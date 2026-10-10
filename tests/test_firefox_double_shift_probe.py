@@ -27,12 +27,12 @@ class Fields(HTMLParser):
 
 
 class FirefoxDoubleShiftProbeTests(unittest.TestCase):
-    def test_seven_stage_observer_contract(self):
+    def test_observer_semantic_contract(self):
         result = subprocess.run(["node", "--test", "--test-reporter=tap", str(PROOF)], cwd=ROOT,
                                 capture_output=True, text=True, timeout=30)
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         counts = dict(re.findall(r"^# (tests|pass|fail|skipped) (\d+)$", result.stdout, re.M))
-        self.assertEqual(counts, {"tests": "25", "pass": "25", "fail": "0", "skipped": "0"}, result.stdout)
+        self.assertEqual(counts, {"tests": "49", "pass": "49", "fail": "0", "skipped": "0"}, result.stdout)
 
     def test_page_has_all_ten_expected_field_cards(self):
         parser = Fields()
@@ -54,6 +54,22 @@ class FirefoxDoubleShiftProbeTests(unittest.TestCase):
             nested.feed(attrs["srcdoc"])
             editor_tag, editor_attrs = nested.elements["field"]
             self.assertEqual((editor_tag, editor_attrs.get("type"), editor_attrs.get("contenteditable")), expected)
+
+    def test_case_catalog_loads_before_the_observer(self):
+        page = PAGE.read_text()
+        parser = Fields()
+        parser.feed(page)
+        self.assertEqual(parser.elements["test-case"][0], "select")
+        self.assertLess(page.index('src="browser_ime_cases.js"'),
+                        page.index('src="firefox_double_shift.js"'))
+        result = subprocess.run(["node", "-e",
+                                 "const c=require('./tests/manual/browser_ime_cases.js');console.log(JSON.stringify(c.CASES.map(x=>x.id)));"],
+                                cwd=ROOT, capture_output=True, text=True, timeout=10)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        import json
+        self.assertEqual(json.loads(result.stdout), ["greeting", "short", "long", "mixed-case", "previous-word", "english-first",
+                        "space-en-ru", "space-ru-en", "clean-en", "typo-undo", "moved-boundary", "completion-tab",
+                        "caret-edit", "selection-replace", "focus-return"])
 
     def test_chrome_entry_uses_the_same_page_and_observer(self):
         entry = (ROOT / "tests/manual/chrome_double_shift.html").read_text()

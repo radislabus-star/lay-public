@@ -40,6 +40,14 @@ Firefox82 native-диагностика:60ячеек,2PASS/54FAIL/4BLOCKED;39о�
 [source evidence](evidence/browser-ten-field-standard-2026-10-10.json) имеют
 разные границы; Chrome native input и изменённый стенд ещё NOT_TESTED.
 
+По требованию пользователя «одного привет недостаточно» текущая source-задача
+[TD-140](140-browser-functional-regression-cases.md), P1, DONE_FOCUSED_SOURCE:
+15 общих сценариев, включая Space/отмену/Tab/редактирование/фокус и отдельные
+замеры действий. Controlled RED доказан; plan review 9/10; source 49 Node +
+4 fixture + 2 compat + 15 canon PASS. Implementation review 7/10 → 9/10,
+две проверки; exact source/graph receipts в карточке. Source-проверка стенда
+не закрывает открытые native отказы TD-121.
+
 | Доказательство принятой версии | Измеренный результат | Граница |
 | --- | --- | --- |
 | Source release gate | 3044/3044, 3008 correctness + 36 package | Исходники, не все окна |
@@ -103,6 +111,7 @@ FAIL сохраняются. Source review9/10 и full3048+11performance PASS з
 | P1 | [TD-128 — Chrome после Tab](128-chrome-focus-transfer-autocorrect.md), OPEN | Точный исходный переход поля на нынешних bytes; ownership/Reset contracts сохранить |
 | P1 | [TD-127 — Kitty Tab/Space](127-kitty-space-correction-diverges-from-tab.md), OPEN | Один frozen frame и first divergence, без literal-word exception |
 | P1 | [TD-121 — whole-word handoff](121-preserve-word-across-ime-layout-handoff.md), OPEN_CURRENT_SCOPE | Original Firefox scope остаётся открытым. Новый отдельный [экран10полей](../tests/manual/firefox_double_shift.html): оба направления/следующая буква, отдельные режимы слова и окна; fixture source verification не заменяет native acceptance |
+| P1 | [TD-140 — browser functional cases](140-browser-functional-regression-cases.md), DONE_FOCUSED_SOURCE | 15 общих планов, controlled RED и source 49/49 Node PASS; review 9/10 в двух проверках; mandatory graph receipt в карточке; native остаётся TD-121 |
 | P1 | [TD-123 — Wave quality](123-improve-wave-restoration-quality-for-1.0.67.md), OPEN_EXTERNAL_OWNER | Единственный current roadmap в syntax-agreement checkout; stage/protocol оттуда, не второй fit здесь |
 | P2 | [TD-122 — LegacyV1](122-bind-legacy-replay-suppression-request.md), DECISION_REQUIRED | Current reachability, synthetic stream completion, backward policy до протокола или retirement |
 | P2 | [TD-136 — functional gaps](136-functional-test-gaps-and-test-file-boundaries.md), DONE_BOUNDED_MAP_AND_SOURCE_CHARACTERIZATION, review8/10 | 12-family map; one joined caps41 callback test;3045 successful bodies + separate metadata admission, original command FAIL preserved; native128/133 remain open |

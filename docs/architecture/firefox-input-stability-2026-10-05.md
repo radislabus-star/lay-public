@@ -1,6 +1,59 @@
 # Firefox input stability — 2026-10-05
 
-## Current browser standard and native burst diagnostic — 2026-10-10
+## Current functional browser coverage, TD-140 — 2026-10-10
+
+The user's explicit correction is that greeting-only round trips are insufficient.
+At parent `92965082038074096d82f693997e107e75fe51b7`, the first source gap is
+`createRun`'s hard-coded greeting plan. It has no way to assert Space, undo,
+completion, editing or focus transitions. This is a fixture coverage defect,
+not newly proved production failure. Options: more words only 6/10; predefined
+plans plus the existing bounded observer 9/10 (selected); new native framework
+4/10. [Decision](decisions/2026-10-10-browser-functional-regression-cases.json)
+extends the shared protocol/changed-file guard without changing authority.
+
+The shared page now defines six manual corpus plans and nine fixed functional
+plans in `browser_ime_cases.js`; Chrome uses exactly the same code. Coverage:
+short/long/mixed case, preceding text, EN-first, Space both directions, clean EN,
+correction/undo, moved-word boundary, Tab, caret/Backspace/retyping, selection
+replacement and focus return followed by fresh typing and gestures. Expected
+surfaces are fixtures only; they never enter product decisions or mutate input.
+Retain the original 60-cell baseline and eight-gesture C10. Additional selections
+follow the changed mechanism, not a Cartesian product of incompatible controls.
+Separate Space/Tab timing and missing denominators from Double Shift timing.
+Unknown caret/selection or missing trusted trigger stays BLOCKED. HTML does not
+observe completion hint visibility, GNOME icon, IBus InputMode or native send time.
+
+Controlled TDD RED: the new EN-first test fails the old observer at its initial
+`type_ru` phase; all original 25 Node cases pass. Receipt:
+`/home/ubu/.cache/lay/development/browser-functional-red-20261010/RESULT.json`.
+The independent plan review rated 9/10; its scope/timing/fresh-focus findings
+are included. Final remote expanded source proof PASS: 49/49 Node (0 FAIL/0 SKIP),
+4/4 fixture Python, 2/2 existing compat, 15/15 canon, JS/bash/canon checks.
+The model proof exercises 240 corpus plans and 90 functional plans under ten
+field identities; these are abstract snapshots, not real editor interactions.
+Remote headless Firefox 900×600 render keeps all ten fields visible, with zero
+keys sent. Receipt:
+`/home/ubu/.cache/lay/development/browser-functional-source-final49-20261010/RESULT.json`.
+[Compact evidence](../../tech_debt/evidence/browser-functional-regression-cases-2026-10-10.json)
+pins source/receipt hashes and separate source/native denominators.
+Fresh-context implementation review pass 1 rated 7/10. Repaired all three
+material findings: pending Space/Tab cannot accept manually repaired text;
+focus return requires a trusted visit to another registered editor; absent
+completion before Tab reports BLOCKED, while an observed Tab failure reports
+FAIL. Their three new semantic regressions are in the final 49-case proof.
+The other-field observation uses the same bounded record budget. Final review
+pass 2: 9/10, all three material findings closed; two passes, no third.
+[Review record](../../tech_debt/evidence/browser-functional-review-2026-10-10.md).
+Mandatory source-bound/PASS-only publication graph receipt:
+`/home/ubu/.cache/lay/development/browser-functional-graph-20261010/RESULT.json`.
+TD-140 is DONE_FOCUSED_SOURCE: predefined fixture/source coverage only.
+New native profile execution is NOT_TESTED. The preceding 54 FAIL / 4 BLOCKED
+native cells remain unchanged; TD-121 remains OPEN_CURRENT_SCOPE.
+Runtime IME 1.0.82 loaded/installed SHA256
+`5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a`
+is unchanged. No installation, restart, delivery route or owner change.
+
+## Initial shared standard and native burst diagnostic — 2026-10-10 (historical)
 
 The user adopted the ten-field Firefox window as the standard Lay browser
 diagnostic, requested the same Chrome window and required response-time

@@ -82,6 +82,16 @@
   acceptance. Reuse unchanged accepted evidence for publication-only work;
   a test requirement does not authorize installation, restart, shared-learning
   cleanup or input into existing user fields.
+- The baseline greeting is insufficient functional coverage. Use the shared
+  case selector for short/long/mixed-case/English-first words and preserved
+  preceding text; run the fixed Space, clean-text, correction/undo, moved-word
+  boundary, Tab, caret, selection and focus-return plans in every supported
+  field. Keep the baseline 60-cell window/word matrix; choose additional word
+  and burst cases by the affected mechanism rather than multiplying every
+  profile by every control. Functional plans have their own fixed actions.
+  Record their exact selection and untested scope. Unknown caret, missing
+  trusted trigger or unavailable completion is BLOCKED, never an assumed PASS.
+  Report Space/Tab timing and coverage separately from Double Shift timing.
 
 - Run development checks with one command:
   `python3 scripts/dev-check.py check --compact`. Use an explicit `--target`

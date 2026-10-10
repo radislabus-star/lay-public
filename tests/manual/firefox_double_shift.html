@@ -35,13 +35,14 @@
 <h1>Double Shift: 10 типов полей Firefox</h1>
 <p>Все поля видны вместе. Клавиатура работает в одном активном поле; тест переводит фокус при переходе к следующему.</p>
 <div class="toolbar">
+  <label>Сценарий <select id="test-case"></select></label>
   <label>Проверка <select id="sequence"><option value="roundtrip">туда и обратно</option><option value="burst5">5 Double Shift подряд</option></select></label>
   <label>Слово <select id="scenario"><option value="active">без пробела</option><option value="space">после пробела</option></select></label>
   <label>Окно <select id="window-mode"><option>обычное</option><option>приватное</option><option>полноэкранное</option></select></label>
   <button id="start">Начать с первого поля</button><button id="next" disabled>Следующее поле</button>
   <button id="failed" disabled title="Или Escape в активном поле">Не сработало (Esc)</button><button id="export">Скачать отчёт</button>
 </div>
-<div id="instruction" role="status" aria-live="polite">Выберите русскую раскладку Lay и нажмите «Начать». Вводите только указанное тестовое слово.</div>
+<div id="instruction" role="status" aria-live="polite">Выберите сценарий и нажмите «Начать». Начальная раскладка и точные действия указаны в каждом шаге.</div>
 <div id="fields">
   <section class="card" data-field="text"><div class="heading"><label for="text">1. Обычный input</label><output>Не проверено</output></div><input class="editor" id="text" type="text" spellcheck="false" autocomplete="off"></section>
   <section class="card" data-field="search"><div class="heading"><label for="search">2. Поиск</label><output>Не проверено</output></div><input class="editor" id="search" type="search" spellcheck="false" autocomplete="off"></section>
@@ -56,6 +57,7 @@
 </div>
 <p id="summary">Пройдено: 0 · Сбой: 0 · Прервано: 0 · Не проверено: 10</p>
 <p id="speed" class="help">Скорость: ещё нет замеров.</p>
-<p class="help">Туда и обратно: после каждого Double Shift — Я/Z и Backspace. Пять подряд: десять Shift без других клавиш, затем Я/Z и Backspace. Сбой: Esc в поле. Режим окна — метка. Все поля вместе: от 900×600, масштаб 100%.</p>
+<p class="help">Разные слова: туда/обратно или пять подряд. Space, Tab, отмена, курсор, выделение и фокус: отдельные готовые шаги. Сбой: Esc в поле. Все поля вместе: от 900×600, масштаб 100%.</p>
+<script src="browser_ime_cases.js"></script>
 <script src="firefox_double_shift.js"></script>
 </html>

@@ -1,0 +1,107 @@
+{
+  "schema": "lay.browser-functional-regression-evidence.v1",
+  "source_parent": "92965082038074096d82f693997e107e75fe51b7",
+  "scope": "Predefined shared Firefox/Chrome fixture plans, observer source contracts and remote headless layout. Model snapshots are not native inputs.",
+  "source_receipt": "/home/ubu/.cache/lay/development/browser-functional-source-final49-20261010/RESULT.json",
+  "source_receipt_sha256": "aac186d952be6e519ad97aad548702a3744745c229d2265ccef1a16a57d198f7",
+  "archive_sha256": "12fc86c1d87f56d0f6baeefe395caa6cd5887d278cdc666261e988d4e07ac93d",
+  "source_files": {
+    "scripts/check-lay-changed.sh": "b38f0e260a16707929ed07e35bbef57368d5c354a840a570c4fa37181f216e84",
+    "tests/manual/browser_ime_cases.js": "b3a60e4f2acd6c1547566759608498a6086770d03968d3e5488205f2c1b71c2f",
+    "tests/manual/firefox_double_shift.html": "7e2b5354e13fd6f234eefcd4fbcc3999df131aaa98c9b2892bdc0896d3f9f574",
+    "tests/manual/firefox_double_shift.js": "20fb09d8c44a7bd00bf93ae3477e4a9c56be3557bc3c41dafcd7980b8c7209b2",
+    "tests/manual/firefox_double_shift.test.cjs": "7376a01898712abac98fc95a7e1f0c6a3edfcba46216413afea9428b17bf783e",
+    "tests/test_firefox_double_shift_probe.py": "8b77aafee037de53a392fe17c920399abb21f2529aee0438ff94cdc79bd04efa"
+  },
+  "controlled_red": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-functional-red-20261010/RESULT.json",
+    "sha256": "0862e2b5d78d0407934d47e676e21349af7844fae68f466905513c32a0ea9e4f",
+    "selected": 26,
+    "passed": 25,
+    "failed": 1,
+    "skipped": 0,
+    "failure": "New English-first case detects old greeting-only type_ru phase instead of toggle_ru."
+  },
+  "case_plans": {
+    "manual": 6,
+    "functional": 9,
+    "total": 15
+  },
+  "node_observer_tests": {
+    "selected": 49,
+    "passed": 49,
+    "failed": 0,
+    "skipped": 0,
+    "old_tests_preserved": 25
+  },
+  "model_case_executions": {
+    "manual": 240,
+    "functional": 90,
+    "scope": "Trusted abstract snapshots under ten field identities; not ten real browser editors."
+  },
+  "python_checks": {
+    "shared_fixture": 4,
+    "existing_firefox_compat": 2,
+    "canon": 15,
+    "failed": 0
+  },
+  "syntax_and_canon": "PASS",
+  "remote_guard": "dedicated-20cpu with existing heavy lease",
+  "render": {
+    "browser": "remote headless Firefox",
+    "viewport": [
+      900,
+      600
+    ],
+    "sha256": "87a1cf6cd7a2561ae0098e7e224b3b47cc28a00ee402c8ede13655dca5e7522a",
+    "all_ten_fields_visible": true,
+    "keys_sent": 0
+  },
+  "plan_review": {
+    "score": 9,
+    "context": "fresh",
+    "findings_resolved": "Fresh typing and gestures after focus return; separate timing denominators; no automatic Cartesian multiplication."
+  },
+  "implementation_review": {
+    "status": "ACCEPT_SOURCE_SCOPE",
+    "passes": [
+      {
+        "pass": 1,
+        "score": 7,
+        "findings": [
+          "Manual editing after a failed Space/Tab could supply the expected target and false operation timing.",
+          "Focus return did not require visiting another registered editor.",
+          "Unavailable completion reported FAIL instead of BLOCKED."
+        ],
+        "resolution": "Required-action exclusivity; bounded trusted other-editor visit; precondition-specific report. Three semantic regressions added."
+      },
+      {
+        "pass": 2,
+        "score": 9,
+        "verdict": "All three material findings closed; no material remaining defects in reviewed scope.",
+        "verification": "Read-only fresh-context review; verified final source hashes against final49 receipt. No native inputs or tests by reviewer."
+      }
+    ],
+    "pass_limit": 2,
+    "record": "tech_debt/evidence/browser-functional-review-2026-10-10.md"
+  },
+  "graph_receipt": "/home/ubu/.cache/lay/development/browser-functional-graph-20261010/RESULT.json",
+  "native_new_profiles": "NOT_TESTED",
+  "native_chrome": "NOT_TESTED",
+  "native_firefox_predecessor": {
+    "passed": 2,
+    "failed": 54,
+    "blocked": 4,
+    "unattempted": 0,
+    "evidence": "tech_debt/evidence/td121-firefox-five-shift-native-2026-10-10.json"
+  },
+  "installed_ime_sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": false,
+  "installed_runtime_changed": false,
+  "first_source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-functional-source-pass1-20261010/RESULT.json",
+    "sha256": "0519ac0fd7d9f339082b7e60a5bb7eb3e46ef184e56ba0ba60e1b4194d0f41cd",
+    "node_passed": 46
+  }
+}

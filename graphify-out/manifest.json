@@ -80,8 +80,8 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-changed.sh": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "143dcdb1502c758e503e4d3d735fb74e",
+    "mtime": 1791638463.1028144,
+    "ast_hash": "e893ea9c14fb45bea526283d68eddcf4",
     "semantic_hash": ""
   },
   "scripts/check-lay-full.sh": {
@@ -2475,8 +2475,8 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "9d83ea7f8f0efc4faf2505c9e5b6bd7e",
+    "mtime": 1791638463.1028144,
+    "ast_hash": "bdc2ad4034aabdf3fd3e3437f638f5f7",
     "semantic_hash": ""
   },
   "HOW_IT_WORKS.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1791630728.500384,
-    "ast_hash": "aa73a4da763876c5b42b2eafdce38101",
+    "mtime": 1791634498.6468406,
+    "ast_hash": "7876f9123a37f6925b077e604b9ec725",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "c1967f5c65b0fac19836e75174ed8d42",
+    "mtime": 1791638463.1028144,
+    "ast_hash": "7bae72bdb037d327f7b3efc5d2f299a3",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5260,7 +5260,7 @@
     "semantic_hash": ""
   },
   "tech_debt/121-preserve-word-across-ime-layout-handoff.md": {
-    "mtime": 1791634448.5879102,
+    "mtime": 1791634436.6228287,
     "ast_hash": "8c1c7cdb046bf746a3a10a33d77179d4",
     "semantic_hash": ""
   },
@@ -6085,8 +6085,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/firefox-input-stability-2026-10-05.md": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "47cebd5423494507db7f0970fd611162",
+    "mtime": 1791638463.1028144,
+    "ast_hash": "13ffdb72593124800dda6336b2d284ef",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-06-retired-disable-preserves-successor-lifecycle.json": {
@@ -6635,13 +6635,13 @@
     "semantic_hash": ""
   },
   "tests/manual/firefox_double_shift.js": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "5a284079f1d6b76291e188328f112da5",
+    "mtime": 1791638463.1028144,
+    "ast_hash": "687a80eb8d626f408a6d57e736b2ea56",
     "semantic_hash": ""
   },
   "tests/test_firefox_double_shift_probe.py": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "8c600c5e4f8e77e90d64327464ed9892",
+    "mtime": 1791638463.1038144,
+    "ast_hash": "97ddc8ffcd403bb949da3337414f23e5",
     "semantic_hash": ""
   },
   "tech_debt/139-account-for-owned-preedit-in-private-client.md": {
@@ -6670,38 +6670,63 @@
     "semantic_hash": ""
   },
   "tests/manual/firefox_double_shift.html": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "62b15415e5a6d5d6ddd1e85f1fa41a6f",
+    "mtime": 1791638463.1028144,
+    "ast_hash": "5abee1be60740061247bc45f309b7eb2",
     "semantic_hash": ""
   },
   "tests/manual/firefox_double_shift.md": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "763f5fb613687ce5eaabfff5f324778b",
+    "mtime": 1791638463.1038144,
+    "ast_hash": "b9b5bcd343f9899846df84cb68636c31",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-10-browser-ten-field-standard.json": {
-    "mtime": 1791634448.5879102,
+    "mtime": 1791634436.5748873,
     "ast_hash": "c20e6fc311c44a0c85ab7bb558264ff1",
     "semantic_hash": ""
   },
   "tech_debt/evidence/browser-ten-field-standard-2026-10-10.json": {
-    "mtime": 1791634448.5879102,
+    "mtime": 1791634436.5746763,
     "ast_hash": "98a356c52f04a21afa6166dccfe95579",
     "semantic_hash": ""
   },
   "tech_debt/evidence/td121-firefox-five-shift-native-2026-10-10.json": {
-    "mtime": 1791634448.5879102,
+    "mtime": 1791634111.4052358,
     "ast_hash": "7ce6a347d12ae3bf0931c2fd9a974982",
     "semantic_hash": ""
   },
   "tests/manual/browser_ime_standard.md": {
-    "mtime": 1791634448.5879102,
-    "ast_hash": "ecb66096f1bef0390769c4054bc8f9b0",
+    "mtime": 1791638463.1028144,
+    "ast_hash": "3132aa5a10c87487d22c94b72f5b4ba0",
     "semantic_hash": ""
   },
   "tests/manual/chrome_double_shift.html": {
-    "mtime": 1791634448.5879102,
+    "mtime": 1791633408.2245293,
     "ast_hash": "2002bfae76b2c7c896d6727ec2ab9f18",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-10-browser-functional-regression-cases.json": {
+    "mtime": 1791638463.1028144,
+    "ast_hash": "3153f57c9b2fd32397f6090123906274",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/browser-functional-regression-cases-2026-10-10.json": {
+    "mtime": 1791638463.1028144,
+    "ast_hash": "73700d5f658a568e675244fabe6c1728",
+    "semantic_hash": ""
+  },
+  "tests/manual/browser_ime_cases.js": {
+    "mtime": 1791638463.1028144,
+    "ast_hash": "ef138fe8b8ae01e8462e15a86bb6e611",
+    "semantic_hash": ""
+  },
+  "tech_debt/140-browser-functional-regression-cases.md": {
+    "mtime": 1791638463.1028144,
+    "ast_hash": "50c341e4d8e9c6071873e2007bb9648c",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/browser-functional-review-2026-10-10.md": {
+    "mtime": 1791638463.1028144,
+    "ast_hash": "ef7d1f8de1f0d7d6d0e08b7f564ed23c",
     "semantic_hash": ""
   }
 }
