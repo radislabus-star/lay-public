@@ -1,6 +1,10 @@
-# Lay — очередь технического долга, 2026-10-15
+# Lay — очередь технического долга, 2026-10-16
 
-Текущая новая задача: [TD-143 — ручной возврат в нативном терминале](143-native-terminal-restoration-learning.md),
+Текущая задача: [TD-144 — поздний доступ к устройствам, GitHub #49](144-recover-late-device-access.md),
+P1, DONE_SOURCE341/341, review9/10, source 1.0.87. Патч публикуется без установки и без нового
+GitHub Release; предыдущий установленный 1.0.86 и его доказательства сохраняются.
+
+Предыдущая задача: [TD-143 — ручной возврат в нативном терминале](143-native-terminal-restoration-learning.md),
 P1, DONE_SOURCE868/868; INSTALLED_1.0.86; native NOT TESTED; источник cfcbca14 + frozen TD-143 diff,
 source version1.0.86. Native intent сохраняется через настоящий owner/reducer;
 три отдельных UserCorrection эпизода записаны в изолированную память. Review8/10.

@@ -17,9 +17,17 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.86`
+- `1.0.87`
 
-Описание улучшений и известных ограничений:
+1.0.87: source patch for [late device access, GitHub #49](tech_debt/144-recover-late-device-access.md).
+The existing daemon main thread retries missing uinput and input listeners once
+per second. Existing output devices and live listeners are retained; recovered
+availability does not replay failed edits. Listener lifetime changes invalidate
+old word/gesture intent through the existing field epoch. IME delivery routes,
+decision authority and models retain their contracts. This task publishes source;
+it does not install new binaries or create a new GitHub Release.
+
+Описание предыдущего релиза и его известных ограничений:
 [Lay 1.0.86](docs/release-1.0.86.md).
 
 

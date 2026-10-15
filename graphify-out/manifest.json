@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1792098628.6157062,
-    "ast_hash": "3f88f3f25f8806955423a3774108b049",
+    "mtime": 1792106974.0648174,
+    "ast_hash": "71ec9682bf3a78b6a89e5686985935ec",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1792098628.6158144,
-    "ast_hash": "d2b0405f5cf2ffff091e209b56b4cd8d",
+    "mtime": 1792107634.4545913,
+    "ast_hash": "75b9f0737a617cefc93dc183572a3c4c",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -295,13 +295,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_runtime.rs": {
-    "mtime": 1791386348.0535605,
-    "ast_hash": "57d8dee5c63621e8c77f562672ce6459",
+    "mtime": 1792107580.4499989,
+    "ast_hash": "ea703af28c1b5d4a89639ccda4f75155",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_runtime/focus.rs": {
-    "mtime": 1791386348.0535605,
-    "ast_hash": "92ac8232ffed53964f5e90216aedf6d3",
+    "mtime": 1792107580.8520033,
+    "ast_hash": "eb3a6175a016cfc6420952eb2e2e757c",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/daemon_state.rs": {
@@ -320,8 +320,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/force_layout_hotkeys.rs": {
-    "mtime": 1791386348.0535605,
-    "ast_hash": "47f43b093ec1281ed004d847f673d6ec",
+    "mtime": 1792107581.2500076,
+    "ast_hash": "70a2e19b27bc79ad8cb6d74407beba9d",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/keyboard_io.rs": {
@@ -450,13 +450,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_runtime.rs": {
-    "mtime": 1791386348.0566978,
-    "ast_hash": "2ea5a1968de022a4160d19a2df6fb8b0",
+    "mtime": 1792107931.7119148,
+    "ast_hash": "a54d50882e7f9aa15533c612acf4f6a8",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_runtime/tests/warmup.rs": {
-    "mtime": 1791386348.0571992,
-    "ast_hash": "4bff84ebbc55c14586f2b504689edaec",
+    "mtime": 1792107580.0569947,
+    "ast_hash": "20244497c932788c093ccc79533c7641",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_runtime/warmup.rs": {
@@ -2485,13 +2485,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1791386347.29916,
-    "ast_hash": "1b6f7e7108c12db6010715620ff93992",
+    "mtime": 1792106974.0648174,
+    "ast_hash": "fe138a1a678a9de6d382431cd25578da",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792098628.6159327,
-    "ast_hash": "709cc9ecebba77e1597b980919c12bb0",
+    "mtime": 1792106974.0658174,
+    "ast_hash": "270a9007fe76c842b1dd40fdeb788568",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2660,8 +2660,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1791386347.9121687,
-    "ast_hash": "99ec46dbc1a75e5ec735140faed28cdd",
+    "mtime": 1792108142.4233162,
+    "ast_hash": "8f0f819dc8d5df82cbb86377e09393f2",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -3145,8 +3145,8 @@
     "semantic_hash": ""
   },
   "docs/phase-word-recovery-canonical-cutover.md": {
-    "mtime": 1792098926.9131007,
-    "ast_hash": "61a561caafe12023534f52ccd65989ac",
+    "mtime": 1792099400.328871,
+    "ast_hash": "dc02cb97005cb024342e62698010d99d",
     "semantic_hash": ""
   },
   "docs/refactor-baselines/phase-word-recovery-0.2.241.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792095142.1382408,
-    "ast_hash": "6ba5c7280902db25a4a43cc14caeb03c",
+    "mtime": 1792098965.086063,
+    "ast_hash": "91673c6a9ff5e514519b6e44b5ad879e",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792098926.9132462,
-    "ast_hash": "7c045ede6603f0ce0588925d1c8b7152",
+    "mtime": 1792107634.4545913,
+    "ast_hash": "359f3125063935d144efe3040417499f",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -7065,23 +7065,53 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-15-user-directed-restoration85-install.json": {
-    "mtime": 1792095555.8936973,
-    "ast_hash": "0075314f592ced018589b1331d78685b",
+    "mtime": 1792099400.3292935,
+    "ast_hash": "52b525d509fe4529099133ee338b3626",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-15-native-restoration86-install.json": {
-    "mtime": 1792098926.9129252,
-    "ast_hash": "d13e1d1957cfd7f398642da3c7fe94db",
+    "mtime": 1792099400.3285315,
+    "ast_hash": "341d9bc67f71db15b6ad5f0c042c5709",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-15-native-user-restoration-intent.json": {
-    "mtime": 1792098926.9128125,
-    "ast_hash": "7acbf2f052bc5a319afafc9e140ce746",
+    "mtime": 1792099400.3286593,
+    "ast_hash": "2300a2999e7a3e862b8a81cc547f074e",
     "semantic_hash": ""
   },
   "tech_debt/143-native-terminal-restoration-learning.md": {
-    "mtime": 1792098926.912653,
-    "ast_hash": "f518843d0be46f1ef55239b9d594c638",
+    "mtime": 1792099400.328368,
+    "ast_hash": "bcfda72569844667b778c1a22ff98477",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-16-late-device-access.json": {
+    "mtime": 1792108142.424426,
+    "ast_hash": "6a84c5dfd230bd5b338ee5ec4758459e",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/startup_runtime/device_access.rs": {
+    "mtime": 1792107579.269986,
+    "ast_hash": "aeca44f3b907c487040962ec21959eb5",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/startup_runtime/tests/device_access.rs": {
+    "mtime": 1792107579.65099,
+    "ast_hash": "51ba899ec667e0f65ae557137ee89987",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/2026-10-15-td143-source-installed86.json": {
+    "mtime": 1792099485.09464,
+    "ast_hash": "5758b30ec4b208d78c5b37f7db0b8c69",
+    "semantic_hash": ""
+  },
+  "docs/release-1.0.86.md": {
+    "mtime": 1792102986.8587945,
+    "ast_hash": "b41d2ff2825711e5c969ea4db967028f",
+    "semantic_hash": ""
+  },
+  "tech_debt/144-recover-late-device-access.md": {
+    "mtime": 1792108142.4226708,
+    "ast_hash": "65b1544da606e4b3d0dc5f074fd3fe41",
     "semantic_hash": ""
   }
 }

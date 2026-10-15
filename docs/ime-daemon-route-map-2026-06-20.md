@@ -3,6 +3,38 @@
 Date: 2026-06-20
 Runtime baseline: `0.1.233`
 
+## TD-144: device availability, source 1.0.87
+
+The existing daemon main thread maintains missing device availability once per
+second instead of blocking forever in listener joins. It creates only a missing
+shared uinput device, after successful key-release sanitization, and retains live
+listeners across discovery misses. Finished listeners may be reopened, including
+an explicit device path. Automatic discovery still excludes Lay virtual devices.
+No device permissions, output routes, trigger detector or text edit are changed
+by an availability transition. Keyboard/pointer worker entry and exit advance the
+existing field epoch; idle processing consumes it before deferred edits/gestures.
+Stale gesture intent is cancelled while physical held-modifier tracking remains.
+
+The one-second cadence is a readiness retry interval, not measured typing latency
+or a hard deadline for blocking kernel calls. Existing shutdown admission checks,
+listener joins and final virtual-key release remain in force. Failures/recovery
+produce metadata-only status warnings without requiring the typed-text debug log.
+
+Proof is owned by [TD-144](../tech_debt/144-recover-late-device-access.md).
+Focused source regressions: 11/11 PASS, including real temporary-file EACCES →
+accessible acquisition. A controlled recovered-handle-publication violation fails
+that regression; this is not an unmodified physical Bluefin reproduction.
+Final daemon/affected-contract gate: 341/341 PASS (290 daemon + 51 contract
+tests), receipt `/home/ubu/.cache/lay/development/run-7ggr8s_q/RESULT.json`.
+Independent review: 8/10 → 9/10 over two passes; cancellation also covers both
+configured force-layout keys. Canonical graph/checks PASS; receipt
+`/home/ubu/.cache/lay/development/td144-final-graph-20261016-2/GRAPH_RESULT.json`.
+The input-loop timeout helper owns the retry wait; no delay-guard exception was
+added. No runtime
+authority changed; no installation or physical-client acceptance is claimed.
+Held modifiers are preserved in existing listeners; a modifier held before a
+recovered fd is opened remains NOT TESTED, as does physical Bluefin/Wayland.
+
 ## Current TD-126 source consolidation
 
 The managed IBus window/context lifecycle now has one source boundary for

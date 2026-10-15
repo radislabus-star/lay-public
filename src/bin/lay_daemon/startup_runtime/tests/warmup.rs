@@ -1,6 +1,16 @@
 use super::*;
 
 #[test]
+fn late_permissions_listener_lifetime_advances_existing_epoch() {
+    let epoch = Arc::new(AtomicU64::new(0));
+    {
+        let _listener = ListenerEpoch::enter(Arc::clone(&epoch));
+        assert_eq!(epoch.load(Ordering::Acquire), 1);
+    }
+    assert_eq!(epoch.load(Ordering::Acquire), 2);
+}
+
+#[test]
 fn warmup_plan_keeps_direct_ime_owner_out_of_daemon_memory() {
     let cfg = LayConfig {
         typing_assist: true,
