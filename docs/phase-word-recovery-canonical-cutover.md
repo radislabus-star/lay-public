@@ -75,6 +75,36 @@ Process/hash readback does not establish physical acceptance. New learning
 behavior and native speed remain NOT TESTED / NOT MEASURED until a separate
 client check. The historical browser matrix above remains separate.
 
+## 2026-10-15 — TD-143 native restoration, explicit follow-up plan
+
+After installation85 the user reports repeat correction of a manually restored
+second word in Kitty. Passive caps9/purpose10 metadata has no SurroundingText.
+The first missing transition in source is authorized correction submission →
+existing restore trajectory: TD-142 waits for a client observation unavailable
+in that route. This does not yet prove the first/second-word asymmetry.
+[TD-143](../tech_debt/143-native-terminal-restoration-learning.md) records options,
+proof boundaries and the new native scope; [decision](architecture/decisions/2026-10-15-native-user-restoration-intent.json).
+No delivery change: a temporary native proposal is not learning. Only subsequent
+owner-bound observed user native editing may produce existing UserCorrection
+intent, separate from visible-system-outcome evidence. Missing/partial outputs,
+mirror-only state, private/unknown owners and generic undo/import must not vote.
+Actual terminal-executor causal RED:810PASS/1FAIL of811,
+`/home/ubu/.cache/lay/development/run-ritauysi/RESULT.json`. The origin was lost
+after successful authorized terminal emission. Plan review7/10 incorporated
+actual producer, strict native progress, UserCorrection semantics and explicit
+observation limits before runtime changes. Admitted callback/release RED4/5→GREEN5/5 retained the reducer unchanged;
+first-word learning waits for normal Space settlement. Three distinct native
+UserCorrection episodes persisted at5/5PASS in
+`/home/ubu/.cache/lay/development/td143-source-subset-ybvxt7ie/RESULT.json`.
+Final independent review8/10 has no material defect. Source868/868PASS in `/home/ubu/.cache/lay/development/run-0tmq3hj2/RESULT.json`; 86core installed and loadedSHA/version verified; physical Kitty and native timing remain NOT TESTED / NOT MEASURED. TD-142's two prior scores are not replaced or silently rerun.
+
+TD-143 final evidence: [source/install86 summary](../tech_debt/evidence/2026-10-15-td143-source-installed86.json).
+All740Rust match the test/build freeze;9privateIME files changed and731retain85
+hashes. Core/daemon/WordScope reducer/protocol/output primitives are unchanged.
+Installation preserves globalIBus,L1.1,L3,config,sources,mode and24protected files;
+functional input keys0. Runtime bytes changed (86); output authority/delivery
+routes/models unchanged. Physical Kitty and native latency remain untested.
+
 Last source audit: 2026-07-20.
 
 This document is the source of truth for the current L1-L4 runtime, its proven

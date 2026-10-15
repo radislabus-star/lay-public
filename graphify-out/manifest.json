@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1792095011.07854,
-    "ast_hash": "9b4185ca8999cfb4b90bdf9fbaf324d3",
+    "mtime": 1792098628.6157062,
+    "ast_hash": "3f88f3f25f8806955423a3774108b049",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1792095011.07854,
-    "ast_hash": "262925b7c3997df985d347e386b832cd",
+    "mtime": 1792098628.6158144,
+    "ast_hash": "d2b0405f5cf2ffff091e209b56b4cd8d",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -860,8 +860,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
-    "mtime": 1791837924.382262,
-    "ast_hash": "05b27f7ee24e33e75a9098bd4bf34d91",
+    "mtime": 1792097026.9787304,
+    "ast_hash": "05ae8b0ca1b63e73f4ccfd88fa99471f",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_edit.rs": {
@@ -870,8 +870,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine.rs": {
-    "mtime": 1792072713.6230068,
-    "ast_hash": "dca386b88baed21589b23f4a1c768373",
+    "mtime": 1792097025.1107023,
+    "ast_hash": "bc10cec77a50557a4bdf244d29d8e69c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/profile_tests.rs": {
@@ -885,8 +885,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/ibus_interface.rs": {
-    "mtime": 1791910668.3970437,
-    "ast_hash": "c849e9136c8d589535b7c0ebeaa9a8d4",
+    "mtime": 1792097025.8587136,
+    "ast_hash": "6fa39dbc76ed9d5dbd09566a198c6e08",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/key_decode.rs": {
@@ -905,8 +905,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/managed.rs": {
-    "mtime": 1792072456.0987284,
-    "ast_hash": "a4b7b7ce6e0e15b5768d5d10afec2059",
+    "mtime": 1792097026.218719,
+    "ast_hash": "6f02196e9fde7caa90932bc214a3ee82",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
@@ -945,13 +945,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1791909199.181184,
-    "ast_hash": "e89ba89c782a96f6f506bda9231be25e",
+    "mtime": 1792097026.610725,
+    "ast_hash": "854ae7c7e24a444e5fc4f3e2bf0de3c2",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1792076135.0489397,
-    "ast_hash": "98d5ee473c93d8df739b75d9fea982da",
+    "mtime": 1792098736.8787234,
+    "ast_hash": "82ccaaef784adbd5fb36f7efe1523037",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792095066.400331,
-    "ast_hash": "5f585a3daaa75a2fb1bfb421a51fcc02",
+    "mtime": 1792098628.6159327,
+    "ast_hash": "709cc9ecebba77e1597b980919c12bb0",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3145,8 +3145,8 @@
     "semantic_hash": ""
   },
   "docs/phase-word-recovery-canonical-cutover.md": {
-    "mtime": 1792095066.4006503,
-    "ast_hash": "53f6c749cf8544f615a18de6190c3586",
+    "mtime": 1792098926.9131007,
+    "ast_hash": "61a561caafe12023534f52ccd65989ac",
     "semantic_hash": ""
   },
   "docs/refactor-baselines/phase-word-recovery-0.2.241.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792077595.2784777,
-    "ast_hash": "cd3c7518d9020062f5616ebbb0e747ef",
+    "mtime": 1792095142.1382408,
+    "ast_hash": "6ba5c7280902db25a4a43cc14caeb03c",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3315,8 +3315,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/engine/types.rs": {
-    "mtime": 1792076114.6195498,
-    "ast_hash": "858ffe5be1a034ed3fdc543c185b0aa5",
+    "mtime": 1792098274.0760438,
+    "ast_hash": "11a1702deedf778aa5a0ed4779550375",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/correction_runtime/output/replay/action.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792077556.9658039,
-    "ast_hash": "c719f7438cdf74d90adff743f7f1ed62",
+    "mtime": 1792098926.9132462,
+    "ast_hash": "7c045ede6603f0ce0588925d1c8b7152",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5695,8 +5695,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": {
-    "mtime": 1791918155.3696525,
-    "ast_hash": "101418ee065bdeadd826a24252a4d362",
+    "mtime": 1792098737.2887268,
+    "ast_hash": "66b98eb4c94a02b093966dc2f57cdf87",
     "semantic_hash": ""
   },
   "tech_debt/evidence/ime-terminal-native-delivery-composition-successor.json": {
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1792074961.7139237,
-    "ast_hash": "2e11a106840b8a319b5b7b73c290a440",
+    "mtime": 1792097840.2462063,
+    "ast_hash": "0112e18044de67c291fe817c88905a28",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -7055,8 +7055,8 @@
     "semantic_hash": ""
   },
   "tech_debt/142-learn-explicit-autocorrection-restorations.md": {
-    "mtime": 1792077556.965258,
-    "ast_hash": "ce540804dffe50947a75ae26632011bc",
+    "mtime": 1792095555.8938982,
+    "ast_hash": "df7008f890269957233f79333bc475db",
     "semantic_hash": ""
   },
   "tests/manual/native_app_ime_standard.md": {
@@ -7065,8 +7065,23 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-15-user-directed-restoration85-install.json": {
-    "mtime": 1792095066.4007792,
-    "ast_hash": "8d5a556a21f84d16b915786802527b87",
+    "mtime": 1792095555.8936973,
+    "ast_hash": "0075314f592ced018589b1331d78685b",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-15-native-restoration86-install.json": {
+    "mtime": 1792098926.9129252,
+    "ast_hash": "d13e1d1957cfd7f398642da3c7fe94db",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-15-native-user-restoration-intent.json": {
+    "mtime": 1792098926.9128125,
+    "ast_hash": "7acbf2f052bc5a319afafc9e140ce746",
+    "semantic_hash": ""
+  },
+  "tech_debt/143-native-terminal-restoration-learning.md": {
+    "mtime": 1792098926.912653,
+    "ast_hash": "f518843d0be46f1ef55239b9d594c638",
     "semantic_hash": ""
   }
 }

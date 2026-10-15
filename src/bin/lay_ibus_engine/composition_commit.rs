@@ -277,6 +277,7 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         ch: char,
     ) -> fdo::Result<()> {
+        self.observe_native_restoration_letter(ch);
         self.push_tail_char(ch);
         let frame = self.capture_input_frame_identity();
         // The same observation closes an ordinary Legacy Space boundary.

@@ -1,9 +1,14 @@
 # Lay — очередь технического долга, 2026-10-15
 
-Текущая новая задача: [TD-142 — обучение на точном ручном возврате слова](142-learn-explicit-autocorrection-restorations.md),
-P1, DONE_SOURCE; установлена1.0.85, native NOT TESTED. Базовый источник `7741d06d`,
-исходник обучения `a09fb3a5`; версия/loadedSHA и сохранение окружения проверены. Последняя полная READV матрица349PASS/51FAIL/32BLOCKED/432
-относится к предшествующему поведению, не к TD-142.
+Текущая новая задача: [TD-143 — ручной возврат в нативном терминале](143-native-terminal-restoration-learning.md),
+P1, DONE_SOURCE868/868; INSTALLED_1.0.86; native NOT TESTED; источник cfcbca14 + frozen TD-143 diff,
+source version1.0.86. Native intent сохраняется через настоящий owner/reducer;
+три отдельных UserCorrection эпизода записаны в изолированную память. Review8/10.
+Установлены CLI/daemon/IME86 и панель86; точные SHA/статус:
+`/home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json`.
+[TD-142](142-learn-explicit-autocorrection-restorations.md) сохраняет свой
+DONE_SOURCE2966/2966 и установку85. Последняя полная READV матрица349/51/32/432
+относится к предшествующему поведению, не к TD-143.
 [Замеры и доказательства1.0.84](../docs/development/double-shift-latency-2026-10-15.md).
 TD-141 завершён; TD-121 сохраняет свои открытые native отказы.
 Следующий раздел принятой версии — исторический снимок на10октября.

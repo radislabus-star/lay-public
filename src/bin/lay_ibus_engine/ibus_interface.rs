@@ -796,6 +796,7 @@ impl LayIbusEngine {
         keycode: u32,
         state: u32,
     ) -> fdo::Result<bool> {
+        self.prepare_native_restoration_key(keyval, keycode, state, output.is_legacy());
         if is_key_press(state) {
             self.layout_gesture
                 .native_letter_release_focus

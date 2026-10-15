@@ -85,6 +85,7 @@ impl LayIbusEngine {
             self.revoke_managed_word_start_before_client_key();
             self.begin_pending_ime_completion_edit_before_backspace();
             let handled = self.backspace(emitter).await?;
+            self.observe_native_restoration_backspace(handled);
             if handled {
                 self.finish_owned_preedit_local_backspace(owned_backspace);
             }

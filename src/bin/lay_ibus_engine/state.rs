@@ -518,6 +518,7 @@ impl LayIbusEngine {
         if request.is_noop() {
             return Ok(false);
         }
+        self.cancel_native_autocorrection_restoration();
         let source = request.source;
         let backspaces = request.backspaces;
         let intent = request.intent;
@@ -924,6 +925,10 @@ impl LayIbusEngine {
                 outcome_feedback,
                 deferred_layout_sync_text,
             );
+        } else if output_profile.uses_terminal_erase() && emitter.is_legacy() {
+            // Successful emission retains an origin only. Actual subsequent
+            // native edits may evidence preference, never a client outcome.
+            self.arm_native_autocorrection_learning(outcome_feedback.as_ref());
         }
         Ok(true)
     }

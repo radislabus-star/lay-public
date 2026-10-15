@@ -17,7 +17,22 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.85`
+- `1.0.86`
+
+
+1.0.86: TD-143 native-terminal restoration learning. Successful authorized
+terminal correction emission retains a temporary origin; admitted native
+Backspace/retyping and exact restoration produce existing UserCorrection
+preference evidence. First-word learning waits for ordinary Space settlement
+when the existing reducer temporarily has UnknownStart. Word-edit authority,
+delivery routes, models, SSI and deferred Atomic behavior retain their contracts.
+Final source/build/installation evidence is owned by:
+`/home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json`.
+Installed and loaded core identities match the868/868 tested source and verified build.
+GlobalIBus,L1.1,L3,config,sources,mode and24protected files preserved; zero test keys.
+Review7→8/10;
+physical Kitty acceptance and native latency remain NOT TESTED / NOT MEASURED.
+[Native follow-up](tech_debt/143-native-terminal-restoration-learning.md).
 
 
 1.0.85: user-requested installation of TD-142 personal restoration learning,

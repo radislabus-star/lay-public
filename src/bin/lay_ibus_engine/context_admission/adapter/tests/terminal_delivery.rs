@@ -4797,3 +4797,270 @@ fn terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt() {
         no_legacy_output(&mut harness).await;
     });
 }
+
+#[test]
+fn native_restoration_uses_admitted_callbacks_for_first_and_second_words() {
+    zbus::block_on(async {
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!(
+            "lay-native-restoration-{}-{stamp}",
+            std::process::id()
+        ));
+        std::fs::create_dir(&directory).unwrap();
+        let names = [
+            ("LAY_CONFIG_PATH", "config.json"),
+            ("LAY_NANDA_WORD_USAGE_EVENTS", "events.jsonl"),
+            ("LAY_NANDA_WORD_USAGE_COUNTS", "counts.json"),
+            ("LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS", "feedback.json"),
+            ("LAY_NANDA_USAGE_PRIOR", "legacy.json"),
+            ("LAY_L4_CROSS_SCENE_INBOX", "l4-inbox"),
+        ];
+        let previous: Vec<_> = names
+            .iter()
+            .map(|(name, _)| (*name, std::env::var_os(name)))
+            .collect();
+        for (name, file) in names {
+            std::env::set_var(name, directory.join(file));
+        }
+        let config_json = serde_json::json!({"text_backend":"ime", "auto_replace":false,
+            "auto_switch_layout":false, "nanda_autocorrect":true, "nanda_precognition":false,
+            "learning_log":true});
+        let runtime_config: lay::config::LayConfig =
+            serde_json::from_value(config_json.clone()).unwrap();
+        std::fs::write(
+            directory.join("config.json"),
+            serde_json::to_vec(&config_json).unwrap(),
+        )
+        .unwrap();
+        let usage_path = directory.join("events.jsonl");
+        let preferences = usage_path.with_file_name("user_word_restorations.json");
+        assert!(
+            !usage_path.exists() && !preferences.exists(),
+            "fresh isolated learning root required"
+        );
+        for prefix in ["", "плачу ", "сейчас "] {
+            crate::tail_memory::take_native_restoration_feedback();
+            let mut harness = bootstrap_harness_with_profiles_and_budget(
+                "lay-ru",
+                vec![profile("lay-ru")],
+                CALLBACK_BUDGET,
+            )
+            .await;
+            let mut engine = LayIbusEngine::new_from_component(
+                TARGET_PATH.into(),
+                Arc::new(Mutex::new(SharedState::default())),
+                Some(harness.adapter.clone()),
+                "lay-ime-ru",
+                true,
+                runtime_config.clone(),
+            );
+            engine.config.auto_replace = false;
+            engine.config.auto_switch_layout = false;
+            engine.config.nanda_autocorrect = true;
+            engine.config.nanda_precognition = false;
+            lay::config::publish_runtime_config(&engine.config);
+            start_source_free_unknown(&mut harness, &mut engine).await;
+            engine.set_content_type_state(crate::engine::IBUS_INPUT_PURPOSE_TERMINAL, 0);
+            engine.set_client_capabilities(9);
+            engine.client_context.cursor_cell_width = 8;
+            let mut serial = 37_000;
+            // Native Enter establishes the existing reducer's next-word start.
+            assert!(!legacy_key(&mut harness, &mut engine, serial, KEY_ENTER, 28, 0).await);
+            legacy_effects(&mut harness).await;
+            serial += 1;
+            assert!(
+                !legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial,
+                    KEY_ENTER,
+                    28,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            legacy_effects(&mut harness).await;
+            assert!(engine.context_word_is_known());
+            for ch in format!("{prefix}криптой").chars() {
+                let keyval = replay_keyval(ch);
+                let code = (1..=57)
+                    .find(|&code| lay::keyboard::keycode_to_ru_char(code, false) == Some(ch))
+                    .unwrap_or(57) as u32;
+                serial += 1;
+                assert!(!legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+                legacy_effects(&mut harness).await;
+                serial += 1;
+                assert!(
+                    !legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial,
+                        keyval,
+                        code,
+                        RELEASE_MASK
+                    )
+                    .await
+                );
+                legacy_effects(&mut harness).await;
+            }
+            assert_eq!(engine.committed_tail.buffer, format!("{prefix}криптой"));
+            serial += 1;
+            let key = legacy_key_message_at(serial, TARGET_PATH, KEY_SPACE, 57, 0);
+            harness.peer.detached_callback_reply_serials.insert(serial);
+            harness.peer.connection.send(&key).await.unwrap();
+            assert!(bounded(harness.observer.process_next()).await.unwrap());
+            let crate::context_admission::KeyCallbackObservation::Owned(callback) = engine
+                .begin_context_key_callback(&key.header(), Instant::now(), false)
+                .await
+            else {
+                panic!("admitted correction callback")
+            };
+            let before = engine.committed_tail.buffer.clone();
+            let emitter =
+                zbus::object_server::SignalEmitter::new(&harness.connection, TARGET_PATH).unwrap();
+            assert!(engine
+                .replace_committed_tail(
+                    &mut crate::output::EngineOutput::legacy(&emitter),
+                    crate::state::CommittedTailReplaceRequest::ime_autocorrect(
+                        7,
+                        "криптон ".into()
+                    )
+                    .with_outcome_feedback(
+                        crate::engine::PendingSystemOutcomeFeedback {
+                            original: "криптой".into(),
+                            replacement: "криптон ".into(),
+                            source: lay::text_edit::VisibleTailSource::ImeCommittedTail,
+                            kind: crate::engine::SystemOutcomeKind::Correction,
+                        }
+                    ),
+                )
+                .await
+                .unwrap());
+            engine.settle_context_key_callback(Some(&callback), KEY_SPACE, 57, 0, &before, true);
+            legacy_effects(&mut harness).await;
+            assert!(
+                engine.committed_tail.pending_completion_learning.is_some(),
+                "origin {prefix:?}"
+            );
+            assert!(crate::tail_memory::take_native_restoration_feedback().is_empty());
+            serial += 1;
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                serial,
+                KEY_SPACE,
+                57,
+                RELEASE_MASK,
+            )
+            .await;
+            legacy_effects(&mut harness).await;
+            for (keyval, code) in [
+                (crate::protocol::KEY_BACKSPACE, 14),
+                (crate::protocol::KEY_BACKSPACE, 14),
+                (replay_keyval('й'), 16),
+            ] {
+                serial += 1;
+                assert!(!legacy_key(&mut harness, &mut engine, serial, keyval, code, 0).await);
+                legacy_effects(&mut harness).await;
+                serial += 1;
+                assert!(
+                    !legacy_key(
+                        &mut harness,
+                        &mut engine,
+                        serial,
+                        keyval,
+                        code,
+                        RELEASE_MASK
+                    )
+                    .await
+                );
+                legacy_effects(&mut harness).await;
+            }
+            assert_eq!(engine.committed_tail.buffer, format!("{prefix}криптой"));
+            assert_eq!(
+                engine.context_word_is_known(),
+                !prefix.is_empty(),
+                "existing reducer remains authoritative after native editing"
+            );
+            serial += 1;
+            assert!(!legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            assert!(effects
+                .iter()
+                .all(
+                    |effect| effect.header().member().is_none_or(|member| !matches!(
+                        member.as_str(),
+                        "CommitText" | "DeleteSurroundingText"
+                    ))
+                ));
+            assert_eq!(engine.committed_tail.buffer, format!("{prefix}криптой "));
+            assert!(
+                engine.context_word_is_known(),
+                "literal Space settles the original reducer"
+            );
+            assert_eq!(
+                crate::tail_memory::take_native_restoration_feedback(),
+                [("криптой".into(), "криптон".into())],
+                "admitted preference {prefix:?}"
+            );
+        }
+        // The real producer must reach the existing async usage writer, not
+        // only the test spy. Three distinct origins persist three episode IDs.
+        let deadline = Instant::now() + Duration::from_secs(5);
+        let (votes, events) = loop {
+            let votes = std::fs::read_to_string(&preferences)
+                .ok()
+                .and_then(|text| serde_json::from_str::<serde_json::Value>(&text).ok());
+            let events: Vec<serde_json::Value> = std::fs::read_to_string(&usage_path)
+                .unwrap_or_default()
+                .lines()
+                .filter_map(|line| serde_json::from_str::<serde_json::Value>(line).ok())
+                .filter(|row| {
+                    row["source"] == "user_correction" && row["restoration_observed"] == true
+                })
+                .collect();
+            if votes
+                .as_ref()
+                .and_then(|row| row["криптой"].as_array())
+                .is_some_and(|rows| rows.len() == 3)
+                && events.len() == 3
+            {
+                break (votes.unwrap(), events);
+            }
+            assert!(
+                Instant::now() < deadline,
+                "three native preferences were not persisted: {votes:?}, events={events:?}"
+            );
+            async_io::Timer::after(Duration::from_millis(10)).await;
+        };
+        let episodes: std::collections::BTreeSet<_> = events
+            .iter()
+            .map(|row| {
+                assert_eq!(row["from"], "криптой");
+                assert_eq!(row["to"], "криптой");
+                assert_eq!(row["proposal"], "криптон");
+                assert_eq!(row["outcome"], "confirmed_positive");
+                row["episode_id"].as_str().unwrap().to_owned()
+            })
+            .collect();
+        assert_eq!(episodes.len(), 3);
+        let persisted: std::collections::BTreeSet<_> = votes["криптой"]
+            .as_array()
+            .unwrap()
+            .iter()
+            .map(|row| row.as_str().unwrap().to_owned())
+            .collect();
+        assert_eq!(persisted, episodes);
+        for (name, value) in previous {
+            if let Some(value) = value {
+                std::env::set_var(name, value);
+            } else {
+                std::env::remove_var(name);
+            }
+        }
+        std::fs::remove_dir_all(directory).unwrap();
+    });
+}

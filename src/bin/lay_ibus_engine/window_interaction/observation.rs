@@ -2227,6 +2227,9 @@ impl LayIbusEngine {
             return;
         }
         self.context_token = admission.current_token();
+        if self.has_native_autocorrection_restoration() {
+            self.confirm_manual_autocorrection_restoration();
+        }
     }
 
     pub(crate) fn settle_context_callback_without_input(&mut self, callback: Option<&KeyCallback>) {
@@ -4332,6 +4335,13 @@ impl LayIbusEngine {
         self.client_context.preedit_text_supported = caps & IBUS_CAP_PREEDIT_TEXT != 0;
         self.client_context.exact_surrounding_refresh_available =
             caps & IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH != 0;
+        if surrounding_text_was_supported != self.client_context.surrounding_text_supported
+            || preedit_text_was_supported != self.client_context.preedit_text_supported
+            || exact_surrounding_refresh_was_available
+                != self.client_context.exact_surrounding_refresh_available
+        {
+            self.cancel_native_autocorrection_restoration();
+        }
         if preedit_text_was_supported != self.client_context.preedit_text_supported {
             self.discard_exact_replay_reset_seed();
             self.composition.legacy_preedit_start_boundary = None;
@@ -4383,6 +4393,7 @@ impl LayIbusEngine {
             return;
         }
         let personalization_was_allowed = self.content_allows_personalization();
+        self.cancel_native_autocorrection_restoration();
         self.discard_context_reset_rereceipt();
         if self.client_context.content_purpose != purpose {
             self.composition.word_input_mode = None;

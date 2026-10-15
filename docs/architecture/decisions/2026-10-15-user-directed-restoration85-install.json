@@ -5,7 +5,7 @@
   "task": "TD-142",
   "source_head": "a09fb3a5c4b2f22ab7f6c834b6df61c14c2073eb",
   "version": "1.0.85",
-  "user_authorization": "установи новую верисию",
+  "user_authorization": "\u0443\u0441\u0442\u0430\u043d\u043e\u0432\u0438 \u043d\u043e\u0432\u0443\u044e \u0432\u0435\u0440\u0438\u0441\u0438\u044e",
   "decision": "Build and install the verified TD-142 source as1.0.85 using the existing three-core-binary and two-extension-metadata transaction; user-side native acceptance remains separate.",
   "reason": "The user explicitly requested installation. Use the same narrow installation scope as83/84 instead of the broad bump script that rebuilds model packages and restarts model services. No functional code changes are included in this version step.",
   "verification": "Final TD-142 selected source2966/2966 PASS in one run; /home/ubu/.cache/lay/development/run-8rdennhh/RESULT.json, archiveSHA550a739d88d6797b89baf1e85910182fc1c98f71d8a0e042fa52eb5149dee7da. Remote builder must prove all740Rust hashes and dependency parity, refresh canonical architecture and create exact binarySHA manifest. Installer must back up current84 bytes, atomically exchange3core+2metadata files, restart only Lay daemon/IME/extension and verify loaded versions/SHA; preserve globalIBus,L1.1,L3,mode,sources,config and protected files. Live receipt: /home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json",
@@ -50,9 +50,11 @@
     "native_latency": "NOT_MEASURED"
   },
   "user_report_after_install": {
-    "word": "криптой",
-    "automatic_target": "криптон",
+    "word": "\u043a\u0440\u0438\u043f\u0442\u043e\u0439",
+    "automatic_target": "\u043a\u0440\u0438\u043f\u0442\u043e\u043d",
     "report": "The user reports different behavior for the first and second word in a line. It is not yet clear whether this means initial correction or repeated correction after manual restoration. No cause, repair or native PASS inferred.",
-    "status": "OPEN_DIAGNOSIS"
+    "status": "FOLLOW_UP_TD143_SOURCE_VERIFIED_INSTALLED86_NATIVE_PENDING",
+    "clarified": "Repeated correction after exact manual restoration; app Kitty (user clarification).",
+    "follow_up": "tech_debt/143-native-terminal-restoration-learning.md"
   }
 }

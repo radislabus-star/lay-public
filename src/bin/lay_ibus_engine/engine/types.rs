@@ -492,7 +492,8 @@ pub(crate) struct PendingImeCompletionLearning {
     pub(crate) typed_prefix: String,
     pub(crate) accepted_word: String,
     pub(crate) editing: bool,
-    /// An observed automatic edit can reuse the same local edit trajectory.
+    /// An observed automatic edit or emitted native correction origin can
+    /// reuse the same local edit trajectory, with distinct evidence below.
     /// It is never a provisional Tab acceptance or positive completion vote.
     pub(crate) autocorrection: Option<PendingAutocorrectionRestoration>,
 }
@@ -505,4 +506,15 @@ pub(crate) struct PendingAutocorrectionRestoration {
     pub(crate) owner_lease_identity: u64,
     pub(crate) started_at: Instant,
     pub(crate) requested: bool,
+    /// Native key intent is distinct from an observed client restoration.
+    pub(crate) native_edit: Option<NativeRestorationKeys>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct NativeRestorationKeys {
+    pub(crate) expected_tail: String,
+    pub(crate) word_start: usize,
+    pub(crate) layout_is_ru: bool,
+    pub(crate) backspace_observed: bool,
+    pub(crate) letter_observed: bool,
 }
