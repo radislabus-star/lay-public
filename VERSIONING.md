@@ -19,6 +19,9 @@ Current source version:
 
 - `1.0.86`
 
+Описание улучшений и известных ограничений:
+[Lay 1.0.86](docs/release-1.0.86.md).
+
 
 1.0.86: TD-143 native-terminal restoration learning. Successful authorized
 terminal correction emission retains a temporary origin; admitted native
