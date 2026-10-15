@@ -17,7 +17,20 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.84`
+- `1.0.85`
+
+
+1.0.85: user-requested installation of TD-142 personal restoration learning,
+source `a09fb3a5`. The existing three-core-binary transaction builds CLI, daemon
+and IME remotely and synchronizes the two extension version files. All740Rust
+files and dependency content are unchanged from the final2966/2966 source gate;
+only package/extension version metadata advances. Models, input ownership and
+IME delivery routes retain their existing contracts. Other helper binaries and
+L1.1/L3 services remain as installed. This is not full release/client acceptance.
+Current installed/loaded state and rollback evidence are owned by:
+`/home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json`.
+[Installation decision](docs/architecture/decisions/2026-10-15-user-directed-restoration85-install.json).
+New native behavior and latency remain NOT TESTED / NOT MEASURED.
 
 1.0.84: installed verified CLI/daemon/IME and synchronized GNOME extension metadata.
 ObservedIbusEngine replaces CLI spawning only in exact engine verification;

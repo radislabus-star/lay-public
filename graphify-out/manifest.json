@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1792034610.4741004,
-    "ast_hash": "f38adc7b77b9a7cbf920f059de40796f",
+    "mtime": 1792095011.07854,
+    "ast_hash": "9b4185ca8999cfb4b90bdf9fbaf324d3",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1792034610.4742296,
-    "ast_hash": "f2c3b6d069e448faffb6770a3d4140c1",
+    "mtime": 1792095011.07854,
+    "ast_hash": "262925b7c3997df985d347e386b832cd",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792035201.002208,
-    "ast_hash": "4112aeeb7a7e5c3f9b1df839fb4649ea",
+    "mtime": 1792095066.400331,
+    "ast_hash": "5f585a3daaa75a2fb1bfb421a51fcc02",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3145,8 +3145,8 @@
     "semantic_hash": ""
   },
   "docs/phase-word-recovery-canonical-cutover.md": {
-    "mtime": 1792077556.9654582,
-    "ast_hash": "3b79cc2e8b81dbb9f953c10bea857f06",
+    "mtime": 1792095066.4006503,
+    "ast_hash": "53f6c749cf8544f615a18de6190c3586",
     "semantic_hash": ""
   },
   "docs/refactor-baselines/phase-word-recovery-0.2.241.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792035417.2736793,
-    "ast_hash": "d905f81a94b2db47000bfa71ab7e5e89",
+    "mtime": 1792077595.2784777,
+    "ast_hash": "cd3c7518d9020062f5616ebbb0e747ef",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -7062,6 +7062,11 @@
   "tests/manual/native_app_ime_standard.md": {
     "mtime": 1791976444.9152446,
     "ast_hash": "bcd938bfb2e9a1eae2ccfbfa44aa5e8e",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-15-user-directed-restoration85-install.json": {
+    "mtime": 1792095066.4007792,
+    "ast_hash": "8d5a556a21f84d16b915786802527b87",
     "semantic_hash": ""
   }
 }

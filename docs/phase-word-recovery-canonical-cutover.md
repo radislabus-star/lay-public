@@ -53,11 +53,27 @@ threshold/dedup/hot-cold/reload parity and three separate locked writer processe
 
 Canonical graph refresh, exact canon change-record validation and canon tests:
 `/home/ubu/.cache/lay/development/td142-final-graph-20261015-owner/GRAPH_RESULT.json`.
-Source readiness requires PASS in that receipt. Installed runtime remains84;
+Source readiness requires PASS in that receipt. The initial source checkpoint left runtime84;
 new native behavior and latency are NOT TESTED / NOT MEASURED. The explicit
 source scope is immediate Backspace/retype; arbitrary later caret/mouse edits
 are not inferred from spelling. Historical READV349PASS/51FAIL/32BLOCKED/432,
 NOT_TESTED0, is separate and does not certify TD-142.
+
+
+## 2026-10-15 — user-directed installation of TD-142 as1.0.85
+
+The user requested installation after the source checkpoint. Reuse the complete
+2966/2966 source proof with exact Rust/dependency parity; rebuild the existing
+CLI/daemon/IME core and synchronize only extension version surfaces. Existing
+file backups, atomic replacement, owned-empty-field admission and Lay-only
+restart helpers own the transaction; preserve global IBus, L1.1/L3, user mode,
+input sources and configuration. No delivery or model changes are included.
+[Decision](architecture/decisions/2026-10-15-user-directed-restoration85-install.json).
+The current installation verdict, exact bytes and recovery state are in
+`/home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json`.
+Process/hash readback does not establish physical acceptance. New learning
+behavior and native speed remain NOT TESTED / NOT MEASURED until a separate
+client check. The historical browser matrix above remains separate.
 
 Last source audit: 2026-07-20.
 

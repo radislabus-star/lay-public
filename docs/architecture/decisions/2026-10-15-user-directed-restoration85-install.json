@@ -1,0 +1,58 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "INSTALLED_CORE85_IDENTITIES_VERIFIED_NATIVE_NOT_TESTED",
+  "task": "TD-142",
+  "source_head": "a09fb3a5c4b2f22ab7f6c834b6df61c14c2073eb",
+  "version": "1.0.85",
+  "user_authorization": "установи новую верисию",
+  "decision": "Build and install the verified TD-142 source as1.0.85 using the existing three-core-binary and two-extension-metadata transaction; user-side native acceptance remains separate.",
+  "reason": "The user explicitly requested installation. Use the same narrow installation scope as83/84 instead of the broad bump script that rebuilds model packages and restarts model services. No functional code changes are included in this version step.",
+  "verification": "Final TD-142 selected source2966/2966 PASS in one run; /home/ubu/.cache/lay/development/run-8rdennhh/RESULT.json, archiveSHA550a739d88d6797b89baf1e85910182fc1c98f71d8a0e042fa52eb5149dee7da. Remote builder must prove all740Rust hashes and dependency parity, refresh canonical architecture and create exact binarySHA manifest. Installer must back up current84 bytes, atomically exchange3core+2metadata files, restart only Lay daemon/IME/extension and verify loaded versions/SHA; preserve globalIBus,L1.1,L3,mode,sources,config and protected files. Live receipt: /home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json",
+  "not_tested": "New installed native input behavior and latency; complete release/helper-binary set; full TD-121 browser acceptance. Existing51FAIL/32BLOCKED are not closed by this installation.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "docs/phase-word-recovery-canonical-cutover.md"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": true,
+  "models_changed": false,
+  "delivery_routes_changed": false,
+  "full_release_acceptance": false,
+  "build_receipt": "/home/ubu/.cache/lay/development/td142-release85-20261015/BUILD.json",
+  "install_receipt": "/home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json",
+  "final_evidence": {
+    "completed_utc": "2026-10-15T20:16:05.807802+00:00",
+    "version": "1.0.85",
+    "install_receipt": "/home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json",
+    "install_receipt_sha256": "c34ba921bd22e7179aba36b12869535a6bd661c75bfc5cd577d391911caad651",
+    "build_receipt": "/home/ubu/.cache/lay/development/td142-release85-20261015/BUILD.json",
+    "build_seconds": 185.17234789504437,
+    "source_archive_sha256": "f91710f4a135ee5eb6e796f244204644c62522b0b32d25627fe89e5f644037d9",
+    "loaded_hashes": {
+      "daemon": "0d90f01dcb76e45bb3d8ab608d25caf65fc2dbd8f05cd4c251be8b8ebc04a0b4",
+      "ime": "7b688f9a0d182670796fae24b93d804e3a1d4b0ca76f900c30e41dd0e2fd36f9"
+    },
+    "cli_sha256": "bb020eb5cf178da5f187f0346fd1bee2b3548cb4914d812d2052902c72bcc651",
+    "extension_version": "1.0.85",
+    "protected_files": 24,
+    "global_ibus_l11_l3_preserved": true,
+    "config_sources_mode_preserved": true,
+    "functional_input_keys": 0,
+    "native_behavior": "NOT_TESTED",
+    "native_latency": "NOT_MEASURED"
+  },
+  "user_report_after_install": {
+    "word": "криптой",
+    "automatic_target": "криптон",
+    "report": "The user reports different behavior for the first and second word in a line. It is not yet clear whether this means initial correction or repeated correction after manual restoration. No cause, repair or native PASS inferred.",
+    "status": "OPEN_DIAGNOSIS"
+  }
+}
