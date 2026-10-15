@@ -478,7 +478,10 @@ mod td121_content_type_tests {
             zbus::block_on(engine.set_content_type(value, Some(set.header())));
 
             assert_eq!(engine.content_type(), value);
-            assert!(engine.content_is_sensitive());
+            assert_eq!(
+                engine.content_is_sensitive(),
+                matches!(value.0, 8 | 9) || value.1 & (1 << 12) != 0
+            );
             assert!(!engine.content_allows_text_assistance());
             assert!(engine.committed_tail.buffer.is_empty());
             assert!(engine.composition.buffer.is_empty());
@@ -729,15 +732,7 @@ impl LayIbusEngine {
         } else {
             self.layout_gesture.shift_used_as_modifier = false;
         }
-        trace::record_key(
-            "shift_observed_daemon_owner",
-            keyval,
-            keycode,
-            false,
-            None,
-            self.committed_tail.buffer.chars().count(),
-            self.composition.preedit_suffix.chars().count(),
-        );
+        self.trace_key("shift_observed_daemon_owner", keyval, keycode, false, None);
         false
     }
 
@@ -811,15 +806,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if !is_key_press(state) && self.consume_handled_release(keycode) {
-            trace::record_key(
-                "managed_release",
-                keyval,
-                keycode,
-                true,
-                None,
-                self.committed_tail.buffer.chars().count(),
-                self.composition.preedit_suffix.chars().count(),
-            );
+            self.trace_key("managed_release", keyval, keycode, true, None);
             return Ok(true);
         }
         // This protected legacy branch is observation-only even when the
@@ -834,7 +821,7 @@ impl LayIbusEngine {
                 self.reset_for_ibus_focus_change();
             }
             self.revoke_managed_word_start_before_client_key();
-            trace::record_key("composition_disabled", keyval, keycode, false, None, 0, 0);
+            self.trace_key("composition_disabled", keyval, keycode, false, None);
             return Ok(false);
         }
         if is_shift_key(keyval) {
@@ -853,7 +840,7 @@ impl LayIbusEngine {
                 }
                 let handled = exact_replay == ExactReplayPress::Rejected;
                 self.remember_handled_press(keycode, handled);
-                trace::record_key(
+                self.trace_key(
                     if handled {
                         "exact_replay_rejected"
                     } else {
@@ -863,8 +850,6 @@ impl LayIbusEngine {
                     keycode,
                     handled,
                     self.passthrough_visible_char(keyval, keycode),
-                    self.committed_tail.buffer.chars().count(),
-                    self.composition.preedit_suffix.chars().count(),
                 );
                 if !handled {
                     self.revoke_managed_word_start_before_client_key();

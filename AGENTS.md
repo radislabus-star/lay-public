@@ -112,6 +112,28 @@
 - Report one concise test result at completion. Intermediate updates should
   describe a new finding or blocker, not repeat that tests are still running.
 
+## Lay progress table
+
+- Every Lay progress/status reply must include the user's pseudographic browser
+  table: Firefox, Chrome, total; PASS, FAIL, BLOCKED, total. Use the latest complete
+  native matrix receipts and retain their denominator. Show partial/diagnostic
+  runs and source-test results separately; they do not replace full browser totals.
+  Keep NOT_TESTED visible separately whenever present. Update counts only from
+  verified receipts, never from an expected fix or a review score.
+
+## TD-121 core experiment log
+
+- Before changing TD-121 word ownership, replay, release admission or privacy,
+  read [the experiment log](docs/development/td121-core-experiments.md).
+- Record a hypothesis, exact baseline and first failed transition before editing.
+  Preserve failed source/native receipts; do not repeat a rejected mechanism
+  without new causal evidence addressing its recorded rejection.
+- Preserve verified preceding fixes. Run the previously failed controls and full
+  affected development scope before code review or native build. A narrow PASS
+  or review score does not override a broader FAIL.
+- Update the log at each verdict/transfer. It indexes evidence owned by the
+  architecture document and does not introduce a second runtime plan or owner.
+
 ## graphify
 
 This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.

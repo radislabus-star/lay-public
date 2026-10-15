@@ -972,7 +972,9 @@ impl LayIbusEngine {
             ));
             return Ok((Some(self.layout_gesture.layout_is_ru), receipt));
         }
-        trace::record_manual_toggle_plan(&plan);
+        if self.content_allows_personalization() {
+            trace::record_manual_toggle_plan(&plan);
+        }
         let handled = self
             .replace_committed_tail_with_effect_progress(
                 emitter,
@@ -1005,7 +1007,7 @@ impl LayIbusEngine {
         }
         if let Some(queued_at) = self.layout_gesture.pending_manual_refresh_at {
             if queued_at.elapsed() > Duration::from_millis(700)
-                || !self.context_reset_rereceipt_computation_allowed()
+                || !self.context_reset_rereceipt_manual_wait_allowed()
             {
                 self.layout_gesture.pending_manual_toggle = false;
                 self.layout_gesture.pending_manual_refresh_at = None;

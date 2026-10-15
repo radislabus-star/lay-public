@@ -267,6 +267,42 @@ pub(crate) fn uncapped_open_token_chars(tail: &str) -> usize {
 }
 
 impl LayIbusEngine {
+    pub(super) fn inactive_completion_waits_for_handled_release(
+        &self,
+        emitter: &EngineOutput<'_, '_>,
+    ) -> bool {
+        emitter.is_legacy()
+            && !self.atomic.active
+            && self.composition.buffer.is_empty()
+            && !self.uses_native_terminal_input()
+            && !self.layout_gesture.handled_press_keycodes.is_empty()
+    }
+
+    fn defer_inactive_completion_until_release(&mut self, emitter: &EngineOutput<'_, '_>) -> bool {
+        if !self.inactive_completion_waits_for_handled_release(emitter) {
+            return false;
+        }
+        let frame = self
+            .capture_observed_suffix_display_frame()
+            .or_else(|| self.capture_input_frame_identity())
+            .or_else(|| self.capture_pending_reset_readout_frame())
+            .filter(|identity| self.precognition_computation_identity_matches(identity));
+        // Previously published text may remain inert. Newly computed material
+        // stays in its existing cache and cannot become a selectable candidate.
+        let visible_suffix = self
+            .composition
+            .preedit_visible
+            .then(|| self.composition.preedit_suffix.clone());
+        self.clear_visible_precognition_candidates();
+        if let Some(suffix) = visible_suffix {
+            self.composition.preedit_suffix = suffix;
+        }
+        self.composition.preedit_dirty = frame.is_some();
+        self.composition.pending_display_frame = frame;
+        self.composition.preedit_display_only_pending = true;
+        true
+    }
+
     pub(super) async fn refresh_precognition_after_visible_input(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
@@ -322,8 +358,9 @@ impl LayIbusEngine {
             self.composition.pending_display_frame = frame;
             return Ok(());
         }
-        self.composition.preedit_dirty = false;
-        self.composition.pending_display_frame = None;
+        let waits_for_release = self.inactive_completion_waits_for_handled_release(emitter);
+        self.composition.preedit_dirty = waits_for_release;
+        self.composition.pending_display_frame = waits_for_release.then(|| frame.clone()).flatten();
         let scheduled = self.schedule_background_precognition(emitter, frame);
         self.composition.preedit_display_only_pending = scheduled;
         if !scheduled {
@@ -336,11 +373,41 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<()> {
-        if !self.composition.preedit_dirty {
+        if !self.composition.preedit_dirty
+            || self.inactive_completion_waits_for_handled_release(emitter)
+        {
             return Ok(());
         }
         self.composition.preedit_dirty = false;
         let frame = self.composition.pending_display_frame.take();
+        if !frame
+            .as_ref()
+            .is_some_and(|identity| self.precognition_computation_identity_matches(identity))
+        {
+            self.cancel_precognition_display_generation();
+            return self.clear_preedit(emitter).await;
+        }
+        if self.precognition_display_ready()
+            && frame
+                .as_ref()
+                .is_some_and(|identity| self.precognition_identity_matches(identity))
+        {
+            if let Some(proposals) = self
+                .precognition_input()
+                .as_ref()
+                .and_then(cached_precognition_candidates)
+            {
+                self.cancel_precognition_display_generation();
+                return self
+                    .apply_background_precognition(emitter, proposals)
+                    .await
+                    .map(|_| ());
+            }
+        }
+        if emitter.connection().is_none() {
+            self.cancel_precognition_display_generation();
+            return self.update_precognition_preedit(emitter).await;
+        }
         let scheduled = self.schedule_background_precognition(emitter, frame);
         self.composition.preedit_display_only_pending = scheduled;
         if !scheduled {
@@ -356,6 +423,9 @@ impl LayIbusEngine {
         if !self.precognition_preedit_enabled() && !self.composition.legacy_word_preedit_active {
             return self.clear_preedit(emitter).await;
         }
+        if self.defer_inactive_completion_until_release(emitter) {
+            return Ok(());
+        }
         self.refresh_precognition_candidates();
         self.publish_selected_precognition_candidate(emitter).await
     }
@@ -369,6 +439,9 @@ impl LayIbusEngine {
             return self
                 .publish_preedit_payload(emitter, text, cursor_pos)
                 .await;
+        }
+        if self.defer_inactive_completion_until_release(emitter) {
+            return Ok(());
         }
         let Some(suffix) = self
             .composition
@@ -610,11 +683,19 @@ impl LayIbusEngine {
         let replacement = replacement.to_string();
         let original_cursor = self.composition.cursor as u32;
         let original_tail = self.committed_tail.buffer.clone();
-        self.cancel_precognition_display_generation();
+        let original_tail_epoch = self.committed_tail.epoch;
+        self.invalidate_input_frame_background_work();
+        super::layout_sync::supersede_active_ime_engine_switch();
         self.clear_preedit_completion_state();
         let cursor = replacement.chars().count() as u32;
         self.publish_preedit_payload(emitter, replacement.clone(), cursor)
             .await?;
+        if !self.context_owns_active_preedit_manual_toggle() {
+            self.trace_marked_preedit_binding_refusal("preedit_publication");
+            return Err(fdo::Error::Failed(
+                "owned preedit manual toggle lost owner during preedit publication".into(),
+            ));
+        }
         self.composition.buffer = replacement.clone();
         self.composition.cursor = cursor as usize;
         self.replace_last_tail_token_text(&replacement, original.chars().count());
@@ -624,6 +705,10 @@ impl LayIbusEngine {
                 "owned preedit manual toggle lost context handoff".into(),
             ));
         }
+        self.rebind_owned_preedit_manual_tail_epoch(
+            original_tail_epoch,
+            original.chars().count() as u64,
+        );
         if let Err(error) = emitter.register_input_mode(target_layout_is_ru).await {
             // A failed indicator publication cannot count as a completed
             // gesture. Restore the old preedit only while its owner is live.
@@ -635,14 +720,28 @@ impl LayIbusEngine {
                 self.composition.cursor = original_cursor as usize;
                 self.committed_tail.buffer = original_tail;
                 self.rebuild_preedit_fast_from_tail();
-                let _ = self.publish_tail_handoff();
+                let rollback_epoch = self.committed_tail.epoch;
+                if self.publish_tail_handoff() {
+                    self.rebind_owned_preedit_manual_tail_epoch(
+                        rollback_epoch,
+                        replacement.chars().count() as u64,
+                    );
+                }
             }
             return Err(error);
+        }
+        if !self.context_owns_active_preedit_manual_toggle() {
+            self.trace_marked_preedit_binding_refusal("input_mode_publication");
+            return Err(fdo::Error::Failed(
+                "owned preedit manual toggle lost owner during input mode publication".into(),
+            ));
         }
         if protect_current_word {
             self.arm_current_word_autocorrect_suppression();
         }
+        let previous_layout_generation = self.layout_gesture.layout_generation;
         self.set_layout_is_ru(target_layout_is_ru);
+        self.rebind_owned_preedit_manual_layout(previous_layout_generation);
         Ok(())
     }
 
@@ -796,6 +895,9 @@ impl LayIbusEngine {
     ) -> fdo::Result<()> {
         if !completion_token_is_letters_only(&self.committed_tail.buffer) {
             return self.suppress_nonletter_precognition(emitter).await;
+        }
+        if self.defer_inactive_completion_until_release(emitter) {
+            return Ok(());
         }
         let matching_suffix = background_supported
             .then(|| self.matching_target_suffix())
@@ -979,7 +1081,10 @@ impl LayIbusEngine {
                     .is_some_and(|identity| self.precognition_identity_matches(identity))
                 {
                     self.cancel_precognition_display_generation();
-                    return self.apply_background_precognition(emitter, proposals).await;
+                    return self
+                        .apply_background_precognition(emitter, proposals)
+                        .await
+                        .map(|_| ());
                 }
             }
         }
@@ -1184,9 +1289,15 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         proposals: Vec<ImeCandidateProposal>,
-    ) -> fdo::Result<()> {
+    ) -> fdo::Result<bool> {
         if !completion_token_is_letters_only(&self.committed_tail.buffer) {
-            return self.suppress_nonletter_precognition(emitter).await;
+            return self
+                .suppress_nonletter_precognition(emitter)
+                .await
+                .map(|_| true);
+        }
+        if self.defer_inactive_completion_until_release(emitter) {
+            return Ok(false);
         }
         let mut projected = self.clone();
         projected.context_bridge_token = None;
@@ -1200,7 +1311,7 @@ impl LayIbusEngine {
             else {
                 projected.clear_preedit(emitter).await.map(|_| ())?;
                 *self = projected;
-                return Ok(());
+                return Ok(true);
             };
             projected.composition.preedit_suffix =
                 projected.visible_case_completion_suffix(candidate);
@@ -1230,7 +1341,7 @@ impl LayIbusEngine {
         self.composition
             .precognition_apply_count
             .fetch_add(1, Ordering::SeqCst);
-        Ok(())
+        Ok(true)
     }
 
     #[cfg(test)]
@@ -1413,6 +1524,17 @@ impl LayIbusEngine {
     }
 
     pub(super) fn push_tail_char(&mut self, ch: char) {
+        self.client_context.surrounding_text_snapshot = None;
+        self.append_tail_mirror_char(ch);
+    }
+
+    pub(super) fn push_owned_preedit_tail_char(&mut self, ch: char) {
+        // The existing composition owner has not changed the client document.
+        // Keep its actual raw observation inert while only the mirror changes.
+        self.append_tail_mirror_char(ch);
+    }
+
+    fn append_tail_mirror_char(&mut self, ch: char) {
         if self.content_is_sensitive() {
             self.close_committed_tail_field();
             return;
@@ -1429,7 +1551,6 @@ impl LayIbusEngine {
         let prediction_before_boundary = is_boundary
             .then(|| self.composition.preedit_fast.observed_prediction.clone())
             .flatten();
-        self.client_context.surrounding_text_snapshot = None;
         if is_boundary {
             self.client_context.managed_word_start = None;
         }
@@ -1470,7 +1591,7 @@ impl LayIbusEngine {
         tail_before_boundary: &str,
         prediction_before_boundary: Option<&ObservedPrediction>,
     ) {
-        if !self.context_word_is_known() {
+        if !self.context_word_is_known() || !self.content_allows_personalization() {
             return;
         }
         let Some((prefix, observed_word)) = self.live_word_readout_input(tail_before_boundary)

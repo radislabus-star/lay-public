@@ -17,7 +17,29 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.80`
+- `1.0.84`
+
+1.0.84: installed verified CLI/daemon/IME and synchronized GNOME extension metadata.
+ObservedIbusEngine replaces CLI spawning only in exact engine verification;
+accepted output pacing, delivery routes, models and input authority are unchanged.
+Source1134PASS and full matched READV432 preserve all349 previousPASS;
+one Chrome search/undo case advancesBLOCKED→FAIL (349PASS51FAIL32BLOCKED).
+Native-tested83 logic is reused for metadata-only84 after exact parity of739Rust
+files, dependency lock and extension code. Local84 functional typing was not run.
+Installation verified CLI/tray84, /proc binarySHA parity,24protected files,
+unchanged globalIBus/L1.1/L3 identities, config, sources and mode. Receipt:
+`/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install83-20261015T033053Z/INSTALL.json`
+(the directory keeps a legacy name; the receipt records84).
+[Performance and limits](docs/development/double-shift-latency-2026-10-15.md),
+[release decision](docs/architecture/decisions/2026-10-15-observed-readback-release84-metadata-only.json).
+
+1.0.83: installs the frozen WJ CLI/daemon/IME core on the user workstation,
+with synchronized extension version metadata. Source848PASS and native88
+32PASS/49FAIL/7BLOCKED are retained evidence for previous WJ1.0.82 logic;
+new-byte physical acceptance is left to the user by explicit instruction.
+No model, delivery-route or word-authority change is introduced by the bump.
+See [installation scope](docs/architecture/decisions/2026-10-14-user-directed-version83-install.json).
+
 
 1.0.80: installed Firefox Reset/native replay and native Space-boundary repair.
 Preserves the admitted replay seed and exact successor lifecycle through observed

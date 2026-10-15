@@ -1,5 +1,395 @@
 # TD-121: Сохранять целое слово при смене экземпляра IME
 
+## Latest scoped fix — 2026-10-14; overall task OPEN
+
+Installed1.0.83 IME330eda0c...: causal Firefoxiframe10 active roundtrip and five consecutive post-Space targets nowPASS; source850/850+architecturePASS. Telegram explicitly USER_ACCEPTED; further testing stopped. [Exact cause, repair and evidence](../docs/development/completed-native-replay-refresh-2026-10-14.md). Independent reviewNOT_RUN (agent thread limit); full new-byte browser matrixNOT_TESTED, last completeWG343PASS56FAIL33BLOCKED/432 retained. This increment is confirmed within its recorded scope; overall debt and historical other failures remain OPEN.
+
+The entries below are historical stages, not the latest installed state.
+
+
+## V source pass, native regressions; task OPEN
+
+Full432339P60F33B, onegain/three lostPASS vsU; all20cursorPASS preserved.
+Both scopes closed/VT1/all18primaries hashed. Do not publish or count sourcePASS
+as acceptance. Source firstscope-loss proof next; review unavailable, no score.
+[Owning evidence](../docs/architecture/firefox-input-stability-2026-10-05.md) and V decision contain all precise receipts.
+
+
+## V canonical focused53 PASS; scoped gate running; task OPEN
+
+53/53 source PASS at existing V3→source-capture→verifier boundaries; early
+KnownStart veto rejected and absent from current code. Only inert actual replay
+observation retention remains. Eight positive and ten adverse schedules, native
+341/58/33 unchanged, independent review NOT RUN (thread limit). Details and all
+rejected signatures: [owning evidence](../docs/architecture/firefox-input-stability-2026-10-05.md).
+
+
+## V focused53 PASS; task OPEN
+
+53/53 source PASS, eight actual Reset schedules and ten adverse cases; independent
+review unavailable (thread limit). See [owning evidence](../docs/architecture/firefox-input-stability-2026-10-05.md)
+and `2026-10-14-private-boundary-first-target-chunk.json`; native341/58/33 unchanged.
+
+
+## V adverse handoff: separate baseline-existing contradiction located
+
+The new progress positive test passes all four prefix/source-separator variants;
+actual complete SSI confirms native delivery and the real ManualToggleV3 delegates
+exactly once. Test-only final readiness now uses the established closed-boundary
+contract (`!completed_native_replay_awaits_exact_receipt` + native ACK + actual RPC),
+instead of predicates specific to an open UnknownStart suffix.
+
+The adverse owner-change test still FAILs at lease handoff: current actual SSI
+contains only partial replacement at the old caret, yet ManualToggleV3 returns
+`(3,false)`. Controlled U baseline reproduces the same rejection assertion with
+all three affected U production files hash-verified, 0 PASS / 1 FAIL, 13.666 s,
+signature `9f13df4fc5ab2576f71ae36d6ee45420ff60e3eea7a828f292139214069b54e3`.
+Temporary U source was restored to V in a finally block; private runtime unchanged.
+This is a pre-existing admission gap, not a rollback of the retained cursor fix.
+
+First lost guard: factory transfer keeps KnownStart while old native completion
+scope is retired; `context_allows_manual_toggle` treats KnownStart as sufficient
+despite an actual contradictory document/caret receipt. Recommended repair (9/10)
+uses the existing actual-snapshot/owned-tail agreement predicate for this manual
+admission; broad pending-replay transfer (7/10) is deferred; weakening or dropping
+the adverse fixture (1/10) is rejected. Keep current token/reducer and final
+verifier authority, active-preedit ownership, delivery routes and model bytes.
+
+Receipts: `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-U-baseline-handoff1-RESULT.json`
+and `V-U-baseline-handoff-wrapper.json`. Native matrix remains 341/58/33 of 432;
+no new native run and TD-121 remains OPEN.
+
+
+## V first clearing call measured; minimal inert receipt planned
+
+Remote source proof 50 PASS / 1 FAIL (51), signature
+`c6e0ca85fbb9cd78a0b2c5677ba6c01af64c36e8963a9132e3d98316f5cd7452`,
+21.513 s, all 208 Rust source hashes match. Actual erasure SSI is present;
+`exact_replay_mirror_transition` clears it on the first replacement press.
+The pending Reset receipt is absent at that point and is recreated after Space.
+This explains why adjacent actual target growth cannot be established from the
+current snapshot alone. Native equivalence remains a required later check.
+
+Recommended option (9/10): one inert actual progress receipt in the existing
+client observation state, bound to paired replay scope, actual SSI revision,
+focus and layout generation, spent at the next adjacent SSI. Shared mutable
+scope witness (7/10) has a wider equality/revision impact. Shape-only admission
+(1/10) is rejected. Do not restore old client text as current or grant manual,
+Space/Tab, learning or edit authority from the retained witness. Final fresh
+full text/end-caret receipt, reducer provenance and verifier remain mandatory.
+
+Receipt: `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-first-clear-red51-RESULT.json`.
+No model training, delivery route change, runtime installation or native input.
+U complete native result remains 341 PASS / 58 FAIL / 33 BLOCKED (432), TD-121 OPEN.
+
+
+## V source-only RED51: actual prior receipt lost before first target piece
+
+Nativeprivate7 firsttargetchunk failure has a source choreography reproducer:
+realerasureSSI→nativecompletedSpace→firstgrowingtarget/stationarycaret.
+50oldcontrolsPASS/1newFAIL, initial21.6367s; afterprefailurestate assertions
+same50P1F21.5750s sig a923a7c6939336982a91753b38534d7dc59eaaa29c1ff5eb50fc52d92f43045d.
+Prioractual=None even though actualerasureSSI had beenreceived. Pending/current
+boundarytoken match KnownStartlineage7/suffix0 and completedboundaryprovenance
+with fullprefix is present. NoRootruntimechange yet: locatefirstactualsnapshot
+clearingcall and exactfailedprogressconjunct beforechoosingminimalretention.
+Do notinfer permissionfromprefix/geometry or weaken finalidentity/SafetyGate.
+CoreU20cursor gains retained; full432341P58F33B is unchanged. GUIOFF/VT1;
+sourceproofs/readsfmt executedREMOTEonly. Next test-onlydiagnostic may assert
+snapshot after each actualnative key; no unchangedrandomnative retry.
+
+
+## Current U full browser result:341PASS/58FAIL/33BLOCKED432
+
+Both original9-job matrices completed on Uae225/cbc060; both exactscopes
+closed/allfivePID-starttick pairs gone/VT8→VT1. Firefox162P35F19B216:
+all10cursor stableIDs gainedPASS, oneRoldPASS lost(privateSpacefield7
+rapid5stopsafterfirstflip), no otherchanges. Chrome179P23F14B216:
+all216statuses equalR. Combined10newPASS/1lostPASS/9netPASS across432.
+Bothbrowsers now20/20cursorcasesPASS; incomplete/no promotion because
+58FAIL33BLOCKED and one requiredclass regressed. Keep provedcapture-order
+repair; do not blindlyrollback or rerununchangedcaseuntilrandomPASS.
+ProofSHAs:FF152185ead8273ea3cd266052c7b3e23743267761051c5d17837b70ce4cebaf39,
+Chrome5e6679c4565f1f8bef57159b2ffb4900aeb2fbdcf9127fe88d769132f58128d7.
+Speeds standard:p95FF118.806ms416/420, Chrome111.629ms406/420;
+functionalDS141.682ms122/210and128.741ms158/210, missingexplicit.
+Clockevdevwrite-return→exactAT-SPI, kernelreleaseNOTMEASURED.
+Chrome3visitedLayfilesprivateunchanged/publicrecent_actionspositive;
+tracecoverageUNKNOWN/no completeauditclaim. All18primaryactorJSON retained
+in immutableRAWarchives; localcopy70516pendingthenverifyhashes.
+Nextfirstsharedfailure: privateFFspace7 completednativeReplay intermediate
+text4/caret0 rejects currentidentity before target7arrives. Exact331-event
+packet retained`U-firefox-private7-first-burst-loss.json`; no rootcause
+at specific source transition yet. Source840/48PASS retained; newcausal
+proof before nextcoreedit. Freshindependentreview NOTRUN agentthreadlimit.
+No modelrefit/localexecution/input/install/RDP/publication/TD121DONE.
+
+
+## U full Firefox complete:162PASS35FAIL19BLOCKED216; Chrome running
+
+All10cursor stableIDs gainedPASS againstR; exactlyone oldPASS lost:
+standard/private/space/field7, rapid5 burst stops after firstnativeflip.
+All216IDs compared; no otherstatus changes. Uoverall stillFAIL/no promotion.
+FFsourcebytesae225/cbc060; original051–059all0/noheldkeys, exactfiveGone/
+cgroupempty/VT1; primary9JSON preservedinto rawarchive immutablemanifest.
+Proof`nativeae225-firefox-proof.json`, compare`U-firefox-vs-R-stable-ids.json`.
+Standard416/420timings:p95118.806ms; panel48/48p95117.754ms;
+functionalDS122/210p95141.682ms, Space37/50p9523.996ms, Tab/selection0/10.
+Missingexplicit; evdevwrite-return→AT-SPI, kernelreleaseNOTMEASURED.
+Chrome samebytes liveactual33036/driver32147, zero-keyUBscope3985161;
+normal100 thenprivate101sinkbrackets thenoriginal102–108, activeafseat.
+NoheavywhileGUIlive. Rcompleteboth432table332P67F33B retaineduntil bothU216
+complete. Source840+48causal/adversePASS does not certify all nativecases.
+One private7 regression remains firstnextmechanism afterChromefinish;
+do not discard10cursor gains or rerununchangedcaseforrandomPASS.
+
+
+## U scoped source gate PASS840/840; native acceptance pending
+
+Fresh immutable`run-uA2KuH`, local`run-eorp9z31/RESULT.json`, archive
+b4c98b96e437fa9c978b2da6f0f944659885fa000f44236661b4aded1776a88a.
+IME789+sixcontracts51PASS; all737Rust hashes match. PriorRdaemon273 reused
+on unchangedsource, no repeatedexecution; development scope, not release.
+Source48 causal/adversePASS retained; U AST/privatebuild LIVE56245.
+Root capture-order repair only, matchedRestore/finalmanualauthorityunchanged.
+No newroute/owner/deadline/model fit; Rfull332P67F33B remains native baseline.
+Freshcontextfree review NOTRUN due agentthreadlimit; no score invented.
+T originalASTreceiptretained; later graph/report artifactsdrifted after edits/
+hooks, localcopyhashassertionfailed. Do not claimT artifactverification.
+Binding/generatedreceiptstillmatch; UfreshAST willbindcurrentRust separately.
+Next fresh finiteownedSeat-af after oldT exactclosed/VT1, fulloriginal9jobs
+Firefox/Chrome each withspeed/private-sinks. No localinstall/input or promotion.
+
+
+## U exact causal RED confirmed; minimal receive-order repair pending proof
+
+Source47:46oldcontrolsPASS/1newcaseFAIL,19.7413s, signature
+1ba5e257c6b37f064cc49875e9f71ab3effa717b9399e4d704c3e35271fd1bc4.
+ActualReset handler concurrentwith canonicalobserver loses inertphase at the
+firstLeftReset, matching nativeT firstloss. All208Rust hashes verified before
+codeedit. Root changed only capture_native_cursor_reset: existingexactlive
+preReset identity OR existingobservedReset provenance can supply the inert
+clone. Restoration stillrequires independentlyauthenticatedMatchedReset,
+sameactivation/currenttoken/exactreduceroldsourceprovenance. Otheroldguards,
+UnknownStart, manualonly/endcaret/actualSSI, readout/Space/Tab/learningrefusal
+and everyroute unchanged. This repairs eventorder; no additional owner,wait,
+timeout or wordcondition. Focused47/furtheradverse/sourcegate/native pending.
+Rfull332P67F33B remains acceptance; no core success or promotion claimed yet.
+
+
+## U first loss localized: handler-first Reset capture; causal source running
+
+T same35withoutwire:standard20PASS, functional9P5F1B,cursorFAIL; both
+actual83008/driver60771closed0, parent9279280/noheldkeys, exactfiveGone/CGempty/VT1.
+Failure trace1178:phasepresent/identitycurrent/localtokenlive, awaitingLeft
+actualeffect; resetspent/atomic/sensitive/sealed/quarantine allfalse. Capture
+returnsNone BEFORE Reset11620 observer_ingress1180. NextLeft has no phase.
+Allothercapture conjunctions proved; required reducerReset provenance was
+queried before canonicalreceive recorded it. SuccessfulSpositive logging
+allowed observer-first timing; it was not a functionalrepair. Exactpacket
+`T-reset-order-first-failure.json`; tracecoverageUNKNOWN/bounded512000B.
+New source47 fixture calls real handler-first Reset concurrent with real
+observer (futurezip), no withheldreceiver/artificialtimeout. SourceRED before
+coreedit. Minimal9/10option:inertclone from existingcurrentpreReset identity
+or existingobservedReset, then restore onlyafter authenticatedMatchedReset
+and unchangedreducerprovenance/sameactivation guards. OtherResetowners audited,
+no blanketpredicate relaxation. Freshreviewspawn again rejectedthreadlimit;
+NOTRUN/no scoreinvented. Rfull332P67F33B remains solecomplete acceptance.
+
+
+## T failure-only diagnostics: source gate running, no core repair
+
+S fresh15, SHnormal20+15withwire and SI same35withoutwire allcursorPASS.
+The20normal history and passive wire absence did not reproduce RcursorFAIL.
+Built-in positive-path logging can still change scheduling; fullRhistory
+remains untested on diagnostic bytes. T removes successful-path diagnostic
+calls, retains only records after original refusal/discard/capturefailure.
+Original R predicates, mutation, owner/route and deadline remain; no refit.
+Fresh scoped IME+6contracts gate LIVE8158, oldSIexactcgroupempty/5PIDgone/VT1.
+SI actual75 was owned-model-server descendant cleanup after both actorparents0;
+PID3738319/t14390320 stopped with authenticated pidfdSIGTERM; no unrelated
+process changed. Receipt`SI-owned-orphan-cleanup.json`, strongSIclosure retained.
+Scores/options/limits: `decisions/2026-10-14-cursor-failure-only-diagnostics.json`.
+FullR332P67F33B remains acceptance; no partial PASS promotion.
+
+
+## S native diagnostic complete:10PASS4FAIL1BLOCKED15; cursor PASS only
+
+Original public Firefox field1 15plans +passive wire on metadata-only S167ca/37082
+completed. Exact five processes gone, cgroupempty, VT8→VT1. Cursor phase
+seeded, allactualreceipt transitions preserved and exacttargetPASS. This is
+not a full R-state-history replay or a functional repair: retained R full
+cursor10FAIL remains. AllfourRShiftcallbacks in the failing excerpt were
+admitted; the invalid source Shift-timeout fixture is not that native cause.
+OtherS failures:prefix/undo/selection/focus, TabBLOCKED. DiagnosticDS12/21
+p95142.068ms, Space4/5p9521.512ms; missingexplicit. Observer/logging overhead
+NOT_MEASURED, asynctracecoverageUNKNOWN, bounded512000Bprefixnotpreserved.
+Actor+wire hashes verified/local`S-diagnostic-field1/{RESULT.json,WIRE.json}`.
+First failed R cursor-phase transition stillUNKNOWN. Compare retained states
+before any new behavior change. Rfull332P67F33B remains the acceptance table.
+
+
+## S diagnostic source gate PASS837/837; native pending
+
+Immutable remote gate`run-QyJfLT`, local`run-9xuz3ad5/RESULT.json`, archive
+925cb3c43883f4a97a7e4a7fb3b12102626811fdb9997f5a0201fa885338bb64.
+IME786+sixcontracts51 PASS, all737Rust hashes match; development scope, not
+release. R daemon273 evidence retained on unchanged source; not re-executed.
+Remote AST/private build sequential LIVE69800. Native diagnostic not yet
+started; GUIclosed/VT1. R complete332P67F33B remains sole complete baseline.
+Metadata logging only, no new ownership/edit/delivery/training authority.
+
+
+## S45 coverage PASS; scoped metadata diagnostic pending
+
+Corrected source45/45 PASS19.0167s; all208 source hashes verified, no runtime
+fix established. Existing trace switch now records cursor phase/grants,
+actual scalar caret/count, last key and Reset capture/restore/discard.
+Numeric/boolean metadata only, no word/token dump or new delivery/admission
+rule. Two source files only; existing conditions and mutations unchanged.
+One original public Firefox field1 diagnostic follows a fresh scoped source
+and immutable private build. Full332P67F33B remains R acceptance. Diagnostic
+overhead/async writer completeness UNKNOWN. Fresh context-free review spawn
+was rejected by agent thread limit; no review or score is fabricated.
+
+
+## S RED interpretation corrected: artificial Shift stamp timeout
+
+The additional assertions locate loss at the first handler-first Shift
+release. The helper deliberately waits for the Shift callback to return
+before running ingress observation. Shift is excluded from text-inert
+completion by its protected ordered-admission contract. Withholding the
+observer past that deadline causes expected refusal; this RED does not prove
+a runtime defect or the Firefox root cause. Keep all three RED receipts.
+Corrected source fixture uses existing received observer-first Shift callbacks;
+original movement/insert release-order variants remain. No production edit.
+
+
+## S source-only causal RED:44PASS/1FAIL45
+
+Actual prediction publication plus four received Shift callbacks reproduces
+loss of cursor manual-source authority on unchanged R production source.
+Receipt: `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-causal-red-RESULT.json`;
+signature6928aa83a832ba5a3db159add7d2261b0155e6b41590bff649b3adfe11211c04,
+18.8101s. All44R controls passed. First exact event not yet localized;
+assertions added before/after Shift press/release before runtime edits.
+This does not change the native332P67F33B table or establish a Firefox fix.
+Both GUI scopes closed/VT1, no keys running. R10Chrome gains retained;
+no model refit, local execution, delivery-route edit or installation.
+
+
+## Current R browser result:332PASS/67FAIL/33BLOCKED432
+
+Both original9-job matrices completed on R64dfd/20adb; both exact scopes
+closed/all5PID-starttick pairs gone/VT8→VT1. Firefox153P44F19B216,
+all216verdicts equalQ. Chrome179P23F14B216:all10cursor scenarios gained
+PASS, zero lostPASS across216stable IDs. Combined10newPASS/0lostPASS
+across432, no promotion because67FAIL/33BLOCKED remain. This is a native
+Chrome improvement, not a Firefox fix or model retraining.
+Chrome receipt native64dfd-chrome-proof.json SHA
+acf2ea807da3db679563bccf53f7eb17c82cb4c3e1ee25ead7a7ca2e9ac783d1.
+Firefox a6747721a0a3d14daf281eb9a909c79ccdde73fcdd559f5a85cb855ead111a76.
+Standard:p95Firefox118.867ms420/420, Chrome110.429ms406/420;
+functionalDS Firefox142.074ms100/210, Chrome126.096ms158/210.
+Space37/50and38/50, Tab0/10each, selection0/10FF10/10Chrome.
+Allmissing remainexplicit;evdev write-return→exactAT-SPI, kernelrelease
+NOT_MEASURED. Scopedprivate writer proof:3visitedfilesunchanged, public
+recent_actions positive; tracecoverageUNKNOWN, no universalauditclaim.
+Source1109/1109+review9 retained; R mechanism stays as next baseline.
+Next: prove the first native Firefox cursor transition lost in R; source
+fixtures currently omit actual visible prediction/gesture/interleaving.
+No unchanged failed input retry, no core rollback, no production installation.
+
+
+## R final source gate PASS1109/1109; native acceptance pending
+
+Focused44/44 and fresh eight-target1109/1109 PASS, immutable remote
+run-wznQ1e, archive `0e127076801a8318e4de8fb4d35f3089087f69f0afd42748eaafb5155a6e5e62`. Local receipt
+`/home/ubu/.cache/lay/development/run-6x6vdp47/RESULT.json`; all737Rust file hashes match this checkout.
+Final independent review2/2 closed9/10; no third review. Old failure receipts
+and deterministic six-ID registration RED remain retained. The tested fixture
+correction uses the existing exact dispatcher Ping barrier; runtime routes
+are unchanged. Next: remote AST, immutable private build and full original
+Firefox/Chrome9jobs each with latency/privacy. TaskOPEN; Qfull table remains
+322PASS/77FAIL/33BLOCKED/432 until new native matrices complete.
+
+
+## R cursor editing — source verification in progress
+
+Focused43/43 PASS, including the unchanged prior navigation refusal guard.
+All8actual edit/order/prefix surfaces PASS; generic suffix readout, prepared
+Space, Tab and learning remain denied before explicit manual consumption.
+First broad gate1108/1109 retained; the one failure was spent-proof cleanup
+after a refused interior-caret gesture, now fixed without changing the test.
+Second broad eight-target gate running on immutable remote run-RFDp6o, archive
+`0705ba057703c6e8b21856a30e20ab2efec343d8903c56fd97247498d40df571`.
+Final independent R review2/2 and changed-byte full native matrices remain
+required. Current complete Q matrices:322PASS/77FAIL/33BLOCKED/432.
+Task remains OPEN; no production installation, promotion, commit or push.
+
+
+## Current Q browser evidence — 2026-10-14
+
+Status: **OPEN_CURRENT_SCOPE / SOURCE_PASS_BOTH_FULL_BROWSER_MATRICES_FAIL**.
+Q focused38/38 and fresh development1105/1105 PASS, reviews9/9. Full Firefox
+original60+6+150:153PASS/44FAIL/19BLOCKED/216; stable IDs against O show one
+new PASS and zero lost PASS. Separate private diagnostic20/20 does not replace
+the original matrix. Standard speed420/420 measured, p95 120.982ms.
+Chrome Q original matrix on the same bytes:169PASS/33FAIL/14BLOCKED/216;
+all216 stable-ID verdicts match O. Full Q total322PASS/77FAIL/33BLOCKED/432,
+one new PASS and no lost PASS. Chrome private writer roots scoped PASS with
+an observed public positive control; trace coverage remains UNKNOWN.
+The first Chrome Q attempt had an inactive native seat and is retained as
+BLOCKED setup, with no claimed product acceptance. The controller now checks
+actual active seat/foreground VT before input. Source/runtime routes and laptop
+installation are unchanged; no DONE/publication. Exact receipts and subsequent
+state are owned by the Firefox document and TD-121 experiment journal.
+
+## Accepted surrounding receipt revision — 2026-10-12
+
+Status: **OPEN_CURRENT_SCOPE / SOURCE_PASS_PENDING_REVIEW_AND_NATIVE**.
+The accepted actual full receipt now advances the existing revision baseline.
+Temporary previous observations enforce full-context continuity; one existing
+owner phase flag separates owned-append confirmation from full observation.
+Causal RED715/717; focused GREEN719/719. Review pass2 found a right-context
+echo bypass (7/10); causal RED718/719 confirms it. The minimal replan restricts
+echo observations to end-of-whole-text, with right-context appearance/removal
+refusals; new GREEN719/719 (`run-qejdztou/RESULT.json`), changed-byte native
+proof is pending. Both review
+passes are exhausted, and no third review is claimed. First fresh source review7/10 found a
+prefix-echo context bypass, now guarded on both legs with negative proofs.
+Final missing-evidence proof/review and changed-byte browser acceptance remain
+open. Earlier56/60 native result applies only to the preceding candidate;
+exact receipts and limits remain in the owning document.
+
+## Current owned-return continuity — 2026-10-12
+
+Status: **OPEN_CURRENT_SCOPE / SOURCE_PASS_NATIVE_PARTIAL**.
+Stock IBus deduplicates identical client surrounding-text replies after local
+preedit cancellation. The ineffective GTK notification experiment was reverted.
+Existing ownership now retains the original actual observation only across a
+proved local-only cancellation, without advancing its revision. Focused gate
+715/715 PASS, including nine causal interruptions and original revision proof;
+fresh source reviews8/10 then9/10 with no remaining blockers.
+Current changed-byte Firefox standard is56/60 PASS with four retained failures;
+C09/C10 is44/48 transitions PASS with actual panel labels. Chrome cannot yet
+start in the private environment; both functional corpora remain NOT_TESTED.
+No installed laptop runtime or delivery route changed. Full browser acceptance
+remains open. Evidence and superseded experiments are recorded in the
+[owning document](../docs/architecture/firefox-input-stability-2026-10-05.md).
+## Current owned Space boundary diagnosis — 2026-10-12
+
+Status: **OPEN_CURRENT_SCOPE / SOURCE_FOCUSED_PASS_PENDING_NATIVE_PROOF**.
+The remote rich-editor baseline now identifies the first authority loss:
+owned U+0020 Space vs raw client U+00A0. Root-owned implementation and source
+RED receipts cover initial acknowledgment, replay preflight, complete paired
+replay acknowledgment and the following toggle. First fresh review7/10 found
+the downstream replay gap; pass2 scored9/10. Focused source gates now pass711/711
+IME and271/271 daemon. Laptop runtime has not changed; changed-byte native
+input and the full Firefox/Chrome protocol remain NOT_TESTED. Exact identities,
+limits and experiment receipts are recorded once in the
+[owning document](../docs/architecture/firefox-input-stability-2026-10-05.md).
+
 ## Current browser standard / rapid Firefox result — 2026-10-10
 
 Status remains **OPEN_CURRENT_SCOPE**. User adopted the shared ten-field
@@ -5282,3 +5672,709 @@ from the owned Kitty client PASS. Performance, ignored tests, user-keyboard
 confirmation, the existing Kitty window and the known WhatsApp regression
 were not covered by this gate. Runtime authority did not change during the
 gate; the installed IME remains `a8b9d168…135589ea`.
+
+### 2026-10-12 18:00 UTC — current remote native failures and bounded next fixes
+
+Current private IME SHA-256 `0fec60dbac2dd1c80eeeb0a68cf9c73239ce5a42dc008233f3c2df0891937394`, daemon `e6cad39f961a0d044b9566bdeb490c56718ab7276a51f34fc3fd6a4f46c56674`: focused source **719/719 PASS**, remote Firefox standard **54/60 PASS, 6 FAIL**. All 30 active-word cells PASS; after Space 24/30 PASS. Normal receipt `firefox-standard-normal-6tanwkh5/RESULT.json` 19/20; private `firefox-standard-private-mldozt4e/RESULT.json` 18/20; fullscreen `firefox-standard-fullscreen-svmli4dp/RESULT.json` 17/20, all under `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c`. These are new-byte results; older 56/60 results do not certify these bytes.
+
+C09/C10 actual-panel receipt `firefox-c09-c10-54n29p7c/RESULT.json`: 4/6 cells PASS, Space fields 1/6 fail. Wire receipt `firefox-c09-wire-ty70xw2j/WIRE.json`, raw wire SHA-256 `756c1329a94d174519a171be6fd91cbbae795081f4a36a9b00d5f46912d11927`. First observed failures: same-owner Reset before handled closing Space release loses the actual confirmed snapshot; exact replay receives a whole planned raw prefix with cursor one character before its end and drops inert lineage. Raw SSI bytes for other separator failures remain unproven. Timing measures remote evdev write-return to actual AT-SPI target; physical kernel release timing NOT_MEASURED, trace completeness UNKNOWN. Chrome matrices and functional corpus NOT_TESTED: stock private launch failed before a usable window (X authorization errors and thread-limit error). No laptop install, delivery route or production session changed.
+
+Plan review: closing-Space Reset carry 8/10, replacement-only inert off-caret retention 9/10, combined 8/10. Separate decisions record exact scope and causal tests. Private native-actor review pass 2 is 7/10; four receipt weaknesses (latched focus/input interruption, exact cleanup window identity, browser/body provenance, C09 input-mode agreement) are to be fixed before accepting new receipts. Two review passes exhausted for that actor; no third review claimed.
+
+### 2026-10-12 — bounded closing-Space Reset and off-caret replay source PASS
+
+New decisions `2026-10-12-owned-closing-space-reset-observation.json` and `2026-10-12-inert-replay-off-caret-receipt.json` implement only the first matched Reset of a held, managed closing Space with its original already-confirmed whole raw snapshot, and inert retention of exactly one already-observed replacement character right of the caret. Visible preedit is excluded: eligible clear has no asynchronous output; all other Reset paths need fresh client SSI. Original observation revision is unchanged. No new persistent owner/state, delivery route or safety bypass.
+
+Causal A RED `run-5p_ecn8b/RESULT.json` proves original snapshot loss; B RED `run-19i1mgw_/RESULT.json` proves off-caret lineage loss. Latest focused source **721/721 PASS**: `/home/ubu/.cache/lay/development/run-scnveyr3/RESULT.json`, remote `/home/e/projects/lay-development-runner/run-4VdbH0/RESULT.json`, frozen archive SHA-256 `a94c7461d9550ad12cc1b31d0f2fde0b926aab9b8ddc2b120c22d5828909ed8f`. Positive proof includes actual source-lease acquisition and refusal of a second acquisition. Negative proofs include released/second Reset, missing/changed/revised snapshot, epoch, selection, command/navigation, sensitive content, pending append, visible preedit, observer-only later revocation and genuinely planned-but-unobserved replay prefix.
+
+Fresh code review pass 1: A8/B9/combined8, no production defect, two proof gaps. Root chose a narrower no-visible-preedit scope and added the causal future-prefix test. Pass 2/2: **A9/B9/combined9, no blockers**, source files checked against frozen source archive. Native acceptance of these changed bytes is **PENDING**; prior native 54/60 FAIL scope remains separate.
+
+### 2026-10-12 19:27 UTC — native baseline and inactive completion ordering
+
+Current private IME `821209323cc1c4cdb49a9b84ecb403dd4dedf93d88833706284ecc4195ea20c0`: Firefox standard52/60 PASS,8FAIL; actual-panel5/6 PASS; functional raw77PASS/47FAIL/26BLOCKED of150. Seven selection failures and ten incorrect punctuation seeds are harness defects, retained in original receipts. See latest Firefox owning-document entry for exact paths, separate denominators and speed. Stock Chrome environment remains BLOCKED; its input matrices NOT_TESTED. No closure is claimed.
+
+New decision `2026-10-12-inactive-completion-release-order.json` records A8/B5/C2 options, fresh read-only plan review8/10 and authority-loss primary IBus evidence. Causal source RED `/home/ubu/.cache/lay/development/run-6vd2evmi/RESULT.json`:721PASS/1FAIL of722; only the new actual legacy callback proof fails at completion-before-release. Root implemented A using the existing handled ledger, cache and dirty/frame latch; source/native verification and implementation reviews remain PENDING. Strict contradictory SSI refusal, verifier, owned/atomic preedit and delivery routes are preserved.
+
+### 2026-10-12 19:42 UTC — release fence source proof and selector review
+
+Causal source RED `run-6vd2evmi/RESULT.json`:721/722 PASS, only completion-before-held-release proof fails. Initial release-fence GREEN `run-7kofiey1/RESULT.json`:722/722 PASS; frozen archive `be1c766c11a868e3ac883401553b1e678da52e00295c2f43208b4de2b4a8df8a`. Additional GREEN `run-6oafx7hi/RESULT.json`:725/725 PASS covers four no-connection legacy output entrances, both real overlapping release orders and11 stale-frame/revocation cases. All receipts are local under `/home/ubu/.cache/lay/development/` with remote-only execution.
+
+Fresh read-only code review pass1/2: **7/10**, one P2 blocker. Up/Down refresh/cycle bookkeeping can record a new prediction before the release fence prevents its publication; a later boundary could learn that unseen prediction. Root adds a causal selector test and will guard before its refresh/cycle with the same existing predicate and client-navigation refusal. All prior invariants and source identities remain separate. Private initial build SHA `5f05a8dca7e5aaee458e328904025e1a10c70b7cd9cd634acf204652c34e3e35` has not been launched or promoted; it still precedes the selector fix. New native acceptance remains PENDING.
+
+2026-10-12 19:46 UTC — inactive completion presentation ordering, selector blocker resolved.
+The pass-1 Up/Down finding received its own causal RED (725 PASS / 1 FAIL,
+`/home/ubu/.cache/lay/development/run-shb_ujsg/RESULT.json`) before the selector guard.
+Guarding the existing selector before refresh/cycle prevents an unpublished target
+from creating prediction or learning records. The existing client-navigation refusal
+remains authoritative. Remote focused source is now **726/726 PASS**, receipt
+`/home/ubu/.cache/lay/development/run-wu_3e0t_/RESULT.json`, remote
+`/home/e/projects/lay-development-runner/run-mXMvRr/RESULT.json`, archive SHA-256
+`2e71844c9f2b6836fc915cf33488c9302a05ddad5b505894909aa01fb539bb11`.
+This source result includes both handled-release orders and 11 frame-revocation cases.
+Fresh-context final review (pass 2/2) and private native verification remain pending.
+The installed laptop runtime and IME delivery routes did not change. The earlier
+Firefox 52/60 and functional 77/47/26 receipt remains the native baseline, not PASS.
+
+2026-10-12 20:05 UTC — candidate6385 native result: **53/60 PASS,7 FAIL**
+(normal18/20, private18/20, fullscreen17/20); panel4/6. Native changed-byte
+acceptance is **FAIL**, despite source726/726 and final scoped code review9/10.
+The bounded field6 diagnostic shows last literal release before new completion,
+but initial Reset can erase the handled ledger and inverse after native Backspace
+can lose the confirmed predecessor. Primary packet:
+`/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current6385/native-inverse-backspace-reset-ordering.json`.
+Actual full appended SSI precedes matched Reset and release; actual shortened SSI
+follows native Backspace, but manual authority is refused after predecessor loss.
+New owning decision `2026-10-12-managed-commit-reset-ack.json` records variants
+8/2/3/1 and the required causal proof before production editing. The remaining
+failures have not all been attributed to this mechanism. The functional run is
+still active; Chrome remains environment-blocked. Laptop runtime unchanged.
+
+2026-10-12T20:28:20.228398+00:00 — managed effect Reset causal proof. Remote focused source **726 PASS / 2 FAIL / 728** before production editing: `/home/ubu/.cache/lay/development/run-w9oscn04/RESULT.json`, remote `run-3bakzV`, archive `0dbd028845ad649983a6c8b497a1b98d61a9590f885c5d4b7c93daa546b65a87`. Both failures are actual callback schedules: consumed press release erased by matched Reset, and already-confirmed whole post-append SSI erased before native Backspace. Production change is pending GREEN/review/native evidence.
+Firefox candidate6385 fixed functional baseline finished **85 PASS / 46 FAIL / 19 BLOCKED / 150**, remote `firefox-current6385-functional-baseline.json` under current RUN/job-results. All 15 plans per field were attempted; blockers and failures remain separate. Not all failures have a demonstrated shared cause. Chrome remains environment-blocked; its native matrices are NOT_TESTED.
+
+2026-10-12T20:50:01.972340+00:00 — managed effect Reset ACK source **732/732 PASS**, remote FMT PASS. Receipt `/home/ubu/.cache/lay/development/run-u4e4v7gl/RESULT.json`, remote `/home/e/projects/lay-development-runner/run-Meq4tP/RESULT.json`, frozen archive `4d196d64df36cc8f74c6ecbd41a00019b29333147c40b35a319c3bb7e07d11c5`. Actual callback tests retain consumed key-up without SSI; preserve only first confirmed whole observation; require actual fresh shortened SSI after native Backspace. Eleven refusal variants, autorepeat, failed output and queued matched Reset callbacks passed. Layout generation received causal RED730/731 before its effect-identity guard. Existing callback now reports explicit matched/refused/cleanup, separating actual activation-bound release pairing from strict word/text authority. No secondary owner or client bypass. Source-only verdict: code review pass1 and private browser proof pending; prior native53/60 and functional85/46/19 remain FAIL baseline. Laptop runtime unchanged.
+
+2026-10-12T21:02:26.372521+00:00 — managed Reset ACK code review pass1/2 **7/10, P1 blocker**: older authenticated Reset can import the latest token after observer-ahead ContentType revocation and carry an old observation. New actual-callback test covers changed purpose, password and change-back while local properties still show their predecessor. Causal RED pending before production guard; built08564ff0 candidate is NOT staged or launched. Existing native6385 FAIL receipts remain current.
+
+2026-10-12T21:08:13.108555+00:00 — managed Reset ACK pass1 P1 closed by existing reset-only provenance check on the original predecessor before carry and after awaits. Causal RED731/733 includes all three ContentType/password/change-back schedules; other failure was strict detached transport reply ordering. Existing exact Ping acknowledgement fence closes that fixture race without weakening semantics. Remote GREEN **733/733**, FMT PASS: local run-z_votg3m/RESULT.json, remote run-o62yzf/RESULT.json, archive71f6fb1fd604f1c8618e600b5c782ff75264b6810be9ca971f48f28240f83f6c. Code review pass2 and exact new-byte native proof pending. Built085 was never staged; current6385 Firefox53/60 FAIL, functional85/46/19 baseline remains separate.
+
+2026-10-12T21:36:08.974402+00:00 — private candidate965 native completed: Firefox standard **57/60 PASS,3 FAIL** (normal20/20, private20/20, fullscreen17/20), panel **6/6 PASS**, fixed functional **86 PASS/45 FAIL/19 BLOCKED/150**. Receipt `/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current965/firefox-current965-native-baseline.json`. All fields/modes attempted; no universal acceptance. Remaining burst loss first shows independently confirmed full native replay SSI, then extra Reset, then live-token manual authority refusal. Primary packet `current965/native965-replay-late-reset-loss.json`, raw archive `native965-firefox-raw-1791840837619141922/RAW.json` under remote RUN; trace-completeness UNKNOWN retained. New decision `2026-10-13-confirmed-native-replay-reset-ack.json` proposes bounded existing-effect ACK8/10 versus route/cache2/genericcarry1/TTL1; plan review and actual causal RED required before code. All exact GUI processes stopped; laptop runtime unchanged. Functional failures remain separate and not all attributed to this mechanism.
+
+2026-10-12T21:46:50.450473+00:00 — confirmed native replay late Reset causal RED **733 PASS/1 FAIL/734**, remote FMT PASS: `run-ljbxvwly/RESULT.json`, remote `run-JTWVY7/RESULT.json`, frozen archive71ccd14a5af29f7f8c1acac20030e5e6bab259592ce3136742914bdd0caed7a8. Actual full SSI is confirmed and replay provenance consumed before extra actual Reset; the same original whole snapshot is then lost without new SSI. Fresh read-only plan review recommends existing receipt one-use metadata (9/10), only produced after successful full native confirmation/alignment/consumption; generic spent scope is not proof. Keep native verifier and scope expiry; no scope retirement, route change, second owner or generic released-key carry. Implementation/GREEN/code review/native proof pending. Current965 native remains FAIL57/60, panel6/6, functional86/45/19.
+
+2026-10-12T21:53:31.356451+00:00 — confirmed native replay Reset ACK source **738/738 PASS**, FMT PASS, fresh read-only code review pass1/2 **9/10, no material blockers**. Receipt `/home/ubu/.cache/lay/development/run-7uzynhst/RESULT.json`, remote `/home/e/projects/lay-development-runner/run-k1i9on/RESULT.json`, archive42a7f0b6774983c729673e741ca414ac005f17e5973444f584aeece1f03e7dea. Existing pending receipt gains one-use focus/lease/layout metadata only after full actual SSI/alignment/successful consume. First matched Reset replaces it with None, even missing snapshot/output; identical SSI cannot rearm. Spent local/shared complete current replay scope remains intact for the native delivery verifier. Original whole snapshot/revision and predecessor Reset-only chain checked before/after awaits. Sixteen refusal variants, actual ContentType/password/change-back, single-use SSI and missing-output cases pass, together with unchanged held managed/Space negatives. New private build and changed-byte native proof pending; previous965 Firefox57/60 and functional86/45/19 remain FAIL baseline. Laptop runtime unchanged.
+
+2026-10-12T22:06:10.366903+00:00 — candidateaa4 changed-byte native **54 PASS/6 FAIL/60**, panel6/6. Normal19/20, private19/20, fullscreen16/20. Existing candidate is rejected; source738/738 and scoped review9/10 do not certify windows. Receipt `currentaa4/firefox-currentaa4-native-baseline.json` under private remote evidence; raw exact `nativeaa4-firefox-raw-1791842724037470179/RAW.json` under RUN. Functional150 is NOT_TESTED for this rejected experiment (first30-slot report initialized but zero actions; remaining120 unstarted), prior965 full86/45/19 retained. Bounded actual full SSI→lateReset→manual refusal persists; hypothesis generic fully settled producer bypasses pending.completed_replay branch. New actual callback causal test added (739 source selection) and running before production change. All exact GUI processes gone; laptop runtime unchanged. Trace completeness UNKNOWN retained.
+
+2026-10-12T22:08:29.721396+00:00 — generic fully settled native producer causal RED **738 PASS/1 FAIL/739**, FMT PASS. Receipt `/home/ubu/.cache/lay/development/run-zn4fsc19/RESULT.json`, remote `/home/e/projects/lay-development-runner/run-v8gsir/RESULT.json`, archive62d597e1ce84eb8514600d11a79e961466eb3d5bdb520cf98dc325c0154f0129. Actual generic full SSI confirms target after all native callbacks settle; pending.completed_replay seed is absent, so first C implementation did not create its effect ACK. A later actual Reset drops original snapshot. Minimal refinement selects existing complete current paired replay provenance in that same actual confirmation function; original prefix/caret/selection, reducer epoch alignment, reset-only provenance and successful consume remain required. No new owner or delivery route. New GREEN, final code pass2 and changed-byte native proof pending; candidateaa4 rejected54/60 preserved.
+
+2026-10-12T22:12:55.036518+00:00 — producer refinement source **738/739**, new fully settled positive/32 refusal variants PASS; original closed-word/preedit return regression FAIL. Existing test `firefox_completed_boundary_replay_waits_for_final_exact_receipt` shows capability cleanup erased a separately confirmed ordinary SSI solely because the new native ACK marker existed. Minimal fix spends the ACK marker while preserving its independently confirmed whole receipt; actual incomplete replay seed cleanup remains unchanged. No test expectation, deadline or verifier weakened. Candidate remains unaccepted; new GREEN/codepass2/native proof pending.
+
+2026-10-12T22:18:40.852688+00:00 — final confirmed native replay Reset ACK source **739/739 PASS**, FMT PASS; fresh read-only code review final pass2/2 **9/10, no material blockers**. Local `/home/ubu/.cache/lay/development/run-fxyxkhcf/RESULT.json`, remote `/home/e/projects/lay-development-runner/run-iN8RBM/RESULT.json`, archive4a26cf32a8a5a436098b6534fd13dd4a3deb2c8a99c0fca645938da88ee1c35d. Both original full SSI producers require current paired completed provenance, whole prefix/caret/selection, reducer alignment and successful consume before one-use ACK. Capability cleanup clears only that marker, retaining independently confirmed ordinary SSI; all original regression assertions/deadlines unchanged. Final private build running; changed-byte native acceptance remains NOT_TESTED. Rejected aa4 standard54/60 and functional150NOT_TESTED retained. Delivery routes and laptop runtime unchanged.
+
+2026-10-12T22:21:56.507099+00:00 — final739 private build completed181.972s and staged only in remote RUN. IME `be71027845b3e97dbfdd5787d8ab53788cd1dc411c5f537c7aa2fdfad8f7d10f`, daemon `8743552cbb1509424cd717e3487dd9346035f2ee2e41bab83fe0015025f5f758`, immutable `candidate-build-1791843670251005239/BUILD.json` under RUN; source archive `4a26cf32a8a5a436098b6534fd13dd4a3deb2c8a99c0fca645938da88ee1c35d`. Setup/preflight passed, Firefox standard+panel+fixed functional queue running. Actual native verdict PENDING; no acceptance claim. Runtime authority/delivery routes/laptop installation unchanged.
+
+2026-10-12T22:29:51.316911+00:00 — native be710 first new shared loss: actual native Backspace shortened SSI is confirmed, then late matched Reset clears it (normal active field10; native trace hash6013b418c893f73780527abcc6eefd3957b1af94d9050d93ce98651c661f34fe). Exact receipt `job-results/nativebe710-backspace-late-reset-causal.json` under RUN. Native erasure is a separate producer from completed exact replay C. Plan ADR2026-10-13-native-erasure-confirmed-reset-ack recommends bounded one-use erasure receipt ACK (9), forced SSI/route change(2), arbitrary snapshot carry(1), suppress Reset/longer timer(1). No production editing yet; plan review pending. Full native matrices continue; rich separator mismatch separate and wire unproven.
+
+2026-10-12T22:37:31.949608+00:00 — final739 be710 changed-byte native FAIL: standard **52 PASS/6 FAIL/1 BLOCKED/1 NOT_TESTED/60**, panel **5 PASS/1 FAIL/6**, fixed functional **86 PASS/45 FAIL/19 BLOCKED/150** (all150 attempted). Exact receipt `/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/currentbe710/firefox-currentbe710-native-baseline.json`, immutable raw `nativebe710-firefox-raw-1791844517133584746/RAW.json` under RUN; owned GUI scope empty before freeze. Speed coverage `/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/currentbe710/nativebe710-speed-coverage.json`: standard374/420 measured p50=108.58,p95=118.09,max=138.08ms; panel43/48 p50=111.53,p95=117.08,max=119.64ms; functionalDS101/210 p50=112.28,p95=144.42,max=159.37ms. Missing timings retained; kernel-release NOT_MEASURED, trace completeness UNKNOWN. Stock Chrome after private mutter-x11-frames still exits-11 before window; zero input keys, all216 Chrome cells NOT_TESTED, environment cause unknown. Native Backspace late-Reset D plan review9/10; actual causal test740 prepared, production unchanged since C. Separate rich SSI mismatch waits for exact wire analysis. No delivery route or laptop runtime change.
+
+2026-10-12T22:54:35.258912+00:00 — native Backspace erasure causal RED **739 PASS/1 FAIL/740**, FMT PASS; local `/home/ubu/.cache/lay/development/run-kevupqdf/RESULT.json`, remote `/home/e/projects/lay-development-runner/run-uYEhdc/RESULT.json`, archivefbd23df28f5f416df931d968a29bab9fad12b5090fcdbd2b4b6623ca06795380. Original shortened actual snapshot missing after late matched Reset. Production prepared with inert whole actual pre-erasure seed then first full actual shortened receipt ACK using its current token only for matched Reset. First contradictory SSI spends seed; older generic predecessor/C06 and C spent paired replay scope unchanged. Seven new adverse/effect tests prepared (747 focused correctness selected), source/native verdict pending. All owned Chrome debug processes/scope empty after retained zero-key crash diagnostics; child default schemas also exit-11, null indirect call observed by GDB, actual crash cause UNKNOWN. Laptop runtime and input delivery routes unchanged.
+
+2026-10-12T22:58:16.563116+00:00 — D first implementation gate **746 PASS/1 FAIL/747**, FMT PASS; local run-jdx90ps4/RESULT.json, remote run-2ADOHX/RESULT.json, archive571b3a4c163532988725672e4af1632eb519c9ee3800d495aeec14a84590038e. Original causal and unchanged739 tests PASS; new Reset-before-receipt test exposed unconditional word-generation equality despite matched Reset legitimately advancing lineage. Minimal repair retains direct same-generation revalidation OR exact inert predecessor pinned by matched Reset plus unchanged reset-only source predicate; whole actual text/geometry, epoch/revision/current pending identity still required. No test expectation or predicate weakened. Fresh D reviewpass1 independently located same cause; remote GREEN pending. Native be710 rejected, Chrome zero-key environment crash remains UNKNOWN, all216 Chrome native NOT_TESTED.
+
+2026-10-12T23:00:33.580468+00:00 — native erasure D source **747/747 PASS**, FMT PASS, fresh static code reviewpass1/2 **9/10 no material blockers**. Local `/home/ubu/.cache/lay/development/run-cah22ovv/RESULT.json`, remote `/home/e/projects/lay-development-runner/run-OvGO7U/RESULT.json`, archive98c334b015c3c782c16e78881c9bed802b6e3418b69638981a5cd4146acf21cd. Exact pinned Reset bridge handles legitimate generation advance; whole actual geometry/prefix/current pending, one-use/no-output/no-snapshot/content change-back and original tests PASS. Changed-byte private build pending; native acceptance NOT_TESTED for these new bytes, rejectedbe710 and missing timings retained. Delivery routes/laptop runtime unchanged.
+
+2026-10-12T23:05:15.429456+00:00 — remote private D build182.199s, immutable `candidate-build-1791846216405329810/BUILD.json` under RUN; IME706ec6cb1a4c356ecad3766815ca0563b6ec5526cb2907b60a5a3197ad16a7f8, daemon2467d7aedf603f965e25403e716dd3eb0f546a3cd842513b227fd11c144d9250, source747GREEN98c334b015c3c782c16e78881c9bed802b6e3418b69638981a5cd4146acf21cd. Only private staged files updated after verified backup/exact GUI empty. Full FF60+panel6+150 queued with unchanged functional body and passive exact Engine SSI/Reset wire recording (timing observer overhead not separately measured); actual changed-byte native verdict PENDING. Chrome detailed zero-input GDB diagnostic queued after native proof. Source/build OFF while GUI lease active; laptop runtime/delivery routes unchanged.
+
+
+2026-10-12T23:42:18.802828+00:00 — exact D706 Firefox native proof **FAIL**. Standard55 PASS/5 FAIL/60, ordinary120/120 PASS; C09/C10 panel6/6 PASS. Initial fixed functional79 PASS/40 FAIL/16 BLOCKED/15 NOT_TESTED/150 remains retained; unchanged supplemental field10 adds8 PASS/3 FAIL/4 BLOCKED, unique150 coverage87 PASS/43 FAIL/20 BLOCKED. No expected target or functional body changed (SHA45ae44b96e767a61bec7fa6cbf5c82888fe65368fc3798d42b0ebd81c6cea5a6). Exact proof `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native706-firefox-proof.json`, remote same filename under RUN/job-results. Raw `native706-firefox-raw-1791848428889609934/RAW.json`; GUI732253 owned scope verified empty before freeze. Delivery routes/runtime authority/laptop runtime unchanged.
+
+Speed D706: standard406/420 measured,14 missing,p50=109.80,p95=118.59,max=133.90ms; panel48/48,p50=111.06,p95=119.26,max=123.11ms; functional DS103/210,107 missing,p50=113.28,p95=146.26,max=165.23ms; Space37/50,13 missing,p50=17.55,p95=23.65,max=24.78ms; Tab0/10,selection0/10. Clock remains evdev write-return to first actual AT-SPI target, kernel-release NOT_MEASURED; passive-wire overhead NOT_MEASURED; asynchronous trace completeness UNKNOWN. No speed improvement claim.
+
+D706 rich7 diagnostic: five independently seeded existing focused actors retained. Exact Engine wire serial48937 Reset followed48938 actual SSI `привет\u00a0`,7/7,no selection; primary same reset rejected7/7 despite current identity. Existing ASCII-space/NBSP acknowledgment succeeded in preceding epoch12622 but failed at epoch12637. Exact guard responsible still UNKNOWN; no new production repair. Wire `firefox-receipt-wire-xl38kbni/WIRE.json`, primary `firefox-rich7-primary-snapshot-do_2z9ip/SNAPSHOT.json` under RUN.
+
+Chrome environment experiment: vendor155.0.8059.39 null indirect GTK call traced to `gdk_screen_get_default` fallback while GTK4 gtk-xft-dpi=-1; official vendor source gtk_ui.cc confirms fallback. Private standard `config/gtk-4.0/settings.ini` sets98304 (96DPI); fresh GTK4 reads98304 and stock Chrome opens with identical flags/input environment/private IBus. Probe input keys0; delivery/authority unchanged. Both browsers simultaneously hit Tasks512 thread ceiling; retain resource ceiling and run Chrome separately. Receipts `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/chrome-gtk4-dpi-before.json` and `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/chrome-gtk4-dpi-environment-fix.json`. All216 Chrome native slots NOT_TESTED at start of standalone phase; opening alone is no acceptance proof.
+
+
+2026-10-12T23:55:24.300218+00:00 — E actual callback causal RED747 PASS/1 FAIL/748, FMT PASS; local `/home/ubu/.cache/lay/development/run-t3ucaxhe/RESULT.json`, remote run-POHj5u/RESULT.json, archiveb1b55f1bff14b5353667514e784ed39271fd828eda69808432a5d3d35d4a0121. Final raw NBSP receipt is rejected after valid source manual handoff and native replay with no new target source-surface echo. Source receipt stores tail/token/revision/expiry, but no whole external prefix. Refined minimal plan adds optional validated full source prefix to the SAME receipt at publication and carries it into existing paired scope; existing narrow route, validators/expiry/revision/C-D one-use remain unchanged. Native causal link to every burst or functional failure unproved. Decision `2026-10-13-inherited-replay-full-prefix-proof.json`; no E production edit yet. Chrome standalone stock opens ten fields at Tasks259 but GNOME spawns replacement IBUS -r --xim (PPID757205), original757193 zombie/custom socket lost, before input; zero keys,216 native NOT_TESTED, receipt `native706-chrome-startup-raw-1791848847565997194/RAW.json`. Owned GUI756723 closed/scopeempty. Test setup discovery repair pending; no product delivery/laptop change.
+
+2026-10-13T00:19:31.776626+00:00 — E source **751/751 PASS**, remoteFMT PASS; local `/home/ubu/.cache/lay/development/run-ems8366g/RESULT.json`, remote run-xecacu/RESULT.json, archivee9218ccb00a87eda778dcedbe6805a2b0eb0ff8871697a7a661e76e791b9767e. Same existing source receipt retains validated optional raw whole-prefix and transfers it into paired replay scope under unchanged tokens/revisions/expiry. No target SSI manufactured or delivery rule relaxed. Three positive shared fixtures use their selected actual external prefix at source; all original assertions retained, foreign-prefix negatives remain. A fourth sporadic native-erasure source failure passed isolated and final751 without production change. Initial compiled747P4F receipt retained in ADR. Manifest adds exactly4process tests (total3116/correctness3054/process301); original rows/isolation preserved. Codepass1=9; final scoped E review2 and private build pending. D706native Firefox55/60 FAIL and87/43/20 functional remain current; E nativeNOT_TESTED. Private common GNOME-owned IBus discovery setup prepared with zero-key browser IC attachment proof and pinned bus owner guards; all216 Chrome native stillNOT_TESTED. No laptop runtime change.
+
+2026-10-13T00:30:10.615458+00:00 — E final source code review **9/10 pass2/2**, no material blockers. Immutable private build181.995s `candidate-build-1791850863976247797/BUILD.json` under RUN; IME36952d5576dbd6014ccf0059321cd6dbfe8680d8153db91bab36b2168833893d, daemon4e822d22f070b3aa687e5e9a2691e5b1b40b892723850aeee830744ef42c3bef. Both privately staged after verified oldGUI scopeempty and backup `staged-before-inherited-prefix-1791851073683404343`; no installed runtime change. E nativeNOT_TESTED. Private readiness review7 then8 exposed unsupported IBus PID method and stale IC publication after blocking observation. Root replaced method with kernel UNIX_DIAG socket peer proof plus actual current Gtk browser IC/Engine FocusInId, pinned bus/process and final same window/field/IC/RU checks; pidfd-bound nonchild cleanup closes reuse races. Remote AST and actual socketpair probe PASS, functional body SHA45ae44... unchanged. Private desktop topology changes from competing fixed-address bus to stock GNOME-owned discovery; product delivery APIs/authority unchanged and laptop parity not claimed. Zero-key attachment remains unproved until actual browser phase. Source closure daemon+22contract targets active; lexical_compiler separately requires lexical-compiler feature, not an empty default-profile PASS.
+
+
+2026-10-13 00:50:54 UTC — E source closure: daemon plus22 contracts406 selected,405 initialPASS and one static Space signature assertionFAIL. The latter still checked the pre-keycode helper and split line; only source matching updated to current awaited helper, all semantic boundary assertions retained. Focused retest1/1 andFMT PASS (`run-a0ts1y42`); other405 fresh results reused (`run-rgar_ble`, remote run-8yriho). Explicit lexical-compiler feature gate1/1 PASS,0ignored/filtered; no empty default profile accepted. E core751/751 source evidence unchanged.
+
+Private Chrome preparation: current stock GNOME bus initially lacked Lay due cached registry; private vendor `ibus write-cache` fixes catalog while preserving stock components. libdbus99-byte path limit resolved for passive monitor by the SAME socket relative path (actual absolute102); runtime discovery unchanged. Actual Chrome IC is `gnome-shell`, confirmed by FocusInId and kernel Chrome/GNOME/IBus/IME peer chain. Foreign IC.GetEngine is disallowed by vendor IBus, so zero-key observer uses actual focused RU engine path, global descriptor and pinned IME bytes/peer, with final same field/window/IC freshness. Attachment `PASS_SETUP_ATTACHMENT_ONLY`, input_keys0; receipt `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/chrome-stock-gnome-setup-attachment.json`. Old failures/raw preserved; private harness two review passes remain7/8, no third score claimed. Chrome full60+panel6+fixed150 jobs100–108 now queued/running on private E36952… bytes, verdictPENDING; no laptop input/runtime change or delivery route change.
+
+
+2026-10-13 01:07 UTC — current E369 Chrome native **FAIL**. Unique standard60:20PASS/38FAIL/2BLOCKED, panel6:3PASS/3FAIL, fixed functional150:96PASS/43FAIL/11BLOCKED. Exact proof `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native369-chrome-proof.json`, remote same filename under RUN/job-results; final mutable metadata/log raw `native369-chrome-raw-1791853639321307194/RAW.json`, owned Chrome scope812797 verified empty. Standard speed158/420 measured,p50=92.70,p95=113.11,max=122.66ms; panel27/48; functional DS129/210,Space38/50,Tab0/10,selection10/10. Missing samples remain missing; kernel-release NOT_MEASURED, trace continuityUNKNOWN. No speed-improvement or laptop-parity claim.
+
+Private first refusal20NOT_TESTED retained; exact AT-SPI Incognito suffix differed from compositor title, source observer now matches that observed complete title and retains PID/foreground-window/active-frame guards. Supplemental20 allFAIL from actual client PRIVATE hints2112/current sensitive policy; no policy weakened. Normal/fullscreen each10activePASS,9SpaceFAIL and1search Space seedBLOCKED. Common first loss measured: completed native replacement callbacks precede ordered SSI5/5,6/6,7/7; second strict-prefix receipt revokes remaining replay lineage before final full actual snapshot. Exact diagnostic wire `firefox-receipt-wire-dx734unk/WIRE.json`,SHAad5f45ad327f8b7073bb3f1a211189430d196581891bfc717459f54e7334e2ba. Minimal F proposal in `2026-10-13-native-replay-progress-receipts.json`; no F production edit yet, causal source fixture required. Firefox same E bytes remainsPENDING, isolated phase starting.
+
+
+2026-10-13T01:35:30.124569+00:00 — E369 Firefox same-byte native FAIL: standard58PASS/2FAIL/60 (normal18/20,private20/20,fullscreen20/20), panel6/6PASS, fixed functional87PASS/44FAIL/19BLOCKED/150. Proof `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native369-firefox-proof.json`; immutable raw `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native369-firefox-raw-1791855295972601475/RAW.json`. Standard DS414/420 timings,p50=110.41,p95=120.88,max=135.01ms; panel48/48; functionalDS100/210,Space37/50,Tab0/10,selection0/10; missing timings retained, kernel-release NOT_MEASURED. Stock Firefox Gtk actually uses IBus portal because private IBUS_USE_PORTAL=0 is present (vendor treats presence as enabled); dual passive FocusIn monitors identify browser sender PID830595 and distinct portal/IBus context paths plus owned vendor portal/broker/kernel peer chain. Setup observer refined only; product/env/routes unchanged. Owned829920 GUI scope verified empty before source work. F plan review1=8/10 clarified current KnownStart/no-Reset final vs original UnknownStart/Reset alignment; actual callback causal752 gate now RUNNING, production F edit NOT_STARTED. Other functional refusals are separate evidence, not assigned to F.
+
+
+2026-10-13T02:09:13.337838+00:00 — TD121 remains open. F refined source gate RUNNING after causal751/754 exposed completed KnownStart consumer admission before whole client receipt. See owning architecture entry and F decision for exact reports and scope; priorE both native matrices FAIL retained. No F private build/stage, laptop installation, route change or third source-review score.
+
+2026-10-13T02:54:53.693834+00:00 — F final source **754/754 PASS**, remoteFMT PASS, local run-wcpiedjc/RESULT.json and remote run-3grlen/RESULT.json, source archive ddd11f4f0c88ff997469672993ef4b77a893142720c4bb47bdd06a100df79dc8. Separate context-free supplemental consumer review pass1 **9/10, no blockers** covers later KnownStart0 admission/confirmed duplicate carry/raw NBSP ACK and current final fixtures; earlier F producer reviews remain 2/2, without a third producer score. Immutable private build182.154s candidate-build-1791859642943640689/BUILD.json under remote RUN; IME41443ef97c6c0add6776f6ea6c8de47ff63646e6d8ddb662e6a685edfdb43bda, daemon687912d4334cb99913ed227a24d796f1a086287900185d0990a6bdb9474db654. Staged after exact old GUI scope empty and verified E backup staged-before-progress-receipts-1791860051555324067. Changed-byte native acceptance **NOT_TESTED**; both prior E Firefox and Chrome FAIL matrices retained. Delivery routes/runtime ownership unchanged, no laptop installation. Native60+panel6+fixed150 with required/measured/missing speed coverage next; TD121 stays open.
+
+2026-10-13T03:15:01.541450+00:00 — F414 Chrome native **FAIL**, standard20 PASS/38 FAIL/2 BLOCKED/60, C09/C10 panel3 PASS/3 FAIL/6, fixed functional96 PASS/42 FAIL/12 BLOCKED/150, all150 attempted. Exact proof `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native41443-chrome-proof.json`, raw `native41443-chrome-raw-1791861061998153359/RAW.json` under RUN; GUI907333 scope empty before freeze. Speed DS standard158/420 p50=92.276,p95=112.166,max=125.648ms; panel27/48 p50=89.859,p95=107.482,max=112.553; functional129/210 p50=91.480,p95=124.394,max=133.573. Space38/50 p50=19.402,p95=23.752,max=24.775; Tab0/10, selection10/10 p50=20.157,p95/max=22.535. Missing timings retained, kernel-release NOT_MEASURED/traceUNKNOWN, no speed improvement claim. Final native receipt now confirms whole replacement (F progress mechanism active), but after actual managed probe/Backspace a second ManualToggle delegates then factory VisibleTail is passive:unknown-context. Exact separate diagnostic `firefox-receipt-wire-c5csr4o6/WIRE.json`, SHA86256f339f36d6cdda7c0a532cf4a8c61645478532184f551e831550569dcf52; no SSI after probe/Backspace in captured complete isolated sequence. Precise new guard remains UNKNOWN until causal TDD. ChromePRIVATE intentional Sensitive policy and other functional causes remain separate. Firefox next, TD121 open; delivery/runtime ownership/laptop installation unchanged.
+
+2026-10-13T03:35:38.967274+00:00 — F414 Firefox native **FAIL**, standard59 PASS/1 FAIL/60 (normal20/20, fullscreen20/20, private19/20; private Space field10 first burst never transforms despite preceding ordinary2PASS), C09/C10 panel5 PASS/1 FAIL/6, fixed functional87 PASS/44 FAIL/19 BLOCKED/150. Proof `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native41443-firefox-proof.json`, raw `native41443-firefox-raw-1791862238737626823/RAW.json` under RUN, GUI921407 scope empty before freeze. Speed DS standard415/420 p50=110.598,p95=122.423,max=149.831ms; panel42/48 p50=113.398,p95=121.448,max=125.545; functional102/210 p50=114.853,p95=141.508,max=151.930. Space37/50 p50=18.147,p95=24.383,max=26.015; Tab0/10, selection0/10. Missing timings/nonPASS preserved, kernel-release NOT_MEASURED/traceUNKNOWN. Both changed-byte native verdicts FAIL; normal/fullscreen specific success is not universal acceptance. Source754+supplemental review9 remains valid, source/build next only after exact GUIoff. Next causal fixture reproduces actual managed native probe+Backspace without another SSI between confirmed target and subsequent ManualToggle/VisibleTail capture. Exact responsible guard still UNKNOWN; original typing/precognition configuration must be represented. TD121 stays open, no laptop/runtime delivery changes.
+
+2026-10-13T03:54:40.370784+00:00 — H actual managed-preedit probe causal **RED4 PASS/1 FAIL/5 focused**, receipt h-focused-dg2gqi6k/RESULT.json under RUN. Source full actual snapshot is lost at first uncommitted owned-preedit letter, although no CommitText/DeleteSurroundingText occurs; handled local Backspace restores mirror to original closed word but factory capture remains passive:unknown-context. Root is unconditional raw snapshot invalidation in preedit::push_tail_char, a mirror-only producer wrongly treated as committed document mutation. Recommended9: retain SAME actual snapshot only for existing owned legacy-preedit mirror input; force-refresh6, weakened source/factory guard1 rejected. H runtime not yet edited; plan ADR2026-10-13-owned-preedit-keeps-committed-client-receipt, review pending. Prior choreography timeout retained separately, not causal proof. Both F native FAIL/full source754GREEN retained. No route/authority/laptop change.
+
+2026-10-13T04:07:12.805327+00:00 — H plan review1 scored9/10, zero blockers. Explicit producer split implemented: ordinary document append always invalidates actual SSI; only existing owned legacy-preedit end-append retains the SAME raw observation using the existing mirror updater. No new owner/state, route, timer or source guard. Positive proof covers12 Reset/assistance/prefix/NBSP variants; actual Space commit and second unhandled client Backspace negative controls added. Source/full756 and changed-byte native remain PENDING, prior F failures retained.
+
+2026-10-13T04:16:59.844443+00:00 — H second causal guard pinned in h-focused-uii6c80u/RESULT.json: only Reset=true fails; actual raw snapshot/predecessor remain current, but owned local erasure requires custom exact-refresh capability. Actual stock Chrome advertises caps41 with SurroundingText and no custom refresh bit. Minimal H decision uses the existing current observed start witness for local-only erasure, while retaining exact raw geometry/identity/revision/selection/token/settled-output proof. No fake capability or fresh SSI; focused/full gates and plan pass2 pending. Actual Space/native deletion negative final factory refusals PASS; delegation3 alone is not client acceptance.
+
+2026-10-13T04:21:38.839124+00:00 — H plan pass2/2 scored9/10, zero blockers after capability41→40→41 witness retirement. No native ACK copy/rearm or additional source owner; final local cancellation uses the existing ordinary confirmed-observation path. Focused6/6 PASS h-focused-yhpje5ul before final capability negative addition. Final source756+FMT and new context-free code review are running/pending; changed-byte native remains NOT_TESTED.
+
+2026-10-13T04:28:56.354252+00:00 — H final source **756/756+FMT PASS**, local run-itjvhvzx/RESULT.json, remote run-GzZyxH, archive293586743b2f690f503b9dfb7ec58477b032bea2dacf48c3b6e0bf940f0f5f94. New context-free code review pass1 **9/10**, zero blockers. Common old C06 oracle now verifies SAME actual snapshot/revision and noCommit/Delete; all downstream adverse/once-only tests pass unchanged. Final focused6/6 h-focused-osa7e9ru includes12 positive+6 negative variants and capability41→40→41. Earlier manifest/setup/oracle failures retained separately. Native changed-byte proof NOT_TESTED; both F native failures remain history. Private build and both60+6+150/speeds next. TD121 OPEN; delivery/source ownership/laptop runtime unchanged.
+
+2026-10-13T04:35:32.571746+00:00 — H five changed input contracts **49/49+FMT PASS**, local run-cpu1h6i_/RESULT.json, remote run-kVVAhb, archivea0a7d87624dc6c14f70065f69c8868b8912f8ff4f443ff99edb23ad6f4adba1e. IME756 source/review9 unchanged; private build from immutable source run-GzZyxH is running. Both changed-byte native scopes remain NOT_TESTED; TD121 OPEN. No delivery route, production installation or source authority change.
+
+2026-10-13T04:42:11.401243+00:00 — H private build **PASS182.147s**, immutable run-GzZyxH, BUILD candidate-build-1791866176185256887; IME9458b59db6e570af9282c9eddf0ffaccb206d2ae621c944ee75c0baa252f8d1f, daemonecee1d7ee238a481d017001afe917664a6384730185f38a5f84b3c0e5d42ec3a. Verified backup staged-before-owned-preedit-1791866230042334578; private staging only. Chrome actual zero-key attachment/current PID+tick+exeSHA+ownedCG PASS_SETUP_ONLY, receipt native9458-chrome-zero-key-gate.json. Full60+6+150/speeds RUNNING, Firefox NOT_TESTED. Native behavior not yet accepted; TD121 OPEN. Source756/49+FMT/review9 remain separately scoped; no laptop install, delivery-route or source-authority change.
+
+2026-10-13T04:59:12.079062+00:00 — H Chrome complete native **FAIL**: standard38PASS20FAIL2BLOCKED/60 (normal/fullscreen19P1B each; private20FAIL), actual panel6/6PASS, fixed functional96P42F12B/150. Receipt job-results/native9458b-chrome-proof.json; RAW native9458b-chrome-raw-1791867238165741500/RAW.json under RUN. Compared with F:18 standard+3 panel gainedPASS, previousPASS lost0, all150 functional classifications unchanged; comparison native9458b-chrome-versus41443.json. Standard speed266/420, p50/p95/max93.814/112.434/122.196ms; panel48/48,93.233/122.232/126.707ms; functionalDS129/210,90.626/131.230/145.693ms, Space38/50,18.859/24.783/27.954ms, Tab0/10, selection10/10. Clock evdev-write-return→firstexactAT-SPI; kernel-release NOT_MEASURED/trace UNKNOWN. ChromeGUI40532 closed and exactCG967433 empty before archive/new phase. Firefox SAME private bytes full60+6+150/speed now RUNNING in fresh verified stock zero-key attachment/owned scope981940, exec27826. TD121 OPEN; Sensitive policy/private, Search seed and functional prefix-decoder/other failures remain. No delivery/source-authority/laptop change.
+
+2026-10-13T05:13:27.020584+00:00 — H Firefox native **FAIL**:42P6F1B11NOT_TESTED/60, actual panel6/6PASS, functional86P45F19B/150. Proof job-results/native9458b-firefox-proof.json; RAW native9458b-firefox-raw-1791868151324673810/RAW.json. ComparedF:17 prior standardPASS unavailable (6actualFAIL,1BLOCKED,10NOT_TESTED); priorFAIL privateSpace10 nowNOT_TESTED; one moved-boundary field2 functionalPASS lost. Source causal effect unproven; do not promote H. New normalEmailSpace fifthburst miss and fullscreeniframe10 initial misses; privatefixture field9 hidden caused safe stop/11NOT_TESTED, retained separately from product failures. Speed standard312/420,p50/p95/max109.043/120.571/131.112ms; panel48/48,108.852/118.103/123.030ms; functionalDS101/210,111.469/143.584/151.423ms,Space36/50,18.178/24.371/25.630ms,Tab0/10,selection1/10. Kernel-release NOT_MEASURED/trace UNKNOWN. GUI27826 closed/exactCG981940 empty/all ownedPIDticks gone before archive. First inspected failed Email trace has actual snapshot6chars/cursor0, revisiongap1/identity_currentfalse then ManualToggle context_authority not_handled; wire order/raw identity must be established before changes. Bounded existing receipt-wire diagnostic next, no runtime edit. Both H browserverdictsFAIL, TD121 OPEN; source756/49/FMT/review9 does not certify clients. Routes/sourceauthority/laptop unchanged.
+
+
+2026-10-13T05:49:50Z — H Firefox passive diagnostic: the original normal20
+sequence completed20/20PASS; the earlier Email fifth-burst failure was
+**NOT_REPRODUCED**, and the original full Firefox/Chrome FAIL receipts remain
+unchanged. Two preceding isolated cells (normal Space Email5, private active
+Phone4) also passed; these diagnostics do not establish acceptance or a causal
+H improvement. No runtime source, delivery route or ownership changed.
+
+Diagnostic receipt: `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/H-full-normal-wire-diagnostic.json`;
+remote `job-results/H-full-normal-wire-diagnostic.json`, frozen
+`full-normal-wire-frozen-1791870590364254491/RAW.json` under the recorded RUN.
+Wire `firefox-receipt-wire-g23efdal/WIRE.json`, SHA
+`d25ae4856c19a6a36c842a6ae0c356e42c2f7e1b6f8e2cbf9aa21bfe03e6d375`;
+actual actor `firefox-receipt-actor-a4ooluu3/RESULT.json`, SHA
+`27d25ae3917db105262b081249ccb73e68857500b0514668ba16a20ff335c332`.
+Remote source-only probe proves only the receipt prefix differs from the pinned
+original actor; all20 actions/guards/cases/order preserved. Helper reviews8/10
+then9/10, two passes; final cleanup finding was applied after pass2 and no third
+review score is claimed. Monitor was alive after the actor; wire completeness
+UNKNOWN and observer overhead NOT_MEASURED remain.
+
+Speed140/140 measured,0missing: p50=109.699ms,p95=118.915ms,max=123.963ms,
+evdev write-return→first exact AT-SPI target; kernel release NOT_MEASURED.
+GUI exec51199 completed0; owned scope1011639 empty/all bound PIDticks gone
+before freeze. Seat-t is idle finite1h, expires about06:43UTC; no GUI lease
+remains. All executable verification was remote; laptop runtime untouched.
+
+Comparison of the failed Email trace and successful diagnostic identifies a
+shared transition: all native replacement press/releases, including closing
+Space, have been observed before the failed raw6/cursor0 observation; the
+existing Reset receipt is then discarded. Later raw6/6 and raw7/7 observations
+arrive, but ManualToggle rejects context authority. In the successful case,
+prior observed surface retains inert lineage and final7/7 confirms it. Failed
+raw surface bytes and whether they satisfy exact observed-prefix provenance
+are still UNKNOWN because that original trace records only counts/initial-char
+metadata. Do not widen off-caret retention or bypass UnknownStart based on
+this evidence. Existing one-character inert guard and negative multi-character
+caret tests remain intact. Functional decoder/prefix failures remain a separate
+reproducible class to trace through the current owners. TD121 OPEN; H NOT_PROMOTED.
+
+
+2026-10-13T06:07:34Z — H Chrome original30 diagnostic **FAIL_REPRODUCED**,
+16PASS10FAIL4BLOCKED; unmodified fixed15 plans in each of fields1,2. Exact
+receipt `job-results/H-chrome-decoder-diagnostic.json`, local copy under the
+recorded bdir, frozen `decoder-diagnostic-frozen-1791871454180975840/RAW.json`.
+Immediately captured prefix traces retain the first failed layout transition:
+actual live legacy composition with KnownStart takes IME_ACTIVE_COMPOSITION
+CommitText; native layout sync reports ok:false; ManualToggle reports
+Handled(targetUS). In field1 the actual next KEY_Z has keyval122 but IME decodes
+я. CreateEngine ingress during that request has no_live_acquisition then
+transfer_pending/passive. Field2 also has failed layout sync, with no exact
+text target. Precise dispatch failure classification remains UNKNOWN; do not
+weaken native acquisition authority or force a decoder promotion.
+
+GUI exec56431 stopped/completed0, exact owned1021075 scope empty/all bound
+PIDticks gone before freeze. Collector sent0keys, retained raw traces/hash;
+async trace completeness UNKNOWN. Speed DS25/42 measured,17missing,p50=93.010,
+p95=127.166,max=127.496ms; Space6/10,4missing,18.808/22.403/22.403ms;
+Tab0/2;selection2/2,20.408/21.870/21.870ms. Kernel release NOT_MEASURED.
+No runtime source/transport/laptop change; earlier both full H FAIL retained.
+
+Candidate systemic cause: `context_owns_active_preedit_manual_toggle` admits
+only UnknownStart, so the stronger KnownStart lineage of the same live owned
+legacy word takes the old commit/native-activation path. New explicit plan
+`docs/architecture/decisions/2026-10-13-known-owned-preedit-manual-mode.json`
+ranks reuse of the existing owned local word/InputMode operation9/10, wider
+native-acquisition migration7/10, truthful partial-failure reporting6/10.
+Recommended minimal correction requires causal source RED first. Exact-refresh
+marker exclusion and every source/word/selection/caret/lifecycle guard remain;
+no scope claim for the separate intermittent Email receipt failure or Firefox
+marker clients. No new production edit yet; TD121 OPEN.
+
+2026-10-13T06:24:49Z — I plan review pass1 **8/10**. Route-specific consequence
+preflight now records authority, pending Space work, allocation/latency,
+learning, compatibility, partial effects and rollback in the I decision.
+Required controls include preedit/handoff/InputMode failures, output owner
+loss, stale automatic layout completion, retained UnknownStart and disabled
+auto-switch. Causal fixture establishes every retained guard separately.
+Production I NOT_STARTED; source causal RED pending, native I NOT_TESTED.
+Both H full FAIL receipts retained; TD121 OPEN.
+
+2026-10-13T06:28:37Z — I real bridge causal RED confirms CommitText after
+every retained owned-preedit guard passes; I-causal-source-RED.json and remote
+i-known-preedit-1vkvb153/RESULT.json. Plan final pass2 **9/10**. Minimal predicate
+correction written only after RED. Focused/full GREEN and consequence controls
+pending; native I NOT_TESTED, both H FAIL retained, TD121 OPEN.
+
+2026-10-13T06:43:06Z — I causal GREEN; consequence proof3PASS2FAIL exposes
+stale Space dispatch and false completion after actual adapter owner loss.
+I-consequence-source-RED.json / remote i-known-preedit-wpgzoyle/RESULT.json.
+Reused existing background invalidation/latest-layout supersession; full live
+grant revalidated after each forward output await. Added owner loss after InputMode
+publication. Focused/full GREEN, context-free code review and both unchanged
+native browser scopes pending. No installed runtime/transport change; TD121 OPEN.
+
+2026-10-13T06:45:35Z — I focused5/5+remoteFMT PASS, source receipts
+I-focused-source-GREEN.json / i-known-preedit-fsi9obv1/RESULT.json. Full source,
+context-free code review and both changed-byte native scopes pending.
+Current private H binaries and failed native receipts retained; TD121 OPEN.
+
+2026-10-13T08:40:18Z — I final combined source gate **812/812+FMT PASS**:
+761 IME tests and51 tests from six affected architecture contracts, local
+run-_imkjucb/RESULT.json / remote run-WPGb6I. Immutable source archive
+6b2b96f7492f9dbca282e730c329063dbaad9d6aac5271e6558834a5d2132a56.
+The negative fixture uses the normal runtime producer; canon and mint guard
+unchanged. Fresh context-free plan/code reviews each final **9/10**, two passes
+each complete, no material I blockers. Failed rollback transport and owner
+revocation during rollback remain NOT_TESTED in the inherited executor;
+forward-output loss and successful live rollback do not certify those cases.
+I private build/stage and both unchanged native60+6+150 scopes remain pending.
+GUI OFF; old finite seat-t is inactive/MainPID0. Private H9458b/ecee1 unchanged,
+both full H FAIL retained, TD121 OPEN. Next build only from this immutable
+GREEN gate, then private stage and new finite owned native seat. No laptop
+installation, no delivery-route change, no promotion/commit/push yet.
+
+2026-10-13T08:47:53Z — I private release build **PASS182.143s**, immutable
+run-WPGb6I GREEN source; I-private-build.json pins IME
+e84d497cb9416772a3e0abb8a48f4b80da3bbc27c55032f1fdf8c3ce216384cf and daemon
+52a92c557b7833721570158f06b7ea9ee7b72d60dad5affa109d6221e110d767.
+Verified H private binaries backed up under
+staged-before-known-owned-preedit-1791881128440822378 before private staging.
+Fresh finite seat-u1058231/t7865922/session2328/VT8, owned GUIscope1058419,
+controller1058483/t7868366; exec14025 LIVE. Setup002/003/005 complete0,
+zero-key Chrome attachment PASS_SETUP_ATTACHMENT_ONLY, actual current
+GNOME/IBus/Chrome/IME/daemon PIDticks, bytes and shared owned scope verified.
+Unchanged original Chrome full9 wrappers queued:60 standard+6 panel+150
+functional+speed. Native Chrome RUNNING, Firefox NOT_TESTED, no acceptance.
+Heavy source/build/AST checks OFF while GUI lease live. Both H FAIL retained;
+TD121 OPEN, no laptop installation, delivery-route change, commit or push.
+
+2026-10-13T09:03:27Z — I full unchanged Chrome proof **FAIL**, retained at
+nativee84d4-chrome-proof.json, RAW nativee84d4-chrome-raw-1791882005188000210.
+Standard38PASS20FAIL2BLOCKED/60; panel6PASS/6; functional105PASS33FAIL12BLOCKED/150.
+Against H the exact same216 cells have **9 prefix FAIL->PASS**, fields1,3–10;
+**0 previous PASS lost, no other status changes**. Search2 remains FAIL; private
+Sensitive policy, cursor/focus/Space-undo and completion blockers unchanged.
+This is measured native support for I's shared owned-word mechanism, not full
+promotion. Speed std266/420 p50=93.615,p95=111.847,max=125.453ms;
+panel48/48 91.462/108.779/109.183; functionalDS138/210
+90.594/125.577/132.900; Space38/50 19.154/22.784/24.868;Tab0/10;
+selection10/10 19.661/21.676/21.676. Clock is evdev write-return to exact
+AT-SPI surface; kernel release NOT_MEASURED. Missing samples retained.
+
+Chrome exec14025 CLOSED0, exact scope1058419 empty/all bound PIDticks gone
+before immutable assembly; expected STOP signal traceback does not imply PASS.
+Firefox fresh exec15638 LIVE/scope1072872, controller1072892/t7961774,
+GNOME1073145/t7964494, Firefox1073496/t7964592, IBus1073223/t7964555,
+IME1073399/t7964582, daemon1074228/t7965097. Same I private bytes and finite
+seat-u2328 verified; fresh setup002003005 complete0 and zero-key attachmentPASS.
+Unchanged full Firefox9 wrappers queued051–059:60+6+150+speed RUNNING.
+No heavy source/build/AST while GUI lease live. TD121 OPEN; no laptop install,
+delivery-route change, promotion/commit/push. H failures remain immutable.
+
+2026-10-13T09:20:56Z — I full unchanged Firefox proof **FAIL**, immutable
+nativee84d4-firefox-proof.json / RAW nativee84d4-firefox-raw-1791883154511052960.
+Standard55PASS3FAIL1BLOCKED1NOT_TESTED/60; panel6PASS/6;
+functional87PASS44FAIL19BLOCKED/150. Against H16 standard PASS gained,
+**3 previous PASS lost**: normal active6, space2, space8. Functional moved_boundary2
+FAIL->PASS, no functional PASS lost. Firefox causality remains UNKNOWN;
+these lost PASS are retained blockers, not dismissed by aggregate gains.
+Chrome nine causal prefix gains/no lost PASS remain separately recorded.
+Both full I browser scopes FAIL; **I NOT_PROMOTED**, TD121 OPEN.
+
+Speed std395/420 p50=109.536,p95=120.605,max=135.594ms; panel48/48
+108.237/120.337/122.413; functionalDS100/210 111.792/149.464/154.676;
+Space37/50 17.564/23.987/24.591;Tab0/10;selection1/10 17.075ms.
+Clock evdev write-return to exact AT-SPI; kernel release NOT_MEASURED.
+Firefox STOP exec15638 CLOSED75: guard reported descendant_cleanup; one
+private lay-l1.1-serve1073433/t7964589 remained. Its exact scope/comm/UID/tick
+were validated and pidfd terminated; scope1072872 then empty/all bound PIDticks
+gone before immutable freeze. No new heavy launch until cleanup completed.
+
+Three normal-window failures share live bridge but unavailable manual/refresh
+permission. In active6/space2 native transfer installed UnknownStart and fresh6/6 or
+7/7 SSI still left manual permission false. Status3/false means delegation,
+not a reported target layout; the earlier repeated-US inference is withdrawn. Space8 also has fresh7/7 SSI before
+denial. Per-case512000-byte tail receipts have one malformed initial line;
+ordered suffix facts are bounded, exact payload/complete wire UNKNOWN.
+Investigate current existing owner/word/receipt transfer and prove source RED
+before new production changes; no blind grant rebind or weakened guards.
+No installed laptop/runtime delivery change, commit or push.
+
+2026-10-13T09:39:17Z — Next bounded causal plan recorded in
+2026-10-13-confirmed-native-word-second-handoff.json. Two native normal cases
+fail v3 field lease validation AFTER controlled source handoff, BEFORE deletion:
+active6/burst2 at1791882238, space2/burst2 at1791882271; actual field receipt
+empty against the original context-admission/InputContext_3 identity. Subsequent
+old handoff cancellation/next manual authority fails. Real clientcaps1073741865
+include the exact-refresh marker; existing cycle09 transfer defaults41.
+Test a second same-field transfer after fully confirmed native replay using
+actual marker capabilities. Source snapshot/retirement publication loss is a
+hypothesis, not a proved token-order defect. Preserve normal space8 separately;
+status3/false is delegation only. Options9(existing proof producer repair),
+7(existing readiness transaction),1(rejected field/marker bypass).
+No new production edit; source causal RED and independent plan review required.
+
+2026-10-13T10:26:31Z — J focused source investigation completed; no production edit.
+Remote j-second-handoff-oywvbd2n/RESULT.json PASS, one process-isolated
+fixture, 32 subcases, 13.711s, remote formatting completed. Capabilities41 and
+41+exact-refresh marker, empty/Unicode prefixes, Space/NBSP, and four receiver
+orders: absent SSI; matching SSI after install; matching SSI after FocusIn and
+before installation; SSI before FocusIn. The first three orders preserve the
+whole original field receipt/tail/epoch (24 positives). Pre-FocusIn SSI remains
+passive with empty authority (8 adverse controls). No proof was minted by
+assigning KnownStart/token/confirmation. Fixture hashb0e03a57824b1421de9797763aaa490da4c0c991ea6ae1acd4a04c38b8f8c9ff.
+Initial absent-SSI probe _94lk41o PASS did not reproduce native failure.
+Experimental qgh13lrr and8cjiwtk7 failures asserted authority for unbound
+pre-FocusIn data; those positive expectations were invalid, not causal runtime
+RED. Preserve their receipts. Plan review2/2 final8/10 rejects generic FocusIn
+snapshot preservation without independent activation binding; 9/10 pass1.
+Post-FocusIn variants now pass, so no producer repair is justified by this test.
+Next: unchanged I private binaries, existing reviewed passive wire helper and
+original normal20 native actor, join real callback ordering to the refused
+v3 receipt. No change to guards, snapshot expiry, observed flags, native
+transport, runtime ownership or delivery. I native Chrome/Firefox remain FAIL,
+I NOT_PROMOTED, TD121 OPEN. Scope is focused source diagnostic only.
+
+2026-10-13T10:40:10Z — I unchanged original normal20 native sequence with existing
+reviewed passive wire completed: 20/20 PASS, diagnostic NOT_REPRODUCED.
+This does not replace full I Firefox/Chrome FAIL or the three lost Firefox
+PASS; observer overhead NOT_MEASURED and wire completeness UNKNOWN.
+Speed140/140, p50=110.167ms, p95=119.311ms,
+max=130.202ms; evdev write-return -> first exact AT-SPI, kernel
+release NOT_MEASURED. Immutable raw:/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/I-normal-wire-frozen-1791887807789967674/RAW.json; wire
+shacb942d222324e61e722c874be8c4564e1130d96a7549fcf361e17b28f3e1a627. Actorfirefox-receipt-actor-n7nklx8v; wire
+firefox-receipt-wire-5cxwxcyu; job903 exit0/noabort/noheldkeys.
+Explicit STOP closed41959/0, scope1102654empty and every bound PIDtick gone
+before freeze; I-normal-wire-closed.json. Seat-v2422 finite, no active GUI.
+Original failed active6 callback order is bounded source evidence: native
+Get accepted -> Enable -> caps1073741865 -> SSI6/6 -> Shift release callback
+serial2846 (refused ownership while activation pending) -> marker ingress ->
+transfer_install -> v3 empty field -> abort before deletion. These timestamps
+are real recorded order; SSI body remains UNKNOWN in the old failed trace.
+J32 had direct preinstall SSI and no intervening release. Extend source-only
+fixture with real SetSurroundingText/Shift release before marker, and Reset
+after confirmed first native replay. No production change or causal claim yet.
+Compilation typo KEY_SHIFT_L in private test was corrected to native keysym
+0xffe1; sasamvl6/CARGO.jsonl is compile failure, not semantic RED.
+
+2026-10-13T10:46:10Z — K causal source RED and minimal correction plan recorded in
+2026-10-13-pending-native-shift-word-lineage.json. Sourcev7zrblwv compiles and
+selects1 real bridge fixture; receiver3 actual SSI+Shift release before marker
+installs exact SSI but poisons source-seal lineage toUnknownStart0, resulting
+v3 fieldempty before any delete. This matches recorded pending Shift release
+order in original normalactive6; original failed SSI body remainsUNKNOWN.
+Owner branch already treats Shift asLegacyShiftObservation; pending target
+branch currently calls target_input_before_admission unconditionally. Proposed
+small correction reuses that classifier before owner split, keeping neutral
+Shift passive without early authority; possible mutation and malformed bodies
+remain destructive/refused. No new state/transport/timer, FocusIn preservation
+or guard relaxation. Options9(existing classifier),6(new reducer event),
+2(delay/retry rejected). Root/source localization and independent review next.
+I bothnativeFAIL/3lostFirefoxPASS remain, TD121OPEN, no promotion.
+
+2026-10-13T10:59:13Z — K classification-only source80subcases PASS6eqoom1n, then
+review identified and actual fixture proved second ordering REDlp8t6epy:
+pending Shift ingress -> markerready -> handlerinstallsgrant -> oldPassive
+stamp rejected -> newly installed wordrevoked -> v3fieldempty. Earlier root
+REDjkz0xczu localized source-seal generation6KnownStart ->7UnknownStart at
+Shift before marker, with actual SSI-only control passing. Neither RED is a
+compile/helper failure. Planreview1/2 score8 requires delayed callback coverage.
+Minimal typed no-authority PassiveShift disposition/observation is planned;
+never convert Passive to authorizedKey, preserve exact lexical tail and output
+postcondition, keep atomic and owned/abandoned same-path Shift unchanged. C03/C04
+explicitly recorded. No second production callback correction yet.
+Platform rejected a fresh subagent spawn (thread limit); reused an independent
+read-only reviewer, not claimed fresh/context-free. I bothfullnativeFAIL remain.
+
+2026-10-13T11:12:40Z — K plan review2/2 final9/10, no remaining plan blocker; reused
+independent reviewer because platform thread limit, not fresh/context-free.
+TypedPassiveShift callback correction source96subcases GREENy6x_wrfi; final
+left/right press/release both before/after-marker/no-learning version
+GREEN1zwmta6m (16.495s). No earlyowner/token/output, actual SSI/field/tail/epoch
+proof retained only after validatedTransfer; atomic/ownedabandon paths unchanged.
+Added6-case pending-factory adverse fixture; focused2testresult PENDING.
+Compilekkwybjgq was test &String->ObjectPath typeerror, fixedas_str and exact
+u32wiretuple types; notsemanticRED. Full IME/contracts/FMT/code review/native K
+remainpending; privateI bytes and both fullnativeFAIL retained. No promotion.
+
+2026-10-13T11:17:10Z — K final focused source selected2 PASS1z52y6xe (17.090s):
+96 positive/control subcases with actual four left/right Shift edges both
+callback phases, plus6 pending-factory adverse cases (printablepress/release,
+caret,command,atomicShift,malformed). Possible mutation still loses word proof;
+malformed body still revokes/refuses; no revived v3field/text authority. Existing
+same-path held-Get EarlyKey tests unchanged. The adverse helper initially lacked
+RU in its bootstrap allowlist (37m0jfdd setupDenied); configured both profiles
+before admission as the factory case requires, not a runtime guard change.
+Manifest3128 rows including2new process-isolatedcases; full763IME+51contracts
+=814+FMT pending. K code review pass1/max2 pending, native K NOT_TESTED. I/H
+fullnativeFAIL retained; no runtime install/promotion/commit/push.
+
+2026-10-13T11:26:24Z — K full remote source gate GREEN814/814 +FMT, run-og427fqt
+(local)/run-vWGi5z(remote), archive115d01b34552fc224ca7f46c9ee25f31f49c67a2c8977f59110ba26b129107d2. 763IME and51six
+contracts, zero failure; development scope, not native/release acceptance.
+Plan2/2 final9; codepass1score9/no productionblockers, finalpass2pending.
+Adverse6 proof limit retained: ingress + installedreadout, not adverseactual
+handler/ManualToggle settlement. Exact immutable GREEN source privatebuild
+started; no bytes staged or nativeKclaim yet. Both I/H fullnativeFAIL retained.
+
+2026-10-13T11:28:39Z — K code review2/2 final9/10, no materialblockers; verified
+local primary RED/focused GREEN and unchanged productionhashes. Reviewer final
+Full814pending line predates root final gate result; actualFull814+FMT PASS
+run-og427fqt/run-vWGi5z is recorded above. Native K remainsNOT_TESTED; private
+build80415 running from immutable GREEN archive115d01b3..., not mutable source.
+
+2026-10-13T11:35:07Z — K privateBUILD PASS182.138s, exact immutableGREENrun-vWGi5z
+archive115d01b3...; IMEf577c86d5185cd5f9333c652344150b50be711bef3f773e0948241dc24db2579,
+daemon5bead464c0e537c571109a175344c96bd4fc2e0aa6e2ebad76903f94d13e53d9.
+Verified I backupstaged-before-pending-shift-1791891140219834426, private
+RUN/bin/candidate metadata staged; no laptop installation/promotion.
+Fresh finite seat-w1143151/t8867062/session2517/VT8 verified and activated.
+Chrome native launch returned75 BLOCKED_RESOURCE(lock_busy) before GUI/input.
+Actual leaseholder is unrelated L3proof guard1143027/t8854383/session2514;
+its job is not killed/throttled or bypassed. Native K NOT_TESTED, wait resource.
+Source814+FMT/reviews2/2each9 complete; both earlier full I/H FAIL retained.
+Build warning limit: inherited default library deadcode plus1IME warning for
+old key-callback wrappers now test-used/production-unused; no runtime edit
+merely to remove warnings during this bounded native proof.
+
+2026-10-13T12:00:00Z — K full unchanged Chrome native proof FAIL;
+nativef577c-chrome-proof.json, immutable raw
+nativef577c-chrome-raw-1791892753154035871/RAW.json. Standard38PASS20FAIL2BLOCKED/60,
+panel6PASS/6, functional105PASS33FAIL12BLOCKED/150. Exact keyed comparison with
+I has zero status changes across all216 cells: no gained or lost PASS. Private
+mode20FAIL and normal/fullscreen search-after-Space preparation BLOCKED remain
+open; aggregate parity is not acceptance. Original nine jobs100–108 exit0,
+no abort or held keys. Controlled STOP79243 CLOSED0; exact scope1146526 empty
+and all bound PID/startticks gone before assembly (K-chrome-closed.json).
+Session signal15 traceback belongs to controlled teardown, not a functional PASS.
+
+K Chrome speed: standard266/420 p50=93.327,p95=113.694,max=128.536ms;
+panel48/48 96.040/110.965/119.474; functionalDS138/210
+90.010/127.844/133.297; Space38/50 18.838/22.842/33.484;
+Tab0/10; selection10/10 19.230/23.828/23.828. Clock remains evdev write-return
+to first exact AT-SPI target; kernel release NOT_MEASURED. Missing measurements
+are retained. K Firefox NOT_TESTED, K NOT_PROMOTED, TD121 OPEN.
+
+2026-10-13T12:17:16Z — K full unchanged Firefox native proof FAIL;
+nativef577c-firefox-proof.json, immutable raw
+nativef577c-firefox-raw-1791893836955781505/RAW.json. Standard57PASS3FAIL/60,
+panel6PASS/6, functional87PASS44FAIL19BLOCKED/150. Against I, four standard
+PASS gained (normalSpace2/8, privateSpace9/10), two PASS lost
+(normalSpace7, privateSpace1). Normalactive6 remains FAIL. All150 functional
+and six panel keyed statuses unchanged. These are retained blockers;
+K NOT_PROMOTED and TD121 OPEN. All original051–059 jobs exit0/no abort/no held
+keys. STOP94565 CLOSED0, exactscope1162458 empty/all bound PIDticks gone
+before immutable freeze (K-firefox-closed.json). No runtime authority or
+delivery-route change; no laptop install, commit or push.
+
+Speed standard408/420 p50=109.422,p95=119.426,max=130.384ms;
+panel48/48 110.846/120.200/122.333; functionalDS102/210
+111.958/141.484/147.394; Space37/50 17.642/24.072/25.643;
+Tab0/10, selection0/10. Same evdev write-return -> exact AT-SPI clock;
+kernel release NOT_MEASURED, missing measurements retained.
+
+Next source-only hypothesis: normalSpace7 trace-space-7.jsonl after completed
+native Space reports a lagged SSI with chars1/cursor0, prior_replay_surface=true,
+identity_current=false; the current producer discards it as a surrounding
+receipt mismatch before the final full SSI. The exact text body is UNKNOWN in
+this bounded trace. Existing prior-replay recognizer already describes one
+replacement-character caret lag; its inert receipt branch checks Reset identity
+while the completed-boundary branch handles only end-caret prefixes. Extend
+the existing ordered-receipt source fixture with that position shape before
+any production edit. PrivateSpace1 has a different chars5/cursor1 mismatch,
+prior_replay_surface=false, and normalactive6 records a callback-stamp timeout
+after an owned probe; neither is declared fixed by this hypothesis.
+
+2026-10-13T12:35:34Z — L source-only probe RED w76feg3j, selected3:
+one positive fixture fails and both existing pre-final/contradictory controls
+pass, 13.403s. Actual source native replay finishes before SSI1/cursor0;
+the existing prior-snapshot recognizer accepts it, but the producer discards
+the inert pending receipt in the completed-boundary route. No production
+file changed (all three K hashes checked against primary K final probe).
+Options9(existing paired boundary proof + recognizer, recommended),6(new
+reducer event),2(delay/retry rejected) recorded in
+2026-10-13-completed-native-boundary-caret-receipt.json. No edit authority
+from lagged snapshots; full exact final receipt and verifier remain required.
+Current modified source fixture is RED, not certified by historical K814GREEN.
+Both full K native scopes remain FAIL; other failures are not attributed to L.
+
+2026-10-13T12:51:05Z — L focused source GREEN9_juypt7, selected5/5, 19.096s.
+Plan review1/max2 score6 blocked widening the later branch: an earlier prefix
+check would still discard subsequent lagged snapshots. Recommended alternative
+score9 implemented in the existing completed-boundary prefix predicate only;
+generic Reset prior-replay branch unchanged. Exact prefixes, monotonic text,
+paired current provenance and final exact confirmation remain unchanged.
+Positive16 variants now include one-character caret lag between ordered actual
+prefixes and even after full target text. No local text effects, early authority
+or learning. Pre-final actual ManualToggle refusal6 variants, contradictory
+controls20 including lagged-prefix regression, original native probe/backspace
+and second-handoff96 fixture all PASS. The independent ordinary Reset contract
+retains its older decreasing-replay behavior; no preexisting test was weakened.
+L second/final review and full814+FMT pending; L native NOT_TESTED, private K
+bytes unchanged and both K full FAIL retained. No promotion/install/commit/push.
+
+2026-10-13T13:01:49Z — L full remote source GREEN814/814 +FMT,
+localrun-qc62j1kj/remoterun-Ij7oGU, archive
+2bdb006eee9392b10be1514a11ca63c6dbb4390c1da5eb2ca596cde8a64283a7.
+Controller115.7s/worker106.767s, development scope only. Independent reused
+L review2/2 final9/10, no material blockers, no third pass. Reviewer's
+full-source-pending line preceded root's completed gate; full gate now GREEN.
+Immutable-source private build started; no L staging or native result yet.
+Both prior K full browser FAIL retained, TD121 OPEN, no runtime promotion.
+
+Additional bounded Chrome private diagnosis: first active-field failure's
+actual content purpose0/hints2112 contains PRIVATE2048. Current
+content_is_sensitive treats PRIVATE like hidden/password input and disables
+text assistance/word authority. Upstream IBus ibustypes.h defines PRIVATE as
+requesting no personalized-data updates; HIDDEN_TEXT is a separate flag.
+Primary source https://github.com/ibus/ibus/blob/master/src/ibustypes.h.
+This explains a concrete private refusal; all20 per-case bindings have not yet
+been joined. Policy choice requested asynchronously: explicit manual Double
+Shift without learning in ordinary private fields or retain full prohibition;
+password protection retained in both. No privacy policy changed by L.
+
+2026-10-13T13:26:38Z — L full unchanged Firefox native proof FAIL:
+natived858c-firefox-proof.json, immutable raw
+natived858c-firefox-raw-1791897998595953698/RAW.json. Standard58PASS2FAIL/60,
+panel6PASS/6, functional87PASS44FAIL19BLOCKED/150. Exact K comparison:
+three standard PASS gained (normalactive6, normalSpace7, privateSpace1),
+two PASS lost (privateSpace7, fullscreenactive10). All156 panel/functional
+statuses unchanged. Normal20/20 is only a scoped acceptance result;
+full Firefox remains FAIL and both lost PASS are retained blockers.
+All original051–059 jobs exit0/no abort/no held keys; STOP96641 CLOSED0,
+scope1211266 empty/all bound PIDticks gone before immutable freeze;
+L-firefox-closed.json. No laptop/runtime installation or delivery change.
+
+Speed standard411/420 p50=108.368,p95=118.258,max=136.570ms;
+panel48/48 112.907/121.505/122.401; functionalDS102/210
+111.912/140.736/150.340; Space37/50 18.200/24.894/43.741;
+Tab0/10, selection0/10. Same evdev write-return -> exact AT-SPI clock,
+kernel release NOT_MEASURED. Missing measurements retained.
+Fullscreenactive10 still has SSI chars4/cursor1 with
+prior_replay_surface=false; exact old body UNKNOWN. It is outside L's
+recognized one-character-lag proof. PrivateSpace7 still loses manual permission;
+first loss not localized yet. No generalization/guard relaxation from counts.
+L private build182.393s from immutable GREEN source: IMEd858c220...,
+daemon6e725f33..., verified K backupstaged-before-L-caret-1791896846094992954.
+Source814+FMT/reviewL2/2final9 remain complete. Chrome L scope pending/running,
+L NOT_PROMOTED, TD121 OPEN, no commit/push.
+
+2026-10-13T13:44:32Z — L full unchanged Chrome native proof FAIL:
+natived858c-chrome-proof.json, immutable raw
+natived858c-chrome-raw-1791899073168725688/RAW.json. Standard38PASS20FAIL2BLOCKED/60,
+panel6PASS/6, functional105PASS33FAIL12BLOCKED/150. All216 keyed statuses equal
+K: no gained/lost PASS. Original100–108 exit0/no abort/no held keys;
+STOP45819 CLOSED0, scope1255277 empty/all bound PIDticks gone before freeze,
+L-chrome-closed.json. Both full L browser scopes FAIL, no promotion.
+Speed standard266/420 91.672/112.498/127.156ms (p50/p95/max);
+panel48/48 92.325/110.825/124.671; functionalDS138/210
+88.238/125.027/137.773; Space38/50 18.237/22.711/25.252;
+Tab0/10; selection10/10 20.642/22.965/22.965. Same evdev write-return clock,
+kernel release NOT_MEASURED; every missing denominator retained.
+Next bounded diagnostic uses unchanged L binaries and the existing reviewed
+focused passive-wire helper for privateSpace7 and fullscreenactive10, one
+original seven-gesture cell per mode. Parameter-only wrappers910/911;
+no actor predicate/transport change. This diagnostic cannot replace full FAIL,
+observer overhead NOT_MEASURED, wire completeness UNKNOWN.
+
+2026-10-13T14:00:58Z — L unchanged focused wire diagnostic NOT_REPRODUCED:
+privateSpace7 and fullscreenactive10 both PASS,14/14 actions measured.
+This does not replace either original lost PASS or full L Firefox/Chrome FAIL.
+Wire receipts: firefox-receipt-wire-ovia66bk/WIRE.json and
+firefox-receipt-wire-8vgxh3wk/WIRE.json; SHA
+cc1bf59663d03573571ee05a9939716b0752bfc82a87bd78c4a5b9c56977b6fe /
+6bed990bca965c9b66f2b0563ba06856f8891a7bdca74e77a58623daf919697d.
+Immutable raw L-focused-wire-frozen-1791899632565641505/RAW.json.
+Jobs910/911 exit0/no abort/no held keys; explicit STOP33546 CLOSED0,
+scope1315013 empty/all actual pinned processes gone before freeze; original
+VT1 restored. Observer overhead NOT_MEASURED, wire completeness UNKNOWN.
+No production change. Off-end snapshots include displayed completion during
+seed; positions alone cannot identify replay lag. Old failed SSI bodies UNKNOWN.
+
+Original fullscreenactive10 ordered metadata: all6 actual native Backspace
+and6 replacement callbacks unhandled exact_replay_native with preedit_chars0;
+then Reset arms expected6; SSI1/cursor1 retains prior provenance; SSI4/cursor1
+with initial ASCII match rejects it (prior_replay_surface=false). No new
+preedit event in this interval. Replay-only source hypothesis; old four-character
+body UNKNOWN. Reproduce advancing target text with unchanged caret before
+any new production correction. Keep off-caret/selection/regression refusal
+meaning; no broad cursor tolerance, retry or timeout increase from these counts.
+
+2026-10-13T14:07:39Z — M actual growing target with stationary caret: source RED, production unchanged.
+
+- Primary remote receipt: `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/m-replay-stationary-caret-uzrq9eyo/RESULT.json` (SHA-256 `ce11f19851447a882273653779c83e5d2df2cac45c338e49059db42508a8adcc`); three selected semantic tests, one positive FAIL and two existing controls PASS, 14.240936661s. The actual one-character/caret1 to three-character/caret1 observation loses the inert pending receipt at revision3 while KnownStart remains present. Three L production hashes were pinned unchanged.
+- Original L fullscreenactive10 trace measured SSI1/cursor1 then SSI4/cursor1 after real complete native replay and Reset. The four-character payload itself is UNKNOWN. The generalized source fixture proves the observation mechanism, not the historical browser payload. Original L native FAIL and both lost-PASS cells remain blockers; focused NOT_REPRODUCED does not supersede them.
+- Decision: `docs/architecture/decisions/2026-10-13-native-target-text-stationary-caret.json`. Preferred variant9/10: one shared inert progress predicate for two actual adjacent target observations, strict text extension and nonregressing caret with existing completed replay/owner/identity proof. Generic caret-lag widening5/10 and new delay/retry2/10 rejected. Preserve existing final full exact/end-caret and all contradiction guards.
+- M plan review pending, 0/2 passes; no M production change or native test yet. L full814+FMT is historical for its exact prior fixture. GUI OFF; installed private L bytes unchanged; TD121 OPEN, NOT_PROMOTED.
+
+2026-10-13T14:25:37Z — M plan review1/2 PASS9/10, production implementation ready for remote focused tests.
+
+The independent reused reviewer found no material plan blocker and required prefix-shape/progress-permission separation. Implemented one existing-owner shared completed-native progress predicate, used by boundary and Reset inert-retention paths; no generic prior-snapshot widening or final-authority change. Positive fixture now includes successive growing snapshots with stationary caret and full-target lag; original controls retained and extended after wider-lag progress. Focused/full source and M native remain PENDING/NOT_TESTED; private installed L bytes remain unchanged.
+
+The user selected Double Shift in Chrome private ordinary fields without learning or history. This is the next distinct policy correction, not yet implemented; password/PIN/hidden-field protection remains required.
+
+2026-10-13T14:28:38Z — M focused source GREEN5/5 (20.619596118s); final review2/2 pending.
+
+Receipt `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/m-replay-stationary-caret-green-n78cbnej/RESULT.json` SHA-256 `45206e24635f30aa895a3a8d73623bf772b2b4629f4fc9e201e039bb396f9109`; all61 source rows match the actual checkout after fetching remote formatter output. Positive32 variants (old16 retained plus actual successive stationary-caret growth/full-target lag16), pre-final manual refusals10, contradictions44 including unchanged wide-lag body, growing-text backwards caret and caret before the target, original second-handoff96 and probe/backspace control pass. Only source behavior is proven. Existing paired replay/current identity, old Reset decreasing-prior and one-character recognizer, final whole exact/end-caret single-spend authority remain intact. Full source gate follows the separately authorized Chrome-private policy correction; M native NOT_TESTED, old L native FAIL retained, installed private L bytes unchanged.
+
+2026-10-13T14:32:30Z — M final independent code review2/2 PASS9/10, no material blockers; both M review passes closed. Focused5/5/all61 source bindings verified; full source and native remain pending. Original one-character recognizer and final authority/owner/atomic/sensitive guards byte-identical to baseline. Root proceeds to the user-selected private no-learning policy; M source receipt remains an immutable snapshot.
+
+2026-10-13T14:44:24Z — N private manual policy source RED4 selected (1FAIL/3PASS), production M unchanged.
+
+Receipt `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/n-private-manual-policy-red-s1abodtn/RESULT.json` SHA-256 `c5f41f3b2df2e3da6f301f8824c6d382304ffd62884334153b2b46ee1ee043a7`, 64.944438341s. First loss is the PRIVATE/protected-content conflation in content_is_sensitive, before actual native acceptance or persistence proof. User explicitly selected private Double Shift without learning/history. Decision `docs/architecture/decisions/2026-10-13-private-manual-toggle-without-personalization.json`: preferred9/10, separate protected-content/personalization predicates, explicit writer gates and one typed privacy fact in existing exact-tail readout/lease; no new owner or delivery route. Public/legacy privacy handling and diagnostic payloads must be covered. Local-only guard removal4/10 and separate private route/global log disabling2/10 rejected. Plan review0/2 pending; N production unchanged; M review2/2 closed; installed private L unchanged, all old native FAIL retained.
+
+2026-10-13T14:44:24Z — N independent plan review1/2 score8/10, recommended9/10 after two adopted clarifications. Added explicit early IME-owned daemon payload/typed-tail/user-correction sink denial under the existing backend policy; later V4 lease cannot authorize preceding input. Added retention-transition volatile context/shared-handoff/pending cleanup and PRIVATE-to-public boundary proof. Existing generic ReplaceTail PRIVATE refusal preserved. Precognition tick already has IME gate, not counted as an additional leak. No N production changes or persistence/native proof yet; implementation proceeds under this aligned plan, with final pass2 remaining.
+
+2026-10-13T16:34:32Z — N implementation and diagnostic scope correction, full/native still pending.
+
+First N RED helper configured4 but actually ran all766 IME bin tests (765PASS/1policyFAIL), because selected rows were incorrectly supplied as the complete harness registry. Primary receipt stays immutable; its first policy loss is valid, selected denominator superseded by raw log counts. A later wrong-scope probe ran daemon274 (272PASS/2terminal fixtureFAIL) and stopped with ExecutionError; no semantic RESULT or PASS. Corrected15 selection uses the complete discovered per-target registry. Its first precise run `n-private-source-od063_bz/RESULT.json` has3 daemon fixtureFAIL: publishing runtime config did not change the on-disk config subsequently loaded by daemon (and load resets library learning flags). Fixture now writes/restores its isolated config; ordinary native positives and unknown-privacy IME negative are explicit, with process isolation.
+
+Both binaries compile (n-compile-1791908102223797847,12.925530272s) before the final test additions. Current exact15 rerun is active exec16355. Implemented protected/private policy split, explicit learning gates, early IME raw retention refusal, transition volatile/shared cleanup, and existing reducer's settled ContentType projection before imported receiver text. AdditiveV4 returns one bound retention fact through the existing exact lease; old public V3 stays compatible, legacy private refuses, unknown retention never authorizes journals. IME raw keyval/keycode/manual payload and daemon private/unknown errors/journals are gated. Generic ReplaceTail still excludes PRIVATE.
+
+Target cache9985687552/12884901888bytes. Installed private L remains d858c220.../6e725f33..., GUI OFF. N final review2/2, full source gate (must include daemon), immutable build and all native/browser speed proof remain pending; old L full native FAIL/lostPASS retained. TD121 OPEN, NOT_PROMOTED.
+
+2026-10-13T16:39:39Z — N precise15 source GREEN16.397955494s; primary `n-private-source-vqqgajio/RESULT.json` SHA4a64c6c09eac7946db219a41e806f4a35c64a556d0c46c7c0651b99d5381e3d8. Complete registry supplied to each target; all205 Rust source rows bound after remote formatter fetch, manifest3132. Both terminal raw-input positives explicitly use isolated on-disk uinput config; unknown-privacy IME Enter negative has debug/history enabled and zero writer files. Existing M5 retained, private volatile/learning/cleanup and exact lease privacy/field/unknown errors pass. Final N review2, full source including daemon and native/persistence acceptance remain PENDING; L private bytes unchanged.
+
+
+2026-10-13T17:06:01Z — N focused16/16 source GREEN, primary `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/n-private-source-3g89g7f9/RESULT.json`, local `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/N-source-probes/n-private-source-3g89g7f9/RESULT.json`, SHA `bf70a5e4b8785113ae0603104731e29fa3841f18efffbcc802110248147356d7`. All205 runtime source rows match remoteformatted local checkout. The actual-header PRIVATE2112 active/Space fixture proves first ManualToggle, V3 refusal/V4 retention=false, exact same-field factory import with private metadata, existing native replay press/release callbacks, final actual SSI and second ManualToggle. With diagnostics explicitly enabled and a nonempty file, all observed key records redact keyval/keycode/decoded/counts and no manual-plan payload is recorded. M controls and protected-content/unknown daemon-retention controls retained. Final review2/full source gate/private native/browser/persistence proof pending. GUI OFF, installed private L bytes unchanged; no laptop runtime change or delivery-route change; TD121 remains OPEN.
+
+
+N final independent review2/2 closed9/10, no material production blockers after the concrete trace/metadata fixes. Supplemental source receipt `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/n-private-source-ijtoej0k/RESULT.json` is GREEN19, SHA `1bcb32958d583b931e4c72834735f00daab16c8538ceb0728186601d7ba0245e`, all205 source rows match remoteformatted local. Prediction negative retains its existing public positive; system/reverted/deferred negative observes zero private sink files while enabled public controls persist real events. The actual private Manual/V4 fixture also changes ContentType to public and proves the old epoch cannot rearm suppression or expose old private text. Production code unchanged since GREEN1090, full gate refreshed for supplemental test-only changes before immutable private build/native. Native journal-family acceptance and prior browser failures remain pending.
+
+
+N Firefox native primary `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native20df1-firefox-proof.json`, SHA `aec4711c443050689eb72fe3fbc53f08beccea0c058b5de4e88b33e33320f81b`, immutable RAW `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native20df1-firefox-raw-1791913652042738849/RAW.json`. Actual20df1/765f7 private bytes from sourceGREEN1092, independent review9. Standard59PASS1FAIL/60: normal20/20,fullscreen20/20,private19/20; all30 after-Space cells PASS. ComparedL two standard failures restored (fullscreen active10/private Space7), one prior PASS lost (private active10). The failed row first RU→EN is PASS; the return after z+Backspace misses target. Its trace shows earlier owned z release serial15334 callbackstamp refused_timeout, callback_elapsed2527us, then managed_release=true and observer_ingress only afterward. Later Backspace SSI6 cannot recover and manual RPC denies context authority. This first-loss ordering is measured; the exact code repair needs causal source proof, and no guard/timer bypass is authorized by the trace alone. Functional78PASS38FAIL15BLOCKED19NOT_TESTED; last functional9/10 job error `fixture field is hidden` leaves19 untested and9 previous functional PASS lost to coverage/visibility, no gains. Keep those outcomes separate from product regressions. DS speed414/420,median106.554774ms,p95119.139740ms,max125.594719ms; clock evdev write-return→first exact AT-SPI target,kernelreleaseNOT_MEASURED. Native scope1965691 closed/allpinnedPIDticksgone beforefreeze. Chrome whole gate and actual private writer-root audit pending; TD121 remains OPEN.
+
+
+2026-10-13T18:42:56Z — O causal source RED, `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-source-probes/o-late-managed-release-red-ad5ufwag/RESULT.json` SHA `4a2799565ae39c40132d9bb836d3469c725701ac186d9d761f6738a3f84e5869`: one owned managed-release word-proof failure, two controls PASS. Valid press/commit accepted; authenticated release is handled with unchanged text before observer ingress, but generic admission/settlement erases known word proof. The old producer treats late ordinary release as a possible mutable key. Preferred bounded option9 is existing text-inert release cleanup plus canonical passive classification, with native header/path validation and no new word authority/owner/timer/queue/transport; timeout increase5 and generic KnownStart/settlement queue3 rejected. Production unchanged; plan review and stronger negative controls required before implementation. N Chrome private20/20 and writer-root audit PASS for visited roots; full N native stillFAIL, prior outcomes retained.
+
+
+N Chrome native primary `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native20df1-chrome-proof.json`, SHA `9d7b0b2290e9afd761411456694b4139a8c5b6f8a0091ee72f0133b594b7f49b`, RAW `/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native20df1-chrome-raw-1791915477741593947/RAW.json`; standard58PASS2BLOCKED/60 (normal19PASS1BLOCKED,private20PASS,fullscreen19PASS1BLOCKED), panel6PASS/6, functional105PASS33FAIL12BLOCKED/150. All20 old private failures became PASS; no standard PASS lost, all156 other statuses equalL. DS406/420 median92.079734ms,p95110.070222ms,max121.588875ms; clockevdev write-return→first exact AT-SPI target,kernelreleaseNOT_MEASURED. Actual private20-cell writer-root observation `/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/N-chrome-private-sink-proof.json`: usage and Lay history/data file hashes unchanged, normal enabled-public control changed recent_actions.jsonl; bothlearning/debug configuredtrue, before/aftertwoquiescent samples, no extra audit input. Scope is these visited Lay roots/inputs; complete trace coverage remainsUNKNOWN. BothNnativefullverdictsFAIL are retained; TD121OPEN. Scope2046996 closed/allboundPIDticksgonebeforefreeze/restoreVT1. OsourceRED firstlateownedrelease proof, plan review1/2pending, no production edit.
+
+
+2026-10-14T07:31:41.532363+00:00 — W configured repeated closed-source54 and delayed final Backspace-release54 BOTH PASS (23.965s/23.910s; receipts /home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/W-configured54-pass-RESULT.json and /home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/W-delayed-backspace-release54-pass-RESULT.json). Source fixture does not reproduce V fullscreenSpace9 native failure; first loss UNKNOWN. Next WD diagnostic adds only numeric/boolean metadata after existing exact-replay rejection (scope pair/current, command modifier, unexpected key or failed mirror transition), before scope revocation, no successful callback logging. No functional predicate/route/owner/timer/model changes. Decision2026-10-14-native-replay-failure-only-diagnostics; one originalstandard60 normal/private/fullscreen sequence after fresh scoped gate/AST/private byte proof, no passivewire. Partial diagnostic never replaces fullV339P60F33B432. Independent review NOT RUN threadlimit/no score; TD121OPEN.
+
+
+2026-10-14T07:49:51.288202+00:00 — WD standard60 diagnostic COMPLETE60PASS0FAIL0BLOCKED, original3parents0/noheldkeys, actual3321/driver32363 CLOSED0; exact5originalticksGone/CGempty/VT8→1. Archive /home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WD-standard-diagnostic-1791963994703664507/RESULT.json SHA66f029589a4c787c1938e184dae8b4173ad0fddb5cff04bb85cd3b12eab7beb6; all80files copied/hashverified. ZERO ibus_exact_replay_rejection records. V fullscreenSpace9 did not reproduce, causeUNKNOWN/no functional fix claimed, no unchanged repeat. Ordinary p95normal121.472/private119.020/full120.476ms all120/120; burst118.723/116.910/115.019 all300/300; kernelreleaseNOTMEASURED. Next WE one original057 field5,6 functional30 using unchanged gatedWDbytes, no passivewire; snapshot existing capped trace once at observed row completion (bounded30x512KiB) to retain failure-window callbacks missing in V. Originalactor/inputcadence untouched. Same decision extended; no source/build repeat, authority/route/model/laptop changes. Latest complete full432 still339P60F33B; taskOPEN/reviewNOTRUN/threadlimit/no publication.
+
+
+2026-10-14T08:50:46.048180+00:00 — WG focused57GREEN24.179s sig4439f4e... after explicit bounded marked-prefix proof and actual localBS restoration. Focused58GREEN24.732s sigce143f87... adds12refusal classes; allold16guards (including raw marker flip) remain. New marked8gestures preserve owner/path/widgetprefix snapshot/revision and assert nextz decoder pluslocalBS, noCommit/Delete. Actual source afterprobe witness loss wasgenericBSrevocation; boundedexisting prepare/finish localBS nowretains samebirthwitness afterverifiedonechar/oneepoch, currentprefix/token/identity. Final pending-display-on-localerase check and authorize-before-negative mutation are in fresh scopedgate80258 currentlyLIVE; no nativeWG yet. Reviewdiff /home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WG-review-diff.patch relativeimmutableWF source contains only3WGsource files. LatestfullV339P60F33B unchanged; TD121OPEN/no install/promote/push/refit.
+
+
+2026-10-14T10:02:47.127755+00:00 — WG BOTH original216/browser COMPLETE432=343PASS56FAIL33BLOCKED (FF164/33/19, Chrome179/23/14). Chrome696.994s actual86410/driver55556closed0/exact5Gone/CGempty/VT1/9parents0/noheldkeys. Chrome ALL216statuses exactly V/U; FFV5gains1loss =>net4morePASS/fewerFAIL, NOT complete/promotion due56F/33B+lostFFspaceRuEn1+reviewNOTRUN. All20cursorPASS. BothRAWmanifests andALL18primaryJSON locallyhashverified WG-both-primary-retention-verified.json; FFproofSHAf8e190.../ChromeSHAba7c69c0235ae4a35a4edf61bb0e265130a2b1d972b21c13ab50941e31796a02. WGChromeRAW1791971933462849002 manifest1dc10ee... retained. StdChrome406/420p95110.127ms/panel48p95108.761/functionalDS158of210p95124.664/Space38of50p9525.409/selection10p9523.074/Tab0; FFspeedspriorentry. Missing explicit/kernelreleaseNOTMEASURED/no statisticalimprovementclaim. WGprivate3filesunchanged/publicpositive recent_actions changed; notfullaudit/modeltraining. Compactrepoevidence tech_debt/evidence/td121-WG-full-browser-native-2026-10-14.json. Nextfirst newfailedprefix-bindingpredicate +SpaceRuEn1firstauthorityloss unknown; no wordbranch/guardweakening/unchangedrandomretry/blindrollback. Latestcurrenttable343P56F33B; taskOPEN/no publish/laptopinstall/refit.
+
+
+2026-10-14T13:13:40.965631+00:00 — WJ NATIVE88 COMPLETE scoped32PASS49FAIL7BLOCKED0NOT_TESTED. BasicWezTerm inlinepreedit/candidate-at-caret andSpacecommit image pair PASS (PTYemptybefore; preciseприветSpaceafter); focus-renderotherpositions outside88NOTTESTED. Perapp GTKTextView12P2F2B,Entry3P11F2B,Qt5Line/plain/rich each4P11F1B,Wez5P3F. Speed44/290 measured,246missing/13early-marker samples,median75.906/p9586.828/max91.946ms; notkernelrelease/paintproof. Telegramnoauth composerBLOCKED; firstlaunchthreadlimit512 refusal/noceilingbypass, send0, imageactuallyWez/notTelegramproof. Finalactual5286CLOSED0/driver33110CLOSED0/3setupparents0/noheldkeys/5GoneCGemptyVT1. Immutablearchive /home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-acceptance-1791983329525303054/ARCHIVE.json35files, rawSHAec139383..., rootvisualassessmentseparate; allprior32GTKresults carriedbynativehash/noretry. Newnativefirstmeasurement/regressionbaselineWGUNKNOWN/runtimefirstrefusalUNKNOWN; no newsource/model/IMEroute/laptopchange. Owningreport docs/development/wj-native-apps-2026-10-14.md. FullWJbrowsersNOTTESTED; oldWG343P56F33B remains. TD121OPEN/reviewNOTRUN/nopublication.
+
+## Local Firefox1.0.83 iframe diagnostic — 2026-10-14T15:24:54.088336+00:00
+
+User reports Double Shift failure and explicitly requests checking here on the local machine; identifies actual field10, “Редактор внутри iframe”. This authorizes the local diagnostic exception to the prior remote-only test scope. Installed CLI/IME/daemon bytes and user profile are preserved. Actual Firefox157.0 snap8995, PID767837; own standard test window4063878607, all native input bound to that title/window/PID/starttick, actual field focus and existing daemon-attached AT keyboard. Browser/account profiles unchanged; no native text input into WhatsApp or other user sites. No runtime install/restart, delivery-route change, model fit or learning cleanup.
+
+Exact field10 test with simplytyped `просто`: active roundtrip PASS (both surfaces and next-character decoder/Backspace), post-Space5-gesture burst FAIL. First conversion becomes `ghjcnj ` with native caret7 in108.444ms, then gestures2–5 leave it unchanged. All4 reach a live bridge but manual RPC returns `context_authority`; first refusal at authority.rs706, word_known=false, managed_word_mode=false, snapshot present/unselected, witness absent, manual toggle/refresh both false. Between first delegation and second refusal the newUS owner109 sees Reset serials3246/3256/3260/3276/3279; final3279 has refused_timeout. Second marker313 settles in under1ms, so the observed failure is edit admission after successful dispatch, not a missing gesture. The exact first loss of replay/reset authority still requires a causal source test; timeout alone is not asserted as cause. Do not weaken the guard or use a literal word/frame bypass.
+
+Scoped transformation timing3/7 samples,4 missing; median103.207ms, p95/max108.444ms; evdev write-return→AT-SPI observation, not human-release or paint. Input2plan verdicts1PASS1FAIL; no conversion failure excluded from timing denominator. First observed refusal, raw sequence and all earlier setup scopes retained at `/home/ubu/.cache/lay/development/firefox83-local-sequence-kwjodjvq`; root assessment `/home/ubu/.cache/lay/development/firefox83-local-sequence-kwjodjvq/ASSESSMENT.json`, raw SHA1c6e2634a55e57b0aaa831d0666d33805b3cf8a582142f1a5b0bf5a17b6e98ff. Field1/7 local active roundtrips and field1/7 five-target controls pass in separate scopes; they do not certify iframe10. Remaining8-field actor sent0keys because Firefox was behind Kitty while user replied; classify16plans BLOCKED_SETUP, not product failures. Earlier observer artifacts are explicitly retained rather than silently promoted.
+
+Latest complete WG browser counts remain Firefox164P33F19B/216, Chrome179P23F14B/216, total343P56F33B/432. FullWJ/1.0.83 browser acceptance NOT_TESTED; TD121 OPEN and independent WJ review NOT_RUN retained. One local reproduction finished; no product source edits or rollback.

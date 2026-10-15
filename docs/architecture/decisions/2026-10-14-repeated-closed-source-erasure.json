@@ -1,0 +1,57 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-repeated-closed-source-erasure",
+  "status": "TWO_CONFIGURED_SOURCE54_PASS_NATIVE_FIRST_REJECTION_UNKNOWN",
+  "baseline": "V bothfull339PASS60FAIL33BLOCKED432, source53+842PASS; bothGUIclosed/VT1; candidate notaccepted; all20cursorPASS.",
+  "measured": "V fullscreenSpace9 first3 toggles PASS, fourth/fifthFAIL. Prior exact closed source is UnknownStart confirmed through Reset; actual source7 SSI after suppression; complete native erasure before delayed oldsource6/5 SSI, emptySSI after replacement3 letters; laterResetcapturemissingprovenance. First clearing call UNKNOWN.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Source-only two real closed-word conversions using existing factory/actual Reset/V3/V2 source proof, original source SSI after arming, delayed erasure SSI and replacement callback ordering. Locate first scope/provenance loss before runtime edit.",
+      "reason": "Models the repeated source and delayed callback sequence absent from first-conversion positives; no observer overhead or shape/identity relaxation."
+    },
+    {
+      "score": 7,
+      "recommended": false,
+      "solution": "One bounded failure-only native diagnostic of the same choreography if source fixture does not reproduce.",
+      "reason": "May require fresh diagnostic bytes and native admission; retains cadence and explicit unknown trace coverage."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Generic prefix acceptance, KnownStart gate changes, increased deadline, hardcoded field/word, or unchanged repeat untilPASS.",
+      "reason": "Weakens authority or obscures the first failed transition; rejected."
+    }
+  ],
+  "constraints": [
+    "Keep53 previous controls and original canonical routing/source/verifier tests.",
+    "Rootimplements/tests remote only; reviews unavailable thread limit/NOT_RUN, no score.",
+    "No new owner/cache/delivery route/model refit/word condition or production edit before causal RED.",
+    "Two functional Space losses lack trace failure-window coverage, causeUNKNOWN; keep separate from this proven trace choreography."
+  ],
+  "delivery_routes_changed": false,
+  "model_training": false,
+  "updated_at": "2026-10-14T07:31:41.532363+00:00",
+  "initial_probe": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/W-first-source54-RESULT.json",
+    "signature": "12a3ae65e5d973c750c3a3bb26e0acf1c1a9d12a15b21dcc2e73c269a67792ec",
+    "result": "53PASS1FAIL54",
+    "verdict": "NOT_CAUSAL_NATIVE_REPRO: did not prove scope active before SSI and omitted the inherited helper native IME configuration. Do not repair production from this failure."
+  },
+  "configured54_pass": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/W-configured54-pass-RESULT.json",
+    "signature": "7345b8908d6cf3ef8408fb016e38c8baf454dc835b3e1dbb8305b487f0062460",
+    "result": "54PASS0FAIL54",
+    "seconds": 23.96453464400838,
+    "scope": "Same native IME config as inherited helper, active replay asserted before original SSI; two actual conversions/confirmed UnknownStart source/delayed erasure schedule pass. No W functional edit or explained native failure yet."
+  },
+  "next_gap": "Actual trace has final Backspace press30716, then Reset/old erasure SSI packets30717\u201330720, then late Backspace release30721. Earlier source54 paired all erase releases before Reset. Current test defers only that actual received release until after delayed erasure SSI; no withholding observer through a deadline.",
+  "late_release54_pass": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/W-delayed-backspace-release54-pass-RESULT.json",
+    "signature": "364230e6eb2b7e252accf5f3cd336f8d7833eb0bd86299d309c9aa9898c83693",
+    "result": "54PASS0FAIL54",
+    "seconds": 23.910175,
+    "scope": "Actual delayed final Backspace release after Reset and old erasure SSI. Native failure NOT reproduced; no functional edit authorized by this evidence."
+  }
+}

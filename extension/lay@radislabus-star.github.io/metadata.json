@@ -1,9 +1,14 @@
 {
-    "uuid": "lay@radislabus-star.github.io",
-    "name": "Lay Layout Switcher",
-    "version": 1000081,
-    "version-name": "1.0.81",
-    "description": "Трей и GNOME bridge для Lay: RU/EN, режим ввода, автозамена, диагностика и управление службами.",
-    "shell-version": ["45", "46", "47", "50"],
-    "url": "https://github.com/radislabus-star/lay-public"
+  "uuid": "lay@radislabus-star.github.io",
+  "name": "Lay Layout Switcher",
+  "version": 1000084,
+  "version-name": "1.0.84",
+  "description": "Трей и GNOME bridge для Lay: RU/EN, режим ввода, автозамена, диагностика и управление службами.",
+  "shell-version": [
+    "45",
+    "46",
+    "47",
+    "50"
+  ],
+  "url": "https://github.com/radislabus-star/lay-public"
 }

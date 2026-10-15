@@ -1,0 +1,483 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-private-boundary-first-target-chunk",
+  "status": "BOTH_FULL_NATIVE339P60F33B_REJECTED_AS_COMPLETE_FF_THREE_LOST_PASS",
+  "baseline": "U completeboth432341P58F33B, all20cursorPASS, one lostR privateFFspace7burst after firstflip. Source840+48PASS, no publication; allGUIclosed/VT1/RAW18primaryhashverified.",
+  "measured_evidence": "Private7trace has actualerasureempty then completedSpaceKnownStart beforefirsttarget4/caret0. GenericpendingResetidentity false is expectedforKnownStart; completed-boundary progress path existsbutits exactfailedpredicateunknown.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Add source-only actualerasureSSI+completednativeSpace+firstgrowingtargetwithstationarycaret fixture, preserving existingobservedreceiver/proof paths and old48controlcases. Diagnosefirst failedprogress predicate before runtime change.",
+      "reason": "Directlytests missing choreography instead of changing authority from matchingtext."
+    },
+    {
+      "score": 7,
+      "recommended": false,
+      "solution": "Failure-only metadata for completed-boundary progress plus one changeddiagnosticnativeprivate7run if source case does not reproduce.",
+      "reason": "Goodfallback but needs freshgatedbuild/actualscopebinding and diagnosticobserveroverheadaccounting."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Accept everymatchingprefix or ignoretoken/knownStart predicates.",
+      "reason": "Unprovedsource/caret,unsafe; prohibited."
+    }
+  ],
+  "source_gap": "Current progresspositivefixture adds a realprior targetpiece forcaretlag>1. Nativeprivate7 mayfirstdeliverlargerpiece at oldcaret afterrealerasureempty; whetheroldemptyreceipt survivescallbackscopechanges is unknown. Mustnot fabricatepriorpiece/timestamp/sourceid or inferScopeValidfromshape.",
+  "scope_contract": [
+    "Rootonlyimplements/tests; no agents implement; contextfree reviews unavailablethreadlimit/no fabricatedscores.",
+    "No extra nativeinput until source diagnosis; no model refit/newowner/routes/deadline/guard weakening.",
+    "Existing wholeprefix/endcaret/currentowner/lease/layout/revision/contradiction predicates remain. Intermediate progress grants no manual/edit/readout/Space/Tab/learningauthority.",
+    "All48U controls retained; fixedfull432 preserved; no one-wordruntimebranches or unchangedretryuntilrandomPASS."
+  ],
+  "delivery_routes_changed": false,
+  "runtime_authority_changed": false,
+  "updated_at": "2026-10-14T06:21:01.596913+00:00",
+  "source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-first-chunk-red51-RESULT.json",
+    "signature": "507f067b9fda6f547c29aef5ef71c272d7a1b567a40d59c60d815da465617e0d",
+    "result": "50PASS1FAIL51",
+    "seconds": 21.636657611001283,
+    "all208RustHashesMatch": true,
+    "first_assertion": "first actual growingtarget stationarycaret lostinertprogress prefixempty separatorASCII",
+    "scope_limit": "This choreography reproduces loss; exactprogresspredicate and equalitytonativefailure notyet proved. No runtimeedit/guardweakening."
+  },
+  "prestate_source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-prestate-red51-RESULT.json",
+    "signature": "a923a7c6939336982a91753b38534d7dc59eaaa29c1ff5eb50fc52d92f43045d",
+    "result": "50PASS1FAIL51",
+    "seconds": 21.574980008997954,
+    "all208RustHashesMatch": true,
+    "facts": "prior_actual=None; pendingSome/currenttoken same KnownStart lineage7/suffix0, expected4/tailEpoch14/armedRevision2/unconfirmed; completedboundarySome with fullobservedexternalprefix empty and exactcompletedreplay. ActualerasureSSI existedbefore replayletters.",
+    "limit": "First clearingcall and allactualfailedprogressconjuncts stillneedlocalization; no productionedit/permissionrelaxation. Nativecasecomparability mustbechecked."
+  },
+  "first_clearing_call": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-first-clear-red51-RESULT.json",
+    "signature": "c6e0ca85fbb9cd78a0b2c5677ba6c01af64c36e8963a9132e3d98316f5cd7452",
+    "result": "50PASS1FAIL51",
+    "seconds": 21.512992445001146,
+    "all208RustHashesMatch": true,
+    "fact": "Actual erasure SSI present before first native replacement press; first validated replay press calls exact_replay_mirror_transition, clears current snapshot; pending=None at this point. Completed Space later creates pending boundary receipt, so storing the witness only in that pending receipt is insufficient."
+  },
+  "implementation_options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Keep one inert actual replay progress receipt in existing ClientContextState, captured only as validated replay invalidates the current snapshot. Bind to exact paired scope, actual SSI revision, focus and layout generation; consume once at next actual adjacent SSI only under independently current completed replay provenance. Never restore the old receipt as current text or authorization.",
+      "reason": "Preserves actual evidence across the measured clearing call even while pending Reset receipt is absent. Existing paired replay remains sole lineage owner; final current full end-caret SSI and all verifier guards remain required."
+    },
+    {
+      "score": 7,
+      "recommended": false,
+      "solution": "Add mutable progress snapshot to shared ExactManualToggleSuppression and update both paired copies on SSI.",
+      "reason": "Avoids a local witness field but changes shared suppression equality/revision behavior and captured replay clones across Reset; larger affected path."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Allow arbitrary matching target prefixes without actual previous observation or relax KnownStart identity guard.",
+      "reason": "Missing client evidence; weakens authority and contradiction proof. Rejected."
+    }
+  ],
+  "preexisting_handoff_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-U-baseline-handoff1-RESULT.json",
+    "wrapper": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-U-baseline-handoff-wrapper.json",
+    "signature": "9f13df4fc5ab2576f71ae36d6ee45420ff60e3eea7a828f292139214069b54e3",
+    "result": "0PASS1FAIL1",
+    "seconds": 13.666232759976992,
+    "proof": "Exact U tail_memory/observation/mod production hashes verified; only new-field-only fixture assertions removed for compiling U; actual factory/current SSI/ManualToggleV3 rejection assertions unchanged. Same lease case incorrectly delegates exact IME tail (3,false). V source restored finally; no runtime rollback.",
+    "first_failed_transition": "New installed handoff owner has KnownStart; completed replay guard no longer has old paired scope, and context_allows_manual_toggle returns true on KnownStart before inspecting current contradictory actual SSI."
+  },
+  "contradiction_options": [
+    {
+      "score": 9,
+      "recommended": false,
+      "solution": "Strengthen existing KnownStart manual admission: an available actual client snapshot must agree with the owned committed tail; independently owned active preedit keeps its existing separate authority. Absence of SSI retains existing input policy. Use current_external_snapshot_agrees_with_owned_tail, no new ownership or route.",
+      "reason": "Directly rejects the measured contradictory document/caret while retaining exact final proofs and current admission reducer.",
+      "verdict": "REJECTED: strengthens earlier route by moving source authority to wrong stage"
+    },
+    {
+      "score": 7,
+      "recommended": false,
+      "solution": "Transfer unfinished native replay delivery state through every factory handoff.",
+      "reason": "Broader reducer/ready-slot/shadow lifetime changes; do not add them to repair a current explicit contradiction."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Relax the adverse assertion or disable the failing lease case.",
+      "reason": "Masks a baseline-existing consumer contradiction; rejected."
+    }
+  ],
+  "focused53_first_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-first-green53-RESULT.json",
+    "signature": "5ff2452317778a4e081852fd5e6d9a614dd88f498dcc82b33ecbe75855757b30",
+    "result": "53PASS0FAIL53",
+    "seconds": 23.674503515998367,
+    "scope": "48U controls, 3 prior replay-progress contracts, new positive4 variants and 10 adverse cases. Production source changed in three files (plus export); private U runtime unchanged. Original probe receipt label no runtime edit was stale and is explicitly corrected here, raw receipt retained."
+  },
+  "independent_review": {
+    "status": "NOT_RUN",
+    "attempt": "collaboration.spawn_agent first_target_chunk_review_20261014 fork_turns=none",
+    "tool_error": "agent thread limit reached",
+    "score": null,
+    "scope": "No independent V review score; root source audit is not an independent review. TD121 stays OPEN, no completion/publication."
+  },
+  "focused53_final_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-final-green53-RESULT.json",
+    "signature": "ac95b8aadbdda390c86980b2a936a082e57792b007cb342b8a8db52ec38044e9",
+    "result": "53PASS0FAIL53",
+    "seconds": 23.83451507301652,
+    "all208RustHashesMatch": true,
+    "positive_variants": 8,
+    "adverse_variants": 10,
+    "scope": "8 positive prefix/source-separator/interleaved-actual-Reset schedules; 10 adverse cases; exact real bridge V3 and visible-tail effects. No current snapshot restored from inert receipt; KnownStart actual contradiction guard strengthened."
+  },
+  "early_guard_rejection": {
+    "receipt": "/home/ubu/.cache/lay/development/run-cf_cq3rn/RESULT.json",
+    "result": "841PASS1FAIL842",
+    "failed_test": "exact_replay_requires_current_unselected_external_tail_at_each_lease",
+    "first_fail": "SourceMismatch: V3 expected typed route (3,false) until actual source capture; experiment returned (0,false).",
+    "verdict": "REJECT early contradiction guard; restore exact previous context_allows_manual_toggle code. Inert actual replay progress fix retained. No binary built or installed for rejected guard.",
+    "correction": "Earlier claimed baseline-existing unsafe consumer admission was unproved: V3 disposition is routing, not source or edit authority. Adverse fixture must assert V2 source capture, no published exact handoff, no replay scope and no local Commit/Delete, which are the canonical boundaries.",
+    "scope": "No canonical test weakened or changed. New adverse fixture now checks actual safety effects at the existing owner; controls and recorded failed signatures retained."
+  },
+  "canonical_focused53_final_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-canonical-final-green53-RESULT.json",
+    "signature": "cef52d3805060d185cc64a325e389215fb4d08c9c0a4da5b19f969a0f1e260a7",
+    "result": "53PASS0FAIL53",
+    "seconds": 23.900812106003286,
+    "all208RustHashesMatch": true,
+    "positive_variants": 8,
+    "adverse_variants": 10,
+    "guard_change": "NONE: original context_allows_manual_toggle and V3 typed routing retained",
+    "authority_checks": "V2 source refusal, no exact handoff/target receipt or live reset/boundary provenance, no native ACK/revival/Commit/Delete. A spent suppression may remain as inert protection, so presence alone is not counted as live authority."
+  },
+  "scoped_source_gate": {
+    "local": "/home/ubu/.cache/lay/development/run-jmmjw42b",
+    "remote": "/home/e/projects/lay-development-runner/run-e4XAFt",
+    "tests": {
+      "executed": 842,
+      "failed": 0,
+      "passed": 842,
+      "selected": 842
+    },
+    "allRustHashesMatch": 737,
+    "archive_sha256": "b80393ad176658954fbb46dee1ca9a27317b05e3fceafa3f06275fb7aa03f2f7",
+    "worker_seconds": 117.23721501001273,
+    "scope": "IME791+sixcontracts51; all737Rust hashes verified; unchanged R daemon273 prior proof reused, not rerun; development-only not release/global heldout"
+  },
+  "private_build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-e4XAFt",
+    "archive_sha256": "b80393ad176658954fbb46dee1ca9a27317b05e3fceafa3f06275fb7aa03f2f7",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791956462585229729.txt",
+    "elapsed_seconds": 183.80345638899598,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "522f232d88cdabe3af4f4bfc383822650ee3f05ac3496a75feb59b34dbb076ad",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791956646388584106/bin/lay-ibus-engine",
+      "bytes": 8275088
+    },
+    "lay-daemon": {
+      "sha256": "c15d36013a7b48260cb16336cbad2d2927b7e6cca76830cde737a91082996e2c",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791956646388584106/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "remote_ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.836343151982874,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/V-final-graph-1791956441558914493.log",
+    "artifacts": {
+      "graphify-out/graph.json": "d4e5c112a0152f9259ec3112fc8cfd7a191a244165fbde99b0d0db1698ad7812",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "ac52b2c00aa21f074bd7abd59c691f2ec047934fa97db8a3093a461be188051d",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    },
+    "all4LocalArtifactsHashVerified": true
+  },
+  "staged_private_only": {
+    "status": "STAGED_PRIVATE_ONLY",
+    "backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-V-native-progress-1791956684983127385",
+    "ime_sha256": "522f232d88cdabe3af4f4bfc383822650ee3f05ac3496a75feb59b34dbb076ad",
+    "daemon_sha256": "c15d36013a7b48260cb16336cbad2d2927b7e6cca76830cde737a91082996e2c",
+    "gate": "/home/e/projects/lay-development-runner/run-e4XAFt",
+    "original_actors_unchanged": true
+  },
+  "native_firefox_scope": {
+    "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/VB-firefox-zero-key.json",
+    "zero_input_verified": true,
+    "actual_session": 99325,
+    "driver_session": 3337,
+    "bound": {
+      "gnome": {
+        "pid": 103863,
+        "starttick": "15425272",
+        "sha256": "e16ce30979e60f172bebbf019ae430c15a90aef6861efe90f1ca8568fab03458",
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-103649.scope"
+      },
+      "firefox": {
+        "pid": 104308,
+        "starttick": "15425369",
+        "sha256": "b3089612093d427f3912dead43f377e65c709e8da4496c2912a84b447a368779",
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-103649.scope"
+      },
+      "ibus": {
+        "pid": 103955,
+        "starttick": "15425332",
+        "sha256": "24338c0e7cfb749d2ac9b9254d7d54029e71b5ac9342aa1b8d78b1d55f5ac1b6",
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-103649.scope",
+        "address": "unix:path=/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/cache/ibus/dbus-RGDoiu79,guid=e13dec7bd376cd40e434a5336acf16f3",
+        "discovery_path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/config/ibus/bus/60e058a0453c4c3bb267afcbdbad793b-unix-wayland-0",
+        "discovery_sha256": "9628e1ebfb7d8ec79f73377153b05a307feb66be04b97e178448c0fa91082384",
+        "parent_pid": 103863,
+        "parent_starttick": "15425272",
+        "owner": "stock GNOME startup/restart child",
+        "input_keys": 0
+      },
+      "daemon": {
+        "pid": 105236,
+        "starttick": "15425874",
+        "sha256": "c15d36013a7b48260cb16336cbad2d2927b7e6cca76830cde737a91082996e2c",
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-103649.scope"
+      },
+      "ime": {
+        "pid": 104209,
+        "starttick": "15425359",
+        "sha256": "522f232d88cdabe3af4f4bfc383822650ee3f05ac3496a75feb59b34dbb076ad",
+        "cgroup": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-103649.scope"
+      }
+    },
+    "scope": "Original nine once, no passive wire, source/byte/active seat pinned; not complete physical acceptance yet."
+  },
+  "full_firefox_native": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native522f2-firefox-proof.json",
+    "sha256": "ba5347ff2444188d16e9816c01e5439f2d54746858cc030357cf89f9ce19547e",
+    "counts": {
+      "PASS": 160,
+      "FAIL": 37,
+      "BLOCKED": 19
+    },
+    "changes_vs_U": [
+      {
+        "id": [
+          "functional",
+          "normal",
+          "moved_boundary",
+          6
+        ],
+        "from": "PASS",
+        "to": "FAIL"
+      },
+      {
+        "id": [
+          "functional",
+          "normal",
+          "space_en_ru",
+          5
+        ],
+        "from": "PASS",
+        "to": "FAIL"
+      },
+      {
+        "id": [
+          "standard",
+          "fullscreen",
+          "space",
+          9
+        ],
+        "from": "PASS",
+        "to": "FAIL"
+      },
+      {
+        "id": [
+          "standard",
+          "private",
+          "space",
+          7
+        ],
+        "from": "FAIL",
+        "to": "PASS"
+      }
+    ],
+    "closed": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/VB-firefox-closed.json",
+    "speed": {
+      "standard": {
+        "double_shift": {
+          "required": 420,
+          "measured": 418,
+          "missing": 2,
+          "p50_ms": 106.28182099759579,
+          "p95_ms": 118.52085900306702,
+          "max_ms": 129.66926699876785,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "panel": {
+        "double_shift": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "p50_ms": 106.90215848386288,
+          "p95_ms": 120.63649198412895,
+          "max_ms": 124.18572798371315,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "functional": {
+        "double_shift": {
+          "required": 210,
+          "measured": 122,
+          "missing": 88,
+          "p50_ms": 109.93717901408672,
+          "p95_ms": 140.4216620028019,
+          "max_ms": 160.863587975502,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "space": {
+          "required": 50,
+          "measured": 35,
+          "missing": 15,
+          "p50_ms": 18.725728005170822,
+          "p95_ms": 23.35605999827385,
+          "max_ms": 23.605150014162064,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "tab": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "selection": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      }
+    },
+    "scope": "Full216 same stable IDs/pinned original9/bytes; privateSpace7 restored, fullscreenSpace9 and functional moved_boundary6/space_en_ru5 lostPASS. Source-only repair is not accepted whole version."
+  },
+  "native_chrome_scope": {
+    "actual_session": 25438,
+    "driver_session": 33161,
+    "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/VB-chrome-zero-key.json",
+    "scope": "Same V bytes, original100–108 once, four read-only sink brackets; no heavy work while GUI live."
+  },
+  "full_chrome_native": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native522f2-chrome-proof.json",
+    "sha256": "cd4b7e72bb965ed4cbd629df12817b2e6a12153c8b9b99602a17e879243adde4",
+    "counts": {
+      "PASS": 179,
+      "BLOCKED": 14,
+      "FAIL": 23
+    },
+    "all216_statuses_equal_U": true,
+    "closed": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/VB-chrome-closed.json",
+    "speed": {
+      "standard": {
+        "double_shift": {
+          "required": 420,
+          "measured": 406,
+          "missing": 14,
+          "p50_ms": 91.71026502549648,
+          "p95_ms": 109.72297498583794,
+          "max_ms": 152.3322929739952,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "panel": {
+        "double_shift": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "p50_ms": 93.10345999896526,
+          "p95_ms": 115.30286002159119,
+          "max_ms": 119.65926599502563,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "functional": {
+        "double_shift": {
+          "required": 210,
+          "measured": 158,
+          "missing": 52,
+          "p50_ms": 90.23048347234726,
+          "p95_ms": 128.91341602802277,
+          "max_ms": 137.88292601704597,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "space": {
+          "required": 50,
+          "measured": 38,
+          "missing": 12,
+          "p50_ms": 17.9806499928236,
+          "p95_ms": 23.242751985788345,
+          "max_ms": 23.68139100074768,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "tab": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "selection": {
+          "required": 10,
+          "measured": 10,
+          "missing": 0,
+          "p50_ms": 19.363506972789764,
+          "p95_ms": 21.532205998897552,
+          "max_ms": 21.532205998897552,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      }
+    },
+    "privacy": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-chrome-private-sink-proof.json",
+    "scope": "Full216 same stable IDs/original9/bytes, zero status changes; public positive sink changed/privatevisitedLay3files unchanged; no complete trace coverage claim."
+  },
+  "full_both_native": {
+    "counts": {
+      "PASS": 339,
+      "FAIL": 60,
+      "BLOCKED": 33
+    },
+    "required": 432,
+    "vs_U": "one gain and three lostPASS, net two extraFAIL; all20cursorPASS retained; no unconditional improvement or promotion",
+    "primary_retention": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/V-both-primary-retention-verified.json",
+    "all18PrimaryHashesVerified": true,
+    "bothRAWManifestHashesVerified": true,
+    "runtime_closed": "all5 originals bothscopes gone/cgroups empty/all18 parent exit0/noheldkeys/VT1",
+    "training": "No fit/refit/model parameters or delivery routes changed",
+    "review": "NOT_RUN_THREAD_LIMIT_NO_SCORE",
+    "next": "Source-only first-scope-loss proof for repeated UnknownStart closed-word handoff + source SSI after suppression + delayed erasure SSI; two functional Space gaps lack retained timing-window trace coverage, cause UNKNOWN."
+  }
+}

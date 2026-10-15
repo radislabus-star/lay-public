@@ -64,6 +64,14 @@ PACKAGE_FIXTURE_PATHS = (
 
 PROCESS_ISOLATED_TESTS = {
     (
+        "bin:lay-ibus-engine",
+        "preedit::tests::private_finished_visible_prediction_never_records_usage",
+    ),
+    (
+        "bin:lay-ibus-engine",
+        "atomic::tests::private_system_and_deferred_sinks_keep_enabled_public_controls",
+    ),
+    (
         "lib:lay",
         "ru_typo::repeated::tests::repeated_letter_without_a_repeated_run_keeps_reference_cold",
     ),
@@ -74,6 +82,10 @@ PROCESS_ISOLATED_TESTS = {
     (
         "bin:lay-daemon",
         "tests::runtime_state::terminal_enter_raw_observation_does_not_repeat_or_learn_other_boundaries",
+    ),
+    (
+        "bin:lay-daemon",
+        "tests::runtime_state::ime_unknown_privacy_never_records_raw_input_on_enter",
     ),
     (
         "lib:lay",

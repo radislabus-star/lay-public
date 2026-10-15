@@ -1,0 +1,44 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "FULL_MATCHED_SERIES_COMPLETE_PRIOR349PASS_RETAINED",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "problem": "Two native harness interruptions on hidden iframe setup; one exact prefix target with unrecorded mode mismatch. Source6-file parity confirms focused-IME episode does not execute optimized daemon engine consumer, but causal independence remains UNKNOWN.",
+  "old_evidence": "RUN/PERF-READ-firefox-incomplete-2 and RUN/PERF-mode-viewport-diagnostic; retain original FAIL/BLOCKED/NOT_TESTED. Diagnostic parent failed finalization __file__, not acceptance.16reloads had fresh native objects,15preinput probes300samplesSHOWING; staleobject hypothesis not supported in those samples.",
+  "change": "Before first seed letter only: stable100ms focused+SHOWING; fresh read of source/mode/stockCLI engine must agree without reactivation; same fieldguard at every key. Record existing functional target mode RPC result. Preserve visibility precondition. No source/runtime modification.",
+  "comparison": "Fixed single PLAINV and single READV full216 perbrowser with identical actor hashes, frozen private data and original case/key/target clocks. Four full matrices maximum; no further unchanged reruns. Every historical lostPASS remains explicit; any unresolved loss rejects install.",
+  "checks": "Native key sequences, cadence, release/target clocks, exact text/caret/decoder acceptance and per-key identity/focus/SHOWING/activity/runtime guards unchanged. Source1134/review9 remains valid; separate harness review pending.",
+  "scope": "Remote owned GNOME native windows; no RDP/local input/profile installation/models; installed83 remainsBC89/330.",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "harness_review": {
+    "pass1": "8/10 stale result blocker corrected",
+    "pass2": "9/10 no blockers, independently static only",
+    "receipt": "BDIR/PERF-preinput-v2-review2.md",
+    "minor_notes_adopted": "atomic pending->rename probe job, postrow exception limited exactly to hidden-field setup, separate mode timestamp, explicit body pin",
+    "unchanged_source_review": "9/10 two passes, no source edits"
+  },
+  "scope_receipt": "RUN/PERF-preinput-v2-SCOPE.json PASS undercanonicalremote guard; restores exact original source outside scoped preinput functions, functional keys/cases/clocks exact byte parity",
+  "equal_preparation": "Bothphases60actualIBusqueries/30pairs, first API timingseparate; baseline2CLI,candidateRPC+CLI. No cold-native claim.",
+  "launch_failure": "Zero-key stale keyboard readiness race retained RUN/PERF-MATCHED-v2-zero-key-launch-race and missing-ready. Controller now retains/unlinks old readiness markers before GUI launch; no old file accepted. No behavior repeats; first real fixedseries nowrunning.",
+  "final_native_counts": {
+    "firefox": {
+      "PASS": 170,
+      "FAIL": 27,
+      "BLOCKED": 19
+    },
+    "chrome": {
+      "PASS": 179,
+      "FAIL": 24,
+      "BLOCKED": 13
+    },
+    "total": {
+      "PASS": 349,
+      "FAIL": 51,
+      "BLOCKED": 32,
+      "NOT_TESTED": 0
+    }
+  },
+  "coverage_change": "Chromeundo/field2 BLOCKEDsetup→FAILSpace, no lostPASS",
+  "closure_receipt": "RUN/PERF-MATCHED-v2/READV-chrome-closure-recovery.json"
+}

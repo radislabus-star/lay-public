@@ -3,6 +3,73 @@ use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 
 #[test]
+fn inactive_handled_release_selector_cannot_track_an_unpublished_prediction() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+    use crate::protocol::{KEY_DOWN, KEY_UP};
+    for keyval in [KEY_UP, KEY_DOWN] {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut engine = LayIbusEngine::new(
+            "/test".into(),
+            Arc::clone(&shared),
+            true,
+            true,
+            LayConfig {
+                auto_replace: false,
+                typing_assist: false,
+                nanda_precognition: false,
+                ..LayConfig::default()
+            },
+        );
+        shared.lock().unwrap().active_path = Some("/test".into());
+        let mut emitted = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        for (ch, code) in [('п', 34), ('р', 35), ('о', 36)] {
+            zbus::block_on(engine.commit_managed_passthrough_char(
+                &mut EngineOutput::test(&mut emitted),
+                ch,
+                code,
+            ))
+            .unwrap();
+        }
+        assert!(engine.consume_handled_release(34));
+        assert!(engine.consume_handled_release(35));
+        assert!(engine.layout_gesture.handled_press_keycodes.contains(&36));
+        assert_eq!(emitted.committed_texts, ["п", "р", "о"]);
+        engine.config.nanda_precognition = true;
+        // A completed list is not a published prediction. No target has ever
+        // been shown in this fixture; selector bookkeeping must respect that.
+        engine.composition.preedit_candidates = vec!["верка".into(), "ект".into()];
+        engine.composition.preedit_replacement_targets = vec![None, None];
+        assert!(engine
+            .composition
+            .preedit_fast
+            .observed_prediction
+            .is_none());
+        assert!(engine.composition.preedit_fast.target_surface().is_none());
+        let handled = zbus::block_on(
+            engine.select_precognition_candidate(&mut EngineOutput::test(&mut emitted), keyval),
+        )
+        .unwrap();
+        assert!(
+            engine
+                .composition
+                .preedit_fast
+                .observed_prediction
+                .is_none(),
+            "unpublished navigation must not become completion feedback"
+        );
+        assert!(engine.composition.preedit_fast.target_surface().is_none());
+        assert!(!handled, "unpublished navigation belongs to the client");
+        assert!(emitted.preedit_updates.is_empty());
+        assert!(engine.selected_precognition_suffix().is_none());
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
+        engine.cancel_precognition_display_generation();
+    }
+}
+
+#[test]
 fn published_preedit_suggestion_style_respects_owned_buffer_and_not_caret() {
     use crate::output::{EngineOutput, TestEngineOutput};
 
@@ -722,6 +789,15 @@ fn daemon_is_the_only_raw_typed_usage_owner() {
 
 #[test]
 fn manually_finished_visible_prediction_records_positive_usage() {
+    finished_prediction_usage_fixture(false);
+}
+
+#[test]
+fn private_finished_visible_prediction_never_records_usage() {
+    finished_prediction_usage_fixture(true);
+}
+
+fn finished_prediction_usage_fixture(private: bool) {
     let test_id = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .expect("clock")
@@ -749,6 +825,10 @@ fn manually_finished_visible_prediction_records_positive_usage() {
             ..LayConfig::default()
         },
     );
+    if private {
+        engine.set_content_type_state(0, 2112);
+    }
+    assert!(engine.context_word_is_known());
     for ch in "н".chars() {
         engine.push_tail_char(ch);
     }
@@ -766,27 +846,33 @@ fn manually_finished_visible_prediction_records_positive_usage() {
     );
     engine.push_tail_char(' ');
 
-    let deadline = std::time::Instant::now() + std::time::Duration::from_millis(1300);
-    let text = loop {
-        if let Ok(text) = std::fs::read_to_string(&events_path) {
-            // The asynchronous writer creates the file before appending its
-            // newline-terminated event; existence alone is not completion.
-            if text.ends_with('\n') {
-                break text;
+    if private {
+        std::thread::sleep(std::time::Duration::from_millis(1300));
+        assert!(!events_path.exists());
+        assert!(!counts_path.exists());
+    } else {
+        let deadline = std::time::Instant::now() + std::time::Duration::from_millis(1300);
+        let text = loop {
+            if let Ok(text) = std::fs::read_to_string(&events_path) {
+                // The asynchronous writer creates the file before appending its
+                // newline-terminated event; existence alone is not completion.
+                if text.ends_with('\n') {
+                    break text;
+                }
             }
-        }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "usage persistence did not flush within its active interval"
+            );
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        };
         assert!(
-            std::time::Instant::now() < deadline,
-            "usage persistence did not flush within its active interval"
+            text.contains(r#""kind":"confirmed_ime_prediction""#),
+            "{text}"
         );
-        std::thread::sleep(std::time::Duration::from_millis(10));
-    };
-    assert!(
-        text.contains(r#""kind":"confirmed_ime_prediction""#),
-        "{text}"
-    );
-    assert!(text.contains(r#""word":"ну""#), "{text}");
-    assert!(!text.contains(r#""kind":"rejected_ime""#), "{text}");
+        assert!(text.contains(r#""word":"ну""#), "{text}");
+        assert!(!text.contains(r#""kind":"rejected_ime""#), "{text}");
+    }
 
     std::env::remove_var("LAY_NANDA_WORD_USAGE_EVENTS");
     std::env::remove_var("LAY_NANDA_WORD_USAGE_COUNTS");

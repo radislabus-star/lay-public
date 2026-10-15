@@ -360,7 +360,7 @@ impl LayIbusEngine {
         accepted_word: String,
         with_space: bool,
     ) {
-        if !self.context_word_is_known() {
+        if !self.context_word_is_known() || !self.content_allows_personalization() {
             self.committed_tail.pending_completion_learning = None;
             return;
         }
@@ -391,7 +391,7 @@ impl LayIbusEngine {
     /// A later word or terminal punctuation confirms that the explicitly
     /// accepted completion remained useful. This does not alter visible text.
     pub(super) fn confirm_pending_ime_completion_at_stable_boundary(&mut self) {
-        if !self.context_word_is_known() {
+        if !self.context_word_is_known() || !self.content_allows_personalization() {
             self.committed_tail.pending_completion_learning = None;
             return;
         }
@@ -416,7 +416,7 @@ impl LayIbusEngine {
         &mut self,
         tail_before_boundary: &str,
     ) -> bool {
-        if !self.context_word_is_known() {
+        if !self.context_word_is_known() || !self.content_allows_personalization() {
             self.committed_tail.pending_completion_learning = None;
             return false;
         }
@@ -581,6 +581,7 @@ impl LayIbusEngine {
                     token,
                     self.committed_tail.epoch,
                     self.committed_tail.buffer.clone(),
+                    self.current_full_external_prefix(),
                     source_observation_revision,
                     expires_at,
                 );
@@ -678,12 +679,24 @@ impl LayIbusEngine {
                 == self.client_context.surrounding_observation_revision
             && self.client_context.surrounding_text_supported
             && !self.client_context.surrounding_text_callback_observed
-            && self.content_allows_text_assistance()
+            && !self.content_is_sensitive()
             && self.context_token.as_ref() == Some(&receipt.target_token)
             && self
                 .context_admission
                 .as_ref()
                 .is_some_and(|admission| admission.revalidate(&receipt.target_token))
+    }
+
+    fn current_full_external_prefix(&self) -> Option<String> {
+        self.client_context
+            .surrounding_text_snapshot
+            .as_ref()
+            .filter(|snapshot| {
+                !snapshot.has_selection()
+                    && snapshot.cursor_pos as usize == snapshot.text.chars().count()
+            })
+            .and_then(|snapshot| snapshot.text.strip_suffix(&self.committed_tail.buffer))
+            .map(str::to_owned)
     }
 
     pub(super) fn clear_identity_bound_exact_manual_toggle_authority(&mut self) {
@@ -767,22 +780,23 @@ impl LayIbusEngine {
         {
             return false;
         }
-        if !(self.current_external_snapshot_agrees_with_owned_tail()
+        let current_snapshot_is_exact = self.current_external_snapshot_agrees_with_owned_tail();
+        if !(current_snapshot_is_exact
             || self.inherited_exact_manual_snapshot_agrees_with_owned_tail())
         {
             self.clear_identity_bound_exact_manual_toggle_authority();
             return false;
         }
-        let observed_external_prefix = self
-            .client_context
-            .surrounding_text_snapshot
-            .as_ref()
-            .filter(|snapshot| {
-                !snapshot.has_selection()
-                    && snapshot.cursor_pos as usize == snapshot.text.chars().count()
-            })
-            .and_then(|snapshot| snapshot.text.strip_suffix(&self.committed_tail.buffer))
-            .map(str::to_owned);
+        // Retain the full external context from the same validated source
+        // proof. An inherited receipt is consumed below without fabricating
+        // a target SSI or changing its observation revision.
+        let observed_external_prefix = if current_snapshot_is_exact {
+            self.current_full_external_prefix()
+        } else {
+            self.exact_manual_target_snapshot
+                .as_ref()
+                .and_then(|receipt| receipt.source.observed_external_prefix.clone())
+        };
         let source_token = self
             .context_admission
             .as_ref()
@@ -836,6 +850,7 @@ impl LayIbusEngine {
         advance_suppression_revision(&mut state);
         self.committed_tail.autocorrect_suppression = Some(suppression);
         self.exact_manual_target_snapshot = None;
+        self.client_context.native_replay_progress = None;
         drop(state);
         self.invalidate_input_frame_background_work();
         self.committed_tail.pending_completion_learning = None;
@@ -865,6 +880,79 @@ impl LayIbusEngine {
                 .flatten()
         });
         (local, shared)
+    }
+
+    pub(super) fn acknowledge_owned_space_tail(
+        &mut self,
+        replay: Option<&ExactManualToggleSuppression>,
+    ) -> Result<Option<ExactManualToggleSuppression>, ()> {
+        if !self.committed_tail.buffer.ends_with(' ')
+            || replay.is_some_and(|scope| {
+                self.exact_replay_reset_provenance(true).as_ref() != Some(scope)
+                    && self.completed_exact_replay_boundary_provenance().as_ref() != Some(scope)
+            })
+        {
+            return Err(());
+        }
+        let acknowledged_replay = if let Some(scope) = replay {
+            let Some(word) = scope.replacement.strip_suffix(' ') else {
+                return Err(());
+            };
+            let mut acknowledged = scope.clone();
+            acknowledged.replacement = format!("{word}\u{a0}");
+            let Some(prefix) = scope.observed_external_prefix.as_deref() else {
+                return Err(());
+            };
+            let expected = format!(
+                "{prefix}{}{}",
+                scope.unchanged_prefix, acknowledged.replacement
+            );
+            if !self
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(|snapshot| {
+                    snapshot.text == expected
+                        && !snapshot.has_selection()
+                        && snapshot.cursor_pos as usize == expected.chars().count()
+                })
+            {
+                return Err(());
+            }
+            Some(acknowledged)
+        } else {
+            None
+        };
+        let Ok(mut shared) = self.shared.lock() else {
+            return Err(());
+        };
+        if !self.owns_shared_context_state(&shared)
+            || shared.active_path.as_deref() != Some(self.path.as_str())
+            || shared.handoff_tail_epoch != self.committed_tail.epoch
+            || shared.handoff_tail_buffer != self.committed_tail.buffer
+            || replay.is_some_and(|scope| {
+                shared.autocorrect_suppression.as_ref()
+                    != Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+            })
+        {
+            return Err(());
+        }
+        // Same witnessed Space effect, same epoch. Only its first exact client
+        // acknowledgment changes the stored surface. A completed replay also
+        // requires the full external prefix and both matching scope copies.
+        self.committed_tail.buffer.pop();
+        self.committed_tail.buffer.push('\u{a0}');
+        shared
+            .handoff_tail_buffer
+            .clone_from(&self.committed_tail.buffer);
+        if let Some(acknowledged) = acknowledged_replay.as_ref() {
+            shared.autocorrect_suppression =
+                Some(AutocorrectSuppression::ExactReplay(acknowledged.clone()));
+            self.committed_tail.autocorrect_suppression =
+                Some(AutocorrectSuppression::ExactReplay(acknowledged.clone()));
+            advance_suppression_revision(&mut shared);
+        }
+        Ok(acknowledged_replay)
     }
 
     pub(super) fn bind_exact_replay_external_prefix_from_snapshot(&mut self) {
@@ -966,7 +1054,49 @@ impl LayIbusEngine {
             && self.exact_replay_scope_is_current_except_expiry(scope)
     }
 
+    // Failure-only metadata: this cannot admit or preserve a replay. Call before
+    // revocation, after the existing predicate has already rejected the event.
+    fn trace_exact_replay_rejection(&self, scope: &ExactManualToggleSuppression, reason: &str) {
+        if !super::trace::enabled() {
+            return;
+        }
+        let distance = self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize;
+        let shared = self.shared.lock().ok().map(|state| {
+            (
+                self.owns_shared_context_state(&state),
+                state.active_path.as_deref() == Some(self.path.as_str()),
+                state.autocorrect_suppression.as_ref()
+                    == Some(&AutocorrectSuppression::ExactReplay(scope.clone())),
+                state.handoff_tail_epoch == self.committed_tail.epoch,
+                state.handoff_tail_buffer == self.committed_tail.buffer,
+            )
+        });
+        super::trace::record(format!(
+            "{{\"kind\":\"ibus_exact_replay_rejection\",\"reason\":\"{reason}\",\"distance\":{distance},\"delete_chars\":{},\"target_chars\":{},\"source_token_present\":{},\"expires_current\":{},\"path_matches\":{},\"lease_matches\":{},\"layout_matches\":{},\"live_composition\":{},\"surrounding_supported\":{},\"sensitive\":{},\"composition_empty\":{},\"selection\":{},\"tail_matches\":{},\"shared_lock\":{},\"shared_owner\":{},\"shared_path\":{},\"shared_scope\":{},\"shared_epoch\":{},\"shared_tail\":{}}}",
+            scope.original_suffix.chars().count(),
+            scope.replacement.chars().count(),
+            scope.source_token.is_some(),
+            Instant::now() <= scope.expires_at,
+            scope.path == self.path,
+            scope.owner_lease_identity == self.client_context.runtime_owner_lease_identity,
+            scope.target_layout_is_ru == self.layout_gesture.layout_is_ru,
+            self.live_composition_enabled(),
+            self.client_context.surrounding_text_supported,
+            self.content_is_sensitive(),
+            self.composition.buffer.is_empty(),
+            self.client_context.surrounding_text_snapshot.as_ref().is_some_and(|snapshot| snapshot.has_selection()),
+            Self::exact_replay_expected_tail(scope, distance).as_deref() == Some(self.committed_tail.buffer.as_str()),
+            shared.is_some(),
+            shared.is_some_and(|state| state.0),
+            shared.is_some_and(|state| state.1),
+            shared.is_some_and(|state| state.2),
+            shared.is_some_and(|state| state.3),
+            shared.is_some_and(|state| state.4),
+        ));
+    }
+
     fn revoke_exact_replay_scope(&mut self, scope: &ExactManualToggleSuppression) {
+        self.client_context.native_replay_progress = None;
         self.invalidate_input_frame_background_work();
         self.committed_tail.pending_completion_learning = None;
         self.client_context.surrounding_text_snapshot = None;
@@ -995,6 +1125,19 @@ impl LayIbusEngine {
         scope: &ExactManualToggleSuppression,
         append: Option<char>,
     ) -> bool {
+        if let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() {
+            let deletes = scope.original_suffix.chars().count() as u64;
+            self.client_context.native_replay_progress =
+                (self.committed_tail.epoch.wrapping_sub(scope.epoch) >= deletes
+                    && self.exact_replay_contains_prior_snapshot(snapshot))
+                .then(|| crate::window_interaction::NativeReplayProgressReceipt {
+                    scope: scope.clone(),
+                    snapshot: snapshot.clone(),
+                    observation_revision: self.client_context.surrounding_observation_revision,
+                    focus_serial: self.client_context.focus_serial,
+                    layout_generation: self.layout_gesture.layout_generation,
+                });
+        }
         self.invalidate_input_frame_background_work();
         self.committed_tail.pending_completion_learning = None;
         self.client_context.surrounding_text_snapshot = None;
@@ -1007,6 +1150,7 @@ impl LayIbusEngine {
         }
         self.exact_replay_tail_change_quarantined = true;
         if !self.publish_tail_handoff() || !self.exact_replay_scope_is_current(scope) {
+            self.trace_exact_replay_rejection(scope, "mirror_transition");
             self.revoke_exact_replay_scope(scope);
             return false;
         }
@@ -1021,6 +1165,17 @@ impl LayIbusEngine {
                 .count()
                 .saturating_add(scope.replacement.chars().count())
             && self.exact_replay_scope_is_current_except_expiry(scope)
+    }
+
+    pub(super) fn spent_completed_exact_replay_scope_is_current(&self) -> bool {
+        let (Some(local), Some(shared)) = self.exact_replay_scope_pair() else {
+            return false;
+        };
+        local == shared
+            && local.source_token.is_none()
+            && local.observed_external_prefix.is_some()
+            && self.exact_replay_scope_is_current(&local)
+            && self.exact_replay_scope_is_completed(&local)
     }
 
     pub(super) fn exact_replay_reset_provenance(
@@ -1045,6 +1200,67 @@ impl LayIbusEngine {
         Some(local)
     }
 
+    pub(super) fn completed_exact_replay_boundary_provenance(
+        &self,
+    ) -> Option<ExactManualToggleSuppression> {
+        let (Some(local), Some(shared)) = self.exact_replay_scope_pair() else {
+            return None;
+        };
+        let source = local.source_token.as_deref()?;
+        if local != shared
+            || local.observed_external_prefix.is_none()
+            || !self.exact_replay_scope_is_current(&local)
+            || !self.exact_replay_scope_is_completed(&local)
+            || !self
+                .context_admission
+                .as_ref()?
+                .completed_exact_replay_boundary_is_current(
+                    source,
+                    self.context_token.as_ref()?,
+                    local.epoch,
+                    self.committed_tail.epoch,
+                    local.original_suffix.chars().count() + local.replacement.chars().count(),
+                )
+        {
+            return None;
+        }
+        Some(local)
+    }
+
+    pub(super) fn completed_exact_replay_target_advances(
+        &self,
+        previous: &super::engine::SurroundingTextSnapshot,
+        current: &super::engine::SurroundingTextSnapshot,
+    ) -> bool {
+        let Some(replay) = self
+            .completed_exact_replay_boundary_provenance()
+            .or_else(|| self.exact_replay_reset_provenance(true))
+        else {
+            return false;
+        };
+        let Some(external_prefix) = replay.observed_external_prefix.as_deref() else {
+            return false;
+        };
+        let prefix = format!("{external_prefix}{}", replay.unchanged_prefix);
+        let expected = format!("{prefix}{}", replay.replacement);
+        let prefix_chars = prefix.chars().count();
+        let is_target_surface = |surface: &super::engine::SurroundingTextSnapshot| {
+            !surface.has_selection()
+                && surface.text.starts_with(&prefix)
+                && expected.starts_with(&surface.text)
+                && surface.cursor_pos as usize >= prefix_chars
+                && surface.cursor_pos as usize <= surface.text.chars().count()
+        };
+        // Two actual adjacent observations can explain text overtaking its
+        // caret. An unchanged body or a backwards caret supplies no such proof.
+        // This recognizes only inert progress, never a final receipt or range.
+        is_target_surface(previous)
+            && is_target_surface(current)
+            && current.text.len() > previous.text.len()
+            && current.text.starts_with(&previous.text)
+            && current.cursor_pos >= previous.cursor_pos
+    }
+
     pub(super) fn consume_exact_replay_reset_provenance(
         &mut self,
         scope: &ExactManualToggleSuppression,
@@ -1066,11 +1282,13 @@ impl LayIbusEngine {
         let spent = AutocorrectSuppression::ExactReplay(spent);
         state.autocorrect_suppression = Some(spent.clone());
         self.committed_tail.autocorrect_suppression = Some(spent);
+        self.client_context.native_replay_progress = None;
         advance_suppression_revision(&mut state);
         true
     }
 
     fn retire_completed_exact_replay(&mut self, scope: &ExactManualToggleSuppression) {
+        self.client_context.native_replay_progress = None;
         if self.committed_tail.autocorrect_suppression.as_ref()
             == Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
         {
@@ -1119,7 +1337,6 @@ impl LayIbusEngine {
         let distance = self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize;
         let complete_distance = deletes.saturating_add(replacements);
         if snapshot.has_selection()
-            || snapshot.cursor_pos as usize != snapshot.text.chars().count()
             || distance > complete_distance
             || (distance < complete_distance && Instant::now() > scope.expires_at)
             || !self.exact_replay_scope_is_current_except_expiry(scope)
@@ -1138,6 +1355,23 @@ impl LayIbusEngine {
         else {
             return false;
         };
+        let raw_chars = snapshot.text.chars().count();
+        if snapshot.cursor_pos as usize != raw_chars {
+            // Firefox can expose the last already observed replacement
+            // character before advancing its caret. Keep only inert replay
+            // provenance, never a word or an edit range. The character on the
+            // right must belong to replacement, not original/external text.
+            return distance > deletes
+                && scope.observed_external_prefix.is_some()
+                && snapshot.cursor_pos.checked_add(1).map(|n| n as usize) == Some(raw_chars)
+                && relative_text
+                    .strip_prefix(&scope.unchanged_prefix)
+                    .is_some_and(|suffix| {
+                        !suffix.is_empty()
+                            && suffix.chars().count() <= distance - deletes
+                            && scope.replacement.starts_with(suffix)
+                    });
+        }
         let relative_chars = relative_text.chars().count();
         let shortest_source = scope.original_tail.chars().count() - distance.min(deletes);
         relative_text.starts_with(&scope.unchanged_prefix)
@@ -1163,6 +1397,7 @@ impl LayIbusEngine {
             return ExactReplayPress::Inactive;
         };
         if local.as_ref() != Some(&scope) || shared.as_ref() != Some(&scope) {
+            self.trace_exact_replay_rejection(&scope, "scope_pair");
             self.revoke_exact_replay_scope(&scope);
             return ExactReplayPress::Rejected;
         }
@@ -1174,11 +1409,13 @@ impl LayIbusEngine {
             return ExactReplayPress::Inactive;
         }
         if !self.exact_replay_scope_is_current(&scope) {
+            self.trace_exact_replay_rejection(&scope, "scope_current");
             self.revoke_exact_replay_scope(&scope);
             return ExactReplayPress::Rejected;
         }
 
         if super::protocol::has_command_modifier(state) {
+            self.trace_exact_replay_rejection(&scope, "command_modifier");
             self.revoke_exact_replay_scope(&scope);
             return ExactReplayPress::Rejected;
         }
@@ -1194,6 +1431,7 @@ impl LayIbusEngine {
                 .map(Some)
         };
         let Some(append) = append else {
+            self.trace_exact_replay_rejection(&scope, "unexpected_key");
             self.revoke_exact_replay_scope(&scope);
             return ExactReplayPress::Rejected;
         };
@@ -1362,6 +1600,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
+        self.client_context.native_replay_progress = None;
         if let Some(scope) = self.context_word_scope.as_mut() {
             scope.forget_observed_first_word();
         }
@@ -1468,6 +1707,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn clear_autocorrect_suppression_handoff(&mut self) {
+        self.client_context.native_replay_progress = None;
         let local_suppression = self.committed_tail.autocorrect_suppression.take();
         let Ok(mut state) = self.shared.lock() else {
             return;

@@ -35,6 +35,7 @@ pub(crate) fn await_same_gesture_exact_receipt(
 
 type VisibleTailV2Reply = (String, String, bool, u64, String);
 type VisibleTailV3Reply = (String, String, bool, u64, String, String);
+type VisibleTailV4Reply = (String, String, bool, u64, String, String, bool);
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ImeDelegatedTailLease {
@@ -42,9 +43,41 @@ pub(crate) struct ImeDelegatedTailLease {
     initial_layout_is_ru: bool,
     source_path: String,
     exact_focus_receipt: Option<String>,
+    personalization: Option<bool>,
 }
 
 impl ImeDelegatedTailLease {
+    pub(crate) fn allows_personalization(&self) -> bool {
+        self.personalization == Some(true)
+    }
+
+    fn privacy_safe_error(&self, error: String) -> String {
+        if self.allows_personalization() {
+            error
+        } else {
+            "exact IME tail lease rejected; payload retention disabled".to_string()
+        }
+    }
+
+    fn current_v3_reply(&self) -> Result<VisibleTailV3Reply, String> {
+        let Some(expected) = self.personalization else {
+            return visible_tail_v3();
+        };
+        let reply: VisibleTailV4Reply = call_ime_noarg("VisibleTailV4")?;
+        self.bound_v4_reply(reply, expected)
+    }
+
+    fn bound_v4_reply(
+        &self,
+        reply: VisibleTailV4Reply,
+        expected: bool,
+    ) -> Result<VisibleTailV3Reply, String> {
+        if reply.6 != expected || self.personalization != Some(expected) {
+            return Err("exact IME tail retention policy changed".to_string());
+        }
+        Ok(project_visible_tail_v4(reply).0)
+    }
+
     pub(crate) fn expected_suffix(&self) -> &str {
         &self.snapshot.expected_suffix
     }
@@ -63,15 +96,20 @@ impl ImeDelegatedTailLease {
 
     pub(crate) fn validate_current(&self, backspaces: u32) -> Result<(), String> {
         if let Some(expected_focus_receipt) = self.exact_focus_receipt.as_deref() {
-            return validate_delegated_tail_v3_reply(
-                &self.snapshot,
-                &self.source_path,
-                expected_focus_receipt,
-                backspaces,
-                visible_tail_v3()?,
-                false,
-                self.initial_layout_is_ru,
-            );
+            return self
+                .current_v3_reply()
+                .and_then(|reply| {
+                    validate_delegated_tail_v3_reply(
+                        &self.snapshot,
+                        &self.source_path,
+                        expected_focus_receipt,
+                        backspaces,
+                        reply,
+                        false,
+                        self.initial_layout_is_ru,
+                    )
+                })
+                .map_err(|error| self.privacy_safe_error(error));
         }
         validate_delegated_tail_reply(
             &self.snapshot,
@@ -80,6 +118,7 @@ impl ImeDelegatedTailLease {
             false,
             self.initial_layout_is_ru,
         )
+        .map_err(|error| self.privacy_safe_error(error))
     }
 
     pub(crate) fn validate_after_controlled_layout_handoff(
@@ -88,7 +127,9 @@ impl ImeDelegatedTailLease {
         target_layout_is_ru: bool,
     ) -> Result<String, String> {
         if let Some(expected_focus_receipt) = self.exact_focus_receipt.as_deref() {
-            let reply = visible_tail_v3()?;
+            let reply = self
+                .current_v3_reply()
+                .map_err(|error| self.privacy_safe_error(error))?;
             let target_path = reply.4.clone();
             validate_delegated_tail_v3_reply(
                 &self.snapshot,
@@ -98,18 +139,14 @@ impl ImeDelegatedTailLease {
                 reply,
                 true,
                 target_layout_is_ru,
-            )?;
+            )
+            .map_err(|error| self.privacy_safe_error(error))?;
             return Ok(target_path);
         }
         let reply = visible_tail_v2()?;
         let target_path = reply.4.clone();
-        validate_delegated_tail_reply(
-            &self.snapshot,
-            backspaces,
-            reply,
-            true,
-            target_layout_is_ru,
-        )?;
+        validate_delegated_tail_reply(&self.snapshot, backspaces, reply, true, target_layout_is_ru)
+            .map_err(|error| self.privacy_safe_error(error))?;
         Ok(target_path)
     }
 }
@@ -185,6 +222,28 @@ fn visible_tail_v3() -> Result<VisibleTailV3Reply, String> {
     call_ime_noarg("VisibleTailV3")
 }
 
+fn project_visible_tail_v4(reply: VisibleTailV4Reply) -> (VisibleTailV3Reply, bool) {
+    (
+        (reply.0, reply.1, reply.2, reply.3, reply.4, reply.5),
+        reply.6,
+    )
+}
+
+fn visible_tail_for_manual_replay() -> Result<(VisibleTailV3Reply, Option<bool>), String> {
+    match call_ime_noarg::<VisibleTailV4Reply>("VisibleTailV4") {
+        Ok(reply) => {
+            let (reply, permission) = project_visible_tail_v4(reply);
+            Ok((reply, Some(permission)))
+        }
+        // Older public IME versions still support conversion. Their unknown
+        // privacy cannot authorize text retention. Do not hide other errors.
+        Err(error) if error.contains("UnknownMethod") => {
+            visible_tail_v3().map(|reply| (reply, None))
+        }
+        Err(error) => Err(error),
+    }
+}
+
 pub(super) fn capture_delegated_tail_lease(
     expected_suffix: &str,
     backspaces: u32,
@@ -193,7 +252,23 @@ pub(super) fn capture_delegated_tail_lease(
 }
 
 pub(super) fn capture_committed_tail_replay() -> Result<ImeCommittedTailReplay, String> {
-    committed_tail_replay_from_v3_reply(visible_tail_v3()?)
+    let (reply, permission) = visible_tail_for_manual_replay()?;
+    committed_tail_replay_from_readout(reply, permission)
+}
+
+fn committed_tail_replay_from_readout(
+    reply: VisibleTailV3Reply,
+    permission: Option<bool>,
+) -> Result<ImeCommittedTailReplay, String> {
+    let mut replay = committed_tail_replay_from_v3_reply(reply).map_err(|error| {
+        if permission == Some(true) {
+            error
+        } else {
+            "exact IME tail capture rejected; payload retention disabled".to_string()
+        }
+    })?;
+    replay.lease.personalization = permission;
+    Ok(replay)
 }
 
 pub(super) fn wait_for_committed_tail_settlement(
@@ -205,14 +280,14 @@ pub(super) fn wait_for_committed_tail_settlement(
     }
     let deadline = Instant::now() + QUEUED_MANUAL_TOGGLE_SETTLEMENT_MAX;
     loop {
-        let reply = visible_tail_v3()?;
+        let (reply, _) = visible_tail_for_manual_replay()?;
         if committed_tail_is_settled(&reply, expected_tail, expected_layout_is_ru) {
             return Ok(());
         }
         if Instant::now() >= deadline {
             return Err(format!(
-                "queued manual toggle timed out waiting for exact committed tail: expected_tail={expected_tail:?} expected_layout_is_ru={expected_layout_is_ru} last={:?}",
-                (reply.0, reply.1, reply.2, reply.3, reply.4)
+                "queued manual toggle timed out waiting for exact committed tail: expected_chars={} expected_layout_is_ru={expected_layout_is_ru} last_source={} last_epoch={}",
+                expected_tail.chars().count(), reply.0, reply.3
             ));
         }
         std::thread::yield_now();
@@ -299,6 +374,7 @@ fn tail_lease_from_reply(
         initial_layout_is_ru,
         source_path,
         exact_focus_receipt: None,
+        personalization: None,
     })
 }
 
@@ -500,6 +576,26 @@ pub(super) fn cancel_exact_manual_toggle_suppression_v2(
         .map_err(|error| error.to_string())
 }
 
+pub(super) fn observed_ibus_engine() -> Result<String, String> {
+    observed_ibus_engine_on(&dbus_connection()?)
+}
+
+fn observed_ibus_engine_on(connection: &zbus::blocking::Connection) -> Result<String, String> {
+    let reply = connection
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "ObservedIbusEngine",
+            &(),
+        )
+        .map_err(|error| error.to_string())?;
+    reply
+        .body()
+        .deserialize::<String>()
+        .map_err(|error| error.to_string())
+}
+
 fn call_ime_noarg<T>(method: &str) -> Result<T, String>
 where
     T: DeserializeOwned + Type,
@@ -617,6 +713,96 @@ mod delegated_tail_tests {
             false,
         )
         .is_ok());
+    }
+
+    #[test]
+    fn exact_private_tail_keeps_conversion_but_never_upgrades_retention() {
+        for permission in [None, Some(false), Some(true)] {
+            let replay = committed_tail_replay_from_readout(
+                reply_v3(
+                    "passive:committed-tail",
+                    "prefix ghjdthrf ",
+                    19,
+                    "/engine/us",
+                    "field-a",
+                ),
+                permission,
+            )
+            .expect("valid exact manual source");
+            assert_eq!(replay.plan.replacement, "проверка ");
+            assert_eq!(
+                replay.lease.allows_personalization(),
+                permission == Some(true)
+            );
+            if let Some(expected) = permission {
+                for changed in [false, true] {
+                    let base = reply_v3(
+                        "passive:committed-tail",
+                        "prefix ghjdthrf ",
+                        19,
+                        "/engine/us",
+                        "field-a",
+                    );
+                    let current = (
+                        base.0,
+                        base.1,
+                        base.2,
+                        base.3,
+                        base.4,
+                        base.5,
+                        if changed { !expected } else { expected },
+                    );
+                    let bound = replay.lease.bound_v4_reply(current, expected);
+                    assert_eq!(bound.is_ok(), !changed);
+                    if let Ok(reply) = bound {
+                        assert!(validate_delegated_tail_v3_reply(
+                            &replay.lease.snapshot,
+                            replay.lease.expected_source_path(),
+                            "field-a",
+                            replay.plan.backspaces,
+                            reply,
+                            false,
+                            false,
+                        )
+                        .is_ok());
+                    }
+                }
+                let other_field = reply_v3(
+                    "passive:committed-tail",
+                    "prefix ghjdthrf ",
+                    19,
+                    "/engine/ru",
+                    "field-b",
+                );
+                let current = (
+                    other_field.0,
+                    other_field.1,
+                    true,
+                    other_field.3,
+                    other_field.4,
+                    other_field.5,
+                    expected,
+                );
+                let bound = replay.lease.bound_v4_reply(current, expected).unwrap();
+                assert!(
+                    validate_delegated_tail_v3_reply(
+                        &replay.lease.snapshot,
+                        replay.lease.expected_source_path(),
+                        "field-a",
+                        replay.plan.backspaces,
+                        bound,
+                        true,
+                        true,
+                    )
+                    .is_err(),
+                    "matching privacy cannot admit a different field"
+                );
+            }
+            let safe = replay
+                .lease
+                .privacy_safe_error("private sentinel".to_string());
+            assert_eq!(safe.contains("private sentinel"), permission == Some(true));
+        }
     }
 
     #[test]
@@ -785,5 +971,70 @@ mod delegated_tail_tests {
             "привет",
             false,
         ));
+    }
+}
+
+#[cfg(test)]
+mod observed_engine_rpc_tests {
+    use super::*;
+    struct Peer(std::sync::Arc<std::sync::Mutex<String>>);
+    #[zbus::interface(name = "io.github.radislabus_star.LayIme")]
+    impl Peer {
+        #[zbus(name = "ObservedIbusEngine")]
+        fn observed(&self) -> zbus::fdo::Result<String> {
+            let value = self.0.lock().unwrap().clone();
+            if value.is_empty() {
+                Err(zbus::fdo::Error::Failed("backend unavailable".into()))
+            } else {
+                Ok(value)
+            }
+        }
+    }
+    struct LegacyPeer;
+    #[zbus::interface(name = "io.github.radislabus_star.LayIme")]
+    impl LegacyPeer {
+        fn ping(&self) -> String {
+            "old-IME".into()
+        }
+    }
+    fn peer<T: zbus::object_server::Interface + Send + Sync + 'static>(
+        service: T,
+    ) -> (zbus::blocking::Connection, zbus::blocking::Connection) {
+        let (server_stream, client_stream) = std::os::unix::net::UnixStream::pair().unwrap();
+        let guid = zbus::Guid::generate();
+        let server = std::thread::spawn(move || {
+            zbus::blocking::connection::Builder::unix_stream(server_stream)
+                .server(guid)
+                .unwrap()
+                .p2p()
+                .serve_at(IME_DBUS_PATH, service)
+                .unwrap()
+                .build()
+                .unwrap()
+        });
+        let client = zbus::blocking::connection::Builder::unix_stream(client_stream)
+            .p2p()
+            .method_timeout(Duration::from_millis(250))
+            .build()
+            .unwrap();
+        (client, server.join().unwrap())
+    }
+    #[test]
+    fn client_reads_fresh_rpc_and_propagates_backend_error_and_disconnect() {
+        let value = std::sync::Arc::new(std::sync::Mutex::new("lay-ime-ru".to_string()));
+        let (client, _server) = peer(Peer(value.clone()));
+        assert_eq!(observed_ibus_engine_on(&client).unwrap(), "lay-ime-ru");
+        *value.lock().unwrap() = "lay-ime-us".into();
+        assert_eq!(observed_ibus_engine_on(&client).unwrap(), "lay-ime-us");
+        value.lock().unwrap().clear();
+        assert!(observed_ibus_engine_on(&client).is_err());
+        zbus::block_on(client.inner().clone().close()).unwrap();
+        assert!(observed_ibus_engine_on(&client).is_err());
+    }
+    #[test]
+    fn client_reports_old_ime_unknown_method() {
+        let (client, _server) = peer(LegacyPeer);
+        let error = observed_ibus_engine_on(&client).unwrap_err();
+        assert!(error.contains("UnknownMethod"), "{error}");
     }
 }

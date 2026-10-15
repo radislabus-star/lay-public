@@ -1,0 +1,377 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "decision": "KnownStart must not divert a live owned legacy word into a different manual text executor",
+  "recorded_at": "2026-10-13T06:07:34Z",
+  "status": "SOURCE_GREEN_REVIEW_COMPLETE_NATIVE_FAIL_NOT_PROMOTED",
+  "invariants": [
+    "C01",
+    "C02",
+    "C06",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "observed_native": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/H-chrome-decoder-diagnostic.json",
+    "remote_frozen": "decoder-diagnostic-frozen-1791871454180975840/RAW.json",
+    "scope": "Unchanged original Chrome normal functional actor, two fields and fixed15 plans per field",
+    "verdict": "FAIL_REPRODUCED",
+    "counts": {
+      "PASS": 16,
+      "FAIL": 10,
+      "BLOCKED": 4,
+      "total": 30
+    },
+    "first_transition": "KnownStart live legacy word -> IME_ACTIVE_COMPOSITION CommitText -> native layout sync ok:false -> Handled(targetUS) -> actual KEY_Z keyval122 decodedRU",
+    "factory_evidence": "CreateEngine ingress records no_live_acquisition and transfer_pending/passive during the direct legacy layout request",
+    "trace_completeness": "UNKNOWN",
+    "installed_laptop_changed": false,
+    "both_full_H_browser_verdicts": "FAIL"
+  },
+  "source_root_candidate": {
+    "owner": "src/bin/lay_ibus_engine/window_interaction/observation.rs::context_owns_active_preedit_manual_toggle",
+    "guard": "Only UnknownStart can select the existing verified-owned-preedit route; KnownStart is excluded even if exactly the same live legacy word is owned",
+    "consumer": "src/bin/lay_ibus_engine/shift.rs::manual_toggle_active_text_target_with_disposition",
+    "consequence": "The stronger KnownStart lineage takes CommitText plus a direct native layout request, rather than the existing local word/preedit/InputMode transaction",
+    "causality": "CONFIRMED_SOURCE_RED: real callback construction passes every other guard, then the real ManualToggle bridge emits CommitText",
+    "remaining_distinct_defect": "The legacy commit path reports the planned target even when its layout postcondition failed. Do not weaken native activation admission to hide this failure."
+  },
+  "causal_source_red": {
+    "recorded_at": "2026-10-13T06:28:37Z",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/I-causal-source-RED.json",
+    "remote_receipt": "i-known-preedit-1vkvb153/RESULT.json",
+    "fixture": "context_admission::adapter::tests::word_scope::residuals::td121_known_start_owned_preedit_uses_one_manual_word_mode",
+    "failed_effect": "CommitText at the real bridge output; all setup and retained guard assertions passed",
+    "scope": "One causal source fixture; not native acceptance",
+    "earlier_probe": "i-known-preedit-1sxorfh9/RESULT.json is NOT_EXECUTED: incorrect manifest module path filtered out the fixture, zero tests ran. Preserved and corrected without claiming RED."
+  },
+  "consequence_source_red": {
+    "recorded_at": "2026-10-13T06:43:06Z",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/I-consequence-source-RED.json",
+    "remote_receipt": "i-known-preedit-wpgzoyle/RESULT.json",
+    "counts": {
+      "PASS": 3,
+      "FAIL": 2,
+      "total": 5
+    },
+    "stale_space_effect": "Controlled dispatch bound to the actual preceding Space generation still invokes the old switch closure: (superseded=false, switches=1).",
+    "owner_loss_effect": "Actual adapter owner revocation during a suspended preedit output still returns Some(targetRU), LocalComplete.",
+    "correction": "Reuse existing background-work invalidation and latest-layout supersession before owned output. Revalidate the same complete owned-preedit grant after preedit and InputMode awaits; preserve indeterminate partial effects on loss, without fallback or rollback through a revoked owner.",
+    "test_boundary": "Dispatch closure is a controlled source probe, not a native switch or native acceptance. Failed real preedit transport, InputMode rollback, shared handoff loss, owner loss at both outputs and disabled-auto-switch behavior are separate controls."
+  },
+  "focused_source_green": {
+    "recorded_at": "2026-10-13T06:45:35Z",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/I-focused-source-GREEN.json",
+    "remote_receipt": "i-known-preedit-fsi9obv1/RESULT.json",
+    "counts": {
+      "PASS": 5,
+      "FAIL": 0,
+      "total": 5
+    },
+    "proof": "Eight real bridge gestures preserve whole prefix, cached receipt/revision, owner and factory profile; actual preedit/InputMode signals and next physical key/Backspace. Sixteen retained refusal guards, real preedit transport failure, failed InputMode rollback, shared handoff loss, adapter revocation at both output awaits, disabled-auto-switch and controlled preceding Space dispatch.",
+    "native_acceptance": "NOT_TESTED",
+    "full_source_gate": "PASS: final combined812/812 + fmt",
+    "code_review": "PASS: final9/10, two passes complete"
+  },
+  "options": [
+    {
+      "name": "Use the same verified owned legacy word route for KnownStart and UnknownStart",
+      "score": 9,
+      "selected": true,
+      "benefit": "One narrow owner-classification correction; reuse the existing preedit replacement, physical decoder and InputMode publication contract",
+      "limits": "Keep every real word/preedit/owner/selection/end-caret/sensitive/seal/atomic guard and exact-refresh-marker exclusion. Does not claim to repair Firefox marker clients or the separate intermittent off-caret receipt failure."
+    },
+    {
+      "name": "Move legacy direct layout activation onto the existing native acquisition transaction",
+      "score": 7,
+      "selected": false,
+      "benefit": "Addresses the wider legacy commit/activation mismatch",
+      "cost": "Larger output and lifecycle ordering change after a committed effect; requires its own measured source chain and native proof. Later stage, not a bypass around current admission."
+    },
+    {
+      "name": "Make the legacy response report a failed layout postcondition",
+      "score": 6,
+      "selected": false,
+      "benefit": "Removes the demonstrated false success",
+      "limit": "Does not make the intended one-gesture text/decoder/indicator operation work. Must preserve partial-effect reporting rather than claiming no text was changed."
+    }
+  ],
+  "minimal_plan": [
+    "Construct a causal KnownStart fixture through actual legacy native word/Space callbacks and real surrounding receipts; do not assign KnownStart or legacy ownership flags directly.",
+    "Prove that the second owned word has a current owner/token and a real published legacy preedit, yet takes the wrong manual path today. Keep complete prefix bytes and current client receipt/revision.",
+    "Require an actual ManualToggle bridge call to retain the existing preedit, publish target InputMode, produce the correct next physical letter and Backspace, and return the exact decoder/word after repeated pairs.",
+    "Run causal RED remotely before changing production. Only then remove the completeness-specific exclusion from the same live owned-preedit predicate; retain all other guards.",
+    "Establish every retained owned-preedit guard individually and auto_switch_layout=true before the causal bridge call. Add meaningful adverse controls for marker exclusion, stale owner/token, scope mismatch, selection, caret, sensitive content, false legacy ownership, dirty/display-only preview and foreign/reset lifecycle. Existing negative fixtures must remain unchanged.",
+    "Control failed preedit publication, failed tail handoff, failed InputMode publication and owner loss during output. Require truthful partial-effect errors, live-owner rollback where supported, and no completion or second executor after uncertainty.",
+    "Control a delayed automatic-layout completion from the preceding real Space. The newly selected local route must supersede stale work through the existing shared generation mechanism; do not assume the old direct layout-sync cancellation runs on this route.",
+    "Retain UnknownStart positives and separately prove disabled-auto-switch behavior. Inspect actual IBus UpdateProperty InputMode effects as well as decoder state.",
+    "Run remote focused/full IME and affected source contracts; context-free code review max2 passes; build/stage only private remote binaries after source GREEN.",
+    "Verify both unchanged60+6+150 browser scopes with speed. Retain all preceding FAIL/BLOCKED/NOT_TESTED, and record actual route selection separately from the unchanged IBus delivery transport."
+  ],
+  "route_specific_consequence_preflight": {
+    "first_failed_transition": "Live real legacy preedit with a proven start is excluded solely by the completeness discriminator; causal RED must demonstrate all other guards and the real downstream effect before production edits.",
+    "authority": "The existing reducer, word scope, admission token, authorized edit, verifier and owned-preedit executor remain owners. KnownStart becomes eligible only while the same complete live-ownership conjunction holds. Exact-refresh marker, selection, sensitive content, sealing and speculative output exclusions remain.",
+    "pending_work": "Manual word mode must dominate older automatic layout work from Space. replace_verified_owned_preedit currently cancels display generation but does not execute the direct layout-sync supersession helper. This is an explicit proof gate; use the existing shared cancellation/generation only if the controlled fixture shows the missing effect.",
+    "latency_and_allocation": "Selected words avoid a synchronous native source request and retain the existing bounded preedit replacement allocation. No new timers, retries, workers, queues or cache are planned. Improvement is a hypothesis until native measured, missing and required samples are recorded.",
+    "learning": "Use the existing manual-word autocorrect suppression. Preserve current learning and acceptance contracts; no dictionary, ranker, model, training data or fixture-specific runtime condition changes.",
+    "compatibility": "UnknownStart retains the same executor; genuinely owned KnownStart gains it. Disabled auto-switch and exact-refresh marker clients retain their existing decisions. Native activation/source ownership and IBus transport are unchanged, while eligible manual route selection intentionally changes.",
+    "failure_and_partial_effects": "Preedit output can precede a handoff or InputMode failure. Preserve CursorOrPreedit partial-effect reporting, do not return Handled or retry with CommitText after uncertainty, and never restore through a revoked owner. A failed InputMode publication uses the existing live-owner rollback; failure controls must establish exact behavior rather than assuming atomic output.",
+    "rollback_and_promotion": "Keep private remote candidate bytes and all immutable failed receipts. No installed laptop change. Reject a source or native regression and retain the preceding candidate; promotion requires the full source gate, independent review and both unchanged browser proof scopes."
+  },
+  "transport_changed": false,
+  "coverage_limits": {
+    "nonblocking_inherited_executor_edge": "Best-effort rollback after failed InputMode checks ownership before rollback output, then updates the original internal buffers after its await without checking that output result or ownership again. Unchanged from H; independent code review classified it nonblocking for I.",
+    "not_tested": [
+      "Failed rollback transport",
+      "Owner revocation during rollback output"
+    ],
+    "scope": "I proves revocation at the two forward outputs and successful live-owner InputMode rollback. Do not report complete rollback-failure coverage; discuss this inherited edge as a separate later task."
+  },
+  "planned_route_selection": "Existing verified owned-preedit route gains genuinely owned KnownStart words; no new text executor or native source-switch initiator",
+  "runtime_authority_changed": false,
+  "native_acceptance": "FAIL_BOTH_FULL_SCOPES_NOT_PROMOTED",
+  "promotion_gate": "Source semantics and native receipts must both pass; this plan and the earlier diagnostics are not acceptance",
+  "final_source_gate": {
+    "recorded_at": "2026-10-13T08:40:18Z",
+    "receipt": "/home/ubu/.cache/lay/development/run-_imkjucb/RESULT.json",
+    "remote_gate": "/home/e/projects/lay-development-runner/run-WPGb6I",
+    "archive_sha256": "6b2b96f7492f9dbca282e730c329063dbaad9d6aac5271e6558834a5d2132a56",
+    "counts": {
+      "PASS": 812,
+      "FAIL": 0,
+      "total": 812
+    },
+    "fmt": "PASS",
+    "scope": "761 IME tests plus51 tests from six affected architecture contracts; source evidence, not native acceptance",
+    "negative_fixture": "Uses the normal runtime manual producer; architecture mint guard was not changed."
+  },
+  "independent_review": {
+    "plan": {
+      "passes": 2,
+      "final_score": 9
+    },
+    "code": {
+      "passes": 2,
+      "final_score": 9
+    },
+    "material_blockers": [],
+    "inherited_rollback_limit": "Retained in coverage_limits; separate later task, no extra production change for I."
+  },
+  "private_build": {
+    "recorded_at": "2026-10-13T08:47:53Z",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/I-private-build.json",
+    "build_seconds": 182.14321361698967,
+    "gate": "/home/e/projects/lay-development-runner/run-WPGb6I",
+    "archive_sha256": "6b2b96f7492f9dbca282e730c329063dbaad9d6aac5271e6558834a5d2132a56",
+    "ime_sha256": "e84d497cb9416772a3e0abb8a48f4b80da3bbc27c55032f1fdf8c3ce216384cf",
+    "daemon_sha256": "52a92c557b7833721570158f06b7ea9ee7b72d60dad5affa109d6221e110d767",
+    "stage": "PRIVATE_REMOTE_ONLY",
+    "installed_laptop_changed": false
+  },
+  "native_chrome": {
+    "recorded_at": "2026-10-13T09:03:27Z",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativee84d4-chrome-proof.json",
+    "raw_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/nativee84d4-chrome-raw-1791882005188000210/RAW.json",
+    "raw_sha256": "b4aafb20e462ec8d774d13657f3d8d7020b89c15d54fa891e92b543758f9d7dd",
+    "verdict": "FAIL",
+    "counts": {
+      "standard": {
+        "PASS": 38,
+        "BLOCKED": 2,
+        "FAIL": 20
+      },
+      "panel": {
+        "PASS": 6
+      },
+      "functional": {
+        "PASS": 105,
+        "FAIL": 33,
+        "BLOCKED": 12
+      }
+    },
+    "comparison_with_H": "9 prefix FAIL->PASS (fields1,3,4,5,6,7,8,9,10); no lost PASS or other status changes",
+    "speed": {
+      "standard": {
+        "double_shift": {
+          "required": 420,
+          "measured": 266,
+          "missing": 154,
+          "p50_ms": 93.61474899947643,
+          "p95_ms": 111.84700499475002,
+          "max_ms": 125.45257198810577,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "panel": {
+        "double_shift": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "p50_ms": 91.46158749610186,
+          "p95_ms": 108.77920399606228,
+          "max_ms": 109.1825219988823,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "functional": {
+        "double_shift": {
+          "required": 210,
+          "measured": 138,
+          "missing": 72,
+          "p50_ms": 90.5942885056138,
+          "p95_ms": 125.57654900848866,
+          "max_ms": 132.90038099884987,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "space": {
+          "required": 50,
+          "measured": 38,
+          "missing": 12,
+          "p50_ms": 19.15445800125599,
+          "p95_ms": 22.78440399467945,
+          "max_ms": 24.868310004472733,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "tab": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "selection": {
+          "required": 10,
+          "measured": 10,
+          "missing": 0,
+          "p50_ms": 19.660867005586624,
+          "p95_ms": 21.67605099081993,
+          "max_ms": 21.67605099081993,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      }
+    },
+    "scope": "H and I full native Chrome receipts remain FAIL; nine independent fields improved, not universal acceptance."
+  },
+  "native_firefox": {
+    "recorded_at": "2026-10-13T09:20:56Z",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativee84d4-firefox-proof.json",
+    "raw_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/nativee84d4-firefox-raw-1791883154511052960/RAW.json",
+    "raw_sha256": "f014e4f0fb30281bc597ef014a439532250b0c3eb986b5fa193843479cb372f6",
+    "verdict": "FAIL",
+    "counts": {
+      "standard": {
+        "PASS": 55,
+        "FAIL": 3,
+        "BLOCKED": 1,
+        "NOT_TESTED": 1
+      },
+      "panel": {
+        "PASS": 6
+      },
+      "functional": {
+        "PASS": 87,
+        "FAIL": 44,
+        "BLOCKED": 19
+      }
+    },
+    "comparison_with_H": {
+      "standard_gained_pass": 16,
+      "standard_lost_pass": 3,
+      "lost_cells": [
+        "normal active6",
+        "normal space2",
+        "normal space8"
+      ],
+      "panel_changes": 0,
+      "functional_gained_pass": 1,
+      "functional_lost_pass": 0
+    },
+    "causality": "UNKNOWN for Firefox changed statuses; neither native aggregate improvement nor prior intermittent PASS proves a systemic repair or source regression. The three lost PASS remain blocking evidence, not dismissed.",
+    "speed": {
+      "standard": {
+        "double_shift": {
+          "required": 420,
+          "measured": 395,
+          "missing": 25,
+          "p50_ms": 109.53592000901699,
+          "p95_ms": 120.60546900331974,
+          "max_ms": 135.59421099722385,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "panel": {
+        "double_shift": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "p50_ms": 108.23655650764704,
+          "p95_ms": 120.3365720063448,
+          "max_ms": 122.41329199075699,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "functional": {
+        "double_shift": {
+          "required": 210,
+          "measured": 100,
+          "missing": 110,
+          "p50_ms": 111.79159098863602,
+          "p95_ms": 149.46385599672794,
+          "max_ms": 154.67598600685596,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "space": {
+          "required": 50,
+          "measured": 37,
+          "missing": 13,
+          "p50_ms": 17.56428398191929,
+          "p95_ms": 23.98733699321747,
+          "max_ms": 24.591073006391525,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "tab": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "selection": {
+          "required": 10,
+          "measured": 1,
+          "missing": 9,
+          "p50_ms": 17.075286999344826,
+          "p95_ms": 17.075286999344826,
+          "max_ms": 17.075286999344826,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      }
+    },
+    "closure": "Controller STOP exit75 due one surviving private lay-l1.1-serve descendant. Exact PID1073433/t7964589/cgroup/comm/UID verified and pidfd terminated. All bound PIDticks gone and scope empty before immutable freeze; not a native PASS."
+  },
+  "next_investigation": {
+    "first_shared_observed_failure": "normal active6 and space2: successful native transfer installs UnknownStart, actual end-caret surrounding callbacks follow, bridge live but ManualToggle allowed=false. normal space8 also loses manual authority after fresh7/7 receipt. Status3/false is DelegateExactImeTail, not a target-layout report; no wrong target is proved by this RPC flag.",
+    "trace_boundary": "Per-case bounded512000-byte trace tails have one malformed leading line each; selected ordered suffix proves the reported events only, not complete wire/payload. Text-value preservation across transfer remains a hypothesis until a causal source test.",
+    "planned": "Inspect existing manual permission/transfer/handoff/receipt owners; causal source RED before any new production edit. Keep invariant/refresh/ownership guards.",
+    "corrected_interpretation": "2026-10-13T09:27:55Z: src/manual_toggle.rs:92-101 defines status3 target flag false as a fixed delegate placeholder. Earlier repeated-US inference from that flag is withdrawn; inspect daemon plan/layout transaction before claiming a wrong target."
+  }
+}

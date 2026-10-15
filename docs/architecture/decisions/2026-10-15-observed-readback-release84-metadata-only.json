@@ -1,0 +1,123 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "INSTALLED_RELEASE84_IDENTITIES_VERIFIED_INPUT_LOGIC_PROOF_COMPLETE",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "decision": "Publish the verified engine-readback change as1.0.84 using the existing three-core-binary and extension metadata release transaction. Version fields manually synchronized; do not invoke broad bump-lay-version.sh because it rebuilds model packs/restarts model services outside this task.",
+  "source_proof": {
+    "tests": "1134/1134 PASS, localrun-3recp7ey,remote run-dWWz50",
+    "archive_sha256": "af0d9b36e84e9612b54708a485c2df608fb0a82afeedd7a6135fd20ccea67d4f",
+    "source_review": "2passes final9/10",
+    "harness_review": "2passes final9/10"
+  },
+  "native_proof": {
+    "phase": "READV",
+    "version_tested": "1.0.83 input logic",
+    "firefox": {
+      "PASS": 170,
+      "FAIL": 27,
+      "BLOCKED": 19
+    },
+    "chrome": {
+      "PASS": 179,
+      "FAIL": 24,
+      "BLOCKED": 13
+    },
+    "total": {
+      "PASS": 349,
+      "FAIL": 51,
+      "BLOCKED": 32,
+      "NOT_TESTED": 0
+    },
+    "all_prior349PASS_retained": true,
+    "all216IDs_compared_with": "both originalPLAIN and identical-harnessPLAINV",
+    "difference": "Chrome functional/normal/undo/field2 BLOCKED setup→FAIL Space; no baselinePASS loss, no regression/repair cause claimed",
+    "privacy": "bothPLAINV/READV ChromePASS_VISITED_LAY_SINK_ROOTS normalpositivecontrol/privateunchanged"
+  },
+  "latency": {
+    "clock": "evdev-write-return to AT-SPI exact target; not kernel release or paint",
+    "firefox": {
+      "n": 420,
+      "missing": 0,
+      "median_before_after_ms": [
+        107.2536169886589,
+        98.50678798556328
+      ],
+      "p95_before_after_ms": [
+        118.25892400741577,
+        111.11212998628616
+      ],
+      "paired_gain_ms": 8.235193505883217
+    },
+    "chrome": {
+      "n": 406,
+      "required": 420,
+      "missing": 14,
+      "median_before_after_ms": [
+        92.16139149665833,
+        83.30636598169804
+      ],
+      "p95_before_after_ms": [
+        112.63088798522949,
+        100.0731920003891
+      ],
+      "paired_gain_ms": 9.801069974899292
+    }
+  },
+  "metadata_only_rule": "No functional retest for version-only surfaces. Builder must prove all Rust hashes, dependencies, extension logic and build features identical to native-tested predecessor; build new complete core set, verify CLI84 and SHA manifest, then install/snapshot/proc parity. This does not claim a new physical84 input run.",
+  "tested_predecessor": {
+    "ime": "f633f6aac492817031b025c02c8746a27eac6541f345ea60873415a4b52fedc3",
+    "daemon": "ba6d9d77163a13284c3540481806c8b710570160bb8e571164309014a318a19e"
+  },
+  "closure": {
+    "raw_guard_exit": 75,
+    "status": "RECOVERED_OWNED_CLOSURE_ZERO_INPUT_NOT_CHANGED_TO_GUARD_PASS",
+    "cause": "supervisorSIGTERM interrupted guestfinally; privateL1.1 remained. systemd249 supports--kill-who, guard uses--kill-whom; compatibility debt recorded",
+    "recovery": "pidfd SIGTERM only ownedUID1000 PID3971292/starttick23111169/exeSHA+private socket+exactcgroup verified; allgone/CGempty/VT1/finite seatclosed. No replayedtests.",
+    "receipt": "RUN/PERF-MATCHED-v2/READV-chrome-closure-recovery.json"
+  },
+  "artifacts": "RUN/PERF-{PLAINV,READV}/{firefox,chrome}/RESULT.json andREADV/{browser}-vs-{PLAIN,PLAINV}.json",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": true,
+  "local_accepted83": "bc89daemon/330IME remains loaded until verified84 transaction",
+  "final_evidence": {
+    "version": "1.0.84",
+    "install_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install83-20261015T033053Z/INSTALL.json",
+    "status": "INSTALLED_RELEASE84_IDENTITIES_VERIFIED_REMOTE_READV432_LOGIC_ACCEPTANCE_LOCAL_NATIVE_NOT_TESTED",
+    "loaded_hashes": {
+      "daemon": "6d0237e6355e94d6205fc77d71aed3f3ddf0c71c2293c89e76babe1755bbbeb3",
+      "ime": "7e338ae2aee2fe151f38ef5838f88d48664f8acaaa9764ca308f80895b14170b"
+    },
+    "cli_sha256": "60de3f20cdb5ab09a3765e4cbc5a16e199c2a932f2efdf8f1a907633a368f559",
+    "protected_file_count": 24,
+    "global_ibus_L11_L3_preserved": true,
+    "config_sources_mode_preserved": true,
+    "local_functional_input_keys": 0,
+    "metadata_only_parity": {
+      "rust_files": 739,
+      "rust": true,
+      "dependencies": true,
+      "extension_code": true
+    },
+    "native_input_version": "1.0.83 exact input logic, carried forward only through metadata-only84 parity",
+    "native_counts": {
+      "firefox": {
+        "PASS": 170,
+        "FAIL": 27,
+        "BLOCKED": 19
+      },
+      "chrome": {
+        "PASS": 179,
+        "FAIL": 24,
+        "BLOCKED": 13
+      },
+      "total": {
+        "PASS": 349,
+        "FAIL": 51,
+        "BLOCKED": 32,
+        "NOT_TESTED": 0
+      }
+    },
+    "prior_PASS_lost": 0
+  }
+}

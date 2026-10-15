@@ -82,8 +82,10 @@ pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
     }
     let already_pending = ctx.pending_typing_assist_after_space.is_some();
     ctx.buffer.handle_space();
-    if let Some(tail) = ctx.buffer.visible_tail_text(6) {
-        lay::typing_cpu::TypingCpu::record_typed_tail(&tail);
+    if super::super::config_runtime::daemon_input_retention_allowed() {
+        if let Some(tail) = ctx.buffer.visible_tail_text(6) {
+            lay::typing_cpu::TypingCpu::record_typed_tail(&tail);
+        }
     }
     record_precognition_tick_if_enabled("space", ctx.buffer);
     if let Some(pending) = ctx.pending_typing_assist_after_space.as_mut() {

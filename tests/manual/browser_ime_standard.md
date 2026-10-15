@@ -116,9 +116,51 @@ HTML не подтверждает RPC count, значок или `InputMode`.
 
 Source-проверки выполняются удалённо существующими guards. Native-ввод — только
 в разрешённых новых тестовых окнах, с проверкой фокуса и точных runtime bytes.
+При удалённом evdev-вводе перед первой клавишей и каждым новым заданием
+подтвердить, что разрешённая owned seat/session активна: PID/starttick и UID
+совпадают, `loginctl` показывает `Active=yes`, foreground VT совпадает с её VT.
+Один AT-SPI focus или подключённый IME этого не доказывает. После возврата
+предыдущей VT для следующего браузера нужна новая проверенная активация тестовой
+сессии. Неактивная сессия даёт BLOCKED подготовки; исходные receipts сохраняются
+отдельно, ввод останавливается до устранения причины. Такой отказ не является
+полной native матрицей или PASS продукта.
 Стандарт не разрешает установку, рестарт IBus/Lay, изменение пользовательских
 профилей, очистку общего обучения или ввод в существующие пользовательские поля.
 Для native-проверок отмены учитывать влияние штатного feedback/обучения:
 использовать разрешённую изоляцию тестовых данных; не чистить общую базу.
 Фактические результаты и ограничения записываются в
 [owning document](../../docs/architecture/firefox-input-stability-2026-10-05.md).
+
+
+2026-10-14T09:40:16.451011+00:00 — WG Chrome zero-key setup twice rejected before any behavior input, bothclosed exact5Gone/CGempty/VT1. Root cause second capturedFocus payload unchanged (clientgnome-shell, lay_ime_ru/1), only wire serial35→47/time changed. Existing zero setup dictionary equality conflates repeated observational header with identity. Protocol decision2026-10-14-browser-zero-key-focus-identity: compare nonemptyclient+engine path and retain bothheaders; existingfreshIC/globalRU/IMEPIDticksha/focuswindow/kernelpeer/portal rechecks unchanged. Add pure helper+five semantic tests (header-only change allowed; missing/malformed/client/path changes refused), revise005pin only; no sourceRuntime/model/deliveryRoute/binary change. CurrentWGfullFF164P33F19B/216 (5Vgains1lostSpaceRuEn1), all9primary+RAWmanifest copied/hashverified, partialnotfulltable. Original432baselineV339P60F33B staysuntilChrome216. ReviewerNOTRUNthreadlimit/TD121OPEN.
+
+
+## Native viewport preparation before typing
+
+Before seeding each field, require the exact owned browser window in the foreground. If its native AT-SPI component is not SHOWING, use Component.scroll_to(ANYWHERE), then the existing grab-focus/native-Tab preparation. Wait at most750ms for the original SHOWING predicate before arming input. A still-hidden or wrong-focus field is BLOCKED; no behavior keys are sent there. This applies to standard, functional and C09/C10 actors. Do not add waits after a measured gesture or change its release→exact-target clock, burst cadence, intermediate text, caret, decoder or live field/foreground guards.
+
+Keep interrupted setup receipts and their NOT_TESTED cases. When a new setup-only harness version requires restarting a matrix, pin its actor hashes and keep it separate from the interrupted receipts and binary identity. No core rebuild/retest is implied by viewport preparation alone; changed native acceptance remains required. Owning decision:2026-10-15-browser-fixture-native-viewport-preparation.json.
+
+
+Для согласованного сравнения скорости подготовка обеих сборок должна совпадать.
+Перед первой буквой требуется устойчивое FOCUSED+SHOWING в течение 100 мс,
+затем согласие начального GNOME source, InputMode и свежего stock `ibus engine`.
+Эта проверка только наблюдает: не реактивирует раскладку и не разрешает ввод в
+скрытое поле. Подготовительные ожидания находятся до seed и вне измеряемого
+действия; часы и темп пяти жестов сохраняются. Обе стороны получают одинаковое
+число подготовительных backend-чтений; first/cold API timing записывается
+отдельно и не называется холодной нативной задержкой.
+
+Если точный текст найден, но режим не совпал, сохранять фактический mode и
+отдельное время его чтения; timestamp поверхности не доказывает время режима.
+Использовать уже имеющийся запрос, не добавлять диагностический RPC внутрь
+измеряемого пути. Для скрытого поля, отказавшего до seed, записать BLOCKED и
+сохранить оставшиеся независимые сценарии; следующий сценарий проходит все
+обычные проверки заново. Потеря фокуса, вмешательство или runtime identity не
+получают исключения. Job публикуется атомарно; прежний parent/probe receipt
+должен вызывать явный отказ до публикации нового job, а не ложный PASS.
+
+Решение и границы этого сравнения:
+[2026-10-15-matched-native-initial-stack-readiness.json](../../docs/architecture/decisions/2026-10-15-matched-native-initial-stack-readiness.json).
+Предыдущие FAIL/BLOCKED/NOT_TESTED остаются в журнале и сравниваются по тем же
+ID; повторять неизменённые поведенческие отказы до PASS нельзя.

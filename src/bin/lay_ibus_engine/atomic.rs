@@ -495,6 +495,9 @@ impl LayIbusEngine {
         rejected: &str,
         transition: lay::typing_cpu::ObservedSystemTransition,
     ) {
+        if !self.content_allows_personalization() {
+            return;
+        }
         if self.atomic.speculation {
             self.atomic.deferred_learning_actions.push(
                 DeferredLearningAction::RevertedSystemApply {
@@ -511,6 +514,10 @@ impl LayIbusEngine {
     }
 
     fn apply_deferred_learning_actions(&mut self) {
+        if !self.content_allows_personalization() {
+            self.atomic.deferred_learning_actions.clear();
+            return;
+        }
         for action in std::mem::take(&mut self.atomic.deferred_learning_actions) {
             match action {
                 DeferredLearningAction::RevertedSystemApply {
@@ -642,6 +649,109 @@ mod tests {
         );
         assert!(engine.bind_focus_path());
         engine
+    }
+
+    #[test]
+    fn private_system_and_deferred_sinks_keep_enabled_public_controls() {
+        use crate::engine::{PendingSystemOutcomeFeedback, SystemOutcomeKind};
+        use lay::text_edit::VisibleTailSource;
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!(
+            "lay-private-writers-{}-{stamp}",
+            std::process::id()
+        ));
+        std::fs::create_dir(&directory).unwrap();
+        let names = [
+            ("LAY_NANDA_WORD_USAGE_EVENTS", "events.jsonl"),
+            ("LAY_NANDA_WORD_USAGE_COUNTS", "counts.json"),
+            ("LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS", "feedback.json"),
+            ("LAY_NANDA_USAGE_PRIOR", "legacy.json"),
+            ("LAY_L4_CROSS_SCENE_INBOX", "l4-inbox"),
+        ];
+        let previous: Vec<_> = names
+            .iter()
+            .map(|(name, _)| (*name, std::env::var_os(name)))
+            .collect();
+        for (name, file) in names {
+            std::env::set_var(name, directory.join(file));
+        }
+        assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+        for private in [true, false] {
+            let mut engine = engine();
+            engine.config.learning_log = true;
+            engine.config.nanda_precognition = true;
+            engine.config.debug_action_log = true;
+            engine.config.correction_safety = "experimental".into();
+            lay::config::publish_runtime_config(&engine.config);
+            engine.set_content_type_state(0, if private { 2112 } else { 0 });
+            assert!(engine.context_word_is_known());
+            for kind in [
+                SystemOutcomeKind::LayoutProjection,
+                SystemOutcomeKind::Correction,
+            ] {
+                engine.record_observed_system_outcome(Some(&PendingSystemOutcomeFeedback {
+                    original: "ghbdtn".into(),
+                    replacement: "привет".into(),
+                    source: VisibleTailSource::ImeCommittedTail,
+                    kind,
+                }));
+            }
+            engine.record_reverted_system_apply(
+                "ghbdtn",
+                "привет",
+                lay::typing_cpu::ObservedSystemTransition::Correction,
+            );
+            // A queue prepared before a metadata change must also be dropped.
+            engine.atomic.deferred_learning_actions.push(
+                DeferredLearningAction::RevertedSystemApply {
+                    original: "source".into(),
+                    rejected: "target".into(),
+                    transition: lay::typing_cpu::ObservedSystemTransition::Correction,
+                },
+            );
+            engine.apply_deferred_learning_actions();
+            assert!(engine.atomic.deferred_learning_actions.is_empty());
+            assert_eq!(
+                engine
+                    .atomic
+                    .settlement_feedback_events
+                    .lock()
+                    .unwrap()
+                    .as_slice(),
+                if private { &[][..] } else { &["reverted"][..] }
+            );
+            std::thread::sleep(std::time::Duration::from_millis(1300));
+            if private {
+                for (_, file) in names {
+                    assert!(!directory.join(file).exists(), "private wrote {file}");
+                }
+                assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+            }
+        }
+        let events = std::fs::read_to_string(directory.join("events.jsonl")).unwrap();
+        let rows: Vec<serde_json::Value> = events
+            .lines()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        assert!(
+            rows.len() >= 4,
+            "enabled public writers must emit complete events: {events}"
+        );
+        assert!(
+            events.contains("привет") && events.contains("target"),
+            "enabled public system/deferred writers must persist real events: {events}"
+        );
+        for (name, value) in previous {
+            if let Some(value) = value {
+                std::env::set_var(name, value);
+            } else {
+                std::env::remove_var(name);
+            }
+        }
+        std::fs::remove_dir_all(directory).unwrap();
     }
 
     fn atomic_base(engine: &LayIbusEngine) -> AtomicBaseSnapshot {

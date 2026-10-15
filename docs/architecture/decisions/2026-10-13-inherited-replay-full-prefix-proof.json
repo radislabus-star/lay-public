@@ -1,0 +1,392 @@
+{
+  "date": "2026-10-13",
+  "status": "E_SOURCE751_PASS_NATIVE_REJECTED",
+  "owner": "Existing exact manual handoff snapshot receipt and paired ExactReplay scope",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "problem": "The existing source receipt stores a validated tail and token/revision/expiry but no full external prefix. Arming accepts this imported proof while observed_external_prefix is extracted only from current SSI; target scope therefore loses full external context when no new source-surface echo occurs.",
+  "native_evidence": {
+    "ime_sha256": "706ec6cb1a4c356ecad3766815ca0563b6ec5526cb2907b60a5a3197ad16a7f8",
+    "wire": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-receipt-wire-xl38kbni/WIRE.json",
+    "primary": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-rich7-primary-snapshot-do_2z9ip/SNAPSHOT.json",
+    "measured": "Reset48937 followed actual SSI48938 with whole привет U+00A0, cursor7/anchor7; existing pending7/7 rejected. Same diagnostic previously adopted NBSP in epoch12622; epoch12637 rejected.",
+    "limits": "Missing inherited prefix is a source-supported causal hypothesis for this native rejection; the native scope prefix field is not recorded. Do not claim it explains all five burst failures or all43 functional failures. D706 standard55/60 remains FAIL; trace completeness UNKNOWN."
+  },
+  "options": [
+    {
+      "name": "Retain full prefix from the same already validated inherited actual receipt while creating the existing replay scope",
+      "score": 9,
+      "recommended": true,
+      "scope": "At original source publication retain Option<String> raw full external prefix on SAME existing ExactManualSourceSnapshotReceipt only after unchanged current actual SSI agreement AND no-selection/end-cursor/exact-whole-tail suffix checks. Some(empty) is valid; None cannot be inferred or upgraded and existing narrow route remains unchanged. Transfer same receipt with original token/revision/epoch/expiry. While arming paired scope, select current full snapshot prefix when current proof is valid, otherwise imported prefix only after unchanged inherited validator; consume inherited receipt as before. No client SSI write, revision/expiry renewal, normalization or new owner."
+    },
+    {
+      "name": "Request another source-surface SSI before replay",
+      "score": 3,
+      "reason": "Identical SSI can be suppressed; adds asynchronous dependency and still loses an already available proof."
+    },
+    {
+      "name": "Relax missing-prefix or NBSP receipt guards",
+      "score": 1,
+      "reason": "Cannot prove unchanged external context; violates edit and verifier safety."
+    },
+    {
+      "name": "Redesign all tail/snapshot contracts",
+      "score": 6,
+      "reason": "Separate later debt; wider change is unnecessary for this transfer gap."
+    }
+  ],
+  "required_proof": [
+    "Causal RED through actual source callbacks, manual RPC, factory transfer, suppress RPC, native replay callbacks and final SSI; no injected producer scope or new target source SSI",
+    "Closed first word and Unicode external prefixes; ASCII and NBSP source boundaries; delayed deletion echo and repeated actual Reset",
+    "Actual raw final NBSP snapshot retained, paired scope equality, same epoch on acknowledgment, no generic completeness promotion and no learning",
+    "Foreign prefix, partial target, selection/off-end caret, expired or revoked inherited token/revision/capability/layout/focus must refuse",
+    "Original C and D one-use/Reset, source SafetyGate and full747 proof unchanged; add tests without weakening existing expectations",
+    "Fresh read-only plan/code review, at most two code passes for this distinct scope",
+    "Changed exact private bytes require Firefox60+panel6+fixed150/speed and Chrome same protocol; no Chrome flags or delivery bypass to obtain PASS"
+  ],
+  "second_stage": "Broader whole-snapshot and tail contract simplification is deferred; first close the proof transfer with the existing owner.",
+  "plan_refinement": "Fresh reviewer identified that source receipt lacks whole snapshot; optional exact full prefix plus existing tail is smallest sufficient representation after source whole-geometry checks. Earlier claim that receipt already stored whole raw SSI was incorrect.",
+  "causal_red": {
+    "local": "/home/ubu/.cache/lay/development/run-t3ucaxhe/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-POHj5u/RESULT.json",
+    "archive_sha256": "b1b55f1bff14b5353667514e784ed39271fd828eda69808432a5d3d35d4a0121",
+    "tests": {
+      "executed": 748,
+      "failed": 1,
+      "passed": 747,
+      "selected": 748
+    },
+    "verdict": "FAIL",
+    "first_loss": "thread 'context_admission::adapter::tests::word_scope::residuals::td121_inherited_full_snapshot_proves_closed_replay_without_source_echo' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs:11144:17:\nsource=\" \", delayed_delete_echo=false: inherited whole actual prefix must reach the existing receipt validator\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+  },
+  "plan_review": {
+    "agent": "/root/inherited_replay_prefix_plan_review_20261013",
+    "score": 9,
+    "passes": 1,
+    "blockers": [],
+    "scope": "Refined same source receipt optional raw full prefix; actual full geometry must prove source, None preserves narrow route; native linkage still hypothesis"
+  },
+  "implementation": "Optional source prefix captured only from validated whole actual SSI; same source receipt transferred with existing token/revision/expiry, selected valid source prefix moved into paired existing scope. No client snapshot write or authority rule change; original imported receipt consumed as before.",
+  "source_tests": "Causal RED plus first closed word empty/Unicode prefix, ASCII/NBSP boundary, delayed deletion and repeated Reset, paired scope equality/receipt consumption/no SSI or revision manufacture, source mid-caret narrow route, five contradictory final receipt cases. Original747 unchanged.",
+  "code_review": {
+    "agent": "/root/confirmed_native_replay_reset_code_review2_20261013",
+    "score": 9,
+    "passes": 2,
+    "blockers": [],
+    "scope": "E source only, immutable causal baseline; original assertions and negative branches unchanged, fixture source prefix matches actual scenario",
+    "native_acceptance": "NOT_TESTED"
+  },
+  "pretest_compilation_failure": {
+    "local": "/home/ubu/.cache/lay/development/run-eoq7977l/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-2b9jTc/RESULT.json",
+    "archive_sha256": "2bc9c3a6bfa7406a8b4d5bafa54bb25d46fac65270a7ff00bac576d955cd5305",
+    "tests_executed": 0,
+    "reason": "Four E0433 errors: missing enum import AutocorrectSuppression in new test file. Import corrected; full remote751 rerun pending. No production delta or assertions changed."
+  },
+  "source_green": {
+    "local": "/home/ubu/.cache/lay/development/run-ems8366g/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-xecacu/RESULT.json",
+    "tests": {
+      "executed": 751,
+      "failed": 0,
+      "passed": 751,
+      "selected": 751
+    },
+    "fmt": "PASS",
+    "archive_sha256": "e9218ccb00a87eda778dcedbe6805a2b0eb0ff8871697a7a661e76e791b9767e",
+    "runtime_authority_changed": false
+  },
+  "fixture_alignment": "Three old positive replay fixtures reused a hardcoded whole source prefix while their scenario selected a different target prefix. Shared source helper now receives the same actual scenario prefix at original SSI callback; old wrapper retains its default, all original expectations/negatives remain. No production predicate relaxed. Native-erasure positive failed once in full gate, isolated PASS and final751 PASS without production change; diagnostic text added, no timing extension.",
+  "first_compiled_gate": {
+    "local": "/home/ubu/.cache/lay/development/run-cpc2nyl0/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-t3dha2/RESULT.json",
+    "archive_sha256": "9bd99e005d9bffc4540caf0845d33bcd0dec60013c56f0701b6c53fc24d44552",
+    "passed": 747,
+    "failed": 4,
+    "selected": 751
+  },
+  "private_build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-xecacu",
+    "archive_sha256": "e9218ccb00a87eda778dcedbe6805a2b0eb0ff8871697a7a661e76e791b9767e",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791850681981113895.txt",
+    "elapsed_seconds": 181.9952189290052,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "36952d5576dbd6014ccf0059321cd6dbfe8680d8153db91bab36b2168833893d",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791850863976247797/bin/lay-ibus-engine",
+      "bytes": 8219024
+    },
+    "lay-daemon": {
+      "sha256": "4e822d22f070b3aa687e5e9a2691e5b1b40b892723850aeee830744ef42c3bef",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791850863976247797/bin/lay-daemon",
+      "bytes": 9255760
+    }
+  },
+  "private_test_setup": {
+    "plan_review": 9,
+    "code_review_pass1": 7,
+    "code_review_pass2": 8,
+    "code_passes": 2,
+    "findings_closed_by_root": [
+      "Unsupported IBus peer PID API replaced by kernel UNIX_DIAG connected peer inode join plus actual current browser Gtk IC/Engine FocusInId",
+      "Fresh same window/field/IC/RU and bus owner rechecked after blocking observer queries before READY",
+      "Non-child cleanup now pidfd-bound before identity validation and signal"
+    ],
+    "remote_validation": "6file AST PASS, actual Linux socketpair peer probe PASS; final2changed guard files AST PASS",
+    "scope": "Private desktop IBus startup/discovery now stock GNOME-owned; private setup authority/topology changed, product runtime owner/delivery routes and installed laptop runtime unchanged",
+    "native_input": "NOT_TESTED",
+    "receipt_dir": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6",
+    "additional_measured_setup_failures": {
+      "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/chrome-stock-gnome-zero-key-blocked-1791852280236323179/RAW.json",
+      "input_keys": 0,
+      "causes": [
+        "Valid stock registry cache ignored new component path; final bus lacked Lay",
+        "libdbus maximum absolute socket path99 while this private path102",
+        "Default Chrome has stock GNOME-mediated IC, not a direct Gtk IC",
+        "Vendor IBus rejects GetEngine from an observer connection different from IC owner"
+      ]
+    },
+    "root_corrections_after_pass2": [
+      "Vendor ibus write-cache before GNOME startup in private HOME; stock component path retained, old registry archived",
+      "Monitor uses same socket relative to owned cache directory; browser and engine discovery addresses unchanged",
+      "Zero-key evidence follows observed direct Gtk or stock GNOME peer chain; no browser-specific delivery flags",
+      "Actual focused RU Engine.FocusInId path plus global descriptor, pinned IME bytes and peer connection replaces unauthorized foreign IC query; same window/field/IC checked again"
+    ],
+    "zero_key_chrome_attachment": {
+      "local": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/chrome-stock-gnome-setup-attachment.json",
+      "status": "PASS_SETUP_ATTACHMENT_ONLY",
+      "input_keys": 0,
+      "native_functional_verdict": "NOT_TESTED",
+      "observed_route": "Chrome -> stock GNOME compositor input context -> final GNOME-owned IBus -> Lay RU"
+    },
+    "third_review_claimed": false
+  },
+  "source_closure": {
+    "daemon_and_contracts": {
+      "local": "/home/ubu/.cache/lay/development/run-rgar_ble/RESULT.json",
+      "remote": "/home/e/projects/lay-development-runner/run-8yriho/RESULT.json",
+      "executed": 406,
+      "initial_passed": 405,
+      "initial_failed": 1
+    },
+    "failed_contract_repair": {
+      "test": "ime_space_boundary_contract::every_ime_space_route_finishes_the_full_precognition_boundary",
+      "cause": "Static source assertion retained pre-keycode helper signature and did not join a wrapped call; production awaited Space operation is unchanged",
+      "change": "Join trimmed source lines and require the current Space/keycode call with .await?; all other assertions retained",
+      "retest": "/home/ubu/.cache/lay/development/run-a0ts1y42/RESULT.json",
+      "passed": 1,
+      "fmt": "PASS"
+    },
+    "lexical_compiler": {
+      "feature": "lexical-compiler",
+      "remote_log": "/home/e/projects/lay-development-runner/run-8yriho/lexical-compiler-feature-test.log",
+      "executed": 1,
+      "passed": 1,
+      "ignored": 0,
+      "filtered": 0
+    },
+    "native_verdict": "NOT_ESTABLISHED_BY_SOURCE_CHECKS"
+  },
+  "native_chrome": {
+    "proof": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native369-chrome-proof.json",
+    "groups": {
+      "standard": {
+        "required": 60,
+        "counts": {
+          "PASS": 20,
+          "FAIL": 38,
+          "BLOCKED": 2
+        },
+        "speed": {
+          "double_shift": {
+            "required": 420,
+            "measured": 158,
+            "missing": 262,
+            "p50_ms": 92.70119299739599,
+            "p95_ms": 113.10524100065231,
+            "max_ms": 122.65680899471045,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "panel": {
+        "required": 6,
+        "counts": {
+          "PASS": 3,
+          "FAIL": 3
+        },
+        "speed": {
+          "double_shift": {
+            "required": 48,
+            "measured": 27,
+            "missing": 21,
+            "p50_ms": 92.45702799409628,
+            "p95_ms": 112.34908600151539,
+            "max_ms": 113.5397019982338,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "functional": {
+        "required": 150,
+        "counts": {
+          "PASS": 96,
+          "FAIL": 43,
+          "BLOCKED": 11
+        },
+        "speed": {
+          "double_shift": {
+            "required": 210,
+            "measured": 129,
+            "missing": 81,
+            "p50_ms": 91.0022400021553,
+            "p95_ms": 131.70241499692202,
+            "max_ms": 135.8095799908042,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "space": {
+            "required": 50,
+            "measured": 38,
+            "missing": 12,
+            "p50_ms": 18.89273700118065,
+            "p95_ms": 24.600689999759197,
+            "max_ms": 27.312478996813297,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "tab": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "selection": {
+            "required": 10,
+            "measured": 10,
+            "missing": 0,
+            "p50_ms": 20.042162999510765,
+            "p95_ms": 22.38442600518465,
+            "max_ms": 22.38442600518465,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      }
+    },
+    "wire": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-receipt-wire-dx734unk/WIRE.json",
+    "wire_sha256": "ad5f45ad327f8b7073bb3f1a211189430d196581891bfc717459f54e7334e2ba",
+    "verdict": "FAIL"
+  },
+  "native_firefox": {
+    "verdict": "FAIL",
+    "proof": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native369-firefox-proof.json",
+    "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native369-firefox-raw-1791855295972601475/RAW.json",
+    "groups": {
+      "standard": {
+        "counts": {
+          "PASS": 58,
+          "FAIL": 2
+        },
+        "speed": {
+          "double_shift": {
+            "required": 420,
+            "measured": 414,
+            "missing": 6,
+            "p50_ms": 110.41427100077271,
+            "p95_ms": 120.88227000832558,
+            "max_ms": 135.0073399990797,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "panel": {
+        "counts": {
+          "PASS": 6
+        },
+        "speed": {
+          "double_shift": {
+            "required": 48,
+            "measured": 48,
+            "missing": 0,
+            "p50_ms": 111.50024150311947,
+            "p95_ms": 119.56091400235891,
+            "max_ms": 120.51113399863243,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "functional": {
+        "counts": {
+          "PASS": 87,
+          "FAIL": 44,
+          "BLOCKED": 19
+        },
+        "speed": {
+          "double_shift": {
+            "required": 210,
+            "measured": 100,
+            "missing": 110,
+            "p50_ms": 114.38512849807739,
+            "p95_ms": 136.46099900454283,
+            "max_ms": 146.46119399368763,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "space": {
+            "required": 50,
+            "measured": 37,
+            "missing": 13,
+            "p50_ms": 18.146167002618313,
+            "p95_ms": 24.800142005085945,
+            "max_ms": 27.32879700511694,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "tab": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "selection": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      }
+    },
+    "owned_GUI_scope_empty": true,
+    "laptop_parity": "NOT_CLAIMED"
+  }
+}

@@ -1,0 +1,121 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-12",
+  "task": "TD-121",
+  "status": "SOURCE_PASS_REVIEW_FINDINGS_FIXED_NATIVE_PENDING",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing exact context-reset rereceipt consumer",
+  "first_failed_transition": "An accepted full SetSurroundingText leaves armed_revision at the earlier baseline. A subsequent valid delayed-prefix observation or identical full reply is rejected as a second receipt before the existing bounded exact revalidation can run.",
+  "decision": "Advance the existing receipt baseline to every accepted actual exact observation. Preserve the first causally authenticated owned-append full handoff. When the immediately previous observation already exactly bounds the current pending token, preservation of confirmed authority requires equality of the full previous and current text/cursor/anchor, consecutive observation revisions and all current owner/token/epoch guards. Missing prior observation or changed external context cannot refresh authority. The existing managed strict-prefix echo remains inert and admits only the immediately following full exact receipt; no generic delayed-prefix promotion. Move the previous actual snapshot temporarily through the sole callback consumer, without persistent new fields or a second owner. A manual handoff still consumes the pending receipt once. One phase flag in the existing pending receipt distinguishes confirmation carried through an authenticated owned append from an already accepted full client observation. The append producer invalidates its old client snapshot, so absence alone cannot distinguish the first new receipt from a missing already confirmed snapshot. Only that producer sets the flag; accepting the actual full receipt clears it. Generic Reset, erasure and fresh receipt constructors never set it. No persistent snapshot clone or parallel owner is added. Replan after the second review: scope prefix echoes to the end of the whole actual snapshot on the original full, partial and final full observations. starts_with alone does not preserve text to the right of the caret. An echo inside text is deliberately refused; supporting that would require proving equality of both external parts and is deferred.",
+  "supersedes": "Blanket identical-repeat refusal only in residual_reset_rereceipt_failures_never_delete_gui_text, firefox_reset_suffix_frame_and_tab_refuse_unconfirmed_or_invalid_receipts, and window_interaction_reset_rereceipt_uses_existing_one_shot_token. Changed-context contradictions and one-shot consume remain proved. Published-preedit unchanged receipt and completed/consumed Replay refusals remain unchanged. The identical-second-receipt assertion after a new Reset in firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset also migrates to actual bridge delegation followed by one-shot consumption refusal.",
+  "alternatives": [
+    {
+      "solution": "Advance accepted exact revision with full adjacent-snapshot comparison and existing inert prefix echo",
+      "score": 9
+    },
+    {
+      "solution": "Permit only gap2 identical full receipt without advancing the baseline",
+      "score": 7,
+      "limitation": "Does not cover later short observations"
+    },
+    {
+      "solution": "Add another persistent full-snapshot field",
+      "score": 7,
+      "limitation": "Redundant with the prior actual observation available in the sole caller"
+    },
+    {
+      "solution": "Patch stock IBus",
+      "score": 5
+    },
+    {
+      "solution": "Ignore all extra observations or compare lengths/suffixes only",
+      "score": 1,
+      "rejected": true
+    }
+  ],
+  "delivery_routes_changed": false,
+  "installed_laptop_changed": false,
+  "proof": {
+    "source_plan": "Actual append and adapter SSI full->strict-prefix->full, repeated full receipts and one manual consume; missing prior/full-context/revision/owner/token/epoch/caret/selection/content contradictions; retain initial-unconfirmed/repeated-prefix/ExactReplay refusals",
+    "native_evidence": "Fullscreen field4 trace loses receipt after accepted6/caret6 then short5/caret5; exact bytes for that original failure UNKNOWN. Bounded passive wire diagnostics independently expose real full presentation/typed-prefix callbacks; their passing rerun does not erase the original FAIL.",
+    "native_plan": "Changed-byte shared 60-cell Firefox/Chrome, C09/C10 and speed after source gates; no client-specific exceptions",
+    "source_red": {
+      "receipt": "/home/ubu/.cache/lay/development/run-qqizvac0/RESULT.json",
+      "remote": "/home/e/projects/lay-development-runner/run-0aeD6y",
+      "passed": 715,
+      "failed": 2,
+      "archive_sha256": "e066e4b2c49df75ac021f4ba305b099b96686d2fd249c97d9ad41f77193ebea2",
+      "first_losses": [
+        "Accepted full receipt followed by strict prefix discards pending lineage",
+        "Second identical full receipt loses exact handoff"
+      ]
+    },
+    "initial_candidate": {
+      "receipt": "/home/ubu/.cache/lay/development/run-8utm8p5o/RESULT.json",
+      "passed": 711,
+      "failed": 7,
+      "interpretation": "First owned append must retain its existing confirmation flow; a published unchanged preedit and a prior Replay snapshot after completed confirmation cannot refresh. Three duplicate-only legacy expectations migrate to exact-refresh with unchanged one-shot consume or changed-context refusal."
+    },
+    "review_pass_1": {
+      "score": 7,
+      "blocker": "Full->prefix->full could change external context on either leg",
+      "resolution": "Compare whole raw prefix against the temporary prior actual observation on both legs; missing previous evidence cannot promote an echo; add two focused negatives"
+    },
+    "intermediate_candidate": {
+      "receipt": "/home/ubu/.cache/lay/development/run-pe16lui2/RESULT.json",
+      "passed": 712,
+      "failed": 7,
+      "first_shared_loss": "Owned commits intentionally invalidate the old snapshot; the old confirmed boolean covers both carried append and fully observed confirmation. Treating missing snapshot uniformly rejects existing valid append/prefix flows."
+    },
+    "phase_candidate": {
+      "receipt": "/home/ubu/.cache/lay/development/run-77lhwk4o/RESULT.json",
+      "passed": 718,
+      "failed": 1,
+      "failure": "Only another legacy blanket identical-second-receipt expectation after a fresh Reset; update to one successful actual handoff and refused second consume."
+    },
+    "source_green": {
+      "receipt": "/home/ubu/.cache/lay/development/run-4q6g4h4z/RESULT.json",
+      "passed": 719,
+      "failed": 0,
+      "archive_sha256": "f12d2da7ac5e6927b39bde9ae896c6124c6a94990517c584c65344cacbb3f744",
+      "scope": "Focused source; final missing-evidence negatives and changed-byte native proof pending"
+    },
+    "final_causal_source_green": {
+      "receipt": "/home/ubu/.cache/lay/development/run-brcnk01b/RESULT.json",
+      "remote": "/home/e/projects/lay-development-runner/run-RUhDB0",
+      "passed": 719,
+      "failed": 0,
+      "archive_sha256": "525495694fab3a2f1768c6fc82142acf4c57ca6dbef847efc46c6beaf6cd0a94",
+      "scope": "Includes missing preceding observation on either prefix-echo leg; source only"
+    },
+    "review_pass_2": {
+      "score": 7,
+      "blocker": "A full->prefix->full echo may add or remove right context while starts_with still passes",
+      "resolution": "Restrict both echo legs to end-of-whole-text; retain all existing full adjacent-equality checks. Add actual SSI suffix-appearance/disappearance refusals. No third agent pass: two-pass limit exhausted.",
+      "review_scope": "Source review only, before the end-of-text replan"
+    },
+    "right_context_causal_red": {
+      "receipt": "/home/ubu/.cache/lay/development/run-9q4rxy3u/RESULT.json",
+      "remote": "/home/e/projects/lay-development-runner/run-5230Ne",
+      "passed": 718,
+      "failed": 1,
+      "first_loss": "right_context_added_after_prefix grants recovered manual authority"
+    },
+    "end_of_text_replan_green": {
+      "receipt": "/home/ubu/.cache/lay/development/run-qejdztou/RESULT.json",
+      "remote": "/home/e/projects/lay-development-runner/run-YNL1J1",
+      "passed": 719,
+      "failed": 0,
+      "archive_sha256": "01cdd8ebb522763ce89293659f3f80504ddde47016836e7604e9ca8722d06663",
+      "scope": "Root fixed the bounded blocker identified by the final 7/10 review; no later reviewer score or native PASS is claimed"
+    }
+  }
+}

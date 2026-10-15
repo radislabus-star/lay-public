@@ -256,7 +256,8 @@ fn terminal_delivery_managed_no_apply_space_stays_in_commit_stream_without_recei
                     assert_eq!(engine.committed_tail.buffer, "должен ");
                 }
             }
-            let retained_release = !matches!(lifecycle, "expired_reset" | "focus_out" | "disable");
+            // Expiry revokes observation/Space work, not a consumed key-up.
+            let retained_release = !matches!(lifecycle, "focus_out" | "disable");
             assert_eq!(
                 legacy_key(
                     &mut harness,
@@ -2833,6 +2834,57 @@ fn terminal_delivery_legacy_native_glyphs_preserve_mirror_without_commit_or_rele
 }
 
 #[test]
+fn td121_late_paired_native_terminal_release_keeps_the_existing_word() {
+    zbus::block_on(async {
+        for observer_first in [false, true] {
+            let (mut harness, mut engine) = known_terminal(11).await;
+            assert!(!legacy_key(&mut harness, &mut engine, 92_300, 'a' as u32, 30, 0).await);
+            no_legacy_output(&mut harness).await;
+            assert!(!engine.layout_gesture.handled_press_keycodes.contains(&30));
+            assert_eq!(
+                engine.layout_gesture.native_letter_release_focus.get(&30),
+                Some(&engine.client_context.focus_serial)
+            );
+            let token = engine.context_token.clone().unwrap();
+            let scope = engine.context_word_scope.clone();
+            let tail = engine.committed_tail.buffer.clone();
+            let epoch = engine.committed_tail.epoch;
+            assert!(
+                !super::residuals::td121_release_with_order(
+                    &mut harness,
+                    &mut engine,
+                    92_301,
+                    'a' as u32,
+                    30,
+                    observer_first
+                )
+                .await
+            );
+            assert_eq!(engine.context_word_scope, scope);
+            assert_eq!(engine.context_token.as_ref(), Some(&token));
+            assert_eq!(engine.committed_tail.buffer, tail);
+            assert_eq!(engine.committed_tail.epoch, epoch);
+            assert!(engine.context_word_is_known());
+            assert!(engine.capture_space_autocorrect_frame_identity().is_some());
+            assert!(!engine
+                .layout_gesture
+                .native_letter_release_focus
+                .contains_key(&30));
+            assert!(harness.adapter.revalidate_bridge(&token));
+            assert!(harness
+                .adapter
+                .shared
+                .reducer
+                .lock()
+                .unwrap()
+                .unsettled
+                .is_empty());
+            no_legacy_output(&mut harness).await;
+        }
+    });
+}
+
+#[test]
 fn terminal_delivery_first_atomic_frame_retires_legacy_native_word_mode() {
     zbus::block_on(async {
         let (mut harness, mut engine) = known_terminal(11).await;
@@ -4314,7 +4366,7 @@ fn terminal_delivery_firefox_exact_refresh_keeps_prefix_committed_and_schedules_
 
             if !final_printable {
                 assert!(
-                    !legacy_key(
+                    legacy_key(
                         &mut harness,
                         &mut engine,
                         serial + 2,

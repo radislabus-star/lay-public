@@ -642,7 +642,7 @@ impl LayIbusEngine {
         let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)
         {
             TextTransitionDecision::AlreadyApplied => {
-                trace::record_committed_tail_replace(
+                self.trace_committed_tail_replace(
                     source,
                     "target_state_already_observed",
                     backspaces,
@@ -653,19 +653,21 @@ impl LayIbusEngine {
             TextTransitionDecision::Apply { plan, action } => (plan, action),
             TextTransitionDecision::Reject { rejection, action } => {
                 if let Some(action) = action.as_ref() {
-                    lay::action_log::record_candidate_edit_action_before_apply(
-                        action,
-                        lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
-                        None,
-                    );
-                    trace::record_committed_tail_replace(
+                    if self.content_allows_personalization() {
+                        lay::action_log::record_candidate_edit_action_before_apply(
+                            action,
+                            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+                            None,
+                        );
+                    }
+                    self.trace_committed_tail_replace(
                         source,
                         rejection.reason(),
                         backspaces,
                         action.to_text(),
                     );
                 } else if rejection.reason() != "noop_transition" {
-                    trace::record_committed_tail_replace_guard(
+                    self.trace_committed_tail_replace_guard(
                         source,
                         rejection.reason(),
                         backspaces,
@@ -677,16 +679,18 @@ impl LayIbusEngine {
             }
         };
         let logical_text = edit_action.to_text().to_string();
-        lay::action_log::record_candidate_edit_action_before_apply(
-            &edit_action,
-            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
-            None,
-        );
+        if self.content_allows_personalization() {
+            lay::action_log::record_candidate_edit_action_before_apply(
+                &edit_action,
+                lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+                None,
+            );
+        }
         let backend_action =
             lay::text_edit::authorize_backend_edit(TextEditBackend::Ime, edit_action.clone());
         let backend_reason = backend_action.reason;
         let Some(authorized_edit) = backend_action.into_authorized() else {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 backend_reason,
                 backspaces,
@@ -695,7 +699,7 @@ impl LayIbusEngine {
             return Ok(false);
         };
         let Some(authorized_plan) = authorized_edit.action().plan() else {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 "authorized_edit_without_plan",
                 backspaces,
@@ -705,7 +709,7 @@ impl LayIbusEngine {
         };
         let physical_backspaces = authorized_plan.backspaces;
         if authorized_plan != &plan {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 "authorized_edit_plan_mismatch",
                 backspaces,
@@ -717,7 +721,7 @@ impl LayIbusEngine {
         let text_target_decision = self.text_target_decision(backspaces);
         let output_profile = text_target_decision.route;
         if !output_profile.can_execute() {
-            trace::record_committed_tail_replace_guard(
+            self.trace_committed_tail_replace_guard(
                 source,
                 output_profile.output_route(),
                 backspaces,
@@ -729,7 +733,7 @@ impl LayIbusEngine {
         if (authorized_plan.move_left != 0 || authorized_plan.move_right != 0)
             && output_profile != TextTargetEditRoute::ExactSurroundingText
         {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 "cursor_plan_requires_surrounding_text",
                 backspaces,
@@ -750,7 +754,7 @@ impl LayIbusEngine {
                 physical_backspaces,
                 &text,
             ) else {
-                trace::record_committed_tail_replace_guard(
+                self.trace_committed_tail_replace_guard(
                     source,
                     "exact_surrounding_snapshot_unavailable",
                     backspaces,
@@ -767,12 +771,7 @@ impl LayIbusEngine {
         self.committed_tail.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
         if self.should_skip_duplicate_committed_tail_replace(backspaces, &logical_text, now) {
-            trace::record_committed_tail_replace(
-                source,
-                "duplicate_skip",
-                backspaces,
-                &logical_text,
-            );
+            self.trace_committed_tail_replace(source, "duplicate_skip", backspaces, &logical_text);
             return Ok(true);
         }
         let total_started = Instant::now();
@@ -789,7 +788,7 @@ impl LayIbusEngine {
         } else {
             output_profile.output_route()
         };
-        trace::record_committed_tail_replace(
+        self.trace_committed_tail_replace(
             source,
             output_route,
             authorized_plan.backspaces,

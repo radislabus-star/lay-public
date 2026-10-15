@@ -172,14 +172,22 @@ fn pending_multi_tap_can_continue(ctx: &ManualTriggerEventContext<'_>, now: Inst
 fn cancel_pending_manual_trigger_on_other_key(ctx: &mut ManualTriggerEventContext<'_>) {
     if !ctx.dshift_state.is_idle() && ctx.value == 1 {
         if ctx.verbose {
-            log(&format!("· FSM: cancel → Idle (key {})", ctx.code));
+            if crate::config_runtime::daemon_input_retention_allowed() {
+                log(&format!("· FSM: cancel → Idle (key {})", ctx.code));
+            } else {
+                log("· FSM: cancel → Idle; payload retention disabled");
+            }
         }
         ctx.dshift_state.cancel();
     }
     if ctx.pending_multi_tap.is_some() && ctx.value == 1 {
         *ctx.pending_multi_tap = None;
         if ctx.verbose {
-            log(&format!("· FSM: multi-tap cancel (key {})", ctx.code));
+            if crate::config_runtime::daemon_input_retention_allowed() {
+                log(&format!("· FSM: multi-tap cancel (key {})", ctx.code));
+            } else {
+                log("· FSM: multi-tap cancel; payload retention disabled");
+            }
         }
     }
 }

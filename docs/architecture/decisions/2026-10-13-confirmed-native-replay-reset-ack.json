@@ -1,0 +1,198 @@
+{
+  "date": "2026-10-13",
+  "recorded_at": "2026-10-12T21:46:50.450473+00:00",
+  "status": "SOURCE_739_REVIEW_9_NATIVE_BE710_FAIL_FURTHER_PRODUCERS",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing confirmed reset/rereceipt flow and completed native exact replay receipt",
+  "runtime_authority_changed": false,
+  "problem": "Current native965 fullscreen Space burst loses manual authority after actual fully replayed target SSI was confirmed and then an additional matched Reset cleared that same observation. Stock IBus deduplicates unchanged following SSI. Held managed CommitText proof is a different producer and cannot authorize this completed native effect. No timer or verifier weakening is proposed.",
+  "native_baseline": {
+    "ime_sha256": "96534a91e1ccf87f9836e9d14892c95dd98ac577ffe587d56da78e13d729bda6",
+    "standard": {
+      "PASS": 57,
+      "FAIL": 3,
+      "total": 60
+    },
+    "panel": {
+      "PASS": 6,
+      "FAIL": 0,
+      "total": 6
+    },
+    "functional": {
+      "PASS": 86,
+      "FAIL": 45,
+      "BLOCKED": 19,
+      "total": 150
+    },
+    "receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current965/firefox-current965-native-baseline.json"
+  },
+  "first_loss": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current965/native965-replay-late-reset-loss.json",
+    "trace_completeness": "UNKNOWN, retained label; actual raw primary IBus archive available",
+    "sequence": [
+      "all native replay deletion and insertion callbacks completed",
+      "actual full target SSI confirmed",
+      "extra matched Reset arms same predecessor unconfirmed",
+      "no fresh identical Engine SSI observed before next gesture",
+      "manual RPC has live bridge token but refuses context authority"
+    ]
+  },
+  "options": [
+    {
+      "name": "A: one bounded Reset acknowledgement from the existing fully completed and independently confirmed native replay receipt",
+      "score": 8,
+      "recommended": true,
+      "limits": "Pin original whole actual snapshot/revision/current owner/lease/layout/epoch; use existing reset-only provenance before and after awaits; one use per actual replay effect. Decide minimal marker placement by reviewing existing spent ExactReplay scope versus pending receipt boolean. No generic released-key carry."
+    },
+    {
+      "name": "B: force another SSI or change delivery/cache route",
+      "score": 2,
+      "recommended": false
+    },
+    {
+      "name": "C: preserve every confirmed snapshot across Reset",
+      "score": 1,
+      "recommended": false
+    },
+    {
+      "name": "D: extend an observation timeout or disable Reset revocation",
+      "score": 1,
+      "recommended": false
+    }
+  ],
+  "required_proofs": [
+    "Actual deferred Reset after independently confirmed completed replay retains only original immutable observation and revision without upgrading unknown completeness",
+    "Reset before actual full proof, partial/unverified/contradictory replay, repeated Reset, changed effect epoch, selection/caret, stale revision and visible preedit refuse carry",
+    "Observer-ahead ContentType including change-back, focus/owner/activation/layout/capabilities, native command/navigation and revocation during await cannot inherit authority",
+    "Previous native delivery verifier and consumed replay ownership remain authoritative; no second owner, delivery bypass, literal/client exception or new timer",
+    "Native full Firefox60+panel6+fixed150 and speed must be rerun for changed production bytes; prior baseline remains FAIL"
+  ],
+  "plan_review": {
+    "agent": "/root/confirmed_native_replay_reset_plan_review_20261013",
+    "score": 9,
+    "passes": 1,
+    "read_only": true,
+    "decision": "One-use Option(focus_serial, owner_lease_identity, layout_generation) in existing pending receipt. Producer only successful full SSI/alignment/consumption. Keep spent scope, bounded current pair only; no retirement mutation or route change."
+  },
+  "causal_red": {
+    "local_receipt": "/home/ubu/.cache/lay/development/run-ljbxvwly/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-JTWVY7/RESULT.json",
+    "archive_sha256": "71ccd14a5af29f7f8c1acac20030e5e6bab259592ce3136742914bdd0caed7a8",
+    "passed": 733,
+    "failed": 1,
+    "total": 734,
+    "failure": "Actual extra matched Reset loses original prefix привет full snapshot after independent native confirmation. No new SSI after Reset."
+  },
+  "source_green": {
+    "local_receipt": "/home/ubu/.cache/lay/development/run-7uzynhst/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-k1i9on/RESULT.json",
+    "archive_sha256": "42a7f0b6774983c729673e741ca414ac005f17e5973444f584aeece1f03e7dea",
+    "passed": 738,
+    "failed": 0,
+    "total": 738,
+    "format": "PASS"
+  },
+  "code_review": {
+    "agent": "/root/confirmed_native_replay_reset_code_review1_20261013",
+    "score": 9,
+    "passes": 1,
+    "blockers": [],
+    "scope": "New C mechanism only; read-only source review, no native proof"
+  },
+  "native_candidate_aa4": {
+    "ime_sha256": "aa4cd5237225d5e01876e06520506282dcf27afbbe58637cee980167bae31521",
+    "daemon_sha256": "15d5c4ebb86c2e59bf2faca4155f51f5b6219d94431bbe89831eca4665fb979e",
+    "standard": {
+      "PASS": 54,
+      "FAIL": 6,
+      "total": 60
+    },
+    "panel": {
+      "PASS": 6,
+      "total": 6
+    },
+    "functional": {
+      "NOT_TESTED": 150,
+      "total": 150
+    },
+    "functional_scope": "Rejected experiment after all60 standard and6 panel; first30-slot functional report created but no actions; remaining120 not started. No functional acceptance. Previous965 fixed150 remains completeFAIL baseline.",
+    "receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/currentaa4/firefox-currentaa4-native-baseline.json",
+    "raw_manifest": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/nativeaa4-firefox-raw-1791842724037470179/RAW.json",
+    "raw_scope": "Owned processes gone before freeze; trace completeness UNKNOWN retained.",
+    "hypothesis": "Native ordinary fully settled replay enters generic exact confirmation without pending.completed_replay; C first producer was only observer-ahead completed seed. New actual callback variant test739 running before production change."
+  },
+  "generic_producer_causal_red": {
+    "local_receipt": "/home/ubu/.cache/lay/development/run-zn4fsc19/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-v8gsir/RESULT.json",
+    "archive_sha256": "62d597e1ce84eb8514600d11a79e961466eb3d5bdb520cf98dc325c0154f0129",
+    "passed": 738,
+    "failed": 1,
+    "total": 739,
+    "first_loss": "All native callbacks settled; generic exact SSI confirms actual whole target without pending.completed_replay seed. Later matched Reset loses that actual snapshot. Actual fixture failed at late Reset snapshot None versus full actual фис."
+  },
+  "producer_refinement": "Both actual full confirmation entrypaths must select the same current completed replay provenance before original alignment and consumption. Generic first receipt may resolve it from existing paired replay; unchanged confirmed refresh cannot rearm because source is spent. No verifier/carry gate weakening.",
+  "producer_refinement_regression": {
+    "receipt": "/home/ubu/.cache/lay/development/run-k8p9_5ld/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-aLqKGm/RESULT.json",
+    "passed": 738,
+    "failed": 1,
+    "total": 739,
+    "first_loss": "Both producer positive and negative tests pass; existing completed-boundary native replay preedit-erasure test loses confirmed predecessor because raw/exact-preedit capability cleanup erased whole pending receipt solely for ACK marker presence.",
+    "resolution": "Clear one-use native ACK on capability change while preserving confirmed ordinary whole SSI; existing incomplete completed_replay seed still discards the whole inert pending. No test weakened."
+  },
+  "final_source_green": {
+    "recorded_at": "2026-10-12T22:18:40.852688+00:00",
+    "local_receipt": "/home/ubu/.cache/lay/development/run-fxyxkhcf/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-iN8RBM/RESULT.json",
+    "archive_sha256": "4a26cf32a8a5a436098b6534fd13dd4a3deb2c8a99c0fca645938da88ee1c35d",
+    "passed": 739,
+    "failed": 0,
+    "total": 739,
+    "format": "PASS"
+  },
+  "final_code_review": {
+    "agent": "/root/confirmed_native_replay_reset_code_review2_20261013",
+    "score": 9,
+    "passes": 2,
+    "blockers": [],
+    "scope": "C only, read-only fresh-context source review. Both full producers and marker-only cleanup covered; no native acceptance."
+  },
+  "final_private_candidate": {
+    "build_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791843670251005239/BUILD.json",
+    "ime_sha256": "be71027845b3e97dbfdd5787d8ab53788cd1dc411c5f537c7aa2fdfad8f7d10f",
+    "daemon_sha256": "8743552cbb1509424cd717e3487dd9346035f2ee2e41bab83fe0015025f5f758",
+    "archive_sha256": "4a26cf32a8a5a436098b6534fd13dd4a3deb2c8a99c0fca645938da88ee1c35d",
+    "scope": "Private remote runtime only; full Firefox changed-byte native proof running, Chrome NOT_TESTED"
+  },
+  "native_candidate_be710": {
+    "ime_sha256": "be71027845b3e97dbfdd5787d8ab53788cd1dc411c5f537c7aa2fdfad8f7d10f",
+    "daemon_sha256": "8743552cbb1509424cd717e3487dd9346035f2ee2e41bab83fe0015025f5f758",
+    "standard": {
+      "PASS": 52,
+      "FAIL": 6,
+      "BLOCKED": 1,
+      "NOT_TESTED": 1
+    },
+    "panel": {
+      "PASS": 5,
+      "FAIL": 1
+    },
+    "functional": {
+      "PASS": 86,
+      "BLOCKED": 19,
+      "FAIL": 45
+    },
+    "receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/currentbe710/firefox-currentbe710-native-baseline.json",
+    "speed_receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/currentbe710/nativebe710-speed-coverage.json",
+    "raw_manifest": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/nativebe710-firefox-raw-1791844517133584746/RAW.json",
+    "verdict": "FAIL; all150 attempted, source score does not certify physical behavior",
+    "first_failed_classes": "Native Backspace fresh SSI then late Reset; separate rich full receipt mismatch before C confirmation; one hidden private iframe cell BLOCKED and next NOT_TESTED."
+  }
+}

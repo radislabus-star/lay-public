@@ -1,0 +1,82 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-marked-owned-preedit-actual-prefix-rereceipt",
+  "updated_at": "2026-10-14T10:35:29.420595+00:00",
+  "status": "WI_SOURCE847_PASS_NATIVE_NOT_TESTED",
+  "first_failed_transition": "WH prefix2 second gesture: marked birth revision10 != actual12; current full prefix/cursor/focus/lease/layout/currentowner agree. Field1 earlier context_authority refusal remains separate UNKNOWN.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "At the existing actual SSI consumer, advance the SAME inert marked birth witness revision only if immediately preceding actual snapshot/revision was current, the new snapshot is exactly identical and unselected, and existing entire-owned-word manual proof and context token are current. Retain all identity/capability/current-tail guards and Space/deletion epoch rules."
+    },
+    {
+      "score": 3,
+      "solution": "Drop birth revision equality globally.",
+      "reason": "Stale proof can then survive absent or intervening changed receipts."
+    },
+    {
+      "score": 2,
+      "solution": "Add a separate browser or field override or change timing/ranker.",
+      "reason": "No measured shared cause or architectural authorization; parallel authority and literal cases are prohibited."
+    }
+  ],
+  "contract": [
+    "Causal RED must use actual SetSurroundingText callbacks, no manual revision/snapshot repair.",
+    "Only update armed_revision in existing single inert birth slot on consecutive unchanged actual receipt; no new owner/token/known-start/current snapshot or visible effect.",
+    "Missing previous actual snapshot, revision gap, changed/selected text, changed caret or metadata/current owner must never refresh. Same-text receipt after an intervening change must not revive original birth.",
+    "Existing no-new-receipt stale revision guard and all old adverse tests stay refused.",
+    "Full845+new source tests, AST, private immutable build, full original432 with speed required before any completion claim. Source or diagnostic result is not client acceptance."
+  ],
+  "delivery_routes_changed": false,
+  "runtime_authority_changed": false,
+  "models_retrained": false,
+  "native_current_complete": {
+    "PASS": 343,
+    "FAIL": 56,
+    "BLOCKED": 33,
+    "total": 432
+  },
+  "review": {
+    "status": "NOT_RUN",
+    "score": null,
+    "reason": "Fresh read-only context-free spawn rejected: agent thread limit reached; root code audit performed, no independent score."
+  },
+  "causal_red": {
+    "proof_signature": "627929b3e8264f7f0c523a4481b2f28de75107271b7f2602d53a0e61b7481f08",
+    "selected": 59,
+    "verdict": "FAIL",
+    "failures": [
+      {
+        "target": "bin:lay-ibus-engine",
+        "test": "context_admission::adapter::tests::word_scope::residuals::td121_marked_owned_word_accepts_repeated_actual_unchanged_prefix_receipt",
+        "failure_block": "thread 'context_admission::adapter::tests::word_scope::residuals::td121_marked_owned_word_accepts_repeated_actual_unchanged_prefix_receipt' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs:10480:13:\nthe same actual unselected committed prefix must retain its owned-word mode\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "elapsed_seconds": 25.087640073004877,
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wi-marked-refresh-source-l2b76iqx/RESULT.json"
+  },
+  "focused_green": {
+    "proof_signature": "39ffbe439ba2c7abdcc1802c36c610a3835264d1dff794f8750d952799ff6098",
+    "selected": 60,
+    "verdict": "PASS",
+    "failures": [],
+    "elapsed_seconds": 25.19604770001024,
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wi-marked-refresh-source-b0kw1f1b/RESULT.json"
+  },
+  "root_source_review": "Refresh changes only armed_revision of same current inert birth slot inside synchronous actual SSI consumer; all old admission predicates unchanged. Fourteen refusal classes cannot refresh or revive; prior 12/16 guards preserved. Independent requested read-only context-free spawn rejected by agent thread limit; NOT_RUN/no score.",
+  "source_gate": {
+    "status": "PASS",
+    "tests": {
+      "executed": 847,
+      "failed": 0,
+      "passed": 847,
+      "selected": 847
+    },
+    "worker_seconds": 118.48431508298381,
+    "controller_seconds": 129.2,
+    "archive_sha256": "a208be55fd2aec10887233512ac38454adb724a97a6785f484786267e9fb0f28",
+    "all737RustHashesMatch": true,
+    "source_gate": "/home/ubu/.cache/lay/development/run-ow_hrxg8/RESULT.json"
+  }
+}

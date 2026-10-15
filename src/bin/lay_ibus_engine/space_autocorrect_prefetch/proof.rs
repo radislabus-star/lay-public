@@ -161,7 +161,7 @@ fn render_lookup(
         ))
         .expect("Space correction route");
         if !corrected {
-            zbus::block_on(engine.commit_managed_passthrough_char(&mut output, ' '))
+            zbus::block_on(engine.commit_managed_passthrough_char(&mut output, ' ', 57))
                 .expect("native managed Space");
         }
         true

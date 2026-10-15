@@ -256,7 +256,8 @@ impl LayIbusEngine {
                         self.cancel_precognition_display_generation();
                         let commit_started = Instant::now();
                         if managed_commit {
-                            self.commit_managed_passthrough_char(emitter, ' ').await?;
+                            self.commit_managed_passthrough_char(emitter, ' ', keycode)
+                                .await?;
                         } else {
                             self.observe_terminal_passthrough_char(emitter, ' ').await?;
                         }
@@ -341,7 +342,8 @@ impl LayIbusEngine {
                     let autocorrect_us = autocorrect_started.elapsed().as_micros();
                     let commit_started = Instant::now();
                     if managed_commit {
-                        self.commit_managed_passthrough_char(emitter, ' ').await?;
+                        self.commit_managed_passthrough_char(emitter, ' ', keycode)
+                            .await?;
                     } else {
                         self.observe_terminal_passthrough_char(emitter, ' ').await?;
                     }
@@ -489,7 +491,8 @@ impl LayIbusEngine {
                 );
                 return Ok(true);
             }
-            self.commit_managed_passthrough_char(emitter, ch).await?;
+            self.commit_managed_passthrough_char(emitter, ch, keycode)
+                .await?;
             self.trace_key("printable_managed_commit", keyval, keycode, true, Some(ch));
             super::trace::record_printable_key_timing(
                 "managed_commit",
