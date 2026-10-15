@@ -145,6 +145,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if keyval == KEY_ENTER || keyval == KEY_KP_ENTER {
+            self.preserve_manual_autocorrection_restoration();
             self.revoke_managed_word_start_before_client_key();
             if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
@@ -162,6 +163,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if keyval == KEY_SPACE {
+            self.preserve_manual_autocorrection_restoration();
             let space_started = Instant::now();
             if self.composition.legacy_word_preedit_active {
                 if self.take_manual_toggle_autocorrect_suppression() {

@@ -68,6 +68,9 @@ fn pending_crossed_following_word(pending: bool, current_word_is_empty: bool) ->
 
 pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
     if let Some(correction) = ctx.buffer.take_user_learning_correction(true) {
+        if correction.user_target().as_deref() == Some(correction.lay_from.as_str()) {
+            *ctx.suppress_next_typing_assist_after_manual_replay = true;
+        }
         append_user_correction_learning_log(&correction);
     }
     let pending_expired = pending_crossed_following_word(

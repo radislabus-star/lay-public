@@ -376,6 +376,12 @@ impl LayIbusEngine {
             return;
         }
         self.backspace_committed_tail_only();
+        // Retain observation state only after the same validated native pop;
+        // it grants no output effects or learning from speculative submission.
+        self.committed_tail.pending_completion_learning = speculative
+            .committed_tail
+            .pending_completion_learning
+            .clone();
     }
 
     fn commit_atomic_speculation(
@@ -485,6 +491,7 @@ impl LayIbusEngine {
             self.observe_visible_postcondition();
         }
         self.apply_deferred_layout_actions();
+        self.confirm_manual_autocorrection_restoration();
         self.apply_deferred_learning_actions();
         true
     }
@@ -495,6 +502,25 @@ impl LayIbusEngine {
         rejected: &str,
         transition: lay::typing_cpu::ObservedSystemTransition,
     ) {
+        self.record_system_revert_evidence(original, rejected, transition, false);
+    }
+
+    pub(super) fn record_observed_manual_restoration(&mut self, original: &str, rejected: &str) {
+        self.record_system_revert_evidence(
+            original,
+            rejected,
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+            true,
+        );
+    }
+
+    fn record_system_revert_evidence(
+        &mut self,
+        original: &str,
+        rejected: &str,
+        transition: lay::typing_cpu::ObservedSystemTransition,
+        restoration_observed: bool,
+    ) {
         if !self.content_allows_personalization() {
             return;
         }
@@ -504,8 +530,11 @@ impl LayIbusEngine {
                     original: original.to_string(),
                     rejected: rejected.to_string(),
                     transition,
+                    restoration_observed,
                 },
             );
+        } else if restoration_observed {
+            lay::typing_cpu::TypingCpu::record_observed_manual_restoration(original, rejected);
         } else {
             lay::typing_cpu::TypingCpu::record_reverted_system_apply(
                 original, rejected, transition,
@@ -524,6 +553,7 @@ impl LayIbusEngine {
                     original,
                     rejected,
                     transition,
+                    restoration_observed,
                 } => {
                     #[cfg(test)]
                     self.atomic
@@ -531,9 +561,15 @@ impl LayIbusEngine {
                         .lock()
                         .expect("atomic feedback events")
                         .push("reverted");
-                    lay::typing_cpu::TypingCpu::record_reverted_system_apply(
-                        &original, &rejected, transition,
-                    )
+                    if restoration_observed {
+                        lay::typing_cpu::TypingCpu::record_observed_manual_restoration(
+                            &original, &rejected,
+                        );
+                    } else {
+                        lay::typing_cpu::TypingCpu::record_reverted_system_apply(
+                            &original, &rejected, transition,
+                        );
+                    }
                 }
             }
         }
@@ -621,6 +657,7 @@ pub(crate) fn td120_test_defer_reverted_feedback_on_pending(engine: &LayIbusEngi
             original: "source".to_string(),
             rejected: "target".to_string(),
             transition: lay::typing_cpu::ObservedSystemTransition::Correction,
+            restoration_observed: false,
         });
 }
 
@@ -649,6 +686,40 @@ mod tests {
         );
         assert!(engine.bind_focus_path());
         engine
+    }
+
+    #[test]
+    fn atomic_native_backspaces_retain_observed_autocorrection_learning() {
+        use crate::engine::{PendingSystemOutcomeFeedback, SystemOutcomeKind};
+        use lay::text_edit::VisibleTailSource;
+        let mut live = engine();
+        live.committed_tail.buffer = "Хунту ".into();
+        live.record_observed_system_outcome(Some(&PendingSystemOutcomeFeedback {
+            original: "Хунлу".into(),
+            replacement: "Хунту ".into(),
+            source: VisibleTailSource::ImeCommittedTail,
+            kind: SystemOutcomeKind::Correction,
+        }));
+        for transaction in 101..=102 {
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                KEY_BACKSPACE,
+                14,
+                0,
+                (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                (RECEIPT_NONE, 0, Vec::new()),
+            ))
+            .expect("native backspace");
+            assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
+            assert!(proposal.1.is_empty());
+            assert!(live
+                .committed_tail
+                .pending_completion_learning
+                .as_ref()
+                .is_some_and(|pending| pending.editing));
+        }
+        assert_eq!(live.committed_tail.buffer, "Хунт");
+        assert!(live.atomic.deferred_learning_actions.is_empty());
     }
 
     #[test]
@@ -710,6 +781,7 @@ mod tests {
                     original: "source".into(),
                     rejected: "target".into(),
                     transition: lay::typing_cpu::ObservedSystemTransition::Correction,
+                    restoration_observed: false,
                 },
             );
             engine.apply_deferred_learning_actions();

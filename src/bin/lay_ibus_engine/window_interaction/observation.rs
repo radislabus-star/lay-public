@@ -4483,6 +4483,7 @@ impl LayIbusEngine {
             previous_revision,
             retained_progress.as_ref().map(|receipt| &receipt.snapshot),
         );
+        self.confirm_manual_autocorrection_restoration();
     }
     pub(crate) fn advance_surrounding_observation_revision(&mut self) {
         self.exact_manual_target_snapshot = None;
@@ -5721,7 +5722,7 @@ impl LayIbusEngine {
         }
     }
     pub(crate) fn record_observed_system_outcome(
-        &self,
+        &mut self,
         feedback: Option<&PendingSystemOutcomeFeedback>,
     ) {
         if !self.context_word_is_known() || !self.content_allows_personalization() {
@@ -5739,6 +5740,10 @@ impl LayIbusEngine {
                 );
             }
             SystemOutcomeKind::Correction => {
+                self.arm_observed_autocorrection_learning(
+                    &feedback.original,
+                    &feedback.replacement,
+                );
                 lay::typing_cpu::TypingCpu::record_observed_system_apply(
                     &feedback.original,
                     &feedback.replacement,

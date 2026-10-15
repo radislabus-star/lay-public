@@ -33,6 +33,7 @@ pub(crate) enum DeferredLearningAction {
         original: String,
         rejected: String,
         transition: lay::typing_cpu::ObservedSystemTransition,
+        restoration_observed: bool,
     },
 }
 
@@ -491,4 +492,17 @@ pub(crate) struct PendingImeCompletionLearning {
     pub(crate) typed_prefix: String,
     pub(crate) accepted_word: String,
     pub(crate) editing: bool,
+    /// An observed automatic edit can reuse the same local edit trajectory.
+    /// It is never a provisional Tab acceptance or positive completion vote.
+    pub(crate) autocorrection: Option<PendingAutocorrectionRestoration>,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct PendingAutocorrectionRestoration {
+    pub(crate) original: String,
+    pub(crate) proposal: String,
+    pub(crate) restored_tail: String,
+    pub(crate) owner_lease_identity: u64,
+    pub(crate) started_at: Instant,
+    pub(crate) requested: bool,
 }

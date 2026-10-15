@@ -8,6 +8,20 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 static ATOMIC_WRITE_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
+/// Hold a separate lock file for a complete read/modify/rename transaction.
+pub(crate) fn lock_private_file(path: &Path) -> std::io::Result<std::fs::File> {
+    ensure_parent(path)?;
+    let mut options = std::fs::OpenOptions::new();
+    options.read(true).write(true).create(true).truncate(false);
+    #[cfg(unix)]
+    options
+        .mode(0o600)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+    let file = options.open(path)?;
+    file.lock()?;
+    Ok(file)
+}
+
 pub fn append_private_text(path: &Path, text: &str) -> std::io::Result<()> {
     ensure_parent(path)?;
     let mut options = std::fs::OpenOptions::new();

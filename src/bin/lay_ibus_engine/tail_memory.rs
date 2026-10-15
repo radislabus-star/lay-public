@@ -370,7 +370,151 @@ impl LayIbusEngine {
                 typed_prefix,
                 accepted_word,
                 editing: false,
+                autocorrection: None,
             });
+    }
+
+    /// Only the existing observed-outcome boundary may arm this trace.
+    pub(super) fn arm_observed_autocorrection_learning(&mut self, original: &str, proposal: &str) {
+        if !self.context_word_is_known() || !self.content_allows_personalization() {
+            return;
+        }
+        let original = original.trim_end_matches(char::is_whitespace);
+        let proposal = proposal.trim_end_matches(char::is_whitespace);
+        let (Some((from_start, _)), Some((to_start, _))) = (
+            last_tail_token_range(original),
+            last_tail_token_range(proposal),
+        ) else {
+            return;
+        };
+        let from = &original[from_start..];
+        let to = &proposal[to_start..];
+        if from == to
+            || original[..from_start] != proposal[..to_start]
+            || !from.chars().all(char::is_alphabetic)
+            || !to.chars().all(char::is_alphabetic)
+        {
+            return;
+        }
+        let Some(prefix) = self
+            .committed_tail
+            .buffer
+            .trim_end_matches(char::is_whitespace)
+            .strip_suffix(proposal)
+        else {
+            return;
+        };
+        let restored_tail = format!("{prefix}{original}");
+        self.committed_tail.pending_completion_learning = Some(PendingImeCompletionLearning {
+            context_tail: original[..from_start].trim_end().to_string(),
+            typed_prefix: from.to_string(),
+            accepted_word: to.to_string(),
+            editing: false,
+            autocorrection: Some(super::engine::PendingAutocorrectionRestoration {
+                original: original.to_string(),
+                proposal: proposal.to_string(),
+                restored_tail,
+                owner_lease_identity: self.client_context.runtime_owner_lease_identity,
+                started_at: Instant::now(),
+                requested: false,
+            }),
+        });
+    }
+
+    /// Observe user intent before Space can select another automatic edit.
+    /// The existing suppression owns the ordinary Space delivery unchanged.
+    pub(super) fn preserve_manual_autocorrection_restoration(&mut self) -> bool {
+        let restores = self
+            .committed_tail
+            .pending_completion_learning
+            .as_ref()
+            .filter(|pending| pending.editing)
+            .and_then(|pending| pending.autocorrection.as_ref())
+            .is_some_and(|pending| {
+                !pending.requested
+                    && self.autocorrection_restoration_matches(pending, &self.committed_tail.buffer)
+            });
+        if !restores || !self.arm_current_word_autocorrect_suppression() {
+            return false;
+        }
+        if let Some(pending) = self
+            .committed_tail
+            .pending_completion_learning
+            .as_mut()
+            .and_then(|pending| pending.autocorrection.as_mut())
+        {
+            pending.requested = true;
+        }
+        // A local preedit/mirror is intent, not a visible client result.
+        self.confirm_manual_autocorrection_restoration();
+        true
+    }
+
+    pub(super) fn confirm_manual_autocorrection_restoration(&mut self) {
+        let confirmed = self
+            .committed_tail
+            .pending_completion_learning
+            .as_ref()
+            .and_then(|pending| pending.autocorrection.as_ref())
+            .filter(|pending| pending.requested)
+            .is_some_and(|pending| {
+                if !self.composition.buffer.is_empty()
+                    || !self.autocorrection_restoration_matches(
+                        pending,
+                        self.committed_tail
+                            .buffer
+                            .trim_end_matches(char::is_whitespace),
+                    )
+                {
+                    return false;
+                }
+                let Some(snapshot) = self
+                    .client_context
+                    .surrounding_text_snapshot
+                    .as_ref()
+                    .filter(|snapshot| !snapshot.has_selection())
+                else {
+                    return false;
+                };
+                let chars = pending.restored_tail.chars().count();
+                let exact = snapshot.suffix_before_cursor(chars).as_deref()
+                    == Some(pending.restored_tail.as_str());
+                let after_boundary = snapshot
+                    .suffix_before_cursor(chars + 1)
+                    .is_some_and(|tail| {
+                        tail.chars().last().is_some_and(char::is_whitespace)
+                            && tail.trim_end_matches(char::is_whitespace) == pending.restored_tail
+                    });
+                after_boundary
+                    || exact
+                        && snapshot
+                            .text
+                            .chars()
+                            .nth(snapshot.cursor_pos as usize)
+                            .is_none_or(super::preedit::is_observed_word_boundary)
+            });
+        if !confirmed {
+            return;
+        }
+        let pending = self
+            .committed_tail
+            .pending_completion_learning
+            .take()
+            .and_then(|pending| pending.autocorrection)
+            .expect("confirmed restoration");
+        self.record_observed_manual_restoration(&pending.original, &pending.proposal);
+    }
+
+    fn autocorrection_restoration_matches(
+        &self,
+        pending: &super::engine::PendingAutocorrectionRestoration,
+        tail: &str,
+    ) -> bool {
+        self.context_word_is_known()
+            && self.content_allows_personalization()
+            && pending.owner_lease_identity == self.client_context.runtime_owner_lease_identity
+            && pending.started_at.elapsed() <= IME_AUTO_UNDO_MAX_AGE
+            && tail == pending.restored_tail
     }
 
     pub(super) fn begin_pending_ime_completion_edit_before_backspace(&mut self) {
@@ -406,6 +550,10 @@ impl LayIbusEngine {
         let Some(pending) = self.committed_tail.pending_completion_learning.take() else {
             return;
         };
+        if pending.autocorrection.is_some() {
+            // An unchanged automatic output is not a user acceptance.
+            return;
+        }
         let accepted_tail = format!("{} ", pending.accepted_word);
         if self.committed_tail.buffer.ends_with(&accepted_tail) {
             publish_accepted_completion_feedback(&pending.context_tail, &pending.accepted_word);
@@ -433,6 +581,14 @@ impl LayIbusEngine {
             .pending_completion_learning
             .take()
             .expect("editing completion must remain pending");
+        if let Some(correction) = pending.autocorrection.as_ref() {
+            if correction.requested
+                && self.autocorrection_restoration_matches(correction, tail_before_boundary)
+            {
+                self.committed_tail.pending_completion_learning = Some(pending);
+            }
+            return true;
+        }
         let final_word = lay::nanda_wave::llmwave::tokenize(tail_before_boundary)
             .into_iter()
             .next_back();
@@ -2004,6 +2160,169 @@ mod tests {
     };
     use std::sync::{Arc, Mutex};
     use std::time::{Duration, Instant};
+
+    #[test]
+    fn observed_autocorrection_keeps_a_manual_restoration_trajectory() {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.set_content_type_state(0, 0);
+        engine.committed_tail.buffer = "Хунту ".to_string();
+        engine.record_observed_system_outcome(Some(&PendingSystemOutcomeFeedback {
+            original: "Хунлу ".to_string(),
+            replacement: "Хунту ".to_string(),
+            source: VisibleTailSource::ImeCommittedTail,
+            kind: SystemOutcomeKind::Correction,
+        }));
+
+        engine.begin_pending_ime_completion_edit_before_backspace();
+        assert!(engine
+            .committed_tail
+            .pending_completion_learning
+            .as_ref()
+            .is_some_and(|pending| pending.editing));
+    }
+
+    fn restoration_engine() -> LayIbusEngine {
+        let mut engine = LayIbusEngine::new(
+            "/test".to_string(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.set_content_type_state(0, 0);
+        assert!(engine.bind_focus_path());
+        engine.committed_tail.buffer = "ООО Хунту ".into();
+        engine.record_observed_system_outcome(Some(&PendingSystemOutcomeFeedback {
+            original: "Хунлу".into(),
+            replacement: "Хунту ".into(),
+            source: VisibleTailSource::ImeCommittedTail,
+            kind: SystemOutcomeKind::Correction,
+        }));
+        for _ in 0..3 {
+            engine.begin_pending_ime_completion_edit_before_backspace();
+            engine.backspace_committed_tail_only();
+        }
+        engine.push_tail_char('л');
+        engine.push_tail_char('у');
+        assert_eq!(engine.committed_tail.buffer, "ООО Хунлу");
+        engine.atomic.speculation = true;
+        engine
+    }
+
+    #[test]
+    fn manual_restoration_suppresses_next_correction_and_records_one_deferred_vote() {
+        let mut engine = restoration_engine();
+        assert!(engine.preserve_manual_autocorrection_restoration());
+        assert!(!engine.preserve_manual_autocorrection_restoration());
+        assert!(engine.atomic.deferred_learning_actions.is_empty());
+        engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            "ООО Хунлу".into(),
+            9,
+            9,
+        )));
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
+        assert_eq!(engine.atomic.deferred_learning_actions.len(), 1);
+        let super::super::engine::DeferredLearningAction::RevertedSystemApply {
+            original,
+            rejected,
+            transition,
+            restoration_observed,
+        } = &engine.atomic.deferred_learning_actions[0];
+        assert_eq!(original, "Хунлу");
+        assert_eq!(rejected, "Хунту");
+        assert!(*restoration_observed);
+        assert_eq!(
+            *transition,
+            lay::typing_cpu::ObservedSystemTransition::Correction
+        );
+        assert!(engine.take_manual_toggle_autocorrect_suppression());
+        assert!(!engine.take_manual_toggle_autocorrect_suppression());
+    }
+
+    #[test]
+    fn manual_restoration_waits_for_real_target_without_active_preedit_or_selection() {
+        for variant in 0..4 {
+            let mut engine = restoration_engine();
+            assert!(engine.preserve_manual_autocorrection_restoration());
+            match variant {
+                0 => engine.observe_external_surrounding_text(None),
+                1 => engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                    "ООО Хунту".into(),
+                    9,
+                    9,
+                ))),
+                2 => {
+                    engine.composition.buffer = "Хунлу".into();
+                    engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                        "ООО Хунлу".into(),
+                        9,
+                        9,
+                    )));
+                }
+                _ => engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                    "ООО Хунлу".into(),
+                    9,
+                    4,
+                ))),
+            }
+            assert!(
+                engine.atomic.deferred_learning_actions.is_empty(),
+                "variant {variant}"
+            );
+        }
+    }
+
+    #[test]
+    fn manual_restoration_survives_boundary_until_exact_client_confirmation() {
+        let mut engine = restoration_engine();
+        assert!(engine.preserve_manual_autocorrection_restoration());
+        engine.push_tail_char(' ');
+        assert!(engine.atomic.deferred_learning_actions.is_empty());
+        engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            "ООО Хунлу ".into(),
+            10,
+            10,
+        )));
+        assert_eq!(engine.atomic.deferred_learning_actions.len(), 1);
+    }
+
+    #[test]
+    fn manual_restoration_never_learns_changed_context_expired_owner_or_private_text() {
+        for variant in 0..5 {
+            let mut engine = restoration_engine();
+            match variant {
+                0 => engine.committed_tail.buffer = "другой Хунлу".into(),
+                1 => engine.client_context.runtime_owner_lease_identity += 1,
+                2 => {
+                    let pending = engine
+                        .committed_tail
+                        .pending_completion_learning
+                        .as_mut()
+                        .unwrap()
+                        .autocorrection
+                        .as_mut()
+                        .unwrap();
+                    pending.started_at = Instant::now() - Duration::from_secs(31);
+                }
+                3 => engine.set_content_type_state(0, 2112),
+                _ => engine.reset_for_ibus_focus_change(),
+            }
+            assert!(
+                !engine.preserve_manual_autocorrection_restoration(),
+                "variant {variant}"
+            );
+            assert!(
+                engine.atomic.deferred_learning_actions.is_empty(),
+                "variant {variant}"
+            );
+        }
+    }
 
     #[test]
     fn committed_tail_range_keeps_separator_outside_token() {

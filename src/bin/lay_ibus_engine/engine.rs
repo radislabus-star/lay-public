@@ -28,9 +28,10 @@ pub(super) use state_groups::{
 };
 pub(super) use types::{
     DeferredLayoutAction, DeferredLearningAction, InputFrameIdentity, ManualToggleAuthority,
-    PendingImeCompletionLearning, PendingSpaceBoundaryCommit, PendingSpaceBoundarySelection,
-    PendingSystemOutcomeFeedback, PendingVisiblePostcondition, RecentCommittedTailReplace,
-    SpaceBoundaryPairProvenance, SpaceBoundaryPairScope, SystemOutcomeKind, WordInputMode,
+    PendingAutocorrectionRestoration, PendingImeCompletionLearning, PendingSpaceBoundaryCommit,
+    PendingSpaceBoundarySelection, PendingSystemOutcomeFeedback, PendingVisiblePostcondition,
+    RecentCommittedTailReplace, SpaceBoundaryPairProvenance, SpaceBoundaryPairScope,
+    SystemOutcomeKind, WordInputMode,
 };
 
 #[derive(Clone)]

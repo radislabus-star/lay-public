@@ -21,6 +21,7 @@ use crate::typing_scene::{
 
 mod hot;
 mod projection;
+mod restorations;
 
 pub(crate) use hot::{
     UsageCandidatePrior, UsageContextCandidate, UsageHotContext, UsageHotReadout,
@@ -72,6 +73,8 @@ struct UsageEvent {
     schema: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     episode_id: Option<String>,
+    #[serde(default, skip_serializing_if = "std::ops::Not::not")]
+    restoration_observed: bool,
     kind: UsageEventKind,
     #[serde(skip_serializing_if = "Option::is_none")]
     word: Option<String>,
@@ -181,6 +184,7 @@ impl UsageEvent {
             ts: unix_timestamp(),
             schema: Some(TYPED_EVENT_SCHEMA_V3),
             episode_id: event.episode_id.clone(),
+            restoration_observed: event.restoration_observed,
             kind: match event.kind {
                 TypingMemoryEventKind::Typed => UsageEventKind::Typed,
                 TypingMemoryEventKind::AcceptedFix => UsageEventKind::AcceptedFix,
@@ -442,6 +446,8 @@ enum UsageEventKind {
 struct UsageCounts {
     words: HashMap<String, u32>,
     #[serde(default)]
+    restored_words: restorations::Episodes,
+    #[serde(default)]
     accepted_words: HashMap<String, u32>,
     context_words: HashMap<String, u32>,
     #[serde(default)]
@@ -493,6 +499,23 @@ pub(crate) struct UsageStateMapSummary {
 }
 
 impl UsagePriorSnapshot {
+    /// User intent constrains automatic changes; explicit manual projection
+    /// never consults this preference. Retain unchanged surrounding words.
+    pub(crate) fn changes_protected_word(&self, original: &str, replacement: &str) -> bool {
+        original.split_whitespace().any(|token| {
+            let word = normalize_memory_word(token);
+            self.hot.restoration_count(&word) >= restorations::THRESHOLD
+                && replacement
+                    .split_whitespace()
+                    .filter(|value| *value == token)
+                    .count()
+                    < original
+                        .split_whitespace()
+                        .filter(|value| *value == token)
+                        .count()
+        })
+    }
+
     pub(crate) fn surface_coverage(&self, surface: &str) -> UsageSurfaceCoverage {
         self.hot.surface_coverage(surface)
     }
@@ -677,6 +700,14 @@ pub(crate) fn record_reverted_system_apply_if_enabled(
         return;
     }
     let events = TypingMemoryEvent::reverted_system_apply(original, rejected, source, operation);
+    record_typing_memory_episode_if_enabled(&events);
+}
+
+pub(crate) fn record_observed_manual_restoration_if_enabled(original: &str, rejected: &str) {
+    if !usage_learning_enabled() || original == rejected {
+        return;
+    }
+    let events = TypingMemoryEvent::observed_manual_restoration(original, rejected);
     record_typing_memory_episode_if_enabled(&events);
 }
 
@@ -892,6 +923,11 @@ pub(crate) fn snapshot_from_usage_events_for_tests(text: &str) -> UsagePriorSnap
     let mut counts = UsageCounts::default();
     add_usage_event_counts(&mut counts, text);
     usage_snapshot_from_counts(counts)
+}
+
+#[cfg(test)]
+pub(crate) fn typing_memory_event_json_for_tests(event: &TypingMemoryEvent) -> String {
+    serde_json::to_string(&UsageEvent::from_typing_memory_event(event)).expect("typed event JSON")
 }
 
 pub(crate) fn l2_surface_words_by_usage(limit: usize) -> Vec<String> {
@@ -1232,6 +1268,9 @@ fn load_usage_counts() -> UsageCounts {
         add_legacy_usage_counts(&mut counts, &text);
     }
     merge_usage_counts(&mut counts, load_usage_event_counts());
+    if let Some(path) = usage_events_path() {
+        restorations::merge(&mut counts.restored_words, restorations::load(&path));
+    }
     counts
 }
 
@@ -1267,6 +1306,7 @@ fn load_usage_event_counts() -> UsageCounts {
 }
 
 fn merge_usage_counts(target: &mut UsageCounts, source: UsageCounts) {
+    restorations::merge(&mut target.restored_words, source.restored_words);
     for (word, count) in source.words {
         *target.words.entry(word).or_default() = target
             .words
@@ -1353,6 +1393,7 @@ fn add_usage_event_counts(counts: &mut UsageCounts, text: &str) {
 }
 
 fn add_usage_event_count(counts: &mut UsageCounts, event: &UsageEvent) {
+    restorations::observe(&mut counts.restored_words, event);
     let Some(projected) = UsageEventProjection::from_event(event) else {
         return;
     };
@@ -1664,6 +1705,7 @@ fn read_last_usage_event(path: &Path) -> Option<UsageEvent> {
 fn usage_event_payload_eq(left: &UsageEvent, right: &UsageEvent) -> bool {
     left.schema == right.schema
         && left.episode_id == right.episode_id
+        && left.restoration_observed == right.restoration_observed
         && left.kind == right.kind
         && left.word == right.word
         && left.context == right.context
@@ -1722,6 +1764,9 @@ fn enqueue_usage_persist(path: PathBuf, line: String, tracks_local_hot: bool) {
 #[cfg(test)]
 fn enqueue_usage_persist(path: PathBuf, line: String, tracks_local_hot: bool) {
     if crate::private_file::append_private_text(&path, &line).is_ok() {
+        if restorations::persist(&path, &line).is_err() {
+            return;
+        }
         acknowledge_usage_persist(&path, usize::from(tracks_local_hot));
         compact_usage_events_if_needed(&path);
     }
@@ -1773,6 +1818,11 @@ fn flush_usage_persist(pending: &mut HashMap<PathBuf, UsagePersistBatch>) {
     for (path, batch) in std::mem::take(pending) {
         if crate::private_file::append_private_text(&path, &batch.text).is_err() {
             // Unsaved local evidence stays hot; never acknowledge a failed write.
+            continue;
+        }
+        if restorations::persist(&path, &batch.text).is_err() {
+            // Keep the existing hot evidence unacknowledged on failed storage.
+            // The append is retained; a later rebuild may recover its episode.
             continue;
         }
         acknowledge_usage_persist(&path, batch.local_hot_events);
@@ -1997,6 +2047,8 @@ fn correction_feedback_receipts_from_jsonl(
 
 fn compact_usage_counts_for_persist(counts: &UsageCounts) -> UsageCounts {
     UsageCounts {
+        // These are explicit preferences, not frequency-ranked activity.
+        restored_words: counts.restored_words.clone(),
         words: top_count_entries(&counts.words, USAGE_COUNTS_MAX_WORDS),
         accepted_words: top_count_entries(&counts.accepted_words, USAGE_COUNTS_MAX_ACCEPTED_WORDS),
         context_words: top_count_entries(&counts.context_words, USAGE_COUNTS_MAX_CONTEXT_WORDS),
@@ -2045,7 +2097,12 @@ fn usage_counts_cold_dictionary_logical_bytes(counts: &UsageCounts) -> usize {
     ]
     .into_iter()
     .map(|map| map.keys().map(String::len).sum::<usize>())
-    .sum()
+    .sum::<usize>()
+        + counts
+            .restored_words
+            .iter()
+            .map(|(word, votes)| word.len() + votes.iter().map(String::len).sum::<usize>())
+            .sum::<usize>()
 }
 
 fn top_count_entries(source: &HashMap<String, u32>, limit: usize) -> HashMap<String, u32> {

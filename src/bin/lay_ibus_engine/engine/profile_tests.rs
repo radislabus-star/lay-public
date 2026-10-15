@@ -123,6 +123,7 @@ fn private_content_keeps_volatile_manual_text_without_completion_learning() {
                     typed_prefix: "vol".to_string(),
                     accepted_word: "volatile".to_string(),
                     editing,
+                    autocorrection: None,
                 });
             if editing {
                 assert!(!engine.finalize_pending_ime_completion_edit("volatile"));

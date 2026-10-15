@@ -126,7 +126,8 @@ impl TransitionDecisionCore {
         let started = std::time::Instant::now();
         match mode {
             DecisionEvidenceMode::ClosedExact(certificate) => {
-                return evaluate_closed_exact(event, candidates, certificate, started);
+                return evaluate_closed_exact(event, candidates, certificate, started)
+                    .preserve_user_words(event, &crate::nanda_wave::cached_usage_prior_snapshot());
             }
             DecisionEvidenceMode::ClosedExactAbsent => {
                 return CandidateDecisionBatch::no_selection_with_started(started);
@@ -388,6 +389,7 @@ impl TransitionDecisionCore {
                 total_us: elapsed_us(finished.duration_since(started)),
             },
         }
+        .preserve_user_words(event, &usage)
     }
 }
 
@@ -1127,6 +1129,22 @@ pub(crate) struct CandidateDecisionBatch {
 }
 
 impl CandidateDecisionBatch {
+    fn preserve_user_words(
+        mut self,
+        event: &TypingErrorEvent,
+        usage: &crate::nanda_wave::usage_prior::UsagePriorSnapshot,
+    ) -> Self {
+        if self.selected_candidate.as_ref().is_some_and(|candidate| {
+            usage.changes_protected_word(&event.original, &candidate.replacement)
+        }) {
+            self.selected_index = None;
+            self.selected_candidate = None;
+            self.selected_evaluation = None;
+            self.selected_transition = None;
+        }
+        self
+    }
+
     pub(crate) fn no_selection() -> Self {
         Self {
             evaluations: Vec::new(),
