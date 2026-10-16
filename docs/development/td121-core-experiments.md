@@ -1255,3 +1255,14 @@ INSTALL.json remains immutable with verified88 rollback. No delivery/model/input
 route changes or localfunctionalinput. All owned remote finite seats CLOSED.
 Source/native mechanism scope complete; retained compatibility failures belong
 also to TD121 and do not become PASS. Source-only public tag/release next.
+
+
+Publication verified 2026-10-16T22:44:16.720061+00:00: source-only tagv1.0.89 ->
+e9d40144fff79c59ea7189599b6957b2cec326bb, public releasehttps://github.com/radislabus-star/lay-public/releases/tag/v1.0.89.
+Normal publicmain+both working-branch pushes/readback, private origin/main untouched;
+no force/delete. #46 material updatehttps://github.com/radislabus-star/lay-public/issues/46#issuecomment-6226098048
+posted once and exact body read back. #47 remains NEEDS_REPORTER_RETEST; prior
+#59/#60/#43/#44/#48 closures unchanged. Source/runtime work DONE for TD154/155;
+TD121 known compatibility limits remain OPEN. Only publication metadata changes
+follow the exact tested core; no repeated tests/builds/input/install/restarts.
+BASE/PUBLICATION.json, METADATA-PUSH.json, ISSUE46-REPLY.json.

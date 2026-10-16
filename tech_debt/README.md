@@ -2,8 +2,8 @@
 
 **1.0.89 установлена**: CLI, daemon, IME и панель; загруженные SHA проверены.
 [TD-154](154-acknowledge-consecutive-owned-space-boundaries.md) и
-[TD-155](155-replay-exact-acknowledged-space-series.md): source/native/install DONE,
-публикация готовится. Исходники3211/3211 без исключений, plan/code9/10,
+[TD-155](155-replay-exact-acknowledged-space-series.md): source/native/install/publication DONE, релиз
+[1.0.89](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.89). Исходники3211/3211 без исключений, plan/code9/10,
 три контролируемых регрессии, первые main CI/Security SUCCESS.
 Полная новая матрица:349PASS/50FAIL/33BLOCKED/432,0NOT_TESTED и0потерянных
 прежних defaultPASS. Дополнительные normal80:64PASS/12FAIL/4BLOCKED_PRECONDITION,

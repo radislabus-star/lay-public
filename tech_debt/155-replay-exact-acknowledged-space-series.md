@@ -1,11 +1,10 @@
 # TD-155 — Replay an exactly leased series of acknowledged Space boundaries
 
-Status: SOURCE_NATIVE_INSTALL_DONE_1.0.89, publication pending; final source review9/10. Priority: P1, next consumer after TD154. Root implements;
+Status: DONE_RELEASE_1.0.89 (source/native/install/publication complete); final source review9/10. Priority: P1, next consumer after TD154. Root implements;
 fresh-context plan and code reviews, at most two passes each. Authoritative
 checkout /home/ubu/projects/lay-space-boundary-shift-20261007, branch
 codex/space-boundary-shift-20261007, baseline76361affeef7bb0cb9fbe35c1bf9293137b7156b.
-Baseline at task start was installed/published1.0.88. Current1.0.89 is installed;
-publication is pending. Exact final scope and immutable receipts are below.
+Baseline at task start was installed/published1.0.88. Current1.0.89 is installed and published. Exact final scope and immutable receipts are below.
 
 ## Root cause, measured evidence and authority boundary
 
@@ -333,3 +332,14 @@ INSTALL.json remains immutable with verified88 rollback. No delivery/model/input
 route changes or localfunctionalinput. All owned remote finite seats CLOSED.
 Source/native mechanism scope complete; retained compatibility failures belong
 also to TD121 and do not become PASS. Source-only public tag/release next.
+
+
+Publication verified 2026-10-16T22:44:16.720061+00:00: source-only tagv1.0.89 ->
+e9d40144fff79c59ea7189599b6957b2cec326bb, public releasehttps://github.com/radislabus-star/lay-public/releases/tag/v1.0.89.
+Normal publicmain+both working-branch pushes/readback, private origin/main untouched;
+no force/delete. #46 material updatehttps://github.com/radislabus-star/lay-public/issues/46#issuecomment-6226098048
+posted once and exact body read back. #47 remains NEEDS_REPORTER_RETEST; prior
+#59/#60/#43/#44/#48 closures unchanged. Source/runtime work DONE for TD154/155;
+TD121 known compatibility limits remain OPEN. Only publication metadata changes
+follow the exact tested core; no repeated tests/builds/input/install/restarts.
+BASE/PUBLICATION.json, METADATA-PUSH.json, ISSUE46-REPLY.json.

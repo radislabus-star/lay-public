@@ -1,7 +1,7 @@
 {
   "schema": "lay.architecture-decision.v1",
   "date": "2026-10-17",
-  "status": "INSTALLED_IDENTITIES_VERIFIED_PUBLICATION_PENDING",
+  "status": "INSTALLED_AND_PUBLISHED_IDENTITIES_VERIFIED",
   "owning_document": "docs/development/td121-core-experiments.md",
   "decision": "Align only the exported panel APP_VERSION from1.0.88 to1.0.89. Preserve all exact tested core bytes, full3211/3211, main CI/Security firstattempt and whole native432+optional80 receipts. No behavior re-test or rebuild for this display-only correction. Use exact old-byte/one-literal/new-byte proof, never a generic source-hash exemption.",
   "failed_install": "td155-install89-20261017/INSTALL.json: extension version did not settle; automatic six-file rollback VERIFIED and old88 loaded hashes independently checked.",
@@ -25,6 +25,8 @@
     "package_review": "9/10 pass2/2, separate from source review",
     "protected_files": 23,
     "new_functional_tests": 0,
-    "input_keys": 0
+    "input_keys": 0,
+    "source_release": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.89",
+    "tag_commit": "e9d40144fff79c59ea7189599b6957b2cec326bb"
   }
 }

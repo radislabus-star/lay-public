@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.89` (installed CLI/daemon/IME/panel; publication pending)
+- `1.0.89` (published and installed CLI/daemon/IME/panel)
 
 1.0.89: exact acknowledged Space-series replay (TD154/155), source3211/3211,
 review9/10, first-attempt source-main CI/Security. New whole432=349P50F33B,

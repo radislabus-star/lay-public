@@ -1,6 +1,6 @@
 # TD-154 — Keep exact receipts for consecutive owned Space boundaries
 
-Status: SOURCE_NATIVE_INSTALL_DONE_1.0.89, publication pending; independent review9/10. Priority: P1, before further optional
+Status: DONE_RELEASE_1.0.89 (source/native/install/publication complete); independent review9/10. Priority: P1, before further optional
 shortcut compatibility changes. Baseline: fe614235967b4b7779085b5e784b9c5c7a2ebcde,
 released/installed 1.0.88. Root implements; independent review, at most two passes.
 

@@ -1,9 +1,9 @@
-# Current checkpoint — 2026-10-17, installed1.0.89 / publication pending
+# Current checkpoint — 2026-10-17, installed/published1.0.89; TD154/155 DONE
 
 Authoritative /home/ubu/projects/lay-space-boundary-shift-20261007,
 branch codex/space-boundary-shift-20261007. Functional8562c2bb pushed to publicmain
 and both working branches; firstmain CI38972539257/Security38972539134 SUCCESS.
-TD154/155 source/native/install DONE; publish89 next, no more functional tests.
+TD154/155 source/native/install/publication DONE; no more functional tests for this release.
 Source3211/3211 zeroexemptions, corrected focused14/14 and3controls, final source
 review9/10 pass2/2. Fullg48ali01 and canonicalrwecv4fk receipts immutable.
 
@@ -34,11 +34,19 @@ daemon9b9f7dcab2772f6daf4aa62682df02a967f9c17366c50819fee925d4e646c4f2.
 local functional keys0. All owned remoteGUI scopes/finite seats CLOSED,VT1.
 Do not retry either installer or repeat native/source tests merely for publication.
 
-Next: commit only current metadata/graph/Markdown; normal push publicmain+both
-working branches (never divergentprivate origin/main), tag/releasev1.0.89 source-only,
-reply materially to#46, update publication receipts. Existing#59/#60/#43/#44/#48
-replies stay;#47 awaits reporter OrangePi result, do not falsely close. No RDP,
-local functionalinput, model changes or globalIBus restart. SSH e@192.168.3.94 works.
+Publication COMPLETE: tagv1.0.89 ->e9d40144fff79c59ea7189599b6957b2cec326bb,
+source-only official releasehttps://github.com/radislabus-star/lay-public/releases/tag/v1.0.89,
+published2026-10-16T22:44:15Z. Publicmain+both working branches normally
+pushed/readback; tagalso origin. Follow-up Markdown commit records publication;
+read latestHEAD fromgit. PUBLICATION.json / METADATA-PUSH.json inBASE.
+#46 material reply posted/readback once6226098048; ISSUE46-REPLY.json.
+#47 remains reporter OrangePi retest gate, not a closed confirmed fix. Existing
+#59/#60/#43/#44/#48 replies stay. Runtime unchanged by final publication metadata.
+Current remaining technical scope is TD121 compatibility, with known native50FAIL/
+33BLOCKED and optional12FAIL/4preconditions, all recorded by receipt. Do not
+blindly retry unchanged source/input or re-open completedTD154/155. Future work
+starts from actual first refusal, no delivery-route/model/globalIBus changes.
+SSH e@192.168.3.94 works; no RDP/local functionalkeys.
 Old setup-only partial0nativejobs/40NOT_TESTED remains archived in BASE/native-
 shortcuts-SETUP-ATTEMPT1 and remote RELEASE89-TD155-SHORTCUTS-SETUP-ATTEMPT1.
 Private helper labels/tags metadata amendments and failed full/first draft evidence
