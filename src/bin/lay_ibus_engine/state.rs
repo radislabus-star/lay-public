@@ -400,11 +400,15 @@ impl LayIbusEngine {
         // alter the observed word boundary. Its one-use ticket is tied to the
         // exact tail epoch and can retain only that word's prepared Space work.
         let preserves_managed_commit_reset = self.take_managed_commit_reset_echo();
-        let preserved_space_frame = if preserves_managed_commit_reset {
-            self.capture_space_autocorrect_frame_identity()
-        } else {
-            self.capture_pending_reset_space_frame()
-        };
+        // Revocation temporarily unconfirms the retained client receipt. Keep
+        // its stable predecessor frame before the managed echo can select an
+        // independent surrounding-revision frame; restoration grants no new
+        // computation identity and cannot recover an already retired slot.
+        let preserved_space_frame = self.capture_pending_reset_space_frame().or_else(|| {
+            preserves_managed_commit_reset
+                .then(|| self.capture_space_autocorrect_frame_identity())
+                .flatten()
+        });
         self.cancel_precognition_display_generation();
         if let Some(identity) = preserved_space_frame.as_ref() {
             self.retain_space_autocorrect_across_reset(identity);

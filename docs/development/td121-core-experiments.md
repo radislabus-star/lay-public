@@ -964,3 +964,61 @@ regression. MSRV1.88 both configurations, strict lints530/354 unchanged, canon15
 architecture/audit50, Node/harness/panel PASS;994 tested files matched locally.
 Fresh source review9/10; final canonical/matched build/new native pending.
 Both original rejected E6 full Firefox receipts remain unchanged.
+
+
+## TD-151 / TD-152 — new b411 release blockers before production edits
+
+2026-10-16. TD-150 final build a0620bf..., IME d0ef253..., Firefox complete
+169P28F19B/216. Captured fullscreen/space8 repeat now5/5, standard60/60,
+420/420timings median98.694ms, p95112.273ms.
+One lostPASS functional/normal/space_en_ru/7: exact inline preparations14/15
+at epoch11522 precede matched Reset46045, pairedrelease and Space46047;
+lookup NotReady worker15/wait0. Trace /home/ubu/.cache/lay/development/td150-install88-20261016/space7-failure/firefox-functional-l3nq1f8n-7-space_en_ru.jsonl.
+Preparation trace alone precedes finish_request; causal test must establish
+stored readiness and precise identity loss. Hypothesis: temporary post-Reset
+capture mismatch retires a same-word prepared slot before restoring the exact
+owned observation. No runtime edits; actual adapter RED pending. Chrome full
+continues under sole remote heavy lease; do not splice the current pair.
+[TD-151](../../tech_debt/151-preserve-prepared-space-frame-on-matched-reset.md).
+
+Separate CI38901069439 failed overlapping_handled_releases_publish_only_the_latest_completion;
+no raw panic/artifact, same remote3210 passed. Diagnose exact material readiness
+and bounded callback order without assuming a runtime defect or adding retries.
+[TD-152](../../tech_debt/152-control-overlapping-release-test-readiness.md).
+Installed87/config/models/routes unchanged, installation blocked by both gates.
+
+
+B411 complete matched new pair: Firefox169P28F19B / Chrome179P23F14B /
+348P51F33B/432,0NOT_TESTED, both9jobs/emptyerrors/cleanupVT1. Only new
+lostPASS Firefoxnormal/space_en_ru/7; Chrome0lost. TD-150 oldfullscreen8
+now5/5; FFstandard420/420median98.694,p95112.273ms, Chrome406/420
+(14missing)82.307,p9597.386. Release/installation blocked pending TD-151/152,
+no unchanged-byte repeat. New source-only causal diagnosis snapshot frozen
+3fc2c350..., td151-reset-diagnosis-359fg2lz, contains tests only/no runtime edit.
+
+
+TD151 causal RED td151-reset-diagnosis-359fg2lz2/3PASS17.25s: real inline
+exact-ready before matched Reset; after Reset slotgone although pending/current
+frames exactly equal pre-Reset prepared. Old exact-refresh and CI baselinePASS.
+First loss is existing soft-reset retention before owned observation restoration;
+prefer existing stable pending predecessor frame, then former managed-echo
+fallback. Decision2026-10-16-retain-stable-pending-space-frame-on-reset.json;
+no changed identity guard, verifier, timeout, route or model. Green/control/full
+and new native pending; installed87 unchanged. CI originalcause stillUNKNOWN.
+
+
+TD151/152 fresh full source td151-full-source-gvt96j4h3211/3211 PASS,
+3175correctness+36package,0failure/exemption,693.46s, archive844618fc... .
+MSRV1.88both/strictlints530-354same/canon15/architecture-audit50/Node/harness122
+(oneexplicitSkip)/panelPASS. Newmanifest3237 addsone TD151regression only;
+oldclassifications/15ignored/11performanceunchanged. Finalgraph+test-only TD152
+encoding assertion check pending, then matchingbuild/native/CI; installed87.
+
+
+TD151 final canonical td151-final-canonical-1gumzyss PASS48.56s,17currentPython
+encoding/fixed-only cases +15canon +15privatehelperAST;4canonicalmetadatafetched,
+993functionalfullproofinputsidentical. Final independent TD151/TD152 code reviews
+both9/10 pass2/2/noP1-P2; newcontext-free thread unavailable(platformlimit),
+reused unrelated reviewthreads explicitly. Rootallimplementation. Source tasks
+complete; genuine newCI/matchingbuild/native432+options80/install remainpending.
+All oldrejectedreceiptsretained; no route/model/deadline/learning change.

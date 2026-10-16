@@ -17,7 +17,7 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/state.rs:L188:.with_winner_action()",
-        "src/bin/lay_ibus_engine/state.rs:L514:.replace_committed_tail()",
+        "src/bin/lay_ibus_engine/state.rs:L518:.replace_committed_tail()",
         "src/text_edit/structural_verifier.rs:L20:verify_visible_text_transition()",
         "src/text_edit/visible_tail.rs:L100:VisibleTailSnapshot",
         "src/text_edit/visible_tail.rs:L65:SnapshotIdentity"
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:66185",
-        "graph_nodes:25102"
+        "graph_links:66223",
+        "graph_nodes:25123"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "60928e50356fec33692b322c9be2fbd0c73a055d92901d68e3a5f506649f0876",
-  "graph_fingerprint": "79fae7c5cde4743a3aa3b6f48775ccd961d5525ea77ad152620c69c1a3bcb7aa",
-  "graph_links": 66185,
-  "graph_nodes": 25102,
+  "graph_binding_fingerprint": "f50e7f132a06e90e52a127950bcce867c39dca8f215486343987976d318e71fe",
+  "graph_fingerprint": "37d2edeb1be23ca0e227ab609ff0f5880c1090264fa7d2326f8df432ade56c85",
+  "graph_links": 66223,
+  "graph_nodes": 25123,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "8cb181d559696fe7caf10d0eac48a324663026901be0316036fe1c33f304a18a",
+  "source_fingerprint": "6ed5aee6a60f3cee969666746ae8249c884c50f3ad475019fa6601cf839566d0",
   "verdict": "PASS"
 }

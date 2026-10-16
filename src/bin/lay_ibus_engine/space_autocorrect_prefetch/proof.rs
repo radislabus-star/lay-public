@@ -594,6 +594,22 @@ pub(crate) fn has_current_slot(identity: &InputFrameIdentity) -> bool {
     })
 }
 
+pub(crate) fn has_current_exact_slot(identity: &InputFrameIdentity) -> bool {
+    let Some(worker) = existing_worker(&identity.path) else {
+        return false;
+    };
+    let Ok(state) = worker.state.0.lock() else {
+        return false;
+    };
+    state.slot.as_ref().is_some_and(|slot| {
+        slot.identity == *identity
+            && slot.request_generation == state.generation
+            && slot.request_generation == worker.latest_request_generation.load(Ordering::Acquire)
+            && slot.material_generation == lay::nanda_wave::candidate_material_generation()
+            && matches!(slot.exact, ExactSlotState::Prepared(_))
+    })
+}
+
 pub(crate) fn hold_full_lease(
     identity: &InputFrameIdentity,
     config: &LayConfig,

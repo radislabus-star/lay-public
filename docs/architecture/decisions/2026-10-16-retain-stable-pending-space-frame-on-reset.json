@@ -1,0 +1,18 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "decision": "During the existing soft Reset retain the stable pending Reset computation frame first, falling back to the existing managed-commit echo frame only when no pending Reset frame exists. Keep exact slot/material equality and all current edit-authority gates.",
+  "reason": "TD151 actual legacy callback RED proves a real inline exact-ready slot is lost when final SSI precedes the managed CommitText Reset. The post-Reset exact current frame and pending computation frame are both identical to the prepared frame, but the slot is gone. Between revocation and restored owned observation, the managed echo branch captures an independent surrounding-revision frame while the stable predecessor-token frame is available. Existing prepared work is retired before restoration. No new wait, owner, cache, timer, generation, executor or client-specific route is needed.",
+  "verification": "Unchanged-production td151-reset-diagnosis-359fg2lz:2/3 PASS, new regression fails the intended ready-slot retention assertion after real inline readiness, proof-frozen exact slot and matched Reset; previous exact-refresh control and unchanged CI identity pass. Prepared/pending/current post-Reset frame equality is exact. Plan fresh-context9/10, root implements. Focused green/control, full source/MSRV/lints/canon, independent code review and new matched native receipts remain required.",
+  "not_tested": "Changed-byte native matrices, optional shortcuts, latency and installation. Original CI failure cause remains UNKNOWN under TD152. Installed1.0.87 unchanged.",
+  "invariants": ["C01", "C03", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/state.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": true,
+  "authority_scope": "Retain existing inert exact same-owner prepared correction across its matched Reset; current exact authority, verifier and one existing executor still determine whether Space may apply it.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

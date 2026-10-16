@@ -17,7 +17,15 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.87`
+- `1.0.88`
+
+1.0.88 source includes backed present-tense verb forms (TD-148), opt-in IME
+Backspace undo and Double Space (TD-147), session-scoped installer input access
+(TD-146), rustls0.23.46 (TD-149), completed native replay proof across Reset
+(TD-150), prepared Space proof retention (TD-151), and bounded CI failure
+evidence (TD-152). The final matched source/native/install receipts are linked
+from [the public issue register](docs/development/public-issues-2026-10-16.md).
+Installed runtime remains1.0.87 until that separate transaction is verified.
 
 1.0.87: source patch for [late device access, GitHub #49](tech_debt/144-recover-late-device-access.md).
 The existing daemon main thread retries missing uinput and input listeners once

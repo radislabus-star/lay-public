@@ -178,3 +178,39 @@ Final canonical refresh td150-final-canonical-w9iu0xaq/RESULT.json PASS48.15s,
 exact new decision coverage+15canon tests. Four canonical files fetched/SHA
 verified;993 functional inputs still match full proof. Nine private release
 adapters parse under the remote guard; no native keys or installation yet.
+
+## Published source and matching changed-byte candidate
+
+Source b411182292fcc0ed46a6d0e0127a28f5ae132486 published/read back on origin
+work branch and public work/main refs; private origin/main untouched.
+Final independent source/evidence/private-adapter review2/2:9/10, no material
+corrections. Original native actors, body, activity ledger and eighteen original
+default wrapper bodies retain their exact hashes; only unique jobs/tags/output
+locations and read-only passive capture are adapted. No test or guard weakening.
+
+Build /home/ubu/.cache/lay/development/td150-install88-20261016/BUILD.json:
+PASS83.53s, source archivea0620bfaf04e23e8e631d6b3ae6a5aa9a0394eac1b0edd6311841b0c651a3620,
+same lock/audit database, audit0. Matching CLI/daemon bytes remain identical to
+the earlier88 candidate; IME now has the bounded proof repair, SHA256
+d0ef25351c2d0bd0d350bf25d45236450c385a0619a4fe51f285fe5a8e384b13.
+CLI ac7f3fbc49d3de30c6fbb82ec676ea55fad4695b8f617479bf652099bf37f344;
+daemon625feb964731db33dac2cbcae6fb09873b1b73d382e45606dea64b36d40226a9.
+All993 functional inputs match the full source proof. Local installation still87.
+
+Changed-byte REPAIR both full matrices are COMPLETE (nine original jobs each):
+Firefox169P28F19B, Chrome179P23F14B, total348P51F33B/432,0NOT_TESTED;
+errors empty and owned GUI cleanup/VT1 verified in both collectors.
+Original fullscreen/space8 repeat is now5/5 and Firefox standard60/60;
+420/420 native DS median98.694ms/p95112.273ms. Chrome406/420 (14 missing)
+median82.307ms/p9597.386ms; all prior ChromePASS retained. These are visible
+client timings from synthetic evdev write-return, not kernel release latency.
+
+Firefox lost functional/normal/space_en_ru/7 while original short4 passes.
+This blocks installation; no unchanged-byte rerun to obtain green. Immediate
+raw row/trace and same-baseline comparison are under the build's
+space7-failure/ and native/firefox-vs-READV.json. Existing replay repair is
+retained; new first-transition investigation is [TD-151](151-preserve-prepared-space-frame-on-matched-reset.md).
+Fresh CI38901069439 failed one old overlapping-release fixture (no raw panic
+published), despite remote3210/3210; Security38901069484 passed. [TD-152](152-control-overlapping-release-test-readiness.md)
+tracks it separately. Original cause is UNKNOWN. Installed87 unchanged.
+Optional80 on these bytes NOT_TESTED; older E6 options are separate evidence.

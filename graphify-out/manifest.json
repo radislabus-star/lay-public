@@ -945,8 +945,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/state.rs": {
-    "mtime": 1792142053.413086,
-    "ast_hash": "c055906a460642f7043daba1c16d9f56",
+    "mtime": 1792156569.9535315,
+    "ast_hash": "b45830df96ff44a1816fce6e8d26eb1a",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792111607.0983353,
-    "ast_hash": "5f1ea450f4191776cbab8876b22c11fb",
+    "mtime": 1792156840.2563748,
+    "ast_hash": "48de598a51b4595e92773be95b588bb5",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792153549.5977912,
-    "ast_hash": "0eaf74f35c14b4a8ce337469e28f2d2b",
+    "mtime": 1792157312.190185,
+    "ast_hash": "6fb3d1bbdb42a9387886b71e5220e030",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4820,8 +4820,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs": {
-    "mtime": 1791833195.6643603,
-    "ast_hash": "6c5c668aa74b2a2475bd98e43bfeb464",
+    "mtime": 1792155868.9907131,
+    "ast_hash": "045f3fde97527a9651f8769aba35715b",
     "semantic_hash": ""
   },
   "src/exact_layout_authority.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792153611.1991231,
-    "ast_hash": "4a855e9290a7987f395a3162d4a5cab7",
+    "mtime": 1792156729.7533596,
+    "ast_hash": "d48c6e9829ba40b06ba206eeaf9de4b4",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1792153548.776787,
-    "ast_hash": "cfc6f230a660e989784f8fe3e0482a78",
+    "mtime": 1792157311.3491747,
+    "ast_hash": "25ef9f3c89438802534c65391a3d9983",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1792153549.2097893,
-    "ast_hash": "81104435535acdbec647340eae7f2deb",
+    "mtime": 1792157311.77118,
+    "ast_hash": "cc93253a791073a868a89dae0a118227",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5040,8 +5040,8 @@
     "semantic_hash": ""
   },
   "scripts/test_lanes/contracts.py": {
-    "mtime": 1791386348.0503466,
-    "ast_hash": "3e873729bce5cc131e12cd8c2a8e2506",
+    "mtime": 1792156525.756533,
+    "ast_hash": "199ca4c1d4a3de5b23cdbbd1161af609",
     "semantic_hash": ""
   },
   "scripts/test_lanes/discovery.py": {
@@ -5055,8 +5055,8 @@
     "semantic_hash": ""
   },
   "tests/test_test_lanes.py": {
-    "mtime": 1791386348.1661725,
-    "ast_hash": "bb69be5d23375bfd8f8563593963ce1a",
+    "mtime": 1792156765.915464,
+    "ast_hash": "73c1f1ff4cd0c9b1b6e6a835a2d6c344",
     "semantic_hash": ""
   },
   "docs/test-lanes.md": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1791579286.3010108,
-    "ast_hash": "8b1ed00895cb0fb4fe17c3743e5de027",
+    "mtime": 1792157134.24499,
+    "ast_hash": "6b844016f2ae94952179940f39c7f202",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -5695,8 +5695,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": {
-    "mtime": 1792142552.9688625,
-    "ast_hash": "46af7b625cc64e859eb3a2289b4f4165",
+    "mtime": 1792156533.8033166,
+    "ast_hash": "6d94751d51f6afa0bc033524ef9ed4b8",
     "semantic_hash": ""
   },
   "tech_debt/evidence/ime-terminal-native-delivery-composition-successor.json": {
@@ -7040,8 +7040,8 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1792153611.1991231,
-    "ast_hash": "52c3d3bc5224270e61ce3614a75ab6ac",
+    "mtime": 1792157313.1611938,
+    "ast_hash": "24bafdc73714bf2a22709da92f274cb2",
     "semantic_hash": ""
   },
   "docs/development/wj-native-apps-2026-10-14.md": {
@@ -7125,8 +7125,8 @@
     "semantic_hash": ""
   },
   "docs/development/public-issues-2026-10-16.md": {
-    "mtime": 1792152748.4030998,
-    "ast_hash": "106726b08bdcedd57c4520ddf131776d",
+    "mtime": 1792157134.245308,
+    "ast_hash": "ef221ef90722c4177937c8660289af30",
     "semantic_hash": ""
   },
   "tech_debt/145-verify-issue47-current-version.md": {
@@ -7155,8 +7155,8 @@
     "semantic_hash": ""
   },
   "docs/release-1.0.88.md": {
-    "mtime": 1792153611.200123,
-    "ast_hash": "fa9a261a909b0422ee7524ff5cbae655",
+    "mtime": 1792156840.2563748,
+    "ast_hash": "7fcf881cc489e17f3203f29794de1621",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-atomic-manual-tail-frame-owner.json": {
@@ -7185,13 +7185,33 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-completed-native-replay-reset-capture.json": {
-    "mtime": 1792153611.299212,
-    "ast_hash": "e6a11749d832e337dc9659ce82eddd6f",
+    "mtime": 1792153823.978085,
+    "ast_hash": "a1390d37c62c3132bd5cd67b945aae9a",
     "semantic_hash": ""
   },
   "tech_debt/150-retain-completed-native-replay-across-reset.md": {
-    "mtime": 1792153611.198123,
-    "ast_hash": "c9731a549074815f42c03197aa133be7",
+    "mtime": 1792156055.9568946,
+    "ast_hash": "afaf7c1c2b87c7639d06a88766cd02a3",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-16-bounded-ci-failure-evidence.json": {
+    "mtime": 1792156525.857701,
+    "ast_hash": "c557f1db7407afd93b61edd38aafa5c3",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-16-retain-stable-pending-space-frame-on-reset.json": {
+    "mtime": 1792156159.631123,
+    "ast_hash": "c6478fc7276e0c1fcb700a2e2f2ed9a4",
+    "semantic_hash": ""
+  },
+  "tech_debt/151-preserve-prepared-space-frame-on-matched-reset.md": {
+    "mtime": 1792157313.1607602,
+    "ast_hash": "2f1df2607e8cdf2615e2a9a80a5de236",
+    "semantic_hash": ""
+  },
+  "tech_debt/152-control-overlapping-release-test-readiness.md": {
+    "mtime": 1792157313.1608698,
+    "ast_hash": "603502bda3de24d1c6a37a1b4f5b820a",
     "semantic_hash": ""
   }
 }

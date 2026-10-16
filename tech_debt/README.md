@@ -1,11 +1,14 @@
 # Lay — очередь технического долга, 2026-10-16
 
-Текущий release gate: [TD-150 — подтверждение завершённого native replay после Reset](150-retain-completed-native-replay-across-reset.md).
-Причинный observer/callback RED; минимальная правка существующего capture,11/11 focused,
-контрольный возврат старой отсечки обнаружен1/1. Full3210/3210 PASS, review9/10;
-новые сборка/native впереди.
-Два разных полных Firefox216 на e6f3227c остаются REJECT_LOST_PASS;
-не повторять ту же сборку до PASS. Пользовательский runtime пока1.0.87.
+Текущие release blockers, P1:
+
+1. [TD-151 — сохранение готовой Space-коррекции при matched Reset](151-preserve-prepared-space-frame-on-matched-reset.md): causal RED; минимальный приоритет pending frame, final focused13/13 + controlled1/1, code review9/10. Full3211/3211, final canon PASS, final code review9/10; новый native gate впереди.
+2. [TD-152 — readiness теста перекрывающихся отпусканий](152-control-overlapping-release-test-readiness.md): исходный CI cause UNKNOWN, повторный baseline PASS; доказана потеря raw assertion в отчёте, reporting RED16/17 → green17/17, без изменения runtime/fixture/deadline. Final code review9/10; новый CI впереди.
+
+[TD-150](150-retain-completed-native-replay-across-reset.md): source3210/3210,
+review9/10, b411 build готов; прежний fullscreen/space8 repeat теперь5/5,
+standard Firefox60/60. Новый полный Chrome идёт, установка88 заблокирована.
+Все отрицательные полные прогоны сохранены; runtime пользователя1.0.87.
 
 Завершена и опубликована: [TD-148 — подтверждённые формы глаголов, GitHub #59](148-recognize-backed-ti-present-forms.md).
 DONE_SOURCE3191/3191 после ремонта ревью,12/12 focused, review7→9/10.

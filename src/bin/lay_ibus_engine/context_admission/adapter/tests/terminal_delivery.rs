@@ -4138,6 +4138,118 @@ fn terminal_delivery_midword_exact_snapshot_survives_owned_commit_reset_echo() {
 }
 
 #[test]
+fn terminal_delivery_exact_space_preparation_survives_receipt_before_owned_reset() {
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("exact preparation available");
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+        let mut engine = new_engine(&harness);
+        engine.config.auto_replace = true;
+        engine.config.auto_switch_layout = true;
+        engine.config.nanda_autocorrect = true;
+        engine.config.nanda_precognition = false;
+        engine.config.correction_safety = "experimental".into();
+        start_source_free_unknown(&mut harness, &mut engine).await;
+        engine.set_content_type_state(0, 0);
+        engine.set_client_capabilities(
+            1 | 1 << 3 | 1 << 5 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+        );
+        engine.set_layout_is_ru(false);
+        let mut visible = String::new();
+        for (index, (ch, code)) in [
+            ('g', 34),
+            ('h', 35),
+            ('b', 48),
+            ('d', 32),
+            ('t', 20),
+            ('n', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            let serial = 25_100 + index as u32 * 4;
+            assert!(legacy_key(&mut harness, &mut engine, serial, ch as u32, code, 0).await);
+            let effects = legacy_effects(&mut harness).await;
+            assert!(effects.iter().any(|effect| effect
+                .header()
+                .member()
+                .is_some_and(|member| member.as_str() == "CommitText")));
+            visible.push(ch);
+            if index == 5 {
+                // The final SSI can precede its CommitText-triggered Reset.
+                // Readiness is fixed here; a later miss cannot be blamed on
+                // asynchronous materialization or a short inter-key interval.
+                exact_replay_surrounding_receipt(&mut harness, &mut engine, &visible).await;
+                let prepared = engine
+                    .capture_space_autocorrect_frame_identity()
+                    .expect("exact final managed word");
+                assert!(
+                    crate::space_autocorrect_prefetch::proof::has_current_exact_slot(&prepared),
+                    "the real inline schedule must prepare an exact decision before Reset"
+                );
+                crate::space_autocorrect_prefetch::proof::install_exact_lease(
+                    &prepared,
+                    &engine.config,
+                );
+                assert!(
+                    crate::space_autocorrect_prefetch::proof::has_current_exact_slot(&prepared)
+                );
+                text_free_owned_soft_reset(&mut harness, &mut engine, serial + 1).await;
+                let pending = engine.capture_pending_reset_space_frame();
+                let current = engine.capture_space_autocorrect_frame_identity();
+                assert!(crate::space_autocorrect_prefetch::proof::has_current_slot(&prepared),
+                    "ready exact Space work was lost on matched owned Reset: prepared={prepared:?}, pending={pending:?}, current={current:?}");
+                assert_eq!(current.as_ref(), Some(&prepared));
+            } else {
+                text_free_owned_soft_reset(&mut harness, &mut engine, serial + 1).await;
+                exact_replay_surrounding_receipt(&mut harness, &mut engine, &visible).await;
+            }
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial + 2,
+                    ch as u32,
+                    code,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            no_legacy_output(&mut harness).await;
+        }
+        assert!(legacy_key(&mut harness, &mut engine, 25_125, KEY_SPACE, 57, 0).await);
+        let effects = legacy_effects(&mut harness).await;
+        assert_eq!(engine.committed_tail.buffer, "привет ");
+        assert!(engine.layout_gesture.layout_is_ru);
+        assert_eq!(
+            effects
+                .iter()
+                .filter(|effect| effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "DeleteSurroundingText"))
+                .count(),
+            1
+        );
+        let commits = effects
+            .iter()
+            .filter(|effect| {
+                effect
+                    .header()
+                    .member()
+                    .is_some_and(|member| member.as_str() == "CommitText")
+            })
+            .map(|effect| {
+                let body = effect.body();
+                let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
+                crate::ibus_interface::ibus_text_value_to_string(&value).unwrap()
+            })
+            .collect::<Vec<_>>();
+        assert_eq!(commits, ["привет "]);
+    });
+}
+
+#[test]
 fn terminal_delivery_firefox_exact_refresh_keeps_prefix_committed_and_schedules_space() {
     zbus::block_on(async {
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;

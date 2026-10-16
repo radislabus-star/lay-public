@@ -1,3 +1,29 @@
+# Current checkpoint — 2026-10-16, release1.0.88 gates
+
+Current authority is [tech_debt/README.md](tech_debt/README.md) and the
+[public issue register](docs/development/public-issues-2026-10-16.md).
+Checkout `/home/ubu/projects/lay-space-boundary-shift-20261007`, branch
+`codex/space-boundary-shift-20261007`, published baseline b4111822.
+User authorized sequential fixes, tests, pushes, issue replies/closures and final
+local installation. Root implements; agents review. All functional input/builds/
+tests/graph refresh remote only, no RDP or global IBus restart/route/model change.
+Installed87 remains until the guarded final88 transaction actually passes.
+
+Current root changes: TD151 causal prepared-Space Reset repair (13/13 focused,
+controlled old selector1/1 detected, independent code9/10); TD152 reporting-only
+CI evidence repair (17/17, original CI failure cause UNKNOWN). Full3211/3211 source
+`/home/ubu/.cache/lay/development/td151-full-source-gvt96j4h` PASS;
+final canonical td151-final-canonical-1gumzyss PASS/current17Python+15AST helpers,
+final independent source reviews both9/10 (reused threads due platform limit).
+Fresh final-source CI and changed-byte native432/options80 remain gates. Last
+complete matched pair b411: Firefox169/28/19 + Chrome179/23/14 =348/51/33/432,
+0NOT_TESTED. B411 loses one old Firefox Space7PASS; preserve it and the older E6
+failures, no rerun-until-green or best-row splicing. Do not install these rejected
+bytes. New private build/helper staging: td151-install88-20261016 and
+td151-release88-native, REPAIR2 unique jobs. No new88 install or release tag yet.
+
+## Historical checkpoint from 2026-10-09
+
 # Current checkpoint — 2026-10-09, accepted1.0.81 + technical-debt loop
 
 Единственная текущая очередь: [tech_debt/README.md](tech_debt/README.md).
