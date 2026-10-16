@@ -1,0 +1,26 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-17",
+  "decision": "The existing first adjacent acknowledgement may record ASCII/NBSP presentation at each newly emitted trailing Space position of a currently paired and fully completed exact replay. Preserve the target token and both old prefixes exactly; ordinary non-replay Space still changes only its new final character.",
+  "reason": "TD155 actual callback regression reaches the next loss after the consumer6/6 passes: a completed multi-Space replay has exact physical effects but the old acknowledger and scope mirror only support the last separator. Current completed provenance already proves every replacement key and complete epoch distance; no new owner or state is necessary.",
+  "verification": "td155-exact-series-focused-9akk5_kf:11/12PASS17.342s, archive89cb69224625aceefea4a98f50cea9a97ea48c4bdff4b8101ba03924da49f4bd. Old single-Space controls pass, actual completed two-NBSP client receipt loses exact manual authority. Fresh-context amended plan review9/10 ACCEPT pass2/2. Green/contradictory tests, independent consumer/receipt controlled reversions, full source and code review remain required.",
+  "not_tested": "New runtime/client acceptance, complete native matrices, latency, publication or installation. Installed/published1.0.88 remains unchanged;1.0.89 is an unpublished candidate.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs"
+  ],
+  "runtime_authority_changed": true,
+  "authority_scope": "Before mutation, revalidate the supplied replay via existing current paired completed predicates, full raw external/unchanged prefix, exact projected word/count/caret/selection, local/shared lease/owner/epoch/buffer and first-adjacent-receipt guards. Atomically retain the same observed raw surface in local/shared tail and both copies of the completed scope; carry the updated pending witness. Incomplete, expired, mismatched or merely cached provenance cannot authorize acknowledgement. No arbitrary historical separator normalization.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

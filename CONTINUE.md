@@ -1,30 +1,42 @@
-# Current checkpoint —2026-10-16, TD154 source accepted / installed1.0.88
+# Current checkpoint —2026-10-17, TD155 corrected full gate / installed1.0.88
 
-Continue TD154 in this authoritative checkout/branch. Production repair is one
-expression in acknowledge_owned_space_boundary: retain exact earlier ASCII/NBSP
-boundaries and acknowledge only the newly owned final Space. No route/model/
-learning/default change. Genuine second-boundary RED, focused10/10, full3211/3211
-zero exceptions, controlled reversion detected; fresh plan8→9/code9 reviews.
-All3237 manifest IDs unchanged; actualMSRV/lints/canon/audit50/Node/panel PASS.
-New1.0.89 metadata only changes this package version, no dependency versions.
+Authoritative checkout/branch as below, parent76361aff. Current focused14/14
+PASS td155-prefix-focused-jnf0564c, archivedf903f2ab8bd863f35763390593627cdbe3a688794b3f6a2c9df4628342dc500.
+First full td155-full-source-wstyurem FAILED716.943s with2 old IME regressions:
+new candidate confused full owned tail with bounded pending token suffix.
+Corrected by retaining exact owned prefix separately and checking suffix-only
+receipt geometry; full tail still goes to existing atomic paired owner.
+Both old failures and new two-boundary owned-prefix variants now pass; no old
+assertion weakened. All3237 IDs and original zero-exception policy unchanged.
+New full-source-final-g48ali01 PASS3211/3211,0failure/exemption,730.988s; all994proofinputs matched locally; all3controls detected. Final fresh-context code review2 ACCEPT9/10/noP1-P2, archive47036521eca9c87863dad30218067923f74547225242c59e6564a680137390bc; includes three independent controls
+(consumer, completed-series ACK, exact owned-prefix/token-suffix distinction).
+Do not reuse failed full or stale code-review9/10 pass1 as final acceptance.
+Fresh plan9/10 completed2passes; final code pass2 ACCEPT9/10 after successful full3211, no further source work required.
 
-Full receipt td154-full-source-final-50j7ij8d; final canonical
-td154-final-canonical-ws_l_m_4, under /home/ubu/.cache/lay/development/.
-993 functional hashes match, current canonical graph fetched remotely. Private
-helper predicates17/17 remote PASS and18 helper hashes reviewed; see
-td154-native-helpers-20261016/REVIEW-INPUTS.json. Build/native/install adapters
-are prepared in td154-install89-20261016, NOT executed. Need matching new-byte
-build, whole default432+optionalnormal80 (raw NBSP positions observed correctly,
-ghost suffix still FAIL), source-main first-attempt CI and reversible install.
-No byte-equivalence shortcut for changed runtime. All execution/native keys
-remote e@192.168.3.94 under existing guard; no RDP/local functional input.
+Private helpers18 reviewed (metadata-only paths/phase/seat/filenames),
+/home/ubu/.cache/lay/development/td155-native-helpers-20261017/REVIEW-INPUTS.json.
+New build dir td155-install89-20261017; REVIEW.json is stale pending commit,
+not ACCEPTED. Update final-canonical body to NEW successful full stage, run
+remote observer17+canonical/functional parity; sync generated graph. Then
+code review pass2, commit/bind review head, new89 build, whole native432+normal80,
+main CI/security first attempts, reversible install. No new build/push/install.
+All tests/build/graph/native keys remain remote e@192.168.3.94 under shared guard;
+no RDP/local functional input/global IBus restart. Both remote branches/main
+still fe614235 as of readback, local76361aff TD154 commit remains unpushed.
 
-Latest completed default matrix is still release88:349P50F33B/432,
-FF170/27/19,Chrome179/23/14,NOT_TESTED0. Old optionalnormal80=58P18F4B,
-DoubleSpace40=26P14F; optionalprivate/fullscreen NOT_TESTED. Six FF rich failures
-share second-NBSP acknowledgement loss; two FF release-order cases and six
-Chrome observer/probe cases are separate. Never relabel old receipts or rerun
-unchanged bytes until green. Current installed/published88 remains below.
+TD154 initial candidate/failed optionalFirefox40 remain immutable under
+td154-install89-20261016. Producer ACK/handoff proven; daemon one-NBSP guard
+rejected. TD155 source identified and fixed the completed target receipt half
+before new native input. Its earlier two source failures remain in owning task.
+Original owned source Space needs per-key receipt; fully completed new replay
+proves every newly emitted Space before its batched raw client receipt.
+
+Latest complete default matrix remains release88:349P50F33B/432,
+FF170/27/19,Chrome179/23/14,NOT_TESTED0. Old optionalnormal80=58P18F4B;
+TD154 Firefox-only40=25P12F3B is separate. Optional private/fullscreen NOT_TESTED.
+Owned failed Firefox finite seat CLOSED, VT1/no heldkeys/empty privatecgroup;
+td154-install89-20261016/NATIVE-FF-CLOSURE.json. Installed/published88 unchanged.
+No new push/release/install this turn;1.0.89 remains an unpublished candidate.
 
 ## Previous checkpoint — installed/published1.0.88
 

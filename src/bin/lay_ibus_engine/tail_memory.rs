@@ -1296,6 +1296,7 @@ impl LayIbusEngine {
 
     pub(super) fn acknowledge_owned_space_tail(
         &mut self,
+        actual_tail: &str,
         replay: Option<&ExactManualToggleSuppression>,
     ) -> Result<Option<ExactManualToggleSuppression>, ()> {
         if !self.committed_tail.buffer.ends_with(' ')
@@ -1307,11 +1308,23 @@ impl LayIbusEngine {
             return Err(());
         }
         let acknowledged_replay = if let Some(scope) = replay {
-            let Some(word) = scope.replacement.strip_suffix(' ') else {
+            let word = scope.replacement.trim_end_matches(' ');
+            let spaces = scope.replacement.chars().count() - word.chars().count();
+            let Some(replacement) = actual_tail.strip_prefix(&scope.unchanged_prefix) else {
                 return Err(());
             };
+            let Some(boundaries) = replacement.strip_prefix(word) else {
+                return Err(());
+            };
+            if spaces == 0
+                || replacement == scope.replacement
+                || boundaries.chars().count() != spaces
+                || !boundaries.chars().all(|ch| matches!(ch, ' ' | '\u{a0}'))
+            {
+                return Err(());
+            }
             let mut acknowledged = scope.clone();
-            acknowledged.replacement = format!("{word}\u{a0}");
+            acknowledged.replacement = replacement.to_string();
             let Some(prefix) = scope.observed_external_prefix.as_deref() else {
                 return Err(());
             };
@@ -1333,6 +1346,10 @@ impl LayIbusEngine {
             }
             Some(acknowledged)
         } else {
+            let word = self.committed_tail.buffer.strip_suffix(' ').ok_or(())?;
+            if actual_tail != format!("{word}\u{a0}") {
+                return Err(());
+            }
             None
         };
         let Ok(mut shared) = self.shared.lock() else {
@@ -1349,11 +1366,10 @@ impl LayIbusEngine {
         {
             return Err(());
         }
-        // Same witnessed Space effect, same epoch. Only its first exact client
-        // acknowledgment changes the stored surface. A completed replay also
-        // requires the full external prefix and both matching scope copies.
-        self.committed_tail.buffer.pop();
-        self.committed_tail.buffer.push('\u{a0}');
+        // Same witnessed effects, same epoch. Ordinary Space changes only its
+        // new final character; a completed replay proves every newly emitted
+        // Space above. Full old prefixes and both scope copies stay exact.
+        self.committed_tail.buffer = actual_tail.to_string();
         shared
             .handoff_tail_buffer
             .clone_from(&self.committed_tail.buffer);

@@ -318,23 +318,23 @@ fn prepare_exact_replay(
     let trailing = expected_suffix
         .strip_prefix(&plan.edit.original_token)
         .ok_or_else(|| "leased suffix does not begin with the exact original token".to_string())?;
-    let preserved_ascii_spaces =
-        trailing.chars().all(|ch| ch == ' ') && plan.replacement.ends_with(trailing);
-    // The exact source lease retains a client's previously acknowledged NBSP.
-    // Replay still emits the existing ASCII Space key; its first raw client
-    // receipt is checked by the same IME owner before a following edit.
-    let acknowledged_space = trailing == "\u{a0}"
+    // The raw lease keeps every acknowledged ASCII Space/NBSP boundary.
+    // Replay uses the existing Space key for each, with an exact token projection
+    // and count; zero boundaries remain valid. No other whitespace is admitted.
+    let acknowledged_spaces = trailing.chars().all(|ch| matches!(ch, ' ' | '\u{a0}'))
         && plan.replacement
             == format!(
-                "{} ",
+                "{}{}",
                 lay::manual_toggle::project_to_opposite_layout(
                     &plan.edit.original_token,
                     !plan.target_layout_is_ru
-                )
+                ),
+                " ".repeat(trailing.chars().count())
             );
-    if !preserved_ascii_spaces && !acknowledged_space {
+    if !acknowledged_spaces {
         return Err(
-            "exact replay requires preserved ASCII spaces or one acknowledged Space".to_string(),
+            "exact replay requires exact projected text and acknowledged Space boundaries"
+                .to_string(),
         );
     }
     let prefix = plan
@@ -479,22 +479,95 @@ mod tests {
 
     #[test]
     fn exact_replay_reencodes_one_acknowledged_space_without_normalizing_other_suffixes() {
+        // Keep this manifest test ID while extending its original single-Space cases.
+        let mut cases = Vec::new();
         for (source, mode, target) in [("ghbdtn", false, "привет"), ("привет", true, "ghbdtn")]
         {
-            let tail = format!("prefix {source}\u{a0}");
-            let suffix = format!("{source}\u{a0}");
-            let prepared = prepare_exact_replay(&plan(&tail, mode), &suffix)
-                .expect("one exact acknowledged Space is representable by the existing replay");
-            assert_eq!(
-                map_events_to_layout(&prepared.events, !mode),
-                format!("{target} ")
-            );
-            assert_eq!(prepared.visible_after, format!("prefix {target} "));
-            assert!(prepare_exact_replay(&plan(&tail, mode), &format!("{source} ")).is_err());
-            for separator in ["\t", "\u{202f}", "\u{a0}\u{a0}", " \u{a0}"] {
-                let tail = format!("prefix {source}{separator}");
-                let suffix = format!("{source}{separator}");
+            for prefix in ["", "文 🌍 ", "old\u{a0}prefix "] {
+                for count in [0, 1, 2, 4, 10] {
+                    let mixed: String = (0..count)
+                        .map(|index| if index % 2 == 0 { ' ' } else { '\u{a0}' })
+                        .collect();
+                    for separator in [" ".repeat(count), "\u{a0}".repeat(count), mixed] {
+                        let tail = format!("{prefix}{source}{separator}");
+                        let suffix = format!("{source}{separator}");
+                        let exact = plan(&tail, mode);
+                        let prepared = prepare_exact_replay(&exact, &suffix).expect(
+                            "an exact acknowledged Space series uses the existing Space keys",
+                        );
+                        let replacement = format!("{target}{}", " ".repeat(count));
+                        assert_eq!(map_events_to_layout(&prepared.events, !mode), replacement);
+                        assert_eq!(prepared.visible_after, format!("{prefix}{replacement}"));
+                        assert_eq!(prepared.authorized_edit.backend(), TextEditBackend::Daemon);
+                        assert_eq!(exact.backspaces as usize, source.chars().count() + count);
+                        assert_eq!(exact.edit.delete_chars, exact.backspaces);
+                        assert_eq!(exact.edit.insert_text, replacement);
+                        cases.push((exact, suffix, source, mode, target, count, separator));
+                    }
+                }
+                for separator in ["\t", "\u{202f}", "\n", "\u{2009}", "\u{a0}\t"] {
+                    let tail = format!("{prefix}{source}{separator}");
+                    let suffix = format!("{source}{separator}");
+                    assert!(prepare_exact_replay(&plan(&tail, mode), &suffix).is_err());
+                }
+                let suffix = format!("{source}{}", "\u{a0}".repeat(33));
+                let tail = format!("{prefix}{suffix}");
                 assert!(prepare_exact_replay(&plan(&tail, mode), &suffix).is_err());
+            }
+        }
+        for (exact, suffix, source, mode, target, count, separator) in cases {
+            if separator.contains('\u{a0}') {
+                assert!(
+                    prepare_exact_replay(&exact, &format!("{source}{}", " ".repeat(count)),)
+                        .is_err()
+                );
+                let mut contradictory = exact.clone();
+                contradictory.replacement = format!("{target}{separator}");
+                contradictory.edit.insert_text = contradictory.replacement.clone();
+                assert!(prepare_exact_replay(&contradictory, &suffix).is_err());
+            }
+            let mut replacements = vec![
+                format!("{target}{}", " ".repeat(count + 1)),
+                format!("other{}", " ".repeat(count)),
+            ];
+            if count > 0 {
+                replacements.push(format!("{target}{}", " ".repeat(count - 1)));
+            }
+            for replacement in replacements {
+                let mut contradictory = exact.clone();
+                contradictory.replacement = replacement.clone();
+                contradictory.edit.insert_text = replacement;
+                assert!(prepare_exact_replay(&contradictory, &suffix).is_err());
+            }
+            for mismatch in [
+                "count",
+                "delete",
+                "insert",
+                "source",
+                "route",
+                "layout",
+                "suppression",
+                "tail",
+            ] {
+                let mut contradictory = exact.clone();
+                match mismatch {
+                    "count" => contradictory.backspaces += 1,
+                    "delete" => contradictory.edit.delete_chars += 1,
+                    "insert" => contradictory.edit.insert_text.push(' '),
+                    "source" => contradictory.edit.source = VisibleTailSource::DaemonWordBuffer,
+                    "route" => contradictory.route = ManualToggleRoute::Daemon,
+                    "layout" => {
+                        contradictory.target_layout_is_ru = mode;
+                        contradictory.edit.target_layout_is_ru = mode;
+                    }
+                    "suppression" => contradictory.suppress_next_autocorrect = false,
+                    "tail" => contradictory.edit.original_tail.push('x'),
+                    _ => unreachable!(),
+                }
+                assert!(
+                    prepare_exact_replay(&contradictory, &suffix).is_err(),
+                    "{mismatch}"
+                );
             }
         }
     }

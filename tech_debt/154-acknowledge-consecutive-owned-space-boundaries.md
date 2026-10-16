@@ -183,3 +183,25 @@ Final canonical td154-final-canonical-ws_l_m_4/RESULT.json PASS48.392s,
 matched; generated graph fetched from the remote workspace. Source/graph gates
 are complete. New exact-byte native432+80, source-main CI and reversible install
 are still required; no new physical result or installation is claimed.
+
+
+## First changed-byte native result — preserved failure, next owner isolated
+
+Build source76361affeef7bb0cb9fbe35c1bf9293137b7156b/archive4088d1308056524d5f74643603f0f909d7fc05967dfe61e80f1b85aa2fc04613,
+1.0.89 candidate,203.644s. Not published or installed. First complete optional
+Firefox normal40:25PASS/12FAIL/3BLOCKED_PRECONDITION. Other new native modes,
+Chrome optional and default432 NOT_TESTED. This is not an improvement claim.
+Receipt: /home/ubu/.cache/lay/development/td154-install89-20261016/native-shortcuts/firefox/RESULT.json.
+Double-Space latency30/60 samples:median112.400ms,p95137.124ms;30missing.
+
+Preserved field7 rapid10 trace firefox-shortcuts89-hi06zvxw/ime-trace.jsonl
+SHAe532cd41ac37b38780243c265a9310edc3cfba2f9d2646c3038ed6f599bdb4e8:
+lines24/46 acknowledge both Spaces,25/47 confirm receipts,56 consumes,
+57 delegates observed_suffix_ime_committed_tail,59 RPC status3. This confirms
+the repaired acknowledgement/handoff, not a successful text replacement.
+Daemon log firefox-optional-daemon.log SHAe62067fd5d875d8191b97930dc4752dde8b3f06d56253ae4261c2dfc1fc46d97
+then rejects: exact replay requires preserved ASCII spaces or one acknowledged
+Space. First remaining shared transition is prepare_exact_replay in
+src/bin/lay_daemon/exact_ime_tail_replay.rs; TD155 owns that separate consumer.
+Do not revert TD154 or relabel this failed native receipt. The bounded trace
+is incomplete outside the retained interval; asynchronous completeness UNKNOWN.

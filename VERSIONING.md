@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.88`
+- `1.0.89` (unpublished candidate; installed/published version remains `1.0.88`)
 
 1.0.88 source includes backed present-tense verb forms (TD-148), opt-in IME
 Backspace undo and Double Space (TD-147), session-scoped installer input access

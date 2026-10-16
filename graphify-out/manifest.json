@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1792142053.8230898,
-    "ast_hash": "22e2ecb543bf422ad5e022bd5299f5d0",
+    "mtime": 1792186535.6050026,
+    "ast_hash": "bd216d4c7afb91ccd55cf3c7b2cf05dc",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792162663.3423066,
-    "ast_hash": "9be1378aba71b26aa13e1a827ca1b3e2",
+    "mtime": 1792185433.411551,
+    "ast_hash": "431dc5b8fef7d48af05dcfb352f7e111",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792183377.2296543,
-    "ast_hash": "bb200a5f5672851bd5941327c3bb6ac6",
+    "mtime": 1792187309.7785227,
+    "ast_hash": "2e68bc2a9459f28da75a9e541e98f560",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792182063.4813385,
-    "ast_hash": "5dd4384c33ad69ab59f2d10894031342",
+    "mtime": 1792186673.301391,
+    "ast_hash": "a8f047fdb3d5fe868c1c90bfc0b108be",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -4975,8 +4975,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/exact_ime_tail_replay.rs": {
-    "mtime": 1792025368.2154636,
-    "ast_hash": "01af5d96fbf3a720013926d5c8062c24",
+    "mtime": 1792186534.7849946,
+    "ast_hash": "312d1f4b32404662e4ab617f39367c69",
     "semantic_hash": ""
   },
   "scripts/verify-rust-toolchain.sh": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1792182546.3296342,
-    "ast_hash": "e8233810d725b496bba88ce32ca8184d",
+    "mtime": 1792186536.0060065,
+    "ast_hash": "221e1fc52cc2684619f5c2ed5a91fdd8",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1792162897.1060882,
-    "ast_hash": "5d0f7e7e5d5781eaa75c6182990bd47a",
+    "mtime": 1792187314.5478232,
+    "ast_hash": "19f22bdb38f2c4f44e6e9f333e54d6ad",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1792182546.3316343,
-    "ast_hash": "570c6d64945ac990e5329baf10ac49f9",
+    "mtime": 1792186535.2049987,
+    "ast_hash": "f8a4cfc912fd84577e68467deeb90f46",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -6970,8 +6970,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/late_native_replay_refresh.rs": {
-    "mtime": 1792152633.2794323,
-    "ast_hash": "941e9c11f67084e59ed0d558d6b8ac29",
+    "mtime": 1792186536.3850102,
+    "ast_hash": "d3d4dc228197e955380da327265c110f",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_cursor_edit.rs": {
@@ -7040,8 +7040,8 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1792183404.5240357,
-    "ast_hash": "342a0cb44fab3b7741d01c0981ffd565",
+    "mtime": 1792187314.4596398,
+    "ast_hash": "22951959a9030bc2c48feb311e37e87e",
     "semantic_hash": ""
   },
   "docs/development/wj-native-apps-2026-10-14.md": {
@@ -7230,13 +7230,28 @@
     "semantic_hash": ""
   },
   "docs/release-1.0.89.md": {
-    "mtime": 1792183404.5250356,
-    "ast_hash": "92b05442b31cc9aa4c1002623ef4c252",
+    "mtime": 1792185433.412101,
+    "ast_hash": "58d9298313d1887a21eb806e289239a3",
     "semantic_hash": ""
   },
   "tech_debt/154-acknowledge-consecutive-owned-space-boundaries.md": {
-    "mtime": 1792183404.5240357,
-    "ast_hash": "dc33e921f3de32efce437c5f2d64b5d5",
+    "mtime": 1792184733.2238257,
+    "ast_hash": "1ce417e00f6e10e3627a7d6f029f7129",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-17-completed-replay-space-series-acknowledgement.json": {
+    "mtime": 1792185212.7427063,
+    "ast_hash": "8b7ab5b50184686ba30c81a281e2e297",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-17-exact-acknowledged-space-series-replay.json": {
+    "mtime": 1792184917.6896,
+    "ast_hash": "7e08b4c414d30c092544103ff0a0bd90",
+    "semantic_hash": ""
+  },
+  "tech_debt/155-replay-exact-acknowledged-space-series.md": {
+    "mtime": 1792187314.4593236,
+    "ast_hash": "b795d3c6863f1f9a2d3d42de0f4380fd",
     "semantic_hash": ""
   }
 }

@@ -1106,3 +1106,75 @@ unchanged,994proofinputs verified. Exact snapshotfe493... priorMSRV/lints reused
 canon/architecture/audit50/Node/harness/panel PASS. Private6payload whole432
 equivalence +mandatoryoptional80/CI-firstattempt-main qualification now explicit;
 actualnewbuild/equality/options/CI/install still pending, installed87 unchanged.
+
+
+TD154 source76361aff built89candidate203.644s, not published/installed. First
+optionalFirefox40=25P12F3BLOCKED_PRECONDITION, complete native-shortcuts/firefox/RESULT.json
+under td154-install89-20261016. Raw trace field7rapid10 confirms ACK24/46,
+receipt25/47, consumed56, exact delegation57/status3at59. Daemon log rejects
+exact replay requires preserved ASCII spaces or one acknowledged Space. TD154
+producer repair confirmed through handoff; final replacement NOT_MET. TD155
+owns the next existing exact-replay consumer, no producer revert. Default432
+and Chrome optional newbytes NOT_TESTED; old349/50/33 remains unchanged.
+
+TD155 causal unchanged-production td155-exact-series-red-lggpkxju:5/6PASS,5.310s,
+archivedf8eb00b703b1be766b1bfd2e108b6b16b363ace80e70291810ed040d9e62b4d.
+Extended actual existing executor regression fails two-NBSP representability
+after single-boundary controls; other five current safety controls PASS.
+Production unchanged; next uniform exact literal/count consumer validation
+requires explicit decision and actual replay-stream regression.
+
+TD155 first focused11/12PASS17.342s, archive89cb6922..., actual daemon6/6PASS.
+Actual IME completed multi-Space stream loses exact manual authority at final
+raw two-NBSP receipt: existing outer acknowledgement and paired-tail mirror only
+change final Space. No new native run. Task amendment requests existing complete
+replay witness for exactly its newly emitted Space positions, preserving byte-
+exact old prefixes and every current owner/counter/provenance guard; fresh plan
+review pass2 and new protected-path decision precede any IME runtime edits.
+
+TD155 second focused mq6xj6cd:11/12PASS16.740s, archive89875b89... .
+Stopped at a new negative fixture assertion: missing boundary is inert
+AwaitingExactSnapshot(status4), not NotHandled(status0). No text mutation or
+daemon delegation occurred. Preserve strict0 for all original adverse cases;
+new contradiction assertions permit only inert0/4 with zero text effects and
+no authoritative handoff. Do not change runtime to satisfy an overspecified
+fixture. Complete multi-NBSP positives remain unproved until next run.
+
+TD155 focused td155-series-green-9qqzqfio:12/12PASS25.671s,
+archive1dc6f8200beb96ac4fd2ec432df723f5c243cb36c406ca115b4f658365f7ed89.
+Uniform exact consumer + existing completed paired Space-series acknowledger
+pass real callback/Reset/raw-SSI and strict contradiction controls. No state,
+route/model/config/default changes. Full controlled/source gates pending; no
+new native or installed evidence. Only later test failure diagnostics add the
+explicit boundary count; assertions/runtime unchanged.
+
+TD155 full wstyurem FAIL716.943s: unchanged3237IDs/no waivers; IME827 has2
+old owned-prefix regressions. New outer candidate confused full owned tail with
+pending token suffix. Correct geometry uses suffix only, retaining exact old
+prefix for the same tail/scope owner. Both original one-boundary failures and
+new two-boundary owned-prefix controls join focused proof. No publication/build/
+install and no producer revert. First independent code review9/10 did not
+identify this gap; pass2 required after corrected source proof.
+
+TD155 corrected prefix-focused-jnf0564c14/14PASS30.197s, archivedf903f2a... .
+Both old one-Space/owned-prefix failures and added two-Space owned-prefix
+variants pass. Geometry compares only current pending token suffix; full owned
+prefix stays exact for the same atomic tail/scope owner. New full will detect
+three independent counterfactual restrictions/errors, no waiver or route change.
+
+TD155 final g48ali01 sourcePASS3211/3211,0failure/exemption,730.988s,
+archive47036521... . All3237IDs/classifications unchanged, actualMSRV/lints/canon/
+audit50/Node-harness122/panel PASS. IME827/827 including both old regressions;
+daemon294/294. All3counterfactuals detected and source exactly restored.
+994proof inputs matched locally after verified generated/lint metadata sync.
+Final code review2/canonical+observer17 and new89 build/native/CI/install next.
+
+TD155 final canonical rwecv4fk PASS48.657s, archive9cd6b176...,993functional
+inputs equal full g48ali01;18helper AST/hash identities and actual remote
+observer17/17PASS,0nativekeys. Generated graph copied back; no runtime delta
+after full3211. Final code review2/build/new native/CI/install pending.
+
+TD155 final fresh-context code review9/10 ACCEPT pass2/2, noP1/P2,
+/root/td155_space_series_final_code_review. Corrected suffix/full-tail boundary
+and18helper pins verified; no runtime delta after final3211. Source task DONE;
+new matching build/native/CI/release/install still pending, installed88 unchanged.

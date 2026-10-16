@@ -12994,213 +12994,279 @@ fn firefox_native_replay_append_preserves_reset_lineage_until_exact_tail() {
 #[test]
 fn firefox_completed_boundary_replay_waits_for_final_exact_receipt() {
     for source_separator in [" ", "\u{a0}"] {
-        for observed_separator in [" ", "\u{a0}"] {
-            for guard in [
-                "exact",
-                "prefix",
-                "selection",
-                "caret",
-                "focus",
-                "content",
-                "off_caret_exact",
-                "off_caret_two",
-                "off_caret_external",
-                "off_caret_selection",
-                "off_caret_foreign",
-                "off_caret_future",
-            ] {
-                zbus::block_on(bounded(async {
-                    let mut harness = cycle09_harness().await;
-                    let mut source = cycle09_source(&mut harness).await;
-                    cycle09_add_trailing_boundary(&mut harness, &mut source).await;
-                    cycle09_surrounding_receipt(
-                        &mut harness,
-                        &mut source,
-                        &format!("πrefix abc{source_separator}"),
-                        11,
-                        11,
-                    )
-                    .await;
-                    assert_eq!(
-                        source.committed_tail.buffer,
-                        format!(" abc{source_separator}")
-                    );
-                    let (source, disposition) = cycle09_manual_toggle(&mut harness, source).await;
-                    assert_eq!(disposition, Ok((3, false)));
-                    let (source, tail) = cycle09_visible_tail(&mut harness, source).await;
-                    assert!(cycle09_tail_is_authoritative(
-                        &tail,
-                        &source.path,
-                        false,
-                        &format!(" abc{source_separator}"),
-                    ));
-                    let epoch = tail.as_ref().unwrap().3;
-                    let target_path = format!("{TARGET_PATH}_completed_boundary_replay");
-                    let target = cycle09_factory_handoff(
-                        &mut harness,
-                        source,
-                        26_000,
-                        &target_path,
-                        None,
-                        "lay-ime-ru",
-                    )
-                    .await;
-                    let (mut target, suppression) = cycle09_suppress_exact_replay(
-                        &mut harness,
-                        target,
-                        &format!("abc{source_separator}"),
-                        epoch,
-                        &target_path,
-                        true,
-                    )
-                    .await;
-                    assert_eq!(suppression, Ok(true));
-                    target.config.text_backend = "ime".into();
-                    target.config.typing_assist = false;
-                    target.config.nanda_precognition = false;
-                    cycle09_surrounding_receipt(
-                        &mut harness,
-                        &mut target,
-                        &format!("πrefix abc{source_separator}"),
-                        11,
-                        11,
-                    )
-                    .await;
-                    let mut serial = 26_040;
-                    for _ in 0..4 {
-                        for state in [0, RELEASE_MASK] {
-                            assert!(
-                                !firefox_replay_callback(
-                                    &mut harness,
-                                    &mut target,
-                                    &mut serial,
-                                    (KEY_BACKSPACE, 14, state),
-                                )
-                                .await
-                            );
-                        }
-                    }
-                    assert_eq!(target.committed_tail.buffer, " ");
-                    for (ch, code) in [('ф', 30), ('и', 48), ('с', 46), (' ', 57)] {
-                        let keyval = if ch == ' ' {
-                            KEY_SPACE
-                        } else {
-                            0x0100_0000 | ch as u32
-                        };
-                        for state in [0, RELEASE_MASK] {
-                            assert!(
-                                !firefox_replay_callback(
-                                    &mut harness,
-                                    &mut target,
-                                    &mut serial,
-                                    (keyval, code, state),
-                                )
-                                .await
-                            );
-                        }
-                    }
-                    assert_eq!(target.committed_tail.buffer, " фис ");
-                    firefox_replay_reset(&mut harness, &mut target, &mut serial).await;
-                    assert!(target.context_reset_rereceipt.is_some());
-
-                    // Firefox reports the surface after deletion even though replacement
-                    // keys have already completed. It cannot yet authorize another edit.
-                    let (partial, cursor, anchor) = match guard {
-                        "off_caret_exact" => ("πrefix фи", 8, 8),
-                        "off_caret_two" => ("πrefix фи", 7, 7),
-                        "off_caret_external" => ("πrefix ", 6, 6),
-                        "off_caret_selection" => ("πrefix фи", 8, 7),
-                        "off_caret_foreign" => ("foreignфи", 8, 8),
-                        "off_caret_future" => ("πrefix фисx", 10, 10),
-                        _ => ("πrefix ", 7, 7),
-                    };
-                    cycle09_surrounding_receipt(&mut harness, &mut target, partial, cursor, anchor)
+        for observed_boundary in [" ", "\u{a0}"] {
+            for boundary_count in [1, 2] {
+                let observed_separator = observed_boundary.repeat(boundary_count);
+                let source_separator = source_separator.repeat(boundary_count);
+                for guard in [
+                    "exact",
+                    "prefix",
+                    "selection",
+                    "caret",
+                    "focus",
+                    "content",
+                    "off_caret_exact",
+                    "off_caret_two",
+                    "off_caret_external",
+                    "off_caret_selection",
+                    "off_caret_foreign",
+                    "off_caret_future",
+                ] {
+                    zbus::block_on(bounded(async {
+                        let mut harness = cycle09_harness().await;
+                        let mut source = cycle09_source(&mut harness).await;
+                        cycle09_add_trailing_boundary(&mut harness, &mut source).await;
+                        cycle09_surrounding_receipt(
+                            &mut harness,
+                            &mut source,
+                            &format!("πrefix abc{}", source_separator.chars().next().unwrap()),
+                            11,
+                            11,
+                        )
                         .await;
-                    if guard.starts_with("off_caret_") && guard != "off_caret_exact" {
+                        if boundary_count == 2 {
+                            assert!(
+                                legacy_key(
+                                    &mut harness,
+                                    &mut source,
+                                    11_911,
+                                    KEY_SPACE,
+                                    57,
+                                    RELEASE_MASK
+                                )
+                                .await
+                            );
+                            let mode = source.layout_gesture.layout_is_ru;
+                            let visible = source.composition.preedit_visible;
+                            assert!(
+                                legacy_key(&mut harness, &mut source, 11_912, KEY_SPACE, 57, 0)
+                                    .await
+                            );
+                            expect_legacy_managed_space(&mut harness, &source, mode, visible).await;
+                            assert!(
+                                legacy_key(
+                                    &mut harness,
+                                    &mut source,
+                                    11_913,
+                                    KEY_SPACE,
+                                    57,
+                                    RELEASE_MASK
+                                )
+                                .await
+                            );
+                            cycle09_surrounding_receipt(
+                                &mut harness,
+                                &mut source,
+                                &format!("πrefix abc{source_separator}"),
+                                12,
+                                12,
+                            )
+                            .await;
+                        }
+                        assert_eq!(
+                            source.committed_tail.buffer,
+                            format!(" abc{source_separator}")
+                        );
+                        let (source, disposition) =
+                            cycle09_manual_toggle(&mut harness, source).await;
+                        assert_eq!(disposition, Ok((3, false)));
+                        let (source, tail) = cycle09_visible_tail(&mut harness, source).await;
+                        assert!(cycle09_tail_is_authoritative(
+                            &tail,
+                            &source.path,
+                            false,
+                            &format!(" abc{source_separator}"),
+                        ));
+                        let epoch = tail.as_ref().unwrap().3;
+                        let target_path = format!("{TARGET_PATH}_completed_boundary_replay");
+                        let target = cycle09_factory_handoff(
+                            &mut harness,
+                            source,
+                            26_000,
+                            &target_path,
+                            None,
+                            "lay-ime-ru",
+                        )
+                        .await;
+                        let (mut target, suppression) = cycle09_suppress_exact_replay(
+                            &mut harness,
+                            target,
+                            &format!("abc{source_separator}"),
+                            epoch,
+                            &target_path,
+                            true,
+                        )
+                        .await;
+                        assert_eq!(suppression, Ok(true));
+                        target.config.text_backend = "ime".into();
+                        target.config.typing_assist = false;
+                        target.config.nanda_precognition = false;
                         cycle09_surrounding_receipt(
                             &mut harness,
                             &mut target,
-                            "πrefix фис ",
-                            11,
-                            11,
+                            &format!("πrefix abc{source_separator}"),
+                            10 + boundary_count as u32,
+                            10 + boundary_count as u32,
                         )
                         .await;
-                        firefox_assert_no_recovered_manual_authority(&mut harness, target, guard)
-                            .await;
-                        return;
-                    }
-                    assert!(
-                        target.context_reset_rereceipt.is_some(),
-                        "inert retention: {guard}"
-                    );
-                    assert!(!target.context_reset_rereceipt_exact_manual_handoff_allowed());
-                    assert!(!target.context_word_is_known());
+                        let mut serial = 26_040;
+                        for _ in 0..3 + boundary_count {
+                            for state in [0, RELEASE_MASK] {
+                                assert!(
+                                    !firefox_replay_callback(
+                                        &mut harness,
+                                        &mut target,
+                                        &mut serial,
+                                        (KEY_BACKSPACE, 14, state),
+                                    )
+                                    .await
+                                );
+                            }
+                        }
+                        assert_eq!(target.committed_tail.buffer, " ");
+                        let mut replacement_keys = vec![('ф', 30), ('и', 48), ('с', 46)];
+                        replacement_keys.extend(std::iter::repeat_n((' ', 57), boundary_count));
+                        for (ch, code) in replacement_keys {
+                            let keyval = if ch == ' ' {
+                                KEY_SPACE
+                            } else {
+                                0x0100_0000 | ch as u32
+                            };
+                            for state in [0, RELEASE_MASK] {
+                                assert!(
+                                    !firefox_replay_callback(
+                                        &mut harness,
+                                        &mut target,
+                                        &mut serial,
+                                        (keyval, code, state),
+                                    )
+                                    .await
+                                );
+                            }
+                        }
+                        assert_eq!(
+                            target.committed_tail.buffer,
+                            format!(" фис{}", " ".repeat(boundary_count))
+                        );
+                        firefox_replay_reset(&mut harness, &mut target, &mut serial).await;
+                        assert!(target.context_reset_rereceipt.is_some());
 
-                    let final_text = if guard == "prefix" {
-                        format!("foreignфис{observed_separator}")
-                    } else {
-                        format!("πrefix фис{observed_separator}")
-                    };
-                    if guard == "focus" {
-                        actual_focus_out(&mut harness, &mut target, serial).await;
-                    } else if guard == "content" {
-                        target.set_content_type_state(8, 0);
-                    }
-                    cycle09_surrounding_receipt(
-                        &mut harness,
-                        &mut target,
-                        &final_text,
-                        if guard == "caret" { 10 } else { 11 },
-                        if guard == "selection" || guard == "caret" {
-                            10
-                        } else {
-                            11
-                        },
-                    )
-                    .await;
-                    if guard != "exact" && guard != "off_caret_exact" {
-                        firefox_assert_no_recovered_manual_authority(&mut harness, target, guard)
+                        // Firefox reports the surface after deletion even though replacement
+                        // keys have already completed. It cannot yet authorize another edit.
+                        let (partial, cursor, anchor) = match guard {
+                            "off_caret_exact" => ("πrefix фи", 8, 8),
+                            "off_caret_two" => ("πrefix фи", 7, 7),
+                            "off_caret_external" => ("πrefix ", 6, 6),
+                            "off_caret_selection" => ("πrefix фи", 8, 7),
+                            "off_caret_foreign" => ("foreignфи", 8, 8),
+                            "off_caret_future" => ("πrefix фисx", 10, 10),
+                            _ => ("πrefix ", 7, 7),
+                        };
+                        cycle09_surrounding_receipt(
+                            &mut harness,
+                            &mut target,
+                            partial,
+                            cursor,
+                            anchor,
+                        )
+                        .await;
+                        if guard.starts_with("off_caret_") && guard != "off_caret_exact" {
+                            cycle09_surrounding_receipt(
+                                &mut harness,
+                                &mut target,
+                                "πrefix фис ",
+                                11,
+                                11,
+                            )
                             .await;
-                        return;
-                    }
-                    assert!(
+                            firefox_assert_no_recovered_manual_authority(
+                                &mut harness,
+                                target,
+                                guard,
+                            )
+                            .await;
+                            return;
+                        }
+                        assert!(
+                            target.context_reset_rereceipt.is_some(),
+                            "inert retention: {guard}"
+                        );
+                        assert!(!target.context_reset_rereceipt_exact_manual_handoff_allowed());
+                        assert!(!target.context_word_is_known());
+
+                        let final_text = if guard == "prefix" {
+                            format!("foreignфис{observed_separator}")
+                        } else {
+                            format!("πrefix фис{observed_separator}")
+                        };
+                        if guard == "focus" {
+                            actual_focus_out(&mut harness, &mut target, serial).await;
+                        } else if guard == "content" {
+                            target.set_content_type_state(8, 0);
+                        }
+                        cycle09_surrounding_receipt(
+                            &mut harness,
+                            &mut target,
+                            &final_text,
+                            if guard == "caret" {
+                                10
+                            } else {
+                                10 + boundary_count as u32
+                            },
+                            if guard == "selection" || guard == "caret" {
+                                10
+                            } else {
+                                10 + boundary_count as u32
+                            },
+                        )
+                        .await;
+                        if guard != "exact" && guard != "off_caret_exact" {
+                            firefox_assert_no_recovered_manual_authority(
+                                &mut harness,
+                                target,
+                                guard,
+                            )
+                            .await;
+                            return;
+                        }
+                        assert!(
                         target.context_reset_rereceipt_exact_manual_handoff_allowed(),
-                        "source={source_separator:?} observed={observed_separator:?} guard={guard}"
+                        "source={source_separator:?} observed={observed_separator:?} guard={guard} count={boundary_count}"
                     );
-                    // The next owned preedit starts after a completed manual
-                    // replay, not only after an ordinary managed Space. Retiring
-                    // that replay must not lose the confirmed closed word.
-                    target.set_client_capabilities(0x4000_0029);
-                    let path = target.path.clone();
-                    assert!(
-                        legacy_key_at(
-                            &mut harness,
-                            &mut target,
-                            &path,
-                            serial,
-                            0x0100_0000 | 'я' as u32,
-                            44,
-                            0,
-                        )
-                        .await
-                    );
-                    serial += 1;
-                    assert!(target.composition.legacy_word_preedit_active);
-                    drain_output_to_proof(&mut harness).await;
-                    assert!(
-                        legacy_key_at(
-                            &mut harness,
-                            &mut target,
-                            &path,
-                            serial,
-                            KEY_BACKSPACE,
-                            14,
-                            0,
-                        )
-                        .await
-                    );
-                    let erasure_effects = drain_output_to_proof(&mut harness).await;
-                    assert_eq!(
+                        // The next owned preedit starts after a completed manual
+                        // replay, not only after an ordinary managed Space. Retiring
+                        // that replay must not lose the confirmed closed word.
+                        target.set_client_capabilities(0x4000_0029);
+                        let path = target.path.clone();
+                        assert!(
+                            legacy_key_at(
+                                &mut harness,
+                                &mut target,
+                                &path,
+                                serial,
+                                0x0100_0000 | 'я' as u32,
+                                44,
+                                0,
+                            )
+                            .await
+                        );
+                        serial += 1;
+                        assert!(target.composition.legacy_word_preedit_active);
+                        drain_output_to_proof(&mut harness).await;
+                        assert!(
+                            legacy_key_at(
+                                &mut harness,
+                                &mut target,
+                                &path,
+                                serial,
+                                KEY_BACKSPACE,
+                                14,
+                                0,
+                            )
+                            .await
+                        );
+                        let erasure_effects = drain_output_to_proof(&mut harness).await;
+                        assert_eq!(
                         erasure_effects
                             .iter()
                             .filter(|member| member.as_str() == "RequireSurroundingText")
@@ -13208,27 +13274,29 @@ fn firefox_completed_boundary_replay_waits_for_final_exact_receipt() {
                         0,
                         "owned cancellation retains the observation without a fake fresh receipt"
                     );
-                    assert!(
-                        target.context_reset_rereceipt.is_some(),
-                        "owned erasure after completed replay retains its proved predecessor"
-                    );
-                    assert!(target.context_reset_rereceipt_exact_manual_handoff_allowed());
-                    let (target, disposition) = cycle09_manual_toggle(&mut harness, target).await;
-                    assert_eq!(
-                        disposition,
-                        Ok(
-                            lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail
-                                .as_v3()
-                        ),
-                    );
-                    let (target, tail) = cycle09_visible_tail(&mut harness, target).await;
-                    assert!(cycle09_tail_is_authoritative(
-                        &tail,
-                        &target.path,
-                        true,
-                        &format!(" фис{observed_separator}"),
-                    ));
-                }));
+                        assert!(
+                            target.context_reset_rereceipt.is_some(),
+                            "owned erasure after completed replay retains its proved predecessor"
+                        );
+                        assert!(target.context_reset_rereceipt_exact_manual_handoff_allowed());
+                        let (target, disposition) =
+                            cycle09_manual_toggle(&mut harness, target).await;
+                        assert_eq!(
+                            disposition,
+                            Ok(
+                                lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail
+                                    .as_v3()
+                            ),
+                        );
+                        let (target, tail) = cycle09_visible_tail(&mut harness, target).await;
+                        assert!(cycle09_tail_is_authoritative(
+                            &tail,
+                            &target.path,
+                            true,
+                            &format!(" фис{observed_separator}"),
+                        ));
+                    }));
+                }
             }
         }
     }
@@ -13409,18 +13477,34 @@ async fn td121_inherited_first_closed_word_with_capabilities(
     let chars = original.chars().count() as u32;
     cycle09_surrounding_receipt(harness, &mut source, &original, chars, chars).await;
     let mode = source.layout_gesture.layout_is_ru;
-    let preedit_was_visible = source.composition.preedit_visible;
-    assert!(legacy_key(harness, &mut source, 68_020, KEY_SPACE, 57, 0).await);
-    expect_legacy_managed_space(harness, &source, mode, preedit_was_visible).await;
-    assert!(legacy_key(harness, &mut source, 68_021, KEY_SPACE, 57, RELEASE_MASK).await);
-    cycle09_surrounding_receipt(
-        harness,
-        &mut source,
-        &format!("{original}{separator}{right_context}"),
-        chars + 1,
-        chars + 1,
-    )
-    .await;
+    let mut observed_boundaries = String::new();
+    for (index, boundary) in separator.chars().enumerate() {
+        assert!(matches!(boundary, ' ' | '\u{a0}'));
+        let preedit_was_visible = source.composition.preedit_visible;
+        let serial = 68_020 + 2 * index as u32;
+        assert!(legacy_key(harness, &mut source, serial, KEY_SPACE, 57, 0).await);
+        expect_legacy_managed_space(harness, &source, mode, preedit_was_visible).await;
+        assert!(
+            legacy_key(
+                harness,
+                &mut source,
+                serial + 1,
+                KEY_SPACE,
+                57,
+                RELEASE_MASK
+            )
+            .await
+        );
+        observed_boundaries.push(boundary);
+        cycle09_surrounding_receipt(
+            harness,
+            &mut source,
+            &format!("{original}{observed_boundaries}{right_context}"),
+            chars + index as u32 + 1,
+            chars + index as u32 + 1,
+        )
+        .await;
+    }
     let (source, disposition) = cycle09_manual_toggle(harness, source).await;
     assert_eq!(disposition, Ok((3, false)));
     let (source, tail) = cycle09_visible_tail(harness, source).await;

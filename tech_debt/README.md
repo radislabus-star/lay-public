@@ -8,12 +8,14 @@
 #47 требует результата пользователя на Orange Pi; универсальной
 оконной совместимости этот выпуск не заявляет. [Релиз](../docs/release-1.0.88.md).
 
-Продолжение: [TD-154 — точное подтверждение серии Space](154-acknowledge-consecutive-owned-space-boundaries.md),
-P1, DONE_SOURCE3211/3211, causal RED/controlled reversion, code review9/10.
-Одна проверка в существующем владельце; версия1.0.89 подготовлена, ещё не
-установлена/опубликована. Впереди новая точная сборка, native432+80 и CI.
-Chrome oracle/probe и два Firefox release-order отказа учитываются отдельно;
-исходные14 FAIL не переименовываются.
+Продолжение: [TD-155 — точная серия подтверждённых Space в исполнителе](155-replay-exact-acknowledged-space-series.md),
+P1, DONE_SOURCE3211/3211; corrected focused14/14, plan/code9/10,
+three controlled regressions, final canonical/observer17PASS. Новая сборка,
+whole native432+normal80, CI и установка впереди. [TD154](154-acknowledge-consecutive-owned-space-boundaries.md)
+DONE_SOURCE3211/3211, review9/10; native подтвердил оба ACK и handoff, затем
+выявил следующий отказ daemon prepare_exact_replay (разрешён только один NBSP).
+Новый optionalFirefox40=25P12F3B; default432 не запускался. Версия1.0.89
+собрана как кандидат, ещё не установлена/опубликована; первый отказ сохранён.
 
 Исторические этапы, их отрицательные результаты и точные границы:
 

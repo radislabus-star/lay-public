@@ -3329,7 +3329,33 @@ impl LayIbusEngine {
         {
             return;
         }
-        let actual = format!("{word}\u{a0}");
+        let Some(owned_prefix) = self.committed_tail.buffer.strip_suffix(&pending.token_text)
+        else {
+            return;
+        };
+        let actual = if let Some(scope) = replay.as_ref() {
+            let Some(prefix) = scope.observed_external_prefix.as_deref() else {
+                return;
+            };
+            let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() else {
+                return;
+            };
+            let Some(replacement) = snapshot
+                .text
+                .strip_prefix(&format!("{prefix}{}", scope.unchanged_prefix))
+            else {
+                return;
+            };
+            // The existing tail owner below revalidates completed provenance
+            // and permits presentation changes only in its newly replayed Spaces.
+            let actual_tail = format!("{}{replacement}", scope.unchanged_prefix);
+            let Some(suffix) = actual_tail.strip_prefix(owned_prefix) else {
+                return;
+            };
+            suffix.to_string()
+        } else {
+            format!("{word}\u{a0}")
+        };
         if !self
             .client_context
             .surrounding_text_snapshot
@@ -3344,14 +3370,14 @@ impl LayIbusEngine {
         {
             return;
         }
-        // A rich editor may acknowledge each owned Space as NBSP, including
-        // one after previously acknowledged boundaries. Only the new final
-        // character changes; the exact prefix above retains every earlier byte.
-        // Keep those actual bytes for every later exact check; never normalize
-        // the client snapshot or revive a stale owner. This is the same append, so
-        // its character count and epoch do not change. Confirmation stays with
-        // the existing receipt validator below.
-        let Ok(acknowledged_replay) = self.acknowledge_owned_space_tail(replay.as_ref()) else {
+        // The receipt bounds its token suffix; the tail owner retains the full
+        // owned prefix. Only newly emitted Space positions may be acknowledged,
+        // using a completed paired replay when present. Keep every earlier byte
+        // exact and let the existing receipt validator confirm the observation.
+        let actual_tail = format!("{owned_prefix}{actual}");
+        let Ok(acknowledged_replay) =
+            self.acknowledge_owned_space_tail(&actual_tail, replay.as_ref())
+        else {
             return;
         };
         let pending = self
