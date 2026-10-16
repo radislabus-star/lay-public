@@ -939,3 +939,28 @@ TD-141 COMPLETE / installed1.0.84. Build RUN/release84-build/BUILD.json:232.239s
 ## TD-147 opt-in shortcuts — before production edit
 
 2026-10-16T08:25:11.537592+00:00; baseline05e1e448 source88, installed87 unchanged. Hypothesis: new opt-in Backspace must reach the existing exact undo owner before next-key invalidation; double-Space needs ordinary boundary accounting and exact suffix count before the existing gesture dispatch. First failures and accepted plan8/10 are recorded in tech_debt/147-explicit-undo-and-double-space.md and decision2026-10-16-opt-in-existing-owner-shortcuts.json. No early KnownStart veto, parallel legacy detector, transport bypass, models or training changes. Start with real executable RED; source, native, timing and installed evidence remain separate. Historical complete matrix349P51F32B/432; new bytes NOT_TESTED.
+
+## TD-150 — completed native replay Reset capture, focused verdict
+
+2026-10-16; baseline e6f3227c, built88/installed87. The single same-byte full
+Firefox confirmation completed216 at169P28F19B but lost fullscreen/space/field8;
+its per-cell trace records late matched Reset without a predecessor and a live
+bridge context_authority refusal. Both complete E6 Firefox receipts and original
+short4 failure remain immutable; no third same-byte full rerun. Existing deferred
+observer/callback stream reproduces the exact authority failure in
+td150-observer-red-wtmv6a4m,2/3 controlsPASS. Remove only the whitespace rejection
+in the existing completed-replay capture fallback, preserving all proof gates.
+td150-focused-proof-vfotdhss11/11 PASS, controlled old guard1/1 detected; fresh
+plan9/10 and independent code review9/10(pass1), root all implementation.
+Full source3210 expected is running; no new-byte build/native/install claim.
+[Owning task](../../tech_debt/150-retain-completed-native-replay-across-reset.md)
+contains exact hashes, failed fixtures, adverse cases, consequences and limits.
+No early KnownStart veto, new owner/route/timeout/model/learning change.
+
+TD-150 full source verdict: td150-full-source-5m8befqy3210/3210 PASS,
+3174 correctness+36 package, zero failures/exemptions,694.58s. Manifest3236
+keeps all old classifications/15ignored/11performance and adds only the causal
+regression. MSRV1.88 both configurations, strict lints530/354 unchanged, canon15,
+architecture/audit50, Node/harness/panel PASS;994 tested files matched locally.
+Fresh source review9/10; final canonical/matched build/new native pending.
+Both original rejected E6 full Firefox receipts remain unchanged.

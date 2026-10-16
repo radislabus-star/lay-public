@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792144732.4465659,
-    "ast_hash": "79fbec3b68c1cd1cc3fd59685c59c20b",
+    "mtime": 1792153549.5977912,
+    "ast_hash": "0eaf74f35c14b4a8ce337469e28f2d2b",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792146549.2859633,
-    "ast_hash": "4088cbbeb7178e12e184e8505b091422",
+    "mtime": 1792153611.1991231,
+    "ast_hash": "4a855e9290a7987f395a3162d4a5cab7",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1792144555.5059164,
-    "ast_hash": "4ef4e28ca97c30c22a7ce767b66274be",
+    "mtime": 1792153548.776787,
+    "ast_hash": "cfc6f230a660e989784f8fe3e0482a78",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1792144555.0769098,
-    "ast_hash": "02eb736c0b2b13a548d511c5ce14d3fd",
+    "mtime": 1792153549.2097893,
+    "ast_hash": "81104435535acdbec647340eae7f2deb",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1792142552.8626087,
-    "ast_hash": "59823595f812121d7aad61f3f387f0fa",
+    "mtime": 1792152667.4036062,
+    "ast_hash": "6eee83a057f5f1759376d5f89895024e",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -6970,8 +6970,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/late_native_replay_refresh.rs": {
-    "mtime": 1791997679.601047,
-    "ast_hash": "8161b47599f1b25b0b4f950638473454",
+    "mtime": 1792152633.2794323,
+    "ast_hash": "941e9c11f67084e59ed0d558d6b8ac29",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_cursor_edit.rs": {
@@ -7040,8 +7040,8 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1792139111.5375392,
-    "ast_hash": "e8a1a4b6b3420b65828ae7c3db3a29ba",
+    "mtime": 1792153611.1991231,
+    "ast_hash": "52c3d3bc5224270e61ce3614a75ab6ac",
     "semantic_hash": ""
   },
   "docs/development/wj-native-apps-2026-10-14.md": {
@@ -7125,8 +7125,8 @@
     "semantic_hash": ""
   },
   "docs/development/public-issues-2026-10-16.md": {
-    "mtime": 1792146549.2860928,
-    "ast_hash": "13d7ac4a55fcffde22e9c351e9153340",
+    "mtime": 1792152748.4030998,
+    "ast_hash": "106726b08bdcedd57c4520ddf131776d",
     "semantic_hash": ""
   },
   "tech_debt/145-verify-issue47-current-version.md": {
@@ -7155,8 +7155,8 @@
     "semantic_hash": ""
   },
   "docs/release-1.0.88.md": {
-    "mtime": 1792146549.285746,
-    "ast_hash": "17109b215b2f014c721635edfd246cab",
+    "mtime": 1792153611.200123,
+    "ast_hash": "fa9a261a909b0422ee7524ff5cbae655",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-atomic-manual-tail-frame-owner.json": {
@@ -7175,13 +7175,23 @@
     "semantic_hash": ""
   },
   "tech_debt/149-update-rustls-security-patch.md": {
-    "mtime": 1792146549.285454,
-    "ast_hash": "405bfbb5e8ee4ca4f54f1b018c2206f2",
+    "mtime": 1792152748.4040997,
+    "ast_hash": "b44be7c3d5c0c071e5b130343c75775a",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-rustls-patch-release-prerequisite.json": {
     "mtime": 1792146549.2856429,
     "ast_hash": "ab83e84b138795fed133ea2d98eee355",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-16-completed-native-replay-reset-capture.json": {
+    "mtime": 1792153611.299212,
+    "ast_hash": "e6a11749d832e337dc9659ce82eddd6f",
+    "semantic_hash": ""
+  },
+  "tech_debt/150-retain-completed-native-replay-across-reset.md": {
+    "mtime": 1792153611.198123,
+    "ast_hash": "c9731a549074815f42c03197aa133be7",
     "semantic_hash": ""
   }
 }

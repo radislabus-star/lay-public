@@ -1,6 +1,6 @@
 # TD-149 — Minimal rustls security patch before release1.0.88
 
-Status: DONE_SOURCE after plan9/10 and independent code review9/10; final build/native/install pending. Priority:P1 release prerequisite.
+Status: DONE_SOURCE after plan9/10 and independent code review9/10; built e6f3227c candidate BLOCKED_NATIVE, follow-up TD-150. Priority:P1 release prerequisite.
 Baseline829f47c749159f71057fe3776b4a8141d1b445a2; TD-147 source3209/3209 published.
 User authorized sequential fixes/tests/review/push and final installation.
 Root alone implements; independent review max2 passes. No IME route, authority,
@@ -152,3 +152,90 @@ Final canonical refresh PASS47.96s, exact decision coverage+15 canon tests:
 /home/ubu/.cache/lay/development/td149-final-canonical-8bhhvtib/RESULT.json.
 All four canonical metadata files fetched and SHA verified;993/993 functional
 files retain final source proof identity. New native/build/install still pending.
+
+## Built candidate and first native result (not installation)
+
+Published source e6f3227c50f13b443fc161e11b52e8ff56feaa33 verified on origin
+work branch and both public work/main refs. Current GitHub CI38887748692 and
+Security38887748572 both SUCCESS; MSRV and installer jobs succeeded separately.
+Build receipt /home/ubu/.cache/lay/development/td149-install88-20261016/BUILD.json,
+archivea677c68268c9983a3545fff86fa3b5a4caf4ee9fe10ed10c69eb6c557c88f5a6,
+205.9s, same audited Cargo.lock; final same-DB audit0. No runtime source edited
+after this build. Local installed runtime remains87.
+
+Firefox full216 completed and retained at
+/home/ubu/.cache/lay/development/td149-install88-20261016/native/firefox/RESULT.json:
+169 PASS/28 FAIL/19 BLOCKED, NOT_TESTED0. Standard60/60 and panel6/6 PASS;
+functional103/28/19. Comparison native/firefox-vs-READV.json: one lost PASS,
+functional/normal/short/field4, no gains. Do not discard or rerun this receipt
+until green. Original single-character projection а→f stayed а; initial raw
+seed а caret1, while old READV/PLAINV/PLAIN successful seeds show аж caret1
+(completion after caret). Root cause NOT YET established; completion visibility
+is a hypothesis, not authority to weaken any verifier/admission or alter routes.
+The existing bounded512KB final trace does not establish the failed callback;
+need a separate bounded diagnostic preserving that case immediately. Chrome
+full matrix running; optional shortcuts80 and local installation still pending.
+
+Firefox native Double Shift standard420/420 timings: median99.593867ms,
+p95112.090050ms,max120.080199ms. Functional DS132/210 (78missing), Space37/50
+(13missing), Tab0/10 and selection0/10 retained. Same evdev-write-return→AT-SPI
+clock, not kernel/paint or universal laptop latency. New active-VT ledger guard
+means harness overhead is not byte-identical to old comparison.
+
+Initial Firefox setup attempt: controller omitted existing owned-keyboard ACL
+admission, stopped before input; native-setup-failed-attempt1/firefox/RESULT.json
+retains all216 NOT_TESTED and every missing timing. Second setup hit exclusive
+seat-receipt filename collision after creating finite owned seat, before GUI.
+Verified exact seat PID/starttick/UID/session/VT/RuntimeMax1h and preserved
+SEAT-RECOVERY.json before continuing that setup. The standard protocol/actors
+and product bytes stayed unchanged; original PERF-keyboard-admit.py prerequisite
+now runs before GUI readiness. This is setup recovery, not extra functional PASS.
+
+## Complete current matrix and bounded controls
+
+Current88 default matrix COMPLETE432: Firefox169/28/19, Chrome179/23/14,
+total348 PASS/51 FAIL/33 BLOCKED, NOT_TESTED0. Chrome receipt
+/home/ubu/.cache/lay/development/td149-install88-20261016/native/chrome/RESULT.json;
+no lost Chrome PASS; one prior FAIL became BLOCKED. Firefox one short/phone
+loss remains unclassified. Standard DS timings Chrome406/420,14missing,
+median82.533846ms,p9599.414483ms. Full raw timing denominators retained.
+
+Optional enabled configurations are separate80: Firefox27 PASS/10 FAIL/3
+BLOCKED_PRECONDITION; Chrome33/6/1. Receipts native-shortcuts/{browser}/RESULT.json
+in the same private release cache. Do not add these to the432 denominator.
+All first6 Firefox fields passed; Firefox rich7/8/10 failed projection and
+first-word undo, second-word seeds blocked on native NBSP prefix; iframe input9
+rapid pairs reached3/5 then declined pair4. Chrome33successful cases include
+19/20 exact Backspace undo actions; rich7/10 projection failure snapshots already
+show converted letters plus retainedNBSP2 while current test expectsASCII2
+(not proof of a runtime defect). Search2 projections completed but later probe
+failed with an unaccepted visible suffix; preserve overallFAIL. Do not relax
+raw-output checks or declare every fixtureFAIL a runtime bug. Source/runtime
+authority remains unchanged; private modes with options and raw unobserved burst
+remain NOT_TESTED.
+
+Bounded old87/current88 diagnostics, no installation or code rollback:
+ native-diagnostic/{reference87,candidate88}/firefox/RESULT.json:3/3 each,
+ Nanda previews disabled using normal config, live composition stays enabled;
+ native-diagnostic/{reference87on,candidate88on}/firefox/RESULT.json:20/20 each,
+ normal Nanda, ten base/short pairs with physical Shift gaps0..700ms.
+Both versions used the same controlled88 panel, frozen data, native actors and
+guards. These46 total controlled positive cells do NOT explain or clear the
+original single failure. No speculative production patch is justified yet.
+
+Prepare at most ONE full Firefox confirmation for this unresolved concern:
+original byte-identical9 wrappers/canonical actors, same88 binary/config20fe
+and frozen data; unique651..659 jobs, separate native-recheck receipts. A passive
+read-only watcher captures trace at each failure so the callback cannot be lost
+from the bounded final trace. Original default216 FAIL and all controls remain
+immutable. No third same-byte full rerun, no test/guard/threshold weakening and
+no claim of a root-cause fix from a passing confirmation. Installed87 and all
+user config/models/processes remain unchanged.
+
+The single full Firefox confirmation native-recheck/firefox/RESULT.json is
+COMPLETE216/9 jobs,169 PASS/28 FAIL/19 BLOCKED, zeroNOT_TESTED. Original short4
+passes, but standard/fullscreen/space/field8 loses a priorPASS. Retain both full
+receipts unchanged; REJECT_LOST_PASS remains and installation is not permitted
+for these bytes. No third same-byte full repeat. Per-cell trace-space-8.jsonl
+captures the actual live bridge refusal after completed native replay/lateReset.
+TD-150 now owns the causal source repair; its fresh changed-byte gate is required.

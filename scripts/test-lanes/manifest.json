@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3173,
+    "correctness": 3174,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 347,
+    "process": 348,
     "target": 2888
   },
   "package_fixtures": [
@@ -1044,6 +1044,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::firefox_zero_width_visible_completion_tab_appends_once_with_space",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::late_native_replay_refresh::completed_native_closed_replay_survives_reset_after_partial_replacement",
       "target": "bin:lay-ibus-engine"
     },
     {

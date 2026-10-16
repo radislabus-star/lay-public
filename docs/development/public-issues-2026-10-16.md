@@ -19,11 +19,21 @@ Live queue and readback receipts:
 `/home/ubu/.cache/lay/development/issues-final-pass-20261016/`.
 GitHub comments/closure are recorded there and read back after each mutation.
 
-Last complete native browser receipt remains Firefox170/27/19/216 and
-Chrome179/24/13/216, total349/51/32/432; historical NOT_TESTED0.
-This is not acceptance of1.0.87 or subsequent patches. New source results,
-installed identities, native client acceptance and typing latency remain
-separate scopes. No client messages are sent during tests.
+Current source e6f3227c1.0.88 complete native432: Firefox169/28/19 and
+Chrome179/23/14, total348/51/33; NOT_TESTED0. Exact receipts in private
+td149-install88-20261016/native/. One lost historical Firefox PASS is under
+validation; no lost Chrome PASS. Historical READV349/51/32 remains separate.
+Optional shortcut80:60PASS/16FAIL/4blocked preconditions; no universal acceptance.
+Source3209, compiled bytes, installed87, native clients and timing stay separate.
+No client messages are sent.
+
+The one same-byte full Firefox confirmation also completes216/9 jobs at169/28/19
+but loses standard/fullscreen/space/field8; original short/field4 passes there.
+Both receipts remain separate and installation is BLOCKED_NATIVE. No third
+unchanged-byte full rerun. The saved per-cell trace yields a causal source RED
+and minimal [TD-150](../../tech_debt/150-retain-completed-native-replay-across-reset.md)
+completed-replay Reset capture repair; focused11/11 plus controlled reversion1/1.
+Full source/review/new-byte build and client proof are still pending.
 
 Release prerequisite [TD-149](../../tech_debt/149-update-rustls-security-patch.md):
 rustls-only security patch, same fresh DB before4/after0; full source3209/3209,

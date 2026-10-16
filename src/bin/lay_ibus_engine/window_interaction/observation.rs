@@ -3049,12 +3049,13 @@ impl LayIbusEngine {
     fn capture_context_reset_rereceipt_candidate(&self) -> Option<ContextResetRereceiptCandidate> {
         self.capture_owned_context_reset_rereceipt_candidate()
             .or_else(|| {
-                if self.context_handoff_sealed
-                    || self.atomic.active
-                    || self.committed_tail.buffer.ends_with(char::is_whitespace)
-                {
+                if self.context_handoff_sealed || self.atomic.active {
                     return None;
                 }
+                // A Reset observed during replay may have retired the ordinary
+                // pre-Space candidate. A fully matched replay still carries its
+                // exact source proof across the closing boundary; only the real
+                // complete client receipt can confirm this inert Reset seed.
                 let replay = self.exact_replay_reset_provenance(true)?;
                 let token_text = self.last_tail_with_boundary();
                 if token_text.is_empty() || token_text != replay.replacement {
