@@ -26,7 +26,10 @@ Backspace undo and Double Space (TD-147), session-scoped installer input access
 evidence (TD-152) and an explicit test-only readout readiness prerequisite
 (TD-153). The final matched source/native/install receipts are linked
 from [the public issue register](docs/development/public-issues-2026-10-16.md).
-Installed runtime remains1.0.87 until that separate transaction is verified.
+CLI/daemon/IME and panel1.0.88 are installed and loaded with matching hashes.
+Current source CI/Security first attempts pass; whole432+80 receipts and six-payload
+byte equivalence are recorded. Models/settings/sources/mode and globalIBus/L1.1/L3
+are preserved. See the owning TD153 receipt record.
 
 1.0.87: source patch for [late device access, GitHub #49](tech_debt/144-recover-late-device-access.md).
 The existing daemon main thread retries missing uinput and input listeners once

@@ -238,3 +238,13 @@ attested evidence; installed runtime authority and IME delivery routes have
 not changed. Publication is authorized by the sequential public-issue request.
 
 Published05e1e448 to origin work branch, public work branch and public/main; all remote refs/readback verified. #59 CLOSED completed, reply https://github.com/radislabus-star/lay-public/issues/59#issuecomment-6211314244; /home/ubu/.cache/lay/development/issues-final-pass-20261016/CLOSED-59.json. No new installation/native claim.
+
+
+Final release closure —2026-10-16: functional source77af7ade, full3211/3211,
+CI38916364078 +Security38916364185 firstattemptSUCCESS, independent review9/10.
+Installed matching CLI/daemon/IME/panel1.0.88;6actualpayloads match native-tested
+e34 bytes. Whole432=349P50F33B and normal optional80=58P18F4blockedpreconditions
+remain explicit, no all-client acceptance claim. GlobalIBus/L1.1/L3, models,
+settings/sources/mode unchanged; no localfunctionalkeys. Rollback/procSHA evidence:
+/home/ubu/.cache/lay/development/td153-install88-20261016/INSTALL.json.
+All old negative receipts and each card's narrower source/ACL/ARM scopes remain.

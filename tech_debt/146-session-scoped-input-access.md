@@ -116,3 +116,13 @@ Canonical remote refresh/check PASS (48.02s):
 All four shell files were then individually parsed and source hashes verified:
 `td146-final-graph-20261016/SHELL_SYNTAX.json`, PASS. The earlier lock-busy
 syntax attempt did not run; it was repeated only after the graph lease ended.
+
+
+Final release closure —2026-10-16: functional source77af7ade, full3211/3211,
+CI38916364078 +Security38916364185 firstattemptSUCCESS, independent review9/10.
+Installed matching CLI/daemon/IME/panel1.0.88;6actualpayloads match native-tested
+e34 bytes. Whole432=349P50F33B and normal optional80=58P18F4blockedpreconditions
+remain explicit, no all-client acceptance claim. GlobalIBus/L1.1/L3, models,
+settings/sources/mode unchanged; no localfunctionalkeys. Rollback/procSHA evidence:
+/home/ubu/.cache/lay/development/td153-install88-20261016/INSTALL.json.
+All old negative receipts and each card's narrower source/ACL/ARM scopes remain.

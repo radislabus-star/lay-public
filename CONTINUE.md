@@ -1,32 +1,25 @@
-# Current checkpoint — 2026-10-16, release1.0.88 gates
+# Current checkpoint —2026-10-16, installed/published1.0.88
 
-Current authority is [tech_debt/README.md](tech_debt/README.md) and the
+Authoritative checkout /home/ubu/projects/lay-space-boundary-shift-20261007,
+branch codex/space-boundary-shift-20261007. Functional source77af7ade, final
+publication changes only Markdown; current head is available from git.
+CLI/daemon/IME/panel88 installed, loaded SHA verified; no localfunctionalkeys.
+GlobalIBus/L1.1/L3/models/config/sources/mode preserved, rollback6files retained.
+
+TD153 DONE: controlled cache-MISS RED/current-frame materialization HIT, focused11,
+full3211/3211,0exceptions, all3237IDs unchanged; MSRV/lints/canon/independent9/10.
+Freshmain CI38916364078 andSecurity38916364185 firstattemptSUCCESS. All6actual
+payloads identical to native-tested e34: immutable whole432=349P50F33B,0NOT_TESTED,
+no lost defaultPASS. Optionalnormal80=58P18F4preconditions, private/fullscreen
+NOT_TESTED; observed older-E6 changes remain in TD147, no retry/splicing.
+
+Owning receipts /home/ubu/.cache/lay/development/td153-install88-20261016:
+BUILD.json, CI.json, NATIVE-EQUIVALENCE.json, INSTALL.json, NATIVE-CLOSURE.json.
+All owned remoteGUI scopes and finite seat closed, VT1,0heldkeys/ownedunits.
+No new input routes/owners/queues/timers/models or installation of modelservers.
+Issue#47 remains reporter-specific; known window limits belong to TD121.
+[Current queue](tech_debt/README.md), [release](docs/release-1.0.88.md),
 [public issue register](docs/development/public-issues-2026-10-16.md).
-Checkout `/home/ubu/projects/lay-space-boundary-shift-20261007`, branch
-`codex/space-boundary-shift-20261007`, current published e34a47ac (TD152 separate67debce1; previous b411 baseline).
-User authorized sequential fixes, tests, pushes, issue replies/closures and final
-local installation. Root implements; agents review. All functional input/builds/
-tests/graph refresh remote only, no RDP or global IBus restart/route/model change.
-Installed87 remains until the guarded final88 transaction actually passes.
-
-Current root changes: TD151 causal prepared-Space Reset repair (13/13 focused,
-controlled old selector1/1 detected, independent code9/10); TD152 reporting-only
-CI evidence repair (17/17, original CI failure cause UNKNOWN). Full3211/3211 source
-`/home/ubu/.cache/lay/development/td151-full-source-gvt96j4h` PASS;
-final canonical td151-final-canonical-1gumzyss PASS/current17Python+15AST helpers,
-final independent source reviews both9/10 (reused threads due platform limit).
-New exact-byte pair e34 is complete: Firefox170/27/19 + Chrome179/23/14
-=349PASS/50FAIL/33BLOCKED/432, NOT_TESTED0; zero old PASS lost. TD151 Space7
-PASS. Both owned GUI scopes empty, pinned processes gone, no held keys, VT1.
-Receipts: td151-install88-20261016/native/{firefox,chrome}/RESULT.json.
-CI38908900651 failed old overlap fixture None!=Some(ерка) at final release;
-Security38908900839 PASS. TD153 test-only readiness source complete: focused11/11, full3211/3211
-PASS564.631s,994inputs verified; originalCItransientcause unproved. Plan/code
-review9/10 both passes (reused context due platform limit); final canon
-PASS48.543s,20helperAST/17Python/15canon,993functionalinputs unchanged. No88 install/tag yet.
-Retain all old rejected E6/b411 whole receipts; no splicing/rerun-until-green.
-Final-source CI + optional80 + explicit byte equivalence/native binding remain
-before final install/release. No runtime change for TD153 is authorized by evidence.
 
 ## Historical checkpoint from 2026-10-09
 

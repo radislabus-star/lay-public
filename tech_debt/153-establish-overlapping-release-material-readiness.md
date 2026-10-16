@@ -1,6 +1,6 @@
 # TD-153 — establish material readiness in the overlapping-release fixture
 
-Priority P1, final CI blocker. Status: DONE_SOURCE3211/3211; final CI/byte equivalence/native options/install pending.
+Priority P1, final CI blocker. Status: DONE — source/current CI/strict byte equivalence/declared native coverage/local install verified. Known TD121 native limits remain open.
 Baseline e34a47ac8436918e9a243158b56b55d1f7eb82ca, version1.0.88;
 installed1.0.87 unchanged. Root implements, independent reviewer reads only.
 New-context thread creation is unavailable; reused review context is explicit.
@@ -186,3 +186,32 @@ and local final files. Four canonical metadata files fetched with SHA parity.
 993functional full-proof inputs remain identical (only generated graph receipt
 excluded). Actual new build/six-byte-equivalence/optional80/current-main CI/install
 remain blocked until their own receipts exist; no defaults or live runtime changed.
+
+
+Published functional source77af7adef906d98865938964f011da8b39b518e6, all3 refs
+readback verified (private origin/main untouched). Fresh build83.208s, archive
+10576bd2ff4820abceb814d81156f58eb0974b92a4f8f27409f4caeccb703091, buildSHA
+1fff987474ae9af5349a3c841ed20a0ea70f8ed9aa44ae4f4a652dbb3a9b5d98.
+All6 actual payload bytes match e34 exactly, including IME8cb7bca... . Existing
+whole432 may bind explicitly; no repeated unchanged-byte default input. Optional
+80 runs once per browser with the same exact payloads and original e34 source
+labels. New current-main CI38916364078/Security38916364185 first attempts running;
+final equivalence/install remains blocked until all required receipts exist.
+
+
+Final whole option80 complete58P18F4blockedpreconditions; normal only. Scope and
+observed older-E6 changes preserved in TD147, private/fullscreen NOT_TESTED.
+NATIVE-EQUIVALENCE.json verified six actual payloads and complete432+80 raw
+identity/config/cleanup gates; no quality/all-PASS assertion. Final owned finite
+seat1978761/tick35886058/UID1000/session6305 stopped only after cleanup/VT1;
+no other owned finite units remain, globalIBus untouched. CI stillpending.
+
+
+Final release closure —2026-10-16: functional source77af7ade, full3211/3211,
+CI38916364078 +Security38916364185 firstattemptSUCCESS, independent review9/10.
+Installed matching CLI/daemon/IME/panel1.0.88;6actualpayloads match native-tested
+e34 bytes. Whole432=349P50F33B and normal optional80=58P18F4blockedpreconditions
+remain explicit, no all-client acceptance claim. GlobalIBus/L1.1/L3, models,
+settings/sources/mode unchanged; no localfunctionalkeys. Rollback/procSHA evidence:
+/home/ubu/.cache/lay/development/td153-install88-20261016/INSTALL.json.
+All old negative receipts and each card's narrower source/ACL/ARM scopes remain.

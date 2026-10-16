@@ -1,7 +1,13 @@
 # Lay — очередь технического долга, 2026-10-16
 
-Текущий release blocker, P1: [TD153 — readiness overlapping-release fixture](153-establish-overlapping-release-material-readiness.md).
-Controlled cache-MISS reproduces None/Some; минимальная cfg(test) готовность, focused11/11, full3211/3211, review9/10; финальный canon PASS, code review2/2=9/10; CI/equivalence/options впереди. Runtime не меняется.
+Текущий выпуск **1.0.88 установлен**: CLI, daemon, IME и панель, загруженные SHA совпадают.
+[TD153](153-establish-overlapping-release-material-readiness.md) DONE:3211/3211,
+оба GitHub CI с первого раза, review9/10,6payload equivalence, whole432+80.
+Основной native349/50/33/432; новые опции58/18/4/80, normal-only. Ограничения TD121
+сохраняются. #47 требует результата пользователя на Orange Pi; универсальной
+оконной совместимости этот выпуск не заявляет. [Релиз](../docs/release-1.0.88.md).
+
+Исторические этапы, их отрицательные результаты и точные границы:
 
 Предыдущие release prerequisites:
 

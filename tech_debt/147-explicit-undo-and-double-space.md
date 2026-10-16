@@ -173,3 +173,45 @@ Final independent code review2/2:9/10, /root/confirmed_second_handoff_plan_revie
 Publish this source phase before TD-149's one-package security patch. The final matching1.0.88 build shares one remote default432-cell browser gate, then separate optional shortcut cases and timing. Source DONE does not imply native completion. Installed user1.0.87, global IBus, delivery routes, config and models remain unchanged at this milestone. Callback boxing adds one small owned-callback allocation, so final native timing is required.
 
 Final canonical AST refresh /home/ubu/.cache/lay/development/td147-final-canonical-6km3pybt/RESULT.json:PASS, exact decision coverage and15 canon tests,48.4s. All functional inputs match the3209-test proof; only generated architecture metadata/documentation differ. Installed authority unchanged.
+
+
+## Final1.0.88 normal-window option evidence
+
+Whole80 COMPLETE: Firefox25PASS/12FAIL/3BLOCKED_PRECONDITION, Chrome33/6/1,
+total58/18/4; each40distinct rows/5jobs,0collectorerrors, allprocessesgone/
+noheldkeys/VT1. Whole receipts: td151-install88-20261016/native-shortcuts/.
+Byte-equivalence binds these original e34-labeled receipts to final77af core
+and panel payloads; source labels are not rewritten. Native opt-in configuration
+SHA48f6e88fa12da65d5f7acf3e352feb076eeab6a73b4848bf07f3084f142b35ba.
+DoubleSpace40:26PASS/14FAIL; Backspace40:32PASS/4FAIL/4blockedpreconditions.
+Failures may precede the action or occur at the next-letter/ordinary-Backspace
+probe; these are complete-scenario statuses, not14 proven detector failures.
+The32successful undo scenarios include ordinary deletion. Three Firefox failures
+occur at the actual backspace_undo target (fields7/8/10), one at preceding Space
+(field9); four other scenarios lack seed preconditions. Successful timing samples
+must not hide these failed/missing cases. Private/fullscreen options remain NOT_TESTED.
+
+DoubleSpace measured36/60FF med117.086ms/p95144.668,48/60Chrome99.855/p95119.052;
+missing24/12 explicit. Backspace undo13/20FF med20.749/p9525.141,19/20Chrome
+21.027/p9524.334; missing7/1 explicit. First-Space and ordinary-Backspace coverage
+are stored separately in the full receipts. Options remain off/defaultDoubleShift.
+
+Observed comparison with older E6 whole80: Chrome no changedPASS; Firefox lost
+3PASS (search2 rapid,iframe9 singlepair,iframe9 second-wordSpace/undo), gained
+iframe9 rapid, net-2. These outcomes and original negative raw receipts remain,
+not a causal runtime-regression proof and not waived as PASS. Compatibility
+follow-up remains under TD121: group by first failed transition through actual
+Space/ACK/manual intent/context admission/verifier/output; no literal-word fix,
+route bypass, relaxed oracle, repeated same-byte full run or forced authority.
+Current source/option implementation is complete within exact current-context
+contract; universal native acceptance is explicitly NOT established.
+
+
+Final release closure —2026-10-16: functional source77af7ade, full3211/3211,
+CI38916364078 +Security38916364185 firstattemptSUCCESS, independent review9/10.
+Installed matching CLI/daemon/IME/panel1.0.88;6actualpayloads match native-tested
+e34 bytes. Whole432=349P50F33B and normal optional80=58P18F4blockedpreconditions
+remain explicit, no all-client acceptance claim. GlobalIBus/L1.1/L3, models,
+settings/sources/mode unchanged; no localfunctionalkeys. Rollback/procSHA evidence:
+/home/ubu/.cache/lay/development/td153-install88-20261016/INSTALL.json.
+All old negative receipts and each card's narrower source/ACL/ARM scopes remain.
