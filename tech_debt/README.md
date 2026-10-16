@@ -1,6 +1,11 @@
 # Lay — очередь технического долга, 2026-10-16
 
-Текущая задача: [TD-144 — поздний доступ к устройствам, GitHub #49](144-recover-late-device-access.md),
+Текущий разбор: [TD-145 — GitHub #47 на версии1.0.87](145-verify-issue47-current-version.md).
+Исходные механизмы подтверждены текущим кодом и12/12 core-диагностик;
+review9/10. Остаточный отказ после login: NEEDS_REPORTER_RETEST; тикет открыт.
+Новая правка runtime, версия или установка не требуются; установлен1.0.87.
+
+Последняя исправленная задача: [TD-144 — поздний доступ к устройствам, GitHub #49](144-recover-late-device-access.md),
 P1, DONE_SOURCE341/341, review9/10; INSTALLED_1.0.87 по отдельной команде пользователя.
 CLI/daemon/IME и панель87 загружены, SHA совпадают; uinput и устройства ввода
 открыты. Native NOT TESTED, latency NOT MEASURED.
