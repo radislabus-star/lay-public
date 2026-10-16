@@ -20,7 +20,20 @@ Live queue and readback receipts:
 `/home/ubu/.cache/lay/development/issues-final-pass-20261016/`.
 GitHub comments/closure are recorded there and read back after each mutation.
 
-## Current release gate
+## Current installed1.0.89 — publication pending
+
+TD154/155: source8562c2bb3211/3211/review9/10/firstmainCI+SecurityPASS,
+new whole432349P50F33B,0lostdefaultPASS; normal80=64P12F4preconditions vs58/18/4,
+9gains/3lostFFrapidPASS. Version-only panel alignment separately proven; three
+native-tested core binaries unchanged. Installed CLI/daemon/IME/panel89, loaded
+hashes matched,23protected files andglobalIBus/L1.1/L3/config/sources/mode preserved.
+Receipts /home/ubu/.cache/lay/development/td155-install89-20261017/:
+PANEL-VERSION-ALIGNMENT.json, OPTIONAL-CONTRAST.json, NATIVE-SELECTION.json,
+NATIVE-CLOSURE.json, CI.json, install-aligned/INSTALL.json. Original failed install
+and verified88 rollback retained. #46 material release follow-up pending after
+actual tag; #47 still needs reporter retest. [Release](../release-1.0.89.md).
+
+## Historical1.0.88 release gate
 
 Final functional source77af7ade, version1.0.88 installed for CLI/daemon/IME/panel.
 Source3211/3211/0exception, all3237IDs unchanged, MSRV/lints/canon/review9/10.

@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1792140006.3637986,
-    "ast_hash": "485decc74f2a43922e5b60031c9da56c",
+    "mtime": 1792190213.9672174,
+    "ast_hash": "7da4f9c6eb1d9963b2332c903c473c63",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792187309.7785227,
-    "ast_hash": "2e68bc2a9459f28da75a9e541e98f560",
+    "mtime": 1792187466.059375,
+    "ast_hash": "75ed63b4bbee891d51f68c45ca4ff039",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792186673.301391,
-    "ast_hash": "a8f047fdb3d5fe868c1c90bfc0b108be",
+    "mtime": 1792188596.3782814,
+    "ast_hash": "d5620832845e231fb6ade9c30463f3b9",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1792187314.5478232,
-    "ast_hash": "19f22bdb38f2c4f44e6e9f333e54d6ad",
+    "mtime": 1792190266.1283038,
+    "ast_hash": "c3de9367e4cd71a1c09a428ef6fe1de0",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -7040,8 +7040,8 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1792187314.4596398,
-    "ast_hash": "22951959a9030bc2c48feb311e37e87e",
+    "mtime": 1792190266.127899,
+    "ast_hash": "f3854601ff7598197c78c08221b91255",
     "semantic_hash": ""
   },
   "docs/development/wj-native-apps-2026-10-14.md": {
@@ -7230,8 +7230,8 @@
     "semantic_hash": ""
   },
   "docs/release-1.0.89.md": {
-    "mtime": 1792185433.412101,
-    "ast_hash": "58d9298313d1887a21eb806e289239a3",
+    "mtime": 1792188922.0264683,
+    "ast_hash": "5f9cd4cf27b9965ead7267337bc94e94",
     "semantic_hash": ""
   },
   "tech_debt/154-acknowledge-consecutive-owned-space-boundaries.md": {
@@ -7250,8 +7250,13 @@
     "semantic_hash": ""
   },
   "tech_debt/155-replay-exact-acknowledged-space-series.md": {
-    "mtime": 1792187314.4593236,
-    "ast_hash": "b795d3c6863f1f9a2d3d42de0f4380fd",
+    "mtime": 1792190266.127187,
+    "ast_hash": "4588dd4f4af8aa7a1d2b2df4c6c8a28d",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-17-panel-version89-metadata-alignment.json": {
+    "mtime": 1792190213.971387,
+    "ast_hash": "65e40d4fec9964c96f2a0cea415cd65d",
     "semantic_hash": ""
   }
 }

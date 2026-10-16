@@ -1,21 +1,23 @@
-# Lay — очередь технического долга, 2026-10-16
+# Lay — очередь технического долга, 2026-10-17
 
-Текущий выпуск **1.0.88 установлен**: CLI, daemon, IME и панель, загруженные SHA совпадают.
-[TD153](153-establish-overlapping-release-material-readiness.md) DONE:3211/3211,
-оба GitHub CI с первого раза, review9/10,6payload equivalence, whole432+80.
-Основной native349/50/33/432; новые опции58/18/4/80, normal-only. Ограничения TD121
-сохраняются. #46 закрыт как реализованные настройки с указанными ограничениями;
-#47 требует результата пользователя на Orange Pi; универсальной
-оконной совместимости этот выпуск не заявляет. [Релиз](../docs/release-1.0.88.md).
+**1.0.89 установлена**: CLI, daemon, IME и панель; загруженные SHA проверены.
+[TD-154](154-acknowledge-consecutive-owned-space-boundaries.md) и
+[TD-155](155-replay-exact-acknowledged-space-series.md): source/native/install DONE,
+публикация готовится. Исходники3211/3211 без исключений, plan/code9/10,
+три контролируемых регрессии, первые main CI/Security SUCCESS.
+Полная новая матрица:349PASS/50FAIL/33BLOCKED/432,0NOT_TESTED и0потерянных
+прежних defaultPASS. Дополнительные normal80:64PASS/12FAIL/4BLOCKED_PRECONDITION,
+раньше58/18/4;9новых PASS,3потерянных PASS в серии Firefox, причина последних
+покаUNKNOWN. Optional private/fullscreen NOT_TESTED. Ограничения TD121 сохраняются.
+[Изменения и точные границы](../docs/release-1.0.89.md).
 
-Продолжение: [TD-155 — точная серия подтверждённых Space в исполнителе](155-replay-exact-acknowledged-space-series.md),
-P1, DONE_SOURCE3211/3211; corrected focused14/14, plan/code9/10,
-three controlled regressions, final canonical/observer17PASS. Новая сборка,
-whole native432+normal80, CI и установка впереди. [TD154](154-acknowledge-consecutive-owned-space-boundaries.md)
-DONE_SOURCE3211/3211, review9/10; native подтвердил оба ACK и handoff, затем
-выявил следующий отказ daemon prepare_exact_replay (разрешён только один NBSP).
-Новый optionalFirefox40=25P12F3B; default432 не запускался. Версия1.0.89
-собрана как кандидат, ещё не установлена/опубликована; первый отказ сохранён.
+Пропущенная константа версии панели исправлена отдельно:992файла точно совпадают,
+один буквальный номер88→89, все3ядровых бинарника неизменны. Первая установка
+откатилась на88 и сохранена; исправленная установка подтверждена, package review9/10.
+Глобальный IBus/L1.1/L3, модели, настройки, источники, режим и23защищённых файла
+сохранены. Исходный текущий источник/состояние — в верхнем CONTINUE.md.
+#47 остаётся OPEN_NEEDS_REPORTER_RETEST на Orange Pi; уже закрытые тикеты
+и исторические результаты сохраняются в [реестре](../docs/development/public-issues-2026-10-16.md).
 
 Исторические этапы, их отрицательные результаты и точные границы:
 

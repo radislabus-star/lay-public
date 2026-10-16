@@ -1,6 +1,6 @@
 # TD-154 — Keep exact receipts for consecutive owned Space boundaries
 
-Status: DONE_SOURCE3211/3211, independent review9/10 / native gate pending. Priority: P1, before further optional
+Status: SOURCE_NATIVE_INSTALL_DONE_1.0.89, publication pending; independent review9/10. Priority: P1, before further optional
 shortcut compatibility changes. Baseline: fe614235967b4b7779085b5e784b9c5c7a2ebcde,
 released/installed 1.0.88. Root implements; independent review, at most two passes.
 
@@ -205,3 +205,18 @@ Space. First remaining shared transition is prepare_exact_replay in
 src/bin/lay_daemon/exact_ime_tail_replay.rs; TD155 owns that separate consumer.
 Do not revert TD154 or relabel this failed native receipt. The bounded trace
 is incomplete outside the retained interval; asynchronous completeness UNKNOWN.
+
+
+TD154/155 final installation1.0.89 VERIFIED, publication pending. Whole new
+native432349P50F33B with0lostdefaultPASS; separate normal80=64P12F4B,
+9gains/3lostFFrapidPASS and all prior receipts retained. Source3211/3211,
+source review9/10 pass2/2; metadata package review9/10 pass2/2 is separate.
+Metadata canonical fy4002ss PASS48.443s:992exact inputs+one APP_VERSION literal,
+3core binaries unchanged; graph/links/decisions valid,0newfunctionaltests/keys.
+BASE td155-install89-20261017/install-aligned/INSTALL.json verifies CLI/daemon/
+IME/panel89, loaded IMEb69b4ba0/daemon9b9f7dca,23protected files and identical
+globalIBus/L1.1/L3 process identities, config, sources and RUmode. Initial failed
+INSTALL.json remains immutable with verified88 rollback. No delivery/model/input
+route changes or localfunctionalinput. All owned remote finite seats CLOSED.
+Source/native mechanism scope complete; retained compatibility failures belong
+also to TD121 and do not become PASS. Source-only public tag/release next.

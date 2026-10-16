@@ -17,17 +17,27 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.89` (unpublished candidate; installed/published version remains `1.0.88`)
+- `1.0.89` (installed CLI/daemon/IME/panel; publication pending)
 
-1.0.88 source includes backed present-tense verb forms (TD-148), opt-in IME
+1.0.89: exact acknowledged Space-series replay (TD154/155), source3211/3211,
+review9/10, first-attempt source-main CI/Security. New whole432=349P50F33B,
+0lost old defaultPASS; optional80=64P12F4preconditions,9gains/3lostFFrapidPASS.
+Exact three native-tested core binaries installed; display-only APP_VERSION
+alignment separately proves992 exact inputs plus one literal and preserves all
+original receipts. Current install receipt:
+`/home/ubu/.cache/lay/development/td155-install89-20261017/install-aligned/INSTALL.json`.
+CLI/panel89 and loaded hashes verified;23protected files, globalIBus/L1.1/L3,
+models/config/sources/mode preserved. [Release details](docs/release-1.0.89.md).
+
+Historical 1.0.88 source includes backed present-tense verb forms (TD-148), opt-in IME
 Backspace undo and Double Space (TD-147), session-scoped installer input access
 (TD-146), rustls0.23.46 (TD-149), completed native replay proof across Reset
 (TD-150), prepared Space proof retention (TD-151), and bounded CI failure
 evidence (TD-152) and an explicit test-only readout readiness prerequisite
 (TD-153). The final matched source/native/install receipts are linked
 from [the public issue register](docs/development/public-issues-2026-10-16.md).
-CLI/daemon/IME and panel1.0.88 are installed and loaded with matching hashes.
-Current source CI/Security first attempts pass; whole432+80 receipts and six-payload
+CLI/daemon/IME and panel1.0.88 were installed and loaded with matching hashes.
+Its functional-source CI/Security first attempts passed; whole432+80 receipts and six-payload
 byte equivalence are recorded. Models/settings/sources/mode and globalIBus/L1.1/L3
 are preserved. See the owning TD153 receipt record.
 

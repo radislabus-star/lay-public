@@ -1,10 +1,11 @@
 # TD-155 — Replay an exactly leased series of acknowledged Space boundaries
 
-Status: DONE_SOURCE3211/3211, final review9/10; native/install pending. Priority: P1, next consumer after TD154. Root implements;
+Status: SOURCE_NATIVE_INSTALL_DONE_1.0.89, publication pending; final source review9/10. Priority: P1, next consumer after TD154. Root implements;
 fresh-context plan and code reviews, at most two passes each. Authoritative
 checkout /home/ubu/projects/lay-space-boundary-shift-20261007, branch
 codex/space-boundary-shift-20261007, baseline76361affeef7bb0cb9fbe35c1bf9293137b7156b.
-Installed/published1.0.88 remains unchanged;1.0.89 is an unpublished candidate.
+Baseline at task start was installed/published1.0.88. Current1.0.89 is installed;
+publication is pending. Exact final scope and immutable receipts are below.
 
 ## Root cause, measured evidence and authority boundary
 
@@ -255,3 +256,80 @@ Final fresh-context code review9/10 ACCEPT, pass2/2 total, no P1/P2, reviewer
 all current owner/provenance guards and18 helper identities independently checked.
 No runtime code changed after final full source; no third review pass. Source
 task complete; matching new-byte native/CI/release/install gates remain separate.
+
+
+TD155 source8562c2bb published normally to public/main and both working branches;
+matched89 build83.417s archive48ce41a5d4ad8b23e16be3a06dfef6205879313f3c6a0452964493801cfb0737,
+daemon9b9f7dca / IMEb69b4ba0. BASE td155-install89-20261017 holds BUILD/REVIEW/
+SOURCE-PUSH. Setup metadata errors caught before any functional job: invalid numeric
+seat label, then reused TD154 zero-key output name. Alphabetic guards retained;
+only fresh private names changed, recorded separately from independent source
+review. Original partial40 NOT_TESTED and prep retained as SETUP-ATTEMPT1;
+current cgroup/pinned processes/keyboard owner independently confirmed gone before
+restaging. No false native PASS; first actual Firefox optional40 now running.
+Security main first attempt succeeds; CI running. Installed88/source3211 unchanged.
+
+
+TD155 actual first functional Firefox optional40 COMPLETE27PASS/10FAIL/
+3BLOCKED_PRECONDITION,0NOT_TESTED,5jobs. Single pair10/10PASS including7/8/10;
+rapid10=3/10, undo-first7/10, undo-second7PASS/3BLOCKED. Old installed88 FF40
+25P12F3B gives5gains but3lostPASS (rapid fields1/4/6), no causal regression verdict
+or unchanged retry. Whole contrast OPTIONAL-FIREFOX-CONTRAST.json. DoubleSpace
+latency106.802median/137.423p95ms,33/60 measured,27missing; not an all-client speed claim.
+Captured one failed field2 rapid second pair in bounded ring: marker nonce53
+sees unsettled callback741, bridge rejects with18.494ms left in20ms; same Space
+release then enters/settles normally. No replay delegation for this failed gesture.
+OPTIONAL-FIRST-BRIDGE-REFUSAL.json SHA da9bef0a41bf50b7c183d6b845e279653ad6e4db1abe9502fcd83d53e5bac806
+under td155-install89-20261017; trace completeness UNKNOWN. No admission edit yet;
+all lostPASS causality UNKNOWN. DefaultFirefox216 now running; standard normal/
+private40/40PASS is partial evidence only. Installed88/default349P50F33B preserved.
+
+
+TD155 new-byte default Firefox216 COMPLETE170PASS/27FAIL/19BLOCKED,
+0NOT_TESTED, all9jobs and cleanup valid, no lostPASS or gains vs whole88 REPAIR2.
+Native DoubleShift420/420:98.465median/111.253p95ms; functional134/210 measured,
+76missing, retained separately. BASE td155-install89-20261017/native/firefox/
+RESULT.json and firefox-vs-REPAIR2.json. Chrome216 now running; latest complete
+both-browser table stays old349P50F33B until new Chrome whole completes.
+CI38972539257 and Security38972539134 exact8562c2bb firstattempt SUCCESS,
+BASE/CI.json. No source edit, v89 release/install still pending; installed88.
+
+
+TD155 new-byte default BOTH COMPLETE349PASS/50FAIL/33BLOCKED/432,
+0NOT_TESTED. Firefox170/27/19, Chrome179/23/14; whole comparisons both0lostPASS/
+0gains, all18jobs COMPLETE, no primary splicing. BASE td155-install89-20261017/
+native/{firefox,chrome}/RESULT.json and browser-vs-REPAIR2.json. Native standard
+Firefox420/420:98.465median111.253p95ms; Chrome406/420:82.182/98.873ms,14missing.
+Functional/other timing coverage remains separate in full receipts. Firefox
+optional40 already27P10F3B; Chrome optional40 now running on same exact build.
+No release/install yet, no source changes after final3211 or first-attempt CI.
+
+
+TD155 new whole native432=349P50F33B,0lostdefaultPASS, optional80=64P12F4B
+(FF27/10/3, Chrome37/2/1),9observedgains/3lostoptionalrapidPASS recorded explicitly.
+Chrome DoubleSpace60/60 observations98.756median118.154p95ms; both remaining
+ChromeFAIL are field2 Backspace-return extra raw`zoom`, not failed flips; third
+case undo-second seed BLOCKED. Entire native/CI/review gate qualified and owned
+finite seats CLOSED. First install FAILED panel version and automatically restored
+six88 files, recovery VERIFIED; loaded old hashes independently confirmed.
+Root cause exact APP_VERSION='1.0.88' while Cargo/metadata='1.0.89'. Fix only exported
+version literal, preserve3exact native-tested binaries/all old receipts. ADR
+2026-10-17-panel-version89-metadata-alignment.json and PANEL-VERSION-ALIGNMENT.json
+pin old/new bytes; private aligned installer requires full exact parity with that
+single reversible literal difference, fresh output/backup, original limits intact.
+Metadata graph refresh/package review pending; no rebuild/functional retest needed.
+
+
+TD154/155 final installation1.0.89 VERIFIED, publication pending. Whole new
+native432349P50F33B with0lostdefaultPASS; separate normal80=64P12F4B,
+9gains/3lostFFrapidPASS and all prior receipts retained. Source3211/3211,
+source review9/10 pass2/2; metadata package review9/10 pass2/2 is separate.
+Metadata canonical fy4002ss PASS48.443s:992exact inputs+one APP_VERSION literal,
+3core binaries unchanged; graph/links/decisions valid,0newfunctionaltests/keys.
+BASE td155-install89-20261017/install-aligned/INSTALL.json verifies CLI/daemon/
+IME/panel89, loaded IMEb69b4ba0/daemon9b9f7dca,23protected files and identical
+globalIBus/L1.1/L3 process identities, config, sources and RUmode. Initial failed
+INSTALL.json remains immutable with verified88 rollback. No delivery/model/input
+route changes or localfunctionalinput. All owned remote finite seats CLOSED.
+Source/native mechanism scope complete; retained compatibility failures belong
+also to TD121 and do not become PASS. Source-only public tag/release next.
