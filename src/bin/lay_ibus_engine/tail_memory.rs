@@ -2184,6 +2184,9 @@ impl LayIbusEngine {
             shift_pressed_at: self.layout_gesture.shift_pressed_at,
             shift_used_as_modifier: self.layout_gesture.shift_used_as_modifier,
             last_shift_release_at: self.layout_gesture.last_shift_release_at,
+            space_pressed: self.layout_gesture.space_pressed,
+            space_cancelled: self.layout_gesture.space_cancelled,
+            last_space_release_at: self.layout_gesture.last_space_release_at,
         });
         super::trace::record(format!(
             r#"{{"kind":"ibus_shift_gesture_handoff","stage":"publish","source":"{}","shift_active":{},"used_as_modifier":{}}}"#,
@@ -2223,6 +2226,9 @@ impl LayIbusEngine {
         self.layout_gesture.shift_pressed_at = handoff.shift_pressed_at;
         self.layout_gesture.shift_used_as_modifier = handoff.shift_used_as_modifier;
         self.layout_gesture.last_shift_release_at = handoff.last_shift_release_at;
+        self.layout_gesture.space_pressed = handoff.space_pressed;
+        self.layout_gesture.space_cancelled = handoff.space_cancelled;
+        self.layout_gesture.last_space_release_at = handoff.last_space_release_at;
         super::trace::record(format!(
             r#"{{"kind":"ibus_shift_gesture_handoff","stage":"consume","source":"{}","target":"{}","shift_active":{},"used_as_modifier":{}}}"#,
             source_path,

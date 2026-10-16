@@ -1,7 +1,7 @@
 # TD-147 — Explicit Backspace undo and double-Space (#46)
 
-Status: PLAN_ACCEPTED8/10; no feature production edits yet. Priority: P2.
-Source baseline798fa391 plus TD-148 in progress; installed1.0.87.
+Status: DONE_SOURCE3209/3209, review7→9/10; consolidated release native gate/install pending. Priority: P2.
+Source baseline05e1e448 (1.0.88 source); installed1.0.87 from50d314b3.
 Issue: https://github.com/radislabus-star/lay-public/issues/46
 
 ## Actual boundaries and first missing transitions
@@ -129,3 +129,47 @@ The following source-inspected conditions are part of the accepted design:
    Replayed/observed constructors derive the real count. Mixed whitespace must
    be represented exactly by the current contract or rejected. This does not
    certify internal multiword gaps; the new command is last-word only.
+
+Additional source-inspected boundary before code: physical_input_grab already owns queued manual gestures and is hardcoded to LeftShift. Parameterize that existing observer for configured Space: forward/count each actual Space once before its complete-release gesture, including repeats, and never synthesize an extra Shift pair for Space. Default queued Shift behavior stays unchanged. New Backspace completion must use the existing Caller/IME layout-postcondition contract, avoiding a second deferred layout operation.
+
+## Genuine RED and first implementation proof
+
+Remote td147-before-code-b88x7s0q/RESULT.json:6 selected,6 genuine failures (3 WordBuffer suffix/refusal,2 real IME key callbacks,1 configured key). Both IME callbacks fail handled=true assertions at the actual Backspace event, not during fixture preparation. No missing-field compile failure: the option is deserialized, which the baseline ignores. After Backspace/counter/mapping foundation, td147-foundation-8rwe8fn9/RESULT.json is6/6 PASS. This first result does not prove physical Space dispatch, Atomic handoff, error/privacy cases or native behavior. Subsequent implementation adds the existing FSM observation before ordinary Space processing and fires only after the complete second release; repeat accounting has no correction/learning.
+
+## First Atomic completed-word owner loss (before repair)
+
+Source path: admitted Atomic key frame -> existing gesture -> manual_toggle_active_text_target -> ImeCommittedTail -> legacy exact-tail delegation. Atomic ownership rejects that external RPC, so a completed word cannot project in the already-owned frame. This also affects the existing Atomic Double Shift after Space; it is not a browser exception. Options9/10: use the existing authorized Atomic replacement executor within that same admitted frame;7/10: leave the option unavailable in Atomic clients;2/10: legacy RPC fallback (rejected). Select9/10, require genuine source RED before the small shared selector repair. Legacy RPC/stock transport routes, verifier and safety gates stay unchanged. Decision2026-10-16-atomic-manual-tail-frame-owner.json records the explicit scope. Plan reviews remain capped at2; implementation review must assess this shared owner repair.
+
+The first partial-output test failed because TestEngineOutput records a commit attempt before injecting its ambiguous failure. Correct its assertion to exactly one attempted commit; retain one delete, consumed key, retired authority, no retry and no second deletion. Do not claim the attempt was accepted client text.
+
+Extended source pack td147-frame-owner-green-tkyox27w:14/15, including the actual four-Space Atomic key/receipt stream with2 projections and4 retained spaces. A separate direct Atomic helper fixture still lacked real activation/frame history; initialize it through actual ProcessAtomicKeyEvent +accepted prior receipts rather than weakening edit admission. The direct pre-repair RED alone is insufficient to locate authority loss; add a controlled selector reversion against the actual complete Space stream.
+
+Queued input boundary: pure-uinput scoped replay currently holds the physical grab but does not run the exact-tail branch queued gesture callback. New Space must drain that same retained grab after the first successful replay and reuse the current manual executor for each queued complete pair before later typing. No deferred command queue or second output route. Preserve its partially observed pair in the existing dshift_state after completion.
+
+The direct helper fixture also seeded English text while declaring the current layout Russian. The existing literal projection correctly rejects that no-op; match the fixture's English layout to its actual English text. This is a fixture correction, not a verifier or runtime relaxation. Only a controlled selector reversion against the complete key/receipt stream can establish the shared owner regression.
+
+Remote td147-final-owner-emhwioq5/RESULT.json:15/15 source PASS. Controlled restoration of only the old shared selector then causes both the admitted completed-tail helper and actual four-Space key/receipt stream to fail (2/2 detected); original bytes restored afterward. This confirms the owner repair independently of the earlier invalid fixture. Extend the Backspace rejection test with focus change, password/PIN, transition to private content and missing receipt. Native acceptance and latency remain unmeasured for these bytes.
+
+Strict lint td147-lint-br9i3il0 stops on two pre-existing unused serial assignments after actual lifecycle operations in a replay-progress test. Remove only those dead assignments; preserve both lifecycle calls, serial values passed to them, assertions and all manifest IDs. No warning suppression or baseline change.
+
+After those assignments, the strict inventory also exposes an older retired callback wrapper and one test-only wrapper still compiled in production. Remove the completely unreferenced Atomic wrapper and compile the three-test legacy convenience wrapper only under cfg(test); production continues through the same observed callback owner. Four existing library warnings differ only in recorded source offsets from prior work. Refresh those inventory locations only if semantic warning identities and multiplicities remain exactly equal; no new allowed warning or suppression. The earlier no-baseline-change expectation is superseded only for this location refresh, not for the warning contract.
+
+Strict Clippy then identifies a real MSRV prerequisite: the existing File::lock call requires Rust1.89 while Cargo/CI promise1.88. Preserve the same independent lock-file transaction with the existing libc flock, retry interruption, keep descriptor ownership until drop and fail closed on other errors. A real independent-descriptor exclusion/release test covers the contract. Move the TD148 test module to the end of its file for the unchanged items-after-test-module rule; all existing test IDs and assertions stay unchanged. These are release prerequisites, not shortcut transport changes.
+
+Implementation review1/2:7/10, /root/confirmed_second_handoff_plan_review_20261013 (reused independent thread, root-only implementation). P1: queued emit failure retained authority; repair tracks delivery validity only within the existing drain, retires mirror/cancels gesture on failure, disables remaining queued replays, keeps forwarding physical input once and retires the final mirror. P2: Atomic checked the gesture deadline at release while daemon checks second press; determine Atomic eligibility at second press and still fire only on complete release. Added actual accounting/observer tests for either failed Space followed by later successful taps and delayed second release/repeat. Fresh complete gates and final review2/2 required.
+
+Other strict lint prerequisites preserve existing behavior: remove Copy-only test clones, combine identical test branches, group existing gesture/handoff arguments, box the same owned callback payload (one small per-callback allocation; subject to native timing). No warning suppression, semantic baseline allowance increase or safety relaxation.
+
+First complete source attempt td147-full-source-0iq_m42g:3207/3209,2 genuine reported test failures; do not label this receipt PASS. New stale-focus negative fixture changed only a counter, not the existing field lifecycle; exercise actual bind_focus_receipt first-field/new-field and assert retirement. The deliberately wrong action-kind fixture was placed in src and correctly rejected by the unchanged runtime mint-owner guard; keep this test fixture in tests/common, compiled only by cfg(test) IME tests. No runtime guard allowlist, admission or verifier relaxation. All other source identities, strict default/research lint530/354, canon15 and harness122 (one explicitly skipped) passed. Semantic warning identities/cardinalities remain equal; only positions refreshed.
+
+Repaired source pack td147-focused-final-n5gdbyuh:34/34 PASS, including all16 unchanged text mutation monopoly guards, all18 shortcut/suffix/lock cases and both new review counterexamples. Controlled old Atomic selector still fails2/2 as expected; restored bytes verified. The engine fixture already has its first focus receipt; replacing it through bind_focus_receipt performs actual field retirement. No runtime edits were needed for these two fixture repairs. First full receipt remains BLOCKED_CONTRACT (2 unexpected failures), retained unchanged; a fresh complete run is required.
+
+## Final source result and remaining release boundary
+
+Fresh normal complete source receipt /home/ubu/.cache/lay/development/td147-full-final-0_9ucici/RESULT.json and SUMMARY.json:3209/3209 (3173 correctness+36 package),33 executed targets,0 semantic/infra errors and zero failure exceptions; manifest3235 includes all original identities,18 additions and unchanged15 ignored/11 performance identities. Strict pinned default/research lint PASS, semantic inventories530/354 unchanged, canon15 and harness122 (one explicitly skipped) PASS; changed panel syntax PASS. Frozen archivece93727d2cd6b6c3ff29191e287832ed48182c3385d3030f1a3df0d06f2d203a; raw/final formatted source hashes retained. The failed first full receipt remains BLOCKED_CONTRACT and is not rewritten.
+
+Final independent code review2/2:9/10, /root/confirmed_second_handoff_plan_review_20261013, reused independent read-only thread because new-context threads were unavailable. No remaining inspected P1/P2; reviewed8 key-source/helper hashes match the34-case proof and warning semantic identities are unchanged. The final full result arrived after that review; native acceptance/latency were not part of its verdict. Root implemented every change.
+
+Publish this source phase before TD-149's one-package security patch. The final matching1.0.88 build shares one remote default432-cell browser gate, then separate optional shortcut cases and timing. Source DONE does not imply native completion. Installed user1.0.87, global IBus, delivery routes, config and models remain unchanged at this milestone. Callback boxing adds one small owned-callback allocation, so final native timing is required.
+
+Final canonical AST refresh /home/ubu/.cache/lay/development/td147-final-canonical-6km3pybt/RESULT.json:PASS, exact decision coverage and15 canon tests,48.4s. All functional inputs match the3209-test proof; only generated architecture metadata/documentation differ. Installed authority unchanged.

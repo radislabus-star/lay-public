@@ -23,6 +23,7 @@ export const SAFETY_OPTIONS = [
 ];
 export const TRIGGER_OPTIONS = [
     ['double-lshift', 'Двойной Shift'],
+    ['double-space', 'Двойной пробел'],
     ['double-ctrl', 'Двойной Ctrl'],
     ['double-alt', 'Двойной Alt'],
     ['caps-lock', 'CapsLock'],
@@ -50,6 +51,7 @@ const DEFAULTS = {
     layout_backend: 'auto',
     text_backend: 'uinput',
     trigger: 'double-lshift',
+    undo_on_backspace: false,
     force_layout_hotkeys: false,
     force_ru_key: 'single-rctrl',
     force_en_key: 'single-ralt',
@@ -91,6 +93,7 @@ function normalizeBoundedInteger(value, fallback, minimum, maximum) {
 
 export function normalizeConfig(input) {
     const cfg = {...DEFAULTS, ...(input ?? {})};
+    cfg.undo_on_backspace = cfg.undo_on_backspace === true;
     const legacyTextBackend = cfg.text_backend === 'auto' ? 'ime' : cfg.text_backend;
     cfg.text_backend = normalizeChoice(legacyTextBackend, INPUT_MODE_OPTIONS, DEFAULTS.text_backend);
     cfg.layout_backend = normalizeChoice(cfg.layout_backend, LAYOUT_BACKEND_OPTIONS, DEFAULTS.layout_backend);

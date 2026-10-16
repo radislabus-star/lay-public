@@ -185,7 +185,7 @@ fn td121_confirmed_reset_before_managed_release_retains_existing_authority() {
                 let token = engine
                     .live_context_token()
                     .expect("confirmed current token");
-                let scope = engine.context_word_scope.clone();
+                let scope = engine.context_word_scope;
                 let proof = engine.context_reset_rereceipt.clone();
                 let known = engine.context_word_is_known();
                 let epoch = engine.committed_tail.epoch;
@@ -293,7 +293,7 @@ fn td121_current_metadata_unproved_release_only_retires_the_handled_press() {
         assert_eq!(token.lineage.completeness, WordCompleteness::UnknownStart);
         assert!(!engine.context_word_is_known());
         assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
-        let scope = engine.context_word_scope.clone();
+        let scope = engine.context_word_scope;
         let proof = engine.context_reset_rereceipt.clone();
         let tail = engine.committed_tail.buffer.clone();
         let epoch = engine.committed_tail.epoch;
@@ -359,7 +359,7 @@ fn td121_late_managed_letter_release_cannot_erase_prior_word_proof() {
             assert!(engine.context_word_is_known());
             let before = engine.committed_tail.buffer.clone();
             let epoch = engine.committed_tail.epoch;
-            let scope = engine.context_word_scope.clone();
+            let scope = engine.context_word_scope;
             let token = engine.context_token.clone();
             let composition = engine.composition.buffer.clone();
             assert!(
@@ -429,7 +429,7 @@ fn td121_late_managed_release_keeps_unknown_start_without_promotion() {
         assert!(legacy_key(&mut harness, &mut engine, 92_400, 'a' as u32, 30, 0).await);
         let _ = super::terminal_delivery::legacy_effects(&mut harness).await;
         let token = engine.context_token.clone().unwrap();
-        let scope = engine.context_word_scope.clone().unwrap();
+        let scope = engine.context_word_scope.unwrap();
         assert!(token.matches_word_scope(&scope));
         assert!(!engine.context_word_is_known());
         let tail = engine.committed_tail.buffer.clone();
@@ -696,7 +696,7 @@ fn td121_completed_release_late_ingress_cannot_revive_the_pre_reset_word() {
         assert!(!harness.adapter.revalidate(&old_token));
         assert!(!engine.context_word_is_known());
         let token = engine.context_token.clone();
-        let scope = engine.context_word_scope.clone();
+        let scope = engine.context_word_scope;
         let tail = engine.committed_tail.buffer.clone();
         let epoch = engine.committed_tail.epoch;
         assert!(harness.observer.process_next().await.unwrap());
@@ -11600,12 +11600,12 @@ async fn cycle09_factory_handoff(
         target_path,
         preinstall_snapshot,
         target_component,
-        41,
-        false,
-        None,
+        (41, false, None),
     )
     .await
 }
+
+type Cycle09Receiver = (u32, bool, Option<((u32, u32, u32), bool)>);
 
 async fn cycle09_factory_handoff_with_capabilities(
     harness: &mut Harness,
@@ -11614,10 +11614,9 @@ async fn cycle09_factory_handoff_with_capabilities(
     target_path: &str,
     preinstall_snapshot: Option<Option<SurroundingTextSnapshot>>,
     target_component: &str,
-    capabilities: u32,
-    snapshot_after_focus: bool,
-    pending_shift: Option<((u32, u32, u32), bool)>,
+    receiver: Cycle09Receiver,
 ) -> LayIbusEngine {
+    let (capabilities, snapshot_after_focus, pending_shift) = receiver;
     let factory = Message::method_call("/org/freedesktop/IBus/Factory", "CreateEngine")
         .unwrap()
         .interface(FACTORY_INTERFACE)
@@ -13140,9 +13139,7 @@ fn firefox_completed_boundary_replay_waits_for_final_exact_receipt() {
                         &mut target,
                         &final_text,
                         if guard == "caret" { 10 } else { 11 },
-                        if guard == "selection" {
-                            10
-                        } else if guard == "caret" {
+                        if guard == "selection" || guard == "caret" {
                             10
                         } else {
                             11
@@ -13424,9 +13421,7 @@ async fn td121_inherited_first_closed_word_with_capabilities(
         &path,
         None,
         "lay-ime-ru",
-        capabilities.unwrap_or(41),
-        false,
-        None,
+        (capabilities.unwrap_or(41), false, None),
     )
     .await;
     assert!(target.inherited_exact_manual_snapshot_agrees_with_owned_tail());
@@ -13743,10 +13738,14 @@ fn td121_confirmed_native_word_retains_proof_for_second_marker_handoff() {
                                 &path,
                                 preinstall,
                                 "lay-ime-us",
-                                capabilities,
-                                receiver == 3 || receiver == 4 || receiver == 5,
-                                (receiver == 3 || receiver == 5)
-                                    .then_some(((KEY_LEFT_SHIFT, 42, RELEASE_MASK), receiver == 5)),
+                                (
+                                    capabilities,
+                                    receiver == 3 || receiver == 4 || receiver == 5,
+                                    (receiver == 3 || receiver == 5).then_some((
+                                        (KEY_LEFT_SHIFT, 42, RELEASE_MASK),
+                                        receiver == 5,
+                                    )),
+                                ),
                             )
                             .await;
                             assert_eq!(
@@ -14608,7 +14607,6 @@ fn td121_retained_erasure_progress_cannot_survive_missing_or_contradictory_evide
             match case {
                 "focus" => {
                     actual_focus_out(&mut harness, &mut target, serial).await;
-                    serial += 1;
                 }
                 "lease" | "layout" => {
                     serial += 100;
@@ -14625,7 +14623,6 @@ fn td121_retained_erasure_progress_cannot_survive_missing_or_contradictory_evide
                         },
                     )
                     .await;
-                    serial += 20;
                 }
                 "scope_pair" => target.shared.lock().unwrap().autocorrect_suppression = None,
                 "private_change" => target.set_content_type_state(0, 2048),

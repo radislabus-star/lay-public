@@ -223,3 +223,69 @@ fn failed_backend_can_restore_unconsumed_pending_auto_undo() {
     assert!(buffer.pending_auto_undo_ready());
     assert!(buffer.take_pending_auto_undo().is_some());
 }
+
+#[test]
+fn repeated_spaces_preserve_exact_last_word_replay_suffix() {
+    use crate::keyboard::{map_original_events, text_to_key_events};
+    for spaces in [1, 2, 4, 17] {
+        let mut buffer = WordBuffer::new();
+        for event in text_to_key_events("привет", true).unwrap() {
+            buffer.push(event);
+        }
+        for _ in 0..spaces {
+            buffer.handle_space();
+        }
+        let expected = format!("привет{}", " ".repeat(spaces));
+        let (events, delete) = buffer.what_to_replay(1).expect("observed last word");
+        assert_eq!(map_original_events(&events), expected);
+        assert_eq!(delete as usize, expected.chars().count());
+        assert_eq!(
+            buffer.visible_tail_text(1).as_deref(),
+            Some(expected.as_str())
+        );
+        assert_eq!(
+            map_original_events(&buffer.last_completed_words_events(1).unwrap()),
+            expected
+        );
+    }
+}
+
+#[test]
+fn observed_and_replayed_text_preserve_actual_ascii_space_suffix() {
+    use crate::keyboard::map_original_events;
+    for spaces in [0, 1, 2, 4] {
+        let observed = format!("привет{}", " ".repeat(spaces));
+        let mut buffer = WordBuffer::new();
+        assert!(buffer.remember_visible_text_for_correction(&observed));
+        assert_eq!(
+            buffer.visible_tail_text(1).as_deref(),
+            Some(observed.as_str())
+        );
+        let (events, delete) = buffer.what_to_replay(1).unwrap();
+        assert_eq!(map_original_events(&events), observed);
+        assert_eq!(delete as usize, observed.chars().count());
+        if spaces > 0 {
+            assert!(buffer.remember_completed_replacement_words_for_replay(&observed));
+            assert_eq!(
+                buffer.visible_tail_text(1).as_deref(),
+                Some(observed.as_str())
+            );
+        }
+    }
+}
+
+#[test]
+fn unrepresentable_trailing_spaces_retire_replay_authority() {
+    for suffix in [" \t ".to_string(), " ".repeat(usize::from(u16::MAX) + 1)] {
+        let mut buffer = WordBuffer::new();
+        assert!(buffer.remember_visible_text_for_correction("старое "));
+        assert!(!buffer.remember_visible_text_for_correction(&format!("слово{suffix}")));
+        assert!(buffer.what_to_replay(1).is_none());
+    }
+    let mut buffer = WordBuffer::new();
+    assert!(buffer.remember_visible_text_for_correction("слово "));
+    for _ in 0..=u16::MAX {
+        buffer.handle_space();
+    }
+    assert!(buffer.what_to_replay(1).is_none());
+}

@@ -2141,7 +2141,7 @@ impl LayIbusEngine {
                     if let Ok(callback) =
                         admission.key_callback_from_observed(owner, observed.clone(), atomic)
                     {
-                        return KeyCallbackObservation::Owned(callback);
+                        return KeyCallbackObservation::Owned(Box::new(callback));
                     }
                 }
                 admission.abandon_observed_key(&observed);
@@ -2158,7 +2158,7 @@ impl LayIbusEngine {
             Err(error) => Err(error),
         };
         match callback {
-            Ok(callback) => KeyCallbackObservation::Owned(callback),
+            Ok(callback) => KeyCallbackObservation::Owned(Box::new(callback)),
             Err(_) => {
                 self.revoke_context_word();
                 KeyCallbackObservation::Refused
@@ -4824,7 +4824,7 @@ impl WindowInteraction {
             .begin_context_key_callback(header, callback_entered, false)
             .await;
         let (callback, passive_shift) = match observation {
-            KeyCallbackObservation::Owned(callback) => (Some(callback), false),
+            KeyCallbackObservation::Owned(callback) => (Some(*callback), false),
             KeyCallbackObservation::PassiveShift => (None, true),
             KeyCallbackObservation::Refused => (None, false),
         };

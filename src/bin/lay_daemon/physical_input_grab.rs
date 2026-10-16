@@ -197,6 +197,31 @@ where
     Ok(())
 }
 
+fn account_queued_space<E>(
+    buf: &mut WordBuffer,
+    state: &mut DShiftState,
+    delivery_known: &mut bool,
+    command_modifier: bool,
+    emitted: Result<(), E>,
+) -> Result<(), E> {
+    match emitted {
+        Ok(()) => {
+            if command_modifier {
+                buf.reset_all();
+            } else {
+                buf.handle_space();
+            }
+            Ok(())
+        }
+        Err(error) => {
+            *delivery_known = false;
+            state.cancel_until_release();
+            buf.reset_all();
+            Err(error)
+        }
+    }
+}
+
 impl<'a> PhysicalInputGrab<'a> {
     pub(super) fn new(device: Option<&'a mut Device>) -> Self {
         let Some(device) = device else {
@@ -260,6 +285,7 @@ impl<'a> PhysicalInputGrab<'a> {
             forward_boundaries,
             Duration::ZERO,
             &mut ignored_trigger_state,
+            KeyCode::KEY_LEFTSHIFT,
             None,
         )
     }
@@ -278,6 +304,7 @@ impl<'a> PhysicalInputGrab<'a> {
         forward_boundaries: bool,
         shift_window: Duration,
         dshift_state: &mut DShiftState,
+        configured_trigger_key: KeyCode,
         replay_manual_toggle: &mut ManualToggleReplay<'_>,
     ) -> ForwardedTyping {
         self.forward_queued_input(
@@ -289,6 +316,7 @@ impl<'a> PhysicalInputGrab<'a> {
             forward_boundaries,
             shift_window,
             dshift_state,
+            configured_trigger_key,
             Some(replay_manual_toggle),
         )
     }
@@ -307,6 +335,7 @@ impl<'a> PhysicalInputGrab<'a> {
         _forward_boundaries: bool,
         shift_window: Duration,
         dshift_state: &mut DShiftState,
+        configured_trigger_key: KeyCode,
         mut replay_manual_toggle: Option<&mut ManualToggleReplay<'_>>,
     ) -> ForwardedTyping {
         if !self.active {
@@ -321,6 +350,7 @@ impl<'a> PhysicalInputGrab<'a> {
         let drain_started = Instant::now();
         let mut modifiers = CapturedModifiers::default();
         let mut forwarded = ForwardedTyping::default();
+        let mut queued_delivery_known = true;
 
         loop {
             let events = match device.fetch_events() {
@@ -367,65 +397,73 @@ impl<'a> PhysicalInputGrab<'a> {
                 let key = KeyCode::new(event.code());
                 let value = event.value();
 
-                if modifiers.observe(key, value) {
-                    match key {
-                        KeyCode::KEY_LEFTSHIFT => {
-                            if observe_queued_double_shift(
-                                dshift_state,
-                                key,
-                                value,
-                                Instant::now(),
-                                shift_window,
-                            ) {
-                                if let Some(replay) = replay_manual_toggle.as_deref_mut() {
-                                    let mut resources = (&mut *virtual_kbd, &mut *buf);
-                                    let dispatched = dispatch_completed_queued_left_shift_pair(
-                                        &mut resources,
-                                        layout_is_ru,
-                                        |resources| emit_left_shift_pair_fast(resources.0),
-                                        |resources, current_layout| {
-                                            replay(resources.0, resources.1, current_layout)
-                                        },
-                                    );
-                                    match dispatched {
-                                        Ok(Some(target_layout_is_ru)) => {
-                                            layout_is_ru = target_layout_is_ru;
-                                            forwarded.manual_toggles += 1;
-                                            forwarded.last_manual_toggle_layout_is_ru =
-                                                Some(target_layout_is_ru);
-                                        }
-                                        Ok(None) => {}
-                                        Err(error) => log(&format!(
-                                            "warning: {label} queued Double Shift emit failed: {error}"
-                                        )),
-                                    }
-                                }
-                            }
-                        }
-                        _ => {
-                            let _ = observe_queued_double_shift(
-                                dshift_state,
-                                key,
-                                value,
-                                Instant::now(),
-                                shift_window,
+                let modifier = modifiers.observe(key, value);
+                let queued_double = if configured_trigger_key == KeyCode::KEY_SPACE {
+                    super::trigger_fsm::observe_double_space(
+                        dshift_state,
+                        key,
+                        value,
+                        modifiers.any_active(),
+                        Instant::now(),
+                        shift_window,
+                    )
+                } else {
+                    observe_queued_double_shift(
+                        dshift_state,
+                        key,
+                        value,
+                        Instant::now(),
+                        shift_window,
+                    )
+                };
+                if modifier {
+                    if key == KeyCode::KEY_LEFTSHIFT && queued_double {
+                        if let Some(replay) = replay_manual_toggle.as_deref_mut() {
+                            let mut resources = (&mut *virtual_kbd, &mut *buf);
+                            let dispatched = dispatch_completed_queued_left_shift_pair(
+                                &mut resources,
+                                layout_is_ru,
+                                |resources| emit_left_shift_pair_fast(resources.0),
+                                |resources, current_layout| {
+                                    replay(resources.0, resources.1, current_layout)
+                                },
                             );
+                            match dispatched {
+                                Ok(Some(target_layout_is_ru)) => {
+                                    layout_is_ru = target_layout_is_ru;
+                                    forwarded.manual_toggles += 1;
+                                    forwarded.last_manual_toggle_layout_is_ru =
+                                        Some(target_layout_is_ru);
+                                }
+                                Ok(None) => {}
+                                Err(error) => log(&format!(
+                                    "warning: {label} queued Double Shift emit failed: {error}"
+                                )),
+                            }
                         }
                     }
                     continue;
                 }
 
+                if value == 0
+                    && queued_double
+                    && configured_trigger_key == KeyCode::KEY_SPACE
+                    && queued_delivery_known
+                {
+                    // Both ordinary spaces were forwarded once at press.
+                    buf.invalidate_replay_and_auto_undo();
+                    if let Some(replay) = replay_manual_toggle.as_deref_mut() {
+                        if let Some(target) = replay(virtual_kbd, buf, layout_is_ru) {
+                            layout_is_ru = target;
+                            forwarded.manual_toggles += 1;
+                            forwarded.last_manual_toggle_layout_is_ru = Some(target);
+                        }
+                    }
+                    continue;
+                }
                 if value != 1 && value != 2 {
                     continue;
                 }
-
-                let _ = observe_queued_double_shift(
-                    dshift_state,
-                    key,
-                    value,
-                    Instant::now(),
-                    shift_window,
-                );
 
                 let command_modifier = modifiers.command_modifier_active();
 
@@ -435,15 +473,31 @@ impl<'a> PhysicalInputGrab<'a> {
                         continue;
                     }
                     let active_modifiers = modifiers.active_keys();
-                    if let Err(error) = emit_closed_key_chord(virtual_kbd, &active_modifiers, key) {
+                    let emitted = emit_closed_key_chord(virtual_kbd, &active_modifiers, key);
+                    let accounted = if configured_trigger_key == KeyCode::KEY_SPACE {
+                        account_queued_space(
+                            buf,
+                            dshift_state,
+                            &mut queued_delivery_known,
+                            command_modifier,
+                            emitted,
+                        )
+                    } else {
+                        emitted.map(|()| {
+                            if command_modifier {
+                                buf.reset_all();
+                            } else {
+                                buf.handle_space();
+                            }
+                        })
+                    };
+                    if let Err(error) = accounted {
                         log(&format!("⚠ {label} passthrough space failed: {error}"));
                         continue;
                     }
                     if command_modifier {
-                        buf.reset_all();
                         forwarded.boundaries += 1;
                     } else {
-                        buf.handle_space();
                         forwarded.spaces += 1;
                     }
                     continue;
@@ -455,6 +509,11 @@ impl<'a> PhysicalInputGrab<'a> {
                         log(&format!(
                             "warning: {label} passthrough boundary failed: {error}"
                         ));
+                        if configured_trigger_key == KeyCode::KEY_SPACE {
+                            queued_delivery_known = false;
+                            dshift_state.cancel_until_release();
+                            buf.reset_all();
+                        }
                         continue;
                     }
                     buf.reset_all();
@@ -469,6 +528,11 @@ impl<'a> PhysicalInputGrab<'a> {
                 let active_modifiers = modifiers.active_keys();
                 if let Err(error) = emit_closed_key_chord(virtual_kbd, &active_modifiers, key) {
                     log(&format!("⚠ {label} passthrough key failed: {error}"));
+                    if configured_trigger_key == KeyCode::KEY_SPACE {
+                        queued_delivery_known = false;
+                        dshift_state.cancel_until_release();
+                        buf.reset_all();
+                    }
                     continue;
                 }
 
@@ -495,6 +559,11 @@ impl<'a> PhysicalInputGrab<'a> {
                 ));
                 break;
             }
+        }
+
+        if !queued_delivery_known {
+            buf.reset_all();
+            dshift_state.cancel_until_release();
         }
 
         if modifiers.any_active() {
@@ -540,6 +609,57 @@ mod tests {
     use evdev::KeyCode;
     use lay::word_buffer::WordBuffer;
     use std::time::{Duration, Instant};
+
+    #[test]
+    fn failed_queued_space_retires_replay_for_the_remaining_drain() {
+        for failed in [None, Some(0), Some(1)] {
+            let mut buffer = WordBuffer::new();
+            assert!(buffer.remember_visible_text_for_correction("привет"));
+            let mut state = DShiftState::Idle;
+            let mut known = true;
+            let mut commands = 0;
+            let now = Instant::now();
+            for tap in 0..6 {
+                let at = now + Duration::from_millis(tap * 10);
+                assert!(!crate::trigger_fsm::observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_SPACE,
+                    1,
+                    false,
+                    at,
+                    Duration::from_millis(250)
+                ));
+                let result = super::account_queued_space(
+                    &mut buffer,
+                    &mut state,
+                    &mut known,
+                    false,
+                    if failed == Some(tap) {
+                        Err("ambiguous emission")
+                    } else {
+                        Ok(())
+                    },
+                );
+                if result.is_err() {
+                    assert!(!known);
+                    assert!(buffer.visible_tail_text(1).is_none());
+                }
+                let pair = crate::trigger_fsm::observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_SPACE,
+                    0,
+                    false,
+                    at,
+                    Duration::from_millis(250),
+                );
+                if pair && known {
+                    commands += 1;
+                }
+            }
+            assert_eq!(commands, if failed.is_some() { 0 } else { 3 });
+            assert_eq!(known, failed.is_none());
+        }
+    }
 
     fn feed(state: &mut DShiftState, events: &[(KeyCode, i32)], start: Instant) -> usize {
         events

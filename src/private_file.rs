@@ -18,7 +18,25 @@ pub(crate) fn lock_private_file(path: &Path) -> std::io::Result<std::fs::File> {
         .mode(0o600)
         .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
     let file = options.open(path)?;
-    file.lock()?;
+    #[cfg(unix)]
+    {
+        use std::os::fd::AsRawFd;
+        loop {
+            // The owned descriptor stays open throughout the transaction.
+            if unsafe { libc::flock(file.as_raw_fd(), libc::LOCK_EX) } == 0 {
+                break;
+            }
+            let error = std::io::Error::last_os_error();
+            if error.kind() != std::io::ErrorKind::Interrupted {
+                return Err(error);
+            }
+        }
+    }
+    #[cfg(not(unix))]
+    return Err(std::io::Error::new(
+        std::io::ErrorKind::Unsupported,
+        "private transaction locks require Unix",
+    ));
     Ok(file)
 }
 
@@ -97,6 +115,42 @@ fn restrict_file_permissions(_path: &Path) {}
 mod tests {
     use super::*;
     use std::time::{SystemTime, UNIX_EPOCH};
+
+    #[cfg(unix)]
+    #[test]
+    fn transaction_lock_excludes_other_descriptors_until_drop() {
+        use std::os::fd::AsRawFd;
+        let tmp = std::env::temp_dir().join(format!(
+            "lay-private-lock-test-{}-{}",
+            std::process::id(),
+            SystemTime::now()
+                .duration_since(UNIX_EPOCH)
+                .unwrap()
+                .as_nanos()
+        ));
+        let path = tmp.join("state.lock");
+        let held = lock_private_file(&path).unwrap();
+        let other = std::fs::OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .unwrap();
+        assert_eq!(
+            unsafe { libc::flock(other.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) },
+            -1
+        );
+        assert_eq!(
+            std::io::Error::last_os_error().kind(),
+            std::io::ErrorKind::WouldBlock
+        );
+        drop(held);
+        assert_eq!(
+            unsafe { libc::flock(other.as_raw_fd(), libc::LOCK_EX | libc::LOCK_NB) },
+            0
+        );
+        drop(other);
+        std::fs::remove_dir_all(tmp).unwrap();
+    }
 
     #[test]
     fn writes_and_appends_private_text() {

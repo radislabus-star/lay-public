@@ -26,6 +26,7 @@ impl Default for LayConfig {
             layout_backend: "auto".into(),
             text_backend: "uinput".into(),
             trigger: "double-lshift".into(),
+            undo_on_backspace: false,
             force_layout_hotkeys: false,
             force_ru_key: "single-rctrl".into(),
             force_en_key: "single-ralt".into(),

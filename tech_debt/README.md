@@ -1,14 +1,17 @@
 # Lay — очередь технического долга, 2026-10-16
 
-Текущая задача: [TD-148 — подтверждённые формы глаголов, GitHub #59](148-recognize-backed-ti-present-forms.md).
+Завершена и опубликована: [TD-148 — подтверждённые формы глаголов, GitHub #59](148-recognize-backed-ti-present-forms.md).
 DONE_SOURCE3191/3191 после ремонта ревью,12/12 focused, review7→9/10.
 Отдельные5/5 с Hunspell пользователя относятся к варианту до финального ремонта.
 Исходный BLOCKED_CONTRACT сохранён; отдельная финализация сверяет368 logs и957 hashes,
 исправляет только привязку нулевого реестра исключений. Новая версия ещё не установлена.
 
-Следующая задача: [TD-147 — Backspace undo и двойной пробел, GitHub #46](147-explicit-undo-and-double-space.md).
-План8/10 принят, production edits ещё нет. Две opt-in функции в существующих owners;
-обычный Double Shift и маршруты доставки сохраняются.
+Текущая задача: [TD-147 — Backspace undo и двойной пробел, GitHub #46](147-explicit-undo-and-double-space.md).
+DONE_SOURCE3209/3209, focused34/34, controlled2/2, review7→9/10. Две opt-in функции в существующих owners;
+обычный Double Shift и маршруты доставки сохраняются. Общий native gate/install1.0.88 впереди.
+
+Следующий release prerequisite: [TD-149 — rustls0.23.46](149-update-rustls-security-patch.md).
+Текущий Security CI выявил четыре advisory для0.23.45; только точечный patch, без ignore.
 
 Завершена: [TD-146 — uaccess вместо input-группы, GitHub #48](146-session-scoped-input-access.md).
 DONE_SOURCE:11/11 access +8/8 public-build и public shell PASS; review7→9/10.

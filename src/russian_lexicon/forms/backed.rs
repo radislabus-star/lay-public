@@ -352,49 +352,6 @@ fn is_backed_russian_verb_form_with_attestation(
     })
 }
 
-#[cfg(test)]
-mod attested_verb_relation_tests {
-    use super::is_backed_russian_verb_form;
-
-    #[test]
-    fn recognizes_licensed_same_stem_forms_from_live_backed_lemmas() {
-        for (surface, lemma) in [
-            ("несу", "нести"),
-            ("везу", "везти"),
-            ("ползу", "ползти"),
-            ("трясу", "трясти"),
-            ("привезу", "привезти"),
-            ("отвезу", "отвезти"),
-        ] {
-            assert!(
-                is_backed_russian_verb_form(surface, |candidate| candidate == lemma),
-                "missing licensed form {surface} from {lemma}"
-            );
-        }
-    }
-
-    #[test]
-    fn rejects_backed_but_unlicensed_inflections_and_nonverbs() {
-        for (surface, lemma) in [
-            ("найу", "найти"),
-            ("расу", "расти"),
-            ("гресу", "грести"),
-            ("почу", "почти"),
-            ("кривезу", "кривезти"),
-        ] {
-            assert!(
-                !is_backed_russian_verb_form(surface, |candidate| candidate == lemma),
-                "unlicensed authority {surface} from {lemma}"
-            );
-        }
-    }
-
-    #[test]
-    fn cached_grammar_never_replaces_live_lemma_authority() {
-        assert!(!is_backed_russian_verb_form("привезу", |_| false));
-    }
-}
-
 pub(super) fn is_backed_russian_ch_verb_present_form(
     word: &str,
     contains: impl Fn(&str) -> bool + Copy,
@@ -452,4 +409,47 @@ pub(super) fn is_backed_russian_imperative_y_form(
             .last()
             .is_some_and(|ch| matches!(ch, 'а' | 'я'))
         && contains(&format!("{stem}ть"))
+}
+
+#[cfg(test)]
+mod attested_verb_relation_tests {
+    use super::is_backed_russian_verb_form;
+
+    #[test]
+    fn recognizes_licensed_same_stem_forms_from_live_backed_lemmas() {
+        for (surface, lemma) in [
+            ("несу", "нести"),
+            ("везу", "везти"),
+            ("ползу", "ползти"),
+            ("трясу", "трясти"),
+            ("привезу", "привезти"),
+            ("отвезу", "отвезти"),
+        ] {
+            assert!(
+                is_backed_russian_verb_form(surface, |candidate| candidate == lemma),
+                "missing licensed form {surface} from {lemma}"
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_backed_but_unlicensed_inflections_and_nonverbs() {
+        for (surface, lemma) in [
+            ("найу", "найти"),
+            ("расу", "расти"),
+            ("гресу", "грести"),
+            ("почу", "почти"),
+            ("кривезу", "кривезти"),
+        ] {
+            assert!(
+                !is_backed_russian_verb_form(surface, |candidate| candidate == lemma),
+                "unlicensed authority {surface} from {lemma}"
+            );
+        }
+    }
+
+    #[test]
+    fn cached_grammar_never_replaces_live_lemma_authority() {
+        assert!(!is_backed_russian_verb_form("привезу", |_| false));
+    }
 }

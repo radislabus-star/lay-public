@@ -12,6 +12,9 @@ use lay::config::LayConfig;
 #[path = "../../../tests/common/space_boundary_lexical.rs"]
 mod lexical_fixture;
 
+#[path = "../../../tests/common/invalid_boundary_inverse.rs"]
+mod invalid_boundary_inverse;
+
 pub(crate) fn warm_pair_lexical_fixture() {
     lay::hot_field::set_process_policy(lay::hot_field::HotFieldPolicy::ime());
     lexical_fixture::warm_lexical_fixture();
@@ -819,5 +822,325 @@ fn space_pair_client_commit_continuation_is_exact_one_shot_and_revocable() {
             engine.shared.lock().unwrap().pending_auto_undo.is_none(),
             "no undo from refused {violation}"
         );
+    }
+}
+
+fn configure_backspace_shortcut(engine: &mut LayIbusEngine, enabled: bool) {
+    // Deserialization lets the genuine before-change executable exercise the
+    // unknown opt-in without turning a missing field into a compile-only RED.
+    engine.config = serde_json::from_value(serde_json::json!({
+        "text_backend":"ime", "undo_on_backspace":enabled,
+        "auto_replace":true, "typing_assist":true,
+        "nanda_autocorrect":true, "correction_safety":"normal",
+        "auto_switch_layout":true
+    }))
+    .unwrap();
+}
+
+#[test]
+fn backspace_shortcut_default_off_and_modified_keys_keep_ordinary_deletion() {
+    if !isolated_case("space_boundary_pair_tests::backspace_shortcut_default_off_and_modified_keys_keep_ordinary_deletion") { return; }
+    for (enabled, state) in [
+        (false, 0),
+        (true, 1),
+        (true, 4),
+        (true, 8),
+        (true, 32),
+        (true, 64),
+        (true, 128),
+        (true, 1 << 26),
+        (true, 1 << 27),
+        (true, 1 << 28),
+    ] {
+        let mut engine = engine(IBUS_CAP_SURROUNDING_TEXT, "проверка ");
+        configure_backspace_shortcut(&mut engine, enabled);
+        engine.remember_pending_ime_auto_undo(
+            "проверрка ".into(),
+            "проверка ".into(),
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+        );
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        assert!(!zbus::block_on(engine.process_key_event_with_output(
+            &mut EngineOutput::test(&mut output),
+            crate::protocol::KEY_BACKSPACE,
+            14,
+            state
+        ))
+        .unwrap());
+        assert!(output.surrounding_deletes.is_empty());
+        assert!(output.committed_texts.is_empty());
+        assert!(engine.shared.lock().unwrap().pending_auto_undo.is_none());
+    }
+    assert!(!LayConfig::default().undo_on_backspace);
+}
+
+#[test]
+fn backspace_shortcut_rejects_expired_selection_caret_and_invalid_inverse() {
+    if !isolated_case("space_boundary_pair_tests::backspace_shortcut_rejects_expired_selection_caret_and_invalid_inverse") { return; }
+    for rejected in 0..9 {
+        let mut engine = engine(IBUS_CAP_SURROUNDING_TEXT, "проверка ");
+        if rejected == 4 {
+            assert!(engine.client_context.focus_receipt.is_some());
+            assert_eq!(engine.committed_tail.buffer, "проверка ");
+        }
+        configure_backspace_shortcut(&mut engine, true);
+        engine.remember_pending_ime_auto_undo(
+            "проверрка ".into(),
+            "проверка ".into(),
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+        );
+        match rejected {
+            0 => {
+                engine
+                    .shared
+                    .lock()
+                    .unwrap()
+                    .pending_auto_undo
+                    .as_mut()
+                    .unwrap()
+                    .recorded_at = std::time::Instant::now() - std::time::Duration::from_secs(31)
+            }
+            1 => engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                "проверка ".into(),
+                9,
+                0,
+            ))),
+            2 => engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                "проверка ".into(),
+                4,
+                4,
+            ))),
+            3 => {
+                let action =
+                    invalid_boundary_inverse::non_boundary_action("проверрка ", "проверка ");
+                engine
+                    .shared
+                    .lock()
+                    .unwrap()
+                    .pending_auto_undo
+                    .as_mut()
+                    .unwrap()
+                    .boundary_forward_action = Some(action);
+            }
+            4 => {
+                assert!(
+                    engine.bind_focus_receipt("/test/second-field".into(), "test-client".into())
+                );
+                assert!(engine.committed_tail.buffer.is_empty());
+            }
+            5 => engine.set_content_type_state(8, 0),
+            6 => engine.set_content_type_state(9, 0),
+            7 => engine.set_content_type_state(0, 1 << 11),
+            _ => engine.shared.lock().unwrap().pending_auto_undo = None,
+        }
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        assert!(
+            !zbus::block_on(engine.process_key_event_with_output(
+                &mut EngineOutput::test(&mut output),
+                crate::protocol::KEY_BACKSPACE,
+                14,
+                0
+            ))
+            .unwrap(),
+            "case {rejected}"
+        );
+        assert!(output.surrounding_deletes.is_empty(), "case {rejected}");
+        assert!(output.committed_texts.is_empty(), "case {rejected}");
+        assert!(engine.shared.lock().unwrap().pending_auto_undo.is_none());
+    }
+}
+
+#[test]
+fn backspace_shortcut_partial_commit_consumes_key_and_retires_authority() {
+    if !isolated_case("space_boundary_pair_tests::backspace_shortcut_partial_commit_consumes_key_and_retires_authority") { return; }
+    let mut engine = engine(IBUS_CAP_SURROUNDING_TEXT, "проверка ");
+    configure_backspace_shortcut(&mut engine, true);
+    engine.remember_pending_ime_auto_undo(
+        "проверрка ".into(),
+        "проверка ".into(),
+        lay::typing_cpu::ObservedSystemTransition::Correction,
+    );
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        fail_commit: true,
+        ..Default::default()
+    };
+    assert!(zbus::block_on(engine.process_key_event_with_output(
+        &mut EngineOutput::test(&mut output),
+        crate::protocol::KEY_BACKSPACE,
+        14,
+        0
+    ))
+    .unwrap());
+    assert_eq!(output.surrounding_deletes, [(-9, 9)]);
+    // The test emitter records the attempt before the ambiguous failure.
+    assert_eq!(output.committed_texts, ["проверрка "]);
+    assert!(engine.committed_tail.buffer.is_empty());
+    assert!(engine.shared.lock().unwrap().pending_auto_undo.is_none());
+    assert!(engine
+        .shared
+        .lock()
+        .unwrap()
+        .pending_auto_undo_retry
+        .is_none());
+    assert!(!zbus::block_on(engine.process_key_event_with_output(
+        &mut EngineOutput::test(&mut output),
+        crate::protocol::KEY_BACKSPACE,
+        14,
+        0
+    ))
+    .unwrap());
+    assert_eq!(output.surrounding_deletes.len(), 1);
+}
+
+#[test]
+fn backspace_shortcut_completes_the_existing_layout_contract_once() {
+    if !isolated_case(
+        "space_boundary_pair_tests::backspace_shortcut_completes_the_existing_layout_contract_once",
+    ) {
+        return;
+    }
+    let mut engine = engine(IBUS_CAP_SURROUNDING_TEXT, "привет ");
+    configure_backspace_shortcut(&mut engine, true);
+    engine.atomic.speculation = true;
+    engine.remember_pending_ime_auto_undo(
+        "ghbdtn ".into(),
+        "привет ".into(),
+        lay::typing_cpu::ObservedSystemTransition::LayoutProjection,
+    );
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    assert!(zbus::block_on(engine.process_key_event_with_output(
+        &mut EngineOutput::test(&mut output),
+        crate::protocol::KEY_BACKSPACE,
+        14,
+        0
+    ))
+    .unwrap());
+    assert_eq!(output.committed_texts, ["ghbdtn "]);
+    assert!(!engine.layout_gesture.layout_is_ru);
+    assert_eq!(engine.atomic.deferred_layout_actions.len(), 1);
+    if let Some(pending) = engine.committed_tail.pending_visible_postcondition.as_ref() {
+        assert!(pending.layout_sync_text.is_none());
+    }
+    assert!(crate::tail_memory::take_native_restoration_feedback().is_empty());
+}
+
+#[test]
+fn opt_in_backspace_restores_exact_auto_correction_once_at_any_word_position() {
+    if !isolated_case("space_boundary_pair_tests::opt_in_backspace_restores_exact_auto_correction_once_at_any_word_position") { return; }
+    use crate::protocol::{KEY_BACKSPACE, RELEASE_MASK};
+    for prefix in ["", "пишу "] {
+        let original = "проверрка ";
+        let replacement = "проверка ";
+        let mut engine = engine(IBUS_CAP_SURROUNDING_TEXT, &format!("{prefix}{replacement}"));
+        configure_backspace_shortcut(&mut engine, true);
+        engine.remember_pending_ime_auto_undo(
+            original.into(),
+            replacement.into(),
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+        );
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        assert!(zbus::block_on(engine.process_key_event_with_output(
+            &mut EngineOutput::test(&mut output),
+            KEY_BACKSPACE,
+            14,
+            0
+        ))
+        .unwrap());
+        assert_eq!(
+            output.surrounding_deletes,
+            [(
+                -(replacement.chars().count() as i32),
+                replacement.chars().count() as u32
+            )]
+        );
+        assert_eq!(output.committed_texts, [original]);
+        assert_eq!(engine.committed_tail.buffer, format!("{prefix}{original}"));
+        assert!(engine.shared.lock().unwrap().pending_auto_undo.is_none());
+        assert!(zbus::block_on(engine.process_key_event_with_output(
+            &mut EngineOutput::test(&mut output),
+            KEY_BACKSPACE,
+            14,
+            RELEASE_MASK
+        ))
+        .unwrap());
+        assert!(!zbus::block_on(engine.process_key_event_with_output(
+            &mut EngineOutput::test(&mut output),
+            KEY_BACKSPACE,
+            14,
+            0
+        ))
+        .unwrap());
+        assert_eq!(output.surrounding_deletes.len(), 1);
+        assert_eq!(output.committed_texts.len(), 1);
+        assert_eq!(
+            engine.committed_tail.buffer,
+            format!("{prefix}{}", original.trim_end())
+        );
+    }
+}
+
+#[test]
+fn opt_in_backspace_uses_the_recorded_boundary_pair_inverse() {
+    if !isolated_case(
+        "space_boundary_pair_tests::opt_in_backspace_uses_the_recorded_boundary_pair_inverse",
+    ) {
+        return;
+    }
+    use crate::protocol::KEY_BACKSPACE;
+    for owned in [false, true] {
+        let (mut engine, mut output) = if owned {
+            owned_pair(false)
+        } else {
+            (
+                engine(
+                    IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+                    "должн ыбыть",
+                ),
+                TestEngineOutput {
+                    legacy_transport: true,
+                    ..Default::default()
+                },
+            )
+        };
+        install(&engine);
+        assert!(press(&mut engine, &mut output, KEY_SPACE).unwrap());
+        if owned {
+            observe_space_commit(&mut engine, &mut output).unwrap();
+        }
+        engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            "должны быть ".into(),
+            12,
+            12,
+        )));
+        engine.observe_visible_postcondition();
+        configure_backspace_shortcut(&mut engine, true);
+        let before = output.surrounding_deletes.len();
+        assert!(zbus::block_on(engine.process_key_event_with_output(
+            &mut EngineOutput::test(&mut output),
+            KEY_BACKSPACE,
+            14,
+            0
+        ))
+        .unwrap());
+        assert_eq!(output.surrounding_deletes.len(), before + 1);
+        assert_eq!(output.surrounding_deletes.last(), Some(&(-12, 12)));
+        assert_eq!(
+            output.committed_texts.last().map(String::as_str),
+            Some("должн ыбыть ")
+        );
+        assert_eq!(engine.committed_tail.buffer, "должн ыбыть ");
     }
 }

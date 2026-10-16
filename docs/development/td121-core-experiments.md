@@ -934,3 +934,8 @@ READV BOTH full native complete349PASS51FAIL32BLOCKED/432,0NOT_TESTED. All349his
 
 
 TD-141 COMPLETE / installed1.0.84. Build RUN/release84-build/BUILD.json:232.239s, all739Rustfiles/dependencies/extensioncode exactlyequal tested83 except version surfaces, canonicalarchitecturePASS. CLI60de3f20…, daemon6d0237e6…, IME7e338ae2…. Local transaction /home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install83-20261015T033053Z/INSTALL.json: CLI/tray84 and/procSHAverified,24protectedfiles, globalIBus/L11/L3processidentities+config/source/mode unchanged,0functionalkeys. NativeREADV432 logicproof349P51F32B/0NT,0lost349previousPASS, Chromeundo/searchB→F retained; metadata-only84 proofcarryexplicit, no localfunctional84claim. Freshsource/harnessreviewsfinal9/10(twoeach),1134sourcePASSunchanged. TD121legacyfunctionalworkremainsOPEN. No models/deliveryroutes/runtimeauthority change; endpointremainsfreshread-only onexistingconnections.
+
+
+## TD-147 opt-in shortcuts — before production edit
+
+2026-10-16T08:25:11.537592+00:00; baseline05e1e448 source88, installed87 unchanged. Hypothesis: new opt-in Backspace must reach the existing exact undo owner before next-key invalidation; double-Space needs ordinary boundary accounting and exact suffix count before the existing gesture dispatch. First failures and accepted plan8/10 are recorded in tech_debt/147-explicit-undo-and-double-space.md and decision2026-10-16-opt-in-existing-owner-shortcuts.json. No early KnownStart veto, parallel legacy detector, transport bypass, models or training changes. Start with real executable RED; source, native, timing and installed evidence remain separate. Historical complete matrix349P51F32B/432; new bytes NOT_TESTED.

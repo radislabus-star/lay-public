@@ -79,6 +79,26 @@ impl LayIbusEngine {
             self.clear_preedit(emitter).await?;
             self.composition.pending_passthrough_preedit_clear = false;
         }
+        if keyval == KEY_BACKSPACE
+            && self.config.undo_on_backspace
+            && !super::protocol::has_input_modifier(state)
+        {
+            let outcome = self.undo_ime_autocorrect_on_backspace(emitter).await;
+            // A rejected or partially executed shortcut is never retried by
+            // another key/backend. Only proven zero-effect permits deletion.
+            self.clear_pending_ime_auto_undo("backspace_shortcut_finished");
+            match outcome {
+                Ok(Some(_)) => return Ok(true),
+                Err(error) if error.receipt() == super::window_interaction::ExecutionReceipt::LocalIndeterminatePartial => {
+                    self.close_committed_tail_field();
+                    self.client_context.surrounding_text_snapshot = None;
+                    self.revoke_context_word();
+                    self.trace_key("backspace_undo_partial_consumed", keyval, keycode, true, None);
+                    return Ok(true);
+                }
+                Ok(None) | Err(_) => {}
+            }
+        }
         self.clear_pending_ime_auto_undo("next_pressed_key");
         if keyval == KEY_BACKSPACE {
             let owned_backspace = self.prepare_owned_preedit_local_backspace();

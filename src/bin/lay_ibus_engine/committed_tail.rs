@@ -1084,6 +1084,21 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> Result<Option<bool>, LocalExecutionFailure> {
+        self.undo_recorded_ime_autocorrect(emitter, false).await
+    }
+
+    pub(super) async fn undo_ime_autocorrect_on_backspace(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> Result<Option<bool>, LocalExecutionFailure> {
+        self.undo_recorded_ime_autocorrect(emitter, true).await
+    }
+
+    async fn undo_recorded_ime_autocorrect(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        complete_manual_layout: bool,
+    ) -> Result<Option<bool>, LocalExecutionFailure> {
         let boundary_elided_snapshot = self.pending_ime_auto_undo_uses_boundary_elided_snapshot();
         let causal_precondition_snapshot =
             self.pending_ime_auto_undo_uses_causal_precondition_snapshot();
@@ -1113,12 +1128,15 @@ impl LayIbusEngine {
         .with_expected_tail(expected_tail)
         .with_boundary_elided_external_snapshot(boundary_elided_snapshot)
         .with_recorded_boundary_precondition(recorded_precondition);
+        if complete_manual_layout {
+            request = request.with_caller_layout_postcondition();
+        }
         if let Some(forward) = pending.boundary_forward_action.as_ref() {
             let Some(inverse) = lay::text_edit::plan_recorded_boundary_inverse(forward) else {
-                return Ok(Some(false));
+                return Ok(None);
             };
             if inverse.from_text() != pending.replacement || inverse.to_text() != pending.original {
-                return Ok(Some(false));
+                return Ok(None);
             }
             request = request.with_winner_action(inverse);
         }
@@ -1142,6 +1160,9 @@ impl LayIbusEngine {
             }
         };
         if handled {
+            if complete_manual_layout {
+                self.sync_layout_after_manual_toggle(&pending.original);
+            }
             self.record_reverted_system_apply(
                 &accepted_context,
                 &rejected_context,

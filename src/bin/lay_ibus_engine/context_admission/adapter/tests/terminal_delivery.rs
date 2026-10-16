@@ -2846,7 +2846,7 @@ fn td121_late_paired_native_terminal_release_keeps_the_existing_word() {
                 Some(&engine.client_context.focus_serial)
             );
             let token = engine.context_token.clone().unwrap();
-            let scope = engine.context_word_scope.clone();
+            let scope = engine.context_word_scope;
             let tail = engine.committed_tail.buffer.clone();
             let epoch = engine.committed_tail.epoch;
             assert!(

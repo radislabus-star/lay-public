@@ -142,10 +142,14 @@ impl LayIbusEngine {
         let authority = self.manual_toggle_authority();
         match authority {
             ManualToggleAuthority::ImeCommittedTail => {
-                if self.terminal_committed_tail_executor_available() {
-                    trace::record(
-                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#,
-                    );
+                if self.terminal_committed_tail_executor_available()
+                    || self.atomic.speculation && !emitter.is_legacy()
+                {
+                    trace::record(if self.atomic.speculation {
+                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"atomic_frame"}"#
+                    } else {
+                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#
+                    });
                     return self
                         .toggle_committed_tail_target_with_disposition(emitter)
                         .await;

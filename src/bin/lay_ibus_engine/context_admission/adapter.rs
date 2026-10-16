@@ -471,7 +471,7 @@ pub(crate) struct KeyCallback {
 }
 
 pub(crate) enum KeyCallbackObservation {
-    Owned(KeyCallback),
+    Owned(Box<KeyCallback>),
     PassiveShift,
     Refused,
 }
@@ -479,7 +479,7 @@ pub(crate) enum KeyCallbackObservation {
 impl KeyCallbackObservation {
     pub(crate) fn into_key(self) -> Option<KeyCallback> {
         match self {
-            Self::Owned(callback) => Some(callback),
+            Self::Owned(callback) => Some(*callback),
             Self::PassiveShift | Self::Refused => None,
         }
     }
@@ -692,6 +692,7 @@ impl ContextAdmissionAdapter {
         }
     }
 
+    #[cfg(test)]
     pub(crate) async fn begin_key_callback(
         &self,
         expected_owner: &EngineOwner,
@@ -745,16 +746,6 @@ impl ContextAdmissionAdapter {
                 .shared
                 .stamps
                 .record_completed_release(key, (keyval, keycode, state), guard)
-    }
-
-    pub(crate) async fn begin_atomic_key_callback(
-        &self,
-        expected_owner: &EngineOwner,
-        header: &zbus::message::Header<'_>,
-        callback_entered: Instant,
-    ) -> Result<KeyCallback, AdapterError> {
-        let observed = self.observe_callback(header, callback_entered).await?;
-        self.key_callback_from_observed(expected_owner, observed, true)
     }
 
     pub(crate) fn key_callback_from_observed(

@@ -32,6 +32,9 @@ pub(crate) struct ShiftGestureHandoff {
     pub(crate) shift_pressed_at: Option<Instant>,
     pub(crate) shift_used_as_modifier: bool,
     pub(crate) last_shift_release_at: Option<Instant>,
+    pub(crate) space_pressed: bool,
+    pub(crate) space_cancelled: bool,
+    pub(crate) last_space_release_at: Option<Instant>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

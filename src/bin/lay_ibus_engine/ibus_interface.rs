@@ -717,6 +717,47 @@ mod td120_atomic_owner_tests {
 }
 
 impl LayIbusEngine {
+    fn observe_atomic_space_gesture(&mut self, keyval: u32, state: u32) -> bool {
+        use super::protocol::{has_input_modifier, KEY_SPACE};
+        let pressed = is_key_press(state);
+        let gesture = &mut self.layout_gesture;
+        if keyval != KEY_SPACE
+            || has_input_modifier(state)
+            || gesture.shift_active
+            || gesture.alt_completion_active
+        {
+            if pressed {
+                gesture.space_cancelled |= gesture.space_pressed;
+                gesture.last_space_release_at = None;
+            }
+            if keyval == KEY_SPACE && !pressed {
+                gesture.space_pressed = false;
+                gesture.space_cancelled = false;
+                gesture.last_space_release_at = None;
+            }
+            return false;
+        }
+        if pressed {
+            if gesture.space_pressed {
+                gesture.space_cancelled = true;
+                gesture.last_space_release_at = None;
+            } else if gesture.last_space_release_at.is_some_and(|at| {
+                Instant::now().duration_since(at)
+                    > Duration::from_millis(self.config.shift_window_ms)
+            }) {
+                gesture.last_space_release_at = None;
+            }
+            gesture.space_pressed = true;
+            return false;
+        }
+        let tapped = std::mem::take(&mut gesture.space_pressed) && !gesture.space_cancelled;
+        gesture.space_cancelled = false;
+        let now = Instant::now();
+        let double = tapped && gesture.last_space_release_at.is_some();
+        gesture.last_space_release_at = (tapped && !double).then_some(now);
+        double
+    }
+
     fn observe_daemon_owned_legacy_shift(&mut self, keyval: u32, keycode: u32, state: u32) -> bool {
         let pressed = is_key_press(state);
         self.layout_gesture.shift_active = pressed;
@@ -805,6 +846,16 @@ impl LayIbusEngine {
         if !self.client_context.managed_input {
             self.revoke_managed_word_start_before_client_key();
             return Ok(false);
+        }
+        if self.atomic.speculation
+            && self.live_composition_enabled()
+            && configured_atomic_double_shift_key(&self.config.trigger, super::protocol::KEY_SPACE)
+            && self.observe_atomic_space_gesture(keyval, state)
+        {
+            let paired_release = self.consume_handled_release(keycode);
+            self.clear_pending_ime_auto_undo("double_space_literal_projection");
+            let target = self.manual_toggle_active_text_target(output).await?;
+            return Ok(target.is_some() || paired_release);
         }
         if !is_key_press(state) && self.consume_handled_release(keycode) {
             self.trace_key("managed_release", keyval, keycode, true, None);
@@ -946,7 +997,11 @@ impl LayIbusEngine {
 }
 
 fn configured_atomic_double_shift_key(trigger: &str, keyval: u32) -> bool {
-    trigger == "double-lshift" && keyval == KEY_LEFT_SHIFT
+    match trigger {
+        "double-lshift" => keyval == KEY_LEFT_SHIFT,
+        "double-space" => keyval == super::protocol::KEY_SPACE,
+        _ => false,
+    }
 }
 
 #[cfg(test)]
@@ -1094,6 +1149,37 @@ mod tests {
     use crate::protocol::{KEY_LEFT_SHIFT, KEY_RIGHT_SHIFT};
     use crate::text::make_ibus_text;
     use zbus::zvariant::Value;
+
+    #[test]
+    fn atomic_space_window_is_decided_at_the_second_press() {
+        use crate::engine::LayIbusEngine;
+        use crate::protocol::{KEY_SPACE, RELEASE_MASK};
+        use std::{
+            sync::{Arc, Mutex},
+            time::{Duration, Instant},
+        };
+        let mut engine = LayIbusEngine::new(
+            "/space-window".into(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            lay::config::LayConfig::default(),
+        );
+        assert!(!engine.observe_atomic_space_gesture(KEY_SPACE, 0));
+        assert!(!engine.observe_atomic_space_gesture(KEY_SPACE, RELEASE_MASK));
+        assert!(!engine.observe_atomic_space_gesture(KEY_SPACE, 0));
+        engine.layout_gesture.last_space_release_at = Some(Instant::now() - Duration::from_secs(2));
+        assert!(engine.observe_atomic_space_gesture(KEY_SPACE, RELEASE_MASK));
+        engine.layout_gesture.last_space_release_at = Some(Instant::now() - Duration::from_secs(2));
+        assert!(!engine.observe_atomic_space_gesture(KEY_SPACE, 0));
+        assert!(!engine.observe_atomic_space_gesture(KEY_SPACE, RELEASE_MASK));
+        assert!(!engine.observe_atomic_space_gesture(KEY_SPACE, 0));
+        assert!(
+            !engine.observe_atomic_space_gesture(KEY_SPACE, 0),
+            "repeat cancels held tap"
+        );
+        assert!(!engine.observe_atomic_space_gesture(KEY_SPACE, RELEASE_MASK));
+    }
 
     #[test]
     fn double_shift_matches_only_two_left_shift_members() {

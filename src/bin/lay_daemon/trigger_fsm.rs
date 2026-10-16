@@ -91,6 +91,7 @@ pub(super) enum DShiftState {
     WaitingSecond { first_release: Instant },
     SecondPress,
     AdditionalPress,
+    CancelledUntilRelease,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -143,8 +144,177 @@ impl DShiftState {
         *self = Self::Idle;
     }
 
+    pub(super) fn cancel_until_release(&mut self) {
+        *self = Self::CancelledUntilRelease;
+    }
+
     pub(super) fn is_idle(self) -> bool {
         self == Self::Idle
+    }
+}
+
+/// Ordinary Space is delivered/accounted by its existing caller. This only
+/// observes complete physical taps in the same FSM, including grab queues.
+pub(super) fn observe_double_space(
+    state: &mut DShiftState,
+    key: KeyCode,
+    value: i32,
+    modifiers_active: bool,
+    now: Instant,
+    window: std::time::Duration,
+) -> bool {
+    if key != KeyCode::KEY_SPACE || modifiers_active {
+        if value != 0 || modifiers_active {
+            if matches!(
+                state,
+                DShiftState::FirstPress
+                    | DShiftState::SecondPress
+                    | DShiftState::CancelledUntilRelease
+            ) {
+                state.cancel_until_release();
+            } else {
+                state.cancel();
+            }
+        }
+        return false;
+    }
+    match value {
+        1 => state.trigger_press(now, window),
+        2 => state.cancel_until_release(),
+        0 => return state.trigger_release(now) == DShiftRelease::Double,
+        _ => {}
+    }
+    false
+}
+
+#[cfg(test)]
+mod double_space_tests {
+    use super::*;
+    use std::time::Duration;
+
+    #[test]
+    fn complete_space_pairs_fire_once_per_pair_without_a_delay() {
+        for taps in [1, 2, 4, 10] {
+            let mut state = DShiftState::Idle;
+            let start = Instant::now();
+            let mut commands = 0;
+            for tap in 0..taps {
+                assert!(!observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_SPACE,
+                    1,
+                    false,
+                    start + Duration::from_millis(tap * 20),
+                    Duration::from_millis(250)
+                ));
+                commands += usize::from(observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_SPACE,
+                    0,
+                    false,
+                    start + Duration::from_millis(tap * 20 + 10),
+                    Duration::from_millis(250),
+                ));
+                assert_eq!(commands, (tap as usize).div_ceil(2));
+            }
+            assert_eq!(commands, taps as usize / 2);
+        }
+    }
+
+    #[test]
+    fn repeat_modifiers_interleaving_and_timeout_cancel_only_the_space_gesture() {
+        for interrupted in [0, 1, 2, 3] {
+            let mut state = DShiftState::Idle;
+            let now = Instant::now();
+            let window = Duration::from_millis(250);
+            assert!(!observe_double_space(
+                &mut state,
+                KeyCode::KEY_SPACE,
+                1,
+                false,
+                now,
+                window
+            ));
+            if interrupted == 0 {
+                assert!(!observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_SPACE,
+                    2,
+                    false,
+                    now,
+                    window
+                ));
+                assert!(!observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_SPACE,
+                    1,
+                    false,
+                    now,
+                    window
+                ));
+            }
+            assert!(!observe_double_space(
+                &mut state,
+                KeyCode::KEY_SPACE,
+                0,
+                false,
+                now,
+                window
+            ));
+            if interrupted == 1 {
+                assert!(!observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_A,
+                    1,
+                    false,
+                    now,
+                    window
+                ));
+            }
+            if interrupted == 2 {
+                assert!(!observe_double_space(
+                    &mut state,
+                    KeyCode::KEY_LEFTSHIFT,
+                    1,
+                    true,
+                    now,
+                    window
+                ));
+            }
+            let later = now + Duration::from_millis(if interrupted == 3 { 251 } else { 20 });
+            assert!(!observe_double_space(
+                &mut state,
+                KeyCode::KEY_SPACE,
+                1,
+                false,
+                later,
+                window
+            ));
+            assert!(!observe_double_space(
+                &mut state,
+                KeyCode::KEY_SPACE,
+                0,
+                false,
+                later,
+                window
+            ));
+            assert!(!observe_double_space(
+                &mut state,
+                KeyCode::KEY_SPACE,
+                1,
+                false,
+                later,
+                window
+            ));
+            assert!(observe_double_space(
+                &mut state,
+                KeyCode::KEY_SPACE,
+                0,
+                false,
+                later,
+                window
+            ));
+        }
     }
 }
 

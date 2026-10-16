@@ -66,6 +66,18 @@ fn pending_crossed_following_word(pending: bool, current_word_is_empty: bool) ->
     pending && !current_word_is_empty
 }
 
+pub(crate) fn handle_space_repeat(
+    buffer: &mut WordBuffer,
+    pending: &mut Option<PendingTypingAssist>,
+    events_since_word_start: &mut u32,
+) {
+    buffer.handle_space();
+    if let Some(pending) = pending.as_mut() {
+        pending.note_visible_char();
+    }
+    *events_since_word_start = 0;
+}
+
 pub(crate) fn handle_space_press(ctx: SpacePressContext<'_>) {
     if let Some(correction) = ctx.buffer.take_user_learning_correction(true) {
         if correction.user_target().as_deref() == Some(correction.lay_from.as_str()) {

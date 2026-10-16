@@ -12,6 +12,10 @@ pub(crate) fn has_command_modifier(state: u32) -> bool {
     state & (CONTROL_MASK | MOD1_MASK | MOD4_MASK | SUPER_MASK | HYPER_MASK | META_MASK) != 0
 }
 
+pub(crate) fn has_input_modifier(state: u32) -> bool {
+    has_command_modifier(state) || state & (SHIFT_MASK | MOD3_MASK | MOD5_MASK) != 0
+}
+
 pub(crate) fn has_only_control_modifier(state: u32) -> bool {
     state & CONTROL_MASK != 0
         && state

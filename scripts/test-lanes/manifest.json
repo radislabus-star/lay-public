@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3155,
+    "correctness": 3173,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 347,
-    "target": 2870
+    "target": 2888
   },
   "package_fixtures": [
     {
@@ -2807,6 +2807,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "atomic::tests::atomic_manual_completed_tail_keeps_the_existing_frame_executor",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "atomic::tests::atomic_native_backspaces_retain_observed_autocorrection_learning",
       "target": "bin:lay-ibus-engine"
     },
@@ -2822,6 +2829,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "atomic::tests::double_shift_produces_one_speculative_atomic_frame",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "atomic::tests::double_space_atomic_frames_preserve_four_spaces_and_two_commands",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -2864,6 +2878,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "atomic::tests::receipt_matrix_rejects_mismatch_duplicate_and_wrong_disposition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "atomic::tests::rejected_atomic_space_press_cannot_arm_a_future_pair",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -5706,6 +5727,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "ibus_interface::td121_content_type_tests::td121_unsealed_focus_out_ignores_legacy_700ms_handoff",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ibus_interface::tests::atomic_space_window_is_decided_at_the_second_press",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -15358,6 +15386,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "physical_input_grab::tests::failed_queued_space_retires_replay_for_the_remaining_drain",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "physical_input_grab::tests::modifier_replay_is_bounded_and_tracks_command_chords",
       "target": "bin:lay-daemon"
     },
@@ -16086,6 +16121,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "private_file::tests::transaction_lock_excludes_other_descriptors_until_drop",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "private_file::tests::writes_and_appends_private_text",
       "target": "lib:lay"
     },
@@ -16766,6 +16808,48 @@
       "kind": "test",
       "lane": "correctness",
       "name": "space_autocorrect_prefetch::tests::worker_pool_isolates_paths_and_evicts_to_the_fixed_bound",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::backspace_shortcut_completes_the_existing_layout_contract_once",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::backspace_shortcut_default_off_and_modified_keys_keep_ordinary_deletion",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::backspace_shortcut_partial_commit_consumes_key_and_retires_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::backspace_shortcut_rejects_expired_selection_caret_and_invalid_inverse",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::opt_in_backspace_restores_exact_auto_correction_once_at_any_word_position",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::opt_in_backspace_uses_the_recorded_boundary_pair_inverse",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -20300,6 +20384,27 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "trigger_dispatch::double_space_config_tests::configured_double_space_uses_the_ordinary_space_key",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "trigger_fsm::double_space_tests::complete_space_pairs_fire_once_per_pair_without_a_delay",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "trigger_fsm::double_space_tests::repeat_modifiers_interleaving_and_timeout_cancel_only_the_space_gesture",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "typed_authority_mints_have_only_named_runtime_callers",
       "target": "test:text_mutation_monopoly_contract"
     },
@@ -22323,7 +22428,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "word_buffer::tests::observed_and_replayed_text_preserve_actual_ascii_space_suffix",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "word_buffer::tests::pending_auto_undo_readiness_does_not_consume_fresh_undo",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "word_buffer::tests::repeated_spaces_preserve_exact_last_word_replay_suffix",
       "target": "lib:lay"
     },
     {
@@ -22352,6 +22471,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "word_buffer::tests::single_word_wrong_layout_replays_opposite_layout",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "word_buffer::tests::unrepresentable_trailing_spaces_retire_replay_authority",
       "target": "lib:lay"
     },
     {

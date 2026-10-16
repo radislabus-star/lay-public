@@ -344,6 +344,10 @@ impl LayIbusEngine {
         self.layout_gesture.shift_pressed_at = speculative.layout_gesture.shift_pressed_at;
         self.layout_gesture.last_shift_release_at =
             speculative.layout_gesture.last_shift_release_at;
+        self.layout_gesture.space_pressed = speculative.layout_gesture.space_pressed;
+        self.layout_gesture.space_cancelled = speculative.layout_gesture.space_cancelled;
+        self.layout_gesture.last_space_release_at =
+            speculative.layout_gesture.last_space_release_at;
         self.layout_gesture.alt_completion_active =
             speculative.layout_gesture.alt_completion_active;
         self.layout_gesture.alt_used_as_modifier = speculative.layout_gesture.alt_used_as_modifier;
@@ -489,6 +493,9 @@ impl LayIbusEngine {
             self.client_context.surrounding_text_callback_observed = callback_observed;
             self.exact_manual_target_snapshot = None;
             self.observe_visible_postcondition();
+        }
+        if self.config.trigger == "double-space" {
+            self.publish_shift_gesture_handoff();
         }
         self.apply_deferred_layout_actions();
         self.confirm_manual_autocorrection_restoration();
@@ -686,6 +693,186 @@ mod tests {
         );
         assert!(engine.bind_focus_path());
         engine
+    }
+
+    #[test]
+    fn atomic_manual_completed_tail_keeps_the_existing_frame_executor() {
+        let mut live = engine();
+        live.set_client_capabilities(crate::window_interaction::IBUS_CAP_SURROUNDING_TEXT);
+        live.config.auto_switch_layout = false;
+        live.layout_gesture.layout_is_ru = false;
+        live.committed_tail.buffer = "ghbdtn".into();
+        let mut visible = "ghbdtn".to_string();
+        let mut prior = (RECEIPT_NONE, 0, Vec::new());
+        for index in 0..3 {
+            let cursor = visible.chars().count() as u32;
+            live.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                visible.clone(),
+                cursor,
+                cursor,
+            )));
+            let transaction = 1800 + index;
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                crate::protocol::KEY_SPACE,
+                57,
+                if index % 2 == 0 {
+                    0
+                } else {
+                    crate::protocol::RELEASE_MASK
+                },
+                (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                prior,
+            ))
+            .unwrap();
+            for (_, value) in proposal.1.iter().filter(|(tag, _)| *tag == 1) {
+                visible.push_str(&String::try_from(value.clone()).unwrap());
+            }
+            prior = match proposal.0 {
+                PROPOSAL_FRAME_READY => {
+                    (RECEIPT_SUBMITTED_ATOMIC, transaction, vec![7; DIGEST_BYTES])
+                }
+                PROPOSAL_CONSUMED_NO_EFFECT => (
+                    RECEIPT_CONSUMED_NO_EFFECT,
+                    transaction,
+                    vec![7; DIGEST_BYTES],
+                ),
+                _ => (RECEIPT_NONE, 0, Vec::new()),
+            };
+        }
+        assert!(live.settle_atomic_pending(41, &prior));
+        assert_eq!(visible, "ghbdtn  ");
+        live.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(visible, 8, 8)));
+        live.atomic.speculation = true;
+        let mut builder = AtomicEffectBuilder::default();
+        let (target, receipt) =
+            zbus::block_on(live.manual_toggle_active_text_target_with_disposition(
+                &mut EngineOutput::atomic(&mut builder),
+            ))
+            .unwrap();
+        assert_eq!(target,Some(true), "receipt={receipt:?} authority={:?} known={} active={} spec={} layout_ru={} snapshot={:?}", live.manual_toggle_authority(), live.context_word_is_known(), live.atomic.active, live.atomic.speculation, live.layout_gesture.layout_is_ru, live.client_context.surrounding_text_snapshot);
+        assert_eq!(
+            receipt,
+            crate::window_interaction::ExecutionReceipt::LocalComplete
+        );
+        let proposal = builder.finish(true);
+        assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+        assert_eq!(proposal.1.iter().filter(|(tag, _)| *tag == 2).count(), 1);
+        let commits: Vec<String> = proposal
+            .1
+            .iter()
+            .filter(|(tag, _)| *tag == 1)
+            .map(|(_, v)| String::try_from(v.clone()).unwrap())
+            .collect();
+        assert_eq!(commits, ["привет  "]);
+        assert_eq!(live.committed_tail.buffer, "привет  ");
+    }
+
+    #[test]
+    fn double_space_atomic_frames_preserve_four_spaces_and_two_commands() {
+        let mut live = engine();
+        live.config.trigger = "double-space".into();
+        live.set_client_capabilities(crate::window_interaction::IBUS_CAP_SURROUNDING_TEXT);
+        live.committed_tail.buffer = "привет".into();
+        live.composition.word_input_mode = Some(crate::engine::WordInputMode::ManagedCommit);
+        let mut visible = "привет".to_string();
+        let mut prior = (RECEIPT_NONE, 0, Vec::new());
+        let mut commands = 0;
+        for index in 0..8 {
+            let cursor = visible.chars().count() as u32;
+            live.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                visible.clone(),
+                cursor,
+                cursor,
+            )));
+            let transaction = 1600 + index;
+            let state = if index % 2 == 0 {
+                0
+            } else {
+                crate::protocol::RELEASE_MASK
+            };
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                crate::protocol::KEY_SPACE,
+                57,
+                state,
+                (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                prior,
+            ))
+            .unwrap();
+            let mut deleted = false;
+            for (tag, value) in &proposal.1 {
+                if *tag == 2 {
+                    let zbus::zvariant::Value::Structure(structure) = &**value else {
+                        panic!("delete structure")
+                    };
+                    let fields = structure.fields();
+                    let (zbus::zvariant::Value::I32(offset), zbus::zvariant::Value::U32(count)) =
+                        (&fields[0], &fields[1])
+                    else {
+                        panic!("delete range")
+                    };
+                    assert_eq!(*offset, -(*count as i32));
+                    let mut chars: Vec<_> = visible.chars().collect();
+                    assert!(*count as usize <= chars.len());
+                    chars.truncate(chars.len() - *count as usize);
+                    visible = chars.into_iter().collect();
+                    deleted = true;
+                } else if *tag == 1 {
+                    visible.push_str(&String::try_from(value.clone()).unwrap());
+                }
+            }
+            if deleted {
+                commands += 1;
+                assert_eq!(
+                    index % 4,
+                    3,
+                    "ordinary Space cannot replay a completed word"
+                );
+            }
+            prior = match proposal.0 {
+                PROPOSAL_FRAME_READY => {
+                    (RECEIPT_SUBMITTED_ATOMIC, transaction, vec![7; DIGEST_BYTES])
+                }
+                PROPOSAL_CONSUMED_NO_EFFECT => (
+                    RECEIPT_CONSUMED_NO_EFFECT,
+                    transaction,
+                    vec![7; DIGEST_BYTES],
+                ),
+                PROPOSAL_NATIVE_UNHANDLED => (RECEIPT_NONE, 0, Vec::new()),
+                _ => panic!("proposal disposition"),
+            };
+        }
+        assert!(live.settle_atomic_pending(41, &prior));
+        assert_eq!(commands, 2);
+        assert_eq!(visible, "привет    ");
+        assert_eq!(live.committed_tail.buffer, visible);
+        assert!(!live.layout_gesture.shift_active);
+    }
+
+    #[test]
+    fn rejected_atomic_space_press_cannot_arm_a_future_pair() {
+        let mut live = engine();
+        live.config.trigger = "double-space".into();
+        live.committed_tail.buffer = "слово".into();
+        let proposal = zbus::block_on(live.process_atomic_key_event(
+            crate::protocol::KEY_SPACE,
+            57,
+            0,
+            (1700, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+            capability(),
+            (RECEIPT_NONE, 0, Vec::new()),
+        ))
+        .unwrap();
+        assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+        assert!(!live.layout_gesture.space_pressed);
+        assert!(live.settle_atomic_pending(
+            41,
+            &(RECEIPT_REFUSED_ZERO_EFFECT, 1700, vec![7; DIGEST_BYTES])
+        ));
+        assert!(!live.layout_gesture.space_pressed);
+        assert!(live.layout_gesture.last_space_release_at.is_none());
+        assert_eq!(live.committed_tail.buffer, "слово");
     }
 
     #[test]

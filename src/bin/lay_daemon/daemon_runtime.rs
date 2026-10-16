@@ -118,6 +118,7 @@ pub(super) fn listen_keyboard(
                         field_context_epoch.as_ref(),
                     );
                     fire_expired_pending_multi_tap(PendingMultiTapTimeoutContext {
+                        trigger_key,
                         buffer: &mut state.buffer,
                         device: &mut device,
                         virtual_kbd: &virtual_kbd,
@@ -328,6 +329,12 @@ pub(super) fn listen_keyboard(
                         verbose,
                         text_context,
                     });
+                } else if value == 2 {
+                    super::boundary_runtime::handle_space_repeat(
+                        &mut state.buffer,
+                        &mut state.pending_typing_assist_after_space,
+                        &mut state.events_since_word_start,
+                    );
                 }
                 continue;
             }

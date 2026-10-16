@@ -190,6 +190,11 @@ impl CommittedTailReplaceRequest {
         self
     }
 
+    pub(crate) fn with_caller_layout_postcondition(mut self) -> Self {
+        self.layout_postcondition_owner = LayoutPostconditionOwner::Caller;
+        self
+    }
+
     pub(crate) fn with_space_pair_scope(
         mut self,
         scope: Option<super::engine::SpaceBoundaryPairScope>,
@@ -345,6 +350,9 @@ impl LayIbusEngine {
         self.composition.pending_passthrough_preedit_clear = false;
         self.layout_gesture.shift_pressed_at = None;
         self.layout_gesture.last_shift_release_at = None;
+        self.layout_gesture.space_pressed = false;
+        self.layout_gesture.space_cancelled = false;
+        self.layout_gesture.last_space_release_at = None;
         if !preserve_tail {
             self.committed_tail.last_input_at = None;
             self.committed_tail.recent_replace = None;
@@ -442,6 +450,9 @@ impl LayIbusEngine {
         self.composition.pending_passthrough_preedit_clear = false;
         self.layout_gesture.shift_pressed_at = None;
         self.layout_gesture.last_shift_release_at = None;
+        self.layout_gesture.space_pressed = false;
+        self.layout_gesture.space_cancelled = false;
+        self.layout_gesture.last_space_release_at = None;
         self.committed_tail.recent_replace = None;
         self.layout_gesture.shift_active = false;
         self.layout_gesture.shift_used_as_modifier = false;

@@ -6368,45 +6368,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 17447,
-          "byte_start": 17437,
-          "file": "src/typing_memory.rs"
-        }
-      ],
-      "message": "associated function `edited_ime` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": false,
-          "label": "associated function in this implementation",
-          "text": [
-            "impl TypingMemoryEvent {"
-          ]
-        },
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn edited_ime("
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 17511,
           "byte_start": 17483,
           "file": "src/nanda_wave/context_phase/composite.rs"
@@ -6789,6 +6750,45 @@
           "label": "",
           "text": [
             "fn prerequisite_rejection("
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 18338,
+          "byte_start": 18328,
+          "file": "src/typing_memory.rs"
+        }
+      ],
+      "message": "associated function `edited_ime` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": false,
+          "label": "associated function in this implementation",
+          "text": [
+            "impl TypingMemoryEvent {"
+          ]
+        },
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn edited_ime("
           ]
         }
       ],
@@ -7727,37 +7727,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 21806,
-          "byte_start": 21772,
-          "file": "src/typing_memory.rs"
-        }
-      ],
-      "message": "function `completion_edit_geometry_is_linked` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn completion_edit_geometry_is_linked("
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 2189,
           "byte_start": 2186,
           "file": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs"
@@ -8215,6 +8184,37 @@
           "label": "",
           "text": [
             "fn flush_lemma("
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 22738,
+          "byte_start": 22704,
+          "file": "src/typing_memory.rs"
+        }
+      ],
+      "message": "function `completion_edit_geometry_is_linked` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn completion_edit_geometry_is_linked("
           ]
         }
       ],
@@ -9651,37 +9651,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 27504,
-          "byte_start": 27482,
-          "file": "src/typing_memory.rs"
-        }
-      ],
-      "message": "function `transition_target_text` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn transition_target_text(from: &str, to: &str) -> String {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 2752,
           "byte_start": 2738,
           "file": "src/nanda_wave/l4_cross_scene/format.rs"
@@ -9968,6 +9937,37 @@
           "label": "",
           "text": [
             "pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 28526,
+          "byte_start": 28504,
+          "file": "src/typing_memory.rs"
+        }
+      ],
+      "message": "function `transition_target_text` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn transition_target_text(from: &str, to: &str) -> String {"
           ]
         }
       ],
@@ -17280,37 +17280,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 69975,
-          "byte_start": 69936,
-          "file": "src/nanda_wave/usage_prior.rs"
-        }
-      ],
-      "message": "function `exact_reverted_system_apply_usage_jsonl` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/nanda_wave/usage_prior.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 70980,
           "byte_start": 70975,
           "file": "src/nanda_wave/lexical_phase/runtime.rs"
@@ -17465,6 +17434,37 @@
           "label": "",
           "text": [
             "fn encode_direct_journal_slot("
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 72182,
+          "byte_start": 72143,
+          "file": "src/nanda_wave/usage_prior.rs"
+        }
+      ],
+      "message": "function `exact_reverted_system_apply_usage_jsonl` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/nanda_wave/usage_prior.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {"
           ]
         }
       ],

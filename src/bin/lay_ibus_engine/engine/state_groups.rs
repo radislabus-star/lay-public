@@ -83,6 +83,9 @@ pub(crate) struct LayoutGestureState {
     /// This is pairing evidence, never text-edit authority.
     pub(crate) native_letter_release_focus: BTreeMap<u32, u64>,
     pub(crate) last_shift_release_at: Option<Instant>,
+    pub(crate) space_pressed: bool,
+    pub(crate) space_cancelled: bool,
+    pub(crate) last_space_release_at: Option<Instant>,
     pub(crate) pending_manual_toggle: bool,
     /// A Firefox preedit refresh may deliver its exact receipt after the
     /// ManualToggleV3 reply. The existing pending toggle owns that one reply.
@@ -102,6 +105,9 @@ impl LayoutGestureState {
             handled_press_keycodes: BTreeSet::new(),
             native_letter_release_focus: BTreeMap::new(),
             last_shift_release_at: None,
+            space_pressed: false,
+            space_cancelled: false,
+            last_space_release_at: None,
             pending_manual_toggle: false,
             pending_manual_refresh_at: None,
         }
