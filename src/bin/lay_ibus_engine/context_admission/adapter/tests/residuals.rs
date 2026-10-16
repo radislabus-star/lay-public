@@ -18958,52 +18958,87 @@ fn native_space_legacy_clear_failure_does_not_observe_boundary() {
 
 #[test]
 fn native_space_observed_boundary_adopts_exact_client_nbsp() {
-    for reset_before_receipt in [false, true] {
-        zbus::block_on(bounded(async {
-            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
-            let mut engine = initial_observed_tail_reset(
-                &mut harness,
-                62_100,
-                &[('a', 30), ('b', 48), ('c', 46)],
-            )
-            .await;
-            exact_surrounding_receipt(&mut harness, &mut engine, "abc").await;
-            publish_fixture_append_completion(&mut harness, &mut engine, "de").await;
-            let mode = engine.layout_gesture.layout_is_ru;
-            assert!(legacy_key(&mut harness, &mut engine, 62_120, KEY_SPACE, 57, 0).await);
-            expect_legacy_managed_space(&mut harness, &engine, mode, true).await;
-            let epoch = engine.committed_tail.epoch;
-            assert_eq!(engine.committed_tail.buffer, "abc ");
-            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
-            if reset_before_receipt {
-                actual_reset(&mut harness, &mut engine, 62_121, false).await;
+    let words: &[(&str, &[(char, u32)])] = &[
+        ("abc", &[('a', 30), ('b', 48), ('c', 46)]),
+        ("xyza", &[('x', 45), ('y', 21), ('z', 44), ('a', 30)]),
+    ];
+    for &(word, keys) in words {
+        for separators in [
+            "\u{a0}",
+            "\u{a0}\u{a0}",
+            " \u{a0}",
+            " \u{a0} \u{a0}",
+            "\u{a0}\u{a0}\u{a0}\u{a0}\u{a0}\u{a0}\u{a0}\u{a0}\u{a0}\u{a0}",
+        ] {
+            for reset_before_receipt in [false, true] {
+                zbus::block_on(bounded(async {
+                    let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+                    let mut engine = initial_observed_tail_reset(&mut harness, 62_100, keys).await;
+                    exact_surrounding_receipt(&mut harness, &mut engine, word).await;
+                    publish_fixture_append_completion(&mut harness, &mut engine, "de").await;
+                    let mode = engine.layout_gesture.layout_is_ru;
+                    let mut expected = word.to_string();
+                    for (index, separator) in separators.chars().enumerate() {
+                        let serial = 62_120 + index as u32 * 3;
+                        assert!(
+                            legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0).await
+                        );
+                        expect_legacy_managed_space(&mut harness, &engine, mode, index == 0).await;
+                        let epoch = engine.committed_tail.epoch;
+                        assert_eq!(engine.committed_tail.buffer, format!("{expected} "));
+                        assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                        assert!(
+                            legacy_key(
+                                &mut harness,
+                                &mut engine,
+                                serial + 1,
+                                KEY_SPACE,
+                                57,
+                                RELEASE_MASK
+                            )
+                            .await
+                        );
+                        assert!(super::terminal_delivery::legacy_effects(&mut harness)
+                            .await
+                            .is_empty());
+                        if reset_before_receipt {
+                            actual_reset(&mut harness, &mut engine, serial + 2, false).await;
+                        }
+                        expected.push(separator);
+                        exact_surrounding_receipt(&mut harness, &mut engine, &expected).await;
+                        assert_eq!(engine.committed_tail.buffer, expected, "{word:?} {separators:?} boundary {index}, Reset={reset_before_receipt}");
+                        assert_eq!(engine.committed_tail.epoch, epoch);
+                        assert_eq!(
+                            engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                            reset_before_receipt
+                        );
+                        assert_eq!(engine.context_word_is_known(), !reset_before_receipt);
+                        assert!(engine.current_external_snapshot_agrees_with_owned_tail());
+                        {
+                            let shared = engine.shared.lock().unwrap();
+                            assert_eq!(shared.handoff_tail_buffer, expected);
+                            assert_eq!(shared.handoff_tail_epoch, epoch);
+                        }
+                        assert!(super::terminal_delivery::legacy_effects(&mut harness)
+                            .await
+                            .is_empty());
+                    }
+                    let path = engine.path.clone();
+                    let (engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
+                    assert_eq!(
+                        disposition,
+                        Ok(
+                            lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail
+                                .as_v3()
+                        )
+                    );
+                    let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
+                    assert!(cycle09_tail_is_authoritative(
+                        &tail, &path, false, &expected
+                    ));
+                }));
             }
-            exact_surrounding_receipt(&mut harness, &mut engine, "abc\u{a0}").await;
-            assert_eq!(engine.committed_tail.buffer, "abc\u{a0}");
-            assert_eq!(engine.committed_tail.epoch, epoch);
-            assert_eq!(
-                engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
-                reset_before_receipt
-            );
-            assert_eq!(engine.context_word_is_known(), !reset_before_receipt);
-            assert!(engine.current_external_snapshot_agrees_with_owned_tail());
-            assert!(super::terminal_delivery::legacy_effects(&mut harness)
-                .await
-                .is_empty());
-            let path = engine.path.clone();
-            let (engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
-            assert_eq!(
-                disposition,
-                Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3())
-            );
-            let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
-            assert!(cycle09_tail_is_authoritative(
-                &tail,
-                &path,
-                false,
-                "abc\u{a0}"
-            ));
-        }));
+        }
     }
 }
 
@@ -19350,6 +19385,12 @@ fn native_space_observed_boundary_refuses_missing_or_contradictory_receipts() {
         "narrow_nbsp",
         "nbsp_left_edge",
         "nbsp_right_edge",
+        "consecutive_prefix",
+        "consecutive_rewrite_old_space",
+        "consecutive_selection",
+        "consecutive_cursor",
+        "consecutive_extra_separator",
+        "consecutive_tab",
     ] {
         zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
@@ -19381,6 +19422,58 @@ fn native_space_observed_boundary_refuses_missing_or_contradictory_receipts() {
             assert!(!engine.context_word_is_known());
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             match guard {
+                guard if guard.starts_with("consecutive_") => {
+                    exact_surrounding_receipt(&mut harness, &mut engine, "abc\u{a0}").await;
+                    assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                    assert!(legacy_key(&mut harness, &mut engine, 63_023, KEY_SPACE, 57, 0).await);
+                    expect_legacy_managed_space(&mut harness, &engine, mode, false).await;
+                    assert_eq!(engine.committed_tail.buffer, "abc\u{a0} ");
+                    assert!(
+                        legacy_key(
+                            &mut harness,
+                            &mut engine,
+                            63_024,
+                            KEY_SPACE,
+                            57,
+                            RELEASE_MASK
+                        )
+                        .await
+                    );
+                    assert!(super::terminal_delivery::legacy_effects(&mut harness)
+                        .await
+                        .is_empty());
+                    actual_reset(&mut harness, &mut engine, 63_025, false).await;
+                    match guard {
+                        "consecutive_prefix" => {
+                            exact_surrounding_receipt(&mut harness, &mut engine, "abd\u{a0}\u{a0}")
+                                .await
+                        }
+                        "consecutive_rewrite_old_space" => {
+                            exact_surrounding_receipt(&mut harness, &mut engine, "abc \u{a0}").await
+                        }
+                        "consecutive_selection" => {
+                            surrounding_receipt(&mut harness, &mut engine, "abc\u{a0}\u{a0}", 5, 4)
+                                .await
+                        }
+                        "consecutive_cursor" => {
+                            surrounding_receipt(&mut harness, &mut engine, "abc\u{a0}\u{a0}", 4, 4)
+                                .await
+                        }
+                        "consecutive_extra_separator" => {
+                            exact_surrounding_receipt(
+                                &mut harness,
+                                &mut engine,
+                                "abc\u{a0}\u{a0}\u{a0}",
+                            )
+                            .await
+                        }
+                        "consecutive_tab" => {
+                            exact_surrounding_receipt(&mut harness, &mut engine, "abc\u{a0}\t")
+                                .await
+                        }
+                        _ => unreachable!(),
+                    }
+                }
                 "missing" => {}
                 "surface" => surrounding_receipt(&mut harness, &mut engine, "abd ", 4, 4).await,
                 "selection" => surrounding_receipt(&mut harness, &mut engine, "abc ", 4, 3).await,

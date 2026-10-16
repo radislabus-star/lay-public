@@ -1,0 +1,14 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "decision": "Allow the existing first adjacent exact client acknowledgement of an owned Space after an observed word and previously retained ASCII Space or NBSP boundaries. Adopt only the newly appended U+0020 as U+00A0; keep every earlier byte exact and every owner, token, revision, epoch, cursor, selection and replay guard.",
+  "reason": "TD154 preserved native trace shows first owned Space acknowledged NBSP, then second owned Space rejected at its exact adjacent SSI despite matching identity and geometry. The actual legacy callback regression reproduces the first loss with unchanged production: the second Space leaves local tail abc+NBSP+ASCII while the observed exact client tail is abc+NBSP+NBSP. The acknowledger's immediate-predecessor word-character restriction rejects an already witnessed boundary. No delivery or gesture change is needed.",
+  "verification": "Unchanged-production td154-consecutive-space-red-bcubbzg9/RESULT.json:1/2 PASS; existing adverse receipt test passes and extended actual callback test fails the intended second boundary surface assertion, Reset=false, after original single-Space cases pass. Archive6c6668282e4eaf7f3d69a854b6b117f11ee9e2732e566f5bcc942d00c16edd00. Green, controlled reversion, complete source gates and independent review remain required.",
+  "not_tested": "Changed-byte native matrices, optional shortcuts, latency and installation. Two Firefox release-order and six Chrome oracle/probe failures are independent and not claimed fixed. Existing installed release1.0.88 remains unchanged.",
+  "invariants": ["C01", "C03", "C04", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/window_interaction/observation.rs"],
+  "runtime_authority_changed": true,
+  "authority_scope": "Retain the existing inert Reset receipt for each actually acknowledged consecutive owned append. First exact adjacent SSI may change only its final newly committed separator; existing verifier and exact-tail executor retain sole mutation authority.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "bd521f2afe0058eab0ad797f8d7e7b404c079ea5d607f2ed131388d6b977ae4d",
-  "manifest_fingerprint": "d0da3a91847edc75b80036e4a004e89f7ca302643d7d8a6eec7399d58e370fe0",
+  "graph_fingerprint": "8cb0cdcc5494c2d442c260054ff99162d4644bfe4f6ba9e1e30fcbdcb483ddbd",
+  "manifest_fingerprint": "30146e06113272c7a35fe0b0db3200e2fb4657d3bb38bc26c0d4965d536996f7",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -168,7 +168,7 @@
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/late_native_replay_refresh.rs": "5be2af4068d3d06fe816b5d2e523af5c10113d6143ed63e843b0fe3275ddad9e",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_cursor_edit.rs": "a069d91a0d7e675ccd6a6806cd0b24948110e5d92f929242fa00cf5730cce266",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_transfer.rs": "0dbf8f15e0e919ef4e7c377714ecd02c3802818cbd2c10c75620b205fa0332a5",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "e6f5b9fe63eb49150565a350d17cb59c8e3fe9e121c700f631055c6665353a18",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "ac5c9839d1d07138119048ae6693b910db8bf26fb9acdbf3cd369f1db9c44c63",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": "29c9611bd9ecb7d52743a3621dcb152a91fa9ffd5d85a89fd0f4254e65613ed0",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": "f2ceb70a63670a90168e531116b0b143e4664e32f92ed35352da925b76671871",
     "src/bin/lay_ibus_engine/context_admission/ordered_merge.rs": "07a189ca12f842d8931d2dea0aaa798a038e96214550240b8d432973a14174f9",
@@ -217,7 +217,7 @@
     "src/bin/lay_ibus_engine/window_interaction/mod.rs": "dd9f51fe4386c4ebe971e2f47bb7737ac882646334fdaffc578418db0d095607",
     "src/bin/lay_ibus_engine/window_interaction/native_cursor_edit.rs": "222940139b08928c926f20b3e30f2cbefcc74670529d57cf542a53c7ee3c3ec1",
     "src/bin/lay_ibus_engine/window_interaction/native_cursor_observation.rs": "9e3e1f23fa3133132ec98010526bdc5e3ca1350d5d47db5b99392819742696a2",
-    "src/bin/lay_ibus_engine/window_interaction/observation.rs": "ae2b772f04b9f4f61409ba1384d3af8f7780f5f653727f691d6d9459f5085551",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs": "9d7a0516e68955cfd73c6341d6a2cbe3a84df3d2308d5b5f55e8e31a7b05e391",
     "src/bin/lay_ibus_engine/window_interaction/tests.rs": "afa008a0191b267f33d0174168b12fa660bc9fefea9229914967de0d0fa32650",
     "src/bin/lay_ibus_engine/xml.rs": "3e8f82c914b2c05de3bdb6d24dfa934d58f404f7b37447e34d8b7514d18d0608",
     "src/bin/lay_l1_1_restore.rs": "72b93286e9a7970dac4c86dae7d8ebcb38d62f446dd83ca046370ce28103fc1b",

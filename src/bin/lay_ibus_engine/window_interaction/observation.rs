@@ -3321,6 +3321,7 @@ impl LayIbusEngine {
             return;
         };
         if !word
+            .trim_end_matches([' ', '\u{a0}'])
             .chars()
             .next_back()
             .is_some_and(|ch| !crate::preedit::is_observed_word_boundary(ch))
@@ -3343,9 +3344,11 @@ impl LayIbusEngine {
         {
             return;
         }
-        // A rich editor may acknowledge our single Space as NBSP. Retain its
-        // actual bytes for every later exact check; never normalize the client
-        // snapshot or revive a stale owner. This is the same owned append, so
+        // A rich editor may acknowledge each owned Space as NBSP, including
+        // one after previously acknowledged boundaries. Only the new final
+        // character changes; the exact prefix above retains every earlier byte.
+        // Keep those actual bytes for every later exact check; never normalize
+        // the client snapshot or revive a stale owner. This is the same append, so
         // its character count and epoch do not change. Confirmation stays with
         // the existing receipt validator below.
         let Ok(acknowledged_replay) = self.acknowledge_owned_space_tail(replay.as_ref()) else {

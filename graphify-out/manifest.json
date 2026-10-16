@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1792135650.650886,
-    "ast_hash": "2403999c6a371f7c92af64dab8d6ab52",
+    "mtime": 1792182393.6991723,
+    "ast_hash": "65891007a96aa55e23e12c1b77505dca",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -2485,13 +2485,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792157885.3501291,
-    "ast_hash": "8212ae49a7972b14d87715df08143007",
+    "mtime": 1792162663.3421276,
+    "ast_hash": "d406978fd0ecdbb13683646d6ff3f006",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792160528.068335,
-    "ast_hash": "44c90e90b08b33d9c64f8836a1bc4ba2",
+    "mtime": 1792162663.3423066,
+    "ast_hash": "9be1378aba71b26aa13e1a827ca1b3e2",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792160755.5816395,
-    "ast_hash": "7a42ca94adca9448abe4227c65248bed",
+    "mtime": 1792183377.2296543,
+    "ast_hash": "bb200a5f5672851bd5941327c3bb6ac6",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792160866.055786,
-    "ast_hash": "ebcc7a2983e81b7accdf1c959dd3f561",
+    "mtime": 1792182063.4813385,
+    "ast_hash": "5dd4384c33ad69ab59f2d10894031342",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1792159798.4664447,
-    "ast_hash": "d1e0cf2aa0a93a7f89d5da9b1ae95669",
+    "mtime": 1792182546.3296342,
+    "ast_hash": "e8233810d725b496bba88ce32ca8184d",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1792160866.0548146,
-    "ast_hash": "7a14c143a920dfffb3e71356ef059e29",
+    "mtime": 1792162897.1060882,
+    "ast_hash": "5d0f7e7e5d5781eaa75c6182990bd47a",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1792152667.4036062,
-    "ast_hash": "6eee83a057f5f1759376d5f89895024e",
+    "mtime": 1792182546.3316343,
+    "ast_hash": "570c6d64945ac990e5329baf10ac49f9",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -6695,8 +6695,8 @@
     "semantic_hash": ""
   },
   "tests/manual/browser_ime_standard.md": {
-    "mtime": 1792031587.60964,
-    "ast_hash": "a7f03499b5e1d405370fa2132e6b63d3",
+    "mtime": 1792182491.5870278,
+    "ast_hash": "dd1cbf099188e1755bcfd1e9b95daf7f",
     "semantic_hash": ""
   },
   "tests/manual/chrome_double_shift.html": {
@@ -7040,8 +7040,8 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1792160866.0553684,
-    "ast_hash": "7d563722a52b35ca472d4e18b8d5111e",
+    "mtime": 1792183404.5240357,
+    "ast_hash": "342a0cb44fab3b7741d01c0981ffd565",
     "semantic_hash": ""
   },
   "docs/development/wj-native-apps-2026-10-14.md": {
@@ -7125,8 +7125,8 @@
     "semantic_hash": ""
   },
   "docs/development/public-issues-2026-10-16.md": {
-    "mtime": 1792160866.0555117,
-    "ast_hash": "94471d70dabb36a8862d5900b41b6b9e",
+    "mtime": 1792163023.9389207,
+    "ast_hash": "df85d843747be3b00a3d57c2c611cdd7",
     "semantic_hash": ""
   },
   "tech_debt/145-verify-issue47-current-version.md": {
@@ -7135,13 +7135,13 @@
     "semantic_hash": ""
   },
   "tech_debt/146-session-scoped-input-access.md": {
-    "mtime": 1792134634.2078018,
-    "ast_hash": "d47730f0f646ba130a63c5cf8fa7950b",
+    "mtime": 1792162663.342636,
+    "ast_hash": "52ca4595ae5627e429a2ce7b170939a8",
     "semantic_hash": ""
   },
   "tech_debt/148-recognize-backed-ti-present-forms.md": {
-    "mtime": 1792140006.4599407,
-    "ast_hash": "eb633c6b4115ea0c322f76729eef72f4",
+    "mtime": 1792162663.3431406,
+    "ast_hash": "1699eb940e61071fecb1986a56932e38",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-attested-verb-inflection-witness.json": {
@@ -7150,13 +7150,13 @@
     "semantic_hash": ""
   },
   "tech_debt/147-explicit-undo-and-double-space.md": {
-    "mtime": 1792144732.805571,
-    "ast_hash": "f73289cc96e0e893367529236fb3a122",
+    "mtime": 1792162663.3428764,
+    "ast_hash": "dd79f544e2d14ef2d55689159cbf4860",
     "semantic_hash": ""
   },
   "docs/release-1.0.88.md": {
-    "mtime": 1792160608.01802,
-    "ast_hash": "8fa9d742a2b1994a6e81523d77c90873",
+    "mtime": 1792162663.3419015,
+    "ast_hash": "bad2d2429997cf3bbb20c9d23cb1cd7c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-atomic-manual-tail-frame-owner.json": {
@@ -7175,8 +7175,8 @@
     "semantic_hash": ""
   },
   "tech_debt/149-update-rustls-security-patch.md": {
-    "mtime": 1792152748.4040997,
-    "ast_hash": "b44be7c3d5c0c071e5b130343c75775a",
+    "mtime": 1792162663.3433514,
+    "ast_hash": "36603a89a7677f3ad76ed09bc2244cc8",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-rustls-patch-release-prerequisite.json": {
@@ -7190,8 +7190,8 @@
     "semantic_hash": ""
   },
   "tech_debt/150-retain-completed-native-replay-across-reset.md": {
-    "mtime": 1792156055.9568946,
-    "ast_hash": "afaf7c1c2b87c7639d06a88766cd02a3",
+    "mtime": 1792162663.3435667,
+    "ast_hash": "a9ac67198d0f7e68804741d7d469758f",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-bounded-ci-failure-evidence.json": {
@@ -7205,13 +7205,13 @@
     "semantic_hash": ""
   },
   "tech_debt/151-preserve-prepared-space-frame-on-matched-reset.md": {
-    "mtime": 1792160406.3364995,
-    "ast_hash": "39ce32568ffcea6682364e496767f589",
+    "mtime": 1792162663.3437765,
+    "ast_hash": "aefa41842a11fafbbf037e131ac73812",
     "semantic_hash": ""
   },
   "tech_debt/152-control-overlapping-release-test-readiness.md": {
-    "mtime": 1792157561.5333304,
-    "ast_hash": "4670f649f1aca0998f8abc3530f1365c",
+    "mtime": 1792162663.343976,
+    "ast_hash": "e8db9003ec05ede55697b660c005fc4c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-overlapping-release-ready-material-prerequisite.json": {
@@ -7220,8 +7220,23 @@
     "semantic_hash": ""
   },
   "tech_debt/153-establish-overlapping-release-material-readiness.md": {
-    "mtime": 1792160866.0543036,
-    "ast_hash": "6e37e938b444ba2db0cc7c5b33ff3309",
+    "mtime": 1792162663.3442366,
+    "ast_hash": "839b848cfacafb2541e85aa8e48ef43c",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-16-consecutive-owned-space-acknowledgement.json": {
+    "mtime": 1792182225.332274,
+    "ast_hash": "d0aadb26426b3c4a6a25df5388cca4cb",
+    "semantic_hash": ""
+  },
+  "docs/release-1.0.89.md": {
+    "mtime": 1792183404.5250356,
+    "ast_hash": "92b05442b31cc9aa4c1002623ef4c252",
+    "semantic_hash": ""
+  },
+  "tech_debt/154-acknowledge-consecutive-owned-space-boundaries.md": {
+    "mtime": 1792183404.5240357,
+    "ast_hash": "dc33e921f3de32efce437c5f2d64b5d5",
     "semantic_hash": ""
   }
 }

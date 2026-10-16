@@ -1023,6 +1023,49 @@ reused unrelated reviewthreads explicitly. Rootallimplementation. Source tasks
 complete; genuine newCI/matchingbuild/native432+options80/install remainpending.
 All oldrejectedreceiptsretained; no route/model/deadline/learning change.
 
+## TD154 — consecutive owned Space acknowledgement, before production edits
+
+2026-10-16T20:19:23Z. Baseline fe614235 / installed release88 IME8cb7bca... .
+Default whole432 remains349P50F33B. Optional normal80 remains58P18F4B;
+Double Space40=26P14F. Read-only preserved trace35041eb5... field7 rapid10:
+first owned Space confirmed asNBSP, second owned Space then matched Reset and
+adjacent SSI rejected despite matching identity/length/cursor. The source
+acknowledger forbids a previously observed separator immediately before its
+new final Space. Hypothesis: retain exact previous separators and acknowledge
+only the newly appended character using current owner/receipt guards.
+[TD154](../../tech_debt/154-acknowledge-consecutive-owned-space-boundaries.md)
+records alternatives9/3/1, scope, adverse tests and native limits. Six FF rich
+cases share this mechanism. Four Chrome failures are strict ASCII target
+comparison despite projected surface; two fail only a later probe. Two FF
+release-order cases remain independent, no causal repair claimed.
+Causal source RED and plan review pending; zero new native keys/runtime edits.
+
+TD154 causal RED td154-consecutive-space-red-bcubbzg9:1/2PASS14.724s,
+archive6c666828... . Original single-boundary cases pass; actual second complete
+Space callback with adjacent exact SSI leaves abc+NBSP+ASCII instead of observed
+abc+NBSP+NBSP. Existing adverse receipt test PASS. Production unchanged; causal
+transition identified, new protected-path decision recorded before runtime edit.
+
+TD154 first green td154-consecutive-space-green-zftayg2t10/10PASS17.231s:
+second owned boundary retained under exact raw previous-prefix equality;
+mixed/multiple boundaries and all existing/new adverse controls PASS. One
+runtime expression; fresh-context plan review8→9/10, two passes complete.
+New1.0.89 metadata prepared, installed88 unchanged. Controlled reversion and
+full source gates next; no new native success claimed.
+
+TD154 full preflight _7ih78_h stopped before full tests at Clippy's new fixture
+MutexGuard/await diagnostic. Replace explicit drop with lexical scope, retain
+all assertions and strict lint gate. Controlled one-expression rollback did
+detect original second-boundary failure; no runtime revert or guard weakening.
+
+TD154 final full source td154-full-source-final-50j7ij8d PASS3211/3211,
+0failure/exemption,715.353s; archiveb2793f28... . All3237 IDs unchanged, both
+actualMSRV1.88/strictlints/canon/architecture-audit50/Node-harness-panel PASS.
+994 functional input hashes verified locally, controlled old guard RED detected
+and exact source restored. Actual private observer predicates17/17 PASS including
+ghost refusal, zero native keys. Independent code review/new build/whole native
+and installation pending; installed88 and historical349/50/33 unchanged.
+
 
 TD151 new-byteFirefox216 complete170P27F19B/zero lostPASS, Space7 nowPASS;
 standard60/panel6,420/420DS median98.548/p95111.391ms. ChromeREPAIR2running,

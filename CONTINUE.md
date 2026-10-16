@@ -1,4 +1,32 @@
-# Current checkpoint —2026-10-16, installed/published1.0.88
+# Current checkpoint —2026-10-16, TD154 source accepted / installed1.0.88
+
+Continue TD154 in this authoritative checkout/branch. Production repair is one
+expression in acknowledge_owned_space_boundary: retain exact earlier ASCII/NBSP
+boundaries and acknowledge only the newly owned final Space. No route/model/
+learning/default change. Genuine second-boundary RED, focused10/10, full3211/3211
+zero exceptions, controlled reversion detected; fresh plan8→9/code9 reviews.
+All3237 manifest IDs unchanged; actualMSRV/lints/canon/audit50/Node/panel PASS.
+New1.0.89 metadata only changes this package version, no dependency versions.
+
+Full receipt td154-full-source-final-50j7ij8d; final canonical
+td154-final-canonical-ws_l_m_4, under /home/ubu/.cache/lay/development/.
+993 functional hashes match, current canonical graph fetched remotely. Private
+helper predicates17/17 remote PASS and18 helper hashes reviewed; see
+td154-native-helpers-20261016/REVIEW-INPUTS.json. Build/native/install adapters
+are prepared in td154-install89-20261016, NOT executed. Need matching new-byte
+build, whole default432+optionalnormal80 (raw NBSP positions observed correctly,
+ghost suffix still FAIL), source-main first-attempt CI and reversible install.
+No byte-equivalence shortcut for changed runtime. All execution/native keys
+remote e@192.168.3.94 under existing guard; no RDP/local functional input.
+
+Latest completed default matrix is still release88:349P50F33B/432,
+FF170/27/19,Chrome179/23/14,NOT_TESTED0. Old optionalnormal80=58P18F4B,
+DoubleSpace40=26P14F; optionalprivate/fullscreen NOT_TESTED. Six FF rich failures
+share second-NBSP acknowledgement loss; two FF release-order cases and six
+Chrome observer/probe cases are separate. Never relabel old receipts or rerun
+unchanged bytes until green. Current installed/published88 remains below.
+
+## Previous checkpoint — installed/published1.0.88
 
 Authoritative checkout /home/ubu/projects/lay-space-boundary-shift-20261007,
 branch codex/space-boundary-shift-20261007. Functional source77af7ade, final
