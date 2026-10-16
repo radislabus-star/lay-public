@@ -1,5 +1,11 @@
 # Lay — очередь технического долга, 2026-10-16
 
+Текущая задача: [TD-146 — uaccess вместо input-группы, GitHub #48](146-session-scoped-input-access.md).
+DONE_SOURCE:11/11 access +8/8 public-build и public shell PASS; review7→9/10.
+Два controlled RED обнаруживают нарушенные права/проигнорированный отказ.
+Canonical refresh и отдельный syntax gate PASS; реальные seat ACL NOT_TESTED.
+Runtime1.0.87 сохраняется. Старые подтверждённые install-тикеты #43/#44 закрыты.
+
 Текущий разбор: [TD-145 — GitHub #47 на версии1.0.87](145-verify-issue47-current-version.md).
 Исходные механизмы подтверждены текущим кодом и12/12 core-диагностик;
 review9/10. Остаточный отказ после login: NEEDS_REPORTER_RETEST; тикет открыт.

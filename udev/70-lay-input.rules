@@ -1,0 +1,4 @@
+# Lay: logind grants device access to the active local seat session.
+# Must sort before systemd's 73-seat-late.rules (uaccess builtin).
+SUBSYSTEM=="input", KERNEL=="event*", TAG+="uaccess"
+SUBSYSTEM=="misc", KERNEL=="uinput", TAG+="uaccess"

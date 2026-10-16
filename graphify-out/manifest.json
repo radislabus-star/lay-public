@@ -50,8 +50,8 @@
     "semantic_hash": "5275471b604b12b7e282a3bde6476734"
   },
   "install.sh": {
-    "mtime": 1791386348.0331705,
-    "ast_hash": "28d0f42cd1ccc500ba88915bcb8792e8",
+    "mtime": 1792116986.158901,
+    "ast_hash": "075ebc6b0c5121b1d7acb39c14bd8b58",
     "semantic_hash": ""
   },
   "scripts/bump-lay-version.sh": {
@@ -2485,13 +2485,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792106974.0648174,
-    "ast_hash": "fe138a1a678a9de6d382431cd25578da",
+    "mtime": 1792116986.1599011,
+    "ast_hash": "fb91e41a739564e57d22dd8582ba76aa",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792106974.0658174,
-    "ast_hash": "270a9007fe76c842b1dd40fdeb788568",
+    "mtime": 1792111607.0983353,
+    "ast_hash": "5f1ea450f4191776cbab8876b22c11fb",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -2660,8 +2660,8 @@
     "semantic_hash": ""
   },
   "docs/ime-daemon-route-map-2026-06-20.md": {
-    "mtime": 1792108142.4233162,
-    "ast_hash": "8f0f819dc8d5df82cbb86377e09393f2",
+    "mtime": 1792108229.0823112,
+    "ast_hash": "e148fbf3a3352357cbb097b30e8b6cfe",
     "semantic_hash": ""
   },
   "docs/l1-l4-intelligence-route.md": {
@@ -3120,13 +3120,13 @@
     "semantic_hash": ""
   },
   "scripts/test-public-issues.sh": {
-    "mtime": 1791386348.0491707,
-    "ast_hash": "9048e1bc7e7701c8c7fbf8900502d23a",
+    "mtime": 1792117084.1589963,
+    "ast_hash": "9472176d2b28dab4cebc603df1949450",
     "semantic_hash": ""
   },
   "uninstall.sh": {
-    "mtime": 1791386348.1676173,
-    "ast_hash": "dc4a3b861633a86d0871b6fb75944cf5",
+    "mtime": 1792134329.094364,
+    "ast_hash": "1031fd3749fe7661a644c19203c3ad0d",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/typing_assist_worker.rs": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792098965.086063,
-    "ast_hash": "91673c6a9ff5e514519b6e44b5ad879e",
+    "mtime": 1792108181.7659197,
+    "ast_hash": "ced6df966e8fa634e6178d027aaa66f3",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792107634.4545913,
-    "ast_hash": "359f3125063935d144efe3040417499f",
+    "mtime": 1792112803.8406832,
+    "ast_hash": "e0e2b958278f9ab14bb70899e160a575",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -7085,8 +7085,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-late-device-access.json": {
-    "mtime": 1792108142.424426,
-    "ast_hash": "6a84c5dfd230bd5b338ee5ec4758459e",
+    "mtime": 1792108229.08372,
+    "ast_hash": "c82ba658e38fc35a7564b6e97d704a68",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/startup_runtime/device_access.rs": {
@@ -7110,8 +7110,38 @@
     "semantic_hash": ""
   },
   "tech_debt/144-recover-late-device-access.md": {
-    "mtime": 1792108142.4226708,
-    "ast_hash": "65b1544da606e4b3d0dc5f074fd3fe41",
+    "mtime": 1792111607.0980108,
+    "ast_hash": "4e6f4eb382d3b51daa8ed9697999c02f",
+    "semantic_hash": ""
+  },
+  "scripts/setup-input-access.sh": {
+    "mtime": 1792134329.094364,
+    "ast_hash": "f5bd6476890037ae59c0174767aea048",
+    "semantic_hash": ""
+  },
+  "tests/test_input_access.py": {
+    "mtime": 1792134329.095364,
+    "ast_hash": "9d596c93bad0e088ba2d05e26e811f37",
+    "semantic_hash": ""
+  },
+  "docs/development/public-issues-2026-10-16.md": {
+    "mtime": 1792116869.1966279,
+    "ast_hash": "c4a6350c0382b8ed2babe2c09a9e0a21",
+    "semantic_hash": ""
+  },
+  "tech_debt/145-verify-issue47-current-version.md": {
+    "mtime": 1792112881.2785738,
+    "ast_hash": "81660f3a0b0fc9f6189c8298fa5ca63c",
+    "semantic_hash": ""
+  },
+  "tech_debt/146-session-scoped-input-access.md": {
+    "mtime": 1792134329.095364,
+    "ast_hash": "71b2dbd897d4adc56414fd6ba422cd98",
+    "semantic_hash": ""
+  },
+  "tech_debt/148-recognize-backed-ti-present-forms.md": {
+    "mtime": 1792134449.5847096,
+    "ast_hash": "e8d61eedbce64d2084592803f640fe91",
     "semantic_hash": ""
   }
 }
