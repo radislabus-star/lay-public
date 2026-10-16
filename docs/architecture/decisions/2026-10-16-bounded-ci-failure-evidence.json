@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "decision": "Keep the exact known-failure rejection contract and append a bounded JSON-escaped first unexpected or signature-mismatched raw failure excerpt, anchored at the existing panic pattern when present. Full raw logs remain on disk.",
+  "reason": "GitHub CI38901069439 reports only an unexpected test identity, no raw assertion/artifact. A fresh unchanged isolated baseline passes, so a runtime or fixture change is not justified. TD152 reporting RED16/17 proves the contract exception discards available failure evidence.",
+  "verification": "td152-reporting-red-4a4ljc9c16/17, intended missing assertion excerpt RED. Independent plan review9/10 pass2/2; tests cover failure-class selection, fixed-only rejection, long stdout before panic, bounded/truncated excerpt and absent raw evidence. Remote green/full harness/new CI pending.",
+  "not_tested": "Original overlapping-release CI cause UNKNOWN. No production, fixture readiness, deadline, exemption or delivery-route change. Native acceptance belongs to TD151 release bytes.",
+  "invariants": [
+    "C01",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/test_lanes/contracts.py",
+    "tests/test_test_lanes.py"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}
