@@ -14,7 +14,6 @@ No force push to the divergent private `origin/main`.
 | [#59](https://github.com/radislabus-star/lay-public/issues/59) | CLOSED, source05e1e448 pushed; [reply](https://github.com/radislabus-star/lay-public/issues/59#issuecomment-6211314244) | [TD-148](../../tech_debt/148-recognize-backed-ti-present-forms.md), same-stem backed verb forms |
 | [#46](https://github.com/radislabus-star/lay-public/issues/46) | CLOSED_FEATURE_IMPLEMENTED_1.0.88; [reply](https://github.com/radislabus-star/lay-public/issues/46#issuecomment-6218295099); known native limits | [TD-147](../../tech_debt/147-explicit-undo-and-double-space.md); preserve existing restoration learning and single-owner routes. Installed1.0.88; whole optional80=58/18/4, normal-only; complex-field limits remain. |
 | [#47](https://github.com/radislabus-star/lay-public/issues/47) | OPEN_NEEDS_REPORTER_RETEST; [1.0.88 follow-up](https://github.com/radislabus-star/lay-public/issues/47#issuecomment-6218296876) | [TD-145](../../tech_debt/145-verify-issue47-current-version.md); source and isolated core verified, latest reporter version1.0.74; current source/runtime1.0.88 available, new reporter result missing. |
-
 | [#60](https://github.com/radislabus-star/lay-public/issues/60) | CLOSED; source release1.0.88 published, README/VERSIONING aligned | [Release follow-up](https://github.com/radislabus-star/lay-public/issues/60#issuecomment-6218298017); no binary archives claimed. |
 
 Live queue and readback receipts:
