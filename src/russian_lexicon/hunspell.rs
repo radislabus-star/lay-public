@@ -19,20 +19,83 @@ pub(super) fn load_hunspell_words_min_len(
     Ok(words)
 }
 
-pub(super) struct HunspellAdjectiveClasses {
+pub(super) type AffixWitnesses = HashMap<String, HashSet<String>>;
+
+pub(super) struct HunspellInflectionMetadata {
     pub(super) regular_iy: HashSet<String>,
     pub(super) possessive_iy: HashSet<String>,
     pub(super) comparative_ee: HashSet<String>,
+    pub(super) attested_forms: AffixWitnesses,
 }
 
-pub(super) fn load_hunspell_adjective_classes(
+pub(super) fn load_hunspell_inflection_metadata(
     path: &str,
-) -> std::io::Result<HunspellAdjectiveClasses> {
+    aff_path: &str,
+    relations: &[(&str, &str)],
+    max_pairs: usize,
+) -> std::io::Result<HunspellInflectionMetadata> {
     let text = std::fs::read_to_string(path)?;
-    Ok(hunspell_adjective_classes(&text))
+    let mut metadata = hunspell_adjective_classes(&text);
+    if let Ok(aff) = std::fs::read_to_string(aff_path) {
+        if affix_supports_attestation(&aff) {
+            metadata.attested_forms = attested_suffix_witnesses(
+                &text,
+                &parse_simple_hunspell_suffix_rules(&aff),
+                relations,
+                max_pairs,
+            )
+            .unwrap_or_default();
+        }
+    }
+    Ok(metadata)
 }
 
-fn hunspell_adjective_classes(text: &str) -> HunspellAdjectiveClasses {
+// Validate only the new authority. The legacy reference generator deliberately
+// retains its existing permissive parser and behavior.
+fn affix_supports_attestation(text: &str) -> bool {
+    let mut groups = HashSet::new();
+    let mut group_flag = "";
+    let mut remaining = 0usize;
+    for line in text.lines() {
+        let fields: Vec<_> = line.split_whitespace().collect();
+        let Some(&directive) = fields.first() else {
+            continue;
+        };
+        if directive.starts_with('#') {
+            continue;
+        }
+        match directive {
+            "AF" | "FULLSTRIP" | "NEEDAFFIX" | "PSEUDOROOT" | "CIRCUMFIX" | "FORBIDDENWORD"
+            | "ONLYINCOMPOUND" => return false,
+            "FLAG" | "SET" if fields.as_slice() != [directive, "UTF-8"] => return false,
+            "SFX" if remaining > 0 => {
+                if fields.len() < 5 || fields[1] != group_flag {
+                    return false;
+                }
+                remaining -= 1;
+            }
+            "SFX" => {
+                if fields.len() != 4
+                    || fields[1].chars().count() != 1
+                    || !matches!(fields[2], "Y" | "N")
+                    || !groups.insert(fields[1])
+                {
+                    return false;
+                }
+                let Ok(count) = fields[3].parse() else {
+                    return false;
+                };
+                group_flag = fields[1];
+                remaining = count;
+            }
+            _ if remaining > 0 => return false,
+            _ => {}
+        }
+    }
+    remaining == 0
+}
+
+fn hunspell_adjective_classes(text: &str) -> HunspellInflectionMetadata {
     let mut regular_iy = HashSet::new();
     let mut possessive_iy = HashSet::new();
     let mut comparative_ee = HashSet::new();
@@ -54,10 +117,11 @@ fn hunspell_adjective_classes(text: &str) -> HunspellAdjectiveClasses {
         }
     }
 
-    HunspellAdjectiveClasses {
+    HunspellInflectionMetadata {
         regular_iy,
         possessive_iy,
         comparative_ee,
+        attested_forms: HashMap::new(),
     }
 }
 
@@ -65,6 +129,7 @@ struct HunspellSuffixRule {
     strip: String,
     add: String,
     condition: Vec<HunspellConditionToken>,
+    can_attest: bool,
 }
 
 #[derive(Clone)]
@@ -95,20 +160,8 @@ pub(super) fn load_hunspell_generated_forms_min_len(
                 continue;
             };
             for rule in flag_rules {
-                if !hunspell_condition_matches(&word, &rule.condition) {
+                let Some(candidate) = apply_hunspell_suffix_rule(&word, rule) else {
                     continue;
-                }
-                let stem = if rule.strip == "0" {
-                    word.as_str()
-                } else if let Some(stem) = word.strip_suffix(&rule.strip) {
-                    stem
-                } else {
-                    continue;
-                };
-                let candidate = if rule.add == "0" {
-                    stem.to_string()
-                } else {
-                    format!("{stem}{}", rule.add)
                 };
                 if candidate.chars().count() >= min_chars && is_cyrillic_word(&candidate) {
                     forms.insert(candidate);
@@ -140,6 +193,10 @@ fn load_simple_hunspell_suffix_rules(
     path: &str,
 ) -> std::io::Result<HashMap<char, Vec<HunspellSuffixRule>>> {
     let text = std::fs::read_to_string(path)?;
+    Ok(parse_simple_hunspell_suffix_rules(&text))
+}
+
+fn parse_simple_hunspell_suffix_rules(text: &str) -> HashMap<char, Vec<HunspellSuffixRule>> {
     let mut rules: HashMap<char, Vec<HunspellSuffixRule>> = HashMap::new();
 
     for line in text.lines() {
@@ -157,10 +214,72 @@ fn load_simple_hunspell_suffix_rules(
             strip: parts[2].to_string(),
             add: parts[3].split('/').next().unwrap_or(parts[3]).to_string(),
             condition,
+            can_attest: parts[1].chars().count() == 1 && !parts[3].contains('/'),
         });
     }
 
-    Ok(rules)
+    rules
+}
+
+fn apply_hunspell_suffix_rule(word: &str, rule: &HunspellSuffixRule) -> Option<String> {
+    if !hunspell_condition_matches(word, &rule.condition) {
+        return None;
+    }
+    let stem = if rule.strip == "0" {
+        word
+    } else {
+        word.strip_suffix(&rule.strip)?
+    };
+    Some(if rule.add == "0" {
+        stem.to_string()
+    } else {
+        format!("{stem}{}", rule.add)
+    })
+}
+
+fn attested_suffix_witnesses(
+    dictionary: &str,
+    rules: &HashMap<char, Vec<HunspellSuffixRule>>,
+    relations: &[(&str, &str)],
+    max_pairs: usize,
+) -> Option<AffixWitnesses> {
+    let mut witnesses = AffixWitnesses::new();
+    let mut pairs = 0usize;
+    for (lemma, flags) in hunspell_dic_entries(dictionary) {
+        let Some(flags) = flags else {
+            continue;
+        };
+        let lemma = lemma.to_lowercase();
+        for &(ending, lemma_ending) in relations {
+            let Some(stem) = lemma.strip_suffix(lemma_ending) else {
+                continue;
+            };
+            let surface = format!("{stem}{ending}");
+            if !is_cyrillic_word(&surface) {
+                continue;
+            }
+            let licensed = flags
+                .chars()
+                .filter_map(|flag| rules.get(&flag))
+                .flatten()
+                .any(|rule| {
+                    rule.can_attest
+                        && (rule.strip == "0"
+                            || lemma
+                                .strip_suffix(&rule.strip)
+                                .is_some_and(|stem| !stem.is_empty()))
+                        && apply_hunspell_suffix_rule(&lemma, rule).as_deref()
+                            == Some(surface.as_str())
+                });
+            if licensed && witnesses.entry(lemma.clone()).or_default().insert(surface) {
+                pairs += 1;
+                if pairs > max_pairs {
+                    return None;
+                }
+            }
+        }
+    }
+    Some(witnesses)
 }
 
 fn parse_hunspell_suffix_condition(condition: &str) -> Option<Vec<HunspellConditionToken>> {
@@ -241,7 +360,8 @@ pub(super) fn load_word_list(path: &Path) -> std::io::Result<HashSet<String>> {
 #[cfg(test)]
 mod tests {
     use super::{
-        hunspell_adjective_classes, hunspell_dic_entries, load_hunspell_adjective_classes,
+        attested_suffix_witnesses, hunspell_adjective_classes, hunspell_dic_entries,
+        load_hunspell_inflection_metadata, parse_simple_hunspell_suffix_rules,
     };
     use std::collections::HashSet;
 
@@ -271,9 +391,171 @@ mod tests {
             classes.comparative_ee,
             HashSet::from(["точный".to_string()])
         );
-        assert!(load_hunspell_adjective_classes(
-            "/definitely/missing/lay-hunspell-adjective-classes.dic"
+        assert!(load_hunspell_inflection_metadata(
+            "/definitely/missing/lay-hunspell-adjective-classes.dic",
+            "/missing.aff",
+            &[],
+            4096
         )
         .is_err());
+    }
+
+    #[test]
+    fn affix_witness_requires_exact_lemma_flag_condition_strip_and_surface() {
+        let dictionary =
+            "8\nнести/M\nнайти/M\nгрести/Y\nпочти\nвезти/M\nползти/L\nслово/M\nнести/M\n";
+        let rules = parse_simple_hunspell_suffix_rules(
+            "SFX M Y 3\nSFX M ти у [сз]ти\nSFX M ти ду йти\nSFX M x у .\nSFX Y сти бу сти\nSFX L ти ут [сз]ти\n",
+        );
+        let witnesses =
+            attested_suffix_witnesses(dictionary, &rules, &[("у", "ти")], 4096).unwrap();
+        assert_eq!(witnesses.len(), 2);
+        assert_eq!(witnesses["нести"], HashSet::from(["несу".to_string()]));
+        assert_eq!(witnesses["везти"], HashSet::from(["везу".to_string()]));
+        for rejected in ["найти", "грести", "почти", "ползти", "слово"] {
+            assert!(
+                !witnesses.contains_key(rejected),
+                "unexpected witness for {rejected}"
+            );
+        }
+        for unsupported in ["SFX MM ти у [сз]ти\n", "SFX M ти у/X [сз]ти\n"] {
+            let rules = parse_simple_hunspell_suffix_rules(unsupported);
+            assert!(
+                attested_suffix_witnesses(dictionary, &rules, &[("у", "ти")], 4096)
+                    .unwrap()
+                    .is_empty()
+            );
+        }
+    }
+
+    #[test]
+    fn affix_witness_budget_is_unique_streamed_and_order_independent() {
+        let rules = parse_simple_hunspell_suffix_rules("SFX M ти у .\n");
+        let entries: Vec<_> = (0..4097)
+            .map(|mut number| {
+                let mut stem = "слов".to_string();
+                for _ in 0..3 {
+                    stem.push(char::from_u32('а' as u32 + number % 32).unwrap());
+                    number /= 32;
+                }
+                format!("{stem}ти/M")
+            })
+            .collect();
+        let dictionary = |rows: Vec<&str>| format!("{}\n{}\n", rows.len(), rows.join("\n"));
+        let mut at_limit: Vec<_> = entries[..4096].iter().map(String::as_str).collect();
+        at_limit.extend(entries[..20].iter().map(String::as_str));
+        let witnesses =
+            attested_suffix_witnesses(&dictionary(at_limit), &rules, &[("у", "ти")], 4096).unwrap();
+        assert_eq!(witnesses.values().map(HashSet::len).sum::<usize>(), 4096);
+        for reversed in [false, true] {
+            let mut rows: Vec<_> = entries.iter().map(String::as_str).collect();
+            if reversed {
+                rows.reverse();
+            }
+            assert!(
+                attested_suffix_witnesses(&dictionary(rows), &rules, &[("у", "ти")], 4096)
+                    .is_none()
+            );
+        }
+    }
+
+    #[test]
+    fn malformed_suffix_groups_and_aliases_cannot_attest_grammar() {
+        let root = std::env::temp_dir().join(format!("lay-affix-structure-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let dictionary = root.join("ru.dic");
+        let affix = root.join("ru.aff");
+        std::fs::write(&dictionary, "3\nсиний/A\nнести/M\nнести/1\n").unwrap();
+        for text in [
+            "SET UTF-8\nAF 1\nAF X\nSFX 1 Y 1\nSFX 1 ти у [сз]ти\n",
+            "SET UTF-8\nSFX M ти у [сз]ти\n",
+            "SET UTF-8\nSFX M Y 0\nSFX M ти у [сз]ти\n",
+            "SET UTF-8\nSFX M Y 2\nSFX M ти у [сз]ти\n",
+            "SET UTF-8\nSFX M X 1\nSFX M ти у [сз]ти\n",
+            "SET UTF-8\nSFX M Y 1\nSFX X ти у [сз]ти\n",
+            "SET UTF-8\nSFX M Y 1\nSFX M ти у [сз]ти\nSFX M Y 1\nSFX M ти у [сз]ти\n",
+        ] {
+            std::fs::write(&affix, text).unwrap();
+            let metadata = load_hunspell_inflection_metadata(
+                dictionary.to_str().unwrap(),
+                affix.to_str().unwrap(),
+                &[("у", "ти")],
+                4096,
+            )
+            .unwrap();
+            assert!(
+                metadata.attested_forms.is_empty(),
+                "invalid affix authority: {text}"
+            );
+            assert!(metadata.regular_iy.contains("синий"));
+        }
+        std::fs::write(&affix, "SET UTF-8\nSFX M Y 1\nSFX M ти у [сз]ти\n").unwrap();
+        let metadata = load_hunspell_inflection_metadata(
+            dictionary.to_str().unwrap(),
+            affix.to_str().unwrap(),
+            &[("у", "ти")],
+            4096,
+        )
+        .unwrap();
+        assert!(metadata.attested_forms["нести"].contains("несу"));
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn whole_lemma_strip_is_not_an_attestation_witness() {
+        let root = std::env::temp_dir().join(format!("lay-affix-fullstrip-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let dictionary = root.join("ru.dic");
+        let affix = root.join("ru.aff");
+        std::fs::write(&dictionary, "2\nсиний/A\nнести/M\n").unwrap();
+        for prefix in ["", "FULLSTRIP\n"] {
+            std::fs::write(
+                &affix,
+                format!("SET UTF-8\n{prefix}SFX M Y 1\nSFX M нести несу .\n"),
+            )
+            .unwrap();
+            let metadata = load_hunspell_inflection_metadata(
+                dictionary.to_str().unwrap(),
+                affix.to_str().unwrap(),
+                &[("у", "ти")],
+                4096,
+            )
+            .unwrap();
+            assert!(
+                metadata.attested_forms.is_empty(),
+                "whole-lemma strip: {prefix}"
+            );
+            assert!(metadata.regular_iy.contains("синий"));
+        }
+        std::fs::remove_dir_all(root).unwrap();
+    }
+
+    #[test]
+    fn missing_or_unsupported_affix_evidence_preserves_adjective_classes() {
+        let root = std::env::temp_dir().join(format!("lay-inflection-{}", std::process::id()));
+        std::fs::create_dir_all(&root).unwrap();
+        let dictionary = root.join("ru.dic");
+        let affix = root.join("ru.aff");
+        std::fs::write(&dictionary, "2\nсиний/A\nнести/M\n").unwrap();
+        for contents in [
+            None,
+            Some("FLAG long\nSFX M ти у .\n"),
+            Some("SFX M ти у [invalid\n"),
+            Some("NEEDAFFIX X\nSFX M ти у .\n"),
+        ] {
+            if let Some(text) = contents {
+                std::fs::write(&affix, text).unwrap();
+            }
+            let metadata = load_hunspell_inflection_metadata(
+                dictionary.to_str().unwrap(),
+                affix.to_str().unwrap(),
+                &[("у", "ти")],
+                4096,
+            )
+            .unwrap();
+            assert_eq!(metadata.regular_iy, HashSet::from(["синий".to_string()]));
+            assert!(metadata.attested_forms.is_empty());
+        }
+        std::fs::remove_dir_all(root).unwrap();
     }
 }

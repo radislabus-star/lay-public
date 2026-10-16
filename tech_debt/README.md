@@ -1,6 +1,16 @@
 # Lay — очередь технического долга, 2026-10-16
 
-Текущая задача: [TD-146 — uaccess вместо input-группы, GitHub #48](146-session-scoped-input-access.md).
+Текущая задача: [TD-148 — подтверждённые формы глаголов, GitHub #59](148-recognize-backed-ti-present-forms.md).
+DONE_SOURCE3191/3191 после ремонта ревью,12/12 focused, review7→9/10.
+Отдельные5/5 с Hunspell пользователя относятся к варианту до финального ремонта.
+Исходный BLOCKED_CONTRACT сохранён; отдельная финализация сверяет368 logs и957 hashes,
+исправляет только привязку нулевого реестра исключений. Новая версия ещё не установлена.
+
+Следующая задача: [TD-147 — Backspace undo и двойной пробел, GitHub #46](147-explicit-undo-and-double-space.md).
+План8/10 принят, production edits ещё нет. Две opt-in функции в существующих owners;
+обычный Double Shift и маршруты доставки сохраняются.
+
+Завершена: [TD-146 — uaccess вместо input-группы, GitHub #48](146-session-scoped-input-access.md).
 DONE_SOURCE:11/11 access +8/8 public-build и public shell PASS; review7→9/10.
 Два controlled RED обнаруживают нарушенные права/проигнорированный отказ.
 Canonical refresh и отдельный syntax gate PASS; реальные seat ACL NOT_TESTED.

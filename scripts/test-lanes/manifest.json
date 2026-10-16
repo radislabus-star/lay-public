@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3115,
+    "correctness": 3155,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 343,
-    "target": 2834
+    "process": 347,
+    "target": 2870
   },
   "package_fixtures": [
     {
@@ -2191,6 +2191,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::terminal_delivery::native_restoration_uses_admitted_callbacks_for_first_and_second_words",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::terminal_delivery::ordinary_unknown_start_input_reaches_the_precognition_schedule_probe",
       "target": "bin:lay-ibus-engine"
     },
@@ -2478,6 +2485,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "correction_core::tests::attested_clean_verb_forms_are_preserved_in_first_and_later_positions",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "daemon_space_and_enter_decoders_share_input_gate_replacement_contract",
       "target": "test:input_gate_space_contract"
     },
@@ -2542,6 +2556,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "ru_typo::repeated::tests::repeated_letter_without_a_repeated_run_keeps_reference_cold",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::tests::attested_verb_forms_use_current_ime_lemma_authority_without_full_generated_forms",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::tests::inflection_metadata_initialization_is_shared_and_reports_its_bounded_cost",
       "target": "lib:lay"
     },
     {
@@ -2773,6 +2801,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "atomic::proof::v27_cross_engine_shift_gesture_restores_exact_source",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "atomic::tests::atomic_native_backspaces_retain_observed_autocorrection_learning",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -4755,6 +4790,20 @@
       "lane": "correctness",
       "name": "current_word_scope_cannot_apply_last_pair_from_read_only_context",
       "target": "test:space_boundary_shift_mechanism"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "daemon_runtime::focus::device_recovery_tests::late_permissions_epoch_cancels_both_force_layout_keys_before_release",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "daemon_runtime::focus::device_recovery_tests::late_permissions_epoch_cancels_idle_word_and_gesture_intent_without_losing_held_keys",
+      "target": "bin:lay-daemon"
     },
     {
       "isolation": "target",
@@ -14819,7 +14868,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::exact_restorations_need_three_distinct_episodes_in_hot_and_cold_memory",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::usage_prior::tests::exact_state_transition_overrides_global_target_frequency",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::exact_user_restoration_receipt_protects_only_the_changed_word",
       "target": "lib:lay"
     },
     {
@@ -14897,6 +14960,27 @@
       "kind": "test",
       "lane": "correctness",
       "name": "nanda_wave::usage_prior::tests::malformed_typed_v3_identity_fails_closed",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::restoration_preferences_serialize_concurrent_processes",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::restoration_preferences_survive_journal_rotation_and_reload",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::usage_prior::tests::restoration_votes_exclude_unconfirmed_nonexact_and_unbound_feedback",
       "target": "lib:lay"
     },
     {
@@ -16261,7 +16345,35 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "russian_lexicon::forms::backed::attested_verb_relation_tests::cached_grammar_never_replaces_live_lemma_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::forms::backed::attested_verb_relation_tests::recognizes_licensed_same_stem_forms_from_live_backed_lemmas",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::forms::backed::attested_verb_relation_tests::rejects_backed_but_unlicensed_inflections_and_nonverbs",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "russian_lexicon::forms::tests::center_lemmas_produce_regular_noun_and_adjective_forms",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::forms::verb_relation_parser_tests::evidence_markers_fail_closed_including_empty_columns",
       "target": "lib:lay"
     },
     {
@@ -16275,7 +16387,42 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "russian_lexicon::hunspell::tests::affix_witness_budget_is_unique_streamed_and_order_independent",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::hunspell::tests::affix_witness_requires_exact_lemma_flag_condition_strip_and_surface",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "russian_lexicon::hunspell::tests::hunspell_entries_skip_count_header_and_extract_optional_flags",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::hunspell::tests::malformed_suffix_groups_and_aliases_cannot_attest_grammar",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::hunspell::tests::missing_or_unsupported_affix_evidence_preserves_adjective_classes",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "russian_lexicon::hunspell::tests::whole_lemma_strip_is_not_an_attestation_witness",
       "target": "lib:lay"
     },
     {
@@ -16730,6 +16877,69 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_detect_only_shutdown_and_busy_skip_device_creation",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_discovery_recovers_keyboard_and_keeps_pointers_independent",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_failure_and_shutdown_during_creation_do_not_publish_output",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_listener_recovers_after_real_access_denial",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_poison_recovery_preserves_existing_device",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_recover_output_once_without_replacing_ready_handle",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_registry_reaps_finished_listener_and_distinguishes_device_kinds",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::device_access::tests::late_permissions_shutdown_during_discovery_prevents_listener_spawn",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "startup_runtime::tests::late_permissions_listener_lifetime_advances_existing_epoch",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "startup_runtime::tests::warmup_plan_can_warm_full_typing_heap_for_uinput_daemon",
       "target": "bin:lay-daemon"
     },
@@ -17116,6 +17326,69 @@
       "kind": "test",
       "lane": "correctness",
       "name": "tail_memory::tests::layout_sync_waits_for_the_committed_text_postcondition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::manual_restoration_never_learns_changed_context_expired_owner_or_private_text",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::manual_restoration_suppresses_next_correction_and_records_one_deferred_vote",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::manual_restoration_survives_boundary_until_exact_client_confirmation",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::manual_restoration_waits_for_real_target_without_active_preedit_or_selection",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::native_restoration_does_not_learn_from_generic_tail_retyping",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::native_restoration_rejects_interrupted_or_mirror_only_edits",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::native_restoration_requires_actual_successful_legacy_correction_emission",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::native_terminal_restoration_retains_user_intent_without_a_client_snapshot",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "tail_memory::tests::observed_autocorrection_keeps_a_manual_restoration_trajectory",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -20945,6 +21218,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "typing_transition::decision::tests::exact_state_proof_allows_single_learned_drift",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_transition::decision::tests::explicit_user_word_preference_revokes_automatic_selection_and_keeps_identical_output",
       "target": "lib:lay"
     },
     {
