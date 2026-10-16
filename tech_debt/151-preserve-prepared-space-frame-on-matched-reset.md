@@ -174,3 +174,31 @@ All15 private helper hashes match ADAPTATION; new IDs/tags/output paths retain
 original actors/bodies/guards/denominators. Root alone implemented. Final canon
 PASS is independently verified above; reviewer does not replace its receipt.
 New native and GitHub CI remain gates. Source task complete, installed87 intact.
+
+
+Published/read back source e34a47ac8436918e9a243158b56b55d1f7eb82ca on origin
+work branch and public work/main refs. TD152 reporting commit67debce1 is separate;
+private origin/main untouched/no force. Matching build frozen119269e9713aec4e4e84b5326cc8d706aa90d2937f3e53974576db25a94261d7,
+/home/ubu/.cache/lay/development/td151-install88-20261016; build/native/CI pending.
+
+
+Matching build complete83.38s: archive119269e9713aec4e4e84b5326cc8d706aa90d2937f3e53974576db25a94261d7,
+CLIac7f3fbc..., daemon625feb96... unchanged from earlier88, new IME
+8cb7bca42505a4a7c0aa3a94d8caaac92b887ea6c24dd7e4fe8ee94b7a74b132,
+993functionalinputs/SHA match, lock/auditDB same and0advisories. No local install.
+New remote Firefox REPAIR2 full216 is running (jobs1051..1059), Chrome next.
+Private prelaunch readonly check caught alphabetic-only existing zero-tag/seat
+label constraints: corrected only unique labels to LAYREPAIRB/LAYREPAIRBOPT and
+repairbverify/repairboptions BEFORE staging/input. Existing guards/actors/routes
+unchanged, all15 updated helper hashes/syntax/argument constraints remotePASS0keys,
+PARAMETER-PREFLIGHT.json. The earlier adapter review remains about its ancestor;
+this constant-only startup correction is recorded explicitly, no third review.
+CI38908900651/Security38908900839 pending first attempts, both sourcee34a47ac.
+
+
+New e34 paired native COMPLETE349P50F33B/432, NOT_TESTED0: FF170/27/19,
+Chrome179/23/14, zero lostPASS vsREADV in either browser. Actual normal Space7
+now PASS including target/next decoder/return,20.146ms. Both scopes empty,
+all pinned processes gone, no held keys, VT1. The remaining CI fixture blocker
+is separately owned by TD153; this runtime repair is source/native complete.
+Whole receipts: /home/ubu/.cache/lay/development/td151-install88-20261016/native/.

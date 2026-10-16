@@ -2485,13 +2485,13 @@
     "semantic_hash": ""
   },
   "README.md": {
-    "mtime": 1792116986.1599011,
-    "ast_hash": "fb91e41a739564e57d22dd8582ba76aa",
+    "mtime": 1792157885.3501291,
+    "ast_hash": "8212ae49a7972b14d87715df08143007",
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792156840.2563748,
-    "ast_hash": "48de598a51b4595e92773be95b588bb5",
+    "mtime": 1792160528.068335,
+    "ast_hash": "44c90e90b08b33d9c64f8836a1bc4ba2",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3070,8 +3070,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
-    "mtime": 1791386348.070171,
-    "ast_hash": "86b7b4dc42ae723ad36ec1473f9d64a4",
+    "mtime": 1792159766.4177923,
+    "ast_hash": "e3d33df87ec8869e4e3c1f10deae885c",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/surface.rs": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792157312.190185,
-    "ast_hash": "6fb3d1bbdb42a9387886b71e5220e030",
+    "mtime": 1792160755.5816395,
+    "ast_hash": "7a42ca94adca9448abe4227c65248bed",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792156729.7533596,
-    "ast_hash": "d48c6e9829ba40b06ba206eeaf9de4b4",
+    "mtime": 1792160866.055786,
+    "ast_hash": "ebcc7a2983e81b7accdf1c959dd3f561",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1792142757.0971525,
-    "ast_hash": "f63f9c329f09a916fc8a870e91a95fb6",
+    "mtime": 1792159798.4664447,
+    "ast_hash": "d1e0cf2aa0a93a7f89d5da9b1ae95669",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
@@ -5650,8 +5650,8 @@
     "semantic_hash": ""
   },
   "CONTINUE.md": {
-    "mtime": 1792157134.24499,
-    "ast_hash": "6b844016f2ae94952179940f39c7f202",
+    "mtime": 1792160866.0548146,
+    "ast_hash": "7a14c143a920dfffb3e71356ef059e29",
     "semantic_hash": ""
   },
   "docs/README.md": {
@@ -7040,8 +7040,8 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1792157313.1611938,
-    "ast_hash": "24bafdc73714bf2a22709da92f274cb2",
+    "mtime": 1792160866.0553684,
+    "ast_hash": "7d563722a52b35ca472d4e18b8d5111e",
     "semantic_hash": ""
   },
   "docs/development/wj-native-apps-2026-10-14.md": {
@@ -7125,8 +7125,8 @@
     "semantic_hash": ""
   },
   "docs/development/public-issues-2026-10-16.md": {
-    "mtime": 1792157134.245308,
-    "ast_hash": "ef221ef90722c4177937c8660289af30",
+    "mtime": 1792160866.0555117,
+    "ast_hash": "94471d70dabb36a8862d5900b41b6b9e",
     "semantic_hash": ""
   },
   "tech_debt/145-verify-issue47-current-version.md": {
@@ -7155,8 +7155,8 @@
     "semantic_hash": ""
   },
   "docs/release-1.0.88.md": {
-    "mtime": 1792156840.2563748,
-    "ast_hash": "7fcf881cc489e17f3203f29794de1621",
+    "mtime": 1792160608.01802,
+    "ast_hash": "8fa9d742a2b1994a6e81523d77c90873",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-atomic-manual-tail-frame-owner.json": {
@@ -7205,13 +7205,23 @@
     "semantic_hash": ""
   },
   "tech_debt/151-preserve-prepared-space-frame-on-matched-reset.md": {
-    "mtime": 1792157313.1607602,
-    "ast_hash": "2f1df2607e8cdf2615e2a9a80a5de236",
+    "mtime": 1792160406.3364995,
+    "ast_hash": "39ce32568ffcea6682364e496767f589",
     "semantic_hash": ""
   },
   "tech_debt/152-control-overlapping-release-test-readiness.md": {
-    "mtime": 1792157313.1608698,
-    "ast_hash": "603502bda3de24d1c6a37a1b4f5b820a",
+    "mtime": 1792157561.5333304,
+    "ast_hash": "4670f649f1aca0998f8abc3530f1365c",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-16-overlapping-release-ready-material-prerequisite.json": {
+    "mtime": 1792160866.054474,
+    "ast_hash": "a885b572261eb41fd1cf25775eb3f50e",
+    "semantic_hash": ""
+  },
+  "tech_debt/153-establish-overlapping-release-material-readiness.md": {
+    "mtime": 1792160866.0543036,
+    "ast_hash": "6e37e938b444ba2db0cc7c5b33ff3309",
     "semantic_hash": ""
   }
 }

@@ -23,7 +23,8 @@ Current source version:
 Backspace undo and Double Space (TD-147), session-scoped installer input access
 (TD-146), rustls0.23.46 (TD-149), completed native replay proof across Reset
 (TD-150), prepared Space proof retention (TD-151), and bounded CI failure
-evidence (TD-152). The final matched source/native/install receipts are linked
+evidence (TD-152) and an explicit test-only readout readiness prerequisite
+(TD-153). The final matched source/native/install receipts are linked
 from [the public issue register](docs/development/public-issues-2026-10-16.md).
 Installed runtime remains1.0.87 until that separate transaction is verified.
 

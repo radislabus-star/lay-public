@@ -1022,3 +1022,44 @@ both9/10 pass2/2/noP1-P2; newcontext-free thread unavailable(platformlimit),
 reused unrelated reviewthreads explicitly. Rootallimplementation. Source tasks
 complete; genuine newCI/matchingbuild/native432+options80/install remainpending.
 All oldrejectedreceiptsretained; no route/model/deadline/learning change.
+
+
+TD151 new-byteFirefox216 complete170P27F19B/zero lostPASS, Space7 nowPASS;
+standard60/panel6,420/420DS median98.548/p95111.391ms. ChromeREPAIR2running,
+source e34/build119269.../IME8cb7bca..., installed87. Source3211 unchanged.
+FreshCI38908900651failed exact oldoverlapfixtureNone!=Some(ерка) atlastrelease,
+no timeout; newboundedreportingexposedactualpanic. Security38908900839PASS.
+[TD153](../../tech_debt/153-establish-overlapping-release-material-readiness.md)
+now owns controlled readiness proof/test-only repair; no runtime edit or CI retry.
+If finaltest-onlybuild allsix installedpayloadsarebyteidentical, explicitlybind
+wholeoldnativeevidence ratherthan repeatinput; otherwise changed-bytegate required.
+
+
+TD151 paired e34 native complete349P50F33B/432, NOT_TESTED0; FF170/27/19,
+Chrome179/23/14, zero lostPASS in each vsREADV. Both scopes empty/five pinned
+processes gone/no heldkeys/VT1. Chrome406/420standard DS med82.533/p95100.712ms,
+14missing retained. TD153 plan review1/2=9/10; narrow cfg(test) exact-input/cache
+accessor allowed, actual frame/display prerequisite + MISS/materialize/HIT proof
+required before fixture repair; original CI missing-cache cause not yet proven.
+
+
+TD153 controlled diagnosis td153-readiness-diagnosis-hvepdrsr PASS25.411s:
+unchanged baseline PASS; exact authority/display-ready + usage-refresh cacheMISS
+reproduces same None/Some(ерка) RED; actual materialize/cache-onlyHIT makesboth
+releaseorders PASS, originalsourceSHAs restored. OriginalCIcachecause unproved.
+Minimal cfg(test) prerequisite now owns readiness atlastrelease, no runtime edit;
+plan review2/2=9/10, current focused/full/CI/equivalence pending.
+
+
+TD153 focused11/11PASS21.95s; code review1/2=9/10/noP1-P2. Full private-helper
+preflight falsely marked unchanged manifest as changed, canon rejected correctly
+before full tests; actual3237 IDs/SHA unchanged. Corrected helper does not weaken
+canon and resumes remaining gates from byte-identical fe493... frozen source,
+reusing only independently recorded successful MSRV/lint/discovery checks.
+
+
+TD153 final full completion PASS3211/3211/0fail/exempt,564.631s, all3237IDs
+unchanged,994proofinputs verified. Exact snapshotfe493... priorMSRV/lints reused;
+canon/architecture/audit50/Node/harness/panel PASS. Private6payload whole432
+equivalence +mandatoryoptional80/CI-firstattempt-main qualification now explicit;
+actualnewbuild/equality/options/CI/install still pending, installed87 unchanged.

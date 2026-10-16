@@ -2455,20 +2455,7 @@ fn td121_deferred_completion_is_inert_with_legacy_test_output() {
 
 #[test]
 fn td121_overlapping_handled_releases_publish_only_the_latest_completion() {
-    use lay::typing_cpu::{LiveCompletionRequest, TypingCpu};
     let _memory = td121_prime_completion_material();
-    let proposals = TypingCpu::live_completion_candidates(LiveCompletionRequest {
-        context_prefix: "",
-        partial: "пров",
-        max_suffix_chars: 16,
-        active_composition: true,
-        allow_short_lexical: true,
-        limit: 12,
-    });
-    assert_eq!(
-        proposals.first().map(|p| p.surface.as_str()),
-        Some("проверка")
-    );
     zbus::block_on(bounded(async {
         for releases in [[36, 32], [32, 36]] {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
@@ -2485,6 +2472,31 @@ fn td121_overlapping_handled_releases_publish_only_the_latest_completion() {
                 .await
                 .is_empty());
             for (index, code) in releases.into_iter().enumerate() {
+                if index == 1 {
+                    use crate::preedit::preedit_readout_contract::current_pending_readout;
+                    // This is the key-after-ready case. An early generic query
+                    // does not establish readiness of this actual scene/input
+                    // after two adapter choreographies. Keep the cold-worker
+                    // and revoked-frame cases in their separate real tests.
+                    let frame = engine.composition.pending_display_frame.clone();
+                    let (before, _) = current_pending_readout(&engine);
+                    assert_eq!(
+                        lay::nanda_wave::l2_surface_words_by_usage(1),
+                        vec!["проверка".to_owned()]
+                    );
+                    let (input, _) = current_pending_readout(&engine);
+                    assert_eq!(input, before);
+                    assert_eq!(engine.composition.pending_display_frame, frame);
+                    // The real worker may already refill after invalidation;
+                    // the hot-case fixture requires HIT after preparation,
+                    // not a race-dependent MISS before it.
+                    let material =
+                        crate::preedit::materialize_precognition_candidates_observed(&input);
+                    let (same_input, cached) = current_pending_readout(&engine);
+                    assert_eq!(same_input, input);
+                    assert_eq!(cached, Some(material.candidates));
+                    assert_eq!(engine.composition.pending_display_frame, frame);
+                }
                 let ch = if code == 36 { 'о' } else { 'в' };
                 assert!(
                     td121_readout_key(

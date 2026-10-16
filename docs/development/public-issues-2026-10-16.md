@@ -21,26 +21,33 @@ GitHub comments/closure are recorded there and read back after each mutation.
 
 ## Current release gate
 
-Published b4111822 (TD150), source3210/3210, review9/10, built88/audit0.
-Its matched complete432: Firefox169PASS/28FAIL/19BLOCKED, Chrome179/23/14,
-total348/51/33, NOT_TESTED0. Whole new receipts:
-`/home/ubu/.cache/lay/development/td150-install88-20261016/native/`.
-Original fullscreen/space8 repeat now5/5; Firefox standard60/60 and420/420
-median98.694ms/p95112.273ms. Chrome406/420 (14 missing)82.307/p9597.386ms.
-No Chrome lostPASS, one Firefox lostPASS functional/normal/space_en_ru/7.
-Installed87 unchanged; installation BLOCKED_NATIVE_AND_CI.
+Published e34a47ac includes TD150/151 runtime repairs and TD152 reporting.
+Exact complete remote pair: Firefox170PASS/27FAIL/19BLOCKED, Chrome179/23/14,
+total349/50/33, NOT_TESTED0. Zero previous READV PASS lost in either browser.
+Whole receipts: `/home/ubu/.cache/lay/development/td151-install88-20261016/native/`.
+Firefox standard60/60 and420/420 DS median98.548ms/p95111.391ms;
+Chrome standard58PASS/2BLOCKED,406/420 timings (14missing),82.533/p95100.712ms.
+Firefox normal Space7 now PASS, including next-letter mode/return. Both GUI
+scopes empty, all pinned processes gone, no held keys, VT1. Installed87 unchanged.
 
-[TD151](../../tech_debt/151-preserve-prepared-space-frame-on-matched-reset.md)
-proves and minimally repairs prepared Space frame loss before owned Reset
-observation restoration. Causal RED2/3, final focused13/13, controlled old selector
-1/1 detected, independent code review9/10; full3211/3211 and final canonical PASS; final code/evidence review9/10. No route/model/
-deadline change. New build/new complete432/options80 remain pending.
+[TD151](../../tech_debt/151-preserve-prepared-space-frame-on-matched-reset.md):
+causal prepared Space frame-loss RED2/3 -> focused13/13 +controlled1/1, full3211/3211,
+code review9/10, final canon PASS, actual changed-byte Space7 PASS. Delivery routes,
+model, deadline and verifier remain unchanged.
 
-[TD152](../../tech_debt/152-control-overlapping-release-test-readiness.md)
-keeps original CI38901069439 cause UNKNOWN: unchanged isolated overlap baseline
-PASS. Proved reporting evidence loss RED16/17 →17/17 green; bounded panic-anchored
-JSON excerpt, unchanged failure policy and no speculative runtime/fixture change.
-Full3211/3211 and current17/17 encoding assertions/canon PASS, final code review9/10. Final-source GitHub CI remains pending.
+[TD152](../../tech_debt/152-control-overlapping-release-test-readiness.md):
+bounded CI failure evidence, RED16/17 ->17/17/full3211/3211, review9/10. It exposed
+fresh CI38908900651 actual final-release assertion None!=Some(ерка). Security
+38908900839 PASS. Original older b411 CI failure cause remains UNKNOWN.
+
+[TD153](../../tech_debt/153-establish-overlapping-release-material-readiness.md)
+now owns the test-only readiness prerequisite. Controlled exact-frame/cache-MISS
+reproduces the assertion; real materialization/cache-onlyHIT passes both orders.
+Focused11/11, full3211/3211/0failure with unchanged3237IDs and code review9/10.
+Final helper/canonical review pending. No runtime change.
+Final-source first-attempt CI + explicit six-payload byte equality (or changed-byte
+native gate) + optional shortcut cases remain before local install/release.
+No rejected old receipt is relabeled or mixed into this pair.
 
 ## Preserved historical receipts
 

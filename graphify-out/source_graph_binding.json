@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "37d2edeb1be23ca0e227ab609ff0f5880c1090264fa7d2326f8df432ade56c85",
-  "manifest_fingerprint": "6530f59fff72207f56066a1165907257a90b022ffe65eca359405653805c6f24",
+  "graph_fingerprint": "bd521f2afe0058eab0ad797f8d7e7b404c079ea5d607f2ed131388d6b977ae4d",
+  "manifest_fingerprint": "d0da3a91847edc75b80036e4a004e89f7ca302643d7d8a6eec7399d58e370fe0",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -168,7 +168,7 @@
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/late_native_replay_refresh.rs": "5be2af4068d3d06fe816b5d2e523af5c10113d6143ed63e843b0fe3275ddad9e",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_cursor_edit.rs": "a069d91a0d7e675ccd6a6806cd0b24948110e5d92f929242fa00cf5730cce266",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_transfer.rs": "0dbf8f15e0e919ef4e7c377714ecd02c3802818cbd2c10c75620b205fa0332a5",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "877b4fcfeac303f77508ad798a8e4bf2e2b0693d2bb1c163cb430a28284cb17a",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "e6f5b9fe63eb49150565a350d17cb59c8e3fe9e121c700f631055c6665353a18",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": "29c9611bd9ecb7d52743a3621dcb152a91fa9ffd5d85a89fd0f4254e65613ed0",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": "f2ceb70a63670a90168e531116b0b143e4664e32f92ed35352da925b76671871",
     "src/bin/lay_ibus_engine/context_admission/ordered_merge.rs": "07a189ca12f842d8931d2dea0aaa798a038e96214550240b8d432973a14174f9",
@@ -192,7 +192,7 @@
     "src/bin/lay_ibus_engine/precognition_worker.rs": "ba5c4fb858e09ee096be5fb14682365a66aaa046a35bebbd55709d2b688c159b",
     "src/bin/lay_ibus_engine/preedit.rs": "a89d70036778efbfac435bc13dc6911d1454a18b8e4df8e4250490162a32659e",
     "src/bin/lay_ibus_engine/preedit/tests.rs": "7ce56136e73b8f43c838595b8a1a2aff3d3f81f109f0014f3fa1dd46f325129d",
-    "src/bin/lay_ibus_engine/preedit_readout.rs": "5b5a6d45157fdc2d6508c6d3fea1b40a7d91a5e9f05fc7915b211fdec510083b",
+    "src/bin/lay_ibus_engine/preedit_readout.rs": "48b17f27c8c528bc83a201ba123d627bbc23e332c2848c8aabcde4165ba6a3d9",
     "src/bin/lay_ibus_engine/protocol.rs": "86f6644a21b241584caca472af6bf70f535492a38b8b62431504fa5925839fc0",
     "src/bin/lay_ibus_engine/protocol/keys.rs": "d02bf06fd7b2a2038ae8369c3e996b365275b5e1115dba4da4d0ac341b6299f3",
     "src/bin/lay_ibus_engine/protocol/modifiers.rs": "88b7e7b1bb43a18758d7c1043e6c2e03093b480e2fd7a76d33fdb686486206ca",

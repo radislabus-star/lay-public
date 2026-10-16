@@ -3,7 +3,7 @@
 Current authority is [tech_debt/README.md](tech_debt/README.md) and the
 [public issue register](docs/development/public-issues-2026-10-16.md).
 Checkout `/home/ubu/projects/lay-space-boundary-shift-20261007`, branch
-`codex/space-boundary-shift-20261007`, published baseline b4111822.
+`codex/space-boundary-shift-20261007`, current published e34a47ac (TD152 separate67debce1; previous b411 baseline).
 User authorized sequential fixes, tests, pushes, issue replies/closures and final
 local installation. Root implements; agents review. All functional input/builds/
 tests/graph refresh remote only, no RDP or global IBus restart/route/model change.
@@ -15,12 +15,18 @@ CI evidence repair (17/17, original CI failure cause UNKNOWN). Full3211/3211 sou
 `/home/ubu/.cache/lay/development/td151-full-source-gvt96j4h` PASS;
 final canonical td151-final-canonical-1gumzyss PASS/current17Python+15AST helpers,
 final independent source reviews both9/10 (reused threads due platform limit).
-Fresh final-source CI and changed-byte native432/options80 remain gates. Last
-complete matched pair b411: Firefox169/28/19 + Chrome179/23/14 =348/51/33/432,
-0NOT_TESTED. B411 loses one old Firefox Space7PASS; preserve it and the older E6
-failures, no rerun-until-green or best-row splicing. Do not install these rejected
-bytes. New private build/helper staging: td151-install88-20261016 and
-td151-release88-native, REPAIR2 unique jobs. No new88 install or release tag yet.
+New exact-byte pair e34 is complete: Firefox170/27/19 + Chrome179/23/14
+=349PASS/50FAIL/33BLOCKED/432, NOT_TESTED0; zero old PASS lost. TD151 Space7
+PASS. Both owned GUI scopes empty, pinned processes gone, no held keys, VT1.
+Receipts: td151-install88-20261016/native/{firefox,chrome}/RESULT.json.
+CI38908900651 failed old overlap fixture None!=Some(ерка) at final release;
+Security38908900839 PASS. TD153 test-only readiness source complete: focused11/11, full3211/3211
+PASS564.631s,994inputs verified; originalCItransientcause unproved. Plan/code
+review9/10 both passes (reused context due platform limit); final canon
+PASS48.543s,20helperAST/17Python/15canon,993functionalinputs unchanged. No88 install/tag yet.
+Retain all old rejected E6/b411 whole receipts; no splicing/rerun-until-green.
+Final-source CI + optional80 + explicit byte equivalence/native binding remain
+before final install/release. No runtime change for TD153 is authorized by evidence.
 
 ## Historical checkpoint from 2026-10-09
 

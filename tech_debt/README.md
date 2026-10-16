@@ -1,13 +1,16 @@
 # Lay — очередь технического долга, 2026-10-16
 
-Текущие release blockers, P1:
+Текущий release blocker, P1: [TD153 — readiness overlapping-release fixture](153-establish-overlapping-release-material-readiness.md).
+Controlled cache-MISS reproduces None/Some; минимальная cfg(test) готовность, focused11/11, full3211/3211, review9/10; финальный canon PASS, code review2/2=9/10; CI/equivalence/options впереди. Runtime не меняется.
 
-1. [TD-151 — сохранение готовой Space-коррекции при matched Reset](151-preserve-prepared-space-frame-on-matched-reset.md): causal RED; минимальный приоритет pending frame, final focused13/13 + controlled1/1, code review9/10. Full3211/3211, final canon PASS, final code review9/10; новый native gate впереди.
-2. [TD-152 — readiness теста перекрывающихся отпусканий](152-control-overlapping-release-test-readiness.md): исходный CI cause UNKNOWN, повторный baseline PASS; доказана потеря raw assertion в отчёте, reporting RED16/17 → green17/17, без изменения runtime/fixture/deadline. Final code review9/10; новый CI впереди.
+Предыдущие release prerequisites:
+
+1. [TD-151 — сохранение готовой Space-коррекции при matched Reset](151-preserve-prepared-space-frame-on-matched-reset.md): causal RED; минимальный приоритет pending frame, final focused13/13 + controlled1/1, code review9/10. Full3211/3211, final canon PASS, final code review9/10; новый native432:349/50/33, ноль потерянных PASS.
+2. [TD-152 — readiness теста перекрывающихся отпусканий](152-control-overlapping-release-test-readiness.md): исходный CI cause UNKNOWN, повторный baseline PASS; доказана потеря raw assertion в отчёте, reporting RED16/17 → green17/17, без изменения runtime/fixture/deadline. Final code review9/10; новый CI показал assertion; исправление fixture принадлежит TD153.
 
 [TD-150](150-retain-completed-native-replay-across-reset.md): source3210/3210,
 review9/10, b411 build готов; прежний fullscreen/space8 repeat теперь5/5,
-standard Firefox60/60. Новый полный Chrome идёт, установка88 заблокирована.
+standard Firefox60/60. Новый TD151/e34 whole432:349/50/33 без потери PASS; установка88 ждёт TD153/CI.
 Все отрицательные полные прогоны сохранены; runtime пользователя1.0.87.
 
 Завершена и опубликована: [TD-148 — подтверждённые формы глаголов, GitHub #59](148-recognize-backed-ti-present-forms.md).

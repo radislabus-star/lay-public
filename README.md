@@ -15,7 +15,7 @@
 
 ![RU / EN](https://img.shields.io/badge/языки-RU_%2F_EN-CCFF77?labelColor=242B35)
 ![Wayland](https://img.shields.io/badge/Linux-Wayland-81B7FF?labelColor=242B35)
-[![Версия исходников](https://img.shields.io/badge/main-1.0.87-CCFF77?labelColor=242B35)](VERSIONING.md)
+[![Версия исходников](https://img.shields.io/badge/main-1.0.88-CCFF77?labelColor=242B35)](VERSIONING.md)
 [![Alpha](https://img.shields.io/badge/статус-alpha-FFD279?labelColor=242B35)](#compatibility)
 [![Лицензия](https://img.shields.io/badge/лицензия-Non--Commercial-C9B7FF?labelColor=242B35)](#license)
 
@@ -177,8 +177,10 @@ deployment через `rpm-ostree`, перезагрузите систему и
 отдельные поля Tor Browser и веб-приложений остаются зоной доводки. Подсказки к
 командам не заменяют автодополнение вашей оболочки и не покрывают все команды.
 
-Версия исходников — **1.0.87**. Патч восстанавливает доступ к устройствам ввода,
-если права появились после запуска демона. Последний оформленный релиз
+Версия исходников — **1.0.88**. Добавлены настройка отмены автокоррекции по
+Backspace в IME и Double Space; улучшены распознавание глагольных форм и
+сохранение точного ввода через Reset. [Подготовка выпуска](docs/release-1.0.88.md).
+Последний оформленный релиз
 исходников — [1.0.86](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.86).
 Полная грамматика русского, понимание целого абзаца и безошибочная работа во всех
 окнах не заявлены.
@@ -273,7 +275,7 @@ and terminal-command priority help with everyday mixed-language input.
 
 GNOME Wayland is the primary target; other backends have smaller coverage. The
 project is alpha, field compatibility varies, and only RU/EN is currently supported.
-The normal typing path needs no cloud API. Source version: **1.0.87**.
+The normal typing path needs no cloud API. Source version: **1.0.88**.
 
 [Install](#install) · [Documentation](docs/README.md) · [Non-Commercial License](LICENSE)
 
