@@ -1,9 +1,11 @@
 # TD-144 — Recover late input-device permissions (GitHub #49)
 
-Status: DONE_SOURCE (341/341). Priority: P1. Baseline: e0a13039, source 1.0.86.
+Status: DONE_SOURCE (341/341); INSTALLED_1.0.87 (identity/device readiness verified); native NOT TESTED. Priority: P1. Baseline: e0a13039, source 1.0.86.
 Patch source version: 1.0.87; package/extension version metadata is synchronized.
 User authorized the patch, verification, push and closing public issue #49.
-Installation, host permission changes and a new binary release are outside this task.
+The initial source-publication request did not include installation, host permission
+changes or a new binary release. The later explicit instruction "обнови" authorizes
+installation of the same patch; the result is recorded below.
 
 ## Confirmed cause and scope
 
@@ -122,3 +124,29 @@ Canonical evidence: 11/11 graph invariants, 26 graph guard tests, 2 scope
 projection tests and 15 canon tests PASS; exact changed/new-path decision
 coverage PASS. Generated graph artifacts were fetched from the guarded worker.
 No architecture guard, allowlist, input authority, model or delivery route changed.
+
+## User-directed installation — 2026-10-16
+
+The user explicitly requested "обнови" after source publication. The installed
+source is `50d314b382c0383764ea8e738a2d2cd274c2628e`, version 1.0.87.
+The existing three-core-binary transaction installed CLI/daemon/IME and the two
+extension version files. Binaries were built once on 192.168.3.94 under the
+shared dedicated-20cpu resource/Cargo guards, using all 742 tested Rust hashes
+and exact tested Cargo.toml/Cargo.lock. The 341/341 source proof is reused;
+unchanged functional tests and native key sequences were not repeated.
+
+Receipts:
+- `/home/ubu/.cache/lay/development/td144-install87-20261016/BUILD.json`
+- `/home/ubu/.cache/lay/development/td144-install87-20261016/INSTALL.json`
+- `/home/ubu/.cache/lay/development/td144-install87-20261016/POST-INSTALL.json`
+
+Loaded daemon and IME SHA-256 match the installed build. CLI and GNOME panel
+report 1.0.87. The daemon has uinput open and 8 physical input-device fds.
+The selected `lay-ime-ru`, mode `ru`, input sources, configuration, global IBus,
+L1.1/L3 process identities and 24 protected files are preserved. The prior 1.0.86
+files and modes were copied and hash-verified in the transaction's `backup/`
+directory before replacement. No host permission or model change occurred.
+
+This establishes installation identity and device readiness. New physical-client
+behavior and native latency remain NOT TESTED / NOT MEASURED. The historical
+349 PASS / 51 FAIL / 32 BLOCKED browser matrix does not certify 1.0.87.

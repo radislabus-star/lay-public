@@ -1,8 +1,11 @@
 # Lay — очередь технического долга, 2026-10-16
 
 Текущая задача: [TD-144 — поздний доступ к устройствам, GitHub #49](144-recover-late-device-access.md),
-P1, DONE_SOURCE341/341, review9/10, source 1.0.87. Патч публикуется без установки и без нового
-GitHub Release; предыдущий установленный 1.0.86 и его доказательства сохраняются.
+P1, DONE_SOURCE341/341, review9/10; INSTALLED_1.0.87 по отдельной команде пользователя.
+CLI/daemon/IME и панель87 загружены, SHA совпадают; uinput и устройства ввода
+открыты. Native NOT TESTED, latency NOT MEASURED.
+`/home/ubu/.cache/lay/development/td144-install87-20261016/INSTALL.json`.
+Новый GitHub Release не создавался; предыдущий 1.0.86 и его доказательства сохраняются.
 
 Предыдущая задача: [TD-143 — ручной возврат в нативном терминале](143-native-terminal-restoration-learning.md),
 P1, DONE_SOURCE868/868; INSTALLED_1.0.86; native NOT TESTED; источник cfcbca14 + frozen TD-143 diff,

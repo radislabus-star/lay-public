@@ -24,8 +24,12 @@ The existing daemon main thread retries missing uinput and input listeners once
 per second. Existing output devices and live listeners are retained; recovered
 availability does not replay failed edits. Listener lifetime changes invalidate
 old word/gesture intent through the existing field epoch. IME delivery routes,
-decision authority and models retain their contracts. This task publishes source;
-it does not install new binaries or create a new GitHub Release.
+decision authority and models retain their contracts. Source publication was
+followed by the user-directed installation of CLI/daemon/IME and panel 1.0.87.
+Loaded binary identities and device readiness are verified in
+`/home/ubu/.cache/lay/development/td144-install87-20261016/INSTALL.json`.
+Physical-client acceptance and native latency remain NOT TESTED / NOT MEASURED.
+No new GitHub Release was created.
 
 Описание предыдущего релиза и его известных ограничений:
 [Lay 1.0.86](docs/release-1.0.86.md).
