@@ -12,8 +12,10 @@ No force push to the divergent private `origin/main`.
 | [#44](https://github.com/radislabus-star/lay-public/issues/44) | CLOSED, original AMD64 installation failure resolved | Reporter confirmed successful install; maintainer inspected successful build6:27. [Closure](https://github.com/radislabus-star/lay-public/issues/44#issuecomment-6206452385). Native switching tracked separately. |
 | [#48](https://github.com/radislabus-star/lay-public/issues/48) | CLOSED, source798fa391 pushed | [TD-146](../../tech_debt/146-session-scoped-input-access.md),11 access +8 public-build tests/shell PASS, review9/10; [closure](https://github.com/radislabus-star/lay-public/issues/48#issuecomment-6210186091). Real seat ACL NOT_TESTED. |
 | [#59](https://github.com/radislabus-star/lay-public/issues/59) | CLOSED, source05e1e448 pushed; [reply](https://github.com/radislabus-star/lay-public/issues/59#issuecomment-6211314244) | [TD-148](../../tech_debt/148-recognize-backed-ti-present-forms.md), same-stem backed verb forms |
-| [#46](https://github.com/radislabus-star/lay-public/issues/46) | FEATURE_IMPLEMENTED_1.0.88, source3209/3209/review9/10; known native limits | [TD-147](../../tech_debt/147-explicit-undo-and-double-space.md); preserve existing restoration learning and single-owner routes. Installed1.0.88; whole optional80=58/18/4, normal-only; complex-field limits remain. |
-| [#47](https://github.com/radislabus-star/lay-public/issues/47) | OPEN, current reporter startup result missing | [TD-145](../../tech_debt/145-verify-issue47-current-version.md); source and isolated core verified, latest reporter version1.0.74; current source/runtime1.0.88 available, new reporter result missing. |
+| [#46](https://github.com/radislabus-star/lay-public/issues/46) | CLOSED_FEATURE_IMPLEMENTED_1.0.88; [reply](https://github.com/radislabus-star/lay-public/issues/46#issuecomment-6218295099); known native limits | [TD-147](../../tech_debt/147-explicit-undo-and-double-space.md); preserve existing restoration learning and single-owner routes. Installed1.0.88; whole optional80=58/18/4, normal-only; complex-field limits remain. |
+| [#47](https://github.com/radislabus-star/lay-public/issues/47) | OPEN_NEEDS_REPORTER_RETEST; [1.0.88 follow-up](https://github.com/radislabus-star/lay-public/issues/47#issuecomment-6218296876) | [TD-145](../../tech_debt/145-verify-issue47-current-version.md); source and isolated core verified, latest reporter version1.0.74; current source/runtime1.0.88 available, new reporter result missing. |
+
+| [#60](https://github.com/radislabus-star/lay-public/issues/60) | CLOSED; source release1.0.88 published, README/VERSIONING aligned | [Release follow-up](https://github.com/radislabus-star/lay-public/issues/60#issuecomment-6218298017); no binary archives claimed. |
 
 Live queue and readback receipts:
 `/home/ubu/.cache/lay/development/issues-final-pass-20261016/`.
@@ -58,3 +60,10 @@ strict lints and review9/10. Current lock retains that exact audited identity.
 Reporter-specific issue47 remains OPEN; no new reporter result. No client
 messages are sent by native tests. No publication or source proof equals local
 installation or universal physical-client acceptance.
+
+
+Final release readback:415083222, tagv1.0.88 ->71155c84556c7d0a7db0a41b77a10a9fe32ad6ed,
+public/non-prerelease/source-only. #46 closed for implemented options with explicit
+58/18/4 native limits; #47 remains open, ARM/login result missing. #60 follow-up
+confirms actual release availability. All three comments/states read back exactly.
+Publication changes only Markdown;993functional source inputs remain unchanged.

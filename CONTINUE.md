@@ -17,7 +17,10 @@ Owning receipts /home/ubu/.cache/lay/development/td153-install88-20261016:
 BUILD.json, CI.json, NATIVE-EQUIVALENCE.json, INSTALL.json, NATIVE-CLOSURE.json.
 All owned remoteGUI scopes and finite seat closed, VT1,0heldkeys/ownedunits.
 No new input routes/owners/queues/timers/models or installation of modelservers.
-Issue#47 remains reporter-specific; known window limits belong to TD121.
+Officialrelease v1.0.88 ->71155c84, source-only/public. #46reply6218295099
+closedfeature-with-limits; #47reply6218296876 OPEN_NEEDS_REPORTER_RETEST;
+#60reply6218298017 confirms release availability. All readback verified.
+Known window limits belong to TD121.
 [Current queue](tech_debt/README.md), [release](docs/release-1.0.88.md),
 [public issue register](docs/development/public-issues-2026-10-16.md).
 
