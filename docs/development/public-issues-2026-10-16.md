@@ -24,3 +24,7 @@ Chrome179/24/13/216, total349/51/32/432; historical NOT_TESTED0.
 This is not acceptance of1.0.87 or subsequent patches. New source results,
 installed identities, native client acceptance and typing latency remain
 separate scopes. No client messages are sent during tests.
+
+Release prerequisite [TD-149](../../tech_debt/149-update-rustls-security-patch.md):
+rustls-only security patch, same fresh DB before4/after0; full source3209/3209,
+MSRV1.88 both configs and strict lints PASS, review9/10; native/build/install pending. This does not close the reporter-specific issue47.

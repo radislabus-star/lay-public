@@ -6,11 +6,11 @@ DONE_SOURCE3191/3191 после ремонта ревью,12/12 focused, review7
 Исходный BLOCKED_CONTRACT сохранён; отдельная финализация сверяет368 logs и957 hashes,
 исправляет только привязку нулевого реестра исключений. Новая версия ещё не установлена.
 
-Текущая задача: [TD-147 — Backspace undo и двойной пробел, GitHub #46](147-explicit-undo-and-double-space.md).
+Завершена по исходникам: [TD-147 — Backspace undo и двойной пробел, GitHub #46](147-explicit-undo-and-double-space.md).
 DONE_SOURCE3209/3209, focused34/34, controlled2/2, review7→9/10. Две opt-in функции в существующих owners;
 обычный Double Shift и маршруты доставки сохраняются. Общий native gate/install1.0.88 впереди.
 
-Следующий release prerequisite: [TD-149 — rustls0.23.46](149-update-rustls-security-patch.md).
+Завершён по исходникам release prerequisite: [TD-149 — rustls0.23.46](149-update-rustls-security-patch.md).
 Текущий Security CI выявил четыре advisory для0.23.45; только точечный patch, без ignore.
 
 Завершена: [TD-146 — uaccess вместо input-группы, GitHub #48](146-session-scoped-input-access.md).
@@ -204,3 +204,6 @@ FAIL сохраняются. Source review9/10 и full3048+11performance PASS з
 [Обе точки продолжения](CONTINUE.md) · [Root checkpoint](../CONTINUE.md).
 Старый индекс R5/C20 сохранён в
 [immutable e7a history](https://github.com/radislabus-star/lay-public/blob/e7a25705bb6196776c35c0e3cb7c3b5a17d55169/tech_debt/README.md).
+
+TD-149: финальные3209/3209, MSRV1.88 обе конфигурации и audit4→0 PASS, review9/10.
+Общая новая сборка, native и установка1.0.88 выполняются отдельно.

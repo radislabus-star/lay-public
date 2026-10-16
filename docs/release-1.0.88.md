@@ -41,5 +41,7 @@ IME delivery routes и модели не менялись. Новый runtime и
 проверены удержание и освобождение на независимых дескрипторах.
 Финальный source receipt: /home/ubu/.cache/lay/development/td147-full-final-0_9ucici/RESULT.json.
 
-Перед финальной сборкой запланирован TD-149: только rustls0.23.45→0.23.46
-для четырёх текущих RustSec advisory; изменение ещё не выполнено.
+TD-149: обновлён только rustls0.23.45→0.23.46. На одной свежей базе RustSec
+число уязвимостей изменилось с4 до0; остальные пакеты и политика аудита прежние.
+Rust1.88 (обе конфигурации), строгие lints и полные3209/3209 прошли; ревью9/10.
+Финальный source receipt: /home/ubu/.cache/lay/development/td149-full-source-b0w2y6u9/RESULT.json.

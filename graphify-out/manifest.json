@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792138905.7421243,
-    "ast_hash": "b081c14a81a5bf6ee148e1ec7e81b5e2",
+    "mtime": 1792144732.4465659,
+    "ast_hash": "79fbec3b68c1cd1cc3fd59685c59c20b",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4920,8 +4920,8 @@
     "semantic_hash": ""
   },
   "tech_debt/README.md": {
-    "mtime": 1792144619.9491446,
-    "ast_hash": "ae6456fc36e2fddc6ed2a200f582bed8",
+    "mtime": 1792146549.2859633,
+    "ast_hash": "4088cbbeb7178e12e184e8505b091422",
     "semantic_hash": ""
   },
   "scripts/architecture_scope_gate.py": {
@@ -7125,8 +7125,8 @@
     "semantic_hash": ""
   },
   "docs/development/public-issues-2026-10-16.md": {
-    "mtime": 1792144619.9493127,
-    "ast_hash": "51686b96331dc1ac3e2423431c580608",
+    "mtime": 1792146549.2860928,
+    "ast_hash": "13d7ac4a55fcffde22e9c351e9153340",
     "semantic_hash": ""
   },
   "tech_debt/145-verify-issue47-current-version.md": {
@@ -7150,13 +7150,13 @@
     "semantic_hash": ""
   },
   "tech_debt/147-explicit-undo-and-double-space.md": {
-    "mtime": 1792144619.948446,
-    "ast_hash": "c30f271e5845b589cb5143c1e4fad712",
+    "mtime": 1792144732.805571,
+    "ast_hash": "f73289cc96e0e893367529236fb3a122",
     "semantic_hash": ""
   },
   "docs/release-1.0.88.md": {
-    "mtime": 1792144619.9494364,
-    "ast_hash": "de1ff6ddfc9672bc6a3fd7a3160e5ee5",
+    "mtime": 1792146549.285746,
+    "ast_hash": "17109b215b2f014c721635edfd246cab",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-16-atomic-manual-tail-frame-owner.json": {
@@ -7175,8 +7175,13 @@
     "semantic_hash": ""
   },
   "tech_debt/149-update-rustls-security-patch.md": {
-    "mtime": 1792143284.8852243,
-    "ast_hash": "b54584ea114590973a739b1b27ada42a",
+    "mtime": 1792146549.285454,
+    "ast_hash": "405bfbb5e8ee4ca4f54f1b018c2206f2",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-16-rustls-patch-release-prerequisite.json": {
+    "mtime": 1792146549.2856429,
+    "ast_hash": "ab83e84b138795fed133ea2d98eee355",
     "semantic_hash": ""
   }
 }
