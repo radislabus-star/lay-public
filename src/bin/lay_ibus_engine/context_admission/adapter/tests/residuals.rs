@@ -2085,6 +2085,20 @@ fn td121_prime_completion_material() -> Td121CompletionMemory {
     memory
 }
 
+fn td121_prepare_current_completion_material(engine: &LayIbusEngine) {
+    // These are key/receipt-after-ready cases. The generic warm-up above
+    // cannot establish readiness for this actual scene and input.
+    assert_eq!(
+        lay::nanda_wave::l2_surface_words_by_usage(1),
+        vec!["проверка".to_owned()]
+    );
+    assert!(engine.selected_precognition_suffix().is_none());
+    assert!(engine.committed_tail.pending_completion_learning.is_none());
+    crate::preedit::preedit_readout_contract::prepare_current_computation_readout(engine);
+    assert!(engine.selected_precognition_suffix().is_none());
+    assert!(engine.committed_tail.pending_completion_learning.is_none());
+}
+
 async fn td121_readout_key(
     harness: &mut Harness,
     engine: &mut LayIbusEngine,
@@ -2320,6 +2334,7 @@ fn td121_inactive_completion_waits_for_matching_handled_release() {
             let snapshot = engine.client_context.surrounding_text_snapshot.clone();
             let revision = engine.client_context.surrounding_observation_revision;
 
+            td121_prepare_current_completion_material(&engine);
             assert!(if observer_first {
                 td121_readout_key(
                     &mut harness,
@@ -2337,7 +2352,8 @@ fn td121_inactive_completion_waits_for_matching_handled_release() {
             let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
             assert_eq!(
                 engine.selected_precognition_suffix().as_deref(),
-                Some("верка")
+                Some("верка"),
+                "matching release must drain prepared material: observer_first={observer_first}"
             );
             assert!(!engine.composition.preedit_dirty);
             assert!(!engine.composition.preedit_display_only_pending);
@@ -2480,10 +2496,7 @@ fn td121_overlapping_handled_releases_publish_only_the_latest_completion() {
                     // and revoked-frame cases in their separate real tests.
                     let frame = engine.composition.pending_display_frame.clone();
                     let (before, _) = current_pending_readout(&engine);
-                    assert_eq!(
-                        lay::nanda_wave::l2_surface_words_by_usage(1),
-                        vec!["проверка".to_owned()]
-                    );
+                    td121_prepare_current_completion_material(&engine);
                     let (input, _) = current_pending_readout(&engine);
                     assert_eq!(input, before);
                     assert_eq!(engine.composition.pending_display_frame, frame);
@@ -2637,6 +2650,9 @@ fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
                 )
                 .await
             );
+            if retain_reset_lineage {
+                td121_prepare_current_completion_material(&engine);
+            }
             let effects = td121_current_completion_receipt(&mut harness, &mut engine).await;
             if !retain_reset_lineage {
                 assert!(engine.composition.preedit_visible);

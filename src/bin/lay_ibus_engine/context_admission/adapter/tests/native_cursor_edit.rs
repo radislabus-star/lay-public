@@ -16,16 +16,16 @@ mod native_cursor_edit_tests {
         let reset = method_message(DISPATCH_SENDER, serial, &path, ENGINE_INTERFACE, "Reset");
         send_manually_dispatched_callback(&mut harness.peer, &reset, &path, ENGINE_INTERFACE).await;
         let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, path).unwrap();
-        // zip polls Reset first through its first await, then lets the actual
-        // observer supply its canonical stamp in the same scheduled turn.
-        // Do not withhold ingress until the callback's deadline expires.
-        let (reply, observed) = bounded(future::zip(
-            engine.reset(reset.header(), emitter),
-            harness.observer.process_next(),
-        ))
-        .await;
-        reply.unwrap();
-        assert!(observed.unwrap());
+        // Establish handler-first order before the actual observer supplies
+        // its canonical stamp. This tests causal order, not transport latency
+        // against the production callback deadline.
+        let mut reply = Box::pin(engine.reset(reset.header(), emitter));
+        assert!(
+            future::poll_once(&mut reply).await.is_none(),
+            "handler-first Reset must await its actual canonical observation"
+        );
+        assert!(bounded(harness.observer.process_next()).await.unwrap());
+        bounded(reply).await.unwrap();
     }
 
     async fn cursor_at_interior(harness: &mut Harness) -> LayIbusEngine {
