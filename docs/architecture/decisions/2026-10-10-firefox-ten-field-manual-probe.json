@@ -1,0 +1,26 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Add a separate manual Firefox page with ten owned field types and one sequential-focus diagnostic. Observe both Double Shift conversions and each following decoder letter. Extend existing Firefox guard routes with the fixture's source contract without removing any existing check.",
+  "reason": "User reports that Double Shift fails in some Firefox fields and explicitly requests ten types on one screen. Keyboard/IME focus has one active recipient; concurrent key injection into ten fields cannot establish that contract. The exact failing runtime transition is still UNKNOWN.",
+  "user_authorization": "Create a separate Firefox test, ten types visible on one screen. Existing session review/remote-check workflow applies. The old IME82 install/four-input grant is consumed; this decision does not authorize local browser/input automation.",
+  "invariants": ["C01", "C03", "C04", "C07", "C08", "C09", "C10"],
+  "protected_paths": ["scripts/check-lay-full.sh", "scripts/check-lay-changed.sh", "docs/architecture/firefox-input-stability-2026-10-05.md"],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "owner": "Root implements only the test fixture/observer and existing check integration. Existing runtime ContextAdmissionReducer/WindowInteraction/output and daemon ManualToggleV3 are unchanged.",
+  "options": [
+    {"design": "One manual page with ten fields, sequential focus, both conversions and following decoder letters.", "score": 9, "reason": "Matches the requested screen; minimal native-input observer, no runtime or browser-profile controller."},
+    {"design": "Ten separate native browser windows with a new automated controller.", "score": 6, "reason": "Adds profile/focus ownership and separate local grant before the actual failing field is known."},
+    {"design": "Use JavaScript-dispatched Shift events as the Double Shift acceptance test.", "score": 2, "reason": "Cannot validate physical input through daemon/IBus; synthetic events must not yield native PASS."}
+  ],
+  "verification": "REMOTE_SOURCE_PASS:15/15 Node observer,4/4 Python Firefox checks,15/15 canon tests, JS/bash/canon PASS. Remote headless Firefox render900x600 shows10fields; no keys were sent. Fresh-context pass1 8/10; pass2 9/10. Root applied pass2 Escape capture-without-advancement fix and verified its regression in final source receipt. Two review passes, no third.",
+  "source_receipt": "/home/ubu/.cache/lay/development/firefox-ten-field-source-_un5vy17/RESULT.json",
+  "source_receipt_sha256": "9ac25324fce2bb4b57998962b532ced6929f76f46e48a9d3ee156170bed4feee",
+  "source_archive_sha256": "3a8841da80a8d27c50ca76bb42eb4be56aa0d7e5c9fc4577d11a74839f8948db",
+  "graph_receipt": "/home/ubu/.cache/lay/development/firefox-ten-field-final-graph-20261010/RESULT.json",
+  "evidence": "tech_debt/evidence/td121-firefox-ten-field-probe-2026-10-10.json",
+  "not_tested": "Actual Firefox field/runtime acceptance; original TD121 scenarios; user-site editors; normal/private/fullscreen/backend compatibility; exact RPC/icon/runtime identity from the DOM alone.",
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": false,
+  "installed_runtime_changed": false,
+  "consequences": "Only a manual diagnostic fixture and added source checks. Composition/caret and declared window mode remain separate observations. Native acceptance and every prior FAIL remain open. No global IBus restart, installation, profile replacement, inverse or shared learning cleanup. Review max2passes."
+}

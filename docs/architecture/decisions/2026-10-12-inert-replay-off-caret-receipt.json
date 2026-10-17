@@ -1,0 +1,59 @@
+{
+  "date": "2026-10-12",
+  "status": "SOURCE_PASS_NATIVE_PENDING",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing ContextAdmissionAdapter, WindowInteraction observation and exact replay scope; no additional runtime authority",
+  "runtime_authority_changed": false,
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "review": {
+    "kind": "Fresh-context read-only plan review",
+    "overall_score": 8,
+    "native_evidence_independently_read_by_reviewer": false
+  },
+  "decision": "Retain only inert exact replay provenance for one already-observed replacement character to the right of the caret",
+  "mechanism_score": 9,
+  "scope": "Existing paired/current replay, expiry and committed-epoch progress. The off-caret case is replacement-phase only: distance > deletes, known observed external prefix, cursor+1 == whole raw char count, no selection, exact original external/unchanged prefix and bounded prefix of already observed replacement. Right-of-caret character belongs to replacement.",
+  "implementation": "Extend existing exact_replay_contains_prior_snapshot only. Intermediate receipt never confirms a word or grants an edit. Require a later full actual SSI and unchanged identity/raw-prefix/revision/one-consume contracts. Existing source/delete-prefix behavior is unchanged.",
+  "refusals": [
+    "Future/unobserved replacement prefix",
+    "Two characters to right of caret",
+    "Caret within external or unchanged prefix",
+    "Foreign external prefix or replacement",
+    "Selection/owner/content/focus/epoch/expiry gap"
+  ],
+  "proof": "Existing full replay callback fixture with multibyte external prefix; one off-caret actual SSI followed by final full SSI and single consume. Full negative matrix retains zero authority before final SSI.",
+  "causal_red": {
+    "receipt": "/home/ubu/.cache/lay/development/run-5p_ecn8b/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-es95b5/RESULT.json",
+    "passed": 719,
+    "failed": 1,
+    "scope": "B and negative replay matrix pass; only A original snapshot lost after Reset fails at correct post-Reset assertion"
+  },
+  "initial_b_causal_red": {
+    "receipt": "/home/ubu/.cache/lay/development/run-19i1mgw_/RESULT.json",
+    "scope": "off_caret_exact fails; A precondition assertion subsequently corrected to KnownStart + pending confirmed"
+  },
+  "source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-scnveyr3/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-4VdbH0/RESULT.json",
+    "archive_sha256": "a94c7461d9550ad12cc1b31d0f2fde0b926aab9b8ddc2b120c22d5828909ed8f",
+    "passed": 721,
+    "failed": 0
+  },
+  "review_pass_2": {
+    "A": 9,
+    "B": 9,
+    "combined": 9,
+    "blockers": [],
+    "reviewer": "Fresh-context read-only final review",
+    "source_bytes_checked_against_frozen_archive": true,
+    "native_acceptance": "PENDING"
+  }
+}

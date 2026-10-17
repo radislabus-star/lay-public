@@ -1,0 +1,105 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "source_verified_not_installed_native_not_tested",
+  "task": "TD-142",
+  "baseline_commit": "7741d06db89eb3ee88016eead904fb216f6675be",
+  "decision": "A causally bound exact manual restoration preserves the current token immediately; three distinct confirmed restoration episodes become a persistent user preference against automatic changes of that word.",
+  "reason": "The observed-autocorrection outcome does not arm the existing manual-edit learning trajectory. The next key clears the separate auto-undo record before Backspace. IME-owned input cannot be retained by daemon learning without an explicit retention fact; retain that privacy boundary.",
+  "verification": "Final source2966/2966 PASS in one run,403.4s wall: /home/ubu/.cache/lay/development/run-8rdennhh/RESULT.json; archiveSHA 550a739d88d6797b89baf1e85910182fc1c98f71d8a0e042fa52eb5149dee7da. Scope lib1824,daemon279,IME810,8integration contracts53. All740Rust match, nine named delivery files unchanged: /home/ubu/.cache/lay/development/td142-final-source-scope.json. Independent reviews6/10 then7/10; reported defects repaired, no third review or revised acceptance score. Initial canonical wrapper passed11 graph contracts but failed file-operation ownership; primitive moved to existing private_file owner without rule/allowlist changes. Final architecture and exact canon record require PASS at /home/ubu/.cache/lay/development/td142-final-graph-20261015-owner/GRAPH_RESULT.json. New native/latency/install not tested.",
+  "not_tested": "New native behavior, new latency, installation and arbitrary caret/mouse relocation are NOT TESTED. This is not release acceptance.",
+  "options": [
+    {
+      "score": 9,
+      "choice": "Extend the existing edit-learning trajectory, typed feedback, usage hot snapshot and persistence worker; constrain automatic selection in TransitionDecisionCore."
+    },
+    {
+      "score": 7,
+      "choice": "Preserve globally after one rejection",
+      "rejected": "Does not implement the user's three-confirmation threshold."
+    },
+    {
+      "score": 3,
+      "choice": "Retrain the general correction model",
+      "rejected": "Cannot guarantee an exact preservation rule and enlarges the affected mechanism."
+    }
+  ],
+  "owners": {
+    "observation": "Existing IME CommittedTailState pending edit-learning trajectory and observed outcome boundary",
+    "feedback": "Existing TypingMemoryEvent with one causal episode identity",
+    "storage": "Existing usage persistence worker; user_word_restorations.json is a non-rotating preference projection in the same private data root",
+    "decision": "Existing TransitionDecisionCore, after semantic selection and before an authorized output plan"
+  },
+  "why_persistent_projection": "The usage activity journal rotates at 500 KiB. An exclusion promised to survive restart must not disappear with old activity. Retain at most three distinct episode IDs per learned word and use the existing worker. An OS lock serializes complete preference transactions between processes; ordinary events acquire no lock. No new thread, queue or cache owner.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "docs/phase-word-recovery-canonical-cutover.md",
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/atomic.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/private_file.rs"
+  ],
+  "contract_notes": [
+    "No change to input ownership, existing text delivery, IME bridge protocol, backend selection, GNOME/IBus synchronization, timing pauses, verifier or SafetyGate.",
+    "Automatic output, raw repetition, Tab acceptance, non-exact replacement and malformed/unbound feedback cannot count as rejection.",
+    "One episode cannot supply more than one vote, even across reload and duplicate journal delivery.",
+    "Known public context, exact preserved tail, current owner lease and the existing 30-second undo age bound are required for a manual edit trajectory. A local mirror/preedit alone cannot count: require an exact actual SurroundingText result without selection or active composition. Missing results remain unconfirmed.",
+    "Atomic speculation defers feedback using the existing deferred-learning actions. Focus/privacy retirement clears the existing trajectory.",
+    "The new observer does not synthesize text or call an executor. The existing current-word suppression delivers the user boundary.",
+    "Explicit manual layout projection continues independently of automatic preservation policy.",
+    "Fixture words never become runtime conditions; the rule is language-independent.",
+    "Permanent preference evidence requires restoration_observed=true and a stable causal episode. Existing generic revert dispatch and legacy receipt compilation cannot set this fact or count toward the threshold."
+  ],
+  "scope_limit": "Reuse the existing immediate tail Backspace/retype trajectory. Arbitrary mouse/caret relocation or an unobserved client edit is not inferred as training; do not claim arbitrary-field acceptance.",
+  "red_source_receipt": "/home/ubu/.cache/lay/development/run-p1iol_ya/RESULT.json",
+  "earlier_fixture_compile_failure": "/home/ubu/.cache/lay/development/run-g30qw0k_/RESULT.json",
+  "runtime_authority_changed": false,
+  "automatic_policy_changed": true,
+  "installed_runtime_changed": false,
+  "review": {
+    "pass_1_score": 6,
+    "pass_2_score": 7,
+    "maximum_passes": 2,
+    "pass_2_receipt": "/home/ubu/.cache/lay/development/td142-review-2.md",
+    "post_review_repair": "Explicitly replan the remaining shared provenance-gate defect: only owner-observed manual-restoration evidence may vote. Generic dispatch and legacy imports retain old signed priors. No third independent pass and no revised ACCEPT score claimed.",
+    "post_review_verification": "Final2966/2966 PASS in one run after all repairs; no independent regrade."
+  },
+  "pre_provenance_source": {
+    "verdict": "PASS",
+    "passed": 2966,
+    "failed": 0,
+    "archive_sha256": "e705728e67e79614b011c8d6330229f9768e1dcea526d9fa9f3e390b8c707482",
+    "receipt": "/home/ubu/.cache/lay/development/run-ipfn_9y_/RESULT.json",
+    "scope": "development_selected_not_full_release_or_native"
+  },
+  "architecture_receipt": "/home/ubu/.cache/lay/development/td142-final-graph-20261015-owner/GRAPH_RESULT.json",
+  "pre_file_owner_source": {
+    "verdict": "PASS",
+    "passed": 2966,
+    "failed": 0,
+    "archive_sha256": "a724f275ec29561e55de953b885a6e42e468843ac2754663e9773fe2d6b83747",
+    "receipt": "/home/ubu/.cache/lay/development/td142-pre-file-owner-source-scope.json",
+    "library_receipt": "/home/ubu/.cache/lay/development/run-qvg2ggxl/RESULT.json",
+    "reused_non_library_receipt": "/home/ubu/.cache/lay/development/run-hmn60wql/RESULT.json",
+    "scope": "development_selected_cohort_union_not_full_release_or_native",
+    "single_run": false
+  },
+  "final_source": {
+    "verdict": "PASS",
+    "passed": 2966,
+    "failed": 0,
+    "archive_sha256": "550a739d88d6797b89baf1e85910182fc1c98f71d8a0e042fa52eb5149dee7da",
+    "receipt": "/home/ubu/.cache/lay/development/run-8rdennhh/RESULT.json",
+    "scope_receipt": "/home/ubu/.cache/lay/development/td142-final-source-scope.json",
+    "single_run": true,
+    "scope": "development_selected_not_full_release_or_native"
+  }
+}

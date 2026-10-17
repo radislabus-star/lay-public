@@ -1,0 +1,82 @@
+{
+  "status": "PREPARED_NOT_EXECUTED_PENDING_NEW_USER_GRANT",
+  "candidate": {
+    "path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/lay-ibus-engine",
+    "sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+    "bytes": 8185232,
+    "version": "1.0.82"
+  },
+  "backup": {
+    "path": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/rollback-ime-2bd88bfcbc53",
+    "sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "bytes": 8185744,
+    "mode": 493
+  },
+  "probe": {
+    "path": "/home/ubu/.cache/lay/development/td133-candidate-client-ordering-diagnostic-20261010.py",
+    "sha256": "6c0585778c0d72b178fb18c63c6bc7b891e37b0555618a9fabd83498d8af24a1",
+    "parent_path": "/home/ubu/.cache/lay/development/td133-client-ordering-diagnostic-20261010.py",
+    "parent_sha256": "3d45c368b075dd3b5fffaf040fa66ea655ac32f48b5406fb49806256b5d70cba",
+    "streams": 4,
+    "text": [
+      "должен ",
+      "должен ыбыть "
+    ],
+    "fields": [
+      "GTK3 Entry",
+      "Qt rich"
+    ],
+    "key_timing_ms": [
+      18,
+      12
+    ],
+    "deadline_s": 1.5
+  },
+  "installation_field_count": 1,
+  "diagnostic_field_count": 2,
+  "total_fresh_windows": 3,
+  "install_scope": "one IME binary and existing IME-only runtime-control channel; no global IBus or other service restart",
+  "candidate_is_not_accepted_release": true,
+  "native64": "PENDING_SAFE_ISOLATED_SUCCESSOR",
+  "inverse_or_shared_cleanup_authorized": false,
+  "source_packet": "tech_debt/evidence/2026-10-10-td138-complete-source-proof.json",
+  "private_client_packet": "tech_debt/evidence/2026-10-10-td133-actual-client-candidate-proof.json",
+  "transaction_plan": {
+    "path": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/PLAN.md",
+    "sha256": "ef88b4a8df2bbc033653b500f8b81f96d6e5517874cfd30ed53f30db3e648c4c",
+    "reuses_existing_runtime_helpers": true,
+    "fresh_native_experiment_not_release": true,
+    "review": "PASS_EXECUTION_PLAN_ONLY_PENDING_NEW_USER_GRANT"
+  },
+  "readonly_runtime_preparation": {
+    "path": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/PREPARATION_RUNTIME.private.json",
+    "sha256": "7a972e6e02aac1e54fa5016fba0fe1cc892fcba67410dcf5165ec0ea85248ba3",
+    "installed_ime_unchanged": true,
+    "coherent_ru": true
+  },
+  "plan_pass1": {
+    "path": "/home/ubu/.cache/lay/development/td133-runtime-candidate-20261010/PLAN.original-pass1.md",
+    "sha256": "393028e0e049402e661b85a2e048870e2f8746e234deb8230a028de209cddf35",
+    "material_gap": "Install witness was closed before probe; no owned empty rollback field remained. Successor retains same witness and revalidates focus/emptiness before recovery without a fourth window."
+  },
+  "review": {
+    "passes": 2,
+    "score": 9,
+    "material_blockers": 0,
+    "reports": [
+      {
+        "path": "tech_debt/evidence/2026-10-10-td133-candidate-execution-plan-review-pass1.md",
+        "sha256": "4e8bc2382e41ccedc18a09cdf6263d1eda9795c52120da7374f812b4d99f1f2e",
+        "score": 8,
+        "material_blockers": 1
+      },
+      {
+        "path": "tech_debt/evidence/2026-10-10-td133-candidate-execution-plan-review-pass2.md",
+        "sha256": "9ce0e3580c9eba1c94ab116fae9f663c6dac7c8d46a2d44ce9705963a81b35c1",
+        "score": 9,
+        "material_blockers": 0
+      }
+    ],
+    "runtime_or_native_acceptance_granted": false
+  }
+}

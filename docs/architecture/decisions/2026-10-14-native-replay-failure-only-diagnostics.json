@@ -1,0 +1,255 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-native-replay-failure-only-diagnostics",
+  "status": "WE_CLOSED_20PASS8FAIL2BLOCKED_CAUSAL_WINDOWS_RETAINED",
+  "updated_at": "2026-10-14T08:06:33.894355+00:00",
+  "baseline": "V latest complete432: Firefox160PASS37FAIL19BLOCKED; Chrome179PASS23FAIL14BLOCKED. V rejected as complete; all20cursorPASS retained. W source54 configured and late-release controls PASS. First native fullscreen Space replay scope loss UNKNOWN.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Metadata only in existing already-rejected exact-replay branches, before scope revocation; one unchanged original standard normal/private/fullscreen sequence without passive wire.",
+      "reason": "Captures the failed shared/path/lease/layout/tail/expiry predicate while avoiding successful callback instrumentation that previously masked ordering failures."
+    },
+    {
+      "score": 6,
+      "recommended": false,
+      "solution": "Add further source schedules without a new observed failed transition.",
+      "reason": "Two source54 schedules already pass; additional guesses have low causal value."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Relax scope, Reset identity, guard or timeout.",
+      "reason": "No measured first rejecting predicate or causal RED; cannot justify changes to authority."
+    }
+  ],
+  "contract": [
+    "Root implements and executes remote only; required context-free reviewer unavailable at agent thread limit, NOT RUN and no score.",
+    "No raw text/tokens, successful path logging, new owner, timer, route, word condition or changed decision predicate. Existing trace switch and bounded store.",
+    "Original60 standard cases once in normal/private/fullscreen with original actor hash/cadence. Diagnostic-only, never replace latest full432 table.",
+    "Fresh source gate, remote AST and immutable gated private build; stopped/empty owned GUI cgroup before heavy work; finite owned seat, original setup3, zero-key byte proof, exact closure/STOP/no held keys/restoreVT1."
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_retrained": false,
+  "source_gate": {
+    "verdict": "PASS",
+    "tests": {
+      "executed": 843,
+      "failed": 0,
+      "passed": 843,
+      "selected": 843
+    },
+    "worker_seconds": 116.30141872298555,
+    "controller_seconds": 124.8,
+    "local": "/home/ubu/.cache/lay/development/run-j9z65nyj/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-P4dPQe",
+    "archive_sha256": "bec4e26e89e7271e5288992bf2d6c43b711c3e5281fb85de8a11eece70aa4847",
+    "all_rust_rows_verified": 737,
+    "scope": "IME792 plus six contracts51; previous daemon source proof reused only for unchanged functional source, not a release/full quality gate"
+  },
+  "root_audit": "Removing only rejection helper and its five calls yields exact V production tail_memory bytes. No other tail mutation/predicate/positive log change.",
+  "user_runtime_feedback": "User said \u0425\u043e\u0440\u043e\u0448\u0430\u044f \u0441\u0431\u043e\u0440\u043a\u0430 while remote843 completed; actual local installed bytes not identified in that feedback. Preserve running local runtime; no publication request.",
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.797309428016888,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WD-final-graph-1791963340708343795.log",
+    "artifacts": {
+      "graphify-out/graph.json": "bb1fdfe028897e6f5b3049e923f4b6ba3ac524ab650a3123fc85ebaac4346304",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "47434a4c9eef1dfe24d5714f4a704bdb67d149d1f6519968c17c22a200835cc1",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    }
+  },
+  "all_four_ast_artifacts_copied_and_hash_verified": true,
+  "build_exec": 84885,
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-P4dPQe",
+    "archive_sha256": "bec4e26e89e7271e5288992bf2d6c43b711c3e5281fb85de8a11eece70aa4847",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791963361697375525.txt",
+    "elapsed_seconds": 183.58090555199306,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "b220aaa1f4beb96c7599e64f2c4bf34e0839bee4219db9e3cb13d9002cc8c001",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791963545278190706/bin/lay-ibus-engine",
+      "bytes": 8279056
+    },
+    "lay-daemon": {
+      "sha256": "213d803b18de9f3be091f4b99ce9ce3bff83412962532da72189ccb37d7ad267",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791963545278190706/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "stage": {
+    "status": "STAGED_PRIVATE_ONLY",
+    "backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-WD-failure-diagnostic-1791963572041217762",
+    "ime_sha256": "b220aaa1f4beb96c7599e64f2c4bf34e0839bee4219db9e3cb13d9002cc8c001",
+    "daemon_sha256": "213d803b18de9f3be091f4b99ce9ce3bff83412962532da72189ccb37d7ad267",
+    "gate": "/home/e/projects/lay-development-runner/run-P4dPQe",
+    "original_actors_unchanged": true
+  },
+  "finite_seat": {
+    "created_unix": 1791963572.2763808,
+    "expires_unix": 1791967072.276381,
+    "status": "OWNED_FINITE_SEAT_READY",
+    "unit": "lay-native-session-6onP5c-ah.service",
+    "seat": {
+      "pid": 450536,
+      "starttick": "16110247",
+      "uid": 1000,
+      "session_id": "3846",
+      "session_type": "wayland",
+      "seat": "seat0",
+      "vt": "8"
+    },
+    "previous_vt": "1",
+    "old_seat_backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WD-seat-before-1791963572164829725.json",
+    "properties": {
+      "User": "1000",
+      "VTNr": "8",
+      "Seat": "seat0",
+      "Leader": "450536",
+      "Type": "wayland",
+      "Active": "yes"
+    }
+  },
+  "native_exec": 3321,
+  "driver_exec": 32363,
+  "standard60_native": {
+    "status": "ALL_80_ARTIFACTS_HASH_VERIFIED",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WD-standard-diagnostic-1791963994703664507/RESULT.json",
+    "sha256": "66f029589a4c787c1938e184dae8b4173ad0fddb5cff04bb85cd3b12eab7beb6",
+    "counts": {
+      "PASS": 60
+    },
+    "rejection_rows": 0,
+    "full432_matrix_replaced": false,
+    "latency": {
+      "normal": {
+        "ordinary": {
+          "required": 40,
+          "measured": 40,
+          "missing": 0,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 105.53593350946903,
+          "p95_ms": 121.47162798047066,
+          "max_ms": 124.39400500059128
+        },
+        "burst": {
+          "required": 100,
+          "measured": 100,
+          "missing": 0,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 107.85506848990917,
+          "p95_ms": 118.72292101383209,
+          "max_ms": 139.35935997962952
+        }
+      },
+      "private": {
+        "ordinary": {
+          "required": 40,
+          "measured": 40,
+          "missing": 0,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 104.7832505106926,
+          "p95_ms": 119.01980602741241,
+          "max_ms": 122.84739303588867
+        },
+        "burst": {
+          "required": 100,
+          "measured": 100,
+          "missing": 0,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 108.56598500907421,
+          "p95_ms": 116.91021400690079,
+          "max_ms": 131.90341699123383
+        }
+      },
+      "fullscreen": {
+        "ordinary": {
+          "required": 40,
+          "measured": 40,
+          "missing": 0,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 100.79875349998474,
+          "p95_ms": 120.47592198848724,
+          "max_ms": 122.08939701318741
+        },
+        "burst": {
+          "required": 100,
+          "measured": 100,
+          "missing": 0,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 106.26714050769806,
+          "p95_ms": 115.01949399709702,
+          "max_ms": 118.83600202202797
+        }
+      }
+    },
+    "actor_seconds": 338.44116114699864,
+    "all3parents_exit0_no_held_keys": true,
+    "closed5_original_pids_cgroup_empty_vt1": true
+  },
+  "next_diagnostic": {
+    "id": "WE",
+    "scope": "One original job057 with fixed15 plans in fields5,6 (30 scenarios) on unchanged WD private bytes. Focus on V space_en_ru5 and moved_boundary6 losses whose prior capped trace had no callback anchors.",
+    "capture": "Read existing actor RESULT every100ms; when a row first reaches PASS/FAIL/BLOCKED, copy existing capped IME trace once for that row. No added callback log, bus subscription, DOM call or input; bounded30x512KiB plus original evidence. Coverage remains UNKNOWN and failed time-window anchors must be checked before causal claims.",
+    "score": 9,
+    "alternatives": [
+      {
+        "score": 6,
+        "solution": "Passive full IBus wire",
+        "reason": "Can expose packets but previously affected ordering; unnecessary until existing trace row capture proves inadequate."
+      },
+      {
+        "score": 2,
+        "solution": "Increase runtime trace cap or log successful paths",
+        "reason": "Changes runtime logging work and previously masked a different ordering defect."
+      }
+    ],
+    "full432_matrix_replaced": false,
+    "source_or_build_rerun": "Not needed: same immutable843 source/private bytes, only diagnostic evidence capture and owned launch.",
+    "review": "NOT_RUN; agent thread limit, no score.",
+    "first_failed_transition": "UNKNOWN; no functional edit until measured loss and causal source RED.",
+    "native_exec": 48580,
+    "driver_exec": 47466,
+    "source_gate_reused": "Immutable run-P4dPQe843PASS, unchanged b220aaa1/213d803b private bytes; no new build or model fit.",
+    "result": {
+      "status": "ALL41_ARTIFACTS_HASH_VERIFIED",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WE-functional-diagnostic-1791964524400800201/RESULT.json",
+      "sha256": "9c3f7e23ac6a8db002b9b2ff1b76de05a35afd5cd80c2385dad9a715e54abf93",
+      "counts": {
+        "PASS": 20,
+        "FAIL": 8,
+        "BLOCKED": 2
+      },
+      "row_traces": 30,
+      "full432_matrix_replaced": false,
+      "actor_seconds": 64.1049561460095,
+      "zero_and_closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WE-firefox-closed.json",
+      "all_original_processes_gone": true,
+      "cgroup_empty": true,
+      "vt_restored": true
+    }
+  },
+  "measured_prefix_loss": {
+    "receipts": [
+      "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WE-5-prefix-window.json",
+      "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WE-6-prefix-window.json"
+    ],
+    "facts": "Actual first prefix word starts printable_legacy_preedit (so proposed regular-Preedit-mode explanation is ruled out). Completed background suffix publication precedes manual RPC. Actual path chooses ime_active_composition, CommitText replacement; ibus_layout_sync ok=false while CreateEngine stamps are pending. Field5 next z decoded as Cyrillic \u044f by old RU path; field6 second RPC refused bridge_admission. Which exact owned-preedit or layout-dispatch predicate failed is still UNKNOWN.",
+    "verifier_guards_weakened": false
+  },
+  "measured_other_failures": {
+    "undo": "Space lease not_ready at worker generation11, lookup wait3458us; late computation superseded. Display candidates0 does not establish candidate-generation correction cause. No deadline or ranker edit before full correction authority path proof.",
+    "selection": "Native raw \u0430\u0436 with caret1 after CommitText \u0430 and actual SSI1/caret1; trace then publishes uncommitted completion \u0436. Current actor exact-selection target fails. Potential observation issue, not yet reclassified or test changed.",
+    "focus": "Raw \u043f\u0440\u0438\u0432\u0435\u0442\u043d\u043e\u0435\u044b after focus return; prior source/client gap still requires causal proof.",
+    "functional_space": "Both V lost Space cases passed in WE; no functional edit, not a claimed repair."
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-browser-zero-key-focus-identity",
+  "status": "UNIT5_PASS_CHROME_ZERO_KEY_READY_PASSED_ORIGINAL_BEHAVIOR_RUNNING",
+  "updated_at": "2026-10-14T09:49:43.073719+00:00",
+  "measured": "Chrome two zero-key setup failures: initial and final client=gnome-shell and engine path lay_ime_ru/1 identical, same current input context/globalRU/IME owner pins. Wire header only changes from serial35/time1791970013.946610 to serial47/time1791970014.094268. The setup compared complete observation dictionaries and rejected a repeated same-focus message. No behavior input executed; both owned scopes closed and VT1 restored.",
+  "solution": "Compare focus identity (nonempty client+engine object path), retain both observed headers as evidence. Keep all existing current IC, fresh window/field focus, RU descriptor, IME PID/starttick/bytes, cgroup/kernel UNIX peers and portal rechecks unchanged. No runtime/delivery/config changes.",
+  "review_score": null,
+  "review": "Independent agent unavailable at thread limit. Root diff audit and five adversarial helper tests required; no claimed review score.",
+  "protocol_version": "zero-key focus identity v2; standard/functional/body/panel actors and cadence unchanged",
+  "original_setup005_sha256": "de677f31c73d025f979cded76177f522d7805335aeabeab0becaf3b28db29b1f",
+  "revised_setup005_sha256": "dde6db54dd7a3de0cf2051b6a7843b127b3cabc8692f6b387d050d85865561a7",
+  "helper_sha256": "bd2bc86ffba3f2bcf6d8495eedf1a0244b31c272ab0f348065bc29a40d30cbd8",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "model_training": false,
+  "unit_tests": "5/5PASS remote via resource guard",
+  "runtime_rust_hashes_unchanged_vs845": 737,
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.70472161800717,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/ZP-final-graph-1791971052077971859.log",
+    "artifacts": {
+      "graphify-out/graph.json": "669bf0fc49108bf5e75f8594ea25f316061682a4e99392df1c5af6cbdbbf0695",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "8b9f557370b96a7c8975c8bd9565364a99f09add7557b1aaad128f55840c80dd",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    }
+  },
+  "ast_all_four_artifacts_copied_and_hash_verified": true
+}

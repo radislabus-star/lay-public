@@ -1,0 +1,141 @@
+{
+  "date": "2026-10-12",
+  "status": "SOURCE_AND_ORDERING_PASS_BROWSER_ACCEPTANCE_FAIL",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing managed CommitText, handled press ledger and precognition publication flow",
+  "runtime_authority_changed": false,
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "problem": "A new inactive completion is published after a genuine end-caret SSI but before the matching handled literal release. Firefox subsequently returns contradictory raw text and caret; the existing strict rejection correctly discards lineage. Later matching text cannot recreate that provenance.",
+  "primary_receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current821/owned-append-publication-ordering.json",
+  "primary_source_prefix_sha256": "786af55c763435b3dec4ee11a5f7fb52b73147b7f0dcb24f3ea4fda068ae8128",
+  "evidence_confidence": {
+    "authority_loss": 9,
+    "early_publication_causes_contradictory_client_cache": 7
+  },
+  "options": [
+    {
+      "name": "A: defer completion presentation until handled releases settle",
+      "score": 8,
+      "recommended": true
+    },
+    {
+      "name": "B: separately proved inert managed-append lineage across contradictory cache",
+      "score": 5,
+      "recommended": false
+    },
+    {
+      "name": "C: extra surrounding refresh or polling",
+      "score": 2,
+      "recommended": false
+    }
+  ],
+  "decision": "Bounded A experiment. Use existing dirty/frame state and candidate cache. Keep computation and correction prefetch active, but no new inactive legacy completion may become visible or selectable while the existing handled-key ledger is nonempty. Register only a successful actual managed CommitText effect before its synchronous refresh. Drain on handled release with current frame revalidation. Do not add a timer, queue, second owner, delivery route, word exception or relaxed SSI/edit verifier.",
+  "scope": "Legacy display-only completion with empty owned composition. Conservatively wait for every outstanding handled press rather than inventing keycode classes. Owned preedit, atomic output and terminal native passthrough retain their contracts. Existing shown material may remain inert; clear/hide for revocation remains available.",
+  "proof_change": "Keep td121_exact_receipt_publishes_cached_current_suffix_before_alt and its accepted-suffix-before-Alt assertion. Its positive sequence will include the actual matching literal release. Add a causal held-key negative and release-only drain proof; do not delete or weaken its acceptance assertion.",
+  "review": {
+    "kind": "Fresh-context read-only plan review",
+    "score": 8,
+    "reviewer": "owned_append_precognition_order_plan_review_20261012"
+  },
+  "native_discriminator": "Show no new completion before matching release, followed by stable genuine SSI and successful existing action. If contradictory SSI persists, reject the remedy hypothesis and replan explicitly; do not silently add option B.",
+  "risks": [
+    "Release-dependent presentation latency; report separately",
+    "Overlapping and autorepeated handled keys",
+    "Stale frame after cancellation, focus, owner, layout, config or boundary change",
+    "Unpublished candidates becoming selectable or positive learning",
+    "Background result before or after release",
+    "Failure cleanup for actual commit and publication"
+  ],
+  "verification": "Remote focused source: 726/726 PASS; fresh-context code review pass 2 pending; private native bytes not yet tested.",
+  "causal_red": {
+    "receipt": "/home/ubu/.cache/lay/development/run-6vd2evmi/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-5tpFmP/RESULT.json",
+    "archive_sha256": "ba8e98aefaa9c4df25918a594bf2be5ea7320dcce15fcfe7e928d44de67f55c2",
+    "passed": 721,
+    "failed": 1,
+    "failure": "New actual legacy-callback proof publishes a completion before matching handled release"
+  },
+  "implementation": "One inactive legacy presentation predicate at refresh, cached/background application and selected publication; existing dirty/frame latch, existing cache and worker, explicit deferred worker outcome. Successful actual CommitText registers its existing handled-key pairing before refresh, with failure cleanup preserving prior autorepeat pairing. WindowInteraction drains only after authentic handled release settlement and unchanged stored-frame revalidation.",
+  "source_green_before_selector_review": {
+    "receipt": "/home/ubu/.cache/lay/development/run-6oafx7hi/RESULT.json",
+    "passed": 725,
+    "failed": 0,
+    "archive_sha256": "81c9730d7b896d5627cf72b026135c625fbf610c1d405669f0cd02093fbba8b6",
+    "edge_cases": "Legacy no-connection output, four publication entrances, both overlapping release orders,11 frame revocation cases"
+  },
+  "code_review_pass_1": {
+    "score": 7,
+    "reviewer": "Fresh-context read-only inactive_completion_release_code_review1_20261012",
+    "blockers": [
+      "Up/Down performs candidate and prediction bookkeeping before the held-release publication fence. An unpublished target can become positive learning or declined material. Guard before selector refresh/cycle using the same predicate and existing client-navigation refusal."
+    ],
+    "native_acceptance": "PENDING"
+  },
+  "selector_review_resolution": {
+    "causal_red": "/home/ubu/.cache/lay/development/run-shb_ujsg/RESULT.json",
+    "passed": 725,
+    "failed": 1,
+    "failure": "Unpublished Up/Down candidate becomes prediction feedback before handled release",
+    "change": "Reuse the inactive handled-release predicate before selector refresh or cycle, cancel pending display and clear through the existing client-navigation refusal; do not record candidate prediction or learning."
+  },
+  "source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-wu_3e0t_/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-mXMvRr/RESULT.json",
+    "archive_sha256": "2e71844c9f2b6836fc915cf33488c9302a05ddad5b505894909aa01fb539bb11",
+    "passed": 726,
+    "failed": 0,
+    "runtime_authority_changed": false
+  },
+  "code_review_pass_2": {
+    "score": 9,
+    "reviewer": "Fresh-context read-only inactive_completion_release_code_review2_20261012",
+    "blockers": [],
+    "pass_1_blocker": "Resolved: held-release guard precedes selector refresh/cycle and prediction bookkeeping",
+    "proof_gaps": [
+      "Native acceptance and release-dependent presentation latency",
+      "Full affected-closure checks"
+    ]
+  },
+  "private_candidate": {
+    "source_gate": "/home/e/projects/lay-development-runner/run-mXMvRr",
+    "ime_sha256": "6385f9d1d3567b8917cd28f7dd8da569f04ce4da913f7efd3cf52bb03c6bc62c",
+    "daemon_sha256": "98810321cf292b856347635280b202108012ffcc0cc2a214db75e08c1b410371",
+    "installation": "REMOTE_PRIVATE_TEST_ONLY",
+    "laptop_installation": false
+  },
+  "native_result": {
+    "ime_sha256": "6385f9d1d3567b8917cd28f7dd8da569f04ce4da913f7efd3cf52bb03c6bc62c",
+    "normal_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-standard-normal-tri__xn0/RESULT.json",
+    "normal": {
+      "passed": 18,
+      "failed": 2
+    },
+    "private_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-standard-private-fp1bfo3w/RESULT.json",
+    "private": {
+      "passed": 18,
+      "failed": 2
+    },
+    "fullscreen_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-standard-fullscreen-b13gx3mo/RESULT.json",
+    "fullscreen": {
+      "passed": 17,
+      "failed": 3
+    },
+    "aggregate": {
+      "passed": 53,
+      "failed": 7,
+      "total": 60
+    },
+    "ordering_receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current6385/inactive-release-native-ordering.json",
+    "measured_scope": "Last literal release501/505 precedes newly shown suffix506 after genuine full SSI490/492; one boundedfield6ACTIVE diagnostic passes. First-letter Reset can erase handled ledger before release and bypass fence. This does not establish the whole-browser repair.",
+    "new_first_failed_transition": "Actual managed append full SSI then same-owner Reset before handled release discards confirmed observation; native Backspace receives fresh shortened SSI but has lost predecessor.",
+    "new_primary_receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current6385/native-inverse-backspace-reset-ordering.json",
+    "runtime_authority_changed": false
+  }
+}

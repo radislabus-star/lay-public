@@ -684,22 +684,28 @@ fn frame_bound_lexical_authority_survives_only_advisory_l4_ambiguity() {
         project_advisory_hidden_ambiguity(&event, &candidates, &mut evaluations, phase_margin);
         let admissions = context.admissions_for_event(&event, &candidates);
         assert_eq!(admissions, [true, false]);
+        let mut authority_lanes = super::AuthorityLaneBatch::new(&candidates, &evaluations);
         for (profile, expected) in [
             (CorrectionSafety::Normal, true),
             (CorrectionSafety::Experimental, true),
             (CorrectionSafety::Strict, false),
         ] {
-            let admission = super::authority_lane_allows_apply(
+            let admission = authority_lanes.admit(
                 &event,
                 0,
-                &candidates,
-                &evaluations,
                 super::TransitionDecisionPolicy {
                     l2_phase_apply: false,
                     correction_safety: profile,
                 },
                 candidates[0].clone(),
                 admissions[0],
+            );
+            let (scratch_candidates, scratch_evaluations) =
+                authority_lanes.scratch.as_ref().unwrap();
+            assert_eq!(scratch_candidates, &candidates);
+            assert_eq!(
+                format!("{scratch_evaluations:?}"),
+                format!("{evaluations:?}")
             );
             observations.push((phase_margin, profile, admission.is_some(), expected));
             if let Some(admission) = admission {
@@ -2921,4 +2927,34 @@ fn exact_positive_l4_memory_outvotes_only_unresolved_competitors() {
     assert!(unresolved_competitor_blocks(false, true));
     assert!(!unresolved_competitor_blocks(true, true));
     assert!(!unresolved_competitor_blocks(false, false));
+}
+#[test]
+fn explicit_user_word_preference_revokes_automatic_selection_and_keeps_identical_output() {
+    use crate::nanda_wave::usage_prior::snapshot_from_usage_events_for_tests;
+    use crate::typing_memory::TypingMemoryEvent;
+
+    let mut rows = Vec::new();
+    for _ in 0..3 {
+        for event in TypingMemoryEvent::observed_manual_restoration("Хунлу", "Хунту") {
+            // Exercise the actual typed wire shape through its public exporter.
+            rows.push(crate::nanda_wave::usage_prior::typing_memory_event_json_for_tests(&event));
+        }
+    }
+    let usage = snapshot_from_usage_events_for_tests(&rows.join("\n"));
+    let event = event("Хунлу ");
+    let mut batch = super::CandidateDecisionBatch::no_selection();
+    batch.selected_index = Some(0);
+    batch.selected_candidate = Some(candidate("Хунту ", "fixture"));
+    let preserved = batch.preserve_user_words(&event, &usage);
+    assert!(preserved.selected_index.is_none());
+    assert!(preserved.selected_candidate.is_none());
+    assert!(preserved.selected_transition.is_none());
+
+    let mut unchanged = super::CandidateDecisionBatch::no_selection();
+    unchanged.selected_index = Some(0);
+    unchanged.selected_candidate = Some(candidate("Хунлу ", "fixture"));
+    assert!(unchanged
+        .preserve_user_words(&event, &usage)
+        .selected_candidate
+        .is_some());
 }

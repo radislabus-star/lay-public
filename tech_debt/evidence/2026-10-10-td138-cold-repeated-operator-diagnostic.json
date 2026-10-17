@@ -1,0 +1,143 @@
+{
+  "schema": "lay.td138.cold-repeated-diagnostic.v1",
+  "records": [
+    {
+      "private_receipt": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/TD138_LEXICAL_SUBSTAGE.json",
+      "sha256": "1047f29ac59e98b112d06138203621a0420d597c611ea3cd082c3f08001e5e27",
+      "result": {
+        "schema": "lay.td138.ime-authority-contrast.v1",
+        "status": "DIAGNOSTIC_COMPLETE_NOT_CONTRACT_MIGRATION",
+        "baseline_head": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+        "baseline_archive_sha256": "51bd32fecb0d135840d904cebd2307555f254c78b13ef7a56d2ca507fa29a105",
+        "only_changed_path": "src/nanda_wave/candidate_gate.rs",
+        "baseline_test_source_sha256": "3c76238a0f1fe1dca374b48e96968cf5bc67f6710c5b052cc357d9cc4c8ed44c",
+        "contrast_test_source_sha256": "e49cc5040ed2de2eaec6a11e6659bb3a99295b1d103b46969d3a766bd86c1c09",
+        "only_changes": "Existing production IME policy in two benchmark fixtures plus worker-only generic lexical substage observer timers; material calls, merge order, inputs and budgets unchanged. Diagnostic overhead is not a gate pass.",
+        "source_stable": true,
+        "selected": 2,
+        "passed": 1,
+        "failed": 1,
+        "results": [
+          {
+            "test": "nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 0.43167145806364715,
+            "log_sha256": "3c84c403c2d03fd5c3f38c5d0321df36960512672a61e8cf8c51dc45ca9cdc33",
+            "timing_lines": [
+              "test nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget ... td138_lexical_substage token_chars=2 word_readout_us=6828 deletion_us=0 binding_us=195243 candidates=12",
+              "td138_lexical_substage token_chars=2 word_readout_us=5599 deletion_us=0 binding_us=27 candidates=12",
+              "td138_lexical_substage token_chars=2 word_readout_us=5831 deletion_us=0 binding_us=86 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=4513 deletion_us=0 binding_us=25 candidates=12"
+            ]
+          },
+          {
+            "test": "nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget",
+            "passed": false,
+            "failure": "UNCHANGED_PERFORMANCE_BUDGET_EXCEEDED",
+            "elapsed_seconds": 1.0163002810440958,
+            "log_sha256": "1b9fcfe1ec300b2597c57788214e6d2f9967e9c602724496684d9f05050824f3",
+            "timing_lines": [
+              "test nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget ... td138_lexical_substage token_chars=2 word_readout_us=6705 deletion_us=0 binding_us=194253 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=6351 deletion_us=0 binding_us=30 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=4678 deletion_us=0 binding_us=25 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=6390 deletion_us=0 binding_us=26 candidates=12",
+              "td138_lexical_substage token_chars=4 word_readout_us=4624 deletion_us=575449 binding_us=465 candidates=16",
+              "td138_lexical_substage token_chars=4 word_readout_us=4593 deletion_us=481 binding_us=279 candidates=15",
+              "td138_lexical_substage token_chars=5 word_readout_us=2364 deletion_us=535 binding_us=280 candidates=15",
+              "unique live prefix timings: [(\"пол\", 6693, 12), (\"цел\", 5080, 12), (\"рас\", 6826, 12), (\"оста\", 581484, 12), (\"дост\", 6096, 12), (\"остан\", 3988, 12)]; max=581484us; stages={\"authority_contract\":\"L2/L3/L4/Bayes are central field evidence; producers supply material, DecisionCore owns live display admission, verifier/AuthorizedEdit own mutation\",\"avg_us\":116028,\"l3_evaluated\":94,\"l3_supported\":0,\"l3_suppressed\":0,\"l4_scene\":{\"block\":0,\"suggest\":0,\"wait\":0},\"l4_scene_memory\":{\"authority\":\"central L4 field evidence; DecisionCore owns display admission and edit-plan safety stays final\",\"hits\":0},\"l4_signed_outcome\":{\"attract\":0,\"neutral\":94,\"repel\":0,\"transition_hits\":0,\"transition_repels\":0},\"live_completion_cache\":{\"hits\":0,\"misses\":7},\"max_us\":581480,\"no_candidate\":0,\"raw_candidates\":94,\"requests\":7,\"returned_candidates\":84,\"stage_us\":{\"decision_max\":127,\"decision_total\":299,\"l2_material_max\":580667,\"l2_material_total\":808060,\"l3_context_max\":402,\"l3_context_total\":441},\"usage_supported\":0}",
+              "unique live prefix readout exceeded 50000us: [(\"пол\", 6693, 12), (\"цел\", 5080, 12), (\"рас\", 6826, 12), (\"оста\", 581484, 12), (\"дост\", 6096, 12), (\"остан\", 3988, 12)]"
+            ]
+          }
+        ],
+        "runtime_authority_changed": false,
+        "installed_runtime_changed": false,
+        "native": "NOT_TESTED"
+      }
+    },
+    {
+      "private_receipt": "/home/ubu/.cache/lay/development/tab-full-04obkqdi/TD138_DELETION_SUBSTAGE.json",
+      "sha256": "0ac0c2fbac4c3f88f601f43f51bdb25fdc2f6fb99fa8d80fd6f93d225deaa00c",
+      "result": {
+        "schema": "lay.td138.ime-authority-contrast.v1",
+        "status": "DIAGNOSTIC_COMPLETE_NOT_CONTRACT_MIGRATION",
+        "baseline_head": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+        "baseline_archive_sha256": "51bd32fecb0d135840d904cebd2307555f254c78b13ef7a56d2ca507fa29a105",
+        "only_changed_path": "src/nanda_wave/candidate_gate.rs",
+        "baseline_test_source_sha256": "3c76238a0f1fe1dca374b48e96968cf5bc67f6710c5b052cc357d9cc4c8ed44c",
+        "contrast_test_source_sha256": "29a4388c713edbbf4ede0431624d64e32a780b9114333199a7f97f122f0baf13",
+        "only_changes": "Existing production IME policy in two benchmark fixtures plus worker-only generic lexical substage observer timers; material calls, merge order, inputs and budgets unchanged. Diagnostic overhead is not a gate pass.",
+        "source_stable": true,
+        "selected": 2,
+        "passed": 1,
+        "failed": 1,
+        "results": [
+          {
+            "test": "nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 0.42957483790814877,
+            "log_sha256": "6d9a5c211fc0d6b8261161673e185ce7a7ac9a82a3dcd6fbd7f5bb949e65047e",
+            "timing_lines": [
+              "test nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget ... td138_lexical_substage token_chars=2 word_readout_us=6957 deletion_us=0 binding_us=193842 candidates=12",
+              "td138_lexical_substage token_chars=2 word_readout_us=5728 deletion_us=0 binding_us=27 candidates=12",
+              "td138_lexical_substage token_chars=2 word_readout_us=5930 deletion_us=0 binding_us=86 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=4465 deletion_us=0 binding_us=25 candidates=12"
+            ]
+          },
+          {
+            "test": "nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget",
+            "passed": false,
+            "failure": "UNCHANGED_PERFORMANCE_BUDGET_EXCEEDED",
+            "elapsed_seconds": 1.0268478200305253,
+            "log_sha256": "a30e6f04f0ca6fd5277ba2c4a1d3db8643674ac6f6a5f4c8b7b944726c9abdb7",
+            "timing_lines": [
+              "test nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget ... td138_lexical_substage token_chars=2 word_readout_us=6920 deletion_us=0 binding_us=192825 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=6418 deletion_us=0 binding_us=29 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=4790 deletion_us=0 binding_us=25 candidates=12",
+              "td138_lexical_substage token_chars=3 word_readout_us=6572 deletion_us=0 binding_us=25 candidates=12",
+              "td138_deletion_substage token_chars=4 repeated_us=581798 exact_deletion_us=613 candidates=4",
+              "td138_lexical_substage token_chars=4 word_readout_us=4663 deletion_us=582427 binding_us=452 candidates=16",
+              "td138_deletion_substage token_chars=4 repeated_us=14 exact_deletion_us=462 candidates=3",
+              "td138_lexical_substage token_chars=4 word_readout_us=4755 deletion_us=485 binding_us=272 candidates=15",
+              "td138_deletion_substage token_chars=5 repeated_us=16 exact_deletion_us=525 candidates=3",
+              "td138_lexical_substage token_chars=5 word_readout_us=2407 deletion_us=549 binding_us=281 candidates=15",
+              "unique live prefix timings: [(\"пол\", 6756, 12), (\"цел\", 5189, 12), (\"рас\", 6993, 12), (\"оста\", 588475, 12), (\"дост\", 6250, 12), (\"остан\", 4058, 12)]; max=588475us; stages={\"authority_contract\":\"L2/L3/L4/Bayes are central field evidence; producers supply material, DecisionCore owns live display admission, verifier/AuthorizedEdit own mutation\",\"avg_us\":116935,\"l3_evaluated\":94,\"l3_supported\":0,\"l3_suppressed\":0,\"l4_scene\":{\"block\":0,\"suggest\":0,\"wait\":0},\"l4_scene_memory\":{\"authority\":\"central L4 field evidence; DecisionCore owns display admission and edit-plan safety stays final\",\"hits\":0},\"l4_signed_outcome\":{\"attract\":0,\"neutral\":94,\"repel\":0,\"transition_hits\":0,\"transition_repels\":0},\"live_completion_cache\":{\"hits\":0,\"misses\":7},\"max_us\":588472,\"no_candidate\":0,\"raw_candidates\":94,\"requests\":7,\"returned_candidates\":84,\"stage_us\":{\"decision_max\":128,\"decision_total\":293,\"l2_material_max\":587663,\"l2_material_total\":814408,\"l3_context_max\":409,\"l3_context_total\":448},\"usage_supported\":0}",
+              "unique live prefix readout exceeded 50000us: [(\"пол\", 6756, 12), (\"цел\", 5189, 12), (\"рас\", 6993, 12), (\"оста\", 588475, 12), (\"дост\", 6250, 12), (\"остан\", 4058, 12)]"
+            ]
+          }
+        ],
+        "runtime_authority_changed": false,
+        "installed_runtime_changed": false,
+        "native": "NOT_TESTED"
+      }
+    }
+  ],
+  "causal_scope": "Word readout ~4.7ms; first repeated-letter call581798us; exact deletion lookup613us. Subsequent repeated-letter calls14/16us. Full-reference lookup before operator geometry identified by source; unchanged candidate/lattice/budget. No native or source gate acceptance.",
+  "tdd_red": [
+    {
+      "label": "format_failed_before_red",
+      "path": "/home/ubu/.cache/lay/development/run-t9sw5156/RESULT.json",
+      "sha256": "22b429da970f482255a9c1310524fe6da7b930bf3852d4c72c3f0c925617dd6b",
+      "status": null,
+      "test_summary": null,
+      "failed_step": null,
+      "failures": null
+    },
+    {
+      "label": "cold_noop_red",
+      "path": "/home/ubu/.cache/lay/development/run-blc5v_r1/RESULT.json",
+      "sha256": "f331fa9b733be8ea07b08e5c2b81171a66343d0115b449172f5647f9faac1226",
+      "status": null,
+      "test_summary": {
+        "executed": 1818,
+        "failed": 1,
+        "passed": 1817,
+        "selected": 1818
+      },
+      "failed_step": null,
+      "failures": null
+    }
+  ],
+  "production_diff": "Existing pure repeated-run material before lexical lookup, empty returns None; same material reused through all unchanged lexical/short-function/length/vowel/filter/sort/dedup/score guards. New cold/no-op process proof. Actual IME benchmark policy and nonvacuity changes retain inputs, timing bounds and existing semantic assertions. GREEN/full pending."
+}

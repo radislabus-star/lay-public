@@ -1,0 +1,103 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-14",
+  "status": "SOURCE_VERIFIED_SCOPED_NATIVE_CONFIRMED",
+  "decision": "A same physical manual gesture may use the existing exact client refresh after a completed paired native replay when the current actual client receipt is still a prior surface. Awaiting remains inert until existing exact final client verification.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "reason": "LocalFirefox83 actualiframe10 targetfirstconverted, next4livebridge intentsfailcontext_authority; unconfirmed observed_replay_prior_surface and no displayed completion. Genuine controlled replay/Reset/old SSI then ManualToggleV3 causally reproduces NotHandled vs required AwaitingExactSnapshot.",
+  "source_causal_red": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/iframe-refresh-red-7e7n5ns2/RESULT.json",
+  "prior_source_scope": "Remote797 existing IME testsPASS; new causal test initially checked wrong KnownStart-only provenance afterReset; corrected to existing reset/boundary provenance union before demonstrating RPC0 vs4. First failed setup/format/metadata scopes retained.",
+  "options": [
+    {
+      "design": "Existing same-gesture exact refresh, completed paired source proof, actual prior snapshot at end caret, unchanged existing final verifier",
+      "score": 9
+    },
+    {
+      "design": "Promote local projected buffer without a current client receipt",
+      "score": 2,
+      "rejected": true
+    },
+    {
+      "design": "Extend Reset or bridge deadlines",
+      "score": 3,
+      "rejected": true
+    }
+  ],
+  "change_scope": "Four existing IME files plus residual causal fixture module. Add manual-only wait eligibility for current completed native replay, preserve existing pending_manual_toggle and700ms lease. Request uses same RequireSurroundingText output and same final receipt/delegation. No new owner/queue/timer, delivery route, model, candidate or verifier change. Space/Tab/prediction computation predicate remains unchanged.",
+  "requirements": [
+    "Marked exact-refresh client capability",
+    "Same live reducer owner/token/word/purpose/layout/paired completed projection",
+    "Initial prior client snapshot unselected with end caret",
+    "No text mutation before actual final exact receipt",
+    "Reject incomplete/expired/revoked/foreign/selected provenance",
+    "Existing source/native/browser controls must not losePASS"
+  ],
+  "user_telegram_scope": "User reportsTelegram also; any available nonsensitive empty text field is allowed, without account authorization or messages. Current localSnapTelegramPID5431 has no exposed accessibility children despiteQT_ACCESSIBILITY1. Use a real available field, no profile cloning or auth-dependent stall.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "installed_runtime_changed": false,
+  "not_tested": [
+    "New implementation source tests",
+    "Changed-byte localiframe/Telegram",
+    "Changed-byte fullFirefox/Chromematrix"
+  ],
+  "source_results": {
+    "focused": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/iframe-refresh-red-jizbtpol/RESULT.json",
+    "focused_passed": 2,
+    "full_ime": "/home/ubu/.cache/lay/development/run-w68csclm/RESULT.json",
+    "full_ime_passed": 799,
+    "integration_and_architecture": "PASS51/51 contracts, canonical remote architecture graph and guards PASS",
+    "installed_native": "Scoped Firefox2/2PASS; Telegram USER_ACCEPTED",
+    "independent_review": "NOT_RUN_AGENT_THREAD_LIMIT",
+    "integration_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/iframe-refresh-integration-corrected/SUMMARY.json"
+  },
+  "installed_candidate_build_sha256": "330eda0c21a93a446eb96224f59c2f63f54c1291aee486d6a7d8778ad34fd191",
+  "runtime_change_scope": "Only lay-ibus-engine is built/installed; version1.0.83 retained for this fix trial, exact different candidate SHA recorded. Existing daemon/CLI/extension/models unchanged.",
+  "installed_runtime": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install-iframe-refresh-20261014T171918Z/INSTALL.json",
+    "ime": {
+      "pid": 1525739,
+      "starttick": "20955217",
+      "loaded_sha256": "330eda0c21a93a446eb96224f59c2f63f54c1291aee486d6a7d8778ad34fd191"
+    },
+    "protected_files_unchanged": 28,
+    "daemon_ibus_l11_l3_unchanged": true,
+    "native_result": "IFRAME10_ACTIVE_ROUNDTRIP_AND_AFTER_SPACE_FIVE_TARGETS_PASS"
+  },
+  "native_receipt": "/home/ubu/.cache/lay/development/firefox83-refresh-iframe-sequence-3uth_s5g/RESULT.json",
+  "native_timing": {
+    "passed": 2,
+    "failed": 0,
+    "scope": "Causal iframe10 exact word active roundtrip2 plus after-Space5-target burst, final decoder checked; not full browser acceptance",
+    "samples": 7,
+    "required": 7,
+    "missing": 0,
+    "median_ms": 115.23419797420502,
+    "p95_ms": 222.17005801200867,
+    "max_ms": 222.17005801200867,
+    "source_receipt": "/home/ubu/.cache/lay/development/firefox83-refresh-iframe-sequence-3uth_s5g/RESULT.json",
+    "keys": 78,
+    "held_after": []
+  },
+  "telegram_acceptance": {
+    "kind": "EXPLICIT_USER_CONFIRMATION",
+    "text": "Телга отлично работает!",
+    "scope": "Current installed local1.0.83 patched IME, any available Telegram field; no further Telegram tests after acceptance",
+    "sends": 0
+  },
+  "scope_limits": [
+    "Not a new full216/browser receipt; latest complete remains WG343/56/33 on earlier bytes",
+    "Independent context-free review NOT_RUN because agent thread limit; no score",
+    "TD121 overall remains OPEN; no universal all-window claim or publication"
+  ]
+}

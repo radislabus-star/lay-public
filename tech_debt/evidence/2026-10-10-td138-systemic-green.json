@@ -1,0 +1,99 @@
+{
+  "private_receipt": "/home/ubu/.cache/lay/development/tab-manifest-su5dwwq4/TD138_SYSTEMIC_GREEN.json",
+  "receipt_sha256": "fdfbff2f9f192ec78ebec47229ba47285c57ed9d9ece496d0bea386ecdc5d686",
+  "record": {
+    "schema": "lay.td138.systemic-green.v1",
+    "status": "DIAGNOSTIC_COMPLETE_NOT_FULL_GATE",
+    "source_head": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+    "source_archive_sha256": "cfa68f15d01bbfa29acadf65b08a2f306ffdc7dcc3bf62c340feea1e78790ce4",
+    "old_reference_fixture_archive_sha256": "51bd32fecb0d135840d904cebd2307555f254c78b13ef7a56d2ca507fa29a105",
+    "results": [
+      {
+        "variant": "ime",
+        "selected": 3,
+        "passed": 3,
+        "failed": 0,
+        "source_stable": true,
+        "only_variant_difference": "Full-reference variant restores the two exact old benchmark functions; systemic production repair and cold no-op test are unchanged. IME variant is unchanged frozen actual source.",
+        "source_hashes": {
+          "src/nanda_wave/candidate_gate.rs": "ca7e26c1e263788e6a80439c6db2602ebccb123562e755c82c828ff5ed2462ab",
+          "src/ru_typo/repeated.rs": "848ac3b55e5e4bceceea5ecb44e162c863d37d74cbc6f7fb5d45334c7c738572",
+          "scripts/test_lanes/discovery.py": "9c30af1a0909cab3da40c4265ef9e7a01de534958c146372379f9c835275b2e9"
+        },
+        "tests": [
+          {
+            "test": "ru_typo::repeated::tests::repeated_letter_without_a_repeated_run_keeps_reference_cold",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 0.0077005920466035604,
+            "log_sha256": "ce67ec078e21191dc3949d46227206ecf8f205406bb77c4750eedee10ef89538",
+            "timing_lines": []
+          },
+          {
+            "test": "nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 0.428936721989885,
+            "log_sha256": "500e79b104bc6085ce39a4c040a38b22a991d0882e8b1cfb675ddf6050123be7",
+            "timing_lines": []
+          },
+          {
+            "test": "nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 0.4405136739369482,
+            "log_sha256": "0eb8b51844dc9f9796b43b77033005070676eb552f73a879c4aeb8e82325e546",
+            "timing_lines": [
+              "test nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget ... unique live prefix timings: [(\"пол\", 6773, 12), (\"цел\", 5154, 12), (\"рас\", 6958, 12), (\"оста\", 6425, 12), (\"дост\", 6067, 12), (\"остан\", 4031, 12)]; max=6958us; stages={\"authority_contract\":\"L2/L3/L4/Bayes are central field evidence; producers supply material, DecisionCore owns live display admission, verifier/AuthorizedEdit own mutation\",\"avg_us\":33793,\"l3_evaluated\":94,\"l3_supported\":0,\"l3_suppressed\":0,\"l4_scene\":{\"block\":0,\"suggest\":0,\"wait\":0},\"l4_scene_memory\":{\"authority\":\"central L4 field evidence; DecisionCore owns display admission and edit-plan safety stays final\",\"hits\":0},\"l4_signed_outcome\":{\"attract\":0,\"neutral\":94,\"repel\":0,\"transition_hits\":0,\"transition_repels\":0},\"live_completion_cache\":{\"hits\":0,\"misses\":7},\"max_us\":201155,\"no_candidate\":0,\"raw_candidates\":94,\"requests\":7,\"returned_candidates\":84,\"stage_us\":{\"decision_max\":134,\"decision_total\":283,\"l2_material_max\":200111,\"l2_material_total\":232444,\"l3_context_max\":448,\"l3_context_total\":480},\"usage_supported\":0}"
+            ]
+          }
+        ]
+      },
+      {
+        "variant": "full-reference",
+        "selected": 3,
+        "passed": 3,
+        "failed": 0,
+        "source_stable": true,
+        "only_variant_difference": "Full-reference variant restores the two exact old benchmark functions; systemic production repair and cold no-op test are unchanged. IME variant is unchanged frozen actual source.",
+        "source_hashes": {
+          "src/nanda_wave/candidate_gate.rs": "3c76238a0f1fe1dca374b48e96968cf5bc67f6710c5b052cc357d9cc4c8ed44c",
+          "src/ru_typo/repeated.rs": "848ac3b55e5e4bceceea5ecb44e162c863d37d74cbc6f7fb5d45334c7c738572",
+          "scripts/test_lanes/discovery.py": "9c30af1a0909cab3da40c4265ef9e7a01de534958c146372379f9c835275b2e9"
+        },
+        "tests": [
+          {
+            "test": "ru_typo::repeated::tests::repeated_letter_without_a_repeated_run_keeps_reference_cold",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 0.009004209190607071,
+            "log_sha256": "ce67ec078e21191dc3949d46227206ecf8f205406bb77c4750eedee10ef89538",
+            "timing_lines": []
+          },
+          {
+            "test": "nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 7.879999209893867,
+            "log_sha256": "a9ccc056cf0e7492347519b589b5cd3825a947533941bde8c26789260ca84eba",
+            "timing_lines": []
+          },
+          {
+            "test": "nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget",
+            "passed": true,
+            "failure": null,
+            "elapsed_seconds": 7.934558452107012,
+            "log_sha256": "9e4e236f81169fcdb5f2a4d34638553bf15fe26185fc7984683053996e3a45ff",
+            "timing_lines": [
+              "test nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget ... unique live prefix timings: [(\"пол\", 6753, 12), (\"цел\", 5177, 12), (\"рас\", 6938, 12), (\"оста\", 6436, 12), (\"дост\", 6099, 12), (\"остан\", 4102, 12)]; max=6938us; stages={\"authority_contract\":\"L2/L3/L4/Bayes are central field evidence; producers supply material, DecisionCore owns live display admission, verifier/AuthorizedEdit own mutation\",\"avg_us\":1099940,\"l3_evaluated\":94,\"l3_supported\":0,\"l3_suppressed\":0,\"l4_scene\":{\"block\":0,\"suggest\":0,\"wait\":0},\"l4_scene_memory\":{\"authority\":\"central L4 field evidence; DecisionCore owns display admission and edit-plan safety stays final\",\"hits\":0},\"l4_signed_outcome\":{\"attract\":0,\"neutral\":94,\"repel\":0,\"transition_hits\":0,\"transition_repels\":0},\"live_completion_cache\":{\"hits\":0,\"misses\":7},\"max_us\":7664086,\"no_candidate\":0,\"raw_candidates\":94,\"requests\":7,\"returned_candidates\":84,\"stage_us\":{\"decision_max\":133,\"decision_total\":281,\"l2_material_max\":7663385,\"l2_material_total\":7695794,\"l3_context_max\":84,\"l3_context_total\":109},\"usage_supported\":0}"
+            ]
+          }
+        ]
+      }
+    ],
+    "runtime_authority_changed": false,
+    "installed_runtime_changed": false,
+    "native": "NOT_TESTED"
+  },
+  "verdict_scope": "6/6 exact controlled proofs: one cold/no-op and two unchanged-budget performance identities under each of actual IME and exact old full-reference fixture setup. Not full source/native acceptance."
+}

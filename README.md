@@ -15,7 +15,7 @@
 
 ![RU / EN](https://img.shields.io/badge/языки-RU_%2F_EN-CCFF77?labelColor=242B35)
 ![Wayland](https://img.shields.io/badge/Linux-Wayland-81B7FF?labelColor=242B35)
-[![Версия исходников](https://img.shields.io/badge/main-1.0.80-CCFF77?labelColor=242B35)](VERSIONING.md)
+[![Версия исходников](https://img.shields.io/badge/main-1.0.89-CCFF77?labelColor=242B35)](VERSIONING.md)
 [![Alpha](https://img.shields.io/badge/статус-alpha-FFD279?labelColor=242B35)](#compatibility)
 [![Лицензия](https://img.shields.io/badge/лицензия-Non--Commercial-C9B7FF?labelColor=242B35)](#license)
 
@@ -109,9 +109,10 @@ Lay работает с текущим вводом: для обычного и�
 curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
 ```
 
-Установщик скачивает исходники и необходимые данные. После первой установки
-**выйдите из пользовательской сессии и войдите снова**: это применяет группу
-`input`, доступ к `/dev/uinput` и интеграцию с рабочим столом.
+Установщик скачивает исходники и необходимые данные. Доступ к evdev/uinput
+выдаёт `udev`/`logind` для активной локальной сессии; добавление в группу
+`input` и перелогин ради прав больше не требуются. Для первоначальной
+интеграции с рабочим столом может потребоваться повторный вход в сессию.
 
 ### 2. Попробуйте Double Shift
 
@@ -176,9 +177,13 @@ deployment через `rpm-ostree`, перезагрузите систему и
 отдельные поля Tor Browser и веб-приложений остаются зоной доводки. Подсказки к
 командам не заменяют автодополнение вашей оболочки и не покрывают все команды.
 
-В `main` опубликованы исходники **1.0.80**. Эта версия улучшает обработку Reset,
-пробела и повторных действий в Firefox. Полная грамматика русского, понимание
-целого абзаца и безошибочная работа во всех окнах не заявлены.
+Версия исходников — **1.0.89**. Улучшен Double Space в редактируемых блоках
+и iframe; сохраняется точная серия пробелов и предыдущий текст.
+[Изменения 1.0.89 и ограничения](docs/release-1.0.89.md).
+Последний оформленный релиз
+исходников — [1.0.89](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.89).
+Полная грамматика русского, понимание целого абзаца и безошибочная работа во всех
+окнах не заявлены.
 
 [Область проверки 1.0.80](docs/architecture/firefox-input-stability-2026-10-05.md) ·
 [Изменения версий](VERSIONING.md) ·
@@ -270,7 +275,7 @@ and terminal-command priority help with everyday mixed-language input.
 
 GNOME Wayland is the primary target; other backends have smaller coverage. The
 project is alpha, field compatibility varies, and only RU/EN is currently supported.
-The normal typing path needs no cloud API. Source version: **1.0.80**.
+The normal typing path needs no cloud API. Source version: **1.0.89**.
 
 [Install](#install) · [Documentation](docs/README.md) · [Non-Commercial License](LICENSE)
 

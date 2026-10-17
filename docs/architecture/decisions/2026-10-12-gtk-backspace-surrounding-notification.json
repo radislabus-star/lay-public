@@ -1,0 +1,61 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-12",
+  "task": "TD-121",
+  "status": "NATIVE_FAIL_EXPERIMENT_REVERTED",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing Firefox GTK surrounding-notification compatibility adapter",
+  "first_failed_transition": "Fresh identical GTK SetSurroundingText reaches IBus InputContext after erasure, but stock bus_engine_proxy_set_surrounding_text suppresses unchanged text/cursor/anchor. No Engine SetSurroundingText follows.",
+  "decision": "Extend the existing outermost handled-release notification to Backspace only, with unchanged command-modifier and GtkIMMulticontext/ibus filters. Call the original GTK filter exactly once per event and preserve its return. Request real client surrounding through the existing retrieve-surrounding signal; never construct or authorize a cached snapshot. IME exact receipt validation remains mandatory.",
+  "alternatives": [
+    {
+      "solution": "Notify real GTK surrounding on handled Backspace release using existing adapter",
+      "score": 9
+    },
+    {
+      "solution": "Permanent interception of IBus require-surrounding signals with new object-lifetime bookkeeping",
+      "score": 6
+    },
+    {
+      "solution": "Authorize the matching old snapshot or fabricate a client receipt",
+      "score": 1,
+      "rejected": true
+    }
+  ],
+  "delivery_routes_changed": false,
+  "installed_laptop_changed": false,
+  "upstream_sources": [
+    "https://raw.githubusercontent.com/ibus/ibus/1.5.34-rc2/client/gtk2/ibusimcontext.c",
+    "https://raw.githubusercontent.com/ibus/ibus/1.5.34-rc2/src/ibusinputcontext.c",
+    "https://raw.githubusercontent.com/ibus/ibus/1.5.34-rc2/bus/engineproxy.c"
+  ],
+  "proof": {
+    "planned_source": "Stub-linked real C adapter: handled/press/unhandled/command modifiers/Shift/non-IBus/simple/nested/null and unchanged original filter result; existing printable/reset/capability contracts.",
+    "planned_native": "First rerun exact four-field second-inverse roundtrip; preserve any FAIL and measure speed; full browser standard remains required.",
+    "source_red": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/frontend-proof/RED.json",
+    "source_green": {
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/frontend-proof/GREEN.json",
+      "tests": 2,
+      "failures": 0
+    },
+    "review_pass_1": {
+      "score": 9,
+      "blockers": 0,
+      "scope": "C source correctness only; native acceptance fails"
+    },
+    "native": {
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-2jn246cv/RESULT.json",
+      "result": "4/4 FAIL second inverse; printable and Backspace requests supplied but no engine receipt"
+    },
+    "native_wire": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/frontend-proof/native-dedup-wire.json",
+    "cleanup": "Root reverted only this experiment C/test diff, retained patch and RED/GREEN/native receipts; no ineffective extra notification shipped."
+  }
+}

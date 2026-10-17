@@ -1,0 +1,40 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "RETIRED_PRIVATE_DIAGNOSTIC_AFTER_LOCALIZATION",
+  "decision": "Profile existing manual dispatch and exact replay stages in the current daemon with the existing private timing sink; measure before altering pacing. Diagnostics carry only durations and fixed stage/status names.",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "authority_changed": false,
+  "runtime_timing_deadlines_changed": false,
+  "new_rpc_poll_queue_or_owner": false,
+  "route_changed": false,
+  "installed_runtime_changed": false,
+  "source_scope": [
+    "src/bin/lay_daemon/manual_trigger_runtime/ime.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs"
+  ],
+  "proof": "Source guards, then private remote fixed native actors with continuous DOM timing; all errors/missing timings preserved; both A/B candidates share identical instrumentation. No stable p95 inference from7 old mixed samples.",
+  "user_instruction": "\u0434\u0435\u043b\u0430\u0439: implement recommended profile then optimize measured expensive stage",
+  "recorded_utc": "2026-10-14T23:03:55.418448+00:00",
+  "source_receipt": "/home/ubu/.cache/lay/development/run-ul0zu9mi/RESULT.json",
+  "source_passed": 324,
+  "source_archive_sha256": "3231f622394b0f09e66210534e7cb0bce37d6363d4d1c65fbe155c7928d46049",
+  "independent_review": "NOT_RUN_AGENT_THREAD_LIMIT",
+  "retirement_reason": "Existing Chrome no-history proof requires all visited Lay sink roots unchanged. Temporary stage timings had no per-field personalization fence; no raw text was logged, but timing writes would violate this stricter contract. Remove diagnostic code entirely from final candidate and compare original accepted83 baseline and optimized daemon with neither instrumentation; retain private diagnostic source/binary/data for causal localization only. Installed accepted runtime was never changed.",
+  "measured_partial_medians_ms": {
+    "dispatch": 5,
+    "replay": 69,
+    "delete": 28,
+    "layout": 24
+  },
+  "temporary_source_gate": "/home/ubu/.cache/lay/development/run-ul0zu9mi/RESULT.json"
+}

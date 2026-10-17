@@ -1,0 +1,450 @@
+{
+  "id": "2026-10-13-native-replay-progress-receipts",
+  "status": "F_SOURCE754_PASS_BOTH_NATIVE_FAIL_NEXT_FACTORY_CAPTURE_CAUSAL_PENDING",
+  "invariants": [
+    "C03",
+    "C05",
+    "C07",
+    "C08"
+  ],
+  "owner": "Existing ContextAdmissionReducer and WindowInteraction replay receipt contour",
+  "checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "private_ime_sha256": "36952d5576dbd6014ccf0059321cd6dbfe8680d8153db91bab36b2168833893d",
+  "measured_native": {
+    "proof": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native369-chrome-proof.json",
+    "groups": {
+      "standard": {
+        "required": 60,
+        "counts": {
+          "PASS": 20,
+          "FAIL": 38,
+          "BLOCKED": 2
+        },
+        "speed": {
+          "double_shift": {
+            "required": 420,
+            "measured": 158,
+            "missing": 262,
+            "p50_ms": 92.70119299739599,
+            "p95_ms": 113.10524100065231,
+            "max_ms": 122.65680899471045,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "panel": {
+        "required": 6,
+        "counts": {
+          "PASS": 3,
+          "FAIL": 3
+        },
+        "speed": {
+          "double_shift": {
+            "required": 48,
+            "measured": 27,
+            "missing": 21,
+            "p50_ms": 92.45702799409628,
+            "p95_ms": 112.34908600151539,
+            "max_ms": 113.5397019982338,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "functional": {
+        "required": 150,
+        "counts": {
+          "PASS": 96,
+          "FAIL": 43,
+          "BLOCKED": 11
+        },
+        "speed": {
+          "double_shift": {
+            "required": 210,
+            "measured": 129,
+            "missing": 81,
+            "p50_ms": 91.0022400021553,
+            "p95_ms": 131.70241499692202,
+            "max_ms": 135.8095799908042,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "space": {
+            "required": 50,
+            "measured": 38,
+            "missing": 12,
+            "p50_ms": 18.89273700118065,
+            "p95_ms": 24.600689999759197,
+            "max_ms": 27.312478996813297,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "tab": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "selection": {
+            "required": 10,
+            "measured": 10,
+            "missing": 0,
+            "p50_ms": 20.042162999510765,
+            "p95_ms": 22.38442600518465,
+            "max_ms": 22.38442600518465,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      }
+    },
+    "wire": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-receipt-wire-dx734unk/WIRE.json",
+    "wire_sha256": "ad5f45ad327f8b7073bb3f1a211189430d196581891bfc717459f54e7334e2ba",
+    "native_sequence": "All replacement native key callbacks incl Space finish before late actual SSI ghbdt5/5 then ghbdtn6/6 then ghbdtnSpace7/7. Trace retains first strict prefix then rejects second at revision_gap2/identity_current=false, before final whole actual snapshot. Subsequent physical decoder letter+Backspace returns exact surface, but next gesture VisibleTail is passive:unknown-context. Diagnostic-only wire overhead not measured."
+  },
+  "root_hypothesis": "Generic single strict-prefix receipt handling also consumes independently proven completed exact native replay lineage while real ordered target snapshots still arrive. First shared mechanism identified; actual callback TDD must locate and prove the loss before production edit. Not every functional failure shares this cause.",
+  "options": [
+    {
+      "solution": "Retain inert progress only under SAME current local/shared exact native replay proof and validated original whole prefix; require fresh exact final snapshot for authority",
+      "score": 9,
+      "recommended": true,
+      "limits": "No new owner/timer/snapshot manufacture. Positive exact effect proof required; contradictory prefix/caret/selection/focus/content/expiry or spent source remains refusal. Existing generic strict-prefix/managed-preedit rules unchanged."
+    },
+    {
+      "solution": "Extend waits or time budgets",
+      "score": 3,
+      "limits": "Does not repair authority lost before actual final receipt; masks order."
+    },
+    {
+      "solution": "Bypass context gate or change browser delivery flags",
+      "score": 1,
+      "limits": "Violates single authority and delivery constraints."
+    },
+    {
+      "solution": "Redesign all replay ownership/state components",
+      "score": 5,
+      "limits": "Possible later phase; unnecessary before a narrow proved repair."
+    }
+  ],
+  "required_causal_test": "Actual original SSI -> ManualToggle/VisibleTail -> factory handoff -> suppression paired scope -> real full native replay callbacks -> several actual end-of-whole target-prefix SSI -> exact final SSI, with/without Reset, empty/multilingual external prefix. No target snapshot/scope seeding. No exact edit authority before final; separate independently bootstrapped refusal fixture. Current KnownStart is legitimate after completed native Space. Reset uses existing alignment; no-Reset uses exact current-token/whole-SSI route plus settled native provenance. Adjacent revisions and nondecreasing raw full prefixes (duplicates inert), no counter/timer. One-use final. Changed external/unchanged prefix, future/extra/regressing text, caret/selection, owner/focus/content/capability, unequal scope pair, extra key/epoch, expiry/spent source stay refusal including subsequent matching final. Preserve all generic guards/old assertions.",
+  "private_mode_separate": "Actual Chrome private hints2112 contain PRIVATE; current content_is_sensitive disables manual authority. This is an intentional policy boundary, not evidence of the replay-progress cause. Original private20 FAIL retained; changing private policy is not included in this minimal proposal.",
+  "production_edit": {
+    "scope": "Existing actual-SSI receipt observer plus reducer settled closed-boundary validator and same reducer adapter, no new owner/counter/timer",
+    "progress": "Current paired completed native proof, exact whole external+unchanged prefix, adjacent actual revisions; nondecreasing raw target prefixes (duplicate inert), no exact edit authority. Contradictory regression spends source. Existing generic guards untouched.",
+    "final": "Whole actual snapshot+end caret/no selection and consume same paired source once. UnknownStart Reset retains original epoch alignment. Current KnownStart/noReset validates already settled exact reducer epoch/bridge token and source projection; no lineage/epoch alignment.",
+    "baseline": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/F-before"
+  },
+  "source_test": {
+    "verdict": "RED",
+    "counts": {
+      "PASS": 751,
+      "FAIL": 1,
+      "SELECTED": 752
+    },
+    "local": "/home/ubu/.cache/lay/development/run-lwkmaj76/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-N2ILHv/RESULT.json",
+    "archive_sha256": "edf93e679d6754354cccf9b780f77db40ae3b86af210967be7e3c39daf849ecd",
+    "first_failure": "No Reset, empty observed external prefix, raw Space, second actual target prefix phi; revision3/current KnownStart observed_suffix0. Same measured loss as Chrome wire."
+  },
+  "changed_native_acceptance": "FAIL",
+  "delivery_routes_changed": false,
+  "plan_review": {
+    "pass": 1,
+    "score": 8,
+    "scope": "F only, independent reread without previous A/B conclusions; read-only",
+    "clarifications": [
+      "Inert progress accepts existing current UnknownStart or exact current KnownStart boundary only; generic guard unchanged.",
+      "Reset final keeps existing epoch alignment; no-Reset final keeps existing current-token/whole-SSI KnownStart authority and separately validates settled native provenance.",
+      "Unknown before final means no exact edit authority, not forced UnknownStart enum; actual refusal needs separate fixture.",
+      "Use existing previous_snapshot/revision for growing or duplicate target prefix; contradiction/regression then final must not recover through F."
+    ]
+  },
+  "first_fix_rejected": {
+    "receipt": "/home/ubu/.cache/lay/development/run-wq31mpm4/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-NhTIUd/RESULT.json",
+    "counts": {
+      "PASS": 750,
+      "FAIL": 2,
+      "SELECTED": 752
+    },
+    "causal_failure": "same noReset second target progress; reset-only provenance does not cover current source",
+    "regression": "Existing delayed client surfaces test count4 source_prefixes=false rejected; refine target progress phase without weakening old assertion",
+    "build_or_native": "NOT_STARTED"
+  },
+  "refined_scope": "Current KnownStart completed-native path ONLY. Preserve existing authenticated Reset delayed/decreasing surface contract and exact alignment unchanged. A noReset source can share current revocation while its lineage differs: SAME connection/owner/activation/revocation plus revalidated current KnownStart boundary token, fully settled exact projected reducer epoch and current equal complete local/shared scope provide narrow native provenance. No generic Reset-provenance weakening.",
+  "new_adverse_cases": "Separate actual pre-final consumers with/withoutReset; 19 contradiction schedules include KnownStart regression, foreign prefix/future text/caret/selection, pair mismatch/expired/spentsource/extra key and deferred ContentType ingress. Old authenticated Reset allows independently receipted decreasing delayed surfaces and is covered by its unchanged positive test. Assert no recovered native ACK and no actual exact edit/delegation/text effects; a separately legitimate ordinary whole receipt is not forbidden merely by its confirmation flag.",
+  "compiled_adverse_red": {
+    "local": "/home/ubu/.cache/lay/development/run-bn0msgwv/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-4XdLiS/RESULT.json",
+    "counts": {
+      "PASS": 751,
+      "FAIL": 3,
+      "SELECTED": 754
+    },
+    "facts": "Actual noReset KnownStart realManual delegates before full receipt and after contradictory regression; previous source tests all PASS. NBSP fixture incorrectly assumed native planner preserved raw whitespace; planner intentionally projects trailing whitespace to ASCII Space. Target fixture now asserts actual planned replacement and supplies that exact raw final, while source NBSP and old Reset NBSP presentation fixture remain covered."
+  },
+  "compile_failure": {
+    "local": "/home/ubu/.cache/lay/development/run-5xr9pxyf/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-FuXpjh/RESULT.json",
+    "tests_executed": 0,
+    "error": "E0616 fixture accessed private native ACK field; production visibility unchanged, fixture uses existing handoff predicate plus real consumers."
+  },
+  "consumer_confirmation_gate": "Only current KnownStart observed_suffix0, same local exact native replay completed epoch/path/lease/layout: existing bridge VisibleTail/ManualToggle wait for original current whole receipt and one-use native ACK, or existing independently exact Reset route. Current UnknownStart contract unchanged. Same full confirmed KnownStart native snapshot may advance adjacent revision and retain SAME ACK; no new consume/ACK/TTL. Ordinary changed snapshots still discard. Added after causal real-consumer RED; two prior source scores do not certify this later guard.",
+  "code_reviews": {
+    "passes": 2,
+    "scores": [
+      9,
+      9
+    ],
+    "scope": "Read-only source reviews of ordered KnownStart progress/whole final consumption and final one-use fixtures. Latest754 adverse run revealed consumer bypass; later common consumer gate is root-reviewed and executable gate pending. No third score claimed."
+  },
+  "focused_diagnostic": {
+    "verdict": "PASS",
+    "selected": 4,
+    "remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/f-focused-mgiat_xr/RESULT.json",
+    "scope": "Existing hermetic process runner, diagnostic only; full754 gate pending. Includes16 actual whole-target variants, prefinal real consumers and19 contradiction schedules plus unchanged UnknownStart readout test."
+  },
+  "owned_nbsp_ack": "Existing owned-Space raw NBSP acknowledgment accepts the SAME validated completed current KnownStart native pair as well as original Reset provenance. Original full external+unchanged prefix equality/end caret/no selection/current owner/epoch/expiry/pair remains required. Stores actual NBSP in tail and paired replacement without epoch change; never normalizes client snapshot. Causal noReset NBSP-target RED in f-focused-vvfxqxgu; source NBSP/Space and target NBSP/Space16 combinations now tested.",
+  "adverse_contract": "Test-only ACK presence query asserts no native F ACK after every contradiction. KnownStart pre-final and contradictory paths refuse real consumers. An independently valid old Reset fresh whole SSI with current exact owned-tail and actual canonical suffix/Reset authority is a positive control: ManualToggle3 and matching authoritative VisibleTail remain valid, with native ACK absent. This does not recover paired native replay proof. No generic runtime guard relaxed. Extra actual managed key consumes its explicit legitimate seed CommitText before separate consumer checks and real subsequent Reset; observed callback ACK ordering preserved by reused dispatcher.",
+  "supplemental_red_receipts": [
+    "/home/ubu/.cache/lay/development/run-u7h_wv41/RESULT.json",
+    "/home/ubu/.cache/lay/development/run-stcz157e/RESULT.json",
+    "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/f-focused-vvfxqxgu/RESULT.json",
+    "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/f-focused-ikjj789d/RESULT.json"
+  ],
+  "source_green": {
+    "verdict": "PASS",
+    "selected": 754,
+    "passed": 754,
+    "fmt": "PASS",
+    "local": "/home/ubu/.cache/lay/development/run-wcpiedjc/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-3grlen/RESULT.json",
+    "archive_sha256": "ddd11f4f0c88ff997469672993ef4b77a893142720c4bb47bdd06a100df79dc8"
+  },
+  "supplemental_consumer_review": {
+    "pass": 1,
+    "score": 9,
+    "blockers": 0,
+    "agent": "/root/completed_native_consumer_review_20261013",
+    "context": "none",
+    "scope": "Separate later KnownStart completed-native consumer admission, identical confirmed snapshot refresh, existing raw NBSP acknowledgment, and strengthened actual consumer/contradiction fixtures; read-only. Does not count as a third review of earlier F producer."
+  },
+  "private_build": {
+    "build": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791859642943640689/BUILD.json",
+    "elapsed_seconds": 182.15359343200544,
+    "ime_sha256": "41443ef97c6c0add6776f6ea6c8de47ff63646e6d8ddb662e6a685edfdb43bda",
+    "daemon_sha256": "687912d4334cb99913ed227a24d796f1a086287900185d0990a6bdb9474db654",
+    "source_gate": "/home/e/projects/lay-development-runner/run-3grlen",
+    "backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-progress-receipts-1791860051555324067",
+    "scope": "Private remote RUN only. GUI off and old owned scope empty verified before stage. Installed runtime not changed; no native acceptance yet."
+  },
+  "final_native": {
+    "chrome": {
+      "local": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native41443-chrome-proof.json",
+      "remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/native41443-chrome-proof.json",
+      "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native41443-chrome-raw-1791861061998153359/RAW.json",
+      "verdict": "FAIL",
+      "groups": {
+        "standard": {
+          "required": 60,
+          "counts": {
+            "PASS": 20,
+            "FAIL": 38,
+            "BLOCKED": 2
+          },
+          "speed": {
+            "double_shift": {
+              "required": 420,
+              "measured": 158,
+              "missing": 262,
+              "p50_ms": 92.2764355018735,
+              "p95_ms": 112.16600599884987,
+              "max_ms": 125.64811100810766,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "panel": {
+          "required": 6,
+          "counts": {
+            "PASS": 3,
+            "FAIL": 3
+          },
+          "speed": {
+            "double_shift": {
+              "required": 48,
+              "measured": 27,
+              "missing": 21,
+              "p50_ms": 89.85912299901247,
+              "p95_ms": 107.48205100744963,
+              "max_ms": 112.55250799655914,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "functional": {
+          "required": 150,
+          "counts": {
+            "PASS": 96,
+            "FAIL": 42,
+            "BLOCKED": 12
+          },
+          "speed": {
+            "double_shift": {
+              "required": 210,
+              "measured": 129,
+              "missing": 81,
+              "p50_ms": 91.47991599142551,
+              "p95_ms": 124.39412100613117,
+              "max_ms": 133.57282699644566,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "space": {
+              "required": 50,
+              "measured": 38,
+              "missing": 12,
+              "p50_ms": 19.40226750075817,
+              "p95_ms": 23.751984000205994,
+              "max_ms": 24.775451987981796,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "tab": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "selection": {
+              "required": 10,
+              "measured": 10,
+              "missing": 0,
+              "p50_ms": 20.15735549852252,
+              "p95_ms": 22.53515499830246,
+              "max_ms": 22.53515499830246,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        }
+      }
+    },
+    "firefox": {
+      "local": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native41443-firefox-proof.json",
+      "remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/native41443-firefox-proof.json",
+      "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native41443-firefox-raw-1791862238737626823/RAW.json",
+      "verdict": "FAIL",
+      "groups": {
+        "standard": {
+          "required": 60,
+          "counts": {
+            "PASS": 59,
+            "FAIL": 1
+          },
+          "speed": {
+            "double_shift": {
+              "required": 420,
+              "measured": 415,
+              "missing": 5,
+              "p50_ms": 110.59817599505186,
+              "p95_ms": 122.42336299270391,
+              "max_ms": 149.83072999864817,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "panel": {
+          "required": 6,
+          "counts": {
+            "PASS": 5,
+            "FAIL": 1
+          },
+          "speed": {
+            "double_shift": {
+              "required": 48,
+              "measured": 42,
+              "missing": 6,
+              "p50_ms": 113.39819649979472,
+              "p95_ms": 121.44794499874115,
+              "max_ms": 125.54475799947977,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "functional": {
+          "required": 150,
+          "counts": {
+            "PASS": 87,
+            "BLOCKED": 19,
+            "FAIL": 44
+          },
+          "speed": {
+            "double_shift": {
+              "required": 210,
+              "measured": 102,
+              "missing": 108,
+              "p50_ms": 114.85284249857068,
+              "p95_ms": 141.50784300267696,
+              "max_ms": 151.92950599640608,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "space": {
+              "required": 50,
+              "measured": 37,
+              "missing": 13,
+              "p50_ms": 18.14656800031662,
+              "p95_ms": 24.383172996342182,
+              "max_ms": 26.014736995100975,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "tab": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "selection": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        }
+      }
+    }
+  },
+  "next_native_transition": {
+    "wire": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-receipt-wire-c5csr4o6/WIRE.json",
+    "wire_sha256": "86256f339f36d6cdda7c0a532cf4a8c61645478532184f551e831550569dcf52",
+    "wire_bytes": 58467,
+    "measured": "First full actual target SSI is now confirmed. Existing standard first DS passes, actual managed Z/Backspace returns exact same whole committed client text. Second ManualToggle delegates status3, then daemon exact factory capture VisibleTail returns passive:unknown-context and no second replacement is emitted. Diagnostic wire serial40990 whole ghbdtnSpace7/7 follows actual native replay; no further SSI accompanies managed probe/Backspace.",
+    "first_failed_transition": "ManualToggle delegated source -> daemon authoritative VisibleTail capture; precise source guard not yet established by causal TDD",
+    "scope": "Separate single-cell diagnostic, not browser acceptance. Kernel-release and wire overhead not measured; no claim every functional error has this cause."
+  }
+}

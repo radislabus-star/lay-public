@@ -36,16 +36,48 @@ fn zero_noun_suffixes() -> impl Iterator<Item = &'static str> {
     data_lines(ZERO_NOUN_SUFFIXES_DATA)
 }
 
-fn verb_form_endings() -> impl Iterator<Item = (&'static str, Vec<&'static str>)> {
-    data_lines(VERB_FORM_ENDINGS_DATA).filter_map(|line| {
-        let (ending, lemmas) = line.split_once('\t')?;
-        Some((
-            ending,
-            lemmas
-                .split(',')
-                .map(str::trim)
-                .filter(|item| !item.is_empty())
-                .collect(),
-        ))
-    })
+fn parse_verb_form_ending(line: &str) -> Option<(&str, Vec<&str>, bool)> {
+    let mut fields = line.split('\t');
+    let ending = fields.next()?.trim();
+    let lemmas = fields.next()?.trim();
+    let require_affix_witness = match fields.next() {
+        None => false,
+        Some("affix") => true,
+        Some(_) => return None,
+    };
+    if fields.next().is_some() || ending.is_empty() || lemmas.is_empty() {
+        return None;
+    }
+    let lemmas: Vec<_> = lemmas.split(',').map(str::trim).collect();
+    if lemmas.iter().any(|lemma| lemma.is_empty()) {
+        return None;
+    }
+    Some((ending, lemmas, require_affix_witness))
+}
+
+fn verb_form_endings() -> impl Iterator<Item = (&'static str, Vec<&'static str>, bool)> {
+    // Preserve tabs: trimming the full line would turn an empty third column
+    // into an absent column and accidentally grant unmarked legacy authority.
+    VERB_FORM_ENDINGS_DATA.lines().filter_map(parse_verb_form_ending)
+}
+
+pub(super) fn attested_verb_relations() -> Vec<(&'static str, &'static str)> {
+    verb_form_endings()
+        .filter(|(_, _, attested)| *attested)
+        .flat_map(|(ending, lemmas, _)| lemmas.into_iter().map(move |lemma| (ending, lemma)))
+        .collect()
+}
+
+#[cfg(test)]
+mod verb_relation_parser_tests {
+    use super::parse_verb_form_ending;
+
+    #[test]
+    fn evidence_markers_fail_closed_including_empty_columns() {
+        assert_eq!(parse_verb_form_ending("у\tить"), Some(("у", vec!["ить"], false)));
+        assert_eq!(parse_verb_form_ending("у\tти\taffix"), Some(("у", vec!["ти"], true)));
+        for invalid in ["у\tти\t", "у\tти\tunknown", "у\tти\taffix\t", "у\tти,\taffix", "\tти"] {
+            assert!(parse_verb_form_ending(invalid).is_none(), "{invalid:?}");
+        }
+    }
 }

@@ -125,7 +125,7 @@ fn prove_full_differential(
     paths: &Paths,
     _stem: &str,
     delta: &Path,
-    _targeted_receipt: &Path,
+    targeted_receipt: &Path,
     full_receipt: &Path,
 ) -> io::Result<serde_json::Value> {
     if !paths.full_proof_corpus.is_file() || !paths.full_proof_surface.is_file() {
@@ -142,6 +142,9 @@ fn prove_full_differential(
             delta,
             full_receipt,
         );
+    }
+    if let Some(runner) = &paths.full_proof_runner {
+        return super::remote_proof::run(runner, paths, delta, targeted_receipt, full_receipt);
     }
     lay::nanda_wave::prove_l3_context_composite_delta_full(
         &paths.full_proof_corpus,
@@ -333,6 +336,7 @@ mod tests {
             state: root.join("state.json"),
             full_proof_corpus: root.join("missing-proof.txt"),
             full_proof_surface: root.join("missing-surface.jsonl"),
+            full_proof_runner: None,
         };
         let relation = PendingRelation {
             rejected: "посмотри".to_string(),
@@ -411,6 +415,7 @@ mod tests {
             state: root.join("state.json"),
             full_proof_corpus: root.join("proof.txt"),
             full_proof_surface: root.join("surface.jsonl"),
+            full_proof_runner: None,
         };
         assert_eq!(
             inactive_compact_base(&paths).unwrap(),

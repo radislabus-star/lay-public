@@ -1,0 +1,26 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "PREINPUT_ONLY_SCOPE_PASS_NATIVE_RESTART_RUNNING",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "first_failed_transition": "Firefoxprivatefield9/space setup: FOCUSED but notSHOWING, beforeseed/behavioralkeys;38PASS1BLOCKED1NOT_TESTEDamongfirst40,176notqueued",
+  "prior_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-READ-visibility-blocked-1/RESULT.json",
+  "preserved": "allcompletednormal20/privatepartial18PASS,blockedrowand177totalNOT_TESTEDretained; notruntimepromotion",
+  "decision": "Prepare the actual native viewport before typing: verify exact ownedforeground window, scroll hidden target using AT-SPIComponent.scroll_to(ANYWHERE), perform originalfocus/Tabfallback, wait<=750ms for the SAME SHOWING requirement, then arm input and run unchanged fieldguard. Appliesidenticallytoallfields/allthreeactors. No DOMfill or input-routechanges.",
+  "scope_proof": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-READ-visibility-blocked-1/VIEWPORT-PREPARATION.json",
+  "proof": "AST valid; exact byte equality after replacing onlyfocus_editor withoriginal; allkeysequences/clocks/burstcadence/target/caret/decoder/foreground/fieldchecks unchanged",
+  "actor_sha256": {
+    "firefox-standard-native.py": "4678321db26e3408a3e7d750de80ecf7b5818b089344bb5e7c292212da141bb1",
+    "browser-functional-native.py": "33091ab0178b30338d5fac747e1270c30f73b9ab9c2667b5438032a45eb4bc79",
+    "browser-c09-c10-native.py": "850f2b1a1afd0d65aa38d3b26f7d955e38f3948ca13fc487eb6b6869e634531b"
+  },
+  "guard": "Explicit newactorhashpins inzero-key verifier; no hash exemption",
+  "candidate_unchanged": {
+    "ime": "f633f6aac492817031b025c02c8746a27eac6541f345ea60873415a4b52fedc3",
+    "daemon": "ba6d9d77163a13284c3540481806c8b710570160bb8e571164309014a318a19e",
+    "source1134_and_review9": "unchanged"
+  },
+  "restart": "WholeREADFirefox216undernewconsistentharnessandfreshfrozendata; oldpartialnotmixedintonewreceipts. NotretryingafunctionalFAILtillPASS.",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false
+}

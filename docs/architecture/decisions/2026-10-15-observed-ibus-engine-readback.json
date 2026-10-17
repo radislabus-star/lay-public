@@ -1,0 +1,183 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "INSTALLED_RELEASE84_IDENTITIES_VERIFIED_INPUT_LOGIC_PROOF_COMPLETE",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/141-reduce-double-shift-replay-latency.md",
+  "cause": "Measured actual CLI engine readback5.362ms median vs native read0.386ms over30matching pairs; existing exact replay performs the independent backend read before and after layout activation. Pacing4/8ms attempts rejected, code restoredaccepted16ms.",
+  "decision": "Reuse existing LayImeBridge.ibus_connection and existing daemon-to-LayIme session-bus connection for a read-only getter that performs a fresh stock org.freedesktop.IBus.GetGlobalEngine call on every request. No cached layout value, new connection owner, discovery route, library or unsafe FFI. Preserve the legacy ibus-engine CLI on read RPC/error/unsupported-method failure; a valid wrong-engine result must still fail existing exact verifier without fallback-to-target.",
+  "source_scope": [
+    "src/bin/lay_ibus_engine/bridge.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_daemon/layout_controller/ibus_bridge.rs",
+    "src/bin/lay_ibus_engine.rs",
+    "src/bin/lay_ibus_engine/observed_ibus_engine.rs",
+    "src/bin/lay_ibus_engine/td120_bridge_atomic_tests.rs"
+  ],
+  "protocol": "Same existing LayIme session object, new read-only ObservedIbusEngine method, returns actual backend engine name from serialized IBusEngineDesc tag/dictionary/name prefix. Accept trailing protocol fields, reject malformed variants; no model/text/field values. No shared state lock, admission token or mutation ownership involved.",
+  "boundedness": "No timer cancels backend call_method, including its send phase. Existing daemon RPC250ms bounds reply waiting AFTER its session frame is sent by zbus. Backend getter continues on existing detached object-server handler until reply/disconnect. At mostONE backend observation perIMEprocess via RAII atomic in-flight flag; concurrent calls fail to originalCLI. No cachedengine/text/inputauthority. Backend send/reply and oldCLI failure path have no new elapsed-time bound; do not claim150ms or overall250ms. Pending backend cannot accumulate; normal IME message framing is never cancelled for this optimization.",
+  "unchanged": "Both physical16ms final delete settle and2ms inter-key pace; actual delivery/output routes, source/target leases, suppression, focus/decoder/authority/verifier, all input paths, models and learning gates. No trace/timing writes from the getter, including private fields.",
+  "options": [
+    {
+      "score": 9,
+      "option": "Fresh backend read via existing LayImeBridge existingIBusconnection",
+      "reason": "Removes measured process-spawn overhead with existing connection ownership and retains independent actual backend verification."
+    },
+    {
+      "score": 5,
+      "option": "New daemon-side private-bus discovery/connection/cache",
+      "reason": "Adds lifecycle and reconnect owner, not needed because engine bridge already owns correct stockIBusconnection."
+    },
+    {
+      "score": 1,
+      "option": "Use GNOME CurrentLayout/CurrentInputMode or cached own-engine name as backend proof",
+      "reason": "Reject: projection/cache is not actual independent IBus readback and would weaken existing verification."
+    }
+  ],
+  "required_tests": "Actual exposed ObservedIbusEngine RPC against isolated existingP2Pstock-interface peer, changing backend while sharedprojection fixed/poisoned; malformed/empty/extended descriptors; backend error,timeout,disconnect/late replies; productiondaemon query/helper success/error/oldIMEUnknownMethod and CLI failure; fallbackexactlyonce onlyonerror, validmismatchzeroCLI; no sharedlock or getterwriter calls on successorerror. Prior baseIME799+daemon273+shared51=1123; ten newlydeclared meaningful regressions, fresh discovery is authoritative.",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": true,
+  "predicted_saving_ms": "Approximately8-10ms for two reads; unmeasured for proposed route, no speed claim",
+  "measured_saving_ms": null,
+  "consumer_scope": "ONLY ibus_bridge::verify_engine_once in the existing exact replay layout-stack verifier. read_engine/read_current_layout_is_ru/ensure_engine retain original CLI paths. A valid mismatch is final and never invokes fallback.",
+  "native_gate": "Exact pinnednewIME+daemon/browser/fixture/actor/env identities, same frozen private1MBdata. Original60standard+6C09/C10+150functional perbrowser216IDs. Everyintermediatetarget/rawsurface/caret/decoder; allPASS/FAIL/BLOCKED/NOT_TESTED; pairedtimingcoverage,median,p95,max/missing; original4ChromeSinkSnapshotsnormalpositivecontrol/privateunchanged. Compare to retained cleanPLAIN349/50/33. LostPASS reject, no retryuntilPASS or data/reason exemptions.",
+  "plan_review": {
+    "score": 8,
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-readback-review/PLAN-REVIEW.md",
+    "sha256": "432468ca0c90e9755834b63664b5a836d2150d33521027bb728a7cedb9db84c5",
+    "all_four_corrections_adopted": true
+  },
+  "source_gate": {
+    "passed": 1133,
+    "failed": 0,
+    "local": "/home/ubu/.cache/lay/development/run-trdx7u5g/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-d9azvU",
+    "archive_sha256": "ab3839443c57f28ae5f69da22a9cd31f6a83a25cfcf2e047ece79d2c8f63bf03",
+    "seconds": 272.7,
+    "scope": "Selected IME799+4/daemon273+6/sixsharedcontracts51;1133, development-only not all-library/release acceptance; superseded by source-review corrections, not promotion"
+  },
+  "compile_corrections": "First frozenrun-tqfufdi9 compilation failed: consumingclose in test and usingdev-onlyfutures_lite in production. Used explicitconnectionclone in test andexistingstdpoll/async_ioTimer pattern; no dependencies changed. Failedreceipt retained.",
+  "typed_protocol": "Require actualIBusEngineDesc tag, attachmentsDict signature exactlya{sv}, nonemptyname; preserve trailingfields.",
+  "code_review_1": {
+    "score": 7,
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-readback-review/CODE-REVIEW-1.md",
+    "sha256": "f52a800335391c6d3d8bfe5362d2e7f50cf5b54ff8a1bc19ca303154dec7e833",
+    "blockers": [
+      "unsafe cancellation during shared-socket partial send",
+      "attachments dictionarysignature not checked"
+    ],
+    "corrections": "Remove backend cancellation, retain existing client replytimeout and1inflightbackendbudget; realpartialwrite/backpressure/callertimeout/late-reply regressions, exacta{sv}test. Newsource/finalreviewpending."
+  },
+  "final_code_review": {
+    "score": 9,
+    "blocking_source_findings": [],
+    "fresh_context": true,
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-readback-review/CODE-REVIEW-2-RESULT.md",
+    "sha256": "2f6b3a7d01b7f2018b34958eb2c279489e06acd3a496ff36a4bcd20427da574c",
+    "scope": "Sourceinspectiononly; focused5actualtests separate; fullcorrectedgate/native stillpending",
+    "nonblocking_gap": "Explicit disconnect test closes daemonclient; backend-inflightdisconnect not a distinct testcase. RAIIcleanup/errorpaths reviewed; no waiverofnativegate."
+  },
+  "final_source_gate": {
+    "local": "/home/ubu/.cache/lay/development/run-3recp7ey/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-dWWz50",
+    "archive_sha256": "af0d9b36e84e9612b54708a485c2df608fb0a82afeedd7a6135fd20ccea67d4f",
+    "passed": 1134,
+    "failed": 0,
+    "seconds": 271.9,
+    "scope": "IME804+daemon279+sixcontracts51; development-selected, not all-library/release acceptance"
+  },
+  "focused_regression_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-read-source-focused/RESULT.json",
+  "default_build": {
+    "schema": "lay.native-candidate-source.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-dWWz50",
+    "archive_sha256": "af0d9b36e84e9612b54708a485c2df608fb0a82afeedd7a6135fd20ccea67d4f",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "source": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-read-build/source",
+    "metadata_only_graph_overlay": {
+      "graphify-out/graph.json": "0fc03f39a297fba7b9341f50b1f252ceb934f53c0c88f84a9dc5db76fb9f5ada",
+      "graphify-out/GRAPH_REPORT.md": "ca9830d7abf28edcd968b9b34b3d7e84f9f7604adfc22e5b05f81fcb5b999bd2",
+      "graphify-out/source_graph_binding.json": "12b6daeb9ebb3b0caa5b7229552f2095f33ee110d538de7ef655912a5ef7f971",
+      "src/generated/architecture_graph_receipt.json": "d497a8e0e9bfe71698431699a7cc0663c8ca40cefd1e76edb7f295e1939719ed",
+      "docs/architecture/firefox-input-stability-2026-10-05.md": "af93225ebfd007009dc5901be8adc13cb570c6eb187b5ff03bdc7a9522cc25d9",
+      "docs/development/td121-core-experiments.md": "ccd474e71edd82f90bd665a9e563f5c652374afb5681176324a68a8cd216a858",
+      "docs/development/double-shift-latency-2026-10-15.md": "d30f99a57203c4f7a4386da812e4df89e078de60dd44ccf41279c4f2565c5f43",
+      "docs/architecture/decisions/2026-10-15-observed-ibus-engine-readback.json": "ab8c538987d8b561acfc918dad23687d7fa93c0fe6d9345c944f23ca822881f9",
+      "tech_debt/141-reduce-double-shift-replay-latency.md": "6c34775209bc00c51b618570fe6277c038c280eb65d0ee66694f805936677928"
+    },
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-read-build/BUILD.log",
+    "elapsed_seconds": 183.90537907200633,
+    "runtime_installation": false,
+    "delivery_routes_changed": false,
+    "diagnostic_only": false,
+    "verification_only": true,
+    "functional_logic_changed": true,
+    "profiling_only": false,
+    "logging_overhead": "NO_INSTRUMENTATION_IN_EITHER_CONTRAST",
+    "stock_client_transport_routes_changed": false,
+    "observational_readback_only": true,
+    "post_delete_settle_ms": 16,
+    "per_key_backspace_ms": 2,
+    "observational_consumer_scope": "verify_engine_once only; general read/ensure unchanged",
+    "metadata_overlay_scope": "fresh AST graph and owning experiment documents only; all gated non-overlay files verified unchanged",
+    "lay-ibus-engine": {
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-read-build/bin/lay-ibus-engine",
+      "sha256": "f633f6aac492817031b025c02c8746a27eac6541f345ea60873415a4b52fedc3",
+      "bytes": 8297616
+    },
+    "lay-daemon": {
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-read-build/bin/lay-daemon",
+      "sha256": "ba6d9d77163a13284c3540481806c8b710570160bb8e571164309014a318a19e",
+      "bytes": 9265744
+    }
+  },
+  "zero_key_actual_getter_firefox": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERFREAD-firefox-engine-readback.json",
+    "pairs": 30,
+    "names_match": true,
+    "input_keys": 0,
+    "observed_first_ms": 1.54224,
+    "observed_median_ms": 0.541348,
+    "cli_median_ms": 5.3977515,
+    "scope": "APIstageonly; not user-input latency, not216nativeacceptance"
+  },
+  "final_evidence": {
+    "version": "1.0.84",
+    "install_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install83-20261015T033053Z/INSTALL.json",
+    "status": "INSTALLED_RELEASE84_IDENTITIES_VERIFIED_REMOTE_READV432_LOGIC_ACCEPTANCE_LOCAL_NATIVE_NOT_TESTED",
+    "loaded_hashes": {
+      "daemon": "6d0237e6355e94d6205fc77d71aed3f3ddf0c71c2293c89e76babe1755bbbeb3",
+      "ime": "7e338ae2aee2fe151f38ef5838f88d48664f8acaaa9764ca308f80895b14170b"
+    },
+    "cli_sha256": "60de3f20cdb5ab09a3765e4cbc5a16e199c2a932f2efdf8f1a907633a368f559",
+    "protected_file_count": 24,
+    "global_ibus_L11_L3_preserved": true,
+    "config_sources_mode_preserved": true,
+    "local_functional_input_keys": 0,
+    "metadata_only_parity": {
+      "rust_files": 739,
+      "rust": true,
+      "dependencies": true,
+      "extension_code": true
+    },
+    "native_input_version": "1.0.83 exact input logic, carried forward only through metadata-only84 parity",
+    "native_counts": {
+      "firefox": {
+        "PASS": 170,
+        "FAIL": 27,
+        "BLOCKED": 19
+      },
+      "chrome": {
+        "PASS": 179,
+        "FAIL": 24,
+        "BLOCKED": 13
+      },
+      "total": {
+        "PASS": 349,
+        "FAIL": 51,
+        "BLOCKED": 32,
+        "NOT_TESTED": 0
+      }
+    },
+    "prior_PASS_lost": 0
+  }
+}

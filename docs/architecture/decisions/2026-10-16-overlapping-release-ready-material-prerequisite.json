@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "decision": "Establish the actual frame, display and exact-input cache readiness immediately before the final handled release in the existing overlapping-release test. A read-only accessor lives only in the existing cfg(test) preedit readout contract module. No shipped runtime change.",
+  "reason": "CI38908900651 failed None!=Some(ерка). Controlled current-authority/display-ready cache MISS reproduces the same assertion; actual materialization followed by cache-only HIT restores both release orders. An early generic query is not the prerequisite required by this key-after-ready fixture. Exact cause of the original CI cache state is not claimed.",
+  "verification": "td153-readiness-diagnosis-hvepdrsr: unchanged baseline PASS; controlled-cold same assertion FAIL; controlled-ready PASS both orders;25.411s; original two sources restored SHA. Plan review9/10 both passes, reused context due platform limit. Final focused/full/CI and byte equivalence pending. Final focused11/11 PASS21.953s. Full td153-full-completion-rg71qlx3 PASS3211/3211,0 failures/exemptions,564.631s, all3237 IDs unchanged. Exact-source MSRV/lint prerequisites reused after correcting a private false changed-path argument; canon rules retained. Final CI/6payload equality/options80 pending.",
+  "not_tested": "Original CI cache-miss cause is unproved. Test-only change is not native acceptance. Source labels of whole e34 native receipts remain unchanged; reuse only through explicit six-payload byte equivalence and fresh final-source CI.",
+  "invariants": [
+    "C01",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/preedit_readout.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

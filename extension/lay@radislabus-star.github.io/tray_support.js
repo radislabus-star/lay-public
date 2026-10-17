@@ -4,8 +4,8 @@ import GLib from 'gi://GLib';
 export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.80';
-export const APP_RELEASE_DATE = '2026-10-05';
+export const APP_VERSION = '1.0.89';
+export const APP_RELEASE_DATE = '2026-10-16';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
@@ -23,6 +23,7 @@ export const SAFETY_OPTIONS = [
 ];
 export const TRIGGER_OPTIONS = [
     ['double-lshift', 'Двойной Shift'],
+    ['double-space', 'Двойной пробел'],
     ['double-ctrl', 'Двойной Ctrl'],
     ['double-alt', 'Двойной Alt'],
     ['caps-lock', 'CapsLock'],
@@ -50,6 +51,7 @@ const DEFAULTS = {
     layout_backend: 'auto',
     text_backend: 'uinput',
     trigger: 'double-lshift',
+    undo_on_backspace: false,
     force_layout_hotkeys: false,
     force_ru_key: 'single-rctrl',
     force_en_key: 'single-ralt',
@@ -91,6 +93,7 @@ function normalizeBoundedInteger(value, fallback, minimum, maximum) {
 
 export function normalizeConfig(input) {
     const cfg = {...DEFAULTS, ...(input ?? {})};
+    cfg.undo_on_backspace = cfg.undo_on_backspace === true;
     const legacyTextBackend = cfg.text_backend === 'auto' ? 'ime' : cfg.text_backend;
     cfg.text_backend = normalizeChoice(legacyTextBackend, INPUT_MODE_OPTIONS, DEFAULTS.text_backend);
     cfg.layout_backend = normalizeChoice(cfg.layout_backend, LAYOUT_BACKEND_OPTIONS, DEFAULTS.layout_backend);

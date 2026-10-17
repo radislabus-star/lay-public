@@ -1,0 +1,38 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-08",
+  "status": "FULL_SOURCE_RELEASE_PASS_PHYSICAL_PENDING",
+  "decision": "Replace per-authority-lane full-vector copying with one lazy call-local scratch pair; restore each substituted slot after both admission and refusal. Restore original parallel independent candidate evaluations.",
+  "reason": "Measured warm50-candidate synthetic-frame run: evaluations11394..12221us, selection5293..7604us. Installed focus correct Apply remains late. Source clones both complete vectors for each lane although only one slot differs.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/typing_transition/decision.rs",
+    "src/typing_transition/decision/tests.rs"
+  ],
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "runtime_authority_changed": false,
+  "preserved": [
+    "All candidates and ordered evaluations",
+    "Exactly same competitor slices with only current lane substituted",
+    "All original slots restored for next lane, including refusal",
+    "Same policy, signals, verifier, SafetyGate, selected receipt and output",
+    "Existing workers, request cancellation, Space wait and callback deadline"
+  ],
+  "verification": "Existing semantic identity verifies full competitor restoration after both admission and refusal; focused2519/2519PASS. Full3032/all17 and physical latency remain pending.",
+  "not_tested": "Synthetic profiling is not physical acceptance or a quality proof. No latency benefit claimed for the pending change.",
+  "source_review": {
+    "reviewer": "/root",
+    "independent_agent": false
+  },
+  "focused_receipt": "/home/ubu/.cache/lay/development/run-mc1dxuot/RESULT.json",
+  "full_release_receipt": "/home/ubu/.cache/lay/development/space-boundary-authority-source-20261008/frozen/FETCHED/RELEASE_GATE_RESULT.json",
+  "artifact_sha256": "824e2f5f3c6d1b65c6219199f9f6aac9eb94ebee70a34f2d61e9b7640cbcc520",
+  "final_source_sha256": "2e9b15ef0856c0982cce14b93758a84a5214a2332462849f501dfc4fe464594b"
+}

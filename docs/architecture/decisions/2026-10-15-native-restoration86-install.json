@@ -1,0 +1,51 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "INSTALLED_CORE86_IDENTITIES_VERIFIED_NATIVE_NOT_TESTED",
+  "task": "TD-143",
+  "version": "1.0.86",
+  "baseline_commit": "cfcbca14",
+  "user_authorization": "Ongoing requested fix after user-directed new-version installation; clarified repeat manual restoration in Kitty. Prior instruction: install new version; user-side client acceptance remains separate.",
+  "decision": "Build and install the reviewed TD-143 native preference fix as1.0.86 through the existing3core+2extension-metadata transaction. Verify exact frozen Rust source, dependency parity, canonical graph and loaded binary hashes; preserve globalIBus,L1.1,L3,config,sources,mode and protected installed files.",
+  "reason": "The installed85 learning path cannot arm native Kitty restoration without SurroundingText. Native admitted user intent now reuses the existing learning trajectory and UserCorrection memory, while delivery and word-edit authority stay unchanged.",
+  "verification": "Source868/868PASS; all740Rust match frozen source and default-feature build;11architecture invariants and15canon tests PASS. Three admitted native UserCorrection episodes persist distinct IDs; independent review8/10. Loaded CLI/tray86 and IME/daemonSHA match,24protected files and globalIBus/L1.1/L3/config/sources/mode preserved; zero functional input keys. Exact evidence /home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json",
+  "not_tested": "Physical Kitty rendering/typing and native latency; full release helper set; new full browser acceptance. Historical349PASS51FAIL32BLOCKED/432 remains separate.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "docs/phase-word-recovery-canonical-cutover.md"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": true,
+  "models_changed": false,
+  "delivery_routes_changed": false,
+  "full_release_acceptance": false,
+  "build_receipt": "/home/ubu/.cache/lay/development/td143-release86-20261015/BUILD.json",
+  "install_receipt": "/home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json",
+  "final_evidence": {
+    "status": "INSTALLED_CORE86_IDENTITIES_VERIFIED_NATIVE_NOT_TESTED",
+    "receipt": "/home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json",
+    "receipt_sha256": "675ef40efbb7665fe64fa63abadc26acf167af131be6617a409e1a612f88dac0",
+    "loaded_sha256": {
+      "daemon": "d01d35389ebfe9abfbaed0a7da68b9c0dd9055c2383998eaa031a3a66f5dbf0e",
+      "ime": "752dc328b1084a77dfba42cab81f57b9785c0f6e43e615e61c56f2bd8bc4950e"
+    },
+    "cli_version": "lay 1.0.86",
+    "extension_version": "1.0.86",
+    "protected_files": 24,
+    "global_ibus_l11_l3_preserved": true,
+    "config_sources_mode_preserved": true,
+    "functional_input_keys": 0,
+    "delivery_routes_changed": false,
+    "models_changed": false,
+    "completed_utc": "2026-10-15T21:21:27.831514+00:00",
+    "built_archive_sha256": "caa25a7721a2281e8d017bfef463f238814e6c954e40ac665be83d52558800ef",
+    "source_tests_receipt": "/home/ubu/.cache/lay/development/run-0tmq3hj2/RESULT.json"
+  }
+}

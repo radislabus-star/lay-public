@@ -1,5 +1,5 @@
 #!/usr/bin/python3
-"""Versioned V2 private IBus.InputContext -> actual Lay factory proof."""
+"""Versioned V3 private IBus.InputContext -> actual Lay factory proof."""
 import hashlib
 import json
 import os
@@ -43,16 +43,25 @@ COMPLETED_STATUS = ('COMPLETED_3_LIFECYCLE_CASES' if SCENARIO_SET == 'lifecycle'
                     else 'COMPLETED_2_FIRST_WORD_CASES' if SCENARIO_SET == 'first-word'
                     else 'COMPLETED_1_FIRST_WORD_CASE' if SCENARIO_SET in ('first-word-us', 'first-word-ru')
                     else 'COMPLETED_1_STARTUP_CASE' if SCENARIO_SET in ('fresh-preedit', 'startup-only', 'packages-absent-literal')
+                    else 'COMPLETED_1_BOUND_INVERSE_CASE' if SCENARIO_SET in ('inverse-first-word', 'inverse-prefixed')
                     else 'COMPLETED_5_CASES_AUTHORITY_ON')
 startup_observed = False
 startup_measurement = None
 KEYCODES = {' ': 57, 'l': 38, 'j': 36, 'v': 47, 'о': 36, 'м': 47, 'д': 38}
 KEYCODES.update({'a': 30, 'g': 34, 'h': 35, 'd': 32, 'п': 34, 'р': 35, 'в': 32})
 KEYCODES.update({'е': 20, 'к': 19, 'а': 33, 'и': 48, 'с': 46, 'т': 49, 'ь': 50})
+KEYCODES.update({'л': 37, 'ж': 39, 'н': 21, 'ы': 31, 'б': 51})
 
 receipt = {
-    'proof_contract': 'lay.ime-client.actual-input-context.v2',
+    'proof_contract': 'lay.ime-client.actual-input-context.v3',
     'predecessor_contract': {
+        'version': 'v2',
+        'git_commit': '55fd32bf418bf6331a29d0522892a8df689499f2',
+        'git_blob': 'b9ae78c38b663fb4f380eaafd969be09dbf64336',
+        'sha256': 'd80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12',
+        'comparison': 'IMMUTABLE_HISTORY_NOT_BASELINE_PARITY',
+    },
+    'older_predecessor_contract': {
         'version': 'v1',
         'git_commit': '708245298a3f553ac3c52243728c02ba6344a140',
         'git_blob': '04f7dbac56c92dbe0238c0754bcb6db4e242256c',
@@ -1115,6 +1124,112 @@ def run_manual_toggle_cases(first_word=False):
         session_connection.unregister_object(registration)
 
 
+def finish_inverse_feedback_case(client, binding, journal, stat, prefix, output_start):
+    """Dispatch through case closure before freezing the complete inverse effects."""
+    from feedback_case import CaseMismatch
+
+    deadline = time.monotonic() + 1.5
+    stable_hash, stable_since = None, None
+    while True:
+        drain()
+        assert stat.read_text().rsplit(') ', 1)[1].split()[19] == binding.starttick
+        feedback = binding.observe(journal.read_bytes() if journal.exists() else b'', time.time_ns())
+        now = time.monotonic()
+        if feedback['journal_sha256'] != stable_hash:
+            stable_hash, stable_since = feedback['journal_sha256'], now
+        if feedback['status'] == 'MATCHED_CASE_FEEDBACK' and now - stable_since >= .1:
+            break
+        if now >= deadline:
+            raise CaseMismatch('complete case feedback absent inside existing1.5s bound')
+        time.sleep(.05)
+    final = bridge_snapshot('inverse_case_final')
+    assert final['canonical_context'] == client.path == binding.context, final
+    assert current_engine_name() == RU_ENGINE
+    client.focus_out()
+    inverse = outputs_since(client, output_start)
+    binding.case.validate_edit(inverse, context=client.path, prefix=prefix,
+                               visible=client.visible, cursor=client.cursor, inverse=True)
+    assert stat.read_text().rsplit(') ', 1)[1].split()[19] == binding.starttick
+    feedback = binding.observe(journal.read_bytes() if journal.exists() else b'', time.time_ns())
+    if feedback['status'] != 'MATCHED_CASE_FEEDBACK':
+        raise CaseMismatch('complete case feedback lost at case closure')
+    return inverse, feedback
+
+
+def run_inverse_feedback_case():
+    """One observed inverse in fresh private learning files; no cleanup writes."""
+    global case_name
+    metadata = json.loads((ROOT / 'run-metadata.json').read_text())
+    assert sha256(ROOT / 'feedback_case.py') == metadata['feedback_case_sha256']
+    from feedback_case import InverseCase, CaseMismatch, typed_input_surface
+
+    prefix = 'они ' if SCENARIO_SET == 'inverse-prefixed' else ''
+    case = InverseCase(SCENARIO_SET, prefix + 'должн ыбыть ', prefix + 'должны быть ')
+    case_name = case.name
+    usage_paths = {
+        'LAY_NANDA_WORD_USAGE_EVENTS': ROOT / 'usage/events.jsonl',
+        'LAY_NANDA_WORD_USAGE_COUNTS': ROOT / 'usage/counts.json',
+        'LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS': ROOT / 'usage/feedback.json',
+        'LAY_NANDA_USAGE_PRIOR': ROOT / 'usage/prior.json',
+    }
+    assert all(os.environ[name] == str(path) for name, path in usage_paths.items())
+    client = Client('td130-' + case.name)
+    checkpoint = barrier_checkpoint()
+    client.focus_in()
+    select_engine(RU_ENGINE)
+    setup_ready(client, RU_ENGINE, checkpoint)
+    before = bridge_snapshot('inverse_case_ready')
+    processes = candidate_pids()
+    assert len(processes) == 1, processes
+    pid = processes[0]['pid']
+    stat = Path('/proc', str(pid), 'stat')
+    starttick = stat.read_text().rsplit(') ', 1)[1].split()[19]
+    candidate_hash = sha256(CANDIDATE)
+    assert sha256(Path('/proc', str(pid), 'exe')) == candidate_hash
+    for character in case.typed:
+        client.key(character)
+    wait_until(lambda: client.visible == case.applied, 'observed boundary pair apply')
+    applied = bridge_snapshot('inverse_case_applied')
+    assert applied['canonical_context'] == before['canonical_context']
+    deletes = [index for index, row in enumerate(client.output)
+               if row['kind'] == 'DeleteSurroundingText']
+    assert len(deletes) == 1, client.output
+    forward = outputs_since(client, deletes[0])
+    case.validate_edit(forward, context=client.path, prefix=prefix,
+                       visible=client.visible, cursor=client.cursor)
+    keys = [json.loads(line) for line in Path(input_log.name).read_text().splitlines()]
+    observed_input = typed_input_surface(keys, client.path)
+    assert candidate_pids() == processes
+    assert stat.read_text().rsplit(') ', 1)[1].split()[19] == starttick
+    journal = usage_paths['LAY_NANDA_WORD_USAGE_EVENTS']
+    binding = case.bind(observed_input=observed_input, observed_apply=client.visible,
+                        context=client.path, pid=pid, starttick=starttick,
+                        candidate_sha256=candidate_hash, began_unix_ns=time.time_ns(),
+                        journal_before=journal.read_bytes() if journal.exists() else b'')
+    output_start = len(client.output)
+    reply = []
+
+    def reverted(connection, result):
+        try:
+            reply.append(connection.call_finish(result).unpack())
+        except Exception as error:
+            reply.append(error)
+
+    session_connection.call(BRIDGE, BRIDGE_PATH, BRIDGE, 'ManualToggleV3', None, None,
+                            Gio.DBusCallFlags.NO_AUTO_START, 2500, None, reverted)
+    wait_until(lambda: reply, 'one inverse reply')
+    assert reply[0] == (1, True), reply
+    wait_until(lambda: client.visible == case.typed, 'observed exact inverse')
+    inverse, feedback = finish_inverse_feedback_case(client, binding, journal, stat, prefix, output_start)
+    receipt['cases'].append({'case': case.name, 'status': 'PASS_BOUND_PRIVATE_INVERSE',
+                             'context': client.path, 'candidate_pid': pid,
+                             'candidate_starttick': starttick, 'typed': case.typed,
+                             'applied': case.applied, 'undo': client.visible,
+                             'forward': forward, 'inverse': inverse, 'reply': reply[0],
+                             'feedback': feedback, 'learning_paths': {k: str(v) for k, v in usage_paths.items()},
+                             'shared_cleanup': False, 'dependent_cases': 0})
+
+
 def run_startup_only_case():
     global case_name
     case_name = 'startup_only'
@@ -1216,7 +1331,7 @@ def validate_private_config(config, profile):
 try:
     assert SCENARIO_SET in ('restoration', 'lifecycle', 'manual-toggle', 'terminal-delivery', 'first-word',
                             'first-word-us', 'first-word-ru', 'fresh-preedit', 'startup-only',
-                            'packages-absent-literal'), SCENARIO_SET
+                            'packages-absent-literal', 'inverse-first-word', 'inverse-prefixed'), SCENARIO_SET
     assert STARTUP_PROOF_PROFILE in ('legacy', 'on', 'off', 'absent'), STARTUP_PROOF_PROFILE
     signal.signal(signal.SIGALRM, deadline)
     signal.alarm(52)
@@ -1356,6 +1471,9 @@ try:
     elif SCENARIO_SET == 'manual-toggle':
         run_manual_toggle_cases()
         assert len(receipt['cases']) == 3, receipt['cases']
+    elif SCENARIO_SET in ('inverse-first-word', 'inverse-prefixed'):
+        run_inverse_feedback_case()
+        assert len(receipt['cases']) == 1, receipt['cases']
     elif SCENARIO_SET == 'lifecycle':
         run_lifecycle_cases()
         assert [case['case'] for case in receipt['cases']] == [
@@ -1372,6 +1490,7 @@ try:
                     else 'PASS_2_FIRST_WORD_CASES' if SCENARIO_SET == 'first-word'
                     else 'PASS_1_FIRST_WORD_CASE' if SCENARIO_SET in ('first-word-us', 'first-word-ru')
                     else 'PASS_1_STARTUP_CASE' if SCENARIO_SET in ('fresh-preedit', 'startup-only', 'packages-absent-literal')
+                    else 'PASS_1_BOUND_INVERSE_CASE' if SCENARIO_SET in ('inverse-first-word', 'inverse-prefixed')
                     else 'PASS_5_CASES_AUTHORITY_ON'),
         'completed_cases': len(receipt['cases']),
         'started_monotonic_ns': behavior_started_ns,

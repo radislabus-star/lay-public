@@ -185,7 +185,11 @@ impl LayIbusEngine {
                 self.context_admission.as_ref().is_some_and(|admission| {
                     admission.settle_bridge_output(
                         token,
-                        SettledWordState::from_scope(self.committed_tail.epoch, scope),
+                        SettledWordState::from_scope(self.committed_tail.epoch, scope)
+                            .with_content_type(
+                                self.client_context.content_purpose,
+                                self.client_context.content_hints,
+                            ),
                     )
                 })
             });

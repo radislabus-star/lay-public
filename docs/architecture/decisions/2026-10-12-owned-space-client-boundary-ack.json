@@ -1,0 +1,82 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-12",
+  "task": "TD-121",
+  "status": "SOURCE_FOCUSED_PASS_NATIVE_PARTIAL",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing LayIbusEngine owned Space/reset receipt and paired exact replay scope; existing daemon exact-tail uinput executor",
+  "first_failed_transition": "A live owned Space append expects U+0020; Firefox rich editing acknowledges U+00A0 with exact unchanged token and cursor. Existing reset rereceipt rejects surrounding_receipt_mismatch and ManualToggleV3 returns context_authority.",
+  "decision": "Acknowledge only the raw U+00A0 surface of one proved owned Space append. Retain raw snapshots, same epoch and paired local/shared tail. The existing exact-source native replay supports that single already-acknowledged separator using its unchanged ASCII Space key. A completed replay may acknowledge U+00A0 only with full matching external prefix, complete observed key progress and live source/reset provenance; update both existing scope copies atomically before the unchanged exact validator and reducer alignment. A replay-closing Space may carry an independently proved boundary token instead of a replay seed; use the same completed scope as its effect witness without replacing the receipt token or its existing reducer path.",
+  "preconditions": [
+    "First post-append observation only; no selection; exact token and left/right word bounds",
+    "Live matching owner/scope/token; revoked predecessor; unchanged tail epoch and complete observed suffix",
+    "Only one trailing U+0020 may be acknowledged as U+00A0; no other Unicode normalization",
+    "No active composition/atomic edit, sensitive field or pending edit postcondition; replay remains quarantined except for acknowledgment of its fully completed, identity-bound scope",
+    "No new authority on adoption alone; existing exact receipt confirmation and verifier still decide",
+    "Completed replay acknowledgment requires both equal local/shared scopes, raw full prefix+replacement snapshot, exact end cursor, live expiry and authenticated source provenance; no partial replay adoption"
+  ],
+  "alternatives": [
+    {
+      "solution": "Bounded acceptance acknowledgment in existing observation owner",
+      "score": 9
+    },
+    {
+      "solution": "Separate word and raw separator storage throughout the tail contracts",
+      "score": 7
+    },
+    {
+      "solution": "Fix client behavior upstream in Firefox",
+      "score": 5
+    }
+  ],
+  "delivery_routes_changed": false,
+  "installed_laptop_changed": false,
+  "proof": {
+    "baseline_remote_run": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-cbclqcoi/RESULT.json",
+    "source_gate": {
+      "ime": {
+        "receipt": "/home/ubu/.cache/lay/development/run-c06md18z/RESULT.json",
+        "passed": 711,
+        "failed": 0
+      },
+      "daemon": {
+        "receipt": "/home/ubu/.cache/lay/development/run-_28jumzx/RESULT.json",
+        "passed": 271,
+        "failed": 0,
+        "scope": "Daemon production source unchanged since this gate; final test helper changes are IME-only."
+      }
+    },
+    "native_changed_bytes": {
+      "ime_sha256": "7fa3280ac25b115675dcc26ba8a05b8df53fb4698b9dafedfe88aca7270b4fa4",
+      "daemon_sha256": "3caa050f5b10d88a4f68bf006e8f40eeb4b8025e0129f6ca896900ce13acd974",
+      "receipt_base": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c",
+      "two_inverses_without_probe": {"receipt": "firefox-first-word-native-zrt8npu7/RESULT.json", "passed": 4, "failed": 0},
+      "roundtrip_with_decoder_probe": {"receipt": "firefox-first-word-native-_vfthobd/RESULT.json", "passed": 0, "failed": 4},
+      "five_gesture_sequences": {"receipt": "firefox-first-word-native-ts3qkoa8/RESULT.json", "passed": 3, "failed": 1},
+      "scope": "Native evdev/AT-SPI in normal fields1/7/8/10 only; current acknowledgment fixes the raw boundary, while append/Backspace authority and plain-field rapid replay remain failing. Kernel release time and panel icon unmeasured; no laptop Snap/human hardware parity."
+    },
+    "browser_standard": "NOT_TESTED",
+    "source_red": [
+      "/home/ubu/.cache/lay/development/run-3e6e7_3y/RESULT.json",
+      "/home/ubu/.cache/lay/development/run-plsx71oz/RESULT.json"
+    ],
+    "review_pass_1": {
+      "score": 7,
+      "blocking_finding": "New raw NBSP tail delegates but preflight rejects its source separator; completed replay also needs the raw acknowledgment. Added production preflight and completed-replay/second-toggle regressions."
+    },
+    "review_pass_2": {
+      "score": 9,
+      "blockers": 0,
+      "scope": "Read-only production/source proof review before final root-owned completed-boundary witness selection; full native and C09/C10 remain unproved."
+    },
+    "post_review_root_change": "The complete-boundary regression showed a freshly owned closing-Space token without a carried replay seed. The same live completed scope is now used only for raw acknowledgment; original receipt provenance is retained. The final 711-test gate covers this branch and negative cases."
+  }
+}

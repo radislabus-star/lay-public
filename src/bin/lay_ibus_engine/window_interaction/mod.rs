@@ -1,5 +1,6 @@
 mod authority;
 mod execution;
+mod native_cursor_edit;
 mod observation;
 #[cfg(test)]
 mod tests;
@@ -11,11 +12,12 @@ pub(crate) use authority::{
 };
 pub(crate) use execution::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
 pub(crate) use observation::{
-    ClientContextState, ManagedWordStartWitness, PendingContextResetRereceipt,
-    SurroundingTextSnapshot, WindowFactEvent, WindowInteraction, WindowLifecycleEvent,
+    ClientContextState, ManagedCommitSnapshotFloor, ManagedWordStartWitness,
+    NativeReplayProgressReceipt, PendingContextResetRereceipt, SurroundingTextSnapshot,
+    WindowFactEvent, WindowInteraction, WindowLifecycleEvent,
 };
 #[cfg(test)]
-pub(crate) use observation::{LifecycleReceipt, ObservationReceipt};
+pub(crate) use observation::{ContextRevocationReceipt, LifecycleReceipt, ObservationReceipt};
 
 pub(crate) const IBUS_CAP_SURROUNDING_TEXT: u32 = 1 << 5;
 pub(crate) const IBUS_CAP_PREEDIT_TEXT: u32 = 1;

@@ -1,0 +1,179 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T12:35:34Z",
+  "decision": "Retain inert completed-native-boundary replay observations while their caret lags one already observed replacement character",
+  "status": "SOURCE_REVIEW_BUILD_GREEN_PRIVATE_NATIVE_FAIL_BOTH_BROWSERS",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "candidate_baseline": "K f577c86d5185cd5f9333c652344150b50be711bef3f773e0948241dc24db2579",
+  "source_red": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/l-completed-boundary-caret-w76feg3j/RESULT.json",
+    "selected": 3,
+    "failed": 1,
+    "passed": 2,
+    "elapsed_seconds": 13.40317848000268,
+    "first_case": "reset=false, empty prefix, source Space, replacement one-character snapshot with cursor/anchor0",
+    "first_loss": "Existing exact_replay_contains_prior_snapshot accepts the actual position shape after all real native replay callbacks; observe_context_reset_rereceipt_surrounding_text rejects it because Reset identity is no longer current and its completed-boundary branch accepts only end-caret target prefixes. Pending inert receipt becomes None.",
+    "production_unchanged_verified": "All three K production files hashed against primary final focused K receipt before test execution."
+  },
+  "native_evidence": {
+    "firefox": "FAIL57PASS3FAIL/60 +6PASS/6 +87PASS44FAIL19BLOCKED/150",
+    "chrome": "FAIL38PASS20FAIL2BLOCKED/60 +6PASS/6 +105PASS33FAIL12BLOCKED/150",
+    "relevant_trace": "firefox-standard-normal-j7ai3bki/trace-space-7.jsonl: snapshot_chars1,cursor0,prior_replay_surface=true,identity_current=false,receipt mismatch before final full SSI",
+    "native_snapshot_body": "UNKNOWN; source fixture represents the measured shape and existing recognized replay mechanism, not a claim of exact old text",
+    "other_failures": "normalactive6 callback-stamp timeout, privateSpace1 chars5/cursor1 with prior_replay_surface=false, Chrome private and broader functional failures remain separate blockers."
+  },
+  "options": [
+    {
+      "score": 9,
+      "selected": true,
+      "name": "Reuse the existing paired completed-boundary proof and prior-snapshot recognizer for inert receipt retention",
+      "change": "Extend the existing completed-boundary target-prefix classifier with the existing recognized prior-snapshot one-character caret lag. Keep actual paired completed replay, current boundary identity, adjacent revision, exact external/target text prefixes and monotonic text ordering. A full target with lagged caret remains inert, with confirmed=false and cleared ACKs. Leave the later generic Reset prior-replay branch and all final exact authority guards unchanged.",
+      "size": "One existing producer condition; no owner, timer, queue, state or transport added."
+    },
+    {
+      "score": 6,
+      "selected": false,
+      "name": "Add a new reducer event for boundary-specific surrounding observations",
+      "reason": "Expresses similar semantics but expands ownership plumbing before the existing proof producer has been exhausted."
+    },
+    {
+      "score": 2,
+      "selected": false,
+      "name": "Wait longer, retry snapshots or delay Reset processing",
+      "reason": "Adds latency and cannot distinguish valid replay progress from contradictory text. Does not repair the already lost receipt."
+    }
+  ],
+  "guard_contract": [
+    "No edit authority, token or whole-field receipt is minted from a lagged snapshot; no CommitText/DeleteSurroundingText and no completion learning.",
+    "Use the already authenticated owner/context/source token, paired replay, tail epoch, actual completed native key progress, revision and layout. Never retain unobserved future progress.",
+    "The existing final full field, prefix, cursor, selection, native marker/grant and verifier checks remain unchanged; contradictory snapshots still refuse.",
+    "No browser-name condition, fixture word, Shift special case, content-purpose exception, changed delivery route, new owner or readiness timer.",
+    "Existing Reset-path prior-replay behavior remains; existing ordered end-caret receipts and contradictory/pre-final controls must pass."
+  ],
+  "verification_plan": [
+    "Retain primary semantic RED and two passing contradictory/pre-final controls; source-only fixture uses real native callbacks and actual SSI, no assigned KnownStart/token/confirmation.",
+    "One focused GREEN with positive empty/Unicode prefix, Space/NBSP and Reset/noReset plus existing negative controls.",
+    "Run full IME plus six affected contracts and FMT remotely if production changes; build only an immutable GREEN snapshot.",
+    "Review this separate bounded correction at most two passes, without reopening completed K reviews or claiming a fresh reviewer when reused.",
+    "Keep all earlier native FAIL and lost PASS; original both-browser60+6+150 with full speed denominators remain required for changed bytes. No promotion before acceptance."
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "production_change_started": true,
+  "review": {
+    "passes": 2,
+    "max_passes": 2,
+    "pass1_score": 6,
+    "initial_plan_verdict": "BLOCKED",
+    "first_blocker": "Widening the later prior-replay branch is insufficient: the earlier completed-boundary branch rejects lagged caret after an end-caret prefix.",
+    "reviewer_recommended_variant_score": 9,
+    "remaining_review": "CLOSED2/2, no third L pass",
+    "final_score": 9,
+    "verdict": "PASS",
+    "material_blockers": [],
+    "scope": "Reused independent reviewer; not fresh/context-free. Review full-source-pending line preceded root full GREEN."
+  },
+  "rollback": "K/I/H private bytes and all receipts retained. No laptop install or commit/push while TD121 remains open.",
+  "superseded_initial_late_branch_plan": "Rejected by pass1 static review before implementation; it would still fail subsequent lagged prefixes and risk text regression.",
+  "implementation": {
+    "files": [
+      "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+    ],
+    "change": "Existing target-prefix predicate plus full-target/end-caret inertness; no generic prior-replay identity widening.",
+    "test_changes": "Original positive receipts retained plus three intermediate caret lags and full-target caret lag; actual manual pre-final refusal extended to lagged/full-text variants; new lagged-prefix regression cannot restore paired native ACK."
+  },
+  "focused_green": {
+    "receipt": "l-completed-boundary-caret-green-9_juypt7/RESULT.json",
+    "selected": 5,
+    "verdict": "PASS",
+    "elapsed_seconds": 19.09638767299475,
+    "positive_variants": 16,
+    "pre_final_manual_refusals": 6,
+    "contradiction_controls": 20,
+    "original_second_handoff_subcases": 96,
+    "scope": "Source only; L native NOT_TESTED."
+  },
+  "full_source": {
+    "verdict": "PASS",
+    "tests": 814,
+    "fmt": "PASS",
+    "local_receipt": "/home/ubu/.cache/lay/development/run-qc62j1kj/RESULT.json",
+    "remote_gate": "/home/e/projects/lay-development-runner/run-Ij7oGU",
+    "archive_sha256": "2bdb006eee9392b10be1514a11ca63c6dbb4390c1da5eb2ca596cde8a64283a7"
+  },
+  "native": "FAIL_L_BOTH_ORIGINAL_SCOPES; all previous K/I/H FAIL retained; NOT_PROMOTED",
+  "build": {
+    "gate": "/home/e/projects/lay-development-runner/run-Ij7oGU",
+    "elapsed_seconds": 182.3930801069946,
+    "ime_sha256": "d858c22018c3ab3df16ac16115715619165cf41c1942c755040773a58e52475c",
+    "daemon_sha256": "6e725f3344f2db9db1a8a22784e18c7a56bd81c01cfbddf516575bd0780f3492",
+    "installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "verified_backup_K": "staged-before-L-caret-1791896846094992954"
+  },
+  "native_firefox": {
+    "proof": "job-results/natived858c-firefox-proof.json",
+    "raw": "natived858c-firefox-raw-1791897998595953698/RAW.json",
+    "standard": {
+      "PASS": 58,
+      "FAIL": 2
+    },
+    "panel": {
+      "PASS": 6
+    },
+    "functional": {
+      "PASS": 87,
+      "FAIL": 44,
+      "BLOCKED": 19
+    },
+    "gained_PASS_vs_K": 3,
+    "lost_PASS_vs_K": 2,
+    "lost_cells": [
+      "privateSpace7",
+      "fullscreenactive10"
+    ],
+    "other_groups_changed": false,
+    "closure": "L-firefox-closed.json"
+  },
+  "native_chrome": {
+    "proof": "job-results/natived858c-chrome-proof.json",
+    "raw": "natived858c-chrome-raw-1791899073168725688/RAW.json",
+    "standard": {
+      "PASS": 38,
+      "FAIL": 20,
+      "BLOCKED": 2
+    },
+    "panel": {
+      "PASS": 6
+    },
+    "functional": {
+      "PASS": 105,
+      "FAIL": 33,
+      "BLOCKED": 12
+    },
+    "keyed_changes_vs_K": 0,
+    "closure": "L-chrome-closed.json"
+  },
+  "focused_wire_diagnostic": {
+    "verdict": "NOT_REPRODUCED",
+    "cells": 2,
+    "actions_measured": 14,
+    "raw": "L-focused-wire-frozen-1791899632565641505/RAW.json",
+    "closed_scope_empty": true,
+    "full_FAIL_replaced": false,
+    "observer_overhead": "NOT_MEASURED",
+    "wire_completeness": "UNKNOWN"
+  }
+}

@@ -1,3 +1,123 @@
+# Current checkpoint — 2026-10-17, installed/published1.0.89; TD154/155 DONE
+
+Authoritative /home/ubu/projects/lay-space-boundary-shift-20261007,
+branch codex/space-boundary-shift-20261007. Functional8562c2bb pushed to publicmain
+and both working branches; firstmain CI38972539257/Security38972539134 SUCCESS.
+TD154/155 source/native/install/publication DONE; no more functional tests for this release.
+Source3211/3211 zeroexemptions, corrected focused14/14 and3controls, final source
+review9/10 pass2/2. Fullg48ali01 and canonicalrwecv4fk receipts immutable.
+
+BASE /home/ubu/.cache/lay/development/td155-install89-20261017:
+BUILD.json (83.417s, archive48ce41a5d4ad8b23e16be3a06dfef6205879313f3c6a0452964493801cfb0737),
+CI.json, REVIEW.json source9/10, NATIVE-SELECTION.json and NATIVE-CLOSURE.json.
+New whole432:FF170P27F19B,Chrome179P23F14B,total349P50F33B,NOT_TESTED0;
+0lostdefaultPASS/0gains vs whole88. Native FF420/42098.465median111.253p95ms;
+Chrome406/42082.182/98.873ms,14missing. Optionalnormal80:FF27P10F3B,Chrome37P2F1B,
+total64P12F4preconditions, old58/18/4.9gains/3lostFFrapidPASS fields1/4/6 remain
+explicit in OPTIONAL-CONTRAST.json; no causal claim for all losses. One captured
+field2 rapid marker sees callback741 pending and bridge rejects before final
+Space release settles: OPTIONAL-FIRST-BRIDGE-REFUSAL.json. No admission fix yet.
+Chrome remaining2FAIL are searchfield2 raw extra zoom after Backspace, all60 flips
+observed. Optional private/fullscreen NOT_TESTED; TD121 compatibility remains OPEN.
+
+Initial installation failed because exported APP_VERSION stayed88 while Cargo/
+metadata89; sixfile rollback verified in original INSTALL.json. Corrected ONLY
+that exact literal. PANEL-VERSION-ALIGNMENT.json and ADR2026-10-17-panel-version89-
+metadata-alignment.json pin old/new; all3 native-tested core bytes unchanged.
+Metadata canonical fy4002ss PASS48.443s,992exact inputs+one literal, no new tests/
+keys. Graph copied back. Separate private package review9/10 pass2/2 is
+REVIEW-ALIGNED.json; original source review9/10 is not relabeled. Final install:
+install-aligned/INSTALL.json statusINSTALLED_CORE89_IDENTITIES_VERIFIED_REMOTE_NATIVE_RECORDED,
+CLI/daemon/IME/panel89, loaded IMEb69b4ba0a0f6977b1608a5cb168534fc029a8ebf5d3e64bc9cd43047ac627e28,
+daemon9b9f7dcab2772f6daf4aa62682df02a967f9c17366c50819fee925d4e646c4f2.
+23protected files/globalIBus/L1.1/L3 identities/config/sources/RUmode preserved;
+local functional keys0. All owned remoteGUI scopes/finite seats CLOSED,VT1.
+Do not retry either installer or repeat native/source tests merely for publication.
+
+Publication COMPLETE: tagv1.0.89 ->e9d40144fff79c59ea7189599b6957b2cec326bb,
+source-only official releasehttps://github.com/radislabus-star/lay-public/releases/tag/v1.0.89,
+published2026-10-16T22:44:15Z. Publicmain+both working branches normally
+pushed/readback; tagalso origin. Follow-up Markdown commit records publication;
+read latestHEAD fromgit. PUBLICATION.json / METADATA-PUSH.json inBASE.
+#46 material reply posted/readback once6226098048; ISSUE46-REPLY.json.
+#47 remains reporter OrangePi retest gate, not a closed confirmed fix. Existing
+#59/#60/#43/#44/#48 replies stay. Runtime unchanged by final publication metadata.
+Current remaining technical scope is TD121 compatibility, with known native50FAIL/
+33BLOCKED and optional12FAIL/4preconditions, all recorded by receipt. Do not
+blindly retry unchanged source/input or re-open completedTD154/155. Future work
+starts from actual first refusal, no delivery-route/model/globalIBus changes.
+SSH e@192.168.3.94 works; no RDP/local functionalkeys.
+Old setup-only partial0nativejobs/40NOT_TESTED remains archived in BASE/native-
+shortcuts-SETUP-ATTEMPT1 and remote RELEASE89-TD155-SHORTCUTS-SETUP-ATTEMPT1.
+Private helper labels/tags metadata amendments and failed full/first draft evidence
+remain in owning155/experiment ledger; never undo TD154 progress or rerun untilPASS.
+
+## Previous checkpoint — installed/published1.0.88
+
+Authoritative checkout /home/ubu/projects/lay-space-boundary-shift-20261007,
+branch codex/space-boundary-shift-20261007. Functional source77af7ade, final
+publication changes only Markdown; current head is available from git.
+CLI/daemon/IME/panel88 installed, loaded SHA verified; no localfunctionalkeys.
+GlobalIBus/L1.1/L3/models/config/sources/mode preserved, rollback6files retained.
+
+TD153 DONE: controlled cache-MISS RED/current-frame materialization HIT, focused11,
+full3211/3211,0exceptions, all3237IDs unchanged; MSRV/lints/canon/independent9/10.
+Freshmain CI38916364078 andSecurity38916364185 firstattemptSUCCESS. All6actual
+payloads identical to native-tested e34: immutable whole432=349P50F33B,0NOT_TESTED,
+no lost defaultPASS. Optionalnormal80=58P18F4preconditions, private/fullscreen
+NOT_TESTED; observed older-E6 changes remain in TD147, no retry/splicing.
+
+Owning receipts /home/ubu/.cache/lay/development/td153-install88-20261016:
+BUILD.json, CI.json, NATIVE-EQUIVALENCE.json, INSTALL.json, NATIVE-CLOSURE.json.
+All owned remoteGUI scopes and finite seat closed, VT1,0heldkeys/ownedunits.
+No new input routes/owners/queues/timers/models or installation of modelservers.
+Officialrelease v1.0.88 ->71155c84, source-only/public. #46reply6218295099
+closedfeature-with-limits; #47reply6218296876 OPEN_NEEDS_REPORTER_RETEST;
+#60reply6218298017 confirms release availability. All readback verified.
+Known window limits belong to TD121.
+[Current queue](tech_debt/README.md), [release](docs/release-1.0.88.md),
+[public issue register](docs/development/public-issues-2026-10-16.md).
+
+## Historical checkpoint from 2026-10-09
+
+# Current checkpoint — 2026-10-09, accepted1.0.81 + technical-debt loop
+
+Единственная текущая очередь: [tech_debt/README.md](tech_debt/README.md).
+Authoritative checkout `/home/ubu/projects/lay-space-boundary-shift-20261007`,
+branch `codex/space-boundary-shift-20261007`, accepted source `e7a25705`.
+Принятый installed IME SHA-256:
+`2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559`.
+Пользователь подтвердил target pair/first-word correction; эта приёмка закрыта.
+Source3044/3044 и native62PASS/2FAIL/64 — разные denominators;
+universal acceptance NOT_MET. Остальные old scopes не закрыты pair acceptance.
+
+План debt review ACCEPT9/10 после двух проходов. TD-129 current index
+DONE_METADATA_SCOPE, review9/10, опубликован `2401a4e4`. TD-131
+one Unicode tail limit DONE_SOURCE_ONLY, review7→9/10, runtime unchanged.
+Первый этап завершён; пользователь разрешил Stage2 («делай»). В нём завершены
+TD-130 connected private proof и TD-137 retirement unsafe shared cleanup
+(review9/10 каждый), TD-136 bounded map + cap41 callback characterization
+(review8/10, published89e075e2). Source3045 successful bodies и separate
+metadata admission не заменяют original command FAIL или native acceptance.
+TD-133 остаётся IN_PROGRESS: два отдельно разрешённых diagnostic2 не повторили
+original committed-surface FAIL. Во втором committed/preedit/caret2/2 PASS,
+GTK assertion layout отличается, один поздний layout совпадает; Qt render
+недоступен. Final diagnostic review9/10 не закрывает причину или отображение.
+Оба local grants исчерпаны; remote-only policy сохраняется. Deferred scopes
+не объявлены DONE. Source receipts/publication status
+смотреть в единственном current index. Каждая выполненная source-only
+задача получает fresh-context review, scopedDONE, commit/push/remote verification
+перед следующей. Никакой installation/restart из metadata task не следует.
+
+## Historical checkpoints below
+
+Весь последующий текст сохранён как история конкретных прежних версий.
+Слова Current/Latest, C20/R5/R7/R12, старые порядки задач и команды установки
+ниже не являются текущим заданием. За current source/status/rollback следовать
+единственному индексу выше и AGENTS.md; historical FAIL/receipts не стирать.
+
+---
+
 # Current: TD-121 acceptance, 2026-09-13
 
 ## Current TD-121 acceptance — 2026-09-13

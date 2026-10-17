@@ -1,0 +1,334 @@
+{
+  "schema": "lay.td136.effect-map.v1",
+  "status": "SOURCE_MAP_FOR_REVIEW_NOT_TASK_DONE",
+  "baseline_commit": "60e0d095f4468d744762831d56336fe428583fb4",
+  "groups": [
+    {
+      "family": "space_join_and_stale_callback",
+      "manifest_tests": [
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "space_boundary_pair_tests::space_pair_pending_calculation_and_actual_commit_join_once_in_either_order",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+          "line": 150
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "space_boundary_pair_tests::space_pair_stale_preedit_witness_refuses_the_prior_text_edit",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+          "line": 361
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "first_pair_after_enter",
+      "manifest_tests": [
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_first_pair_after_enter_preserves_known_start_and_one_exact_frame",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "line": 126
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "space_boundary_pair_tests::space_pair_native_partial_first_word_cannot_extend_its_observed_range",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+          "line": 572
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "clean_invalid_pair_authority",
+      "manifest_tests": [
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "exact_pair_request_preserves_winner_and_one_space",
+          "target": "test:space_boundary_shift_mechanism",
+          "path": "tests/space_boundary_shift_mechanism.rs",
+          "line": 163
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "clean_right_words_and_unsupported_transfers_never_become_boundary_edits",
+          "target": "test:space_boundary_shift_mechanism",
+          "path": "tests/space_boundary_shift_mechanism.rs",
+          "line": 262
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "current_word_scope_cannot_apply_last_pair_from_read_only_context",
+          "target": "test:space_boundary_shift_mechanism",
+          "path": "tests/space_boundary_shift_mechanism.rs",
+          "line": 346
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "explicit_tab",
+      "manifest_tests": [
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::residuals::firefox_zero_width_visible_completion_tab_appends_once_with_space",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+          "line": 4756
+        },
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::residuals::transient_boundary_tab_rejects_changed_surface_or_authority",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+          "line": 4791
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "preedit::tests::pending_tab_and_cursor_arrow_retire_the_display_without_accepting_it",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/preedit/tests.rs",
+          "line": 2710
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "held_shift_reset",
+      "manifest_tests": [
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_firefox_reset_keeps_physically_held_shift",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "line": 3516
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "eight_mode_publications",
+      "manifest_tests": [
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::residuals::no_surrounding_owned_preedit_publishes_each_of_eight_modes_without_committing",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+          "line": 7254
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "layout_dispatch",
+      "manifest_tests": [
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "layout_sync::tests::td121_owner_transfer_refuses_the_old_layout_request_before_dispatch",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/layout_sync/tests.rs",
+          "line": 205
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "layout_sync::tests::manual_toggle_syncs_internal_layout_both_directions",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/layout_sync/tests.rs",
+          "line": 84
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "undo_partial_outputs",
+      "manifest_tests": [
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "space_boundary_pair_tests::space_pair_owned_and_committed_corrections_undo_the_exact_original_pair",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+          "line": 397
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "space_boundary_pair_tests::space_pair_partial_commit_failure_never_falls_back_or_arms_undo",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+          "line": 377
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "space_boundary_pair_tests::space_pair_partial_inverse_consumes_the_record_without_retry",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+          "line": 629
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "focus_reset_order",
+      "manifest_tests": [
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::residuals::delayed_focus_out_after_later_word_revocation_preserves_successor_stamps",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+          "line": 1196
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "stale_prediction",
+      "manifest_tests": [
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "preedit::tests::background_result_requires_the_current_focus_tail_and_token_identity",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/preedit/tests.rs",
+          "line": 365
+        },
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "preedit::tests::layout_switch_away_and_back_keeps_the_old_frame_stale",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/preedit/tests.rs",
+          "line": 499
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "client_capability_first_word",
+      "manifest_tests": [
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_chrome_unknown_first_word_autocorrects_owned_preedit_on_space",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "line": 2761
+        },
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_gtk_late_snapshots_autocorrect_first_committed_word",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "line": 2861
+        },
+        {
+          "isolation": "process",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_gtk_first_word_preedit_rejects_selection_and_word_fragment",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "line": 2973
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    },
+    {
+      "family": "feedback_boundary",
+      "manifest_tests": [
+        {
+          "isolation": "target",
+          "kind": "test",
+          "lane": "correctness",
+          "name": "td120_word_lifecycle_tests::td120_accepted_completion_edit_boundary_publishes_feedback_once_with_attribution",
+          "target": "bin:lay-ibus-engine",
+          "path": "src/bin/lay_ibus_engine/td120_word_lifecycle_tests.rs",
+          "line": 411
+        }
+      ],
+      "scope": "Source assertions reviewed; manifest membership is not a physical-client or branch-coverage claim"
+    }
+  ],
+  "source_identities_matching_previous_behavioral_request": {
+    "scripts/test-lanes/manifest.json": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+    "src/bin/lay_ibus_engine/context_admission.rs": "de56eb3dc9519f384e18d31fe89e004af8bd4e0360cacdcd71b4e59863763e9d",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs": "2f68d9b8905e949e36782c9b80c18212d0b51cc4d4c128e39f0faf1f526c829e",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "784a7dcb368a7da6e43c0446254df2eeff2731d224ebccc6fb3745bb37d2b85e",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": "263ee89dcbfbc638cddf08a63ce7e042f4c2e89d68346f9ff5af7b65c97ed72b",
+    "src/bin/lay_ibus_engine/layout_sync/tests.rs": "d4f7043811c39f079fd11080421195eb39f878e6d1fc9e60fe3cd4d17b3f0b49",
+    "src/bin/lay_ibus_engine/managed.rs": "407056593ac44baf785fe133c19731900db9fb010abdb3fc0705bda783a3ed94",
+    "src/bin/lay_ibus_engine/preedit.rs": "5ed723caa402cae8aca7e7b7d6b066d8f82ad7ed61bcfddc700fdf15024b59dd",
+    "src/bin/lay_ibus_engine/preedit/tests.rs": "c791aff65b8afa74812c7bc7674645e21e49ded71515a8ecc458e9daadbc5308",
+    "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs": "d00c8accaeec0e65cc43ef917e7958c07b2743772b3dd629a0a125de61dcc06e",
+    "src/bin/lay_ibus_engine/td120_word_lifecycle_tests.rs": "8de5cbefde313bccf07eea97be46a268774f06669cdccdcb1799e860ef8bbdb7",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+    "tests/space_boundary_shift_mechanism.rs": "962ab644df5cb29b5dee92121d85a1494114a0730fb4925b5248a69e28bb57a1"
+  },
+  "behavioral_receipt_reused": "/home/ubu/.cache/lay/development/run-i1rymxbv/RESULT.json",
+  "source_request": "/home/ubu/.cache/lay/development/run-i1rymxbv/request.json",
+  "new_execution": false,
+  "coverage_percentage": "NOT_MEASURED",
+  "native_physical_acceptance": "NOT_ESTABLISHED",
+  "python_inverse_source_proof": "tech_debt/evidence/2026-10-09-td130-connected-inverse.json",
+  "shared_cleanup_retired": "tech_debt/evidence/2026-10-09-td137-retirement.json",
+  "missing_joined_native_cells": [
+    "original rapid GTK3 Entry and Qt rich six-letter LEFT streams with callback/process/context binding",
+    "original caps41 Chrome first-field prefix -> Tab -> second-field typo -> Space on installed2bd",
+    "same captured Kitty input frame comparing visible Tab candidate and Space decision",
+    "every physical gesture with actual client surface, decoder and GNOME icon together",
+    "native cold/package-reload data and ownership observations"
+  ],
+  "uncharacterized_source_cell": [
+    "package reload and reader/hot-cache generation path; no reviewed semantic assertion claimed here"
+  ],
+  "planned_code_changes": [],
+  "review_refinements": [
+    "Chrome-named test starts caps9 then gains41; original TD128 records41 before first printable after Tab",
+    "caps41 GTK test uses observe_external_surrounding_text directly; it is not actual SetSurroundingText inbound-callback coverage",
+    "selection/fragment test asserts first-key CommitText and no owned preedit, not Space edit refusal",
+    "missing message header alone is not a measured defect; serialized spawn=false stream and existing owner handling require inspection"
+  ]
+}

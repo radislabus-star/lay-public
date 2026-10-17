@@ -17,7 +17,94 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.80`
+- `1.0.89` (published and installed CLI/daemon/IME/panel)
+
+1.0.89: exact acknowledged Space-series replay (TD154/155), source3211/3211,
+review9/10, first-attempt source-main CI/Security. New whole432=349P50F33B,
+0lost old defaultPASS; optional80=64P12F4preconditions,9gains/3lostFFrapidPASS.
+Exact three native-tested core binaries installed; display-only APP_VERSION
+alignment separately proves992 exact inputs plus one literal and preserves all
+original receipts. Current install receipt:
+`/home/ubu/.cache/lay/development/td155-install89-20261017/install-aligned/INSTALL.json`.
+CLI/panel89 and loaded hashes verified;23protected files, globalIBus/L1.1/L3,
+models/config/sources/mode preserved. [Release details](docs/release-1.0.89.md).
+
+Historical 1.0.88 source includes backed present-tense verb forms (TD-148), opt-in IME
+Backspace undo and Double Space (TD-147), session-scoped installer input access
+(TD-146), rustls0.23.46 (TD-149), completed native replay proof across Reset
+(TD-150), prepared Space proof retention (TD-151), and bounded CI failure
+evidence (TD-152) and an explicit test-only readout readiness prerequisite
+(TD-153). The final matched source/native/install receipts are linked
+from [the public issue register](docs/development/public-issues-2026-10-16.md).
+CLI/daemon/IME and panel1.0.88 were installed and loaded with matching hashes.
+Its functional-source CI/Security first attempts passed; whole432+80 receipts and six-payload
+byte equivalence are recorded. Models/settings/sources/mode and globalIBus/L1.1/L3
+are preserved. See the owning TD153 receipt record.
+
+1.0.87: source patch for [late device access, GitHub #49](tech_debt/144-recover-late-device-access.md).
+The existing daemon main thread retries missing uinput and input listeners once
+per second. Existing output devices and live listeners are retained; recovered
+availability does not replay failed edits. Listener lifetime changes invalidate
+old word/gesture intent through the existing field epoch. IME delivery routes,
+decision authority and models retain their contracts. Source publication was
+followed by the user-directed installation of CLI/daemon/IME and panel 1.0.87.
+Loaded binary identities and device readiness are verified in
+`/home/ubu/.cache/lay/development/td144-install87-20261016/INSTALL.json`.
+Physical-client acceptance and native latency remain NOT TESTED / NOT MEASURED.
+No new GitHub Release was created.
+
+Описание предыдущего релиза и его известных ограничений:
+[Lay 1.0.86](docs/release-1.0.86.md).
+
+
+1.0.86: TD-143 native-terminal restoration learning. Successful authorized
+terminal correction emission retains a temporary origin; admitted native
+Backspace/retyping and exact restoration produce existing UserCorrection
+preference evidence. First-word learning waits for ordinary Space settlement
+when the existing reducer temporarily has UnknownStart. Word-edit authority,
+delivery routes, models, SSI and deferred Atomic behavior retain their contracts.
+Final source/build/installation evidence is owned by:
+`/home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json`.
+Installed and loaded core identities match the868/868 tested source and verified build.
+GlobalIBus,L1.1,L3,config,sources,mode and24protected files preserved; zero test keys.
+Review7→8/10;
+physical Kitty acceptance and native latency remain NOT TESTED / NOT MEASURED.
+[Native follow-up](tech_debt/143-native-terminal-restoration-learning.md).
+
+
+1.0.85: user-requested installation of TD-142 personal restoration learning,
+source `a09fb3a5`. The existing three-core-binary transaction builds CLI, daemon
+and IME remotely and synchronizes the two extension version files. All740Rust
+files and dependency content are unchanged from the final2966/2966 source gate;
+only package/extension version metadata advances. Models, input ownership and
+IME delivery routes retain their existing contracts. Other helper binaries and
+L1.1/L3 services remain as installed. This is not full release/client acceptance.
+Current installed/loaded state and rollback evidence are owned by:
+`/home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json`.
+[Installation decision](docs/architecture/decisions/2026-10-15-user-directed-restoration85-install.json).
+New native behavior and latency remain NOT TESTED / NOT MEASURED.
+
+1.0.84: installed verified CLI/daemon/IME and synchronized GNOME extension metadata.
+ObservedIbusEngine replaces CLI spawning only in exact engine verification;
+accepted output pacing, delivery routes, models and input authority are unchanged.
+Source1134PASS and full matched READV432 preserve all349 previousPASS;
+one Chrome search/undo case advancesBLOCKED→FAIL (349PASS51FAIL32BLOCKED).
+Native-tested83 logic is reused for metadata-only84 after exact parity of739Rust
+files, dependency lock and extension code. Local84 functional typing was not run.
+Installation verified CLI/tray84, /proc binarySHA parity,24protected files,
+unchanged globalIBus/L1.1/L3 identities, config, sources and mode. Receipt:
+`/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install83-20261015T033053Z/INSTALL.json`
+(the directory keeps a legacy name; the receipt records84).
+[Performance and limits](docs/development/double-shift-latency-2026-10-15.md),
+[release decision](docs/architecture/decisions/2026-10-15-observed-readback-release84-metadata-only.json).
+
+1.0.83: installs the frozen WJ CLI/daemon/IME core on the user workstation,
+with synchronized extension version metadata. Source848PASS and native88
+32PASS/49FAIL/7BLOCKED are retained evidence for previous WJ1.0.82 logic;
+new-byte physical acceptance is left to the user by explicit instruction.
+No model, delivery-route or word-authority change is introduced by the bump.
+See [installation scope](docs/architecture/decisions/2026-10-14-user-directed-version83-install.json).
+
 
 1.0.80: installed Firefox Reset/native replay and native Space-boundary repair.
 Preserves the admitted replay seed and exact successor lifecycle through observed

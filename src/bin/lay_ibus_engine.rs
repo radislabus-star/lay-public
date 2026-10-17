@@ -32,6 +32,8 @@ mod layout_sync;
 mod lifecycle;
 #[path = "lay_ibus_engine/managed.rs"]
 mod managed;
+#[path = "lay_ibus_engine/observed_ibus_engine.rs"]
+mod observed_ibus_engine;
 #[path = "lay_ibus_engine/output.rs"]
 mod output;
 #[path = "lay_ibus_engine/precognition_worker.rs"]
@@ -91,3 +93,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     zbus::block_on(server::run(&args))?;
     Ok(())
 }
+#[cfg(test)]
+#[path = "lay_ibus_engine/space_boundary_pair_tests.rs"]
+mod space_boundary_pair_tests;

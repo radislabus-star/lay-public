@@ -1,0 +1,37 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "status": "DONE_SOURCE",
+  "task": "TD-144 / public issue #49",
+  "baseline_commit": "e0a13039",
+  "decision": "Maintain missing device availability in the existing daemon main thread with one-second bounded-cadence attempts. Keep existing shared output mutex and input listeners, at most one reader per kind/path. Never retry an edit. Observe the existing shutdown flag before acquisition/admission. Keyboard/pointer listener entry/exit advances the existing field epoch; consume it before idle deferred work and cancel stale gesture intent while retaining physical held-modifier tracking.",
+  "reason": "Startup records a failed uinput acquisition permanently as None and discovers accessible keyboards only once. Late logind/udev permissions therefore cannot recover a still-running daemon. Current listeners and output contracts already provide the required owners; the main thread only needs to maintain readiness rather than block joining them.",
+  "verification": "Plan review 9/10; code review 8/10 then 9/10 in two passes. Focused 11/11 PASS; controlled recovered-handle publication violation yields the expected failure after a real temporary-file EACCES transition. Final daemon and six affected contract targets 341/341 PASS: /home/ubu/.cache/lay/development/run-7ggr8s_q/RESULT.json. Canonical graph/checks PASS: /home/ubu/.cache/lay/development/td144-final-graph-20261016-2/GRAPH_RESULT.json. Final wait wiring reuses the existing input-loop poll helper without a guard exception; source gate rerun on the adjusted bytes. Owning document: tech_debt/144-recover-late-device-access.md.",
+  "not_tested": "Physical Bluefin/Wayland late permissions, native input latency, newly installed runtime, and full browser matrix are not established by source tests. No installation or host permission changes are authorized by this patch task.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/startup_runtime.rs",
+    "src/bin/lay_daemon/startup_runtime/device_access.rs",
+    "src/bin/lay_daemon/startup_runtime/tests/device_access.rs",
+    "src/bin/lay_daemon/startup_runtime/tests/warmup.rs",
+    "src/bin/lay_daemon/daemon_runtime.rs",
+    "src/bin/lay_daemon/daemon_runtime/focus.rs",
+    "src/bin/lay_daemon/force_layout_hotkeys.rs",
+    "docs/ime-daemon-route-map-2026-06-20.md",
+    "Cargo.toml",
+    "Cargo.lock",
+    "extension/lay@radislabus-star.github.io/metadata.json",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

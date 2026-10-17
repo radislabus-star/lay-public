@@ -1,0 +1,159 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-marked-preedit-birth-binding-failure-diagnostic",
+  "status": "WH_DIAGNOSTIC_CLOSED_TWO_DISTINCT_FIRST_REFUSALS",
+  "updated_at": "2026-10-14T10:28:06.548781+00:00",
+  "baseline": "WG completeboth432343PASS56FAIL33BLOCKED, exact18primary+RAWverified, all20cursorPASS. Source845PASS and observed marked-mode producer nowfixesprefix2/6, oddfirstfieldprefix1/3/5/7/9stillfirsttargetFAIL; FFSpaceRuEn1lostPASS. AllGUIclosed/VT1/STOP.",
+  "measured": "Current full functional trace copies are capped512KiB/UNKNOWNdelivery/prefixnotpreserved, so first odd-field birth binding cause not established. Source57/58eightgestures with marked proof pass, allold16guards remain. Do not infer current failed predicate from earlier plaincapability veto.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Diagnostic booleans/numeric bindings only after existing manual-entry ownership refusal or post-publication ownership refusal. One original job055 field1,2 fixed30 with unchanged actor/cadence and previously established row-end capped trace capture; no passivewire.",
+      "reason": "Names the first actual failed birth witness/client prefix/owner metadata binding without successful-path logging or guard changes."
+    },
+    {
+      "score": 4,
+      "recommended": false,
+      "solution": "Speculate on revision/layout/managed-mode/root first-field flags and broaden admission.",
+      "reason": "First actual failing conjunction not measured; could counterfeit stale proof or hide a publication revoke."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Runtime field/test name exceptions or word patch; blindrollback workingWG path.",
+      "reason": "Prohibited by systemic proof/ownership contract and erases independently demonstrated improvements."
+    }
+  ],
+  "contract": [
+    "No runtime predicate, outcome, effect order, owner, expiry, payload or corpus change. Existingtrace flag/storage; booleans/numeric primitive bindings only; no raw text/tokens.",
+    "Record only after already-original-refused branch, no successful key/SSI/Reset/publication or admission logging.",
+    "Fresh source845/AST/immutableprivatebytes thenoneoriginal055field1,2 thirtycases, newfiniteownedseat ifcurrentexpired. Row-end snapshots preserve failure clocks but coverageUNKNOWN. No changing original input actor or retrying unchanged failed code.",
+    "Full latestWG432table343P56F33B retained; diagnostic30 does not replace it. Independentreview unavailable/threadlimit/NOTRUN/no score; TD121OPEN/no promotion.",
+    "Separate unresolved FFSpaceRuEn1 firstauthorityloss remainsUNKNOWN; no deadline/model/ranker edit or literal word branch."
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_retrained": false,
+  "source_gate": {
+    "status": "PASS",
+    "local": "/home/ubu/.cache/lay/development/run-zcgzioe7/RESULT.json",
+    "archive_sha256": "f62025e9705b86faf85adf13e57e8b9b94beaf2223ea88f2cf3a2151eb38af06",
+    "tests": {
+      "executed": 845,
+      "failed": 0,
+      "passed": 845,
+      "selected": 845
+    },
+    "worker_seconds": 115.9463563990139,
+    "controller_seconds": 124.6,
+    "all737RustHashesMatch": true,
+    "remote": "/home/e/projects/lay-development-runner/run-UWBBHf"
+  },
+  "root_audit": "Remove only trace helper+3refusal calls: all three production files exactly match WG frozen845 source. No predicate, success callback log, return or effect order drift.",
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.894644796004286,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WH-final-graph-1791972748163252649.log",
+    "artifacts": {
+      "graphify-out/graph.json": "facb79f356424eb35b155569e31ee42ea2b74f5f8bdddbcd024668a3c2f900b6",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "271787682427c8a612842e524c3fc3adf04963f3bb8d694a6ebd60b8f222eb46",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    }
+  },
+  "all_four_ast_artifacts_hash_verified": true,
+  "build_exec": 68365,
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-UWBBHf",
+    "archive_sha256": "f62025e9705b86faf85adf13e57e8b9b94beaf2223ea88f2cf3a2151eb38af06",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791972769247248526.txt",
+    "elapsed_seconds": 183.70367099999567,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "6ea689723effd2bdc7b80642e366dacc82fe3e2e11eb18e98639b6904535e09b",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791972952950829680/bin/lay-ibus-engine",
+      "bytes": 8287632
+    },
+    "lay-daemon": {
+      "sha256": "55dc001979ab1e653c17d0b700d4bccbfc3ce23b8d9e9d7e7e61d59ab51bfd2c",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791972952950829680/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "stage": {
+    "status": "STAGED_PRIVATE_ONLY",
+    "backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-WH-binding-diagnostic-1791973030472164492",
+    "ime_sha256": "6ea689723effd2bdc7b80642e366dacc82fe3e2e11eb18e98639b6904535e09b",
+    "daemon_sha256": "55dc001979ab1e653c17d0b700d4bccbfc3ce23b8d9e9d7e7e61d59ab51bfd2c",
+    "gate": "/home/e/projects/lay-development-runner/run-UWBBHf",
+    "original_actors_unchanged": true
+  },
+  "native_exec": 90438,
+  "driver_exec": 30713,
+  "native": {
+    "status": "COMPLETE_DIAGNOSTIC_ONLY",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WH-functional-diagnostic-1791973169227509801/RESULT.json",
+    "receipt_sha256": "2bf4a45cb0d3cd00d3b4cac8381ed7195f7b44aa6ff53941735a7a0cf8368346",
+    "counts": {
+      "PASS": 20,
+      "FAIL": 8,
+      "BLOCKED": 2
+    },
+    "seconds": 65.101010936,
+    "all41_artifact_hashes_verified": true,
+    "original055_fields": [
+      1,
+      2
+    ],
+    "original_actors_and_cadence_unchanged": true,
+    "trace_coverage": "UNKNOWN",
+    "full432_matrix_replaced": false,
+    "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WH-firefox-closed.json",
+    "actual_and_driver_closed_exit0": [
+      90438,
+      30713
+    ],
+    "scope_empty": true,
+    "original_five_ticks_gone": true,
+    "original_parent_exit0": true,
+    "no_held_keys": true,
+    "vt_restored": 1
+  },
+  "first_losses": [
+    {
+      "field": 1,
+      "plan": "prefix",
+      "stage": "first_toggle_rpc",
+      "reason": "context_authority",
+      "bridge_token_live": true,
+      "manual_toggle_allowed": false,
+      "manual_refresh_allowed": false,
+      "owner_completeness": "unknown_start",
+      "binding_diagnostic_events": 0,
+      "cause_beyond_refused_authority": "UNKNOWN"
+    },
+    {
+      "field": 2,
+      "plan": "prefix",
+      "stage": "second_toggle_manual_entry_after_decoder_and_local_backspace",
+      "reason": "birth_revision_stale",
+      "birth_revision": 10,
+      "actual_current_revision": 12,
+      "all_other_logged_binding_predicates": true,
+      "fallback": "ime_active_composition_commit_then_context_conflict",
+      "causal_source_reproduction": "NOT_TESTED"
+    }
+  ],
+  "diagnostic_status_changes_vs_WG": {
+    "space_ru_en_field1": "FAIL_TO_PASS",
+    "prefix_field2": "PASS_TO_FAIL",
+    "functional_source_changed": false,
+    "interpretation": "These are separate diagnostic timings; no functional fix or full-matrix replacement is established."
+  }
+}

@@ -2,6 +2,109 @@
 
 Status: canonical live architecture map and forward contract.
 
+## 2026-10-15 — TD-142: explicit user restoration learning, source ready
+
+Baseline: `7741d06d`, installed Lay1.0.84. Exact runtime hashes, causal RED,
+review reports and intermediate failures are recorded in
+[TD-142](../tech_debt/142-learn-explicit-autocorrection-restorations.md).
+[Decision](architecture/decisions/2026-10-15-explicit-user-word-restoration-learning.json).
+
+The first missing transition was observed IME autocorrection → manual edit
+learning: automatic correction did not arm the existing Tab-edit trajectory,
+and the separate auto-undo ticket was cleared before Backspace. Reuse the
+existing pending learning trajectory, current-word suppression, Atomic deferred
+feedback and SurroundingText observer. An exact manual restoration suppresses
+the next boundary correction immediately. Only actual owner-confirmed text,
+without active composition or selection, can publish its permanent vote.
+Known public context, exact retained tail, current owner lease and the existing
+30-second undo age are required. Focus/privacy/reset retirement remains in the
+existing owner. Native Backspace retains its validated edit-observation state.
+
+Three distinct observed-restoration episodes form a persistent user preference
+in the existing usage-memory snapshot. Generic undo dispatch and raw legacy
+imports lack this fact and cannot manufacture votes by allocating fresh IDs;
+their old signed learning behavior remains. Raw typing and automatic output do
+not vote. Only `TransitionDecisionCore` constrains later automatic selection;
+manual layout projection remains independent and mutation authority is unchanged.
+
+The existing usage writer maintains a private non-rotating
+`user_word_restorations.json` projection because the activity journal rotates
+at500KiB. Retain at most three episode IDs per word. The file-lock primitive
+belongs to the existing `private_file.rs` owner and serializes the complete
+read/modify/atomic-rename transaction. No new queue, thread, cache owner,
+input owner, backend, text-delivery route or verifier exception is introduced.
+
+Independent reviews:6/10 then7/10. All reported gaps were repaired; the explicit
+remaining provenance plan and file-owner correction are in TD-142. The two-pass
+limit was retained; no third independent review or post-repair score is claimed.
+The first canonical wrapper passed11 graph contracts but failed the existing
+file-operation ownership rule; the lock helper was moved to its existing owner
+without changing guards or allowlists. Historical failure receipt:
+`/home/ubu/.cache/lay/development/td142-final-graph-20261015/GRAPH_RESULT.json`.
+
+Final source: **2966/2966 PASS in one run**,403.4s wall,
+`/home/ubu/.cache/lay/development/run-8rdennhh/RESULT.json`, archiveSHA
+`550a739d88d6797b89baf1e85910182fc1c98f71d8a0e042fa52eb5149dee7da`.
+This covers lib1824,daemon279,IME810 and eight integration targets53. All740Rust
+files match the tested archive; nine named delivery files are unchanged from
+`7741d06d`, `/home/ubu/.cache/lay/development/td142-final-source-scope.json`.
+Tests include actual Atomic entrypoints, negative confirmation/provenance cases,
+threshold/dedup/hot-cold/reload parity and three separate locked writer processes.
+
+Canonical graph refresh, exact canon change-record validation and canon tests:
+`/home/ubu/.cache/lay/development/td142-final-graph-20261015-owner/GRAPH_RESULT.json`.
+Source readiness requires PASS in that receipt. The initial source checkpoint left runtime84;
+new native behavior and latency are NOT TESTED / NOT MEASURED. The explicit
+source scope is immediate Backspace/retype; arbitrary later caret/mouse edits
+are not inferred from spelling. Historical READV349PASS/51FAIL/32BLOCKED/432,
+NOT_TESTED0, is separate and does not certify TD-142.
+
+
+## 2026-10-15 — user-directed installation of TD-142 as1.0.85
+
+The user requested installation after the source checkpoint. Reuse the complete
+2966/2966 source proof with exact Rust/dependency parity; rebuild the existing
+CLI/daemon/IME core and synchronize only extension version surfaces. Existing
+file backups, atomic replacement, owned-empty-field admission and Lay-only
+restart helpers own the transaction; preserve global IBus, L1.1/L3, user mode,
+input sources and configuration. No delivery or model changes are included.
+[Decision](architecture/decisions/2026-10-15-user-directed-restoration85-install.json).
+The current installation verdict, exact bytes and recovery state are in
+`/home/ubu/.cache/lay/development/td142-release85-20261015/INSTALL.json`.
+Process/hash readback does not establish physical acceptance. New learning
+behavior and native speed remain NOT TESTED / NOT MEASURED until a separate
+client check. The historical browser matrix above remains separate.
+
+## 2026-10-15 — TD-143 native restoration, explicit follow-up plan
+
+After installation85 the user reports repeat correction of a manually restored
+second word in Kitty. Passive caps9/purpose10 metadata has no SurroundingText.
+The first missing transition in source is authorized correction submission →
+existing restore trajectory: TD-142 waits for a client observation unavailable
+in that route. This does not yet prove the first/second-word asymmetry.
+[TD-143](../tech_debt/143-native-terminal-restoration-learning.md) records options,
+proof boundaries and the new native scope; [decision](architecture/decisions/2026-10-15-native-user-restoration-intent.json).
+No delivery change: a temporary native proposal is not learning. Only subsequent
+owner-bound observed user native editing may produce existing UserCorrection
+intent, separate from visible-system-outcome evidence. Missing/partial outputs,
+mirror-only state, private/unknown owners and generic undo/import must not vote.
+Actual terminal-executor causal RED:810PASS/1FAIL of811,
+`/home/ubu/.cache/lay/development/run-ritauysi/RESULT.json`. The origin was lost
+after successful authorized terminal emission. Plan review7/10 incorporated
+actual producer, strict native progress, UserCorrection semantics and explicit
+observation limits before runtime changes. Admitted callback/release RED4/5→GREEN5/5 retained the reducer unchanged;
+first-word learning waits for normal Space settlement. Three distinct native
+UserCorrection episodes persisted at5/5PASS in
+`/home/ubu/.cache/lay/development/td143-source-subset-ybvxt7ie/RESULT.json`.
+Final independent review8/10 has no material defect. Source868/868PASS in `/home/ubu/.cache/lay/development/run-0tmq3hj2/RESULT.json`; 86core installed and loadedSHA/version verified; physical Kitty and native timing remain NOT TESTED / NOT MEASURED. TD-142's two prior scores are not replaced or silently rerun.
+
+TD-143 final evidence: [source/install86 summary](../tech_debt/evidence/2026-10-15-td143-source-installed86.json).
+All740Rust match the test/build freeze;9privateIME files changed and731retain85
+hashes. Core/daemon/WordScope reducer/protocol/output primitives are unchanged.
+Installation preserves globalIBus,L1.1,L3,config,sources,mode and24protected files;
+functional input keys0. Runtime bytes changed (86); output authority/delivery
+routes/models unchanged. Physical Kitty and native latency remain untested.
+
 Last source audit: 2026-07-20.
 
 This document is the source of truth for the current L1-L4 runtime, its proven

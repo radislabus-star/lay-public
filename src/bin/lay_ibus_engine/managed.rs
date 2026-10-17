@@ -3,13 +3,60 @@ use std::time::Instant;
 use zbus::fdo;
 
 use super::composition_commit::ActiveCompositionCommit;
-use super::engine::{LayIbusEngine, WordInputMode};
+use super::engine::{LayIbusEngine, WordInputMode, IBUS_INPUT_PURPOSE_TERMINAL};
 use super::protocol::{
-    has_command_modifier, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER, KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT,
-    KEY_SPACE, KEY_TAB, KEY_UP,
+    has_command_modifier, has_only_control_modifier, KEY_BACKSPACE, KEY_DOWN, KEY_ENTER,
+    KEY_KP_ENTER, KEY_LEFT, KEY_RIGHT, KEY_SPACE, KEY_TAB, KEY_UP,
 };
 
 impl LayIbusEngine {
+    /// The managed input owner finishes ordinary user Space before an already
+    /// selected boundary action may use the existing client postcondition.
+    pub(super) async fn commit_legacy_space_boundary_continuation(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        mut pending: super::engine::PendingSpaceBoundaryCommit,
+    ) -> fdo::Result<bool> {
+        if !emitter.is_legacy()
+            || !self.composition.legacy_word_preedit_active
+            || !self.input_frame_authority_matches(&pending.frame)
+            || self.capture_space_boundary_pair_scope() != pending.frame.space_boundary_pair
+            || pending.material_generation != lay::nanda_wave::candidate_material_generation()
+        {
+            return Ok(false);
+        }
+        let request = if matches!(
+            pending.selection,
+            super::engine::PendingSpaceBoundarySelection::Computing { .. }
+        ) {
+            if self.layout_gesture.layout_is_ru
+                != self
+                    .client_context
+                    .factory_engine_profile
+                    .initial_layout_is_ru()
+            {
+                return Ok(false);
+            }
+            ActiveCompositionCommit::with_space_in_current_layout()
+        } else {
+            ActiveCompositionCommit::with_space()
+        };
+        self.commit_active_composition(emitter, request).await?;
+        self.retire_legacy_word_preedit_ownership_if_empty();
+        pending.frame.tail_epoch = self.committed_tail.epoch;
+        pending.frame.committed_tail = self.committed_tail.buffer.clone();
+        pending.frame.active_composition = false;
+        if let Some(receipt) = self.committed_tail.pending_visible_postcondition.as_mut() {
+            receipt.space_boundary_commit = Some(pending);
+        }
+        // One read-only request within the same receipt; no retry or new timer.
+        emitter
+            .require_surrounding_text()
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        Ok(true)
+    }
+
     pub(super) async fn process_pressed_key(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
@@ -18,9 +65,39 @@ impl LayIbusEngine {
         state: u32,
     ) -> fdo::Result<bool> {
         let pressed_started = Instant::now();
+        if let Some(pending) = self.committed_tail.pending_visible_postcondition.as_mut() {
+            if let Some(continuation) = pending.space_boundary_commit.take() {
+                if let super::engine::PendingSpaceBoundarySelection::Computing {
+                    identity, ..
+                } = continuation.selection
+                {
+                    super::space_autocorrect_prefetch::invalidate(&identity);
+                }
+            }
+        }
         if self.composition.pending_passthrough_preedit_clear {
             self.clear_preedit(emitter).await?;
             self.composition.pending_passthrough_preedit_clear = false;
+        }
+        if keyval == KEY_BACKSPACE
+            && self.config.undo_on_backspace
+            && !super::protocol::has_input_modifier(state)
+        {
+            let outcome = self.undo_ime_autocorrect_on_backspace(emitter).await;
+            // A rejected or partially executed shortcut is never retried by
+            // another key/backend. Only proven zero-effect permits deletion.
+            self.clear_pending_ime_auto_undo("backspace_shortcut_finished");
+            match outcome {
+                Ok(Some(_)) => return Ok(true),
+                Err(error) if error.receipt() == super::window_interaction::ExecutionReceipt::LocalIndeterminatePartial => {
+                    self.close_committed_tail_field();
+                    self.client_context.surrounding_text_snapshot = None;
+                    self.revoke_context_word();
+                    self.trace_key("backspace_undo_partial_consumed", keyval, keycode, true, None);
+                    return Ok(true);
+                }
+                Ok(None) | Err(_) => {}
+            }
         }
         self.clear_pending_ime_auto_undo("next_pressed_key");
         if keyval == KEY_BACKSPACE {
@@ -28,6 +105,7 @@ impl LayIbusEngine {
             self.revoke_managed_word_start_before_client_key();
             self.begin_pending_ime_completion_edit_before_backspace();
             let handled = self.backspace(emitter).await?;
+            self.observe_native_restoration_backspace(handled);
             if handled {
                 self.finish_owned_preedit_local_backspace(owned_backspace);
             }
@@ -62,15 +140,21 @@ impl LayIbusEngine {
             let managed_legacy_mirror = emitter.is_legacy()
                 && self.client_context.preedit_text_supported
                 && self.composition.word_input_mode == Some(WordInputMode::ManagedCommit);
+            let native_line_clear = self.uses_native_terminal_input()
+                && has_only_control_modifier(state)
+                && keycode == u32::from(evdev::KeyCode::KEY_U.code());
             if self.composition.buffer.is_empty()
-                && (self.client_context.surrounding_text_supported || managed_legacy_mirror)
+                && (self.client_context.surrounding_text_supported
+                    || managed_legacy_mirror
+                    || native_line_clear)
             {
                 // The client owns an unhandled shortcut. Ctrl+A followed by
                 // Backspace can delete the whole field while a one-scalar
                 // local mirror would otherwise survive and contaminate the
                 // next word. Discard the managed mirror even when the client
-                // cannot refresh SurroundingText; TerminalPassthrough retains
-                // its native word contract. Clearing proves no word boundary:
+                // cannot refresh SurroundingText. Native plain Ctrl+U also
+                // retires an untrusted tail; other native shortcuts retain
+                // their word contract. Clearing proves no word boundary:
                 // a fresh receipt or newly owned preedit must supply authority.
                 self.cancel_precognition_display_generation();
                 self.clear_preedit(emitter).await?;
@@ -82,6 +166,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if keyval == KEY_ENTER || keyval == KEY_KP_ENTER {
+            self.preserve_manual_autocorrection_restoration();
             self.revoke_managed_word_start_before_client_key();
             if !self.composition.buffer.is_empty() {
                 self.commit_active_composition(emitter, ActiveCompositionCommit::plain())
@@ -99,6 +184,7 @@ impl LayIbusEngine {
             return Ok(false);
         }
         if keyval == KEY_SPACE {
+            self.preserve_manual_autocorrection_restoration();
             let space_started = Instant::now();
             if self.composition.legacy_word_preedit_active {
                 if self.take_manual_toggle_autocorrect_suppression() {
@@ -137,8 +223,21 @@ impl LayIbusEngine {
                     }
                     _ => false,
                 };
-                if let Some(identity) = frame.as_ref() {
-                    self.invalidate_space_autocorrect_lease(identity);
+                let calculation_retained = self
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_ref()
+                    .and_then(|receipt| receipt.space_boundary_commit.as_ref())
+                    .is_some_and(|pending| {
+                        matches!(
+                            pending.selection,
+                            super::engine::PendingSpaceBoundarySelection::Computing { .. }
+                        )
+                    });
+                if !calculation_retained {
+                    if let Some(identity) = frame.as_ref() {
+                        self.invalidate_space_autocorrect_lease(identity);
+                    }
                 }
                 if !autocorrected {
                     self.commit_active_composition(emitter, ActiveCompositionCommit::with_space())
@@ -164,10 +263,14 @@ impl LayIbusEngine {
                 let setup_us = space_started.elapsed().as_micros();
                 let managed = mode == WordInputMode::ManagedCommit;
                 if managed || self.uses_native_terminal_input() {
-                    // In these ordinary boundary fallbacks, retire the display
-                    // through the existing path and pass Legacy physical Space.
-                    // Atomic retains its existing explicit boundary commit.
-                    let managed_commit = managed && !emitter.is_legacy();
+                    // Surrounding-capable ordinary managed inputs keep Space
+                    // in their CommitText stream. Opaque/terminal Legacy inputs
+                    // retain native Space; Atomic already uses this commit.
+                    let managed_commit = managed
+                        && (!emitter.is_legacy()
+                            || (self.client_context.surrounding_text_supported
+                                && self.client_context.content_purpose
+                                    != IBUS_INPUT_PURPOSE_TERMINAL));
                     if self.take_manual_toggle_autocorrect_suppression() {
                         super::trace::record(
                             r#"{"kind":"ibus_space_autocorrect","status":"manual_toggle_suppressed"}"#,
@@ -176,7 +279,8 @@ impl LayIbusEngine {
                         self.cancel_precognition_display_generation();
                         let commit_started = Instant::now();
                         if managed_commit {
-                            self.commit_managed_passthrough_char(emitter, ' ').await?;
+                            self.commit_managed_passthrough_char(emitter, ' ', keycode)
+                                .await?;
                         } else {
                             self.observe_terminal_passthrough_char(emitter, ' ').await?;
                         }
@@ -261,7 +365,8 @@ impl LayIbusEngine {
                     let autocorrect_us = autocorrect_started.elapsed().as_micros();
                     let commit_started = Instant::now();
                     if managed_commit {
-                        self.commit_managed_passthrough_char(emitter, ' ').await?;
+                        self.commit_managed_passthrough_char(emitter, ' ', keycode)
+                            .await?;
                     } else {
                         self.observe_terminal_passthrough_char(emitter, ' ').await?;
                     }
@@ -409,7 +514,8 @@ impl LayIbusEngine {
                 );
                 return Ok(true);
             }
-            self.commit_managed_passthrough_char(emitter, ch).await?;
+            self.commit_managed_passthrough_char(emitter, ch, keycode)
+                .await?;
             self.trace_key("printable_managed_commit", keyval, keycode, true, Some(ch));
             super::trace::record_printable_key_timing(
                 "managed_commit",

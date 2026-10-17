@@ -1,0 +1,127 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-12",
+  "task": "TD-121",
+  "status": "SOURCE_FOCUSED_PASS_NATIVE_FAIL_UNRESOLVED",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing ManagedWordStartWitness and authenticated reset rereceipt inside LayIbusEngine",
+  "first_failed_transition": "The inert predecessor and exact final erasure now capture natively and RequireSurroundingText is emitted, but Firefox does not send a fresh client receipt after the managed Backspace. ManualToggleV3 correctly refuses context_authority. The first missing transition is the frontend surrounding notification; source fixtures supplied that receipt independently.",
+  "decision": "Carry only the already confirmed closed-word predecessor within the existing observed preedit-start witness. An exact one-character owned Backspace that empties that preedit can arm an inert receipt for the previous word after key settlement. Require the live same owner, unchanged focus/layout/revision/word-start witness and exact one-character tail epoch step. Require a fresh exact client receipt before any manual output. Do not promote WordCompleteness or alter delivery, replay mapping, verifier, generic Reset or unrelated client input. After exact final owned-preedit erasure settles and arms a live unconfirmed predecessor, request one fresh client receipt through the existing RequireSurroundingText output. The request itself grants no output authority; unchanged exact receipt validation remains mandatory.",
+  "alternatives": [
+    {
+      "solution": "Inert predecessor in existing observed preedit-start witness",
+      "score": 9
+    },
+    {
+      "solution": "Rework all WordScope boundary history across Reset",
+      "score": 6
+    },
+    {
+      "solution": "Separate edit history and undo owner",
+      "score": 3
+    }
+  ],
+  "delivery_routes_changed": false,
+  "installed_laptop_changed": false,
+  "proof": {
+    "native_red": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-_vfthobd/RESULT.json",
+    "native_control_without_probe": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-zrt8npu7/RESULT.json",
+    "source_red": {
+      "receipt": "/home/ubu/.cache/lay/development/run-thdr7v4o/RESULT.json",
+      "passed": 712,
+      "failed": 1,
+      "failure": "owned_preedit_erasure_reconfirms_previous_closed_word: erasure must retain only an inert predecessor"
+    },
+    "source_green": {
+      "receipt": "/home/ubu/.cache/lay/development/run-zxvs5asm/RESULT.json",
+      "passed": 713,
+      "failed": 0,
+      "scope": "Includes direct pre-receipt ManualToggleV3 NotHandled and no-output assertion, both separators, authenticated subsequent Reset and nine contradictory-return guards."
+    },
+    "review_pass_1": {
+      "score": 9,
+      "blockers": 0,
+      "scope": "Fresh-context read-only review of this distinct witness/erasure mechanism. Native chain, controlled capture-settlement races and full browser/latency gate remain unproved."
+    },
+    "native_changed_bytes": {
+      "ime_sha256": "e439ac5056c8a589da70b4aa833556886930537fcb374e5d0541d49b93e6d4af",
+      "daemon_sha256": "b706f7ad2da817cca65a52e755e291c471c300f7df5c60501fc61e24e8fc6e10",
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-j4aruwo9/RESULT.json",
+      "result": "4/4 first inverses pass; exact next-letter and full raw Backspace return pass; second inverse fails in all four fields. No SSI or Reset between the final rich-field probe and its deletion; revision remains9. First failed internal witness guard not yet measured."
+    },
+    "scope": "Owned-preedit return remains unresolved in real Firefox; new source regression now covers append/erasure after actual completed native replay. Temporary bounded diagnostics identify first lost witness without changing authority.",
+    "plain_burst_diagnostic": {
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-q9rq8o81/RESULT.json",
+      "status": "BLOCKED",
+      "result": "Field1 has five causally distinct alternating native transformations, 108.756-114.726ms. Actor incorrectly continues to field7 outside its declared one-field rows and aborts before any field7 text input. Partial result is not a completed acceptance run."
+    },
+    "source_completed_replay_probe": {
+      "receipt": "/home/ubu/.cache/lay/development/run-d2p83dsf/RESULT.json",
+      "passed": 713,
+      "failed": 0,
+      "scope": "Adds actual completed replay before owned probe/erasure. Source still does not reproduce native failure; bounded diagnostic candidate build pending."
+    },
+    "native_capture_diagnostic": {
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-xeuob0j6/RESULT.json",
+      "ime_sha256": "d187ca14560905127a55ea1183a6d0319cbf2eb26757cd69aa3cb0e15d8a600a",
+      "result": "Field7 FAIL second inverse. capture_start: captured/predecessor/confirmed/current=true. capture_erasure: candidate/owned-start/owned-word/prepared/exact-refresh=true. No new surrounding receipt after the managed erasure."
+    },
+    "plain_burst_completed": {
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-c0m11833/RESULT.json",
+      "result": "Completed corrected one-field actor: all five causally distinct targets plus decoder/full raw Backspace return PASS. Scoped diagnostic, not full browser standard."
+    },
+    "source_refresh_red": {
+      "receipt": "/home/ubu/.cache/lay/development/run-4xnz0f1t/RESULT.json",
+      "passed": 710,
+      "failed": 3,
+      "failure": "Only new refresh-output assertions fail: RequireSurroundingText count0 instead of1. Source fixtures no longer hide the missing client request."
+    },
+    "implementation": "Final callback requests one existing exact surrounding refresh only for a previously captured final local preedit erasure that handled the key and armed a currently authenticated unconfirmed reset receipt after settlement. Diagnostic capture instrumentation removed; no old-snapshot authority added.",
+    "source_refresh_green": {
+      "receipt": "/home/ubu/.cache/lay/development/run-rhe1jmp4/RESULT.json",
+      "passed": 713,
+      "failed": 0,
+      "scope": "One refresh only after proved final owned erasure; Backspace release emits none; pre-receipt ManualToggleV3 has no output authority; unchanged exact and contradictory-return guards."
+    },
+    "review_pass_2": {
+      "score": 9,
+      "blockers": 0,
+      "scope": "Final fresh-context read-only source review. Current production/test hashes equal final frozen713/713 gate. Single request ordering and failure retain no output authority. Remaining source fault-injection gaps are capture-settlement races, send failure, multichar shortening; changed-byte native matrix pending."
+    },
+    "native_launch_wait": "Historical lease refusal resolved after the unrelated proof finished; scoped GUI ran and was stopped before the next source change.",
+    "native_refresh_candidate": {
+      "ime_sha256": "68407cc5e4c7f48be2480b85c3174565d8fc2554da01b201dc9022b10bd3a29e",
+      "daemon_sha256": "ee022e4da8e1513aa18f766618b9418d08895c8c1c9ed46d1c41afec452bae30",
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-m27wxizw/RESULT.json",
+      "result": "4 FAIL roundtrip despite emitted refresh: first inverse/decoder/full raw Backspace return pass in fields1/7/8/10; all second inverses fail; fresh SSI missing."
+    },
+    "native_burst_refresh_candidate": {
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-first-word-native-2m04kq42/RESULT.json",
+      "result": "4/4 completed five-gesture sequences PASS, with all distinct alternating targets and final decoder/full raw Backspace return; no intervening probe between gestures."
+    }
+  },
+  "refresh_alternatives": [
+    {
+      "solution": "Request once after authenticated final local preedit erasure using existing output",
+      "score": 9
+    },
+    {
+      "solution": "Defer request until following manual gesture with additional pending gesture coordination",
+      "score": 7
+    },
+    {
+      "solution": "Authorize from old matching snapshot or restored mirror",
+      "score": 2,
+      "rejected": true
+    }
+  ],
+  "pure_owned_cancellation_superseded_by": "2026-10-12-owned-preedit-return-continuity.json"
+}

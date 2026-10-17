@@ -1,0 +1,67 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-14",
+  "status": "INSTALLED_RUNTIME_IDENTITIES_VERIFIED_USER_ACCEPTANCE_PENDING",
+  "decision": "Install the frozen WJ core with package version1.0.83 on the user workstation. Functional and physical acceptance will be performed by the user.",
+  "user_authorization": [
+    "Ладно все установи мне новый релиз и поними номер этого достаточно",
+    "Я сам протетсирую!"
+  ],
+  "reason": "Latest direct installation request replaces the earlier remote-only installation restriction for this one local transaction and directs user-side functional verification. Do not rerun gates or browser/Telegram input. Ordinary project guards are unchanged.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "frozen_wj_archive_sha256": "b46f7c455b4aa50f6dae7cd72df68e8f0b91feccb3b43c5d4a3c22355f089d45",
+  "change_scope": "Package version, lockfile package version, extension version/date, VERSIONING.md; rebuild only existing CLI/daemon/IME targets from the exact frozen source. Install3 core binaries and2 extension version files with verified prior backup and existing restart/control helpers. No model or delivery/ownership edits.",
+  "source_evidence": "848/848 source PASS on frozen WJ1.0.82; version-only change does not reopen verification. This is reused logic evidence and not certification of1.0.83 physical clients.",
+  "native_evidence": {
+    "report": "docs/development/wj-native-apps-2026-10-14.md",
+    "pass": 32,
+    "fail": 49,
+    "blocked": 7,
+    "total": 88,
+    "speed_measured": 44,
+    "speed_required": 290,
+    "p50_ms": 75.905657,
+    "p95_ms": 86.827619,
+    "max_ms": 91.945836
+  },
+  "not_tested": [
+    "Full WJ or1.0.83 browser acceptance",
+    "Authenticated Telegram composer",
+    "Independent final WJ review was NOT_RUN due agent thread limit",
+    "New byte physical/client acceptance; user will test",
+    "Rollback not exercised unless installation fails"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": true,
+  "delivery_routes_changed": false,
+  "public_release_published": false,
+  "td121_status": "OPEN",
+  "verification": {
+    "prepared_install_script": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install-release83.py",
+    "sha256": "7e689e4684d27dde392fc2b32ff37bef94ff9a7740142069a53671f0e3ec4d22",
+    "install_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/install83-20261014T141659Z/INSTALL.json",
+    "install_receipt_sha256": "0499fe73a13bcd21b9d6f7554bbaada3750b69abc84ae7cd1c82569570bd43d5",
+    "installed_version": "1.0.83",
+    "loaded_extension_version": "1.0.83",
+    "loaded_ime_sha256": "b742b64dfd8d1d570e3eb8e354b18ba7040a8941ddc1e9982ff7513bdca6767e",
+    "loaded_daemon_sha256": "bc89b4d0a0ffe253898b1b2db0ba9825a7e92d9829c53bf5537af6927846e034",
+    "global_ibus_l11_l3_identity_preserved": true,
+    "config_and_sources_preserved": true,
+    "protected_files": 24,
+    "input_keys": 0,
+    "build_elapsed_seconds": 184.54503683399525,
+    "completed_utc": "2026-10-14T14:17:08.791338+00:00",
+    "archive_sha256": "95dba65eb694f24edc245461d5515dda5c837bbb84b89a2d063111017da29149"
+  }
+}

@@ -139,6 +139,11 @@ impl LayIbusEngine {
             || switch_complete_layout_stack(target_is_ru, target_engine),
         );
         let ok = dispatch.promotes_decoder();
+        if !ok && trace::enabled() {
+            trace::record(format!(
+                r#"{{"kind":"ibus_manual_layout_dispatch_refusal","target_is_ru":{target_is_ru},"dispatch":"{dispatch:?}"}}"#,
+            ));
+        }
         if ok {
             self.set_layout_is_ru(target_is_ru);
         }
@@ -492,8 +497,42 @@ fn request_active_ime_engine_switch(
     });
 }
 
-fn supersede_active_ime_engine_switch() {
+pub(super) fn supersede_active_ime_engine_switch() {
     layout_switch_worker().supersede_pending();
+}
+
+/// Capture a Space-generation request for a controlled late dispatch using
+/// the real worker's generation and existing authority/dispatch contract.
+#[cfg(test)]
+pub(crate) fn delayed_automatic_layout_dispatch_for_test(
+    admission: ContextAdmissionAdapter,
+    token: LayoutIntentToken,
+    target_is_ru: bool,
+) -> impl FnOnce() -> (bool, usize) {
+    let worker = layout_switch_worker();
+    let request_generation = worker.state.0.lock().unwrap().latest_request_generation;
+    let request = LayoutSwitchRequest {
+        request_generation,
+        target_is_ru,
+        engine: ime_engine_for_layout(target_is_ru),
+        authority: LayoutSwitchAuthority::Background {
+            admission_required: true,
+            admission: Some(admission),
+            token: Some(token),
+        },
+    };
+    move || {
+        let mut switches = 0;
+        let result = dispatch_layout_switch(
+            &request,
+            || worker.request_is_current(&request),
+            || {
+                switches += 1;
+                Ok(())
+            },
+        );
+        (matches!(result, LayoutSwitchDispatch::Superseded), switches)
+    }
 }
 
 fn dispatch_direct_layout_switch(

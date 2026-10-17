@@ -68,6 +68,31 @@
 
 ## Automated checks and compact evidence
 
+- Browser input changes must use the [standard ten-field Firefox/Chrome
+  protocol](tests/manual/browser_ime_standard.md). Test each affected browser
+  in normal, private and fullscreen windows, with an active word and after
+  Space: 60 cells per browser. In each cell observe both ordinary directions
+  and five rapid complete Double Shift gestures (ten Shift taps), retain each
+  intermediate target and probe the next letter. Record gesture cadence and
+  response latency with sample coverage, median, p95 and maximum; missing
+  targets and FAIL/BLOCKED must not disappear from the denominator.
+- Use one shared fixture/observer for both browsers. Source/DOM checks do not
+  certify native input, installed bytes, GNOME icon or IBus mode. This focused
+  standard supplements, and never reduces, the existing eight-gesture C10
+  acceptance. Reuse unchanged accepted evidence for publication-only work;
+  a test requirement does not authorize installation, restart, shared-learning
+  cleanup or input into existing user fields.
+- The baseline greeting is insufficient functional coverage. Use the shared
+  case selector for short/long/mixed-case/English-first words and preserved
+  preceding text; run the fixed Space, clean-text, correction/undo, moved-word
+  boundary, Tab, caret, selection and focus-return plans in every supported
+  field. Keep the baseline 60-cell window/word matrix; choose additional word
+  and burst cases by the affected mechanism rather than multiplying every
+  profile by every control. Functional plans have their own fixed actions.
+  Record their exact selection and untested scope. Unknown caret, missing
+  trusted trigger or unavailable completion is BLOCKED, never an assumed PASS.
+  Report Space/Tab timing and coverage separately from Double Shift timing.
+
 - Run development checks with one command:
   `python3 scripts/dev-check.py check --compact`. Use an explicit `--target`
   only when the affected component is known; a focused PASS is not release
@@ -86,6 +111,28 @@
   or regenerate a receipt. Never reinterpret BLOCKED/NOT_TESTED as PASS.
 - Report one concise test result at completion. Intermediate updates should
   describe a new finding or blocker, not repeat that tests are still running.
+
+## Lay progress table
+
+- Every Lay progress/status reply must include the user's pseudographic browser
+  table: Firefox, Chrome, total; PASS, FAIL, BLOCKED, total. Use the latest complete
+  native matrix receipts and retain their denominator. Show partial/diagnostic
+  runs and source-test results separately; they do not replace full browser totals.
+  Keep NOT_TESTED visible separately whenever present. Update counts only from
+  verified receipts, never from an expected fix or a review score.
+
+## TD-121 core experiment log
+
+- Before changing TD-121 word ownership, replay, release admission or privacy,
+  read [the experiment log](docs/development/td121-core-experiments.md).
+- Record a hypothesis, exact baseline and first failed transition before editing.
+  Preserve failed source/native receipts; do not repeat a rejected mechanism
+  without new causal evidence addressing its recorded rejection.
+- Preserve verified preceding fixes. Run the previously failed controls and full
+  affected development scope before code review or native build. A narrow PASS
+  or review score does not override a broader FAIL.
+- Update the log at each verdict/transfer. It indexes evidence owned by the
+  architecture document and does not introduce a second runtime plan or owner.
 
 ## graphify
 

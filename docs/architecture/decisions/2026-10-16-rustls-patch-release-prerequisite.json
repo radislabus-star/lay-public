@@ -1,0 +1,27 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "status": "SOURCE_VERIFIED",
+  "task": "TD-149 / Security CI release prerequisite",
+  "baseline_commit": "829f47c749159f71057fe3776b4a8141d1b445a2",
+  "decision": "Update only locked rustls0.23.45 to0.23.46 for four current RustSec advisories, without changing HTTP/TLS features, security policy, input authority, delivery routes, models or user config. Preserve MSRV1.88. Use a single fresh advisory DB and exact same working official musl audit binary for before/after; lockfile identity binds source/build/install.",
+  "reason": "Public Security CI38873397675 fails on RUSTSEC-2026-0346/0347/0348/0349. Primary RustSec advisories identify>=0.23.46 as patched. Task options10/5/1 choose single-package patch. Minimal plan independently reviewed9/10. GNU audit asset cannot run on host glibc; verified official musl tool avoids any OS/runtime upgrade.",
+  "verification": "Same fresh DB audit4\u21920; exact final lockSHA ae3ec42af3ee131b6cdd257b3d7dc4a6d401075a519f9cbd6f6e9786ca9c5141. Full source3209/3209 PASS, actual Rust1.88 default/lexical-compiler and pinned strict default/research lints, canon15, architecture/audit50, Node observer, harness122(one explicitly skipped), unchanged3235 manifest IDs/zero exceptions, independent code review9/10; receipt /home/ubu/.cache/lay/development/td149-full-source-b0w2y6u9/RESULT.json. Source parity993/993; final canonical refresh separate.",
+  "not_tested": "Matched final build, remote native432 plus optional80 and latency, local install pending; installed1.0.87. Issue47 original OrangePi post-login repro not proven by these x86 source checks.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C10"
+  ],
+  "protected_paths": [
+    "Cargo.lock",
+    "tech_debt/149-update-rustls-security-patch.md",
+    "docs/release-1.0.88.md",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "authority_scope": "TLS dependency implementation changes; IME authority stays with existing owners.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

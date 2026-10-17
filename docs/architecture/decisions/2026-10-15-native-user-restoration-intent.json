@@ -1,0 +1,42 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "DONE_SOURCE868_INSTALLED86_NATIVE_ACCEPTANCE_PENDING",
+  "task": "TD-143",
+  "baseline_commit": "cfcbca14",
+  "decision": "Extend existing restoration learning to proven native user-edit intent in public terminal contexts. A successful authorized correction emission only arms a temporary candidate. Subsequent observed native Backspace and new native letters restoring the exact original at a boundary can produce existing UserCorrection evidence; never claim native input as client-render confirmation. Native candidate is bound to the successful actual terminal executor, purpose10/noSSI/public, unchanged owner/layout and contiguous expected-tail key transitions. Native scope excludes Atomic active/speculation. Preserve existing SSI deferred settlement. Undetectable client-internal edits or middle-click paste are outside this evidence scope. Retain only contiguous same-owner native preference intent across the existing first-boundary UnknownStart transition. Do not upgrade the reducer or mutation admission. Native learning still requires current KnownStart: if needed, confirm after ordinary native Space callback settlement refreshes the actual admission token. Existing CurrentWordSuppression preserves user input and grants no edit authority.",
+  "reason": "Live Kitty metadata reports caps9 with no SurroundingText and purpose10. TD-142 arms only at a client-confirmed system outcome, so its restoration trace cannot begin in this route. Delivery must remain unchanged.",
+  "verification": "Actual successful terminal-executor RED810PASS/1FAIL of811 in /home/ubu/.cache/lay/development/run-ritauysi/RESULT.json. Native key-sequence implementation and hard negatives in fresh independent code review; final source proof pending. A helper-only RED and inert uinput-default fixture failure are retained separately and do not establish native acceptance. Admitted-callback RED4/5\u2192GREEN5/5; final source subset5/5 with3distinct persisted UserCorrection episode IDs in /home/ubu/.cache/lay/development/td143-source-subset-ybvxt7ie/RESULT.json. Independent code review7\u21928/10, no remaining material issue; ordinary-letter extra revalidation removed. Final source868 gate pending. Final source868/868PASS: /home/ubu/.cache/lay/development/run-0tmq3hj2/RESULT.json, archive7476ebb16e66367b76a6ea18360cfc390746b7ef59ae8a715326db9edde5e4d4. Installed86 identities verified in /home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json.",
+  "not_tested": "New native restoration, its input latency, correction installation and explanation of first-versus-second-word asymmetry are NOT TESTED. Historical browser349/51/32 is separate.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "docs/phase-word-recovery-canonical-cutover.md",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/composition_edit.rs",
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "src/bin/lay_ibus_engine/state.rs",
+    "src/bin/lay_ibus_engine/engine/types.rs",
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/ibus_interface.rs",
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false,
+  "runtime_bytes_changed": true,
+  "scope": "new native-client coverage gap after installed85; not a regrade of TD-142 reviews",
+  "plan_review": "7/10 fresh independent review; all five material adjustments incorporated before runtime changes; no TD-142 regrade.",
+  "code_review_pass1": "7/10; actual admitted-callback/release source RED4/5 proves first-word preference loss. Correction retains intent only and waits for normal reducer settlement; final pass2 pending.",
+  "code_review_pass2": "8/10; no remaining material runtime defect; optional ordinary-letter revalidation overhead removed. Max2passes complete.",
+  "final_source_receipt": "/home/ubu/.cache/lay/development/run-0tmq3hj2/RESULT.json",
+  "final_source_archive_sha256": "7476ebb16e66367b76a6ea18360cfc390746b7ef59ae8a715326db9edde5e4d4"
+}

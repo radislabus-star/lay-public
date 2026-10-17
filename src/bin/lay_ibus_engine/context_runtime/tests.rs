@@ -217,6 +217,77 @@ fn exact_appended_span_advances_unknown_scope_on_press_or_release() {
     let scope = unchanged.engine.context_word_scope.unwrap();
     assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
     assert_eq!(scope.lineage().observed_suffix_chars, 0);
+
+    // Pending first-word provenance has a native-terminal consumer. Managed
+    // KnownStart edits keep the established lineage instead of creating a
+    // suffix witness which their delivery projections never use.
+    for native in [false, true] {
+        for state in [0, crate::protocol::RELEASE_MASK] {
+            let mut fixture = installed_engine(
+                "/engine/known_append_evidence_carrier",
+                WordCompleteness::KnownStart,
+            );
+            if native {
+                fixture.engine.set_content_type_state(10, 0);
+                fixture.engine.set_client_capabilities(1 | 1 << 3);
+                fixture.engine.client_context.cursor_cell_width = 8;
+            }
+            assert_eq!(fixture.engine.uses_native_terminal_input(), native);
+            let before = fixture.engine.context_word_scope.unwrap().lineage();
+            fixture.engine.committed_tail.buffer = "abcdef".into();
+            fixture
+                .engine
+                .advance_context_word_scope(KEY_LEFT_SHIFT, 42, state, "abc", true);
+            let after = fixture.engine.context_word_scope.unwrap().lineage();
+            if native {
+                assert_eq!(after.observed_suffix_chars, 3);
+                assert_eq!(after.completeness, WordCompleteness::KnownStart);
+                assert_eq!(after.generation, before.generation);
+                assert_eq!(after.observed_first_word, None);
+                assert_eq!(after.observed_boundary_floor, None);
+            } else {
+                assert_eq!(after, before);
+            }
+            assert_eq!(fixture.engine.committed_tail.buffer, "abcdef");
+            assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+        }
+    }
+
+    // The mirror is not the only owned text surface. A handled preedit edit
+    // cannot retire an independently observed word boundary merely because
+    // its committed mirror did not append or shorten on this callback.
+    for seed in [false, true] {
+        for (keyval, keycode) in [(b'b' as u32, 48), (crate::protocol::KEY_BACKSPACE, 14)] {
+            let mut fixture = installed_engine(
+                "/engine/known_unmirrored_edit",
+                WordCompleteness::KnownStart,
+            );
+            fixture.engine.set_content_type_state(10, 0);
+            fixture.engine.set_client_capabilities(1 | 1 << 3);
+            fixture.engine.client_context.cursor_cell_width = 8;
+            assert!(fixture.engine.uses_native_terminal_input());
+            fixture.engine.committed_tail.buffer = "a".into();
+            if seed {
+                fixture
+                    .engine
+                    .advance_context_word_scope(b'a' as u32, 30, 0, "", true);
+            }
+            let before = fixture.engine.context_word_scope.unwrap().lineage();
+            fixture.engine.composition.buffer = "ab".into();
+            fixture
+                .engine
+                .advance_context_word_scope(keyval, keycode, 0, "a", true);
+            let after = fixture.engine.context_word_scope.unwrap().lineage();
+            assert_eq!(after.completeness, WordCompleteness::KnownStart);
+            assert_eq!(after.generation, before.generation);
+            assert_eq!(after.observed_suffix_chars, 0);
+            assert_eq!(after.observed_first_word, None);
+            assert_eq!(after.observed_boundary_floor, None);
+            assert_eq!(fixture.engine.committed_tail.buffer, "a");
+            assert_eq!(fixture.engine.composition.buffer, "ab");
+            assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+        }
+    }
 }
 
 #[test]

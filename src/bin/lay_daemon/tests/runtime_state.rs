@@ -937,10 +937,16 @@ struct TerminalUsageFixture {
     directory: std::path::PathBuf,
     environment: [(&'static str, Option<std::ffi::OsString>); 5],
     previous_config: LayConfig,
+    config_path: std::path::PathBuf,
+    previous_config_bytes: Option<Vec<u8>>,
 }
 
 impl TerminalUsageFixture {
     fn new() -> Self {
+        Self::with_backend("uinput")
+    }
+
+    fn with_backend(backend: &str) -> Self {
         let stamp = std::time::SystemTime::now()
             .duration_since(std::time::UNIX_EPOCH)
             .expect("fixture clock after epoch")
@@ -967,6 +973,8 @@ impl TerminalUsageFixture {
             ]
             .map(|name| (name, std::env::var_os(name))),
             previous_config: LayConfig::load(),
+            config_path: lay::config::config_path(),
+            previous_config_bytes: std::fs::read(lay::config::config_path()).ok(),
         };
         for (name, file) in [
             ("LAY_NANDA_WORD_USAGE_EVENTS", "events.jsonl"),
@@ -978,9 +986,25 @@ impl TerminalUsageFixture {
             std::env::set_var(name, fixture.directory.join(file));
         }
         let mut config = fixture.previous_config.clone();
+        config.text_backend = backend.to_string();
         config.learning_log = true;
         config.nanda_precognition = false;
         config.nanda_autocorrect = false;
+        if let Some(parent) = fixture.config_path.parent() {
+            std::fs::create_dir_all(parent).expect("private fixture config directory");
+        }
+        lay::private_file::write_private_text(
+            &fixture.config_path,
+            &serde_json::json!({
+                "text_backend": backend,
+                "learning_log": true,
+                "debug_action_log": true,
+                "nanda_precognition": false,
+                "nanda_autocorrect": false
+            })
+            .to_string(),
+        )
+        .expect("write isolated fixture config");
         lay::config::publish_runtime_config(&config);
         fixture
     }
@@ -1014,6 +1038,11 @@ impl TerminalUsageFixture {
 
 impl Drop for TerminalUsageFixture {
     fn drop(&mut self) {
+        if let Some(bytes) = self.previous_config_bytes.as_ref() {
+            let _ = std::fs::write(&self.config_path, bytes);
+        } else {
+            let _ = std::fs::remove_file(&self.config_path);
+        }
         lay::config::publish_runtime_config(&self.previous_config);
         for (name, old) in &self.environment {
             match old {
@@ -1098,6 +1127,28 @@ fn terminal_enter_records_bounded_raw_typed_context_before_reset() {
         !fixture.directory.join("l4-inbox").exists(),
         "censored typing creates no L4 episode"
     );
+}
+
+#[test]
+fn ime_unknown_privacy_never_records_raw_input_on_enter() {
+    let fixture = TerminalUsageFixture::with_backend("ime");
+    assert!(!crate::config_runtime::daemon_input_retention_allowed());
+    let mut buffer = WordBuffer::new();
+    push_text_as_layout(&mut buffer, "private sentinel input", false);
+    assert!(terminal_usage_dispatch(&mut buffer, KeyCode::KEY_ENTER, 1));
+    assert!(fixture.events().is_empty());
+    for name in [
+        "events.jsonl",
+        "counts.json",
+        "feedback.json",
+        "legacy.json",
+        "l4-inbox",
+    ] {
+        assert!(
+            !fixture.directory.join(name).exists(),
+            "unknown IME privacy cannot write {name}"
+        );
+    }
 }
 
 #[test]

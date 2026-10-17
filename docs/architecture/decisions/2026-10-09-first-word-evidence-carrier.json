@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-09",
+  "status": "EVIDENCE_CARRIER_PREFLIGHT",
+  "decision": "Track the pending KnownStart first-word suffix only for the existing native terminal evidence carrier which consumes observed_first_word. Preserve generic UnknownStart suffix tracking and all existing delivery projections.",
+  "reason": "The previous successor has7/7 Kitty target PASS and60/64 native controls with four delayed first Spaces. Full token equality includes suffix provenance; generic KnownStart writes introduce GUI lineage changes without a GUI evidence consumer. Physical causality remains a hypothesis.",
+  "verification": "Before production edits, extend the existing exact_appended_span test to assert unchanged KnownStart GUI lineage and native KnownStart counted spans on press/release, then record actual RED. Preserve707 focused and3044 full identities plus the original physical timing/deadlines.",
+  "not_tested": "This selection is not yet implemented or installed. Prior60/64 physical control result remainsFAIL. Universal window acceptance is not established.",
+  "invariants": ["C01", "C02", "C03", "C05", "C07", "C08", "C10"],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_runtime/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "owner": "Existing ContextAdmissionReducer/WordScope and WindowInteraction evidence classifier; unchanged DecisionCore/verifier/output",
+  "predecessor_artifact": "7dd6ec67ce4b970e06bfd7f8e7e5de12cb4efe1d4f1eb9ab78688af856e0d5a3",
+  "consequences": "No candidate/rank/model/feedback/package changes. No new fields, owners, clients, caches, allocations, timers, fallback or transport. Existing native evidence and generic UnknownStart must remain exact; managed KnownStart retains predecessor lineage. Frame identity consequences require physical verification; do not infer causality from one small matrix. Preserve exact b59 rollback and all mandatory final gates.",
+  "agents": false,
+  "remote_desktop": false
+}

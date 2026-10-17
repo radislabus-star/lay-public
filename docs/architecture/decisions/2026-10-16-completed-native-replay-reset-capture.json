@@ -1,0 +1,30 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "status": "SOURCE_VERIFIED",
+  "task": "TD-150 completed native replay Reset capture",
+  "baseline_commit": "e6f3227c50f13b443fc161e11b52e8ff56feaa33",
+  "decision": "Remove only the trailing-whitespace rejection from the existing completed exact replay fallback in capture_context_reset_rereceipt_candidate. Keep ordinary owned-word capture unchanged. The same paired bounded source proof can seed the existing matched-Reset rereceipt for a closed replay; only an actual exact full client receipt can confirm it. No new owner, route, timer, normalization or executor.",
+  "reason": "Captured Firefox fullscreen/space/field8 loses fourth repeated Double Shift after Reset during native replay. Observer-ahead second-letter callbacks followed by real Space/release and late matched Reset reproduce the authority failure on unchanged runtime code. The closing boundary prevents the existing completed proof from being captured; subsequent live bridge refuses context_authority.",
+  "verification": "Fresh-context plan9/10 and independent code review9/10(pass1, no material P1/P2). Genuine unchanged-production RED td150-observer-red-wtmv6a4m/RESULT.json2/3 PASS; final focused td150-focused-proof-vfotdhss11/11 PASS plus controlled old guard1/1 detected, current source restored. Full td150-full-source-5m8befqy3210/3210 PASS (3174 correctness+36 package),0fail/exempt;3236 IDs preserve all prior classifications and add one regression,15ignored/11performance separate. ActualMSRV1.88both,strictlints530/354same,canon15,architecture/audit50,Node,harness122(oneexplicitSkip),panelPASS.994/994 tested inputs including generatedreceipt,993functionalinputs. Final canonical td150-final-canonical-w9iu0xaq PASS48.15s;4metadataSHAverified and9private verification adapters syntaxPASS. Owning task preserves exact archives, intermediate fixture failures, consequences and native limits. Matched executable/browser/install pending.",
+  "not_tested": "Changed executable, browser matrices, latency and installation pending. Installed1.0.87 unchanged. Original normal/short/field4 failure is not established to share this cause.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": true,
+  "authority_scope": "Retain only existing completed same-owner native replay evidence through matched Reset. Exact client confirmation and the existing manual handoff executor remain mandatory.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

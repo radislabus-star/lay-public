@@ -1,0 +1,159 @@
+{
+  "date": "2026-10-12",
+  "status": "SOURCE_733_REVIEW_9_NATIVE_57_OF_60_FAIL_SEPARATE_COMPLETED_REPLAY_LOSS",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing managed CommitText effect record, handled press pairing and matched Reset/rereceipt flow",
+  "runtime_authority_changed": false,
+  "problem": "A successful managed literal append gets an actual exact full SSI before its matched same-owner Reset and physical release. Reset erases confirmed SSI and may erase the actual consumed-press ledger. Stock IBus deduplicates the unchanged receipt. Native Backspace then loses its inert predecessor even though the shortened SSI is genuine. Presentation-only deferral does not solve these Reset transitions.",
+  "primary_receipt": "/home/ubu/.cache/lay/development/remote-browser-evidence-20261012/current6385/native-inverse-backspace-reset-ordering.json",
+  "sequence": [
+    "actual managed literal press",
+    "successful CommitText",
+    "actual full SSI",
+    "matched Reset",
+    "matching handled release",
+    "native Backspace",
+    "matched Reset",
+    "actual shortened SSI",
+    "existing manual request refused after predecessor loss"
+  ],
+  "options": [
+    {
+      "name": "A: retain consumed release pairing and one already confirmed full observation across a separately proved first held managed-effect Reset",
+      "score": 8,
+      "recommended": true,
+      "limits": "Consumed key routing does not grant text authority. Whole observation carry is separately bounded by exact actual effect, original observation revision, held effect identity, first matched Reset and current owner revalidation."
+    },
+    {
+      "name": "B: change client delivery or force another SSI",
+      "score": 2,
+      "recommended": false
+    },
+    {
+      "name": "C: infer native deletion authority from shortened raw snapshot alone",
+      "score": 3,
+      "recommended": false
+    },
+    {
+      "name": "D: generic Reset snapshot carry",
+      "score": 1,
+      "recommended": false
+    }
+  ],
+  "decision": "Use option A with explicit Matched/Refused/Cleanup receipt from the existing observation callback. The live post-Reset token must match pinned owner/focus/lease; queued authenticated callbacks may share the latest reducer token. Extend the existing successful managed_commit_snapshot_floor into a named effect record with keycode, focus, lease, layout, epoch, observation floor and one-use eligibility, written after successful CommitText only. Carry original confirmed whole actual observation at unchanged revision only for the first matched held singleton effect and strict pinned current token. Spend eligibility on first matched Reset even without SSI; refused/cleanup/foreign callbacks cannot spend it. Never reconstruct SSI or upgrade completeness.",
+  "required_proofs": [
+    "Successful consumed press release remains handled after authenticated same-owner Reset even with no SSI; no word authority is granted",
+    "Confirmed post-append full SSI before first held Reset remains the same immutable observation and revision",
+    "Native Backspace still grants nothing before actual fresh shortened SSI",
+    "Repeated Reset, released press, foreign owner/focus/layout/content/capability, stale revision/epoch, selection/caret and contradictory raw text cannot carry observation",
+    "Overlap/autorepeat, actual CommitText failure and revocation during await preserve conservative refusal",
+    "No literal/key-class exceptions, secondary timer/owner, weakened verifier or changed IME delivery routes"
+  ],
+  "review": {
+    "score": 8,
+    "with_required_guards": 9,
+    "reviewer": "Fresh-context read-only managed_commit_reset_ack_plan_review_20261012",
+    "blockers_in_unqualified_plan": [
+      "Revocation bool alone does not authenticate Reset",
+      "Eligibility must be spent even if first Reset precedes SSI",
+      "Release routing must not inherit snapshot TTL"
+    ]
+  },
+  "release_contract_decision": "Actual handled key-up remains owned by its input activation until consumed or activation/owner/focus/Disable retirement. Word-lineage, Reset revocation, layout and the700ms observation deadline do not make an already consumed press unhandled. shares_input_activation compares existing connection/owner/activation metadata only and grants no text authority. Revalidate after output awaits: strict token for observation, same live actual activation for release pairing. Direct unauthenticated soft-reset helper stays conservative. Expired-Reset fixture changes only release assertion; expired observation/Space work stays inadmissible.",
+  "timing_recorded_at": "2026-10-12T20:16:20.361062+00:00",
+  "causal_red": {
+    "local_receipt": "/home/ubu/.cache/lay/development/run-w9oscn04/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-3bakzV/RESULT.json",
+    "archive_sha256": "0dbd028845ad649983a6c8b497a1b98d61a9590f885c5d4b7c93daa546b65a87",
+    "passed": 726,
+    "failed": 2,
+    "scope": "Actual authenticated callback schedules; release loss and original confirmed observation loss"
+  },
+  "first_implementation_gate": {
+    "receipt": "/home/ubu/.cache/lay/development/run-o9_mpt8c/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-Cq7oPZ/RESULT.json",
+    "archive_sha256": "2fcd4c52c6dacd6cb988f571e70d99b212a3f32272cd6991f07e22da06b3445e",
+    "passed": 725,
+    "failed": 3,
+    "new_causal_tests": "2/2 PASS",
+    "failures": "Two fixture publication sequences omitted actual managed literal key-up after Reset; one explicitly expected consumed literal release to become unhandled."
+  },
+  "fixture_alignment": "Keep original semantic assertions. Add actual missing key-ups before fixture completion publication, and require handled release after authenticated Reset. No observation, frame, selection or verifier refusal was weakened.",
+  "layout_causal_red": {
+    "receipt": "/home/ubu/.cache/lay/development/run-2w01p15m/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-9VSdig/RESULT.json",
+    "archive_sha256": "bac98037b821767d82c4853eadd05e4d122e654130c39ac47a45daaf6d9abb29",
+    "passed": 730,
+    "failed": 1,
+    "failure": "Original observation carried after layout generation changed since actual effect."
+  },
+  "actual_effect_identity": "The named existing effect floor additionally pins runtime owner lease and layout generation, alongside focus, epoch, revision and held key. This closes the measured generation gap without adding an authority.",
+  "queued_callbacks_note": "Actual two-ingress-before-callback fixture PASS: queued matched Reset callbacks share latest reducer token; first carries original actual observation, second removes observation but retains consumed release once. Typed Matched/Refused/Cleanup receipt avoids treating cleanup as authentication. Strict text-token revalidation remains separate from connection/owner/activation-only release pairing.",
+  "implementation_recorded_at": "2026-10-12T20:46:39.411839+00:00",
+  "source_green": {
+    "local_receipt": "/home/ubu/.cache/lay/development/run-u4e4v7gl/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-Meq4tP/RESULT.json",
+    "archive_sha256": "4d196d64df36cc8f74c6ecbd41a00019b29333147c40b35a319c3bb7e07d11c5",
+    "passed": 732,
+    "failed": 0,
+    "native_acceptance": "NOT_TESTED for these changed bytes"
+  },
+  "code_review_pass_1": {
+    "score": 7,
+    "reviewer": "Fresh-context read-only managed_reset_ack_code_review1_20261012",
+    "finding": "P1: older matched Reset can carry original confirmed SSI after observer-ahead non-Reset ContentType revocation; queued latest token alone does not establish a reset-only chain.",
+    "next_action": "Actual deferred Reset and ContentType callbacks, including change-back, receive causal RED before adding the existing reducer reset-only provenance predicate before restoration and after output awaits. Release pairing remains activation-bound separately.",
+    "recorded_at": "2026-10-12T21:02:26.372521+00:00"
+  },
+  "review_p1_causal_red": {
+    "receipt": "/home/ubu/.cache/lay/development/run-la5m1n9r/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-FGtZBc/RESULT.json",
+    "archive_sha256": "ddb0627924905af04bb6b3bcd705a9268e29b1177cb1252108680cd64029b502",
+    "passed": 731,
+    "failed": 2,
+    "causal_failure": "All three actual observer-ahead ContentType schedules incorrectly carried the old observation, including change-back.",
+    "other_failure": "Existing closing-Space fixture received exact UnknownObject for earlier detached callback27609 while expecting27610; transport ordering issue under investigation."
+  },
+  "review_p1_fix": "Before carrying the immutable actual snapshot, require the existing reducer reset-only provenance predicate on the original predecessor token; repeat it after the output await. Keep consumed releases independently activation-bound.",
+  "review_p1_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-z_votg3m/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-o62yzf/RESULT.json",
+    "archive_sha256": "71f6fb1fd604f1c8618e600b5c782ff75264b6810be9ca971f48f28240f83f6c",
+    "passed": 733,
+    "failed": 0,
+    "fmt": "PASS",
+    "native_acceptance": "NOT_TESTED for these changed bytes"
+  },
+  "fixture_transport_fence": "Closing-Space fixture fences declared detached-object callbacks using the existing strict Ping acknowledgement before expecting its exact Reset reply. Only registered UnknownObject replies are consumed; client effects and semantic authority/refusal assertions stay strict.",
+  "code_review_pass_2": {
+    "score": 9,
+    "reviewer": "Fresh-context read-only managed_reset_ack_code_review2_20261013",
+    "production_blockers": [],
+    "proof_strengthening": "No-SSI test now performs actual handled key-up before any SSI and retains snapshot None/manual false/duplicate false/no effects/no learning.",
+    "recorded_at": "2026-10-12T21:15:58.195283+00:00"
+  },
+  "final_source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-1xn8s1qk/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-RAcBTI/RESULT.json",
+    "archive_sha256": "032605719024254330323aac3fbb9bc29f1abb875b10bd3caed43f7e69899349",
+    "passed": 733,
+    "failed": 0,
+    "fmt": "PASS"
+  },
+  "native_candidate": {
+    "ime_sha256": "96534a91e1ccf87f9836e9d14892c95dd98ac577ffe587d56da78e13d729bda6",
+    "daemon_sha256": "584723572fb110d7ee759212c25f1fc3bfab0f7b5c5fe66fe71f5f7dd3f2d554",
+    "compiled_source_green": "/home/e/projects/lay-development-runner/run-o62yzf/RESULT.json",
+    "compiled_archive_sha256": "71f6fb1fd604f1c8618e600b5c782ff75264b6810be9ca971f48f28240f83f6c",
+    "production_equivalence_receipt": "/home/ubu/.cache/lay/development/reset-ack-compiled-proof-addendum.json",
+    "native_acceptance": "Firefox standard57/60 PASS3FAIL, panel6/6PASS, fixed functional86PASS45FAIL19BLOCKED",
+    "scope": "Private remote runtime only; compiled production unchanged by final test-only strengthening"
+  }
+}
