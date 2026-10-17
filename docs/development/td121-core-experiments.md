@@ -1,5 +1,25 @@
 # TD-121: журнал изменений ядра и запрет повторения отвергнутых подходов
 
+## 2026-10-17 — PR53 handler-first Reset fixture schedule
+
+Baseline `8af0b6b` passes3211 remote source cases; GitHub run39071732596
+loses the inert phase before actual SSI in the handler-first cursor regression.
+Concurrent handler/observer scheduling against the production1ms deadline is
+the hypothesis. Poll the real handler to Pending, complete the actual observer,
+then resume the same handler; retain all assertions and production deadlines.
+This changes test causality only. Focused827/827 and subsequent full3211/3211
+remote gates PASS. Controlled removal of pre-Reset live-source capture makes
+the regression RED at the original inert-phase assertion; byte restoration
+returns PASS. Unobserved Reset refusal and absolute-timeout/no-waiter-leak
+controls also PASS; no production change is retained. The ablation is not an
+exact historical revision. Receipts `FOCUSED-PASS.json`, `FIXTURE-PROOF.json`
+and `REPAIRED-SOURCE-PASS.json` retain exact source, identities and durations;
+keep original failed CI and pre-repair source receipts. Final docs/graph refresh
+is metadata-only; current-head CI is still required before merge.
+The [owning entry](../architecture/firefox-input-stability-2026-10-05.md)
+records scope and `/home/ubu/.cache/lay/development/pr53-serde-20261018/` evidence.
+Installed89/runtime owners/native acceptance remain unchanged.
+
 ## 2026-10-17 — `ltkfq` refusal reproduced in current learned source-state memory
 
 User redirected work from GitHub to diagnosis only. The exact layout target

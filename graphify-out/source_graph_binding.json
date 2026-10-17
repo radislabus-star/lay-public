@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "c0cb3f6c1f772e8005f2a3529f4e13c9ae42a9d3ff49d23695e6d85b7c520bb1",
-  "manifest_fingerprint": "cf1749557ca27c3f2e76099ea401d02ec62e7549e28e727cb03ee0657803d90b",
+  "graph_fingerprint": "06e59ba972682175ceea3e3496bb7cc4306f730640a71323a0caef0373bd6e52",
+  "manifest_fingerprint": "27818bcdbb66963a7f6615f952f97bbace7db89103a608dec26f8acfd6e6f3ff",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -166,7 +166,7 @@
     "src/bin/lay_ibus_engine/context_admission/adapter.rs": "25df0a8efc1aa4d03c5c7ce14c4ee991e03a9aafcf5855f7c9e4ecf76389ca1b",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests.rs": "045a2f72092eaaa1ecb726cb470e07d4b549e0bea2f6c255d44f9af9107b6375",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/late_native_replay_refresh.rs": "e71de3123bbe8607fa25bbefc09f2a9055b89937acbbd65220a78f248ad4de6b",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_cursor_edit.rs": "a069d91a0d7e675ccd6a6806cd0b24948110e5d92f929242fa00cf5730cce266",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_cursor_edit.rs": "764852264b1a4709713daa2677a64299e209cd50ee235d625229fddca3ea16aa",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_transfer.rs": "0dbf8f15e0e919ef4e7c377714ecd02c3802818cbd2c10c75620b205fa0332a5",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "20ecd26d450eb3c6764a9d9e09c306137ac0dfb8851db7b5fb761bf0cea71d9c",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": "29c9611bd9ecb7d52743a3621dcb152a91fa9ffd5d85a89fd0f4254e65613ed0",

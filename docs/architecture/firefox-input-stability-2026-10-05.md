@@ -1,5 +1,39 @@
 # Firefox input stability — 2026-10-05
 
+## 2026-10-17 — PR53 source-fixture receive-order repair
+
+At serde update head `8af0b6b6660ec7868512a3c0551572b23afce29a`, remote
+development correctness/package lanes passed 3211/3211. GitHub run 39071732596
+failed only the handler-first cursor Reset inert-phase assertion. The helper
+used concurrent `zip` scheduling against the unchanged 1ms callback deadline;
+transport scheduling is the hypothesis, not an independently timed CI trace.
+
+The test now polls the real Reset once to Pending, completes the actual
+canonical observer, then resumes that same future. All matrix variants,
+manual-only effects and refusal assertions remain. This checks semantic order,
+not 1ms transport performance. Runtime rendezvous, provenance, deadlines,
+delivery routes, guards and installed 1.0.89 bytes are unchanged.
+
+Remote focused IME verification passes827/827 (137.3s end-to-end).
+The private controlled violation removes only pre-Reset live-source capture:
+the same regression fails at its inert-phase assertion, then passes after
+exact production-byte restoration. Unobserved Reset refusal and absolute
+timeout/no-waiter-leak controls both pass on that restored binary. This is
+an invariant ablation, not an exact historical source revision. Its complete
+compile/run proof took22.894s; these durations are not input-latency measures.
+The subsequent full remote correctness/package gate passes3211/3211
+(478.5s end-to-end), with no semantic or infrastructure failure.
+
+Exact receipts: `/home/ubu/.cache/lay/development/pr53-serde-20261018/`,
+`FOCUSED-PASS.json`, `FIXTURE-PROOF.json`, `CONTROLLED-VIOLATION.log`,
+`REPAIRED-SOURCE-PASS.json` and `repaired-SUMMARY.json`. Full gate local receipt
+is `/home/ubu/.cache/lay/development/run-ipc8rpn9/RESULT.json`.
+Final documentation/generated-graph publication is metadata-only relative to
+that tested Rust/lockfile snapshot; current-head CI remains the merge gate.
+The original `SOURCE-PASS.json` and `CI-FAILED.log` stay historical evidence.
+Browser default432 remains349P/50F/33B, NOT_TESTED0 in that retained native
+receipt; this source/dependency change has no new native acceptance.
+
 ## W repeated-source proof: configured54 PASS; delayed erase release coverage next
 
 First W54 test53P1F did not prove the replay was active before SSI and used
