@@ -20,6 +20,7 @@ pub(super) fn trigger_key_from_config(trigger: &str) -> KeyCode {
     match trigger {
         "double-ctrl" => KeyCode::KEY_LEFTCTRL,
         "double-alt" => KeyCode::KEY_LEFTALT,
+        "double-space" => KeyCode::KEY_SPACE,
         "caps-lock" => KeyCode::KEY_CAPSLOCK,
         "single-rshift" => KeyCode::KEY_RIGHTSHIFT,
         "single-rctrl" => KeyCode::KEY_RIGHTCTRL,
@@ -72,9 +73,9 @@ pub(super) fn run_exact_ime_tail_replay(
     virtual_kbd: &Arc<Mutex<Option<VirtualDevice>>>,
     executing: &mut bool,
     replay: ImeCommittedTailReplay,
-    shift_window: Duration,
-    queued_dshift_state: &mut DShiftState,
+    gesture: (Duration, &mut DShiftState, KeyCode),
 ) -> Option<bool> {
+    let (shift_window, queued_dshift_state, configured_trigger_key) = gesture;
     let mut keyboard = lock_virtual_keyboard(virtual_kbd);
     let mut physical_grab = PhysicalInputGrab::new(Some(device));
     let input_isolated = physical_grab.is_active();
@@ -85,9 +86,13 @@ pub(super) fn run_exact_ime_tail_replay(
             |queued_keyboard: &mut VirtualDevice,
              queued_buffer: &mut WordBuffer,
              current_layout_is_ru: bool| {
-                let Some(expected_tail) =
-                    queued_buffer.visible_tail_text(lay::word_buffer::MAX_REPLACE_WORDS)
-                else {
+                let Some(expected_tail) = queued_buffer.visible_tail_text(
+                    if configured_trigger_key == KeyCode::KEY_SPACE {
+                        1
+                    } else {
+                        lay::word_buffer::MAX_REPLACE_WORDS
+                    },
+                ) else {
                     super::log("warning: queued Double Shift has no settled daemon tail");
                     return None;
                 };
@@ -143,6 +148,7 @@ pub(super) fn run_exact_ime_tail_replay(
             true,
             shift_window,
             queued_dshift_state,
+            configured_trigger_key,
             &mut replay_queued_manual_toggle,
         );
         if forwarded.last_manual_toggle_layout_is_ru.is_some() {
@@ -173,23 +179,59 @@ pub(super) fn run_scoped_manual_correction(
         return None;
     }
     let mut g = lock_virtual_keyboard(ctx.virtual_kbd);
-    run_manual_correction_with_scope(ScopedManualCorrectionRequest {
+    let mut result = run_manual_correction_with_scope(ScopedManualCorrectionRequest {
         manual: ManualCorrectionRequest {
             buf: ctx.buffer,
             replace_words,
             virtual_kbd: g.as_mut(),
             executing: ctx.executing,
             input_isolated,
-            text_observation: ctx.text_observation,
+            text_observation: ctx.text_observation.clone(),
             physical_grab: Some(&mut physical_grab),
             output_route: dispatch_plan.output_route,
         },
         events_since_word_start,
         label: reason,
-    })
+    });
+    if ctx.trigger_key == KeyCode::KEY_SPACE && input_isolated {
+        if let (Some(layout), Some(keyboard)) = (result, g.as_mut()) {
+            let mut replay = |keyboard: &mut VirtualDevice, buffer: &mut WordBuffer, _| {
+                buffer.invalidate_replay_and_auto_undo();
+                handle_double_shift(ManualCorrectionRequest {
+                    buf: buffer,
+                    replace_words: 1,
+                    virtual_kbd: Some(keyboard),
+                    executing: ctx.executing,
+                    input_isolated,
+                    text_observation: ctx.text_observation.clone(),
+                    physical_grab: None,
+                    output_route: dispatch_plan.output_route,
+                })
+            };
+            let forwarded = physical_grab.forward_queued_typing_with_manual_toggles(
+                keyboard,
+                ctx.buffer,
+                layout,
+                "scoped-double-space",
+                0,
+                true,
+                ctx.shift_window,
+                ctx.queued_dshift_state,
+                ctx.trigger_key,
+                &mut replay,
+            );
+            if forwarded.last_manual_toggle_layout_is_ru.is_some() {
+                result = forwarded.last_manual_toggle_layout_is_ru;
+            }
+        }
+    }
+    result
 }
 
 pub(super) struct ScopedManualCorrectionContext<'a> {
+    pub(super) trigger_key: KeyCode,
+    pub(super) shift_window: Duration,
+    pub(super) queued_dshift_state: &'a mut DShiftState,
     pub(super) buffer: &'a mut WordBuffer,
     pub(super) device: &'a mut Device,
     pub(super) virtual_kbd: &'a Arc<Mutex<Option<VirtualDevice>>>,
@@ -251,4 +293,15 @@ pub(super) fn reject_manual_trigger(ctx: ManualTriggerCompletion<'_>) {
     *ctx.pending_multi_tap = None;
     *ctx.last_double_at = Some(Instant::now());
     *ctx.clear_on_next_typing = true;
+}
+
+#[cfg(test)]
+mod double_space_config_tests {
+    #[test]
+    fn configured_double_space_uses_the_ordinary_space_key() {
+        assert_eq!(
+            super::trigger_key_from_config("double-space"),
+            evdev::KeyCode::KEY_SPACE
+        );
+    }
 }

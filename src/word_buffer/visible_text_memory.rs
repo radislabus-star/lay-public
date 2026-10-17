@@ -31,13 +31,19 @@ impl WordBuffer {
                 events.push(visible_tail_space_event());
             }
             events.extend(self.current.iter().copied());
-        } else if self.prev_had_trailing_space && !events.is_empty() {
-            events.push(visible_tail_space_event());
+        } else if self.prev_had_trailing_space() && !events.is_empty() {
+            events.extend(std::iter::repeat_n(
+                visible_tail_space_event(),
+                usize::from(self.prev_trailing_spaces),
+            ));
         }
         (!events.is_empty()).then(|| map_original_events(&events))
     }
 
     pub fn remember_visible_text_for_correction(&mut self, text: &str) -> bool {
+        let Some(trailing_spaces) = self.checked_replay_suffix_spaces(text) else {
+            return false;
+        };
         let Some(events) = text_to_key_events(text, preferred_layout_for_text(text, true)) else {
             return false;
         };
@@ -52,25 +58,21 @@ impl WordBuffer {
 
         self.prev_words.clear();
         self.current.clear();
-        if text_ends_with_space(text) {
+        if trailing_spaces > 0 {
             self.prev_words = owned_words;
-            self.prev_had_trailing_space = true;
+            self.prev_trailing_spaces = trailing_spaces;
         } else {
             let Some(current) = owned_words.pop() else {
                 return false;
             };
             self.prev_words = owned_words;
             self.current = current;
-            self.prev_had_trailing_space = false;
+            self.prev_trailing_spaces = 0;
         }
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
         true
     }
-}
-
-fn text_ends_with_space(text: &str) -> bool {
-    text.chars().next_back().is_some_and(char::is_whitespace)
 }
 
 fn visible_tail_space_event() -> KeyEvent {

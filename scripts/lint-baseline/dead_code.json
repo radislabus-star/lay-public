@@ -1491,97 +1491,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 1290,
-          "byte_start": 1273,
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs"
-        },
-        {
-          "byte_end": 1357,
-          "byte_start": 1353,
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs"
-        }
-      ],
-      "message": "fields `worker_generation` and `kind` are never read",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
-          "is_primary": false,
-          "label": "fields in this struct",
-          "text": [
-            "pub(crate) struct PreparedCorrectionLease {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) kind: PreparedLeaseKind,"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) worker_generation: u64,"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
-          "byte_end": 1290,
-          "byte_start": 1273,
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs"
-        }
-      ],
-      "message": "field `worker_generation` is never read",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
-          "is_primary": false,
-          "label": "field in this struct",
-          "text": [
-            "pub(crate) struct PreparedCorrectionLease {"
-          ]
-        },
-        {
-          "file": "src/bin/lay_ibus_engine/space_autocorrect_prefetch.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) worker_generation: u64,"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "bin"
-        ],
-        "kind": [
-          "bin"
-        ],
-        "name": "lay-ibus-engine"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 12987,
           "byte_start": 12957,
           "file": "src/text_edit/output_transaction.rs"
@@ -3470,45 +3379,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 17447,
-          "byte_start": 17437,
-          "file": "src/typing_memory.rs"
-        }
-      ],
-      "message": "associated function `edited_ime` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": false,
-          "label": "associated function in this implementation",
-          "text": [
-            "impl TypingMemoryEvent {"
-          ]
-        },
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn edited_ime("
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 176,
           "byte_start": 161,
           "file": "src/nanda_wave/l2_field/productive_v1/delta.rs"
@@ -3715,6 +3585,45 @@
           "label": "",
           "text": [
             "fn prerequisite_rejection("
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 18338,
+          "byte_start": 18328,
+          "file": "src/typing_memory.rs"
+        }
+      ],
+      "message": "associated function `edited_ime` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": false,
+          "label": "associated function in this implementation",
+          "text": [
+            "impl TypingMemoryEvent {"
+          ]
+        },
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn edited_ime("
           ]
         }
       ],
@@ -4301,37 +4210,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 21806,
-          "byte_start": 21772,
-          "file": "src/typing_memory.rs"
-        }
-      ],
-      "message": "function `completion_edit_geometry_is_linked` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn completion_edit_geometry_is_linked("
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 2189,
           "byte_start": 2186,
           "file": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs"
@@ -4758,6 +4636,37 @@
           "label": "",
           "text": [
             "fn flush_lemma("
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 22738,
+          "byte_start": 22704,
+          "file": "src/typing_memory.rs"
+        }
+      ],
+      "message": "function `completion_edit_geometry_is_linked` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn completion_edit_geometry_is_linked("
           ]
         }
       ],
@@ -5822,37 +5731,6 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 27504,
-          "byte_start": 27482,
-          "file": "src/typing_memory.rs"
-        }
-      ],
-      "message": "function `transition_target_text` is never used",
-      "occurrence": 1,
-      "subjects": [
-        {
-          "file": "src/typing_memory.rs",
-          "is_primary": true,
-          "label": "",
-          "text": [
-            "pub(crate) fn transition_target_text(from: &str, to: &str) -> String {"
-          ]
-        }
-      ],
-      "target": {
-        "crate_types": [
-          "lib"
-        ],
-        "kind": [
-          "lib"
-        ],
-        "name": "lay"
-      }
-    },
-    {
-      "code": "dead_code",
-      "locations": [
-        {
           "byte_end": 27650,
           "byte_start": 27636,
           "file": "src/nanda_wave/lexical_grokking/typed_basin/quality.rs"
@@ -6046,6 +5924,37 @@
           "label": "",
           "text": [
             "pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {"
+          ]
+        }
+      ],
+      "target": {
+        "crate_types": [
+          "lib"
+        ],
+        "kind": [
+          "lib"
+        ],
+        "name": "lay"
+      }
+    },
+    {
+      "code": "dead_code",
+      "locations": [
+        {
+          "byte_end": 28526,
+          "byte_start": 28504,
+          "file": "src/typing_memory.rs"
+        }
+      ],
+      "message": "function `transition_target_text` is never used",
+      "occurrence": 1,
+      "subjects": [
+        {
+          "file": "src/typing_memory.rs",
+          "is_primary": true,
+          "label": "",
+          "text": [
+            "pub(crate) fn transition_target_text(from: &str, to: &str) -> String {"
           ]
         }
       ],

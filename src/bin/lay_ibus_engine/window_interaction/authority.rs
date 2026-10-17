@@ -237,6 +237,26 @@ impl LayImeBridge {
     pub(crate) async fn visible_tail_v3_inner(
         &self,
     ) -> fdo::Result<(String, String, bool, u64, String, String)> {
+        let (state, text, layout, epoch, path, field, may_retain) =
+            self.visible_tail_v4_inner().await?;
+        // Older clients cannot bind a retention fact to their lease. Preserve
+        // their public readout and their previous private-content refusal.
+        if !may_retain && !text.is_empty() {
+            return Ok((
+                "passive:unknown-context".to_string(),
+                String::new(),
+                layout,
+                epoch,
+                path,
+                String::new(),
+            ));
+        }
+        Ok((state, text, layout, epoch, path, field))
+    }
+
+    pub(crate) async fn visible_tail_v4_inner(
+        &self,
+    ) -> fdo::Result<(String, String, bool, u64, String, String, bool)> {
         let token = match self.bridge_admission_token_result().await {
             Ok(token) => token,
             Err(BridgeAdmissionError::Adapter(AdapterError::Denied)) => {
@@ -247,6 +267,7 @@ impl LayImeBridge {
                     0,
                     String::new(),
                     String::new(),
+                    false,
                 ));
             }
             Err(error) => return Err(error.into_fdo()),
@@ -259,6 +280,7 @@ impl LayImeBridge {
                 0,
                 String::new(),
                 String::new(),
+                false,
             ));
         };
         let iface_ref = self
@@ -277,6 +299,7 @@ impl LayImeBridge {
         let reset_rereceipt = engine.context_reset_rereceipt_exact_manual_handoff_allowed();
         if !self.shared_active_path_matches(&path)
             || !self.bridge_token_is_live(&engine, token.as_ref())
+            || engine.completed_native_replay_awaits_exact_receipt()
             || !(word_is_known
                 || bounded_unknown_suffix
                 || observed_exact_suffix
@@ -289,6 +312,7 @@ impl LayImeBridge {
                 engine.committed_tail.epoch,
                 path,
                 String::new(),
+                false,
             ));
         }
         engine.refresh_empty_tail_from_handoff();
@@ -307,6 +331,7 @@ impl LayImeBridge {
                 engine.committed_tail.epoch,
                 path,
                 String::new(),
+                false,
             ));
         }
         let text = visible_text_for_source(
@@ -333,6 +358,7 @@ impl LayImeBridge {
             engine.committed_tail.epoch,
             path,
             focus_receipt,
+            engine.content_allows_personalization(),
         ))
     }
 
@@ -627,7 +653,7 @@ impl LayImeBridge {
         let mut engine = iface_ref.get_mut().await;
         if let Some(queued_at) = engine.layout_gesture.pending_manual_refresh_at {
             if queued_at.elapsed() > Duration::from_millis(700)
-                || !engine.context_reset_rereceipt_computation_allowed()
+                || !engine.context_reset_rereceipt_manual_wait_allowed()
             {
                 engine.layout_gesture.pending_manual_toggle = false;
                 engine.layout_gesture.pending_manual_refresh_at = None;
@@ -647,14 +673,16 @@ impl LayImeBridge {
                 r#"{"kind":"ibus_manual_toggle_refresh","stage":"exact_ready_for_same_gesture"}"#,
             );
         }
-        let reset_snapshot_pending = engine.context_reset_rereceipt_computation_allowed()
+        let reset_snapshot_pending = engine.context_reset_rereceipt_manual_wait_allowed()
             && engine.client_context.surrounding_text_supported
             && engine.client_context.surrounding_text_snapshot.is_none();
-        let mut manual_toggle_allowed = engine.context_allows_manual_toggle()
-            || engine.context_owns_active_preedit_manual_toggle()
-            || engine.context_observed_suffix_exact_manual_handoff_allowed()
-            || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
-            || reset_snapshot_pending;
+        let mut manual_toggle_allowed = !engine.completed_native_replay_awaits_exact_receipt()
+            && (engine.context_allows_manual_toggle()
+                || engine.context_owns_active_preedit_manual_toggle()
+                || engine.context_observed_suffix_exact_manual_handoff_allowed()
+                || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
+                || engine.native_cursor_manual_source_is_current()
+                || reset_snapshot_pending);
         let bridge_token_live = self.bridge_token_is_live(&engine, token.as_ref());
         let manual_refresh_allowed = bridge_token_live
             && !manual_toggle_allowed
@@ -668,7 +696,7 @@ impl LayImeBridge {
             engine.cancel_precognition_display_generation();
             let mut output = EngineOutput::legacy(emitter);
             engine.clear_preedit(&mut output).await?;
-            manual_toggle_allowed = engine.context_reset_rereceipt_computation_allowed()
+            manual_toggle_allowed = engine.context_reset_rereceipt_manual_wait_allowed()
                 && engine.client_context.surrounding_text_supported
                 && engine.client_context.surrounding_text_snapshot.is_none();
             crate::trace::record(
@@ -676,6 +704,12 @@ impl LayImeBridge {
             );
         }
         if !bridge_token_live || !manual_toggle_allowed {
+            if bridge_token_live && !manual_toggle_allowed {
+                engine.trace_marked_preedit_binding_refusal("bridge_context_authority");
+            }
+            // An explicit gesture at an unproved/interior caret spends the
+            // inert cursor phase. A later SSI cannot revive that attempt.
+            engine.discard_native_cursor_manual_source();
             crate::trace::record(format!(
                 r#"{{"kind":"ibus_manual_toggle_rpc","stage":"not_handled","reason":"context_authority","bridge_token_live":{bridge_token_live},"manual_toggle_allowed":{manual_toggle_allowed},"manual_refresh_allowed":{manual_refresh_allowed}}}"#,
             ));
@@ -689,6 +723,11 @@ impl LayImeBridge {
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
         let mut engine = engine.begin_context_bridge_output(token.as_ref());
+        if engine.native_cursor_manual_source_is_current()
+            && !engine.consume_native_cursor_manual_source()
+        {
+            return Ok(ImeManualToggleOutcome::NotHandled);
+        }
         engine.refresh_empty_tail_from_handoff();
         let target_authority = WindowInteraction::admit_manual_toggle(&engine);
         if matches!(
@@ -844,7 +883,7 @@ impl WindowInteraction {
         if engine.atomic.active {
             return TextTargetAuthority::AtomicOwned;
         }
-        if engine.content_is_sensitive() {
+        if !engine.content_allows_text_assistance() {
             return TextTargetAuthority::Reject(WindowRejectReason::SensitiveContent);
         }
         if engine

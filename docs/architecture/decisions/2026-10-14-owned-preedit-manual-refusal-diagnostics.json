@@ -1,0 +1,117 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-owned-preedit-manual-refusal-diagnostics",
+  "status": "WF_CLOSED_MARKER_ONLY_OWNED_PREEDIT_REFUSAL_REPRODUCED",
+  "updated_at": "2026-10-14T08:26:49.865780+00:00",
+  "baseline": "Latest fullV432339PASS60FAIL33BLOCKED. WD diagnostic60PASS/no exact-replay rejects. WE originalfunctional30:20PASS8FAIL2BLOCKED, actual prefix decoder/second toggle failures reproduced with actual clocked row traces.",
+  "measured": "Prefix starts real printable_legacy_preedit, full uncommitted word with suffix suggestion. Manual path falls back to commit+blocking layout instead of owned preedit InputMode transaction; layout_sync false. Next z decoded\u044f or next RPCbridge_admission refused. Exact owned-preedit rejecting guard and dispatch enum UNKNOWN.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Failure-only owned-preedit guard booleans immediately after existing false result and nonempty composition; layout dispatch enum only after existing !promotes_decoder. Same original057 functional30 with case-end trace snapshots on fresh gated private diagnostic bytes.",
+      "reason": "Measures original failed proof before changing a guard, owner, mode transaction or timeout; no successful callback overhead."
+    },
+    {
+      "score": 3,
+      "recommended": false,
+      "solution": "Assume pending suggestion or legacy-mode flag is the cause and broaden owned-preedit guard.",
+      "reason": "Exact failed guard not measured; native first letter is already legacy-owned, ruling out the speculative regular-mode explanation."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Promote decoder after any attempted layout switch, remove context revalidation or increase switch deadline.",
+      "reason": "Violates current stale/foreign-context protections and lacks causal evidence."
+    }
+  ],
+  "contract": [
+    "All existing predicates, return values, effect order and guard tests remain. Trace only after original owned-preedit false/nonempty composition or original failed layout dispatch. Booleans/generated enum only, no text/tokens.",
+    "No new owner, route, timer, mode policy, word condition or model fit. Source expected843 IME+six contracts once, AST, immutable build and private staging only after oldWE strongclosure.",
+    "One original057 fixed30/no passivewire/inputcadence unchanged/case-end snapshots retained. Diagnostic partial never replaces full432.",
+    "Independent context-free reviewer NOT RUN: prior new-agent request rejected at agent thread limit; no score. Root diff audit; taskOPEN/no publication."
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_retrained": false,
+  "source_gate": {
+    "verdict": "PASS",
+    "tests": {
+      "executed": 843,
+      "failed": 0,
+      "passed": 843,
+      "selected": 843
+    },
+    "worker_seconds": 114.99853703400004,
+    "controller_seconds": 125.2,
+    "archive_sha256": "9bfee353d8436afaced54fff86c188989e0a4b6babc57cd85667e9b78b4ce3cb",
+    "local": "/home/ubu/.cache/lay/development/run-q6zfr8gh/RESULT.json",
+    "all737RustHashesMatch": true,
+    "remote": "/home/e/projects/lay-development-runner/run-1p1GAo"
+  },
+  "root_audit": "Remove only post-false owned-preedit metadata and post-failed dispatch record: shift.rs/layout_sync.rs exactly match WD immutable source. No positive metadata/predicate/return/effect-order change.",
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.852854842989473,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WF-final-graph-1791965548583703903.log",
+    "artifacts": {
+      "graphify-out/graph.json": "11ff488df86524806be816a274d64bb684887b5ac0b5762e3b402f74b3891120",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "77f920c8620cdb417ebedc0bd827023ad50ea089f7999baff93a90b87f4d2014",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    }
+  },
+  "ast_all_four_artifacts_verified": true,
+  "build_exec": 76413,
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-1p1GAo",
+    "archive_sha256": "9bfee353d8436afaced54fff86c188989e0a4b6babc57cd85667e9b78b4ce3cb",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791965569624782684.txt",
+    "elapsed_seconds": 183.80453816999216,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "f284b1def2471b5b4d2fcd35109d2b3d5ddba7076c74ec7f34be76fe0666c38d",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791965753429219489/bin/lay-ibus-engine",
+      "bytes": 8281232
+    },
+    "lay-daemon": {
+      "sha256": "09c34f68c47f04bcb780cd56934e3bc10d5ae68f1143016abfe45a9fca3fb710",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791965753429219489/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "stage": {
+    "status": "STAGED_PRIVATE_ONLY",
+    "backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-WF-owner-diagnostic-1791965767449724493",
+    "ime_sha256": "f284b1def2471b5b4d2fcd35109d2b3d5ddba7076c74ec7f34be76fe0666c38d",
+    "daemon_sha256": "09c34f68c47f04bcb780cd56934e3bc10d5ae68f1143016abfe45a9fca3fb710",
+    "gate": "/home/e/projects/lay-development-runner/run-1p1GAo",
+    "original_actors_unchanged": true
+  },
+  "native_exec": 56847,
+  "driver_exec": 94588,
+  "native_result": {
+    "status": "ALL41_ARTIFACTS_HASH_VERIFIED",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WF-functional-diagnostic-1791965898733056745/RESULT.json",
+    "sha256": "f521df86c405005cd1744ad8cf69ae7940979f60b45ae4a8dff14e8f39babab4",
+    "counts": {
+      "PASS": 20,
+      "FAIL": 8,
+      "BLOCKED": 2
+    },
+    "row_traces": 30,
+    "full432_matrix_replaced": false,
+    "actor_seconds": 64.10029298698646,
+    "all41files_hash_verified": true,
+    "all30rowtraces_retained": true,
+    "all5processes_gone": true,
+    "cgroup_empty": true,
+    "vt1": true
+  },
+  "first_failed_guard": "context_owns_active_preedit_manual_toggle: exact_surrounding_refresh_available=true is the sole failing condition in both prefix5/6; legacy owner/mirror/visible/current scope+token all valid, no pending display/selection/sealed/sensitive/atomic flag. Dispatch subsequently ContextConflict{switched:false}."
+}

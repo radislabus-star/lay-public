@@ -4,6 +4,8 @@ mod feedback;
 mod journal;
 #[path = "l3_online/proof_chain.rs"]
 mod proof_chain;
+#[path = "l3_online/remote_proof.rs"]
+mod remote_proof;
 #[path = "l3_online/selector.rs"]
 mod selector;
 
@@ -28,6 +30,7 @@ struct Paths {
     state: PathBuf,
     full_proof_corpus: PathBuf,
     full_proof_surface: PathBuf,
+    full_proof_runner: Option<PathBuf>,
 }
 
 impl Paths {
@@ -49,6 +52,8 @@ impl Paths {
             full_proof_surface: std::env::var_os("LAY_L3_ONLINE_FULL_PROOF_SURFACE")
                 .map(PathBuf::from)
                 .unwrap_or_else(|| proof_root.join("surface-geometry-exact.jsonl")),
+            full_proof_runner: std::env::var_os("LAY_L3_ONLINE_FULL_PROOF_RUNNER")
+                .map(PathBuf::from),
             root,
         })
     }
@@ -82,15 +87,33 @@ pub(super) fn run(args: &[String]) -> io::Result<()> {
         save_state(&paths.state, &state)?;
     }
 
+    let mut failed_cycles = 0_u32;
     loop {
-        if let Err(error) = process_once(&paths, &mut state) {
-            eprintln!("lay-l3-online cycle failed: {error}");
+        match process_once(&paths, &mut state) {
+            Ok(()) => failed_cycles = 0,
+            Err(error) => {
+                failed_cycles = failed_cycles.saturating_add(1);
+                eprintln!("lay-l3-online cycle failed: {error}");
+            }
         }
         if once {
             return Ok(());
         }
-        thread::sleep(Duration::from_millis(poll_ms));
+        thread::sleep(Duration::from_millis(cycle_delay_ms(
+            poll_ms,
+            failed_cycles,
+        )));
     }
+}
+
+fn cycle_delay_ms(poll_ms: u64, failed_cycles: u32) -> u64 {
+    if failed_cycles == 0 {
+        return poll_ms;
+    }
+    poll_ms
+        .max(5_000)
+        .saturating_mul(1_u64 << failed_cycles.min(6))
+        .min(poll_ms.max(300_000))
 }
 
 fn initialize_source_cursor(
@@ -320,6 +343,17 @@ fn arg_u64(args: &[String], flag: &str) -> Option<u64> {
 
 #[cfg(test)]
 mod tests {
+    #[test]
+    fn failed_online_cycles_back_off_without_changing_success_polling() {
+        assert_eq!(super::cycle_delay_ms(5_000, 0), 5_000);
+        assert_eq!(super::cycle_delay_ms(5_000, 1), 10_000);
+        assert_eq!(super::cycle_delay_ms(5_000, 2), 20_000);
+        assert_eq!(super::cycle_delay_ms(5_000, 100), 300_000);
+        assert_eq!(super::cycle_delay_ms(250, 100), 300_000);
+        assert_eq!(super::cycle_delay_ms(600_000, 1), 600_000);
+        assert_eq!(super::cycle_delay_ms(u64::MAX, 100), u64::MAX);
+    }
+
     use super::*;
     use feedback::PendingRelation;
     use std::time::{SystemTime, UNIX_EPOCH};
@@ -342,6 +376,7 @@ mod tests {
             state: online.join("state.json"),
             full_proof_corpus: wave.join("proof.txt"),
             full_proof_surface: wave.join("surface.jsonl"),
+            full_proof_runner: None,
         };
         fs::write(&paths.usage_events, []).unwrap();
         let mut state = OnlineState::default();

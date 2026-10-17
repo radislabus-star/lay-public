@@ -1,0 +1,122 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "For a ManagedCommit word in an ordinary Legacy input advertising SurroundingText, literal no-apply/suppressed closing Space stays in CommitText and is consumed once. Preserve native fallback for opaque Legacy inputs and terminal purpose, including a stored ManagedCommit word; Atomic retains its existing commit. This is a source candidate, not native acceptance.",
+  "reason": "Three retained older7b96 failed Qt surfaces preserve correctly decoded inputs but reorder separators. After a native fallback Space, the next letter is handled through CommitText before a matching receipt; the same Space predicate exists in both the frozen7b96 source and current24bcea52. The newly authorized four-stream2bd probe succeeds with first Space inserted before the next letter; it does not establish the exact original2bd failure cause. The shared delivery mismatch is now evidenced well enough to test a narrow repair; original attribution and native compatibility remain open.",
+  "verification": "Measured unchanged-production RED detects missing literal Space CommitText; candidate callback GREEN covers missing/lagging surrounding receipts and opaque/terminal preservation. Review1 identified Reset-before-release RED, fixed by preserving only already handled press receipts in the existing bounded Reset path. Nine callback/lifecycle scenarios and710IME source tests PASS; obsolete native-only ordinary Space oracles migrated through explicit fixture transport, no authority/provenance guard weakened. Final product-code review2/2 score9/10, no material finding. Fresh full source gate PASS3048/3048 required+11/11 performance, lint/release/format/canon: tab-full-4reofpse/FULL_GATE.json SHA248d9ecbd967fd39b1985a205041b514f798798f8640c0d6527999cf9e208212, stable archive4c53a2e550a38c42f4e73ed7d84e157e32e3ab169775a4e33a3a5da0361f1753. All earlier functional/performance/resource FAILs retained in tech_debt/evidence/2026-10-10-td133-managed-space-source-proof.json; TD138 resolves existing cold operator debt. Exact uninstalled candidate82 SHA5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a passes independent private terminal4 and bound inverse1+1 controls. V3 lifecycle0/3 FAIL on both candidate and baseline remains, restoration5 not reached; TD139 records the owned-preedit proof-consumer mismatch. Changed-byte physical/native64 not tested, original2bd cause not closed. No third code review or TD133 DONE; next separately reviewed reversible experiment needs a NEW explicit grant.",
+  "not_tested": "New-byte native acceptance, original2bd failure attribution, GTK/Qt Wayland aggregation, changed literal-Space native latency/RSS and startup first-key latency NOT_TESTED. Installed2bd unchanged. Native inverse requires actual four-path engine-process isolation and a fresh grant.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/managed.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "Cargo.toml",
+    "Cargo.lock"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": true,
+  "installed_runtime_changed": false,
+  "baseline_commit": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "owner": "Existing ContextAdmissionReducer, WindowInteraction and EngineOutput; root implements.",
+  "user_authorization": "User requested TD133 repair and previously permitted necessary IME changes with testing in all windows. This source decision grants no additional local input beyond the already consumed four-stream diagnostic.",
+  "options": [
+    {
+      "design": "Commit literal Space through existing ManagedCommit only for ordinary surrounding-capable Legacy inputs; preserve Atomic and opaque/terminal Legacy behavior.",
+      "score": 8,
+      "reason": "One shared predicate, no new state/controller/queue. Letters and their Space use the existing same channel; native terminal fallback remains unchanged. Native Wayland batching still needs acceptance."
+    },
+    {
+      "design": "Elect native passthrough for every ordinary legacy word.",
+      "score": 5,
+      "reason": "Broader coupling to first-word provenance, decoder/native glyph compatibility, capability transitions and snapshot floors. Not minimal for the observed fallback edge."
+    },
+    {
+      "design": "Own every first word in preedit before a proven boundary.",
+      "score": 4,
+      "reason": "Changes partial-word/unknown-start correction semantics and candidate/safety eligibility. Not selected."
+    },
+    {
+      "design": "Add a pending queue, timeout or retries.",
+      "score": 2,
+      "reason": "Adds coordination before exhausting the existing per-word transport contract. Not selected."
+    }
+  ],
+  "consequences": "The selected production predicate changes literal fallback Space only for ManagedCommit, including manual suppression. Owned-preedit commits, successful verified edits, Atomic's existing commit, native terminal paths, reducers, owner/epoch/focus revocations, lattice/ranker/DecisionCore/SafetyGate/verifier and model/package/cache reload are retained. No literal phrase enters runtime. Existing glyph append still uses push_tail_char; CommitText additionally updates last_commit_at, as the ManagedCommit path already does. Ordinary positive learning can occur in eventual authorized native checks; no journal deletion or inverse is granted. There is one extra existing CommitText signal in legacy no-apply boundary handling and no timer/wait/retry; performance and client batching effects must be measured rather than inferred. Paired Space release must be consumed without duplicate text. Roll back the scoped source predicate/artifact if native text, latency or delivery regresses; retain original64 and all old failures. Do not install a source-only candidate or relabel the four passing old-byte diagnostics as repair acceptance.",
+  "scope_refinement": "Only surrounding-capable, nonterminal Legacy managed inputs change. Opaque Legacy fields and terminal purpose retain native Space even when current word mode is ManagedCommit; source tests verify both. No runtime word/phrase predicate exists.",
+  "review_refinement": "Pass1 requested a real Reset-before-Space-release regression and an explicit migration of ordinary Legacy transport assertions. Preserve all strict predecessor, owner, epoch, revision, delayed receipt, refusal and manual replay assertions. The proposed lifecycle repair retains only already accepted transport press receipts across an immediate same-field committed-boundary Reset, through the existing LayoutGesture owner. It must not preserve any closed-word correction frame or change Disable/FocusOut handling. No new timer, queue or runtime owner. Existing test names are retained for registry continuity. Only the ordinary managed Space handled/CommitText oracle migrates in the named fixture functions; inert provenance, late receipt and rejection assertions remain. Native opaque/terminal helper and coverage are not broadened. The first full run identified three opaque backspace fixtures sharing the literal helper. They retain the native oracle through an explicit caller-declared space_committed=false parameter; the ordinary surrounding fixtures declare true. The test helper does not inspect the runtime predicate to infer its expectation. No production change was required for these three failures.",
+  "migrated_transport_oracles": [
+    {
+      "file": "residuals.rs",
+      "function": "c06_exact_refresh_owned_second_word",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "c06_native_confirmed_prefix_fixture",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "cycle09_add_trailing_boundary",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "firefox_first_word_space_retires_published_preedit_before_exact_receipt",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "firefox_initial_delayed_prefix_cannot_survive_contradiction_or_input_gap",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "firefox_reset_retains_known_word_or_closed_observed_tail",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "firefox_source_free_first_word_after_space_delegates_exact_tail",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit",
+      "helper_calls_migrated": 0
+    },
+    {
+      "file": "residuals.rs",
+      "function": "native_space_observed_boundary_refuses_missing_or_contradictory_receipts",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "residuals.rs",
+      "function": "native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_receipt",
+      "helper_calls_migrated": 0
+    },
+    {
+      "file": "residuals.rs",
+      "function": "retained_boundary_literal_keys",
+      "helper_calls_migrated": 1
+    },
+    {
+      "file": "terminal_delivery.rs",
+      "function": "completed_exact_replay_retires_before_ordinary_managed_input",
+      "helper_calls_migrated": 1
+    }
+  ],
+  "candidate_version": "1.0.82 source candidate; installed1.0.81/2bd unchanged"
+}

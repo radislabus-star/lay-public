@@ -5,6 +5,21 @@ mod tests {
 
     const SEMANTIC_WORD_FIXTURE_SOURCE: &str = "SemanticWordCell32";
 
+    #[test]
+    fn attested_clean_verb_forms_are_preserved_in_first_and_later_positions() {
+        let pipeline = default_typing_assist_pipeline();
+        for word in ["несу", "везу", "ползу", "трясу", "привезу", "отвезу"] {
+            for prefix in ["", "я "] {
+                let input = format!("{prefix}{word} ");
+                for mode in [CorrectionMode::DeterministicOnly, CorrectionMode::DeterministicAndNanda] {
+                    let resolution = resolve_text_correction(request(&input, &pipeline, mode));
+                    assert!(resolution.selected.is_none(), "clean input={input:?} mode={mode:?}: {resolution:?}");
+                    assert!(resolution.candidates.iter().all(|candidate| candidate.replacement != format!("{prefix}привет ")), "competing greeting for {input:?}");
+                }
+            }
+        }
+    }
+
     fn request<'a>(
         text: &'a str,
         pipeline: &'a [TypingAssistRuleConfig],

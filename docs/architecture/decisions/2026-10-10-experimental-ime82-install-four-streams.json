@@ -1,0 +1,68 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Execute the explicitly approved exact-byte IME82 installation and one four-stream native diagnostic through the reviewed existing transaction. Retain original native64 and private failure scopes.",
+  "reason": "User answered разрешаю to the concrete reviewed IME-only install plus four-stream request; prior grants were consumed. AGENTS remote-only rule has this one bounded local exception.",
+  "user_authorization": {
+    "reply": "разрешаю",
+    "request": "Install prepared IME1.0.82 and run four declared streams in GTK3 Entry and Qt rich, retaining one empty install/recovery witness.",
+    "execution_began_utc": "2026-10-10T08:44:07.833898+00:00",
+    "execution_ended_utc": "2026-10-10T08:44:20.654458+00:00",
+    "status": "CONSUMED_ONE_BATCH",
+    "additional_native_inputs_authorized": false
+  },
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "docs/architecture/space-boundary-shift-2026-10-07.md",
+    "tech_debt/133-causal-rapid-space-ordering.md"
+  ],
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "owner": "Root executes existing atomic-copy/snapshot, empty Field witness, existing IME-only control and unchanged reviewed diagnostic successor. No new runtime owner.",
+  "options": [
+    {
+      "design": "Install exact full-gated candidate in retained empty owned field; run exactly one four-stream native batch and preserve old receipt scopes.",
+      "score": 9,
+      "reason": "Concrete prepared transaction independently reviewed9/10 in two passes; bounded existing helpers and verified rollback, no model copies."
+    },
+    {
+      "design": "Stop at source-only proof.",
+      "score": 6,
+      "reason": "Preserves live81 but cannot check changed-byte GTK/Qt aggregation."
+    },
+    {
+      "design": "Repeat inputs, increase waits or run retired shared-cleanup native inverse launchers.",
+      "score": 1,
+      "reason": "Masks the ordering defect or violates the isolated-feedback proof boundary."
+    }
+  ],
+  "verification": {
+    "result": "tech_debt/evidence/2026-10-10-td133-ime82-installed-four-stream-result.json",
+    "sha256": "aac76c891652af723d7f6a9a29dbd69ab0c1c5c9131f1c76bb3775fc674dc2bb",
+    "four_streams": "4/4PASS,0FAIL,0BLOCKED",
+    "installed_loaded_ime_sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+    "logging_config_restored": true,
+    "other_roles_global_ibus_and_ru_preserved": true,
+    "install_witness_closed": true,
+    "rollback": "Prepared exact81 bytes, not exercised"
+  },
+  "not_tested": [
+    "New-byte original fixed64 matrix and its predecessor/inverse chronology",
+    "New-byte Kitty first pair after Enter and browser controls",
+    "Physical inverse with proven actual-engine four-path learning isolation",
+    "Original2bd failed callback attribution",
+    "Rendered/pixel Qt acceptance",
+    "Measured native key-to-visible latency, startup first-key or RSS",
+    "Rollback execution"
+  ],
+  "runtime_authority_changed": false,
+  "runtime_bytes_changed": true,
+  "installed_runtime_changed": true,
+  "consequences": "Only exact IME82 remains as an approved experimental version; extension81 and other services unchanged. Source gate3048+11performance and two-pass reviews are reused without rebuild/retest. No tag/release, full client acceptance or TD133 DONE. New physical input and unsafe inverse are not authorized by this consumed grant.",
+  "status": "COMPLETE_EXPERIMENT_PASS_NATIVE_ACCEPTANCE_OPEN"
+}

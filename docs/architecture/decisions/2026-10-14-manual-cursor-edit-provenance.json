@@ -1,0 +1,417 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-manual-cursor-edit-provenance",
+  "status": "BOTH_FULL_NATIVE_FAIL_RETAINED_CHROME_CURSOR10_GAIN_ZERO_LOST_PASS",
+  "updated_at": "2026-10-14T01:23:51.197899+00:00",
+  "baseline": "Q source38/fresh1105 PASS/reviews9,9; fullnative432322P77F33B/1gain0lostP; IME399ffa89/daemonc49c44cb private only",
+  "first_failed_transition": "ArrowLeft1350 -> composition_edit::move_composition_cursor empty composition -> forget_committed_tail_after_passive_cursor_move -> close_committed_tail_field clears exact locally typed tail6 and managed witness; advance_context_word_scope revokes suffix provenance. Initial scope is already UnknownStart; confirmed Reset rereceipt initially allows exact manual tail. Later interior insertion rebuilds only char1; EndSSI6/caret6 1371 precedes Reset1372, which drops snapshot; manual RPC refuses context_authority with live bridge.",
+  "native_evidence": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-public-functional-wire-9r0p60_3/WIRE.json",
+  "wire_sha256": "5354a52c07cead7645253a87cede2cb5dfa2e874b5c2466cf60e6f90dc56de86",
+  "diagnostic_only": {
+    "required": 15,
+    "PASS": 9,
+    "FAIL": 5,
+    "BLOCKED": 1,
+    "scope": "public Firefox field1 original actor/body unchanged; not primary matrix"
+  },
+  "options": [
+    {
+      "score": 8,
+      "recommended": true,
+      "solution": "Bounded authenticated editing provenance as a typed inert phase in existing single reset receipt slot; seed only exact observed-suffix or confirmed-rereceipt eligible locally owned range; one outstanding expected effect and exact actual successor; final end-caret manual-only consumer. No generic KnownStart upgrade."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Arbitrary UnknownStart reconstruction/current SSI grant",
+      "reason": "Cannot prove locally owned history or start; grants unrelated mutation authority."
+    },
+    {
+      "score": 3,
+      "recommended": false,
+      "solution": "Retain only End snapshot across late Reset",
+      "reason": "Earlier tail6->0 and suffix history loss remain."
+    },
+    {
+      "score": 2,
+      "recommended": false,
+      "solution": "Require extra Space/new word/artificial test editing",
+      "reason": "Does not satisfy requested behavior."
+    }
+  ],
+  "scope_contract": [
+    "Keep existing reducer, output executor, leases and one pending receipt owner. No additional history queue, timer, owner or delivery route.",
+    "Cursor interior grants no manual word mutation. Every accepted successor must match exactly the outstanding native move/delete or owned insertion within the prior proved range; outside prefix/right context stay exact.",
+    "Each authenticated Reset invalidates old tokens and binds inert proof to the successor. Final actual word-end receipt may preserve a matched late Reset once, with no fresh SSI manufactured.",
+    "UnknownStart remains UnknownStart. Manual-only phase must not promote generic receipt confirmation, suffix readout, Space, Tab or learning before explicit manual consumption.",
+    "Protected fields, unknown/changing metadata, wrong owner/activation, missing/reordered/unexplained data, selection, leaving the range, whole erase, repeat Reset and spent proof revoke the phase.",
+    "No word, fixture, browser, suffix or test-specific runtime condition; no SafetyGate/edit verifier relaxation."
+  ],
+  "review": {
+    "used": 2,
+    "maximum": 2,
+    "reviewer1": "/root/cursor_authority_plan_review_20261014",
+    "score1": 8,
+    "requirement": "Actual source RED first; seed confirmed rereceipt as well as owned suffix; explicit manual-only purpose because generic confirmed Reset also permits readout/Space/Tab.",
+    "pass2_scope": "Request independent code review now, including the unresolved second-full erasure/manual refusal. Full PASS remains a hard prerequisite for build/native staging; a focused PASS does not close the unexplained broader failure.",
+    "reviewer2": "/root/cursor_edit_final_review_20261014",
+    "score2": 9,
+    "verdict2": "No production blockers by independent read-only review; fresh full source gate and changed-byte native acceptance still required.",
+    "closed": true
+  },
+  "source_delta": "One typed manual-only CursorEditing phase in the existing pending reset receipt. Five production files wire key effects, full actual SSI, matched Reset, paired text-inert release and explicit manual consumption. No new delivery route or generic KnownStart grant.",
+  "runtime_authority_changed": false,
+  "production_runtime_changed": false,
+  "delivery_routes_changed": false,
+  "affected_invariants": [
+    "C01 locally proved provenance and old-token invalidation",
+    "C03 single authority and action-scoped edit lease",
+    "C09 manual native output/decoder",
+    "C10 bounded state and measured speed"
+  ],
+  "source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-causal-red/RESULT.json",
+    "selected": 39,
+    "controls_pass": 38,
+    "failures": 1,
+    "positive_variants_failed": 8,
+    "elapsed_seconds": 18.13688494998496,
+    "proof_signature": "f0f6fef006b6ddfdd9a5022092778a87d920d2879b320b81ddfc82a40eba6fc0",
+    "scope": "Real authenticated cursor/backspace/owned insertion/End/late Reset/manual V3+V2; both release callback orders and two prefix/edited surfaces. No production change in this RED."
+  },
+  "implementation_state": "Focused42 PASS: eight native cursor/edit/order surfaces, seven adverse receipts/repeated reset, six identity/layout/capability/content-type cases, purpose exclusions and Q38 prior controls. No changed-byte native run. Full eight-target development gate next.",
+  "intermediate_receipts": [
+    "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-implementation-first-checks/t3_m2wok.json",
+    "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-implementation-first-checks/zeobryj2.json"
+  ],
+  "first_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-first-green/RESULT.json",
+    "selected": 41,
+    "passed": 41,
+    "positive_variants": 8,
+    "elapsed_seconds": 18.45334961899789,
+    "proof_signature": "75a4e9c68705264291c439791ee2632542e2de74c5415d87259257398cfa7321"
+  },
+  "focused_green": {
+    "verdict": "PASS",
+    "selected": 42,
+    "elapsed_seconds": 18.18393511598697,
+    "proof_signature": "bb68c1e94334ebe0d5f36e31352f9d6a96adf8527c29bbaa48c4da466d9de2b8",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-source42-green/RESULT.json",
+    "all_rust_hashes_verified": 208
+  },
+  "full_source_run": {
+    "remote": "/home/e/projects/lay-development-runner/run-QFIH5m",
+    "archive_sha256": "f77d37cdee89ccc659cd2b403452e4a5c58144609104e3525d50a9ca1b37c00d",
+    "status": "FAIL",
+    "scope": "Two runtime binaries and six integration contracts; not release coverage",
+    "receipt": "/home/ubu/.cache/lay/development/run-sgdcr974/RESULT.json",
+    "tests": {
+      "selected": 1109,
+      "passed": 1108,
+      "failed": 1
+    }
+  },
+  "first_full_failure": "Existing residual_reset_rereceipt_failures_never_delete_gui_text: an explicit manual attempt during an unconfirmed cursor move correctly refuses editing but leaves the inert phase. Preserve the guard unchanged: refusal now discards only this cursor phase. A later SSI cannot revive the refused attempt.",
+  "focused43": {
+    "verdict": "PASS",
+    "selected": 43,
+    "elapsed_seconds": 18.324581532011507,
+    "proof_signature": "fde51e46612c8e3979864b36d2454d23f16e3ad5bed5bcd4f8f330162ab20b95",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-source43-green/RESULT.json"
+  },
+  "format_note": "Cargo fmt does not traverse include! files. Both new include files explicitly rustfmt-ed on remote after focused43; only these two style hashes differ. Fresh full gate will validate this exact formatted source.",
+  "full_source_second_run": {
+    "remote": "/home/e/projects/lay-development-runner/run-RFDp6o",
+    "archive_sha256": "0705ba057703c6e8b21856a30e20ab2efec343d8903c56fd97247498d40df571",
+    "status": "FAIL",
+    "scope": "Two runtime binaries plus six integration contracts",
+    "receipt": "/home/ubu/.cache/lay/development/run-lbi52yvg/RESULT.json",
+    "tests": {
+      "selected": 1109,
+      "passed": 1108,
+      "failed": 1
+    }
+  },
+  "second_full_failure": "Existing td121_confirmed_native_erasure_survives_one_late_reset_without_new_ssi refuses manual V3 (0 vs3), despite correct snapshot/revision/epoch and exact authority before RPC. This ID passed first broad R gate. Added post-refusal state in existing assertion and selected it alongside all43 controls; production unchanged. Cause not yet established.",
+  "focused44": {
+    "verdict": "PASS",
+    "selected": 44,
+    "elapsed_seconds": 19.112670811009593,
+    "proof_signature": "996d5053354ae4584c2b83ad6868390cefc18406cb6a167025daf5d2fbd13858",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-source44-green/RESULT.json"
+  },
+  "fixture_registration_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-registration-causal-red/RESULT.json",
+    "selected": 44,
+    "passed": 38,
+    "failed": 6,
+    "oracle": "Exact detached-callback reply counts must be empty BEFORE object_server.at registers the engine; unchanged production and original verdict assertions.",
+    "erasure_pending_serials": {
+      "63011": 1,
+      "63012": 1
+    },
+    "cursor_pending_serials": {
+      "95047": 1
+    },
+    "scope_limit": "Proves missing registration completion; the historical second-full receipt does not identify which already handled callback was auto-dispatched again."
+  },
+  "fixture_change": "Reuse existing strict standard Ping/exact UnknownObject reply barrier in Cycle09 manual, visible V3 and private visible V4 helpers before registration. No runtime code change or timeout relaxation.",
+  "fixture_followup": "The first barrier44 fixed all prior erasure/registration cases but an exact metadata helper saw old release reply96032 before expected96040. The local Cycle09Reached output marker is not an independent dispatcher completion fence. cursor_at_interior now also uses the same strict existing Ping/exact-reply barrier before later metadata callbacks; no runtime change.",
+  "registration_green": {
+    "verdict": "PASS",
+    "selected": 44,
+    "elapsed_seconds": 18.966602325992426,
+    "proof_signature": "56188a2ebcbeef22e920ddbf06ad67385cccd0e83ef9a0fbf52f96c7ba541e01",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-registration-green44/RESULT.json",
+    "rust_hashes_matched": 208
+  },
+  "full_source_third_run": {
+    "remote": "/home/e/projects/lay-development-runner/run-wznQ1e",
+    "archive_sha256": "0e127076801a8318e4de8fb4d35f3089087f69f0afd42748eaafb5155a6e5e62",
+    "status": "PASS",
+    "scope": "Two runtime binaries plus six integration contracts; after causal registration handoff correction",
+    "receipt": "/home/ubu/.cache/lay/development/run-6x6vdp47/RESULT.json",
+    "tests": {
+      "executed": 1109,
+      "failed": 0,
+      "passed": 1109,
+      "selected": 1109
+    },
+    "rust_hashes_verified": 737,
+    "elapsed_seconds": 258.04067088398733
+  },
+  "native_scope": "R changed bytes NOT_TESTED; both complete Q matrices remain322PASS/77FAIL/33BLOCKED432. No installed laptop or production runtime change.",
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.707547747995704,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/R-final-graph-1791941304167725109.log",
+    "artifacts": {
+      "graphify-out/graph.json": "8440797a5d2389a42d39b88e7e803b19a38827ddcb17e94132e9fee4d1e28569",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "6fb298d76f0fc0135288d4858a0e9364b67dafb4e4578ccc9ce642d04dfc49f7",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    },
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-final-graph-receipt.json"
+  },
+  "build_status": "Immutable private candidate build running from passed run-wznQ1e; no installation/native input yet.",
+  "private_candidate": {
+    "build_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-candidate-build.json",
+    "build_seconds": 183.93682263899245,
+    "ime_sha256": "64dfdd713e1414a7bbd1f3155a90608370a76bebeaa92727c9a1862f1151b9d6",
+    "daemon_sha256": "20adb616535a2b1ea2700866685223e5e7de04ca42626e6d3361839e881d8de7",
+    "installation": "PRIVATE_REMOTE_TEST_RUNTIME_ONLY",
+    "laptop_changed": false,
+    "delivery_routes_changed": false
+  },
+  "native_partial": {
+    "browser": "firefox",
+    "standard": "60/60 PASS",
+    "panel": "6/6 PASS",
+    "functional_fields_1_2": "18PASS/10FAIL/2BLOCKED30",
+    "cursor": "Both field1 and2 still FAIL at first exact Double Shift; actual source text/caret correct.",
+    "first_excerpt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-native-cursor-first-failure.json",
+    "clock_trace_coverage": "UNKNOWN capped async trace; excerpt shows actualSSI6/caret6 and visible prediction beforeLeft, later manual context_authority refusal. Cursor phase presence/first precise loss is NOT logged by this build.",
+    "interpretation": "Source positives do not establish native fix. Finish original full matrices without retry or actor changes; use retained evidence to extend the causal source schedule before next production edit."
+  },
+  "full_firefox": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native64dfd-firefox-proof.json",
+    "counts": {
+      "PASS": 153,
+      "FAIL": 44,
+      "BLOCKED": 19,
+      "total": 216
+    },
+    "stable_ids_vs_Q": {
+      "ids": 216,
+      "changed": 0,
+      "gained_pass": 0,
+      "lost_pass": 0
+    },
+    "speed": {
+      "standard": {
+        "double_shift": {
+          "required": 420,
+          "measured": 420,
+          "missing": 0,
+          "p50_ms": 106.60759751498699,
+          "p95_ms": 118.86676201224327,
+          "max_ms": 125.89250296354294,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "panel": {
+        "double_shift": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "p50_ms": 103.79925647377968,
+          "p95_ms": 117.62912997603416,
+          "max_ms": 121.69742500782013,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "functional": {
+        "double_shift": {
+          "required": 210,
+          "measured": 100,
+          "missing": 110,
+          "p50_ms": 109.28930298984051,
+          "p95_ms": 142.0743870139122,
+          "max_ms": 147.14408299326897,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "space": {
+          "required": 50,
+          "measured": 37,
+          "missing": 13,
+          "p50_ms": 17.95014500617981,
+          "p95_ms": 26.019735008478165,
+          "max_ms": 26.975688993930817,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "tab": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "selection": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      }
+    },
+    "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/RB-firefox-closed.json",
+    "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native64dfd-firefox-raw-1791942539350123327/RAW.json",
+    "scope": "Original9 jobs, full216; private official browser/native evdev; no laptop parity claim."
+  },
+  "next_step": "Finish full original Chrome matrix on the same R bytes, then inspect exact missing native cursor-provenance transition; no core rollback or unchanged-source retry.",
+  "full_chrome": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native64dfd-chrome-proof.json",
+    "counts": {
+      "PASS": 179,
+      "FAIL": 23,
+      "BLOCKED": 14,
+      "total": 216
+    },
+    "stable_ids_vs_Q": {
+      "ids": 216,
+      "gained_pass": 10,
+      "lost_pass": 0,
+      "gains": "cursor normal fields1–10"
+    },
+    "speed": {
+      "standard": {
+        "double_shift": {
+          "required": 420,
+          "measured": 406,
+          "missing": 14,
+          "p50_ms": 92.8453349918127,
+          "p95_ms": 110.42918899655342,
+          "max_ms": 123.87946701049805,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "panel": {
+        "double_shift": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "p50_ms": 93.0578854829073,
+          "p95_ms": 110.7496329843998,
+          "max_ms": 126.65720897912979,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      },
+      "functional": {
+        "double_shift": {
+          "required": 210,
+          "measured": 158,
+          "missing": 52,
+          "p50_ms": 90.17897699773312,
+          "p95_ms": 126.09551098942757,
+          "max_ms": 138.09824097156525,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "space": {
+          "required": 50,
+          "measured": 38,
+          "missing": 12,
+          "p50_ms": 18.419325977563858,
+          "p95_ms": 26.05869698524475,
+          "max_ms": 28.004252016544342,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "tab": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        },
+        "selection": {
+          "required": 10,
+          "measured": 10,
+          "missing": 0,
+          "p50_ms": 19.32572650909424,
+          "p95_ms": 22.341239988803864,
+          "max_ms": 22.341239988803864,
+          "clock": "evdev write-return to first exact AT-SPI target",
+          "kernel_release": "NOT_MEASURED"
+        }
+      }
+    },
+    "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/RB-chrome-closed.json",
+    "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native64dfd-chrome-raw-1791943669177266184/RAW.json",
+    "privacy_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/R-chrome-private-sink-proof.json"
+  },
+  "current_full_table": {
+    "firefox": {
+      "PASS": 153,
+      "FAIL": 44,
+      "BLOCKED": 19,
+      "total": 216
+    },
+    "chrome": {
+      "PASS": 179,
+      "FAIL": 23,
+      "BLOCKED": 14,
+      "total": 216
+    },
+    "total": {
+      "PASS": 332,
+      "FAIL": 67,
+      "BLOCKED": 33,
+      "total": 432
+    },
+    "candidate": "R64dfd",
+    "vs_Q": {
+      "new_pass": 10,
+      "lost_pass": 0
+    }
+  }
+}

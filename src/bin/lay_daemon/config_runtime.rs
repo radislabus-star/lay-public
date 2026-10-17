@@ -156,7 +156,15 @@ pub(super) fn active_correction_safety() -> lay::config::CorrectionSafety {
 }
 
 pub(super) fn active_learning_log() -> bool {
-    current_config().debug_action_log && current_config().learning_log
+    current_config().debug_action_log
+        && current_config().learning_log
+        && daemon_input_retention_allowed()
+}
+
+pub(super) fn daemon_input_retention_allowed() -> bool {
+    // Raw shadow input has no bound privacy fact in IME mode. Personalized
+    // feedback then belongs to the admitted IME owner, not this raw buffer.
+    daemon_hot_field_policy(&current_config()).allows_full_nanda_authority()
 }
 
 pub(super) fn active_nanda_trace() -> bool {

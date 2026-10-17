@@ -17,11 +17,30 @@ struct IsolatedBridge {
 }
 
 async fn isolated_p2p_bridge(shared: Shared) -> IsolatedBridge {
+    isolated_p2p_bridge_configured(shared, None, None).await
+}
+
+async fn isolated_p2p_bridge_configured(
+    shared: Shared,
+    write_gate: Option<Arc<ObservedWriteGate>>,
+    timeout: Option<std::time::Duration>,
+) -> IsolatedBridge {
     let (server_stream, client_stream) = UnixStream::pair().expect("p2p stream pair");
     let guid = zbus::Guid::generate();
     let server = std::thread::spawn(move || {
-        zbus::block_on(
+        let builder = if let Some(gate) = write_gate {
+            let split: zbus::connection::socket::BoxedSplit =
+                async_io::Async::new(server_stream).unwrap().into();
+            let (read, write) = split.take();
+            zbus::connection::Builder::socket(zbus::connection::socket::BoxedSplit::new(
+                read,
+                Box::new(ObservedPartialWriter { inner: write, gate }),
+            ))
+        } else {
             zbus::connection::Builder::unix_stream(server_stream)
+        };
+        zbus::block_on(
+            builder
                 .server(guid)
                 .expect("p2p server identity")
                 .p2p()
@@ -29,11 +48,13 @@ async fn isolated_p2p_bridge(shared: Shared) -> IsolatedBridge {
         )
         .expect("p2p server connection")
     });
-    let peer = zbus::connection::Builder::unix_stream(client_stream)
-        .p2p()
-        .build()
-        .await
-        .expect("p2p client connection");
+    let builder = zbus::connection::Builder::unix_stream(client_stream).p2p();
+    let builder = if let Some(timeout) = timeout {
+        builder.method_timeout(timeout)
+    } else {
+        builder
+    };
+    let peer = builder.build().await.expect("p2p client connection");
     let connection = server.join().expect("p2p server handshake");
     IsolatedBridge {
         bridge: LayImeBridge {
@@ -459,5 +480,230 @@ fn td120_v1_receiver_accepts_successful_replay_schedules_once() {
             assert!(engine.take_manual_toggle_autocorrect_suppression());
             assert!(!engine.take_manual_toggle_autocorrect_suppression());
         }
+    });
+}
+
+struct ObservedGlobalEnginePeer {
+    name: Arc<Mutex<String>>,
+    delay: Arc<std::sync::atomic::AtomicU64>,
+}
+#[zbus::interface(name = "org.freedesktop.IBus")]
+impl ObservedGlobalEnginePeer {
+    #[zbus(name = "GetGlobalEngine")]
+    async fn engine(&self) -> zbus::fdo::Result<zbus::zvariant::OwnedValue> {
+        use std::sync::atomic::Ordering;
+        use zbus::zvariant::{OwnedValue, Structure, Value};
+        let name = self.name.lock().unwrap().clone();
+        let delay = self.delay.swap(0, Ordering::SeqCst);
+        if delay != 0 {
+            async_io::Timer::after(std::time::Duration::from_millis(delay)).await;
+        }
+        if name == "backend-error" {
+            return Err(zbus::fdo::Error::Failed("backend unavailable".into()));
+        }
+        let value = Value::from(Structure::from((
+            "IBusEngineDesc",
+            std::collections::HashMap::<String, OwnedValue>::new(),
+            name,
+        )));
+        value
+            .try_to_owned()
+            .map_err(|error| zbus::fdo::Error::Failed(error.to_string()))
+    }
+}
+
+#[derive(Debug, Default)]
+struct ObservedWriteGate {
+    armed: std::sync::atomic::AtomicBool,
+    partial: std::sync::atomic::AtomicBool,
+    released: std::sync::atomic::AtomicBool,
+}
+struct ObservedWriteRelease(Arc<ObservedWriteGate>);
+impl Drop for ObservedWriteRelease {
+    fn drop(&mut self) {
+        self.0
+            .released
+            .store(true, std::sync::atomic::Ordering::SeqCst);
+    }
+}
+#[derive(Debug)]
+struct ObservedPartialWriter {
+    inner: Box<dyn zbus::connection::socket::WriteHalf>,
+    gate: Arc<ObservedWriteGate>,
+}
+#[zbus::export::async_trait::async_trait]
+impl zbus::connection::socket::WriteHalf for ObservedPartialWriter {
+    async fn sendmsg(
+        &mut self,
+        buffer: &[u8],
+        fds: &[std::os::fd::BorrowedFd<'_>],
+    ) -> std::io::Result<usize> {
+        use std::sync::atomic::Ordering;
+        if self.gate.armed.swap(false, Ordering::SeqCst) {
+            let n = self.inner.sendmsg(&buffer[..1], fds).await?;
+            self.gate.partial.store(true, Ordering::SeqCst);
+            return Ok(n);
+        }
+        while self.gate.partial.load(Ordering::SeqCst) && !self.gate.released.load(Ordering::SeqCst)
+        {
+            async_io::Timer::after(std::time::Duration::from_millis(1)).await;
+        }
+        self.inner.sendmsg(buffer, fds).await
+    }
+    async fn close(&mut self) -> std::io::Result<()> {
+        self.inner.close().await
+    }
+    fn can_pass_unix_fd(&self) -> bool {
+        self.inner.can_pass_unix_fd()
+    }
+    async fn peer_credentials(&mut self) -> std::io::Result<zbus::fdo::ConnectionCredentials> {
+        self.inner.peer_credentials().await
+    }
+}
+struct ObservedFixture {
+    client: zbus::Connection,
+    _service: zbus::Connection,
+    _backend_peer: zbus::Connection,
+    name: Arc<Mutex<String>>,
+    delay: Arc<std::sync::atomic::AtomicU64>,
+}
+async fn observed_global_engine_fixture(
+    shared: Shared,
+    gate: Option<Arc<ObservedWriteGate>>,
+) -> ObservedFixture {
+    let backend = isolated_p2p_bridge_configured(shared.clone(), gate, None).await;
+    let session =
+        isolated_p2p_bridge_configured(shared, None, Some(std::time::Duration::from_millis(250)))
+            .await;
+    let name = Arc::new(Mutex::new("lay-ime-ru".to_string()));
+    let delay = Arc::new(std::sync::atomic::AtomicU64::new(0));
+    backend
+        ._peer
+        .object_server()
+        .at(
+            "/org/freedesktop/IBus",
+            ObservedGlobalEnginePeer {
+                name: name.clone(),
+                delay: delay.clone(),
+            },
+        )
+        .await
+        .unwrap();
+    let service = session.bridge.ibus_connection.clone();
+    service
+        .object_server()
+        .at("/io/github/radislabus_star/LayIme", backend.bridge)
+        .await
+        .unwrap();
+    ObservedFixture {
+        client: session._peer,
+        _service: service,
+        _backend_peer: backend._peer,
+        name,
+        delay,
+    }
+}
+async fn read_observed_engine_rpc(client: &zbus::Connection) -> zbus::Result<String> {
+    let reply = client
+        .call_method(
+            Some("io.github.radislabus_star.LayIme"),
+            "/io/github/radislabus_star/LayIme",
+            Some("io.github.radislabus_star.LayIme"),
+            "ObservedIbusEngine",
+            &(),
+        )
+        .await?;
+    reply.body().deserialize::<String>()
+}
+async fn wait_observed_read_completion() {
+    let wait = async {
+        while crate::observed_ibus_engine::test_read_in_flight() {
+            async_io::Timer::after(std::time::Duration::from_millis(1)).await;
+        }
+    };
+    futures_lite::future::race(wait, async {
+        async_io::Timer::after(std::time::Duration::from_secs(2)).await;
+        panic!("backend observation did not finish");
+    })
+    .await;
+}
+#[test]
+fn observed_engine_rpc_reads_actual_backend_without_shared_state_access() {
+    let shared: Shared = Arc::new(Mutex::new(Default::default()));
+    let poisoned = shared.clone();
+    assert!(std::thread::spawn(move || {
+        let _guard = poisoned.lock().unwrap();
+        panic!("poison projection to prove no getter dependence");
+    })
+    .join()
+    .is_err());
+    zbus::block_on(async {
+        let f = observed_global_engine_fixture(shared.clone(), None).await;
+        assert_eq!(
+            read_observed_engine_rpc(&f.client).await.unwrap(),
+            "lay-ime-ru"
+        );
+        *f.name.lock().unwrap() = "xkb:us::eng".into();
+        assert_eq!(
+            read_observed_engine_rpc(&f.client).await.unwrap(),
+            "xkb:us::eng"
+        );
+        assert!(shared.is_poisoned());
+        f.name.lock().unwrap().clear();
+        assert!(read_observed_engine_rpc(&f.client).await.is_err());
+        *f.name.lock().unwrap() = "backend-error".into();
+        assert!(read_observed_engine_rpc(&f.client).await.is_err());
+        assert!(!crate::observed_ibus_engine::test_read_in_flight());
+    });
+}
+#[test]
+fn observed_engine_rpc_client_timeout_does_not_cancel_backend_read() {
+    use std::sync::atomic::Ordering;
+    zbus::block_on(async {
+        let f =
+            observed_global_engine_fixture(Arc::new(Mutex::new(Default::default())), None).await;
+        f.delay.store(350, Ordering::SeqCst);
+        assert!(read_observed_engine_rpc(&f.client).await.is_err());
+        assert!(crate::observed_ibus_engine::test_read_in_flight());
+        assert!(read_observed_engine_rpc(&f.client)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("already pending"));
+        *f.name.lock().unwrap() = "lay-ime-us".into();
+        wait_observed_read_completion().await;
+        assert_eq!(
+            read_observed_engine_rpc(&f.client).await.unwrap(),
+            "lay-ime-us"
+        );
+    });
+}
+#[test]
+fn observed_engine_rpc_partial_write_survives_caller_timeout_and_backpressure() {
+    use std::sync::atomic::Ordering;
+    zbus::block_on(async {
+        let gate = Arc::new(ObservedWriteGate::default());
+        let _release_on_failure = ObservedWriteRelease(gate.clone());
+        let f = observed_global_engine_fixture(
+            Arc::new(Mutex::new(Default::default())),
+            Some(gate.clone()),
+        )
+        .await;
+        gate.armed.store(true, Ordering::SeqCst);
+        assert!(read_observed_engine_rpc(&f.client).await.is_err());
+        assert!(gate.partial.load(Ordering::SeqCst));
+        assert!(crate::observed_ibus_engine::test_read_in_flight());
+        assert!(read_observed_engine_rpc(&f.client)
+            .await
+            .unwrap_err()
+            .to_string()
+            .contains("already pending"));
+        gate.released.store(true, Ordering::SeqCst);
+        wait_observed_read_completion().await;
+        *f.name.lock().unwrap() = "lay-ime-us".into();
+        assert_eq!(
+            read_observed_engine_rpc(&f.client).await.unwrap(),
+            "lay-ime-us"
+        );
     });
 }

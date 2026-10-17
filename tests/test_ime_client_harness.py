@@ -23,6 +23,12 @@ assert SPEC is not None and SPEC.loader is not None
 HARNESS = importlib.util.module_from_spec(SPEC)
 sys.modules[SPEC.name] = HARNESS
 SPEC.loader.exec_module(HARNESS)
+FEEDBACK_SPEC = importlib.util.spec_from_file_location(
+    "ime_inverse_feedback_case", HARNESS_ROOT / "feedback_case.py")
+assert FEEDBACK_SPEC is not None and FEEDBACK_SPEC.loader is not None
+FEEDBACK = importlib.util.module_from_spec(FEEDBACK_SPEC)
+sys.modules[FEEDBACK_SPEC.name] = FEEDBACK
+FEEDBACK_SPEC.loader.exec_module(FEEDBACK)
 
 
 def digest(path: Path) -> str:
@@ -40,6 +46,132 @@ def function_digest(path: Path, name: str) -> str:
     return hashlib.sha256(
         "".join(lines[function.lineno - 1:function.end_lineno]).encode("utf-8")
     ).hexdigest()
+
+
+class InverseFeedbackCaseTests(unittest.TestCase):
+    @staticmethod
+    def case(prefix=""):
+        return FEEDBACK.InverseCase("inverse", prefix + "должн ыбыть ",
+                                    prefix + "должны быть ")
+
+    @staticmethod
+    def journal(rows):
+        return b"".join((json.dumps(row, ensure_ascii=False) + "\n").encode()
+                        for row in rows)
+
+    def rejections(self, case, **updates):
+        return [dict({"kind": "rejected_candidate", "outcome": "reverted",
+                      "episode_id": "73-100000010-1", "ts": 100,
+                      "from": case.typed.strip(), "to": case.applied.strip(),
+                      "word": word}, **updates) for word in sorted(case.changed_words)]
+
+    def bind(self, case, before=b"", **updates):
+        fields = dict(observed_input=case.typed, observed_apply=case.applied,
+                      context="/org/freedesktop/IBus/InputContext_42", pid=73,
+                      starttick="1234", candidate_sha256="a" * 64,
+                      began_unix_ns=100 * 10**9, journal_before=before)
+        fields.update(updates)
+        return case.bind(**fields)
+
+    def test_prefixed_and_first_word_cases_observe_exact_feedback_without_cleanup(self):
+        for prefix in ("", "они "):
+            with self.subTest(prefix=prefix):
+                case = self.case(prefix)
+                before = self.journal([{"kind": "typed", "word": "старое"}])
+                positive = {"kind": "correction", "word": "новое"}
+                other = self.rejections(case, episode_id="74-100000010-1")
+                current = before + self.journal([positive, *other, *self.rejections(case)])
+                result = self.bind(case, before).observe(current, 101 * 10**9)
+                self.assertEqual("MATCHED_CASE_FEEDBACK", result["status"])
+                self.assertEqual(2, result["selected_rows"])
+                self.assertEqual(100 * 10**9, result["began_unix_ns"])
+                self.assertEqual(101 * 10**9, result["ended_unix_ns"])
+                self.assertEqual(hashlib.sha256(current).hexdigest(), result["journal_sha256"])
+                self.assertEqual(hashlib.sha256(before).hexdigest(), result["journal_before_sha256"])
+                self.assertEqual(len(before), result["retained_old_suffix_bytes"])
+                self.assertEqual(0, result["journal_writes"])
+                self.assertFalse(result["cleanup_authority"])
+
+    def test_wrong_case_binding_refuses_before_inverse_feedback_observation(self):
+        prefixed = self.case("они ")
+        for fields in (dict(observed_input=prefixed.typed),
+                       dict(observed_apply=prefixed.applied)):
+            with self.subTest(fields=fields), self.assertRaises(FEEDBACK.CaseMismatch):
+                self.bind(self.case(), **fields)
+
+    def test_input_projection_separates_fixture_shift_releases_and_other_contexts(self):
+        context = "/org/freedesktop/IBus/InputContext_42"
+        typed = self.case().typed
+        keys = [{"kind": "ProcessKeyEvent", "context": context,
+                 "phase": "press", "character": c} for c in typed]
+        metadata = {"kind": "fixture_shift", "context": context, "phase": "press"}
+        release = dict(keys[0], phase="release")
+        other = dict(keys[0], context=context + "0")
+        self.assertEqual(typed, FEEDBACK.typed_input_surface([metadata, release, other, *keys], context))
+        with self.assertRaises(FEEDBACK.CaseMismatch):
+            FEEDBACK.typed_input_surface([dict(metadata, kind="ProcessKeyEvent")], context)
+
+    def test_wrong_pair_cannot_be_reported_as_zero_owned_feedback(self):
+        binding = self.bind(self.case("они "))
+        wrong = self.journal(self.rejections(self.case()))
+        with self.assertRaisesRegex(FEEDBACK.CaseMismatch, "different pair"):
+            binding.observe(wrong, 101 * 10**9)
+
+    def test_partial_absent_or_outside_interval_feedback_never_completes(self):
+        case = self.case()
+        rows = self.rejections(case)
+        variants = [[], rows[:1], self.rejections(case, ts=99),
+                    self.rejections(case, episode_id="73-99000010-1")]
+        for records in variants:
+            with self.subTest(records=records):
+                result = self.bind(case).observe(self.journal(records), 101 * 10**9)
+                self.assertEqual("PENDING_CASE_FEEDBACK", result["status"])
+                self.assertFalse(result["cleanup_authority"])
+
+    def test_duplicate_extra_mixed_or_unknown_targets_stop_the_case(self):
+        case = self.case()
+        first, second = self.rejections(case)
+        variants = [[first, first], [first, second, first],
+                    [first, dict(second, episode_id="73-100000020-2")],
+                    [first, dict(second, word="чужое")],
+                    [first, dict(second, episode_id="73-malformed")]]
+        for rows in variants:
+            with self.subTest(rows=rows), self.assertRaises(FEEDBACK.CaseMismatch):
+                self.bind(case).observe(self.journal(rows), 101 * 10**9)
+
+    def test_native_rotation_preserves_only_a_unique_unchanged_old_suffix(self):
+        case = self.case()
+        a = self.journal([{"kind": "typed", "word": "первое"}])
+        b = self.journal([{"kind": "typed", "word": "второе"}])
+        delta = self.journal(self.rejections(case))
+        result = self.bind(case, a + b).observe(b + delta, 101 * 10**9)
+        self.assertEqual("MATCHED_CASE_FEEDBACK", result["status"])
+        self.assertEqual(len(b), result["retained_old_suffix_bytes"])
+        for before, current in [(a + b + b, b + b + delta), (a, b + delta),
+                                (a, b""), (a, b + delta[:-1])]:
+            with self.subTest(before=before, current=current), self.assertRaises(FEEDBACK.CaseMismatch):
+                self.bind(case, before).observe(current, 101 * 10**9)
+
+    def test_opt_in_inverse_consumer_binds_scenario_and_module_hash(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            fixture = Fixture(root)
+            for name in ("inverse-first-word", "inverse-prefixed"):
+                args = HARNESS.parser().parse_args(["--config", "c", "--output", "o",
+                                                    "--scenario-set", name])
+                self.assertEqual(name, args.scenario_set)
+                plan = HARNESS.replace(HARNESS.load_plan(fixture.config), scenario_set=name)
+                HARNESS.validate_startup_proof_combination(plan)
+                output = root / name
+                HARNESS.prepare_output(plan, output)
+                metadata = json.loads((output / "run-metadata.json").read_text())
+                self.assertEqual(name, metadata["scenario_set"])
+                self.assertEqual(digest(output / "feedback_case.py"), metadata["feedback_case_sha256"])
+                command = HARNESS.build_command(plan, output)
+                self.assertEqual(name, command[command.index("IME_CLIENT_SCENARIO_SET") + 1])
+                with self.assertRaises(HARNESS.HarnessError):
+                    HARNESS.validate_startup_proof_combination(
+                        HARNESS.replace(plan, startup_proof_profile="absent"))
 
 
 class Fixture:
@@ -142,9 +274,9 @@ class ImeClientHarnessTest(unittest.TestCase):
     def tearDown(self) -> None:
         self.temporary.cleanup()
 
-    def test_v2_driver_and_preserved_scenarios_have_exact_identities(self) -> None:
+    def test_v3_driver_and_preserved_scenarios_have_exact_identities(self) -> None:
         self.assertEqual(
-            "d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12",
+            "0518d043d23bf8e931569a316d52306105cd6bbff6085ce53c2a8a7fcc93035f",
             HARNESS.verify_driver_identity(HARNESS_ROOT),
         )
         self.assertEqual(
@@ -173,13 +305,13 @@ class ImeClientHarnessTest(unittest.TestCase):
             1, source.count("self.apply_native_input(character, 'ProcessKeyEvent')")
         )
 
-    def test_v2_contract_has_immutable_v1_git_provenance(self) -> None:
+    def test_v3_contract_has_immutable_v1_v2_git_provenance(self) -> None:
         self.assertEqual("lay.ime-client-harness.v1", HARNESS.SCHEMA)
         self.assertEqual(
-            "lay.ime-client.actual-input-context.v2", HARNESS.PROOF_CONTRACT
+            "lay.ime-client.actual-input-context.v3", HARNESS.PROOF_CONTRACT
         )
         self.assertEqual(
-            "lay.ime-client-harness.run-metadata.v2", HARNESS.RUN_METADATA_SCHEMA
+            "lay.ime-client-harness.run-metadata.v3", HARNESS.RUN_METADATA_SCHEMA
         )
         self.assertEqual(
             {
@@ -191,6 +323,11 @@ class ImeClientHarnessTest(unittest.TestCase):
             },
             HARNESS.V1_DRIVER_PROVENANCE,
         )
+        self.assertEqual({
+            "version": "v2", "git_commit": "55fd32bf418bf6331a29d0522892a8df689499f2",
+            "git_blob": "b9ae78c38b663fb4f380eaafd969be09dbf64336",
+            "sha256": "d80447f21db4d689ea49d39742feb36e2202b23979d820380c1fcef916b88c12",
+        }, HARNESS.V2_DRIVER_PROVENANCE)
 
     def test_explicit_startup_schedule_is_bound_to_command_and_metadata(self) -> None:
         self.assertEqual("immediate", HARNESS.parser().parse_args(
@@ -595,14 +732,15 @@ class ImeClientHarnessTest(unittest.TestCase):
         self.assertEqual(HARNESS.SCHEMA, metadata["configuration_schema"])
         self.assertEqual(str(plan.candidate), metadata["candidate"]["configured_path"])
         self.assertEqual(str(HARNESS.SANDBOX_CANDIDATE), metadata["candidate"]["sandbox_path"])
-        self.assertEqual("v2", metadata["driver"]["version"])
-        self.assertEqual(HARNESS.V2_DRIVER_SHA256, metadata["driver"]["sha256"])
-        self.assertEqual(HARNESS.V1_DRIVER_PROVENANCE, metadata["driver"]["predecessor"])
+        self.assertEqual("v3", metadata["driver"]["version"])
+        self.assertEqual(HARNESS.V3_DRIVER_SHA256, metadata["driver"]["sha256"])
+        self.assertEqual(HARNESS.V2_DRIVER_PROVENANCE, metadata["driver"]["predecessor"])
+        self.assertEqual(HARNESS.V1_DRIVER_PROVENANCE, metadata["driver"]["older_predecessor"])
         self.assertEqual(
             "SUCCESSOR_CONTRACT_NOT_BASELINE_PARITY",
             metadata["driver"]["comparison"],
         )
-        self.assertEqual(HARNESS.V2_DRIVER_SHA256, digest(output / "driver.py"))
+        self.assertEqual(HARNESS.V3_DRIVER_SHA256, digest(output / "driver.py"))
 
     def test_existing_output_is_immutable_and_never_launches(self) -> None:
         output = self.root / "existing-output"
@@ -729,7 +867,8 @@ class ImeClientConsumerTest(unittest.TestCase):
                     if isinstance(node, ast.ClassDef) and node.name == "Client")
         oracle_nodes = [node for node in tree.body
                         if isinstance(node, ast.FunctionDef)
-                        and node.name in {"outputs_since", "deliver_exact_literal"}]
+                        and node.name in {"outputs_since", "deliver_exact_literal",
+                                          "finish_inverse_feedback_case"}]
         self.context = mock.Mock()
         self.context.get_object_path.return_value = "/private/context"
         self.context.needs_surrounding_text.return_value = True
@@ -751,6 +890,134 @@ class ImeClientConsumerTest(unittest.TestCase):
                      str(HARNESS_ROOT / "driver.py"), "exec"), self.namespace)
         self.client = self.namespace["Client"]("unit-consumer")
         self.deliver_exact_literal = self.namespace["deliver_exact_literal"]
+
+    def project_pair_frame(self, case, prefix="", inverse=False, oversize=0):
+        source, target = (case.applied, case.typed) if inverse else (case.typed, case.applied)
+        self.client.path = "/org/freedesktop/IBus/InputContext_42"
+        self.client.visible, self.client.cursor = source, len(source)
+        self.client.output.clear()
+        length = len(source) - len(prefix)
+        self.client.on_delete(None, -length - oversize, length + oversize)
+        self.client.on_commit(None, SimpleNamespace(get_text=lambda: target[len(prefix):]))
+        return self.client.output
+
+    def test_pair_frame_matches_exact_real_client_effects_in_both_directions(self):
+        for prefix in ("", "они "):
+            case = InverseFeedbackCaseTests.case(prefix)
+            for inverse in (False, True):
+                with self.subTest(prefix=prefix, inverse=inverse):
+                    rows = self.project_pair_frame(case, prefix, inverse)
+                    case.validate_edit(rows, context=self.client.path, prefix=prefix,
+                                       visible=self.client.visible, cursor=self.client.cursor,
+                                       inverse=inverse)
+
+    def test_pair_frame_rejects_clamped_oversized_delete_in_both_directions(self):
+        case = InverseFeedbackCaseTests.case()
+        for inverse in (False, True):
+            with self.subTest(inverse=inverse):
+                rows = self.project_pair_frame(case, inverse=inverse, oversize=1)
+                self.assertEqual(case.typed if inverse else case.applied, self.client.visible)
+                with self.assertRaisesRegex(FEEDBACK.CaseMismatch, "exact case geometry"):
+                    case.validate_edit(rows, context=self.client.path, prefix="",
+                                       visible=self.client.visible, cursor=self.client.cursor,
+                                       inverse=inverse)
+
+    def test_pair_frame_refuses_wrong_order_context_text_cursor_and_extra_effect(self):
+        case = InverseFeedbackCaseTests.case("они ")
+        rows = self.project_pair_frame(case, "они ", inverse=True)
+        variants = [list(reversed(rows)), rows + [{"kind": "ForwardKeyEvent"}]]
+        for index, key, value in ((0, "context", "/other/context"), (0, "deleted", "other"),
+                                  (0, "cursor", 0), (1, "context", "/other/context"),
+                                  (1, "text", "other"), (1, "cursor", 0)):
+            changed = [dict(row) for row in rows]
+            changed[index][key] = value
+            variants.append(changed)
+        for variant in variants:
+            with self.subTest(rows=variant), self.assertRaises(FEEDBACK.CaseMismatch):
+                case.validate_edit(variant, context=self.client.path, prefix="они ",
+                                   visible=self.client.visible, cursor=self.client.cursor, inverse=True)
+        for visible, cursor in ((self.client.visible + " ", self.client.cursor),
+                                (self.client.visible, self.client.cursor - 1)):
+            with self.subTest(visible=visible, cursor=cursor), self.assertRaises(FEEDBACK.CaseMismatch):
+                case.validate_edit(rows, context=self.client.path, prefix="они ",
+                                   visible=visible, cursor=cursor, inverse=True)
+
+    def inverse_observation_fixture(self):
+        fixtures = InverseFeedbackCaseTests()
+        case = fixtures.case()
+        self.project_pair_frame(case, inverse=True)
+        binding = fixtures.bind(case)
+        journal = mock.Mock()
+        journal.exists.return_value = True
+        journal.read_bytes.return_value = fixtures.journal(fixtures.rejections(case))
+        stat = mock.Mock()
+        stat.read_text.return_value = "73 (candidate) " + " ".join(["0"] * 19 + ["1234"])
+        clock, pending = [100.], []
+        context = mock.Mock()
+        context.pending.side_effect = lambda: bool(pending)
+        context.iteration.side_effect = lambda _block: pending.pop(0)()
+        self.namespace.update(
+            GLib=SimpleNamespace(MainContext=SimpleNamespace(default=lambda: context)),
+            time=SimpleNamespace(monotonic=lambda: clock[0],
+                                 time_ns=lambda: int(clock[0] * 10**9),
+                                 sleep=lambda seconds: clock.__setitem__(0, clock[0] + seconds)),
+            bridge_snapshot=lambda _label: {"canonical_context": binding.context},
+            current_engine_name=lambda: "lay-ime-ru", RU_ENGINE="lay-ime-ru")
+        node = next(node for node in ast.parse((HARNESS_ROOT / "driver.py").read_text()).body
+                    if isinstance(node, ast.FunctionDef) and node.name == "drain")
+        exec(compile(ast.Module(body=[node], type_ignores=[]), "driver-drain", "exec"), self.namespace)
+        return binding, journal, stat, clock, pending
+
+    def finish_inverse(self, binding, journal, stat):
+        with mock.patch.dict(sys.modules, {"feedback_case": FEEDBACK}):
+            return self.namespace["finish_inverse_feedback_case"](
+                self.client, binding, journal, stat, "", 0)
+
+    def test_inverse_observation_freezes_complete_effects_and_interval_after_focus_out(self):
+        binding, journal, stat, clock, pending = self.inverse_observation_fixture()
+        inverse, feedback = self.finish_inverse(binding, journal, stat)
+        self.assertEqual(["DeleteSurroundingText", "CommitText"], [r["kind"] for r in inverse])
+        self.assertEqual("MATCHED_CASE_FEEDBACK", feedback["status"])
+        self.assertEqual(binding.began_unix_ns, feedback["began_unix_ns"])
+        self.assertEqual(int(clock[0] * 10**9), feedback["ended_unix_ns"])
+        self.assertEqual([], pending)
+        self.context.focus_out.assert_called_once_with()
+
+    def test_inverse_observation_refuses_extra_callbacks_during_feedback_or_focus_out(self):
+        for phase in ("feedback", "focus_out"):
+            for kind in ("CommitText", "DeleteSurroundingText", "ForwardKeyEvent"):
+                with self.subTest(phase=phase, kind=kind):
+                    binding, journal, stat, _clock, pending = self.inverse_observation_fixture()
+                    callbacks = {
+                        "CommitText": lambda: self.client.on_commit(None, SimpleNamespace(get_text=lambda: "")),
+                        "DeleteSurroundingText": lambda: self.client.on_delete(None, 0, 0),
+                        "ForwardKeyEvent": lambda: self.client.on_forward(None, 32, 57, 0),
+                    }
+                    if phase == "feedback":
+                        reads = [0]
+                        content = journal.read_bytes.return_value
+                        def read():
+                            if reads[0] == 0:
+                                pending.append(callbacks[kind])
+                            reads[0] += 1
+                            return content
+                        journal.read_bytes.side_effect = read
+                    focus = mock.Mock(side_effect=(lambda: pending.append(callbacks[kind]))
+                                      if phase == "focus_out" else None)
+                    with mock.patch.object(self.context, "focus_out", focus):
+                        with self.assertRaisesRegex(FEEDBACK.CaseMismatch, "exactly one ordered"):
+                            self.finish_inverse(binding, journal, stat)
+                    self.assertEqual([], pending)
+                    self.assertEqual(binding.case.typed, self.client.visible)
+                    self.assertEqual(3, len(self.client.output))
+
+    def test_connected_inverse_missing_feedback_stops_at_existing_bound(self):
+        binding, journal, stat, clock, _pending = self.inverse_observation_fixture()
+        journal.read_bytes.return_value = b""
+        with self.assertRaisesRegex(FEEDBACK.CaseMismatch, "existing1.5s bound"):
+            self.finish_inverse(binding, journal, stat)
+        self.assertLess(clock[0] - 100., 1.551)
+        self.context.focus_out.assert_not_called()
 
     def test_unhandled_press_inserts_once_and_release_never_duplicates(self) -> None:
         self.assertFalse(self.client.key("l"))

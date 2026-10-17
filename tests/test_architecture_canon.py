@@ -72,8 +72,10 @@ class CanonGuardTest(unittest.TestCase):
         self.assertIn("canon_rule_ids:expected_C01_through_C10_once", gate.check_links(self.root))
 
     def test_protected_change_needs_new_decision(self):
-        self.assertIn("protected_change_without_new_decision:ARCHITECTURE.md",
-                      gate.check_decisions(self.root, {"ARCHITECTURE.md"}, set()))
+        for name in ("ARCHITECTURE.md", "src/bin/lay_ibus_engine/preedit.rs"):
+            with self.subTest(path=name):
+                self.assertIn(f"protected_change_without_new_decision:{name}",
+                              gate.check_decisions(self.root, {name}, set()))
 
     def test_editing_old_decision_does_not_authorize_new_change(self):
         record = self.decision(["ARCHITECTURE.md"])

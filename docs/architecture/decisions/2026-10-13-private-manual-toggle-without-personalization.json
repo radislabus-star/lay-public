@@ -1,0 +1,362 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T14:44:24Z",
+  "decision": "Allow explicit Double Shift in private ordinary content while disabling personalization and text retention; protect password, PIN and hidden text",
+  "status": "PRIVATE_POLICY_SCOPED_NATIVE_PASS_FULL_BROWSER_NATIVE_FAIL_RETAINED",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "user_choice": "Explicit answer: allow Double Shift without learning in Chrome private; question also preserved no history and password protection. No repeated permission needed.",
+  "first_loss": "content_is_sensitive conflates PRIVATE (no personalization) with PASSWORD/PIN/HIDDEN_TEXT. It rejects manual admission and discards SSI. Two additional manual-inheritance guards currently use the assistance predicate; they must use the protected-content predicate instead. Learning writers rely on old impossible private word authority rather than explicit no-personalization checks.",
+  "source_red": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/n-private-manual-policy-red-s1abodtn/RESULT.json",
+    "local_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/N-source-probes/n-private-manual-policy-red-s1abodtn/RESULT.json",
+    "sha256": "c5f41f3b2df2e3da6f301f8824c6d382304ffd62884334153b2b46ee1ee043a7",
+    "selected": 4,
+    "failed": 1,
+    "passed": 3,
+    "elapsed_seconds": 64.94443834100093,
+    "scope": "First failed policy transition only; persistence and native behavior not yet proved.",
+    "production_unchanged": "Four production files pinned to immutable M focused GREEN before execution.",
+    "configured_selected": 4,
+    "actual_total": 766,
+    "actual_passed": 765,
+    "scope_correction": "Configured4 but first helper passed only selected rows as complete harness rows, so it ran all766 bin tests. Primary FAIL/first policy transition remain real; original selected denominator is inaccurate. Keep primary immutable and use actual raw log counts."
+  },
+  "vendor_semantics": {
+    "primary": "https://github.com/ibus/ibus/blob/master/src/ibustypes.h",
+    "private": "PRIVATE asks input method not to update personalized data; HIDDEN_TEXT is separate.",
+    "native_binding": "L Chrome private first active field has purpose0/hints2112 (PRIVATE2048 plus64). Not all twenty failed cells were individually joined."
+  },
+  "options": [
+    {
+      "score": 9,
+      "selected": true,
+      "name": "Separate protected-content and no-personalization policies under the existing engine owner; carry one typed retention fact in the existing exact-tail readout/lease",
+      "implementation": [
+        "content_is_sensitive keeps PASSWORD/PIN/HIDDEN_TEXT; a no-personalization predicate adds PRIVATE. Automatic assistance stays disabled in PRIVATE. The two existing manual-inheritance guards use protected-content checks; all owner/identity/verifier checks remain.",
+        "Explicitly gate completion arm/confirm/edit, prediction/system feedback and deferred learning. On content-type transition discard pending personalization/feedback; retain only bounded volatile private text required for manual operation.",
+        "Add an additive typed VisibleTailV4 readout including retention permission from the same admitted engine under its existing readout lock. V1-V3 keep their previous private refusal. No separate privacy owner, transport, private executor or lease timer.",
+        "Updated daemon captures the retention fact in its existing exact-tail lease, validates it with the existing epoch/path/field identity and never upgrades unknown legacy privacy to permission. Preserve public V3 compatibility; reject private replies without the new typed fact.",
+        "Suppress private user text/key payloads in IME traces and daemon action journals/logs. Existing normal public diagnostics remain available. No global mutable privacy switch. No private payload in error strings.",
+        "Use existing daemon backend authority policy to refuse early raw input/typed-tail/user-correction retention in IME-owned input without a positive retention fact. No per-key RPC, privacy cache or additional owner; public accepted feedback stays with IME owner. Precognition tick is already disabled in IME mode.",
+        "Clear volatile context/shared handoff and pending learning on retention policy change. Preserve old generic ReplaceTail PRIVATE exclusion; only the explicit existing ManualToggle authority may use the permitted private text."
+      ],
+      "proofs": [
+        "Policy RED then manual/volatile SSI vs disabled assistance in PRIVATE and2112; PASSWORD/PIN/HIDDEN and PRIVATE combined with protected purposes remain refused.",
+        "Actual manual first word/Space/repeated5 and exact lease transfer under private metadata; no stored completion/prediction/system/deferred learning or text journal even if normal debug/history config is enabled.",
+        "Missing ContentType stamp still revokes manual/frame authority; selection, stale owner, revoked epoch, mismatched field and privacy-policy change cannot upgrade or execute a stale lease.",
+        "Source agreement of additive V4 and public V3 projection; legacy private remains refused; unknown privacy is fail-closed for persistence.",
+        "One combined full source/FMT/build/native Firefox+Chrome ten-field gate including all latency required/measured/missing counts; previous failures stay open until exact-source proof.",
+        "Actual private input followed by Enter with debug/history configured; PRIVATE-to-public transition followed by Space/Enter cannot retain a private sentinel. Neither later lease permission nor new public policy can retroactively permit older private/unknown input."
+      ]
+    },
+    {
+      "score": 4,
+      "selected": false,
+      "name": "Remove PRIVATE from sensitive guard only",
+      "rejected_reason": "Manual inheritance still uses assistance gates; private word authority would newly reach implicit learning and daemon text journals. This would not meet the chosen no-learning/no-history behavior."
+    },
+    {
+      "score": 2,
+      "selected": false,
+      "name": "Add an independent private delivery route or disable logs globally",
+      "rejected_reason": "A new route duplicates authority; global log disabling changes public diagnostics and does not prove per-field privacy."
+    }
+  ],
+  "review": {
+    "used": 2,
+    "maximum": 2,
+    "verdict": "PASS_SOURCE_MATERIAL_BLOCKERS_FIXED",
+    "score": 9,
+    "recommended_aligned_score": 9,
+    "fresh_context_free": false,
+    "reviewer": "/root/owned_close_and_replay_plan_review_20261012",
+    "required_clarifications": [
+      "Early IME-owned daemon raw input/typed-tail/user-correction sinks cannot rely on later V4 lease privacy; unknown privacy denies payload retention under existing backend/owner policy, metadata diagnostics retained.",
+      "On retention-policy transition clear prior volatile context/shared handoff/pending personalization through existing ContentType retirement; actual client text is not edited."
+    ],
+    "scope": "Final read-only code review2/2 closed; no third pass. Source audit and GREEN16 examined; supplemental writer/policy proof later done by root, physical native and journals pending."
+  },
+  "runtime": "Both N native scopes closed/allpinnedPIDticksgone and originalVT1 restored. Private20df1/765f7 unchanged; no laptop install/promotion/commit/push. Private-policy source19,review9,Chromeprivate20/20 and visited writer-root audit PASS; full browser scopes remainFAIL and firstlate managedrelease has O causalSourceRED, no O production edit.",
+  "baseline_backup": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/N-before-production",
+  "implementation": {
+    "files": "28 packaged source/registry paths, plus two regenerated test metadata files. N-source-file-list.json current.",
+    "policy": "protected/local volatile/private/personalization guards separated, explicit writer and early IME raw sink gates; retention-transition volatile cleanup",
+    "handoff": "Existing admitted reducer projects settled ContentType into receiver fields before imported text publication, preventing new engine defaults from treating private text as public",
+    "readout": "additiveV4 single admitted engine implementation, publicV3 projection/legacy private refusal; permission bound and checked in existing lease at both validations; unknown legacy retention denied",
+    "journal": "Engine traces/journals gated; raw keyval/keycode redacted; daemon exact action journal follows lease validation and permission; private/unknown errors and completion logs have no payload",
+    "settled_metadata": "Keep metadata supplied by already validated soft Reset and bridge output settlement in existing reducer settled_content_type. Existing engine bridge producer supplies its ContentType. Same-context target projects this fact before imported text; no additional owner/state/generation/cache/guard bypass.",
+    "final_review_key_trace_fixes": "All four ibus_interface direct key callers use existing privacy-aware trace_key. Daemon retention predicate precedes autorepeat SKIP, ignored-buffer and manual-trigger cancellation key-code logs are payload-free when permission is unknown."
+  },
+  "verification": {
+    "compile": "both bins compile12.925530272s before final test additions",
+    "invalid_probe": "n-private-source-5mhlq735 had wrong bulk scope, executed daemon274 (272PASS2FAIL); stopped with ExecutionError, no primary semantic RESULT; retain logs as diagnostic",
+    "precise_fail": "n-private-source-od063_bz selected15, failed3 daemon fixture config tests; bulk scopes fixed, no source/native PASS claimed",
+    "fixture_alignment": "TerminalUsageFixture now writes/restores isolated on-disk config because daemon LayConfig::load reloads it and resets published runtime flags; native positive and IME unknown negative explicit; new unknown case process-isolated",
+    "current": "Focused16 GREEN; all semantic private handoff assertions previously passed5m45kq_k, whose trace assertion failed because test constructor silently republished debug=false. Process fixture now preserves its explicit configdebug, and nonempty trace proof passes3g89g7f9.",
+    "full_gate_infrastructure_fail": {
+      "receipt": "/home/ubu/.cache/lay/development/run-r7mlsrjd/RESULT.json",
+      "remote_run": "/home/e/projects/lay-development-runner/run-OFSogH",
+      "failure": "manifest rows were sorted by target/name instead of canonical JSON; stopped before tests. Probe metadata generator now uses existing discovery.canonical. No functional verdict."
+    },
+    "causal_private_handoff_red": {
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/n-private-source-zswp4mpj/RESULT.json",
+      "local_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/N-source-probes/n-private-source-zswp4mpj/RESULT.json",
+      "sha256": "5349ac78016284cb50f993a295d129bf6732229d399cca3d70e93c36d966092b",
+      "selected": 16,
+      "pass": 15,
+      "fail": 1,
+      "first_loss": "Actual PRIVATE2112 active-word Reset restoration passes ManualToggle and V3 private refusal/V4 false, but factory receiver content_hints becomes0. Existing settle_soft_reset_rereceipt accepted metadata-bearing SettledWordState and discarded its ContentType."
+    }
+  },
+  "focused_green": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/n-private-source-ijtoej0k/RESULT.json",
+    "local_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/N-source-probes/n-private-source-ijtoej0k/RESULT.json",
+    "sha256": "1bcb32958d583b931e4c72834735f00daab16c8538ceb0728186601d7ba0245e",
+    "selected": 19,
+    "verdict": "PASS",
+    "elapsed_seconds": 30.237732822002727,
+    "source_rows": 205,
+    "manifest_rows": 3135,
+    "current_source_binding": "All205 Rust source rows match fetched formatter output; source bundlecf789850e76b5a51941a489ce3f0e1d854e255750b6bf550a68d2e182005c756",
+    "scope": "Actual private manual/readout/import/repeated intent and ContentType transition retiring stale replay. Nonempty trace redaction; prediction private negative with existing public positive, system/reverted/deferred disk-writer private negative plus enabled public controls; protected and M controls. Native/persistence-journal scope pending."
+  },
+  "previous_full_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-yw1mry_g/RESULT.json",
+    "gate": "/home/e/projects/lay-development-runner/run-c7yOk8",
+    "tests": 1090,
+    "verdict": "PASS",
+    "scope": "Earlier source before supplemental test-only changes; production code unchanged."
+  },
+  "full_source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-8laey58b/RESULT.json",
+    "sha256": "a6cae95a024b9690e0d0f440f795d66ea13e291e4932125571edbaa6c609f7f7",
+    "gate": "/home/e/projects/lay-development-runner/run-OYRPtS",
+    "archive_sha256": "8afcb980ed79cdf5c325813bf22351309ee04032f96c4a9c4bc739f9192f94d9",
+    "tests": {
+      "executed": 1092,
+      "failed": 0,
+      "passed": 1092,
+      "selected": 1092
+    },
+    "elapsed_seconds": 250.02741623400652,
+    "fmt": "PASS",
+    "scope": "Both bins and six requested input contracts; development source gate, not physical client acceptance."
+  },
+  "native_firefox": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native20df1-firefox-proof.json",
+    "sha256": "aec4711c443050689eb72fe3fbc53f08beccea0c058b5de4e88b33e33320f81b",
+    "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native20df1-firefox-raw-1791913652042738849/RAW.json",
+    "groups": {
+      "standard": {
+        "required": 60,
+        "counts": {
+          "PASS": 59,
+          "FAIL": 1
+        },
+        "speed": {
+          "double_shift": {
+            "required": 420,
+            "measured": 414,
+            "missing": 6,
+            "p50_ms": 106.55477400869131,
+            "p95_ms": 119.13974000513554,
+            "max_ms": 125.59471899271011,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "panel": {
+        "required": 6,
+        "counts": {
+          "PASS": 6
+        },
+        "speed": {
+          "double_shift": {
+            "required": 48,
+            "measured": 48,
+            "missing": 0,
+            "p50_ms": 106.7272465005517,
+            "p95_ms": 117.68856799602509,
+            "max_ms": 122.29639999568462,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "functional": {
+        "required": 150,
+        "counts": {
+          "PASS": 78,
+          "FAIL": 38,
+          "BLOCKED": 15,
+          "NOT_TESTED": 19
+        },
+        "speed": {
+          "double_shift": {
+            "required": 210,
+            "measured": 92,
+            "missing": 118,
+            "p50_ms": 108.88781598955393,
+            "p95_ms": 147.95775400102139,
+            "max_ms": 161.65170599520206,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "space": {
+            "required": 50,
+            "measured": 33,
+            "missing": 17,
+            "p50_ms": 17.835882991552353,
+            "p95_ms": 23.239350989460945,
+            "max_ms": 23.983601987361908,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "tab": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "selection": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      }
+    },
+    "verdict": "FAIL",
+    "scope": "Full60standard+6panel+150functional; no blanket browser or no-history acceptance."
+  },
+  "native_chrome": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native20df1-chrome-proof.json",
+    "sha256": "9d7b0b2290e9afd761411456694b4139a8c5b6f8a0091ee72f0133b594b7f49b",
+    "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native20df1-chrome-raw-1791915477741593947/RAW.json",
+    "verdict": "FAIL",
+    "groups": {
+      "standard": {
+        "required": 60,
+        "counts": {
+          "PASS": 58,
+          "BLOCKED": 2
+        },
+        "speed": {
+          "double_shift": {
+            "required": 420,
+            "measured": 406,
+            "missing": 14,
+            "p50_ms": 92.07973449677229,
+            "p95_ms": 110.07022200524807,
+            "max_ms": 121.58887499570847,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "panel": {
+        "required": 6,
+        "counts": {
+          "PASS": 6
+        },
+        "speed": {
+          "double_shift": {
+            "required": 48,
+            "measured": 48,
+            "missing": 0,
+            "p50_ms": 92.43230050802231,
+            "p95_ms": 113.75069898366928,
+            "max_ms": 114.96653001010418,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "functional": {
+        "required": 150,
+        "counts": {
+          "PASS": 105,
+          "FAIL": 33,
+          "BLOCKED": 12
+        },
+        "speed": {
+          "double_shift": {
+            "required": 210,
+            "measured": 138,
+            "missing": 72,
+            "p50_ms": 89.09892600029707,
+            "p95_ms": 127.39608000218868,
+            "max_ms": 134.98749600350857,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "space": {
+            "required": 50,
+            "measured": 38,
+            "missing": 12,
+            "p50_ms": 18.441368013620377,
+            "p95_ms": 21.881858989596367,
+            "max_ms": 25.968869000673294,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "tab": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "selection": {
+            "required": 10,
+            "measured": 10,
+            "missing": 0,
+            "p50_ms": 19.628509007394314,
+            "p95_ms": 21.621921002864838,
+            "max_ms": 21.621921002864838,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      }
+    },
+    "L_comparison": "20 standard PASS gained, zero lost; all156 panel/functional statuses unchanged."
+  },
+  "private_native_sink_proof": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/N-chrome-private-sink-proof.json",
+    "sha256": "be1f32c3d16e7012834dbdb54d36a11769111acc8e4c654369fb18700f354b6e",
+    "verdict": "PASS_VISITED_LAY_SINK_ROOTS",
+    "private_rows": 20,
+    "private_changed": [],
+    "public_changed": [
+      "home/.local/share/lay/recent_actions.jsonl"
+    ],
+    "scope": "Actual original Chrome private20 cells; Lay writer roots unchanged, enabled public history changed. Full trace completeness not proven; no universal persistence claim."
+  }
+}

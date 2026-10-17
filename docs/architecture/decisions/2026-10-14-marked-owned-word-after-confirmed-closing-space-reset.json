@@ -1,0 +1,218 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-marked-owned-word-after-confirmed-closing-space-reset",
+  "updated_at": "2026-10-14T11:11:32.632930+00:00",
+  "status": "WJ_BUILD_COMPLETE_NATIVE_OTHER_CLIENTS_REQUESTED",
+  "measured_native": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WH-prefix1-window.json",
+    "first_transition": "Space settlement KnownStart -> actual Reset -> exact committed prefix SSI6 -> paired Space release UnknownStart -> printable_legacy_preedit -> first ManualToggleV3 context_authority refused; bridge live.",
+    "trace_lines": [
+      2002,
+      2003,
+      2008,
+      2009,
+      2015,
+      2016,
+      2025,
+      2208
+    ],
+    "trace_coverage": "UNKNOWN",
+    "key_preedit_chars_meaning": "This field counts completion suffix, not composition buffer. Do not infer partial word ownership from 3 suffix characters."
+  },
+  "hypothesis": "Marked owned-preedit boundary helper additionally requires reducer KnownStart. Actual Reset retains UnknownStart even when a fresh prefix and every following uncommitted character belong to same owner. Establish source proof and all other predicates before changing this condition.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Let the existing marked manual-mode birth witness prove the entirely owned uncommitted word independently of reducer KnownStart. Retain exact birth capability/full actual prefix/cursor/no-selection/revision/focus/lease/layout/current token/all other route guards; preserve UnknownStart and all automatic/edit-plan authority rules.",
+      "condition": "Only after actual Space Reset SSI release causal RED verifies current legacy owner and birth proof; no generic removal for unproved words."
+    },
+    {
+      "score": 5,
+      "solution": "Promote reducer word to KnownStart from observed prefix when first owned character begins.",
+      "reason": "Changes broader Space/Tab/automatic authority and reducer semantics for a manual-only fault; requires separate proof and is unnecessary if exact owned word already suffices."
+    },
+    {
+      "score": 1,
+      "solution": "Skip Reset or preserve KnownStart generically; enlarge timeout or add browser/field exception.",
+      "reason": "Hides actual lifecycle revocation; no shared mechanism justification."
+    }
+  ],
+  "contract": [
+    "No production change before causal RED with actual native ordering, no synthetic KnownStart/token/witness.",
+    "Use one current owner and existing preedit+InputMode transaction; no CommitText/DeleteSurroundingText or widget-prefix edit from this manual route.",
+    "UnknownStart stays UnknownStart through repeated toggles/next-letter decoder/local Backspace.",
+    "Absent/contradictory prefix, metadata/owner/revision changes remain refused. A word lacking observed start cannot obtain new marked manual mode.",
+    "WI source847 passed; combined next candidate must have fresh full affected source gate and original432 native/speed receipts before claiming completion."
+  ],
+  "models_retrained": false,
+  "delivery_routes_changed": false,
+  "runtime_authority_changed": false,
+  "review": {
+    "status": "NOT_RUN_THREAD_LIMIT",
+    "score": null,
+    "root_audit": "Combined WI/WJ diff relative frozenWH contains one production file:17lines actual identical-prefix revision binding and one removed KnownStart condition from already exact entirely-owned manual proof. No minted authority/known lineage/SSI, no route/timer/model/codebase exception; positive8UnknownStart asserts generic manual denial; old controls unchanged.",
+    "diff": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WJ-review-diff.patch"
+  },
+  "latest_complete_matrix": {
+    "PASS": 343,
+    "FAIL": 56,
+    "BLOCKED": 33,
+    "total": 432
+  },
+  "causal_red": {
+    "proof_signature": "e13e46a7a8d29cd3180c5b73082c0217534a7d8c503a7773be59d0114c06d8b5",
+    "verdict": "FAIL",
+    "selected": 61,
+    "failures": [
+      {
+        "target": "bin:lay-ibus-engine",
+        "test": "context_admission::adapter::tests::word_scope::residuals::td121_marked_owned_word_after_confirmed_closing_space_reset_keeps_manual_mode",
+        "failure_block": "thread 'context_admission::adapter::tests::word_scope::residuals::td121_marked_owned_word_after_confirmed_closing_space_reset_keeps_manual_mode' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs:10392:9:\nconfirmed real prefix and entirely owned word need manual mode without restoring KnownStart\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "elapsed_seconds": 25.089585790992714,
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wj-confirmed-prefix-source-pui026kh/RESULT.json"
+  },
+  "focused_green": {
+    "proof_signature": "56aa249459035ae25aa3240992c6e9a23c69e8c691d2262a83bbd1ced64bf9a5",
+    "verdict": "PASS",
+    "selected": 61,
+    "failures": [],
+    "elapsed_seconds": 25.390485669020563,
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wj-confirmed-prefix-source-3vimh2vh/RESULT.json"
+  },
+  "source_scope": "Only manual marked birth proof dropped redundant KnownStart requirement. Actual reducer UnknownStart, generic manual refusal, same owner and observed prefix remain through8 mode/probe/erasure gestures with actual SSI. WI14refusal classes proved inboth real lineages (28 variants).",
+  "first_full_source": {
+    "tests": {
+      "executed": 848,
+      "failed": 4,
+      "passed": 844,
+      "selected": 848
+    },
+    "status": "FAIL",
+    "receipt": "/home/ubu/.cache/lay/development/run-44ued6em/RESULT.json",
+    "archive": "cb020ce5230172ff5b3595df9a10894afb5f8c4893830708134e048b92b2b438",
+    "failures": [
+      {
+        "failure_block": "thread 'context_admission::adapter::tests::word_scope::residuals::c06_exact_refresh_observed_second_word_accepts_live_owned_append_once' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs:9164:9:\nassertion failed: !engine.context_owns_active_preedit_manual_toggle()\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "target": "bin:lay-ibus-engine",
+        "test": "context_admission::adapter::tests::word_scope::residuals::c06_exact_refresh_observed_second_word_accepts_live_owned_append_once"
+      },
+      {
+        "failure_block": "thread 'context_admission::adapter::tests::word_scope::residuals::c06_exact_refresh_owned_append_refuses_unproved_or_revoked_start' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs:9248:13:\nobservation_revision\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "target": "bin:lay-ibus-engine",
+        "test": "context_admission::adapter::tests::word_scope::residuals::c06_exact_refresh_owned_append_refuses_unproved_or_revoked_start"
+      },
+      {
+        "failure_block": "thread 'context_admission::adapter::tests::word_scope::residuals::c06_owned_backspace_cannot_repair_external_epoch_or_revoked_start' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs:9385:13:\nexternal_epoch\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "target": "bin:lay-ibus-engine",
+        "test": "context_admission::adapter::tests::word_scope::residuals::c06_owned_backspace_cannot_repair_external_epoch_or_revoked_start"
+      },
+      {
+        "failure_block": "thread 'context_admission::adapter::tests::word_scope::residuals::owned_preedit_return_refuses_interruption_before_final_erasure' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs:16693:5:\nepoch\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace",
+        "target": "bin:lay-ibus-engine",
+        "test": "context_admission::adapter::tests::word_scope::residuals::owned_preedit_return_refuses_interruption_before_final_erasure"
+      }
+    ],
+    "native_build_started": false
+  },
+  "retired_input_refinement": {
+    "status": "PASS",
+    "selected": 65,
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wj-confirmed-prefix-source-hgx11amw/RESULT.json",
+    "signature": "5762e8f5501cd69b3daee33eaa60e406acb8570a488b040d4bb9e5dc8bd50d88",
+    "reason": "UnknownStart exact-owned manual mode additionally requires all original handled input releases retired. Existing C06 append controls retain held mutable input and must not gain manual authority. All four old failing controls pass unchanged.",
+    "remaining_root_audit": "Check epoch-fault case after all paired releases are actually retired, inbothlineages; no masking by pending-release guard."
+  },
+  "epoch_audit": {
+    "status": "CAUSAL_RED65_CONFIRMED",
+    "signature": "7333505b236479e3253712a209508264c8903a9191933930453144d302052ad6",
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wj-confirmed-prefix-source-ps3pzk2_/RESULT.json",
+    "reason": "Released current word with unchanged text but intervening tail epoch was false accepted. All64 other selected controls passed.",
+    "minimal_fix": "One manual_tail_epoch_offset scalar in the existing birth witness, initially0. Marked manual proof checks exact birth epoch+local character count+recorded offset. Only the existing verified owned manual producer after successful one-step local handoff may update that offset from the exact prior epoch. Rollback handoff records its own one step. Existing local Backspace rebases old start epoch and zeros adjustment. Space/deletion do not read adjustment; no new owner/snapshot or generic epoch repair.",
+    "source_gate_next": "focused65 thenfull848",
+    "initial_relation_only_result": {
+      "signature": "53b57dba626d37686627e614b8eda142598941a0dece4734599963aca721ee33",
+      "tests": {
+        "PASS": 62,
+        "FAIL": 3,
+        "total": 65
+      },
+      "first_failure": "owned input_mode_publication revalidation after actual local tail handoff",
+      "cause": "replace_last_tail_token_text alone does not advance epoch, but publish_tail_handoff does advance it by one. Initial statement omitted this existing handoff step; correction requires bounded local effect binding, not removal of epoch check."
+    }
+  },
+  "latest_focused": {
+    "status": "PASS",
+    "tests": 65,
+    "signature": "ac996d204bd0cd4eec7bf8c719d7b76bfb51c3196b47605b9eb97b03d7a9bc92",
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wj-confirmed-prefix-source-m28n6vhw/RESULT.json",
+    "all_old_four_failures_unchanged": true,
+    "adverse_classes": 15,
+    "actual_lineages": 2,
+    "held_input_true_refusal_and_real_release_regrant_asserted": true
+  },
+  "negative_metadata": "Epoch/birth/current/offset and handled-release booleans logged only after original refusals, including earlier RPC context_authority branch. No successful ingress logs or predicate/effect-order changes from diagnostic metadata.",
+  "final_focused": {
+    "proof_signature": "eae59bd0b07e1a558d1720ae166384f5e83532b9b3e599f5ad65a093b392684e",
+    "verdict": "PASS",
+    "selected": 66,
+    "failures": [],
+    "elapsed_seconds": 26.468731484987075,
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/wj-confirmed-prefix-source-gtwan2fw/RESULT.json"
+  },
+  "source_gate": {
+    "status": "PASS",
+    "tests": {
+      "executed": 848,
+      "failed": 0,
+      "passed": 848,
+      "selected": 848
+    },
+    "worker_seconds": 116.14745019297698,
+    "archive_sha256": "b46f7c455b4aa50f6dae7cd72df68e8f0b91feccb3b43c5d4a3c22355f089d45",
+    "all737RustHashesMatch": true,
+    "source_gate": "/home/ubu/.cache/lay/development/run-ab157r6z/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-w03rUs"
+  },
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-w03rUs",
+    "archive_sha256": "b46f7c455b4aa50f6dae7cd72df68e8f0b91feccb3b43c5d4a3c22355f089d45",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791975745845435611.txt",
+    "elapsed_seconds": 183.68337113098823,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "84f8510cc8e99ba552fe92837e71062f5121775ece1efe3588a462a668e1cccd",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791975929528710963/bin/lay-ibus-engine",
+      "bytes": 8292112
+    },
+    "lay-daemon": {
+      "sha256": "08416956a6a94acb2446b1124311c7975bd4c05dbcdd99fcca3f26452d4fa068",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791975929528710963/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "build_exec_closed0": 48504,
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.943310786009533,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-final-graph-1791975724717572771.log",
+    "artifacts": {
+      "graphify-out/graph.json": "6778b94312f794a1afa9bb186a884665eb2c87174639e6686f0aaf0a0a72c5be",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "9f09dda4a115cd8ac84f6ceeeb116fddbd856ae928571465838acad51ae45a95",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    }
+  },
+  "all_four_ast_artifact_hashes_verified": true,
+  "native": {
+    "status": "NOT_TESTED",
+    "request": "User asks exact build in Telegram, WezTerm and other GTK/Qt windows; no further production edits authorized by this validation request."
+  }
+}

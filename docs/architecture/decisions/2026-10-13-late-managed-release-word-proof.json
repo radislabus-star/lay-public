@@ -1,0 +1,99 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T18:42:56Z",
+  "decision": "Preserve existing word proof across an authenticated text-inert managed legacy key release whose observer arrives late",
+  "status": "REJECTED_BROAD_PASSIVE_FULL_SOURCE_FAIL15_NO_BUILD",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "first_loss": "N Firefox private active10: actual owned z release15334 callbackstamp refused_timeout, elapsed2527us; managed_release handled=true, no text mutation; observer ingress later. Generic key admission and settlement revoke word proof, and late ordinary release registers an unsettled possible mutation. Subsequent Backspace SSI6 cannot recover context authority.",
+  "source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-source-probes/o-late-managed-release-red-ad5ufwag/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/o-late-managed-release-red-ad5ufwag/RESULT.json",
+    "sha256": "4a2799565ae39c40132d9bb836d3469c725701ac186d9d761f6738a3f84e5869",
+    "selected": 3,
+    "failures": 1,
+    "controls_pass": 2,
+    "elapsed_seconds": 13.3588264620048,
+    "semantic": "Actual authenticated D-Bus release, handler before observer; owned managed press/visible commit previously accepted; release handled=true and buffer unchanged, but word proof disappears."
+  },
+  "options": [
+    {
+      "score": 9,
+      "preferred": true,
+      "name": "Existing managed-release cleanup as text-inert observation",
+      "scope": "Canonical observer on exact current-owner path treats parsed !press/!Shift/!Alt/!command legacy release as Passive/no queue. Existing authenticated native handler preserves current word/token for zero-text-effect release, retiring matched handled/native press or ordinary unpaired bookkeeping. Default unknown metadata accepts only(0,0); explicit settled metadata must match. Existing nonwaiting stampstore lookup refuses relabeling already observed mutable ingress. Pending target/Atomic/mutable input/lifecycle remain guarded; UnknownStart never promoted."
+    },
+    {
+      "score": 5,
+      "preferred": false,
+      "name": "Increase stamp timeout",
+      "rejected_reason": "Adds latency and hides the scheduling race; deadline still can expire. No independent word-proof justification."
+    },
+    {
+      "score": 3,
+      "preferred": false,
+      "name": "Add release settlement queue or restore KnownStart generically",
+      "rejected_reason": "Extra coordination or unsafe authority restoration; unnecessary when this existing event is provably text-inert."
+    }
+  ],
+  "proof_requirements": [
+    "Normal and late owned plain release preserve existing surfaces and proof; no CommitText/DeleteSurroundingText on release. Unowned/unknown release cannot create word authority.",
+    "Wrong sender/path, malformed body, missing press, stale owner, focus/ContentType changes remain refused; no atomic or Alt/Shift mutation bypass.",
+    "Canonical observer must not leave an orphan mutable key. Existing bridge fence stays required; missing mutable callbacks still revoke.",
+    "Existing managed release press cache cleanup remains exactly once; existing privacy gates and19 source controls retained.",
+    "Full source/FMT, final independent code review, immutable private build and original Firefox/Chrome216 per browser with speed; all prior nonPASS/lostPASS and hidden-field coverage gaps retained."
+  ],
+  "runtime": "Broad Passive production source reverted to authoritative N adapter/observation after preserving rejected source. No O private build/install. Existing N private bytes unchanged, GUIOFF/VT1, laptop unchanged.",
+  "review": {
+    "used": 2,
+    "maximum": 2,
+    "plan_score": 8,
+    "plan_reviewer": "/root/late_managed_release_plan_review_20261013",
+    "scope": "O code review2/2 closed9 before full-source failure. This score does not override FAIL and does not certify the refined replacement. No third O review.",
+    "gaps_closed": "Canonical observer on exact current-owner path treats parsed !press/!Shift/!Alt/!command legacy release as Passive/no queue. Existing authenticated native handler preserves current word/token for zero-text-effect release, retiring matched handled/native press or ordinary unpaired bookkeeping. Default unknown metadata accepts only(0,0); explicit settled metadata must match. Existing nonwaiting stampstore lookup refuses relabeling already observed mutable ingress. Pending target/Atomic/mutable input/lifecycle remain guarded; UnknownStart never promoted.",
+    "code_score": 9
+  },
+  "updated_at": "2026-10-13T19:14:52Z",
+  "source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-source-probes/o-late-managed-release-source-ga44kkbz/RESULT.json",
+    "sha256": "a7543b39515eba20c7d16aecb5baf2d7bedbbe6a799c5f0d8d04c3921f9f620f",
+    "selected": 17,
+    "passed": 17,
+    "elapsed_seconds": 16.117371186992386,
+    "all205_source_sha_match": true
+  },
+  "earlier_implementation_probes": [
+    {
+      "receipt": "o-late-managed-release-source-5yut6xqn/RESULT.json",
+      "verdict": "FAIL",
+      "cause": "Missed original ordinary unpaired Space release semantics; rejected, no private runtime built."
+    },
+    {
+      "receipt": "o-late-managed-release-source-qcc76d9l/RESULT.json",
+      "verdict": "FAIL",
+      "cause": "Already received mutable stamp could be relabelled; refused now. New Reset fixture also left its actual callback reply pending; fixed fixture bookkeeping only."
+    }
+  ],
+  "full_source": {
+    "receipt": "/home/ubu/.cache/lay/development/run-epln3f0l/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-WE0tvu",
+    "selected": 1096,
+    "passed": 1081,
+    "failed": 15,
+    "elapsed_seconds": 257.9,
+    "verdict": "FAIL",
+    "first_shared_cause": "Broad observer Passive bypasses original ordinary release fence and deprives existing ordered replay settlement of its key stamp; focused17 missed these whole-path controls."
+  }
+}

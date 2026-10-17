@@ -1,0 +1,499 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-15",
+  "status": "REJECTED_EIGHT_MS_LOST_BASELINE_PASS_NOT_INSTALLED",
+  "decision": "Reduce only bounded isolated replay final post-delete idle from16ms to8ms. The first4ms candidate lost a baselinePASS and is rejected, with failed native evidence preserved. No causal claim that4ms alone caused the missing-authority failure.",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "observed_baseline": "Private actual standard420+panel: replay median69ms, delete28ms, layout24ms; manual dispatch median5ms. Existing34/37ms pacing is now measured at delete stage, not assumed entire user latency.",
+  "scope": "Existing exact native replay <=32 keys; ordinary/unbounded emit_backspaces retains16ms. Same VirtualDevice.emit/keydown/up/SYN sequence. No application/word switches, new owner, cache or delivery route.",
+  "predicted_saving_ms": 8,
+  "measured_saving_ms": null,
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "tests": "RecordingEmitter old/new full-frame and inter-key-wait parity at1/6/7/32;0/33/MAX reject before any frame or wait; first emission failure releases all keys and stops. Existing exact source guard still requires both lease checks and suppression before one delete and one insert.",
+  "required_native": "Same frozen source/instrumentation/data baseline and candidate; original both-browser60+6+150 fixed receipts; compare stable IDs and every lostPASS, exact target/caret/decoder, timings incl fail/missing; no source PASS promoted to speed or universal acceptance.",
+  "recorded_utc": "2026-10-14T23:26:10.228789+00:00",
+  "final_source_scope": [
+    "src/bin/lay_daemon/text_output/key_emit.rs",
+    "src/bin/lay_daemon/text_output.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs"
+  ],
+  "instrumentation": "Removed entirely after localization; accepted plain baseline/candidate both have none. Prior instrumented private stage is historical diagnostic only, not A/B reference.",
+  "intermediate_source_receipt": "/home/ubu/.cache/lay/development/run-8q9y3av8/RESULT.json",
+  "intermediate_source_passed": 327,
+  "final_source_receipt": "/home/ubu/.cache/lay/development/run-2c8t4e9d/RESULT.json",
+  "final_source_passed": 327,
+  "source_archive_sha256": "a841126ed509b4d88494d24287af7c49c01e8759c414ebd6233612ae15333e89",
+  "task": "tech_debt/141-reduce-double-shift-replay-latency.md",
+  "independent_review": {
+    "status": "SOURCE_REVIEW_PASS_NATIVE_PENDING",
+    "score": 9,
+    "fresh_context": true,
+    "runner": "separate ephemeral read-only Codex process after built-in agent quota rejection",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-pacing-review/REVIEW-1.md",
+    "sha256": "8eb786b700bc1b7c42f360c3c90825e1f760a867839bfe09f48458506e11bf7c",
+    "execution_log": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-pacing-review/REVIEW-1.log",
+    "findings": "No blocking source defect. Nonblocking explicit2ms/16ms/4ms schedule and no-extra-ordinary-delete guard suggestions applied only inside cfg(test); updated source gate pending."
+  },
+  "default_build": {
+    "schema": "lay.native-candidate-source.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-BTUkSD",
+    "archive_sha256": "a841126ed509b4d88494d24287af7c49c01e8759c414ebd6233612ae15333e89",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "source": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast-build/source",
+    "metadata_only_graph_overlay": {
+      "graphify-out/graph.json": "608f4c9363b574566b3c633d58169abe56ad011ec2a368fe4b87dc14bb4799b5",
+      "graphify-out/GRAPH_REPORT.md": "28e0bb0ed9f7b491446790f1af0bba5d4c411d0bbe7493c7b2affb5cb2391d7a",
+      "graphify-out/source_graph_binding.json": "86c6fa594009140ec54fa70f393d28f279de55fea5443aecf3313798bc8a665f",
+      "src/generated/architecture_graph_receipt.json": "041f8c6d885661dceddcbecaa6427f51fcc7ff8d830281d652ecfa887f23bc5a"
+    },
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast-build/BUILD.log",
+    "elapsed_seconds": 176.49819653198938,
+    "runtime_installation": false,
+    "delivery_routes_changed": false,
+    "diagnostic_only": false,
+    "verification_only": true,
+    "functional_logic_changed": true,
+    "profiling_only": false,
+    "logging_overhead": "NO_INSTRUMENTATION_IN_EITHER_CONTRAST",
+    "stock_client_transport_routes_changed": false,
+    "lay-ibus-engine": {
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast-build/bin/lay-ibus-engine",
+      "sha256": "330eda0c21a93a446eb96224f59c2f63f54c1291aee486d6a7d8778ad34fd191",
+      "bytes": 8293264
+    },
+    "lay-daemon": {
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast-build/bin/lay-daemon",
+      "sha256": "cc65fbe779bf4241eb527938445091f664a723d6aaa15dd952a6f66999b3e840",
+      "bytes": 9264592
+    }
+  },
+  "clean_baseline_state": "PLAIN Firefox original9 LIVE, original BC89daemon+330IME, identical private data restored. Installed user runtime untouched.",
+  "review_retry_through_existing_coordinator": "Fresh child spawn also rejected by global agent thread limit; NOT_RUN/no score.",
+  "native_setup_interruption": {
+    "scope": "clean PLAIN Firefox final30 only",
+    "old_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-functional-c3xe2k7g/RESULT.json",
+    "cause": "FOCUSED field9 temporarily lacked SHOWING during setup; stopped before that case behavioral input; remaining NOT_TESTED retained",
+    "preserved": "first8 complete jobs186 rows; interrupted final30 primary and six earlierPASS retained",
+    "change": "setup-only wait up to750ms for unchanged SHOWING predicate before arming input; existing key/foreground/focus/visibility guards and behavioral timing unchanged",
+    "actor_sha256": "67f5012c2716c19525fa64cca366947de62c67d09e20c3c87c04113db57d81f7",
+    "guard_pin": "new actor digest pinned explicitly; first zero-key mismatch preserved, no behavior input"
+  },
+  "rejected_four_ms": {
+    "status": "REJECTED_LOST_BASELINE_PASS",
+    "candidate_daemon": "cc65fbe779bf4241eb527938445091f664a723d6aaa15dd952a6f66999b3e840",
+    "candidate_settle_ms": 4,
+    "complete": false,
+    "completed_standard_normal_counts": {
+      "PASS": 19,
+      "FAIL": 1
+    },
+    "lost_pass_ids": [
+      [
+        "standard",
+        "normal",
+        "space",
+        6
+      ]
+    ],
+    "first_failed_transition": "third burst bridge_context_authority refuses missing witness before deletion; exact causal dependence on4ms not established",
+    "source_safety": "No guard bypass, deletion on refused lease, or corrupted target observed in failed series",
+    "verdict_scope": "No promotion; original full216candidate unfinished, ChromeNOT_TESTED. No retry untilPASS or deletion of failed evidence. Replan bounded8ms once.",
+    "primary": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-standard-normal-k9zlr898/RESULT.json",
+    "sha256": "7963d6c9732369749f1c3e1afe8849c1f4d7800736706e2b287c586b81587449",
+    "cgroup_empty": true,
+    "installed_runtime_changed": false,
+    "captured_unix": 1792022523.4028668
+  },
+  "current_source_settle_ms": 8,
+  "clean_reference_firefox": {
+    "counts": {
+      "PASS": 170,
+      "FAIL": 27,
+      "BLOCKED": 19
+    },
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-PLAIN-firefox/RESULT.json",
+    "standard_measured": 420,
+    "standard_median_ms": 106.64,
+    "standard_p95_ms": 119.943,
+    "scope": "186rows first exact-owned scope plus final30 completed after setup-only SHOWING wait; interruption retained separately"
+  },
+  "eight_ms_source_receipt": "/home/ubu/.cache/lay/development/run-p1a8utmc/RESULT.json",
+  "eight_ms_source_passed": 327,
+  "eight_ms_source_archive_sha256": "9e1c8dbb9c2bf3e5594774c73877af18ab944d1f91d5e8e2c35230296bab02d8",
+  "default_build_eight_ms": {
+    "schema": "lay.native-candidate-source.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-IP07qu",
+    "archive_sha256": "9e1c8dbb9c2bf3e5594774c73877af18ab944d1f91d5e8e2c35230296bab02d8",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "source": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast8-build/source",
+    "metadata_only_graph_overlay": {
+      "graphify-out/graph.json": "97068b315e221f87c8243d17ac35ba1b72ded23997c2123551017f81d2523e91",
+      "graphify-out/GRAPH_REPORT.md": "2c5de34509af1185e51cdaa796689dae48ad9df52d21da821b8a418e8db5e957",
+      "graphify-out/source_graph_binding.json": "e22cea72838a24c33a732c45e6f719e6fd4bae8eafb76af2262d562ec4d1809d",
+      "src/generated/architecture_graph_receipt.json": "e566cbb2b257375e0d701f7cc1dfc52d3f08458328e755cdee3d611d4d6b966a",
+      "docs/architecture/firefox-input-stability-2026-10-05.md": "ffd4c0ef9e90c55d83391960f77d74770644dcff5586ed2af17bf1abb0ccd1bd",
+      "docs/development/td121-core-experiments.md": "6930d51f7290f3ee93d7b457a593f295bcd30b79496b7d0e48543f535ce025ad",
+      "docs/development/double-shift-latency-2026-10-15.md": "4a95cf64467ba95873b1b776c30e3315e1bdd805ad48876c53cc7ff21d9b7f5d",
+      "docs/architecture/decisions/2026-10-15-isolated-replay-post-delete-settle.json": "7e3fbca755860bbcaa3598fe343bfd5f56e0563f3c9aa1b240331cff2b0ce2c4",
+      "tech_debt/141-reduce-double-shift-replay-latency.md": "ac5c83e12e3438877f12491036652099901a7c6d1eac2f3e24a77a1f15032b74"
+    },
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast8-build/BUILD.log",
+    "elapsed_seconds": 176.16655600600643,
+    "runtime_installation": false,
+    "delivery_routes_changed": false,
+    "diagnostic_only": false,
+    "verification_only": true,
+    "functional_logic_changed": true,
+    "profiling_only": false,
+    "logging_overhead": "NO_INSTRUMENTATION_IN_EITHER_CONTRAST",
+    "stock_client_transport_routes_changed": false,
+    "isolated_post_delete_settle_ms": 8,
+    "rejected_prior_candidate_settle_ms": 4,
+    "metadata_overlay_scope": "fresh AST graph and owning experiment documents only; all gated non-overlay files verified unchanged",
+    "lay-ibus-engine": {
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast8-build/bin/lay-ibus-engine",
+      "sha256": "330eda0c21a93a446eb96224f59c2f63f54c1291aee486d6a7d8778ad34fd191",
+      "bytes": 8293264
+    },
+    "lay-daemon": {
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/PERF-fast8-build/bin/lay-daemon",
+      "sha256": "647d72cc82a99f8e92f90dbb3c50f880153069fe8071926d0bf50a432c313019",
+      "bytes": 9264592
+    }
+  },
+  "independent_review_final": {
+    "score": 9,
+    "source_blockers": [],
+    "fresh_context": true,
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-pacing-review/REVIEW-2.md",
+    "sha256": "d2512de0fbcbbef74dd9b0f7efa840757751d7df1951e2231c5edefe24f3cc43",
+    "test_gaps_closed": true,
+    "native_acceptance": "PENDING"
+  },
+  "eight_ms_firefox_comparison": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-FAST-firefox-vs-PLAIN.json",
+    "sha256": "e0ea886f21657229fd92c4840a13ef74a22e2c89acb8378111f917282161c8b3",
+    "all_216_verdicts_identical": true,
+    "standard_paired_median_gain_ms": 11.133359014987946,
+    "speed": {
+      "standard": {
+        "baseline": {
+          "required": 420,
+          "measured": 420,
+          "missing": 0,
+          "median_ms": 106.64041900634766,
+          "p95_ms": 119.94290900230408,
+          "max_ms": 132.00133401155472
+        },
+        "candidate": {
+          "required": 420,
+          "measured": 420,
+          "missing": 0,
+          "median_ms": 93.5474355071783,
+          "p95_ms": 115.28585800528526,
+          "max_ms": 125.34949997067451
+        },
+        "paired_measured": 420,
+        "paired_median_improvement_ms": 11.133359014987946
+      },
+      "panel": {
+        "baseline": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "median_ms": 102.92795999348164,
+          "p95_ms": 118.36331498622894,
+          "max_ms": 121.51295697689056
+        },
+        "candidate": {
+          "required": 48,
+          "measured": 48,
+          "missing": 0,
+          "median_ms": 92.39230298995972,
+          "p95_ms": 114.12733000516891,
+          "max_ms": 121.31924498081207
+        },
+        "paired_measured": 48,
+        "paired_median_improvement_ms": 11.293528959155083
+      },
+      "functional.double_shift": {
+        "baseline": {
+          "required": 210,
+          "measured": 134,
+          "missing": 76,
+          "median_ms": 104.10921248793602,
+          "p95_ms": 140.3781309723854,
+          "max_ms": 152.17848801612854
+        },
+        "candidate": {
+          "required": 210,
+          "measured": 134,
+          "missing": 76,
+          "median_ms": 93.0406985282898,
+          "p95_ms": 131.89299502968788,
+          "max_ms": 138.82905000448227
+        },
+        "paired_measured": 134,
+        "paired_median_improvement_ms": 8.3048604875803
+      },
+      "functional.space": {
+        "baseline": {
+          "required": 50,
+          "measured": 37,
+          "missing": 13,
+          "median_ms": 17.537973999977112,
+          "p95_ms": 23.25280198454857,
+          "max_ms": 23.44166299700737
+        },
+        "candidate": {
+          "required": 50,
+          "measured": 37,
+          "missing": 13,
+          "median_ms": 18.003935992717743,
+          "p95_ms": 24.066552996635437,
+          "max_ms": 25.358748018741608
+        },
+        "paired_measured": 37,
+        "paired_median_improvement_ms": -0.2431519627571106
+      },
+      "functional.tab": {
+        "baseline": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "median_ms": null,
+          "p95_ms": null,
+          "max_ms": null
+        },
+        "candidate": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "median_ms": null,
+          "p95_ms": null,
+          "max_ms": null
+        },
+        "paired_measured": 0,
+        "paired_median_improvement_ms": null
+      },
+      "functional.selection": {
+        "baseline": {
+          "required": 10,
+          "measured": 0,
+          "missing": 10,
+          "median_ms": null,
+          "p95_ms": null,
+          "max_ms": null
+        },
+        "candidate": {
+          "required": 10,
+          "measured": 1,
+          "missing": 9,
+          "median_ms": 20.969481974840164,
+          "p95_ms": 20.969481974840164,
+          "max_ms": 20.969481974840164
+        },
+        "paired_measured": 0,
+        "paired_median_improvement_ms": null
+      }
+    },
+    "both_browser_promotion": "PENDING_CHROME"
+  },
+  "clean_reference_both": {
+    "firefox": {
+      "PASS": 170,
+      "FAIL": 27,
+      "BLOCKED": 19
+    },
+    "chrome": {
+      "PASS": 179,
+      "FAIL": 23,
+      "BLOCKED": 14
+    },
+    "total": {
+      "PASS": 349,
+      "FAIL": 50,
+      "BLOCKED": 33
+    },
+    "NOT_TESTED": 0,
+    "chrome_privacy_proof": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERFPLAIN-chrome-private-sink-proof.json",
+    "chrome_standard_measured": 406,
+    "chrome_standard_required": 420,
+    "chrome_standard_median_ms": 92.0547965168953,
+    "chrome_standard_p95_ms": 111.44337400794029,
+    "new_candidate_both": "PENDING_FAST_CHROME"
+  },
+  "eight_ms_chrome_comparison": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/PERF-FAST-chrome-vs-PLAIN.json",
+    "sha256": "c8f6be7a798f6959f23e2b1176db5adc1d001d165b1ff0b017be01b88f7d4df4",
+    "comparison": {
+      "schema": "lay.native-performance-comparison.v1",
+      "baseline_phase": "PLAIN",
+      "candidate_phase": "FAST",
+      "browser": "chrome",
+      "ids_matched": 216,
+      "baseline_counts": {
+        "PASS": 179,
+        "BLOCKED": 14,
+        "FAIL": 23
+      },
+      "candidate_counts": {
+        "PASS": 178,
+        "BLOCKED": 14,
+        "FAIL": 24
+      },
+      "lost_PASS": [
+        {
+          "id": [
+            "functional",
+            "normal",
+            "space_ru_en",
+            8
+          ],
+          "from": "PASS",
+          "to": "FAIL"
+        }
+      ],
+      "gains": [],
+      "changes": [
+        {
+          "id": [
+            "functional",
+            "normal",
+            "space_ru_en",
+            8
+          ],
+          "from": "PASS",
+          "to": "FAIL"
+        }
+      ],
+      "speed": {
+        "standard": {
+          "baseline": {
+            "required": 420,
+            "measured": 406,
+            "missing": 14,
+            "median_ms": 92.0547965168953,
+            "p95_ms": 111.44337400794029,
+            "max_ms": 145.73725101351738
+          },
+          "candidate": {
+            "required": 420,
+            "measured": 406,
+            "missing": 14,
+            "median_ms": 86.58502949774265,
+            "p95_ms": 102.28643801808357,
+            "max_ms": 111.43672198057175
+          },
+          "paired_measured": 406,
+          "paired_median_improvement_ms": 6.146528974175453
+        },
+        "panel": {
+          "baseline": {
+            "required": 48,
+            "measured": 48,
+            "missing": 0,
+            "median_ms": 91.9160650074482,
+            "p95_ms": 110.5582230091095,
+            "max_ms": 114.29990297555923
+          },
+          "candidate": {
+            "required": 48,
+            "measured": 48,
+            "missing": 0,
+            "median_ms": 89.64362750947475,
+            "p95_ms": 96.42736798524857,
+            "max_ms": 100.24371501803398
+          },
+          "paired_measured": 48,
+          "paired_median_improvement_ms": 5.261999502778053
+        },
+        "functional.double_shift": {
+          "baseline": {
+            "required": 210,
+            "measured": 158,
+            "missing": 52,
+            "median_ms": 89.49340449273586,
+            "p95_ms": 122.76324701309204,
+            "max_ms": 135.69303703308105
+          },
+          "candidate": {
+            "required": 210,
+            "measured": 158,
+            "missing": 52,
+            "median_ms": 85.24937650561333,
+            "p95_ms": 107.7621899843216,
+            "max_ms": 113.69928804039955
+          },
+          "paired_measured": 158,
+          "paired_median_improvement_ms": 4.253448516130447
+        },
+        "functional.space": {
+          "baseline": {
+            "required": 50,
+            "measured": 38,
+            "missing": 12,
+            "median_ms": 19.367548510432243,
+            "p95_ms": 25.598374992609024,
+            "max_ms": 40.01591998338699
+          },
+          "candidate": {
+            "required": 50,
+            "measured": 37,
+            "missing": 13,
+            "median_ms": 18.618144989013672,
+            "p95_ms": 25.645482033491135,
+            "max_ms": 28.11376401782036
+          },
+          "paired_measured": 37,
+          "paired_median_improvement_ms": 1.0038360059261322
+        },
+        "functional.tab": {
+          "baseline": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "median_ms": null,
+            "p95_ms": null,
+            "max_ms": null
+          },
+          "candidate": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "median_ms": null,
+            "p95_ms": null,
+            "max_ms": null
+          },
+          "paired_measured": 0,
+          "paired_median_improvement_ms": null
+        },
+        "functional.selection": {
+          "baseline": {
+            "required": 10,
+            "measured": 10,
+            "missing": 0,
+            "median_ms": 18.6913800239563,
+            "p95_ms": 20.94574001431465,
+            "max_ms": 20.94574001431465
+          },
+          "candidate": {
+            "required": 10,
+            "measured": 10,
+            "missing": 0,
+            "median_ms": 20.037505000829697,
+            "p95_ms": 22.703077018260956,
+            "max_ms": 22.703077018260956
+          },
+          "paired_measured": 10,
+          "paired_median_improvement_ms": -1.3620489686727524
+        }
+      },
+      "no_new_mutation_route": true,
+      "clock": "same native evdev-write-return to exact AT-SPI target clock, not kernel release or paint",
+      "verdict": "REJECT_LOST_PASS"
+    }
+  },
+  "runtime_promotion": "REJECTED_LOST_PASS"
+}

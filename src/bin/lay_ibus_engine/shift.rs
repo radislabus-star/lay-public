@@ -27,6 +27,29 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
     ) -> Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure> {
         let owned_preedit_at_entry = self.context_owns_active_preedit_manual_toggle();
+        if !owned_preedit_at_entry && !self.composition.buffer.is_empty() && trace::enabled() {
+            self.trace_marked_preedit_binding_refusal("manual_entry");
+            trace::record(format!(
+                "{{\"kind\":\"ibus_owned_preedit_manual_refusal\",\"sealed\":{},\"atomic\":{},\"sensitive\":{},\"exact_refresh\":{},\"selection\":{},\"legacy_owner\":{},\"exact_mirror\":{},\"visible\":{},\"dirty\":{},\"display_pending\":{},\"cursor_at_end\":{},\"replacement_selected\":{},\"scope_present\":{},\"token_present\":{},\"admission_present\":{},\"token_matches_scope\":{},\"token_current\":{}}}",
+                self.context_handoff_sealed,
+                self.atomic.active,
+                self.content_is_sensitive(),
+                self.client_context.exact_surrounding_refresh_available,
+                self.client_context.surrounding_text_snapshot.as_ref().is_some_and(|snapshot| snapshot.has_selection()),
+                self.composition.legacy_word_preedit_active,
+                self.exact_owned_legacy_preedit_is_current(),
+                self.composition.preedit_visible,
+                self.composition.preedit_dirty,
+                self.composition.preedit_display_only_pending,
+                self.composition.cursor == self.composition.buffer.chars().count(),
+                self.selected_precognition_replacement().is_some(),
+                self.context_word_scope.is_some(),
+                self.context_token.is_some(),
+                self.context_admission.is_some(),
+                self.context_word_scope.as_ref().zip(self.context_token.as_ref()).is_some_and(|(scope, token)| token.matches_word_scope(scope)),
+                self.context_admission.as_ref().zip(self.context_token.as_ref()).is_some_and(|(admission, token)| admission.revalidate(token)),
+            ));
+        }
         if !self.context_word_is_known() && !owned_preedit_at_entry {
             self.clear_preedit_completion_state();
             if self.context_allows_manual_toggle() {
@@ -39,7 +62,7 @@ impl LayIbusEngine {
                     .toggle_committed_tail_target_with_disposition(emitter)
                     .await;
             }
-            if self.context_reset_rereceipt_computation_allowed()
+            if self.context_reset_rereceipt_manual_wait_allowed()
                 && self.client_context.surrounding_text_supported
                 && self.client_context.surrounding_text_snapshot.is_none()
             {
@@ -119,10 +142,14 @@ impl LayIbusEngine {
         let authority = self.manual_toggle_authority();
         match authority {
             ManualToggleAuthority::ImeCommittedTail => {
-                if self.terminal_committed_tail_executor_available() {
-                    trace::record(
-                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#,
-                    );
+                if self.terminal_committed_tail_executor_available()
+                    || self.atomic.speculation && !emitter.is_legacy()
+                {
+                    trace::record(if self.atomic.speculation {
+                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"atomic_frame"}"#
+                    } else {
+                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#
+                    });
                     return self
                         .toggle_committed_tail_target_with_disposition(emitter)
                         .await;
@@ -151,17 +178,21 @@ impl LayIbusEngine {
         }) else {
             return Ok((None, ExecutionReceipt::Rejected));
         };
-        trace::record_manual_toggle_plan(&plan);
+        if self.content_allows_personalization() {
+            trace::record_manual_toggle_plan(&plan);
+        }
         let original = self.composition.buffer.clone();
         let Some(replacement_plan) = plan_text_replacement(&original, &plan.replacement) else {
             return Ok((None, ExecutionReceipt::Rejected));
         };
         let action = plan_ime_manual_toggle_edit(&original, &plan.replacement, replacement_plan);
-        lay::action_log::record_candidate_edit_action_before_apply(
-            &action,
-            lay::action_log::MutationLogRoute::IME_ACTIVE_COMPOSITION,
-            None,
-        );
+        if self.content_allows_personalization() {
+            lay::action_log::record_candidate_edit_action_before_apply(
+                &action,
+                lay::action_log::MutationLogRoute::IME_ACTIVE_COMPOSITION,
+                None,
+            );
+        }
         let Some(authorized_edit) =
             authorize_backend_edit(TextEditBackend::Ime, action).into_authorized()
         else {

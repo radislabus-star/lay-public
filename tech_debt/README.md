@@ -1,98 +1,240 @@
-# Latest Firefox repair — 2026-09-14
+# Lay — очередь технического долга, 2026-10-17
 
-Latest TD-121: **R5_FINAL_NATIVE_FAIL, 2/4; DO NOT INSTALL R5**. The final
-release gate passed 2,841/2,841 and four isolated client cells. Installed C20
-is preserved. See [the current analysis](evidence/td121-r5-final-native-analysis-2026-09-14.md).
-The R5 status below predates the final native failure.
+**1.0.89 установлена**: CLI, daemon, IME и панель; загруженные SHA проверены.
+[TD-154](154-acknowledge-consecutive-owned-space-boundaries.md) и
+[TD-155](155-replay-exact-acknowledged-space-series.md): source/native/install/publication DONE, релиз
+[1.0.89](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.89). Исходники3211/3211 без исключений, plan/code9/10,
+три контролируемых регрессии, первые main CI/Security SUCCESS.
+Полная новая матрица:349PASS/50FAIL/33BLOCKED/432,0NOT_TESTED и0потерянных
+прежних defaultPASS. Дополнительные normal80:64PASS/12FAIL/4BLOCKED_PRECONDITION,
+раньше58/18/4;9новых PASS,3потерянных PASS в серии Firefox, причина последних
+покаUNKNOWN. Optional private/fullscreen NOT_TESTED. Ограничения TD121 сохраняются.
+[Изменения и точные границы](../docs/release-1.0.89.md).
 
-TD-121 remains IN PROGRESS. R5 focused checks pass 545/545; the actual Firefox
-accepted-completion word now projects twice and returns exactly. Earlier R3
-native evidence covers first-word, mixed-prefix and closing-Space round trips.
-Final R5 release bytes must pass all four scenarios together after the complete
-release gate. C20 remains installed; no new installation or physical acceptance.
-Exact current source decisions and receipts: [TD-121](121-preserve-word-across-ime-layout-handoff.md).
+Пропущенная константа версии панели исправлена отдельно:992файла точно совпадают,
+один буквальный номер88→89, все3ядровых бинарника неизменны. Первая установка
+откатилась на88 и сохранена; исправленная установка подтверждена, package review9/10.
+Глобальный IBus/L1.1/L3, модели, настройки, источники, режим и23защищённых файла
+сохранены. Исходный текущий источник/состояние — в верхнем CONTINUE.md.
+#47 остаётся OPEN_NEEDS_REPORTER_RETEST на Orange Pi; уже закрытые тикеты
+и исторические результаты сохраняются в [реестре](../docs/development/public-issues-2026-10-16.md).
 
-# Lay — текущая очередь
+Исторические этапы, их отрицательные результаты и точные границы:
 
-## Текущее состояние TD-121 — 2026-09-13
+Предыдущие release prerequisites:
 
-TD-121 is **IN PROGRESS / INSTALLED_VERIFIED_PHYSICAL_PENDING**. C20 passed the
-complete 1.0.72 release gate (13/13 commands; changed and full gates each
-2,807/2,807 with 11 intentional performance skips; compiled receipt; four
-final-byte client cells), followed by a 3/3 owned GTK entry smoke.
-Release result SHA-256:
-`02458047a539fb85be82b301fd1cf38b19af1f71241f34260713cf5c5dd90534`;
-GTK receipt SHA-256:
-`27bf83fccd5a15e552dabd9afeada8f1bacfd9038b8f9a0046f2cb3d0fcd1eaf`.
+1. [TD-151 — сохранение готовой Space-коррекции при matched Reset](151-preserve-prepared-space-frame-on-matched-reset.md): causal RED; минимальный приоритет pending frame, final focused13/13 + controlled1/1, code review9/10. Full3211/3211, final canon PASS, final code review9/10; новый native432:349/50/33, ноль потерянных PASS.
+2. [TD-152 — readiness теста перекрывающихся отпусканий](152-control-overlapping-release-test-readiness.md): исходный CI cause UNKNOWN, повторный baseline PASS; доказана потеря raw assertion в отчёте, reporting RED16/17 → green17/17, без изменения runtime/fixture/deadline. Final code review9/10; новый CI показал assertion; исправление fixture принадлежит TD153.
 
-Release 1.0.72 is installed. All ten installed artifacts and four loaded owners
-match C20, and the loaded extension reports 1.0.72. Global IBus, configuration,
-input sources, immutable models, journals and learner state were preserved.
-Installation receipt SHA-256:
-`ca7b0cb622f862cdb9a51678e640d27953fe798f3b37f291bdebce4f5e4735a4`.
-C12 remains historical source-review evidence. Human physical-keyboard acceptance
-is still pending, and TD-123 answer quality remains `UNKNOWN`.
+[TD-150](150-retain-completed-native-replay-across-reset.md): source3210/3210,
+review9/10, b411 build готов; прежний fullscreen/space8 repeat теперь5/5,
+standard Firefox60/60. Новый TD151/e34 whole432:349/50/33 без потери PASS; установка88 ждёт TD153/CI.
+Все отрицательные полные прогоны сохранены; runtime пользователя1.0.87.
 
-Historical attempts and their exact receipts are retained only in
-[evidence/td121-private-actual-baseline-2026-09-13.md](evidence/td121-private-actual-baseline-2026-09-13.md).
+Завершена и опубликована: [TD-148 — подтверждённые формы глаголов, GitHub #59](148-recognize-backed-ti-present-forms.md).
+DONE_SOURCE3191/3191 после ремонта ревью,12/12 focused, review7→9/10.
+Отдельные5/5 с Hunspell пользователя относятся к варианту до финального ремонта.
+Исходный BLOCKED_CONTRACT сохранён; отдельная финализация сверяет368 logs и957 hashes,
+исправляет только привязку нулевого реестра исключений. Новая версия ещё не установлена.
 
-[Очистка новой ветки](../docs/project-cleanup-2026-09-08.md) завершена.
-Текущий приоритет пользователя: пройти оставшуюся очередь по зависимостям,
-закрывая и публикуя один доказанный task checkpoint перед следующим.
-[Точка продолжения](CONTINUE.md) · [История и восстановление](../ARCHIVE.md).
+Завершена по исходникам: [TD-147 — Backspace undo и двойной пробел, GitHub #46](147-explicit-undo-and-double-space.md).
+DONE_SOURCE3209/3209, focused34/34, controlled2/2, review7→9/10. Две opt-in функции в существующих owners;
+обычный Double Shift и маршруты доставки сохраняются. Общий native gate/install1.0.88 впереди.
 
-## Очередь после текущего checkpoint
+Завершён по исходникам release prerequisite: [TD-149 — rustls0.23.46](149-update-rustls-security-patch.md).
+Текущий Security CI выявил четыре advisory для0.23.45; только точечный patch, без ignore.
 
-Четыре задачи (113, 120, 124, 126) сохраняют ранее принятый ограниченный
-`DONE`. TD-121 остаётся активной до release, финальной клиентской, GTK/physical,
-installation и publication приёмки. Порядок: **121 → 125 → 122 → 123**.
+Завершена: [TD-146 — uaccess вместо input-группы, GitHub #48](146-session-scoped-input-access.md).
+DONE_SOURCE:11/11 access +8/8 public-build и public shell PASS; review7→9/10.
+Два controlled RED обнаруживают нарушенные права/проигнорированный отказ.
+Canonical refresh и отдельный syntax gate PASS; реальные seat ACL NOT_TESTED.
+Runtime1.0.87 сохраняется. Старые подтверждённые install-тикеты #43/#44 закрыты.
 
-## Текущая очередь
+Текущий разбор: [TD-145 — GitHub #47 на версии1.0.87](145-verify-issue47-current-version.md).
+Исходные механизмы подтверждены текущим кодом и12/12 core-диагностик;
+review9/10. Остаточный отказ после login: NEEDS_REPORTER_RETEST; тикет открыт.
+Новая правка runtime, версия или установка не требуются; установлен1.0.87.
 
-| Задача | Статус | Следующий доказуемый результат |
-|---|---|---|
-| [TD-126: common window interaction](126-common-window-interaction-module.md) | DONE, source-only; commit/push подтверждены | Сохранять принятую композицию; отдельная установка этим результатом не заявлена |
-| [TD-121: целое слово при IME handoff](121-preserve-word-across-ime-layout-handoff.md) | IN_PROGRESS; final R5 native FAIL 2/4 | Доказать и исправить причины двух native сбоев; R5 не устанавливать |
-| [TD-125: левая граница автозамены](125-preserve-autocorrection-left-boundary.md) | DONE / installed; immutable full gate 2,884/2,884 and GTK/Chrome/Firefox/Kitty PASS | Сохранять release3 receipts и fail-closed отзыв stale KnownStart authority; commit/push только по явному запросу |
-| [TD-127: Kitty Space расходится с Tab](127-kitty-space-correction-diverges-from-tab.md) | OPEN / user-reported / not reproduced | Заморозить один физический Kitty frame и найти первую точку, где Space выбирает `котором`, а Tab — `которую`; без literal-word fix |
-| [TD-128: Chrome Space после смены поля](128-chrome-focus-transfer-autocorrect.md) | OPEN / физически воспроизведено | Разделить source-free и transferred authority после Tab; обе попытки смены preedit ownership отклонены тестами |
-| [TD-122: legacy replay request](122-bind-legacy-replay-suppression-request.md) | DECISION_REQUIRED | После TD-125 заново проверить, нужен ли отдельный protocol binding; старый label сам по себе не закрывает task |
-| [TD-123: качество восстановления Wave](123-improve-wave-restoration-quality-for-1.0.67.md) | OPEN / ACTIVE_QUALITY | После route tasks найти первый общий механизм по полной L1.1 → L2 → L3 → L4 → DecisionCore → verifier цепочке; весь fixed proof и каждый класс |
-| [TD-113: hybrid source contract](113-restore-hybrid-nanda-autocorrect.md) | DONE | Сохранять принятую композицию источников и её strict gates |
-| [TD-120: lifetime suppression](120-scope-autocorrect-suppression-to-word-lifetime.md) | DONE, scoped source/runtime | Сохранять lifetime/atomic settlement contract; это не общий release PASS |
-| [TD-124: воспроизводимый maintenance loop](124-reproducible-maintenance-loop.md) | DONE, tooling scope | Использовать [DEVELOPMENT.md](../DEVELOPMENT.md); focused PASS не заменяет task acceptance |
+Последняя исправленная задача: [TD-144 — поздний доступ к устройствам, GitHub #49](144-recover-late-device-access.md),
+P1, DONE_SOURCE341/341, review9/10; INSTALLED_1.0.87 по отдельной команде пользователя.
+CLI/daemon/IME и панель87 загружены, SHA совпадают; uinput и устройства ввода
+открыты. Native NOT TESTED, latency NOT MEASURED.
+`/home/ubu/.cache/lay/development/td144-install87-20261016/INSTALL.json`.
+Новый GitHub Release не создавался; предыдущий 1.0.86 и его доказательства сохраняются.
 
-Порядок активной работы фиксирован: **TD-121 → TD-125 → TD-122 → TD-123**.
-Перед каждым новым task текущие зависимости
-проверяются по живому source и receipts; исторический статус не переносится
-автоматически.
+Предыдущая задача: [TD-143 — ручной возврат в нативном терминале](143-native-terminal-restoration-learning.md),
+P1, DONE_SOURCE868/868; INSTALLED_1.0.86; native NOT TESTED; источник cfcbca14 + frozen TD-143 diff,
+source version1.0.86. Native intent сохраняется через настоящий owner/reducer;
+три отдельных UserCorrection эпизода записаны в изолированную память. Review8/10.
+Установлены CLI/daemon/IME86 и панель86; точные SHA/статус:
+`/home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json`.
+[TD-142](142-learn-explicit-autocorrection-restorations.md) сохраняет свой
+DONE_SOURCE2966/2966 и установку85. Последняя полная READV матрица349/51/32/432
+относится к предшествующему поведению, не к TD-143.
+[Замеры и доказательства1.0.84](../docs/development/double-shift-latency-2026-10-15.md).
+TD-141 завершён; TD-121 сохраняет свои открытые native отказы.
+Следующий раздел принятой версии — исторический снимок на10октября.
 
-## Operating Rules
+Это единственный текущий индекс задач. Исторические статусы внутри карточек
+относятся к названным в них версиям и не переопределяют эту очередь.
+[Аудит и варианты решений](AUDIT_2026-10-09.md) ·
+[План: независимое ревью, ACCEPT 9/10](evidence/2026-10-09-debt-plan-review-pass2.md) ·
+[Правила](../AGENTS.md) · [Архитектура](../ARCHITECTURE.md) ·
+[Remote development](../DEVELOPMENT.md).
 
-The user-accepted [development simplification rules](../AGENTS.md#accepted-development-simplification--2026-09-07)
-apply to this queue. They constrain the work loop; they do not waive release
-gates or add a broad architecture migration to the 1.0.66 scope.
+## Текущий источник и принятая версия
 
-1. Follow the latest user priority and the current queue above. Historical
-   completed tasks and their old execution order are preserved in the archive.
-2. Start with a failing test or a frozen baseline. Do not mix behavior changes
-   with move-only refactors.
-3. Before edits, record the base commit, exact command, environment/toolchain,
-   feature set, output or receipt hash, untested scope, and revert boundary.
-4. After implementation, run an independent code review in a fresh context. It
-   reports findings first and a score from 1 to 10. A review track has at most
-   two total passes: the initial review and, only if needed, one grouped repair
-   followed by the final second review. Never invent a third review.
-5. An unresolved correctness finding keeps the task open. A score below 8/10
-   triggers the single repair opportunity; unresolved findings after pass 2
-   move the task to `REPLAN_REQUIRED` and never weaken an acceptance gate.
-6. After objective gates and review pass, mark the scoped task `DONE`, record
-   receipts, commit and push the task checkpoint, verify the remote ref and clean
-   worktree, then start the next task.
-7. Preserve the Lay 1.0.54 Double Shift ownership contract. IME work must also
-   recheck candidate visibility, layout synchronization, and terminal
-   passthrough.
+Authoritative checkout: `/home/ubu/projects/lay-space-boundary-shift-20261007`.
+Branch: `codex/space-boundary-shift-20261007`.
+Принятый исходный checkpoint:
+`e7a25705bb6196776c35c0e3cb7c3b5a17d55169`, 1.0.81; опубликован в
+`origin/codex/space-boundary-shift-20261007` и `public/main`.
+Новые task commits добавляются поверх него; старый dirty `/home/ubu/projects/lay`
+не является источником принятого runtime.
 
-Historical task completions, audit baselines, Stage 1/2 tables and reviews
-are preserved at their original paths in the [snapshot](../ARCHIVE.md).
-A historical DONE or PASS is not a new product-acceptance result.
+Последний принятый пользователем IME 1.0.81 SHA-256:
+`2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559`.
+Приёмка пользователем закрывает конкретное исправление
+`должн ыбыть → должны быть`, включая первую пару после Enter. Installed hash
+повторно прочитан при TD-129; receipt относится к этой точной версии.
+
+Текущий экспериментальный IME: **1.0.82**, installed и loaded SHA-256
+`5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a`.
+10 октября пользователь отдельно разрешил установку и один four-stream batch:
+GTK3 Entry/Qt rich **4/4 PASS**, первый Space/committed text/preedit/caret.
+[Точный результат](evidence/2026-10-10-td133-ime82-installed-four-stream-result.json).
+Production source опубликован в `fc38abd4`; full source3048/3048 и11/11performance
+PASS. Extension остаётся1.0.81; другие runtime роли/global IBus/RU/config
+сохранены. Это экспериментальная установка, полная приёмка82 ещё не закрыта.
+
+Текущая браузерная проверка: общий [стенд Firefox/Chrome](../tests/manual/browser_ime_standard.md)
+с10полями, пятью быстрыми Double Shift и замерами скорости принят как стандарт.
+Firefox82 native-диагностика:60ячеек,2PASS/54FAIL/4BLOCKED;39отказов серии и15
+отказов начального ввода. TD-121 остаётся OPEN_CURRENT_SCOPE.
+[Native evidence](evidence/td121-firefox-five-shift-native-2026-10-10.json) и
+[source evidence](evidence/browser-ten-field-standard-2026-10-10.json) имеют
+разные границы; Chrome native input и изменённый стенд ещё NOT_TESTED.
+
+По требованию пользователя «одного привет недостаточно» текущая source-задача
+[TD-140](140-browser-functional-regression-cases.md), P1, DONE_FOCUSED_SOURCE:
+15 общих сценариев, включая Space/отмену/Tab/редактирование/фокус и отдельные
+замеры действий. Controlled RED доказан; plan review 9/10; source 49 Node +
+4 fixture + 2 compat + 15 canon PASS. Implementation review 7/10 → 9/10,
+две проверки; exact source/graph receipts в карточке. Source-проверка стенда
+не закрывает открытые native отказы TD-121.
+
+| Доказательство принятой версии | Измеренный результат | Граница |
+| --- | --- | --- |
+| Source release gate | 3044/3044, 3008 correctness + 36 package | Исходники, не все окна |
+| Целевой Kitty | 7/7 и отдельно 3/3 | Точные сохранённые сценарии |
+| Native fixed matrix | 62 PASS / 2 FAIL / 0 BLOCKED из64 | GTK3 Entry и Qt rich rapid six-letter LEFT controls остаются FAIL; причина UNKNOWN |
+| Browser input | 10/10 | Исходные input cases |
+| Browser dependent cases | Отдельно20/20 после exact owned cleanup | Исходный24/30 FAIL сохранён, не заменён исправленной выборкой |
+| Universal client acceptance | NOT_MET | Новая версия не получает старую приёмку автоматически |
+
+Exact receipts и последствия:
+[Space boundary owning document](../docs/architecture/space-boundary-shift-2026-10-07.md),
+[аудит: пути и счётчики](AUDIT_2026-10-09.md#принятая-точка-и-границы-ревью).
+Полные private receipts лежат в
+`/home/ubu/.cache/lay/development/kitty-boundary-refusal-20261009/`.
+`CURRENT_RESULT.json` — immutable pre-publication receipt: его старое
+`release_pushed=false` описывает момент записи, не сегодняшний Git checkpoint.
+Рабочие журналы, профили и credentials не коммитятся.
+
+## Этап1 — минимальная разрешённая программа
+
+| Порядок | Задача | Приоритет / статус | Приёмка |
+| --- | --- | --- | --- |
+| 1 | [TD-129 — current index](129-current-debt-and-acceptance-index.md) | P0 / DONE_METADATA_SCOPE, review9/10 | Один индекс, карта всех прежних scopes; metadata review, без новых functional tests |
+| 2 | [TD-131 — один Unicode tail limit](131-one-unicode-tail-limit.md) | P1 / DONE_SOURCE_ONLY, review9/10 | Characterization обоих existing producers; fixed160 helper, remote affected contracts, graph/canon, independent review |
+
+До protected production change TD-131 нужен новый explicit decision и owning
+entry, перечисленные в карточке. Граф обновляется canonical remote wrapper.
+После каждого завершённого task: scoped DONE → commit → push обоим названным
+remotes → exact ref verification → чистый worktree → следующий task.
+TD-129 завершён и опубликован: `2401a4e4dca5f99cc87c42415ab52c108c26bd74`.
+Этап1 завершён: TD-129 и TD-131; разрешённое продолжение описано в этапе2.
+TD-131 final source packet: [evidence](evidence/2026-10-09-td131-final-source.json);
+publication receipt: `/home/ubu/.cache/lay/development/td129-publication-20261009.json`.
+
+## Этап2 — разрешённая работа, 2026-10-09
+
+Таблица отсортирована по продуктовой важности; prerequisites определяют порядок
+исполнения. Пользователь разрешил продолжение («делай»). Работа начинается с
+причинного TD-133; карточка/разрешение не означают доказанный runtime fix или DONE.
+Первый разрешённый local diagnostic batch выполнен: два visible controls
+PASS, исходный сбой не повторился; [измеренная сводка](evidence/2026-10-09-td133-local-diagnostic.json).
+Второй отдельно разрешённый batch восстановил исходный same-RU activation
+setup: два committed-text/preedit/caret controls PASS, но GTK assertion layout
+содержит лишнее `ыбыть`; поздний сохранённый layout совпал. Qt render_text
+недоступен. [Раздельные наблюдения](evidence/2026-10-09-td133-original-activation-result.json)
+не дают rendered/pixel acceptance или причины original FAIL.
+Третий отдельно разрешённый four-stream batch также выполнен на старых2bd:
+4/4committed-text/preedit/caret PASS; original failure not reproduced. Все три
+прежних local grants исчерпаны. Новый отдельный install+four-stream grant
+выполнен один раз на82/5fe100db:4/4PASS,0FAIL,0BLOCKED; он также исчерпан.
+Остальные builds/tests/graph refresh remote-only. Original native62/64 и два
+FAIL сохраняются. Source review9/10 и full3048+11performance PASS завершены;
+новые четыре positive controls не закрывают original64/native acceptance.
+
+| Приоритет | Задача / статус | Первый результат и зависимости |
+| --- | --- | --- |
+| P0 | [TD-138 — IME latency proof authority](138-bind-ime-latency-proof-to-runtime-authority.md), DONE_SOURCE_SCOPE | Existing repeated-run geometry before lexical lookup; isolated RED then IME/reference6/6 GREEN; full3048+11performance PASS, final review9/10,2passes. All old FAILs retained; startup/native/RSS NOT_TESTED |
+| P0 | [TD-133 — rapid Space ordering](133-causal-rapid-space-ordering.md), REPLAN_REQUIRED_NATIVE_ACCEPTANCE | Scoped CommitText Space + Reset release receipt; implementation review9/10,2passes; complete source3048+11performance/lint/release PASS. Experimental82/5fe100db installed, new-byte GTK3/Qt rich4/4PASS. Original62/64 retained; all local grants consumed. Changed-byte native64 requires safe actual four-path isolation and fresh authorization |
+| P1 | [TD-130 — case-bound feedback](130-offline-inverse-feedback-case-binding.md), DONE_CONNECTED_PRIVATE_PROOF | 14 new semantic tests, controlled RED,2 real private IBus cases PASS; review9/10,2passes; shared cleanup/recovery остаётся137 |
+| P1 | [TD-137 — isolation / unsafe cleanup retirement](137-owned-feedback-partial-cleanup-recovery.md), DONE_RETIRED_UNSAFE_SHARED_CLEANUP, review9/10 | Пользователь выбрал isolation/retirement; guarded private entrypoint,12 historical identities, unchanged TD-130 proof reused; live recovery/native inverse не заявляются |
+| P1 | [TD-128 — Chrome после Tab](128-chrome-focus-transfer-autocorrect.md), OPEN | Точный исходный переход поля на нынешних bytes; ownership/Reset contracts сохранить |
+| P1 | [TD-127 — Kitty Tab/Space](127-kitty-space-correction-diverges-from-tab.md), OPEN | Один frozen frame и first divergence, без literal-word exception |
+| P1 | [TD-121 — whole-word handoff](121-preserve-word-across-ime-layout-handoff.md), OPEN_CURRENT_SCOPE | Original Firefox scope остаётся открытым. Новый отдельный [экран10полей](../tests/manual/firefox_double_shift.html): оба направления/следующая буква, отдельные режимы слова и окна; fixture source verification не заменяет native acceptance |
+| P1 | [TD-140 — browser functional cases](140-browser-functional-regression-cases.md), DONE_FOCUSED_SOURCE | 15 общих планов, controlled RED и source 49/49 Node PASS; review 9/10 в двух проверках; mandatory graph receipt в карточке; native остаётся TD-121 |
+| P1 | [TD-123 — Wave quality](123-improve-wave-restoration-quality-for-1.0.67.md), OPEN_EXTERNAL_OWNER | Единственный current roadmap в syntax-agreement checkout; stage/protocol оттуда, не второй fit здесь |
+| P2 | [TD-122 — LegacyV1](122-bind-legacy-replay-suppression-request.md), DECISION_REQUIRED | Current reachability, synthetic stream completion, backward policy до протокола или retirement |
+| P2 | [TD-136 — functional gaps](136-functional-test-gaps-and-test-file-boundaries.md), DONE_BOUNDED_MAP_AND_SOURCE_CHARACTERIZATION, review8/10 | 12-family map; one joined caps41 callback test;3045 successful bodies + separate metadata admission, original command FAIL preserved; native128/133 remain open |
+| P2 | [TD-134 — component boundaries](134-god-component-boundaries-without-new-owners.md), DEFERRED | После136: concrete ownership/coupling benefit; новый leaf сохраняет guard protection |
+| P2 | [TD-132 — retired-preedit predicates](132-isolate-inert-retired-preedit-predicates.md), DEFERRED | Уже есть pure block и semantic negatives; extraction только при измеримой maintenance пользе, не prerequisite134 |
+| P3 | [TD-135 — research/runtime boundary](135-research-runtime-build-boundary.md), DEFERRED | Reachability/build baseline; public exports не доказательство RSS/bloat |
+
+## Все прежние карточки: сохранённый scope и current map
+
+| Task | Исторический verdict | Что известно для2bd / следующий шаг |
+| --- | --- | --- |
+| [113](113-restore-hybrid-nanda-autocorrect.md) | DONE, hybrid source contract | Сохранить single lattice/authority и proof gates; не новая heldout quality приёмка |
+| [120](120-scope-autocorrect-suppression-to-word-lifetime.md) | DONE, bounded ordinary/atomic suppression | LegacyV1 debt отдельно122; общий transport/release PASS не приписывается |
+| [124](124-reproducible-maintenance-loop.md) | DONE, remote tooling | Использовать existing dev-check; focused PASS не client acceptance |
+| [125](125-preserve-autocorrection-left-boundary.md) | DONE в recorded installed/full/four-client scope | Сохранить stale KnownStart revocation; старый installed receipt не current2bd universal PASS |
+| [126](126-common-window-interaction-module.md) | DONE_SOURCE_ONLY | Existing observation/authority/execution composition; это не отдельная current installation |
+| [121](121-preserve-word-across-ime-layout-handoff.md) | Поздняя history до2026-09-26; не R5 latest | Original first-word/mixed-prefix/completion/closing-Space Firefox scope на2bd UNKNOWN. Last Kitty a8b receipt: `kitty-focus-proof-20260925/kitty-tab-cycle-aligned/receipt.json`, visible `просто `, two Double Shift; changed gate2904/2904 отдельно. Current2bd native fixed matrix имеет successful eight-Double-Shift cells, но не закрывает original Firefox denominator. Сначала map exact original cases/first loss, затем обсуждение нового proof |
+| [127](127-kitty-space-correction-diverges-from-tab.md) | USER_REPORTED / NOT_REPRODUCED | `которую` visible/Tab против `котором` onSpace; frozen receipt отсутствует, first layer и current2bd UNKNOWN. Нужен один identity-bound frame обоих путей |
+| [128](128-chrome-focus-transfer-autocorrect.md) | Physically reproduced наdaaa… | `пу` в первом textarea → Tab → `публекует ` во втором без reactivation; original receipt `browser-autocorrect-20260922/physical-chrome-final-accepted-combined/receipt.json`, SHA6f469b2a…60fa. Current2bd exact scenario UNKNOWN; fresh-field/pair proof не эквивалентен. Исследовать FocusOut/FocusIn/first-printable/Space, сохранить11 rejected-contract negatives |
+| [139](139-account-for-owned-preedit-in-private-client.md) | DEFERRED_STAGE2_DISCUSSION / P1 | General V3 Client advertises preedit but ignores it; unchanged lifecycle0/3 FAIL on81 and82. Strict consumer/proof revision proposed, no runtime changes selected |
+| [122](122-bind-legacy-replay-suppression-request.md) | DECISION_REQUIRED | Source no-arg LegacyV1 dispatch/handler присутствуют; live current reachability и stream-completion authority UNKNOWN. Last owning inventory: [admission analysis](evidence/td120-suppression-admission-analysis.md); protocol не изобретать до trace/backward policy |
+| [123](123-improve-wave-restoration-quality-for-1.0.67.md) | ACTIVE_QUALITY / general quality OPEN | Historical poor-input aec4… installation и267/267 fixed89 outputs не general quality promotion. Current2bd heldout/per-class quality UNKNOWN. [Owning history](../docs/poor-input-authority-2026-09-11.md); current owner — `/home/ubu/projects/lay-syntax-agreement-20260929/docs/architecture/ru-agreement-roadmap-2026-09-30.md`. Читать его stage, baseline и R1/R2 gates перед любым fit |
+
+Относительные private receipt имена выше разрешаются через исходную карточку,
+где сохраняются original full path/hash. Это исторические наблюдения, не новые
+проверки. Все10 прежних numbered cards113,120–128 учтены; прежние scopedDONE
+не переоткрываются косметическим изменением индекса.
+
+## Правила исполнения и откат
+
+1. Зафиксировать actual source/task baseline, affected invariant, existing owner,
+   первый провал и untested scope. Начать с RED либо честного GREEN characterization.
+2. Использовать existing reducer/DecisionCore/verifier/AuthorizedEdit/output.
+   Не вводить literal exceptions, второго owner, timer/queue/cache/fallback.
+3. Все builds/tests/architecture refresh — remote-only под existing resource и
+   Cargo guards; `python3 scripts/dev-check.py check --compact`, explicit target
+   лишь inner loop. Full release нужен перед будущей installation/release.
+4. После реализации — новый reviewer `fork_turns=none`, score1–10, максимум
+   initial + один grouped repair/final pass. Открытый correctness finding
+   сохраняет OPEN/REPLAN_REQUIRED; score не заменяет objective proof.
+5. Для source-only задач runtime authority NOT_CHANGED и physical NOT_TESTED.
+   Delivery routes, models, learning weights и принятый2bd runtime сохраняются.
+6. Откат отдельной задачи — её Git revert; не установка старого C20, не откат
+   пользовательского feedback. Raw receipts сохраняются неизменными.
+
+[Обе точки продолжения](CONTINUE.md) · [Root checkpoint](../CONTINUE.md).
+Старый индекс R5/C20 сохранён в
+[immutable e7a history](https://github.com/radislabus-star/lay-public/blob/e7a25705bb6196776c35c0e3cb7c3b5a17d55169/tech_debt/README.md).
+
+TD-149: финальные3209/3209, MSRV1.88 обе конфигурации и audit4→0 PASS, review9/10.
+Общая новая сборка, native и установка1.0.88 выполняются отдельно.

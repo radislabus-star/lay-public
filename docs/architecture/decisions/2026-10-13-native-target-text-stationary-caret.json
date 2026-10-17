@@ -1,0 +1,104 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T14:07:39Z",
+  "decision": "Retain only inert paired native replay progress when two actual adjacent target observations grow without moving the caret backwards",
+  "status": "FOCUSED_SOURCE_REVIEW_GREEN_FULL_AND_NATIVE_PENDING",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "candidate_baseline": "L d858c22018c3ab3df16ac16115715619165cf41c1942c755040773a58e52475c",
+  "source_red": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/m-replay-stationary-caret-uzrq9eyo/RESULT.json",
+    "receipt_sha256": "ce11f19851447a882273653779c83e5d2df2cac45c338e49059db42508a8adcc",
+    "local_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/M-source-probes/m-replay-stationary-caret-uzrq9eyo/RESULT.json",
+    "selected": 3,
+    "failed": 1,
+    "passed": 2,
+    "elapsed_seconds": 14.240936661008163,
+    "first_case": "reset=false, empty external prefix, source Space; after complete actual native replay, SSI text grows from one to three replacement characters while cursor/anchor remain1",
+    "first_loss": "Existing completed-boundary target-prefix predicate and Reset prior-snapshot recognizer accept at most one off-caret replacement character. The actual growing target observation with caret lag2 discards the unconfirmed receipt at revision3, while KnownStart word scope is still present.",
+    "production_unchanged_verified": "Three L production source files pinned against l-completed-boundary-caret-green-9_juypt7 before execution. Only the existing semantic fixture was extended."
+  },
+  "native_evidence": {
+    "trace": "firefox-standard-fullscreen-fpf8wcwb/trace-active-10.jsonl: six actual native deletes followed by six actual target printable callbacks, Reset then SSI1/cursor1 retained and SSI4/cursor1 rejected at adjacent revision",
+    "body": "UNKNOWN; the old wire receipt records size/caret/prefix metadata, not exact four-character text. Source fixture proves the shared observation mechanism, not equality of its body with the old browser payload.",
+    "L_full_verdict": "FAIL Firefox58PASS2FAIL/60 and Chrome38PASS20FAIL2BLOCKED/60; previous lost-PASS cells and all functional failures remain blockers.",
+    "focused_wire": "Two unchanged-L one-cell reruns PASS7/7 each, NOT_REPRODUCED. They do not replace the original full failures."
+  },
+  "options": [
+    {
+      "score": 9,
+      "selected": true,
+      "name": "Use one shared inert actual-progress predicate in the existing completed-boundary and Reset receipt paths",
+      "requirements": [
+        "Keep the existing current boundary or Reset identity, completed matching local/shared replay, unspent source, current owner/context/layout/epoch and adjacent armed observation revision.",
+        "Use two real adjacent SSI snapshots; neither may have selection, altered external or unchanged prefix, foreign/future target text, or caret outside the derived target region.",
+        "The current actual target text must strictly extend the prior target prefix and the actual caret must not regress. Do not infer progress from an unchanged body with a moved caret.",
+        "Recognize retained target prefixes consistently in the existing monotonic boundary check so a later smaller prefix cannot bypass it merely because its predecessor had a larger caret lag.",
+        "Reuse the actual-progress predicate for the existing Reset prior-replay inert-retention path. Do not broaden exact_replay_contains_prior_snapshot globally or change its existing one-character contract.",
+        "Clear all pending authority/ACK evidence while retaining existing inert lineage. Full target with lagging caret remains unconfirmed. Only the existing complete exact end-caret client receipt may spend source and publish authority."
+      ]
+    },
+    {
+      "score": 5,
+      "selected": false,
+      "name": "Increase generic accepted caret lag",
+      "rejected_reason": "A larger numeric allowance cannot distinguish target growth from a real caret regression on unchanged text and risks weakening the existing off-caret contradiction control."
+    },
+    {
+      "score": 2,
+      "selected": false,
+      "name": "Delay, retry or buffer all surrounding observations",
+      "rejected_reason": "Adds scheduling/state without an independent progress proof and changes more than the first failed receipt transition."
+    }
+  ],
+  "scope": "M is a distinct bounded correction after completed L review2/2. Root implements and runs tests remotely; independent reviewer reads only. No new owner, timer, queue, transport, SafetyGate/verifier bypass, client-specific runtime condition, or literal fixture condition.",
+  "proof_plan": "Keep all original positive variants and negative controls. Add stationary-caret target growth in Reset/no-Reset, empty/Unicode prefix and Space/NBSP variants, final single-spend and no pre-final effect assertions. Preserve off-caret, text/caret regression, selection, scope mismatch, expiry, spent source and ingress controls; add adverse controls specifically after the new lagged progress. Then focused remote semantic GREEN, full814+FMT, independent final review, immutable build and complete ten-field native proof with all latency denominators.",
+  "review": {
+    "used": 2,
+    "maximum": 2,
+    "verdict": "PASS_FINAL_CODE",
+    "score": 9,
+    "material_blockers": [],
+    "fresh_context_free": false,
+    "reviewer": "/root/boundary_scope_review",
+    "requirements": "Separate prefix shape from progress permission; preserve existing Reset decreasing-prior contract; successive stationary-caret growth, full-target single-spend, pre-final refusal and adverse controls.",
+    "remaining_review": "CLOSED2/2; no third M pass"
+  },
+  "baseline_backup": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/M-before-production",
+  "runtime": "L private test bytes remain unchanged; GUI is closed. M native NOT_TESTED. TD121 OPEN, NOT_PROMOTED.",
+  "implementation": {
+    "files": [
+      "src/bin/lay_ibus_engine/tail_memory.rs",
+      "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+    ],
+    "change": "Shared completed paired native target-progress predicate plus prefix-shape/permission separation. Existing one-character prior-snapshot recognizer and full final receipt remain unchanged.",
+    "tests": "Original16 plus stationary-caret16 positive variants including two successive wider lags and full-target lag; expanded pre-final refusal and contradiction controls after actual wider-lag progress."
+  },
+  "focused_green": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/m-replay-stationary-caret-green-n78cbnej/RESULT.json",
+    "local_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/M-source-probes/m-replay-stationary-caret-green-n78cbnej/RESULT.json",
+    "sha256": "45206e24635f30aa895a3a8d73623bf772b2b4629f4fc9e201e039bb396f9109",
+    "verdict": "PASS",
+    "selected": 5,
+    "elapsed_seconds": 20.619596118005575,
+    "positive_variants": 32,
+    "pre_final_manual_refusals": 10,
+    "contradiction_controls": 44,
+    "second_handoff_subcases": 96,
+    "source_rows": 61,
+    "current_source_binding": "All61 rows matched local after fetching remote rustfmt results.",
+    "full_source": "PENDING_AFTER_SEPARATE_PRIVATE_POLICY_CORRECTION"
+  }
+}

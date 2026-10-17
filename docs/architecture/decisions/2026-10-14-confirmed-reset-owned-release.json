@@ -1,0 +1,185 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T21:16:21Z",
+  "experiment": "P",
+  "status": "FOCUSED_NATIVE_19_PASS_1_FAIL_RETAINED_NO_PROMOTION",
+  "decision": "Permit current-owner authenticated zero-effect handled release completion after an actual confirmed Reset without demanding unrelated current local word-scope equality",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "journal": "docs/development/td121-core-experiments.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "first_failed_transition": "Actual Reset and confirmed full SSI intervene between owned managed press and release. Handler-first release fails existing early completion eligibility and times out; later observer applies an orphan ordinary Key, losing confirmed authority. Subsequent Backspace/Reset refusal is downstream.",
+  "native_trace": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-R2-firefox-private-active1-trace.jsonl",
+  "native_trace_sha256": "351f9d0571f4b576b6ac27149ace5dc402c08f1317931806feb3d271ccaf5e9c",
+  "source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/P-source-probes/p-confirmed-release-source-d_r20233/RESULT.json",
+    "sha256": "50930a773b439c30451a1788360cc21d46566f150fab7be864f9cf6e5a89e0a9",
+    "selected": 3,
+    "failed": 1,
+    "passed_controls": 2,
+    "seconds": 13.27240221799002,
+    "proof_signature": "30e0920835a221913164d0e58e501e05ae63744101b4e11da5bfd231bcd7171b",
+    "all205_source_sha_match": true
+  },
+  "preferred_score": 9,
+  "alternatives": [
+    {
+      "score": 9,
+      "name": "Handled release completion needs current context token/owner/metadata, not word-scope equality",
+      "boundary": "Existing handled press pairing/route/key class/current token/authentication and bounded one-shot completion store remain. Only the already handled release can use this weaker eligibility; it consumes its key and cannot edit text or grant word authority. Paired unhandled terminal release retains exact word-scope check. Observer-first and unpaired releases retain original fence/settlement."
+    },
+    {
+      "score": 6,
+      "name": "Rebind local word scope before release",
+      "reason": "Unneeded new authority/publication for a zero-effect callback; larger proof surface."
+    },
+    {
+      "score": 2,
+      "name": "Increase stamp timeout or retry",
+      "reason": "Scheduling mask/added latency, lacks causal ownership fix."
+    }
+  ],
+  "production_change_planned": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission.rs"
+  ],
+  "constraints": [
+    "No whole-core rollback or rejected broad Passive",
+    "No new owner/queue/timer or client/word condition",
+    "No transport or SafetyGate/verifier weakening",
+    "No generic UnknownStart promotion or release-created authority",
+    "All former O-R1 failed guard IDs and actual post-Reset negative retained",
+    "Source full affected closure plus bounded review before immutable build, native standards retained for final acceptance"
+  ],
+  "proof_required": [
+    "Managed press -> actual Reset -> exact full SSI -> paired release both observer/handler order; prefix empty and nonempty; retain prior token/proof/snapshot/epoch, no orphan/output/learning",
+    "Extend positive through native Backspace -> actual Reset -> exact shortened SSI -> release -> next manual eligibility",
+    "Unproved/unknown/sensitive/stale owner/metadata cannot acquire word authority; terminal fast path remains scope checked",
+    "Full recorded affected source closure before build; original browser216 each before acceptance"
+  ],
+  "review": {
+    "used": 2,
+    "maximum": 2,
+    "score1": 9,
+    "reviewer1": "/root/confirmed_reset_owned_release_plan_review_20261014",
+    "proof_requirements": "Exact token/scope/Reset-proof comparison in handler-first retirement; settled current metadata + UnknownStart negative preserving existing legacy snapshot queue without text effects/delegation/promotion; original unproved O negative actual ManualToggle NotHandled; real Backspace/Reset/SSI/release/manual positive",
+    "score2": 9,
+    "reviewer2": "/root/confirmed_reset_release_final_review_20261014",
+    "scope2": "Independent context-free read-only comparison with O; metadata Reset lifetime extension explicitly accepted; no material findings; no third pass"
+  },
+  "runtime": "P private GUI closed actual9635 CLOSED0; all5PIDticks gone and scope2876924 empty, VT1 restored22:30:00UTC. Both source gates and two reviews retained. No P promotion/laptop change.",
+  "updated_at": "2026-10-13T22:33:55.036992Z",
+  "metadata_cause": "observed_word_reset invokes generic revoke which clears already admitted field content_type. Confirmed SSI keeps a pending proof; metadata is only republished when a later manual request consumes it. Completion guard therefore still refuses even without the local word-scope check.",
+  "metadata_decision": "Preserve only previously admitted content_type across authenticated word-only Reset in the existing reducer, whose owner/activation stay unchanged. Word token/lineage/exact snapshot are still revoked. None stays None; focus/owner/content-type/other unobserved lifecycle paths still use generic revoke and clear attributes. No default metadata or word authority is created.",
+  "metadata_red": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/p-confirmed-release-source-48tbgg95/RESULT.json",
+    "selected": 33,
+    "passed": 30,
+    "failed": 3,
+    "seconds": 16.826417285003117
+  },
+  "test_contract_clarification": "O-R2-added unproved release negative conflates an IPC bridge fence with word authority. Keep its UnknownStart/no-edit/epoch/learning guarantees and strengthen it with actual ManualToggle NotHandled. Same owner contextual readiness after a fully handled zero-effect release does not grant word authority. Original mutable/unpaired/focus/metadata guards remain unchanged.",
+  "intermediate_source": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/p-confirmed-release-source-9v962y99/RESULT.json",
+    "passed": 31,
+    "failed": 2,
+    "seconds": 16.850514483987354,
+    "scope": "Full causal positive and reducer metadata unit now PASS; two negative preconditions incorrectly assume UnknownStart scopes cannot match current tokens. Replace that proxy with explicit UnknownStart plus actual ManualToggle denial. No production change after this receipt."
+  },
+  "negative_fixture_scope": "Current-metadata unknown word has no SSI. Existing legacy ManualToggle may queue RequireSurroundingText and report Handled(current layout) for LocalPending; this is not a completed edit. Assert pending flag, unchanged tail/epoch, unknown word, no exact handoff, no Commit/Delete/Forward effects or learning. Retain original unproved O negative actual NotHandled. Do not change legacy outcome mapping for this experiment.",
+  "second_intermediate_source": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/p-confirmed-release-source-mnfo7dfm/RESULT.json",
+    "passed": 32,
+    "failed": 1,
+    "seconds": 16.879892867989838,
+    "scope": "New negative expected NotHandled but existing LocalPending maps to Handled(current layout). Inspect actual wire/state to prove no word mutation or delegation instead; production unchanged."
+  },
+  "focused_source": {
+    "verdict": "PASS",
+    "selected": 33,
+    "seconds": 16.86613180099812,
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/P-source-probes/p-confirmed-release-source-5aj0pbhy/RESULT.json",
+    "sha256": "d1ab1791552004dd1b8b2848dd0b24a09f989c58f115cd5722b4afdb7c22a958",
+    "all_205_source_hashes_match": true
+  },
+  "full_source": {
+    "verdict": "PASS",
+    "tests": {
+      "executed": 1104,
+      "failed": 0,
+      "passed": 1104,
+      "selected": 1104
+    },
+    "worker_seconds": 256.07834831401124,
+    "controller_seconds": 264.3,
+    "local_receipt": "/home/ubu/.cache/lay/development/run-daqc9vwf/RESULT.json",
+    "remote_gate": "/home/e/projects/lay-development-runner/run-qrlOJ6",
+    "archive_sha256": "2c5e359a99d92b86a7c50c4a9032d59023d8bd112839020704814d2f13b908e3",
+    "source_rows_checked": 205,
+    "scope": "Fresh IME+daemon+six input/edit authority contracts; development gate, not native acceptance or full release gate"
+  },
+  "candidate_build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-qrlOJ6",
+    "archive_sha256": "2c5e359a99d92b86a7c50c4a9032d59023d8bd112839020704814d2f13b908e3",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791930005867888723.txt",
+    "elapsed_seconds": 183.4715690449957,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "48235f612f8ce4e2c1b19f9a2605ebe6d3f73efe7de3aa2652eeae2f6efca7ae",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791930189339362598/bin/lay-ibus-engine",
+      "bytes": 8242960
+    },
+    "lay-daemon": {
+      "sha256": "2feb97733e6ff4ac7ae56795248d7ca9e6f3bd4e3a4a29339741839cc544dfd0",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791930189339362598/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "focused_native": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/P-native-private-diagnostic/RESULT.json",
+    "sha256": "8b6c1770c41ed84a4e9f0edc196378c9c5fde0778044483be09d265ebe349057",
+    "passed": 19,
+    "failed": 1,
+    "scope": "Original Firefox private standard actor diagnostic only; not full browser acceptance",
+    "failure": {
+      "field": 8,
+      "word_mode": "space",
+      "phase": "burst",
+      "trace_sha256": "1ee794df4feaf0a99a2517d3bf8138095b4f5a908720e797ef192d757882e17d"
+    },
+    "speed": {
+      "ordinary": {
+        "required": 40,
+        "measured": 40,
+        "missing": 0,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": 105.7683659940958,
+        "p95_ms": 117.95627799630165,
+        "max_ms": 119.60868801176548
+      },
+      "burst": {
+        "required": 100,
+        "measured": 95,
+        "missing": 5,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": 108.67799900472164,
+        "p95_ms": 117.06115500628948,
+        "max_ms": 117.98899999260902
+      }
+    },
+    "full_browser_matrices_for_P": "NOT_TESTED"
+  }
+}

@@ -1,0 +1,225 @@
+{
+  "schema": "lay.td133.native-diagnostic-summary.v1",
+  "recorded_at_utc": "2026-10-09T15:39:13.210152+00:00",
+  "status": "DIAGNOSTIC_2_VISIBLE_PASS_CAUSAL_FAILURE_UNKNOWN",
+  "source_head": "b7786398e90054b25567fe9c7c736b193f408788",
+  "installed_runtime": {
+    "pid": 3139840,
+    "starttick": "316158626",
+    "loaded_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559"
+  },
+  "runtime_after": {
+    "pid": 3139840,
+    "starttick": "316158626",
+    "loaded_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+    "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559"
+  },
+  "mode_before": {
+    "source": "lay-ime-ru",
+    "engine": "lay-ime-ru",
+    "decoder": "ru",
+    "coherent": true
+  },
+  "mode_after": {
+    "source": "lay-ime-ru",
+    "engine": "lay-ime-ru",
+    "decoder": "ru",
+    "coherent": true
+  },
+  "runtime_and_mode_preserved": true,
+  "logging_config_restored": true,
+  "cleanup_errors": [],
+  "private_receipt": "/home/ubu/.cache/lay/development/td133-native-once-jrdlshgi/RESULT.json",
+  "private_receipt_sha256": "eb1a85bb383186d226b5b7d783f582fd6afeda89938e3a5d181bae8bc392abca",
+  "preflight_receipt": "/home/ubu/.cache/lay/development/td133-preflight-blocked-k57_ncr2/RESULT.json",
+  "probe_sha256": "b023e68924a20ba8caf19b619bf9a44d6d8e5bd53af392d04b282592ca69354e",
+  "review": {
+    "passes": 2,
+    "score": 9,
+    "report": "/home/ubu/.cache/lay/development/td133-diagnostic-review-pass2.md"
+  },
+  "input_streams": 2,
+  "additional_local_streams_authorized": false,
+  "key_timing_ms": [
+    18,
+    12
+  ],
+  "assertion_deadline_s": 1.5,
+  "inverse_executed": false,
+  "shared_feedback_cleanup": false,
+  "runtime_install_or_restart": false,
+  "rows": [
+    {
+      "field": "gtk3.entry",
+      "field_pid": 518329,
+      "field_starttick": "318141251",
+      "visible_control": "PASS_VISIBLE_CONTROL",
+      "observed_text": "должен ыбыть ",
+      "preedit_empty": true,
+      "raw_clear_empty": true,
+      "activation_ready_at_raw_clear": "UNKNOWN_UNLESS_MATCHED_TO_THIS_CLIENT_CONTEXT",
+      "trace_path": "/home/ubu/.cache/lay/development/td133-native-once-jrdlshgi/td133-gtk3-entry-18a1fae1-trace.private.jsonl",
+      "trace_sha256": "d8a47cf3fb72fff9533808b3538571d4fca1a0f70aec675f1c6c7cbbb5f85035",
+      "trace_records": 460,
+      "typed_press_count": 13,
+      "typed_press_sequence_matches": true,
+      "callback_timing_and_serial_bound": true,
+      "client_context_to_field_pid_binding": "UNKNOWN; engine trace does not identify the owned native field process",
+      "selected_sequence": [
+        {
+          "line": 116,
+          "keycode": 38,
+          "decoded": "д",
+          "stage": "printable_managed_commit",
+          "handled": true,
+          "callback_serial": 27682,
+          "owner_generation": 611,
+          "binding_serial": 27682,
+          "inside_observed_interval": true,
+          "surrounding_before": null
+        },
+        {
+          "line": 299,
+          "keycode": 57,
+          "decoded": " ",
+          "stage": "space_managed_native_passthrough",
+          "handled": false,
+          "callback_serial": 27706,
+          "owner_generation": 611,
+          "binding_serial": 27706,
+          "inside_observed_interval": true,
+          "surrounding_before": {
+            "line": 264,
+            "chars": 6,
+            "cursor": 6
+          }
+        },
+        {
+          "line": 318,
+          "keycode": 31,
+          "decoded": "ы",
+          "stage": "printable_legacy_preedit",
+          "handled": true,
+          "callback_serial": 27710,
+          "owner_generation": 611,
+          "binding_serial": 27710,
+          "inside_observed_interval": true,
+          "surrounding_before": {
+            "line": 302,
+            "chars": 7,
+            "cursor": 7
+          }
+        },
+        {
+          "line": 446,
+          "keycode": 57,
+          "decoded": " ",
+          "stage": "space_legacy_preedit_autocorrect",
+          "handled": true,
+          "callback_serial": 27725,
+          "owner_generation": 611,
+          "binding_serial": 27725,
+          "inside_observed_interval": true,
+          "surrounding_before": {
+            "line": 302,
+            "chars": 7,
+            "cursor": 7
+          }
+        }
+      ]
+    },
+    {
+      "field": "qt.rich",
+      "field_pid": 518697,
+      "field_starttick": "318141583",
+      "visible_control": "PASS_VISIBLE_CONTROL",
+      "observed_text": "должен ыбыть ",
+      "preedit_empty": true,
+      "raw_clear_empty": true,
+      "activation_ready_at_raw_clear": "UNKNOWN_UNLESS_MATCHED_TO_THIS_CLIENT_CONTEXT",
+      "trace_path": "/home/ubu/.cache/lay/development/td133-native-once-jrdlshgi/td133-qt-rich-97a651f5-trace.private.jsonl",
+      "trace_sha256": "4d037680797b3d1ca76d7eba8b4a853c5f9d3a81259b24e11667f2aa11f21758",
+      "trace_records": 544,
+      "typed_press_count": 13,
+      "typed_press_sequence_matches": true,
+      "callback_timing_and_serial_bound": true,
+      "client_context_to_field_pid_binding": "UNKNOWN; engine trace does not identify the owned native field process",
+      "selected_sequence": [
+        {
+          "line": 168,
+          "keycode": 38,
+          "decoded": "д",
+          "stage": "terminal_passthrough",
+          "handled": false,
+          "callback_serial": 27762,
+          "owner_generation": 615,
+          "binding_serial": 27762,
+          "inside_observed_interval": true,
+          "surrounding_before": null
+        },
+        {
+          "line": 364,
+          "keycode": 57,
+          "decoded": " ",
+          "stage": "space_managed_native_passthrough",
+          "handled": false,
+          "callback_serial": 27787,
+          "owner_generation": 615,
+          "binding_serial": 27787,
+          "inside_observed_interval": true,
+          "surrounding_before": {
+            "line": 329,
+            "chars": 6,
+            "cursor": 6
+          }
+        },
+        {
+          "line": 383,
+          "keycode": 31,
+          "decoded": "ы",
+          "stage": "printable_legacy_preedit",
+          "handled": true,
+          "callback_serial": 27791,
+          "owner_generation": 615,
+          "binding_serial": 27791,
+          "inside_observed_interval": true,
+          "surrounding_before": {
+            "line": 367,
+            "chars": 7,
+            "cursor": 7
+          }
+        },
+        {
+          "line": 532,
+          "keycode": 57,
+          "decoded": " ",
+          "stage": "space_legacy_preedit_commit",
+          "handled": true,
+          "callback_serial": 27806,
+          "owner_generation": 615,
+          "binding_serial": 27806,
+          "inside_observed_interval": true,
+          "surrounding_before": {
+            "line": 367,
+            "chars": 7,
+            "cursor": 7
+          }
+        }
+      ]
+    }
+  ],
+  "original_fixed_native_proof": {
+    "selected": 64,
+    "passed": 62,
+    "failed": 2,
+    "blocked": 0,
+    "unchanged": true
+  },
+  "limitations": [
+    "Fresh standalone fields and opt-in logging differ from original whole-matrix predecessor state.",
+    "No original failure reproduced; original first failed transition remains UNKNOWN.",
+    "Surrounding-text receipts prove a six-to-seven character boundary before the next decoded letter in these two successful streams; they do not prove the old failure cause.",
+    "Private raw trace stays outside Git; no general local-test exception or future host cleanup authority."
+  ]
+}

@@ -1,0 +1,118 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T09:39:17Z",
+  "decision": "Preserve an independently confirmed native word proof through the next controlled same-field engine handoff",
+  "status": "SOURCE_DIAGNOSTIC_GREEN_NATIVE_CAUSE_NOT_REPRODUCED_NO_PRODUCTION_CHANGE",
+  "invariants": [
+    "C01",
+    "C02",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "private_candidate_ime_sha256": "e84d497cb9416772a3e0abb8a48f4b80da3bbc27c55032f1fdf8c3ce216384cf",
+  "native_observed": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativee84d4-firefox-proof.json",
+    "raw": "nativee84d4-firefox-raw-1791883154511052960/RAW.json",
+    "first_shared_failure": [
+      "normal active6 burst2",
+      "normal space2 burst2"
+    ],
+    "sequence": "First native replay completes. Next physical gesture delegates. After controlled layout handoff, existing daemon v3 lease validation gets an empty field receipt; it refuses BEFORE delete. Cleanup then cannot cancel the old exact handoff; following gestures deny context authority.",
+    "daemon_seconds": [
+      1791882238,
+      1791882271
+    ],
+    "expected_field": "context-admission:1\\u001f/org/freedesktop/IBus/InputContext_3",
+    "actual_field": "",
+    "trace": "successful same-context native transfer followed by end-caret6/6 or7/7 SSI, bridge live but manual/refresh false",
+    "capabilities": 1073741865,
+    "scope": "Normal space8 denies before first delegated replay and may have a different predecessor; preserve it separately. 3 lost Firefox PASS remain blockers.",
+    "trace_completeness": "UNKNOWN:512000-byte per-case tails have one malformed initial line",
+    "rpc_semantics": "status3/false is the fixed DelegateExactImeTail placeholder; it does not report target layout"
+  },
+  "source_owners": {
+    "producer": "tail_memory.rs::prepare_exact_manual_toggle_layout_handoff / publish_exact_manual_snapshot",
+    "transfer": "context_admission.rs::consume and observation.rs::install_context_activation",
+    "receipt": "existing confirmed native replay/reset rereceipt lifecycle",
+    "consumer": "authority.rs::visible_tail_v3_inner -> ime_bridge.rs::validate_delegated_tail_v3_reply"
+  },
+  "source_hypotheses": [
+    "Exact snapshot publication, transfer receipt filtering, receiver installation or v3 eligibility loses the current confirmed word proof. Capturing source token before retirement is not itself proved defective: current retire/arm-current suppression methods do not visibly rotate token. Do not implement an assumed token reorder.",
+    "The source-test factory helper defaults to41 while real Firefox has41 plus IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH. Existing first-transfer/next-manual positives do not by themselves prove a second marker-client transfer."
+  ],
+  "options": [
+    {
+      "score": 9,
+      "selected": true,
+      "name": "Locate and repair the first loss in the existing confirmed-receipt/source-publication/transfer mechanism",
+      "size": "Smallest production correction justified by causal source RED; no assumed token reorder until the failing assertion establishes it.",
+      "benefit": "Keeps existing owner, native activation, exact snapshot, word scope and original v3 lease validation.",
+      "limits": "Must preserve fresh contradictory receiver SSI, focus/field/source/capability changes, selection, expiry, revocation and partial-failure refusal."
+    },
+    {
+      "score": 7,
+      "selected": false,
+      "name": "Wait for the existing native acquisition/receipt transaction to become ready before controlled-handoff readout",
+      "size": "Larger readiness/lifecycle change only if an installed but unsettled target is the measured defect.",
+      "limits": "Use existing transaction budget and owner; no retry loop, timer, synthetic keys or relaxed metadata."
+    },
+    {
+      "score": 1,
+      "selected": false,
+      "name": "Ignore empty field identity or bypass the exact-refresh marker",
+      "rejected": "Would weaken current lease/verifier/ownership authority to hide a producer defect; not permitted."
+    }
+  ],
+  "causal_test_plan": [
+    "Use real callback/bridge/factory Get-marker choreography; no assignment of KnownStart, confirmation, current token or word scope.",
+    "Build marker capability before source admission and before each target activation. Keep the existing default41 helpers unchanged via explicit capability parameters/wrappers.",
+    "Complete a first actual native erase/replay and independently confirm the whole actual target SSI with the entire external prefix.",
+    "Make the next real ManualToggle and authoritative v3 readout, then perform a second same-field native factory transfer. Assert the target has the same original field receipt, exact tail, target layout and epoch before any second deletion.",
+    "Separate no target SSI, matching current receiver SSI before install, and matching SSI after install; cover plain Space/NBSP and Unicode prefixes where the first causal fixture permits.",
+    "Do not claim causal RED if failure is compile, zero selected tests, helper setup, marker mutation at an unreal lifecycle point or timeout.",
+    "After source root is proved, add contradictory/wrong-field/selection/revocation/expiry/content/capability controls; no target grant from string equality alone.",
+    "Run focused and full IME+affected contracts remotely, fresh code review max2; build only exact GREEN snapshot and repeat both unchanged60+6+150 native scopes+speed."
+  ],
+  "rollback": "Current private I bytes and every H/I FAIL remain retained; no laptop installation or promotion.",
+  "transport_changed": false,
+  "runtime_authority_changed": false,
+  "native_acceptance": "FAIL_CURRENT_I_NOT_PROMOTED",
+  "initial_test": {
+    "name": "context_admission::adapter::tests::word_scope::residuals::td121_confirmed_native_word_retains_proof_for_second_marker_handoff",
+    "scope": "Marker/nonmarker, plain Space/NBSP, whole empty/Unicode prefix; two real factory transfers after actual native erase/replay and whole final SSI. Assert source eligibility, same receiver field/tail/epoch before second delete.",
+    "production_changed": false
+  },
+  "source_result": {
+    "recorded_at": "2026-10-13T10:26:31Z",
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/j-second-handoff-oywvbd2n/RESULT.json",
+    "verdict": "PASS",
+    "selected": 1,
+    "subcases": 32,
+    "positives": 24,
+    "adverse_pre_focus_controls": 8,
+    "elapsed_seconds": 13.710655681003118,
+    "source_red": "NOT_ESTABLISHED",
+    "invalid_positive_experiment_receipts": [
+      "j-second-handoff-qgh13lrr/RESULT.json",
+      "j-second-handoff-8cjiwtk7/RESULT.json"
+    ],
+    "production_changed": false
+  },
+  "review": {
+    "passes": 2,
+    "scores": [
+      9,
+      8
+    ],
+    "final_score": 8,
+    "gate": "Do not preserve pre-FocusIn SSI or clear observed flag without independent current-activation binding. Existing post-FocusIn positives pass."
+  },
+  "next": "Actual native callback order with existing reviewed passive wire and unchanged normal20 actor on private I; no guessed producer or authority patch."
+}

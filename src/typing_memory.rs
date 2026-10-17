@@ -421,6 +421,9 @@ pub(crate) struct TypingMemoryEvent {
     /// separate from `from` prevents a rollback from teaching the typo as the
     /// rejected L3 candidate.
     pub(crate) proposal: Option<String>,
+    /// Exact user restoration observed by the owning input context. Generic
+    /// undo dispatch and reconstructed legacy feedback do not establish this.
+    pub(crate) restoration_observed: bool,
 }
 
 impl TypingMemoryEvent {
@@ -443,6 +446,7 @@ impl TypingMemoryEvent {
             completion_edit: None,
             episode_id: None,
             proposal: None,
+            restoration_observed: false,
         })
     }
 
@@ -484,7 +488,7 @@ impl TypingMemoryEvent {
     ) -> Vec<Self> {
         let episode_id = next_causal_episode_id();
         let proposal = proposal.trim();
-        accepted_events(
+        let mut events = accepted_events(
             TypingMemoryEventKind::AcceptedFix,
             original,
             accepted,
@@ -494,7 +498,11 @@ impl TypingMemoryEvent {
             TypingMemoryOutcome::ConfirmedPositive,
             Some(&episode_id),
             (!proposal.is_empty()).then_some(proposal),
-        )
+        );
+        for event in &mut events {
+            event.restoration_observed = original.trim() == accepted.trim();
+        }
+        events
     }
 
     pub(crate) fn observed_system_apply(
@@ -523,6 +531,20 @@ impl TypingMemoryEvent {
         operation: TypingMemoryOperation,
     ) -> Vec<Self> {
         rejected_events(original, rejected, evidence_source, operation)
+    }
+
+    /// Called only after the owner observes the exact manually restored text.
+    pub(crate) fn observed_manual_restoration(original: &str, rejected: &str) -> Vec<Self> {
+        let mut events = Self::reverted_system_apply(
+            original,
+            rejected,
+            TypingMemoryEvidenceSource::Autocorrect,
+            TypingMemoryOperation::Replacement,
+        );
+        for event in &mut events {
+            event.restoration_observed = true;
+        }
+        events
     }
 
     pub(crate) fn accepted_ime(context_tail: &str, accepted_text: &str) -> Vec<Self> {
@@ -612,6 +634,7 @@ impl TypingMemoryEvent {
             }),
             episode_id: Some(next_causal_episode_id()),
             proposal: Some(suggested),
+            restoration_observed: false,
         })
     }
 
@@ -741,6 +764,7 @@ fn rejected_events(
                 completion_edit: None,
                 episode_id: Some(episode_id.clone()),
                 proposal: Some(rejected.trim().to_string()),
+                restoration_observed: false,
             })
         })
         .collect()
@@ -794,6 +818,7 @@ fn accepted_events(
                 completion_edit: None,
                 episode_id: episode_id.map(str::to_owned),
                 proposal: proposal.map(str::to_owned),
+                restoration_observed: false,
             }
         })
         .collect()
@@ -873,6 +898,7 @@ fn ime_events(
             completion_edit: None,
             episode_id: Some(episode_id.clone()),
             proposal: None,
+            restoration_observed: false,
         })
         .collect()
 }

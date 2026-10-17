@@ -29,6 +29,7 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
     }
     let starts_new_word = ctx.buffer.current_is_empty();
     *ctx.events_since_word_start += 1;
+    let retain_input = super::config_runtime::daemon_input_retention_allowed();
 
     let accept = if value == 2 {
         ctx.buffer.current_last_keycode() == Some(code)
@@ -37,10 +38,14 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
     };
     if !accept {
         if ctx.verbose {
-            log(&format!(
-                "· key {code} v=2 SKIP (autorepeat другой) events={}",
-                *ctx.events_since_word_start
-            ));
+            if retain_input {
+                log(&format!(
+                    "· key {code} v=2 SKIP (autorepeat другой) events={}",
+                    *ctx.events_since_word_start
+                ));
+            } else {
+                log("· typing autorepeat skipped; payload retention disabled");
+            }
         }
         return;
     }
@@ -65,14 +70,22 @@ pub(super) fn handle_typing_key_press(code: u16, value: i32, ctx: TypingKeyConte
     if let Some(pending) = ctx.pending_typing_assist_after_space.as_mut() {
         pending.note_visible_char();
     }
-    ctx.buffer.note_learning_typed(typed_event);
+    if retain_input {
+        ctx.buffer.note_learning_typed(typed_event);
+    } else {
+        ctx.buffer.clear_pending_learning();
+    }
     record_precognition_tick_if_enabled("key", ctx.buffer);
     if ctx.verbose {
-        log(&format!(
-            "· key {code} v={value} shift={} → current={} events={}",
-            ctx.shift_state.any(),
-            ctx.buffer.current_len(),
-            *ctx.events_since_word_start
-        ));
+        if retain_input {
+            log(&format!(
+                "· key {code} v={value} shift={} → current={} events={}",
+                ctx.shift_state.any(),
+                ctx.buffer.current_len(),
+                *ctx.events_since_word_start
+            ));
+        } else {
+            log("· typing input observed; payload retention disabled");
+        }
     }
 }

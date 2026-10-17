@@ -90,6 +90,17 @@ remove_system_file() {
     fi
 }
 
+remove_known_system_file() {
+    local path="$1" expected="$2" actual="$SYSTEM_ROOT$1"
+    if [ -e "$actual" ] || [ -L "$actual" ]; then
+        if cmp -s "$expected" "$actual"; then
+            remove_system_file "$path"
+        else
+            echo "ℹ изменённый файл $actual сохранён"
+        fi
+    fi
+}
+
 remove_managed_runtime() {
     local link raw_target canonical_target canonical_managed_dir
     canonical_managed_dir="$(readlink -f -- "$MANAGED_RUNTIME_DIR" 2>/dev/null || printf '%s' "$MANAGED_RUNTIME_DIR")"
@@ -149,7 +160,12 @@ rm -rf \
 remove_gnome_input_sources
 remove_system_file /usr/share/ibus/component/lay-ime.xml
 remove_system_file /usr/share/ibus/component/lay.xml
-remove_system_file /etc/udev/rules.d/99-lay-uinput.rules
+remove_known_system_file /etc/udev/rules.d/70-lay-input.rules \
+    "$SCRIPT_DIR/udev/70-lay-input.rules"
+remove_known_system_file /etc/modules-load.d/lay-uinput.conf \
+    "$SCRIPT_DIR/systemd/lay-uinput.conf"
+remove_known_system_file /etc/udev/rules.d/99-lay-uinput.rules \
+    "$SCRIPT_DIR/udev/99-lay-uinput.legacy.rules"
 
 if [ "$TEST_MODE" != "1" ]; then
     systemctl --user daemon-reload >/dev/null 2>&1 || true

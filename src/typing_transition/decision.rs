@@ -126,7 +126,8 @@ impl TransitionDecisionCore {
         let started = std::time::Instant::now();
         match mode {
             DecisionEvidenceMode::ClosedExact(certificate) => {
-                return evaluate_closed_exact(event, candidates, certificate, started);
+                return evaluate_closed_exact(event, candidates, certificate, started)
+                    .preserve_user_words(event, &crate::nanda_wave::cached_usage_prior_snapshot());
             }
             DecisionEvidenceMode::ClosedExactAbsent => {
                 return CandidateDecisionBatch::no_selection_with_started(started);
@@ -240,6 +241,7 @@ impl TransitionDecisionCore {
         }
         let frame_bound_lexical_admissions =
             lexical_authority_context.admissions_for_event(event, candidates);
+        let mut authority_lanes = AuthorityLaneBatch::new(candidates, &evaluations);
         let surface_authority_admissions = candidates
             .iter()
             .enumerate()
@@ -257,31 +259,11 @@ impl TransitionDecisionCore {
                     let ordinary_admission = candidate
                         .ordinary_authority_lane_views()
                         .into_iter()
-                        .find_map(|lane| {
-                            authority_lane_allows_apply(
-                                event,
-                                index,
-                                candidates,
-                                &evaluations,
-                                policy,
-                                lane,
-                                false,
-                            )
-                        });
+                        .find_map(|lane| authority_lanes.admit(event, index, policy, lane, false));
                     let canonical_admission = frame_bound_lexical_admissions[index]
                         .then(|| candidate.frame_bound_lexical_lane_view())
                         .flatten()
-                        .and_then(|lane| {
-                            authority_lane_allows_apply(
-                                event,
-                                index,
-                                candidates,
-                                &evaluations,
-                                policy,
-                                lane,
-                                true,
-                            )
-                        });
+                        .and_then(|lane| authority_lanes.admit(event, index, policy, lane, true));
                     // When both lanes are valid, preserve independent producer
                     // provenance in the transition receipt. Ranking still uses
                     // the single surface evaluation below.
@@ -318,7 +300,35 @@ impl TransitionDecisionCore {
         );
         let ranked_selected_index = agreement_order.selected;
         let retained_exact = retained_exact_disposition(event, candidates, &evaluations);
-        let selected_index = retained_exact_selection(ranked_selected_index, retained_exact);
+        let attested_boundary = if matches!(retained_exact, RetainedExactDisposition::Absent)
+            && ranked_selected_index.is_none_or(|index| {
+                surface_authority_admissions[index]
+                    .as_ref()
+                    .is_some_and(|lane| {
+                        lane.candidate.frame_bound_lexical_capability().is_none()
+                            && !lane.candidate.has_authority_conflict()
+                            && !event
+                                .original
+                                .chars()
+                                .filter(|ch| !ch.is_whitespace())
+                                .eq(lane
+                                    .candidate
+                                    .replacement
+                                    .chars()
+                                    .filter(|ch| !ch.is_whitespace()))
+                    })
+            }) {
+            admission::attested_space_boundary_admission(event, candidates, &evaluations, policy)
+        } else {
+            None
+        };
+        let selected_index = retained_exact_selection(
+            attested_boundary
+                .as_ref()
+                .map(|(index, _)| *index)
+                .or(ranked_selected_index),
+            retained_exact,
+        );
         if std::env::var_os("LAY_DEBUG_DECISION_CORE").is_some() {
             eprintln!(
                 "decision-core-agreement-order reason={} ranked={:?} selected={:?}",
@@ -327,9 +337,12 @@ impl TransitionDecisionCore {
         }
         let selection_ready = std::time::Instant::now();
         let selected_authority_lane = match retained_exact {
-            RetainedExactDisposition::Absent => {
-                ranked_selected_index.and_then(|index| surface_authority_admissions[index].clone())
-            }
+            RetainedExactDisposition::Absent => attested_boundary
+                .map(|(_, admission)| admission)
+                .or_else(|| {
+                    ranked_selected_index
+                        .and_then(|index| surface_authority_admissions[index].clone())
+                }),
             RetainedExactDisposition::Valid(index) => Some(AuthorityLaneAdmission {
                 candidate: candidates[index].clone(),
                 evaluation: evaluations[index].clone(),
@@ -376,6 +389,7 @@ impl TransitionDecisionCore {
                 total_us: elapsed_us(finished.duration_since(started)),
             },
         }
+        .preserve_user_words(event, &usage)
     }
 }
 
@@ -415,6 +429,100 @@ struct AuthorityLaneAdmission {
     evaluation: CandidateDecisionEvaluation,
 }
 
+struct AuthorityLaneBatch<'a> {
+    candidates: &'a [UnifiedCorrectionCandidate],
+    surface_evaluations: &'a [CandidateDecisionEvaluation],
+    scratch: Option<(
+        Vec<UnifiedCorrectionCandidate>,
+        Vec<CandidateDecisionEvaluation>,
+    )>,
+}
+
+impl<'a> AuthorityLaneBatch<'a> {
+    fn new(
+        candidates: &'a [UnifiedCorrectionCandidate],
+        surface_evaluations: &'a [CandidateDecisionEvaluation],
+    ) -> Self {
+        Self {
+            candidates,
+            surface_evaluations,
+            scratch: None,
+        }
+    }
+
+    fn admit(
+        &mut self,
+        event: &TypingErrorEvent,
+        candidate_index: usize,
+        policy: TransitionDecisionPolicy,
+        lane: UnifiedCorrectionCandidate,
+        frame_bound_lexical_authority: bool,
+    ) -> Option<AuthorityLaneAdmission> {
+        let (lane_candidates, lane_evaluations) = self
+            .scratch
+            .get_or_insert_with(|| (self.candidates.to_vec(), self.surface_evaluations.to_vec()));
+        let original_candidate = std::mem::replace(&mut lane_candidates[candidate_index], lane);
+        let candidate = &lane_candidates[candidate_index];
+        let surface_evaluation = &self.surface_evaluations[candidate_index];
+        let action = action::verify_action_operator(
+            &event.original,
+            &candidate.replacement,
+            candidate.error_class,
+            candidate.origin,
+        );
+        let mut lane_evaluation = surface_evaluation.clone();
+        lane_evaluation.action = action;
+        lane_evaluation.transition =
+            TypingTransition::from_evaluated_candidate(super::EvaluatedTransitionInput {
+                original: &event.original,
+                replacement: &candidate.replacement,
+                error_class: candidate.error_class,
+                origin: candidate.origin,
+                source_id: &candidate.source_id,
+                candidate_count: self.candidates.len(),
+                action,
+                l4_signed_signal: surface_evaluation.transition.l4_signed_signal,
+            });
+        let original_evaluation =
+            std::mem::replace(&mut lane_evaluations[candidate_index], lane_evaluation);
+
+        let producer_admitted = if frame_bound_lexical_authority {
+            matches!(
+                lane_candidates[candidate_index].gate.action,
+                proposal_admission::CandidateGateAction::Eligible
+                    | proposal_admission::CandidateGateAction::SuggestOnly
+            )
+        } else {
+            ordinary_producer_allows_authority_evaluation(
+                event,
+                &lane_candidates[candidate_index],
+                &lane_evaluations[candidate_index],
+                policy,
+            )
+        };
+        let admitted = producer_admitted
+            && candidate_has_apply_authority(
+                event,
+                candidate_index,
+                lane_candidates,
+                lane_evaluations,
+                policy,
+                frame_bound_lexical_authority,
+            );
+        // Every lane observes the original competitor batch. Restore both slots
+        // after admission and refusal before the next lane can inspect them.
+        let candidate =
+            std::mem::replace(&mut lane_candidates[candidate_index], original_candidate);
+        let evaluation =
+            std::mem::replace(&mut lane_evaluations[candidate_index], original_evaluation);
+        admitted.then_some(AuthorityLaneAdmission {
+            candidate,
+            evaluation,
+        })
+    }
+}
+
+#[cfg(test)]
 fn authority_lane_allows_apply(
     event: &TypingErrorEvent,
     candidate_index: usize,
@@ -424,59 +532,13 @@ fn authority_lane_allows_apply(
     lane: UnifiedCorrectionCandidate,
     frame_bound_lexical_authority: bool,
 ) -> Option<AuthorityLaneAdmission> {
-    let mut lane_candidates = candidates.to_vec();
-    lane_candidates[candidate_index] = lane;
-    let mut lane_evaluations = surface_evaluations.to_vec();
-    let candidate = &lane_candidates[candidate_index];
-    let surface_evaluation = &surface_evaluations[candidate_index];
-    let action = action::verify_action_operator(
-        &event.original,
-        &candidate.replacement,
-        candidate.error_class,
-        candidate.origin,
-    );
-    let mut lane_evaluation = surface_evaluation.clone();
-    lane_evaluation.action = action;
-    lane_evaluation.transition =
-        TypingTransition::from_evaluated_candidate(super::EvaluatedTransitionInput {
-            original: &event.original,
-            replacement: &candidate.replacement,
-            error_class: candidate.error_class,
-            origin: candidate.origin,
-            source_id: &candidate.source_id,
-            candidate_count: candidates.len(),
-            action,
-            l4_signed_signal: surface_evaluation.transition.l4_signed_signal,
-        });
-    lane_evaluations[candidate_index] = lane_evaluation;
-
-    let producer_admitted = if frame_bound_lexical_authority {
-        matches!(
-            lane_candidates[candidate_index].gate.action,
-            proposal_admission::CandidateGateAction::Eligible
-                | proposal_admission::CandidateGateAction::SuggestOnly
-        )
-    } else {
-        ordinary_producer_allows_authority_evaluation(
-            event,
-            &lane_candidates[candidate_index],
-            &lane_evaluations[candidate_index],
-            policy,
-        )
-    };
-    (producer_admitted
-        && candidate_has_apply_authority(
-            event,
-            candidate_index,
-            &lane_candidates,
-            &lane_evaluations,
-            policy,
-            frame_bound_lexical_authority,
-        ))
-    .then(|| AuthorityLaneAdmission {
-        candidate: lane_candidates.remove(candidate_index),
-        evaluation: lane_evaluations.remove(candidate_index),
-    })
+    AuthorityLaneBatch::new(candidates, surface_evaluations).admit(
+        event,
+        candidate_index,
+        policy,
+        lane,
+        frame_bound_lexical_authority,
+    )
 }
 
 #[derive(Clone, Copy)]
@@ -1067,6 +1129,22 @@ pub(crate) struct CandidateDecisionBatch {
 }
 
 impl CandidateDecisionBatch {
+    fn preserve_user_words(
+        mut self,
+        event: &TypingErrorEvent,
+        usage: &crate::nanda_wave::usage_prior::UsagePriorSnapshot,
+    ) -> Self {
+        if self.selected_candidate.as_ref().is_some_and(|candidate| {
+            usage.changes_protected_word(&event.original, &candidate.replacement)
+        }) {
+            self.selected_index = None;
+            self.selected_candidate = None;
+            self.selected_evaluation = None;
+            self.selected_transition = None;
+        }
+        self
+    }
+
     pub(crate) fn no_selection() -> Self {
         Self {
             evaluations: Vec::new(),

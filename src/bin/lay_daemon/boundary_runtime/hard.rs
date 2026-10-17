@@ -57,7 +57,11 @@ pub(crate) fn handle_hard_boundary_if_needed(
 
     // Enter terminates an otherwise unrecorded current word. Keep this as
     // raw observation; it is not an accepted completion or correction.
-    if key == KeyCode::KEY_ENTER && value == 1 && !ctx.buffer.current_is_empty() {
+    if key == KeyCode::KEY_ENTER
+        && value == 1
+        && !ctx.buffer.current_is_empty()
+        && super::super::config_runtime::daemon_input_retention_allowed()
+    {
         if let Some(tail) = ctx.buffer.visible_tail_text(6) {
             lay::typing_cpu::TypingCpu::record_typed_tail(&tail);
         }

@@ -40,6 +40,13 @@ impl ActiveCompositionCommit {
             autocorrect: false,
         }
     }
+
+    pub(super) fn with_space_in_current_layout() -> Self {
+        Self {
+            sync_layout: false,
+            ..Self::with_space()
+        }
+    }
 }
 
 impl LayIbusEngine {
@@ -190,6 +197,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         ch: char,
+        keycode: u32,
     ) -> fdo::Result<()> {
         if !ch.is_whitespace() {
             self.rebind_managed_word_start_before_first_commit();
@@ -213,13 +221,26 @@ impl LayIbusEngine {
             None,
         );
         result.map_err(|e| fdo::Error::Failed(e.to_string()))?;
+        // The actual CommitText has succeeded. Register its existing release
+        // pairing before synchronous display refresh, never before the effect.
+        let press_was_held = self
+            .layout_gesture
+            .handled_press_keycodes
+            .contains(&keycode);
+        self.remember_handled_press(keycode, true);
         self.committed_tail.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
-        self.client_context.managed_commit_snapshot_floor = (!ch.is_whitespace()).then_some((
-            self.client_context.focus_serial,
-            self.committed_tail.epoch,
-            self.client_context.surrounding_observation_revision,
-        ));
+        self.client_context.managed_commit_snapshot_floor = (!ch.is_whitespace()).then_some(
+            super::window_interaction::ManagedCommitSnapshotFloor {
+                focus_serial: self.client_context.focus_serial,
+                runtime_owner_lease_identity: self.client_context.runtime_owner_lease_identity,
+                layout_generation: self.layout_gesture.layout_generation,
+                tail_epoch: self.committed_tail.epoch,
+                observation_revision: self.client_context.surrounding_observation_revision,
+                keycode,
+                reset_echo_available: true,
+            },
+        );
         if !ch.is_whitespace() {
             self.arm_managed_commit_reset_echo();
         }
@@ -241,8 +262,13 @@ impl LayIbusEngine {
         } else {
             self.invalidate_space_autocorrect_path();
         }
-        self.refresh_precognition_after_visible_input(emitter, display_frame)
-            .await?;
+        let refresh = self
+            .refresh_precognition_after_visible_input(emitter, display_frame)
+            .await;
+        if refresh.is_err() && !press_was_held {
+            self.consume_handled_release(keycode);
+        }
+        refresh?;
         Ok(())
     }
 
@@ -251,6 +277,7 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         ch: char,
     ) -> fdo::Result<()> {
+        self.observe_native_restoration_letter(ch);
         self.push_tail_char(ch);
         let frame = self.capture_input_frame_identity();
         // The same observation closes an ordinary Legacy Space boundary.

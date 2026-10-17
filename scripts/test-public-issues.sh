@@ -23,6 +23,7 @@ grep -q '^package_manager=rpm-ostree$' <<<"$remote_platform"
 
 echo "== public release build and clean-install dependencies =="
 python3 "$ROOT/tests/test_public_release_build.py"
+python3 "$ROOT/tests/test_input_access.py"
 echo "== research-tool promotion admission =="
 grep -Fq \
     'run --quiet --features research-tools --bin "$bin"' \
@@ -160,6 +161,7 @@ touch \
     "$HOME_DIR/.local/state/lay/update.log" \
     "$SYSTEM_ROOT/usr/share/ibus/component/lay-ime.xml" \
     "$SYSTEM_ROOT/etc/udev/rules.d/99-lay-uinput.rules"
+cp "$ROOT/udev/99-lay-uinput.legacy.rules" "$SYSTEM_ROOT/etc/udev/rules.d/99-lay-uinput.rules"
 for name in "${release_names[@]}"; do
     touch "$HOME_DIR/.local/lib/lay/bin/$name"
     ln -s "$HOME_DIR/.local/lib/lay/bin/$name" "$HOME_DIR/.local/bin/$name"

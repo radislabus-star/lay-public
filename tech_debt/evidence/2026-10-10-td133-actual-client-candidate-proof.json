@@ -1,0 +1,89 @@
+{
+  "schema": "lay.td133.actual-client-candidate-proof.v1",
+  "status": "TERMINAL4_INVERSE1_PLUS1_PASS_LIFECYCLE_BASELINE_AND_CANDIDATE_FAIL",
+  "scope": "private_ibus_readline_not_native",
+  "candidate_sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+  "proofs": [
+    {
+      "path": "/home/ubu/.cache/lay/development/td133-private-client-6tugjijb/RESULT.json",
+      "sha256": "6bda67b0eb8fff83c2cbec8507fe058dbab7aaafebdae926ec7aca546c86b097",
+      "status": "FAIL",
+      "candidate_sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+      "source_stable": true,
+      "rows": [
+        {
+          "scenario": "lifecycle",
+          "status": "FAIL",
+          "expected_cases": 3,
+          "completed_cases": 0,
+          "receipt": "/home/e/projects/lay-development-runner/tab-full-HHFb4E/td133-candidate-client-huxyus32/lifecycle/receipt.json",
+          "receipt_sha256": "914b58665d7b28120987e517457ff85182f05f44305a9a579736c84d01218d57",
+          "verdict": null
+        }
+      ]
+    },
+    {
+      "path": "/home/ubu/.cache/lay/development/td133-private-client-46qcok0a/RESULT.json",
+      "sha256": "074e856f1bb6610957739bafe7e53efacb2cd3fc8a612c3eb31fb9375438d68c",
+      "status": "FAIL",
+      "candidate_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+      "source_stable": true,
+      "rows": [
+        {
+          "scenario": "lifecycle",
+          "status": "FAIL",
+          "expected_cases": 3,
+          "completed_cases": 0,
+          "receipt": "/home/e/projects/lay-development-runner/tab-full-HHFb4E/td133-candidate-client-dp66rxp9/lifecycle/receipt.json",
+          "receipt_sha256": "8fa8f1876deba9a6aa8c6b495d3255356cbb4f4d883415833455c11f9aeb7d1c",
+          "verdict": "FAILED_FROZEN_BEFORE_TRACE_DRAIN"
+        }
+      ]
+    },
+    {
+      "path": "/home/ubu/.cache/lay/development/td133-private-client-sd2i1_9n/RESULT.json",
+      "sha256": "2cb79e01cc08d5ff9226d5801438c4a4746c87c7560c7e27303bff88ff64f4c4",
+      "status": "PASS",
+      "candidate_sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+      "source_stable": true,
+      "rows": [
+        {
+          "scenario": "terminal-delivery",
+          "status": "PASS",
+          "expected_cases": 4,
+          "completed_cases": 4,
+          "receipt": "/home/e/projects/lay-development-runner/tab-full-HHFb4E/td133-candidate-client-u7hzbhdc/terminal-delivery/receipt.json",
+          "receipt_sha256": "28c636eeb3e409b1ecc2eda66c747f4854a7b9419f3a696f16176c8eb528976a",
+          "verdict": "PASS_4_TERMINAL_DELIVERY_CASES"
+        },
+        {
+          "scenario": "inverse-first-word",
+          "status": "PASS",
+          "expected_cases": 1,
+          "completed_cases": 1,
+          "receipt": "/home/e/projects/lay-development-runner/tab-full-HHFb4E/td133-candidate-client-u7hzbhdc/inverse-first-word/receipt.json",
+          "receipt_sha256": "fdb53efa55e90f87fe2c04f1a6cbf534c0b0ece3e7ff2ec88006eb3f75c41fa0",
+          "verdict": "PASS_1_BOUND_INVERSE_CASE"
+        },
+        {
+          "scenario": "inverse-prefixed",
+          "status": "PASS",
+          "expected_cases": 1,
+          "completed_cases": 1,
+          "receipt": "/home/e/projects/lay-development-runner/tab-full-HHFb4E/td133-candidate-client-u7hzbhdc/inverse-prefixed/receipt.json",
+          "receipt_sha256": "705218f9bad3f2e3d7087f022f4fee06a0772811437893bb6452520354eeb1e9",
+          "verdict": "PASS_1_BOUND_INVERSE_CASE"
+        }
+      ]
+    }
+  ],
+  "not_tested": [
+    "new-byte physical64",
+    "restoration5 not reached after lifecycle failure",
+    "native inverse actual-engine isolation and authorization"
+  ],
+  "proof_consumer_issue": "TD139 general Client advertises PREEDIT_TEXT but ignores preedit signals; same active:composition j versus committed-tail j-with-prefix oracle on baseline81 and candidate82",
+  "installed_runtime_changed": false,
+  "runtime_authority_changed": false,
+  "denominator_substitution": false
+}

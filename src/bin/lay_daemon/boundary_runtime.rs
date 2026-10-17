@@ -14,5 +14,6 @@ pub(super) use hard::{
     HardBoundaryContext,
 };
 pub(super) use space::{
-    handle_space_press, try_handle_space_release, SpacePressContext, SpaceReleaseContext,
+    handle_space_press, handle_space_repeat, try_handle_space_release, SpacePressContext,
+    SpaceReleaseContext,
 };

@@ -46,6 +46,10 @@ fn shift_insert_active(key: KeyCode, shift_state: &ShiftState) -> bool {
 
 fn log_ignored_key(code: u16, verbose: bool) {
     if verbose {
-        log(&format!("· key {code} ignored for buffer (shortcut/noise)"));
+        if super::config_runtime::daemon_input_retention_allowed() {
+            log(&format!("· key {code} ignored for buffer (shortcut/noise)"));
+        } else {
+            log("· input ignored for buffer; payload retention disabled");
+        }
     }
 }

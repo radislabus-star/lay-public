@@ -1,0 +1,248 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T10:46:10Z",
+  "decision": "Classify an authenticated legacy Shift observation consistently before and after target admission",
+  "status": "SOURCE_REVIEW_BUILD_GREEN_PRIVATE_NATIVE_FAIL_BOTH_BROWSERS",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "current_private_I_ime_sha256": "e84d497cb9416772a3e0abb8a48f4b80da3bbc27c55032f1fdf8c3ce216384cf",
+  "causal_source_red": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/j-second-handoff-v7zrblwv/RESULT.json",
+    "selected": 1,
+    "verdict": "FAIL",
+    "first_case": "reset=false,marker=true,receiver3,empty prefix,Space",
+    "sequence": "After actual native first replay and full confirmed SSI, second same-field transfer receives exact SSI through real SetSurroundingText and a real legacy Shift release before native marker ingress. Installed target has exact snapshot but UnknownStart observed_suffix_chars0 and empty v3 field. No deletion.",
+    "source_owner": "context_admission/adapter.rs observer ProcessKeyEvent path without current target owner invokes reducer.target_input_before_admission for any key",
+    "first_loss": "Existing admitted-owner branch classifies Shift as LegacyShiftObservation; pending-target branch ignores that classification and poisons source seal lineage to UnknownStart0.",
+    "non_causal_failures": [
+      "sasamvl6 undefined test keysym compile error",
+      "jwwk5tzm test harness consumed pending marker as detached callback reply; fixed explicit marker hold, not production"
+    ]
+  },
+  "native_evidence": {
+    "original_full_firefox": "FAIL, 3 lost PASS retained",
+    "failed_trace": "firefox-standard-normal-tumnkjx4/trace-active-6.jsonl: Get->SSI6/6->Shift release serial2846 before marker ingress->transfer installed->v3 empty field before delete",
+    "old_failure_ssi_body": "UNKNOWN",
+    "current_unchanged_normal20_wire": "NOT_REPRODUCED20PASS; cannot replace original FAIL",
+    "scope": "Shared causal mechanism reproduced in source; universality and all native failures not claimed."
+  },
+  "options": [
+    {
+      "score": 9,
+      "selected": true,
+      "name": "Reuse existing LegacyShiftObservation classification in the pending-target branch",
+      "change": "Parse and classify legacy ProcessKeyEvent before owner split. Only PossibleMutation poisons a pending transfer. Shift remains passive, with no token, output, deferred/replayed key or early grant. Malformed legacy body revokes/refuses; atomic path stays PossibleMutation.",
+      "size": "One existing classifier moved plus one existing-enum condition; no new production owner/state/API/timer."
+    },
+    {
+      "score": 6,
+      "selected": false,
+      "name": "Add separate reducer transition for preadmission nontext callback",
+      "reason": "Can express same semantics but extra reducer plumbing is unnecessary unless direct code review proves existing classifier insufficient."
+    },
+    {
+      "score": 2,
+      "selected": false,
+      "name": "Delay or retry native handoff readout",
+      "reason": "Masks an incorrectly poisoned producer; adds time and does not restore invalidated proof. Rejected."
+    }
+  ],
+  "guard_contract": [
+    "Only the existing authenticated callback observation reaches this branch. Exact target path, interface, native Get/marker, request generation, source seal, profile, expiry, revocation and fresh SSI remain required.",
+    "A pending target Shift does not mint authority: callback is Passive, no engine token/owner or early text effect. The original validated Transfer remains the sole authority producer.",
+    "Printable/editor/command/atomic possible mutation before admission still poisons word lineage; malformed body revokes, with refusal visible.",
+    "SourceFree, wrong target/context/sender, Reset, selection, contradictory SSI, content/capability loss, expiry and revocation continue to refuse.",
+    "No FocusIn SSI preservation, flag clearing, empty-field acceptance or delivery transport change."
+  ],
+  "verification_plan": [
+    "Localize source RED to lineage/source seal after exact native pending Shift, compare real SSI without a Shift; retain previous J32 GREEN and pre-Focus refusal controls.",
+    "Positive pending legacy left/right Shift press/release with actual callback headers and full field/tail/layout/epoch readout before delete; prove pending callback stays passive and no text effects.",
+    "Exercise early printable/command/atomic keys and malformed legacy bodies through real observer/callback choreography; retain all existing refusal guards.",
+    "Remote focused test, full IME and six affected contracts, FMT; context-free plan/code review max2 each.",
+    "Build only immutable GREEN snapshot; both original unchanged Firefox/Chrome60+6+150 scopes+speed. All prior FAIL remain; no promotion before scope requirements."
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "production_change_started": true,
+  "review": {
+    "passes": 2,
+    "scores": [
+      8,
+      9
+    ],
+    "final_score": 9,
+    "type": "Plan only, reused independent reviewer; fresh spawn platform limit",
+    "remaining_plan_blockers": []
+  },
+  "rollback": "Private I/H bytes and all receipts retained; no laptop install, no commit/push before completed task.",
+  "source_localization": {
+    "receipt": "j-second-handoff-jkz0xczu/RESULT.json",
+    "verdict": "FAIL",
+    "exact_first_loss": "Before real legacy Shift release: KnownStart generation6, floor3, firstword(0,3). After ingress/handler: UnknownStart generation7, suffix0, boundariesNone. Actual SSI-only receiver4 passes and leaves source lineage unchanged."
+  },
+  "classifier_only_result": {
+    "receipt": "j-second-handoff-6eqoom1n/RESULT.json",
+    "verdict": "PASS",
+    "subcases": 80,
+    "elapsed_seconds": 15.197393495007418,
+    "native": "NOT_TESTED",
+    "limitation": "Additional callback-after-marker control is required; no promotion."
+  },
+  "delayed_callback_red": {
+    "receipt": "j-second-handoff-lp8t6epy/RESULT.json",
+    "verdict": "FAIL",
+    "sequence": "Real Shift received/stamped Passive before marker; marker publishes ready transfer; actual key callback installs grant then rejects earlier Passive stamp and revokes newly installed word toUnknownStart generation8.",
+    "scope": "Compiled semantic RED; no early authority assigned; exact SSI retained yet v3 fieldempty before delete."
+  },
+  "callback_correction_plan": {
+    "ingress": "Add a unit PassiveShift disposition only for authenticated parsed legacy Shift addressed to an exact pending factory target. It conveys no owner/token/word authority. Existing owned Key/abandon path and every PossibleMutation stay unchanged.",
+    "observation": "Return a typed callback observation: existing KeyCallback, PassiveShift, or Refused. Consume the exact existing callback stamp; do not turn Passive into Key. Recognize only PassiveShift for matching path/interface/member. Preserve existing branch-specific stamp/abandon/revoke handling for all other callbacks.",
+    "settlement": "Legacy owner skips word settlement/revocation ONLY for PassiveShift with actual Shift args, successful unhandled result and unchanged lexical tail. Unexpected handled/tail change or transport failure revokes. No input replay, native Get retry, changed executor or new owner/state/timer.",
+    "atomic": "Atomic cannot obtain PassiveShift; keep its existing KeyCallback/None settlement and bind behavior.",
+    "mode": "Existing InputMode metadata publisher may run after a real ready grant; its own owner/lease validation stays intact. No publication authority from the passive Shift itself.",
+    "canon": "C03 no text authority is produced by the neutral receipt; C04 existing snapshot/frame/grant ownership stays unchanged. Source seal/reducer and ready installation remain single owners."
+  },
+  "implementation": {
+    "source": "context_admission.rs/adapter.rs/observation.rs",
+    "ingress": "Existing LegacyShiftObservation applied before ownership split; PassiveShift stamp only pending target; PossibleMutation unchanged; malformed legacy parsed/refused before split.",
+    "callback": "KeyCallbackObservation Owned/PassiveShift/Refused; exact classified stamp remains nonauthorizing and never creates KeyCallback. Preserve old owner/abandon paths.",
+    "settlement": "Only actualShift + successful unhandled result + unchangedtail bypass word retirement. Transport failure/unexpected effect revokes; atomic unchanged."
+  },
+  "focused_source_results": [
+    {
+      "receipt": "j-second-handoff-y6x_wrfi/RESULT.json",
+      "selected": 1,
+      "subcases": 96,
+      "verdict": "PASS",
+      "coverage": "Both marker/clientcaps, Reset/noReset, 6 receiver orders incl delayed callback, whole prefixes/Space/NBSP"
+    },
+    {
+      "receipt": "j-second-handoff-1zwmta6m/RESULT.json",
+      "selected": 1,
+      "subcases": 96,
+      "verdict": "PASS",
+      "coverage": "Same96 plus actual left/right Shift press/release in both callback phases, no early token/owner/text or learning; live successor retained"
+    }
+  ],
+  "new_adverse_test": "td121_pending_factory_shift_keeps_other_input_and_malformed_bodies_inert:6cases printable press/release,cursor,command,atomicShift,malformed",
+  "adverse_result": "PASS6/6",
+  "native_acceptance": "FAIL_K_BOTH_ORIGINAL_BROWSER_SCOPES",
+  "focused_final": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/j-second-handoff-1z52y6xe/RESULT.json",
+    "verdict": "PASS",
+    "selected": 2,
+    "positive_fixture_subcases": 96,
+    "adverse_cases": 6,
+    "elapsed_seconds": 17.090222069993615,
+    "scope": "Focused source only, native K NOT_TESTED"
+  },
+  "full_source": {
+    "status": "PASS",
+    "report": "/home/ubu/.cache/lay/development/run-og427fqt/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-vWGi5z",
+    "executed": 814,
+    "passed": 814,
+    "failed": 0,
+    "scope": "763IME+51sixcontracts+FMT, development gate",
+    "archive_sha256": "115d01b34552fc224ca7f46c9ee25f31f49c67a2c8977f59110ba26b129107d2"
+  },
+  "code_review": {
+    "passes": 2,
+    "final_score": 9,
+    "material_blockers": 0,
+    "reviewer": "Reused independent code reviewer; fresh spawn unavailable (thread limit).",
+    "proof_limit": "Adverse6 proves ingress refusal/UnknownStart and installed v3 readout, not execution/settlement of adverse key handler or ManualToggle. Existing handler/atomic/abandon controls remain unchanged and are included in full gate.",
+    "scores": [
+      9,
+      9
+    ],
+    "complete": true
+  },
+  "source_gate_preflight_failure": {
+    "receipt": "/home/ubu/.cache/lay/development/run-qwkdp19v/RESULT.json",
+    "failure": "Manifest counters were not incremented for added adverse test; actual lane rows3128 versus header3127. Metadata corrected from rows, no test/guard change.",
+    "semantic_tests_executed": 0
+  },
+  "private_build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-vWGi5z",
+    "archive_sha256": "115d01b34552fc224ca7f46c9ee25f31f49c67a2c8977f59110ba26b129107d2",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791890783904061262.txt",
+    "elapsed_seconds": 182.1376620210067,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "f577c86d5185cd5f9333c652344150b50be711bef3f773e0948241dc24db2579",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791890966041633394/bin/lay-ibus-engine",
+      "bytes": 8229264
+    },
+    "lay-daemon": {
+      "sha256": "5bead464c0e537c571109a175344c96bd4fc2e0aa6e2ebad76903f94d13e53d9",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791890966041633394/bin/lay-daemon",
+      "bytes": 9255760
+    },
+    "status": "PASS",
+    "staged_private": true,
+    "verified_I_backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-pending-shift-1791891140219834426"
+  },
+  "resource_wait": {
+    "native_launch_exit": 75,
+    "reason": "shared heavy lease occupied by another L3 proof worker, pid1143027/t8854383/session2514. Not killed, throttled or bypassed.",
+    "native_input_keys_sent": 0
+  },
+  "build_warning_scope": "Default release contains inherited library dead-code warnings and1IME warning for wrappers begin_key_callback/begin_atomic_key_callback now production-unused/test-used. No functional impact claimed; not a reason to bypass evidence gates.",
+  "native_K_final": {
+    "chrome": {
+      "proof": "job-results/nativef577c-chrome-proof.json",
+      "standard": {
+        "PASS": 38,
+        "FAIL": 20,
+        "BLOCKED": 2
+      },
+      "panel": {
+        "PASS": 6
+      },
+      "functional": {
+        "PASS": 105,
+        "FAIL": 33,
+        "BLOCKED": 12
+      },
+      "keyed_changes_vs_I": 0,
+      "closed": "K-chrome-closed.json"
+    },
+    "firefox": {
+      "proof": "job-results/nativef577c-firefox-proof.json",
+      "standard": {
+        "PASS": 57,
+        "FAIL": 3
+      },
+      "panel": {
+        "PASS": 6
+      },
+      "functional": {
+        "PASS": 87,
+        "FAIL": 44,
+        "BLOCKED": 19
+      },
+      "standard_gained_PASS": 4,
+      "standard_lost_PASS": 2,
+      "panel_functional_keyed_changes": 0,
+      "closed": "K-firefox-closed.json"
+    },
+    "promotion": "NOT_PROMOTED",
+    "source_scope": "Historical immutable K814+FMT GREEN. Current test-only L caret fixture is source RED; K source evidence does not certify its change."
+  }
+}

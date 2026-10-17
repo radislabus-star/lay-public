@@ -1,0 +1,149 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-acknowledged-owned-space-reset",
+  "status": "FULL_BROWSER_NATIVE_FAIL_RETAINED_NO_PROMOTION",
+  "updated_at": "2026-10-13T23:49:40.941365+00:00",
+  "baseline": "P full source33/fresh1104 PASS/reviews9,9; private IME48235f612f8ce4e2c1b19f9a2605ebe6d3f73efe7de3aa2652eeae2f6efca7ae; native private diagnostic19P1F, no full P matrices. Preserve all P/N/O preceding fixes.",
+  "first_failed_transition": "Actual owned Space acknowledged as NBSP at trace2028, full SSI7 confirmed2029/2030; Reset9439 rearms unconfirmed and discards known snapshot2031-2035; Space release9440 accepted, no orphan; first ManualToggle has live bridge but word authority false2078. Existing capture_owned_closing_space_observation at observation.rs2776 rejects buffer not ending literal ASCII Space, while existing acknowledgement correctly retained actual NBSP bytes.",
+  "source_trace": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/P-native-private-diagnostic/trace-space-8.jsonl",
+  "trace_sha256": "1ee794df4feaf0a99a2517d3bf8138095b4f5a908720e797ef192d757882e17d",
+  "evidence_limit": "Per-field trace completeness UNKNOWN; first shared observed loss identified. No conclusion about all78 failures or whole-client regression from focused run.",
+  "options": [
+    {
+      "solution": "Use existing Unicode whitespace boundary predicate at closing-Space capture; keep held Space key57, exactly one handled press, KnownStart, recent commit, exact confirmed snapshot/revision/epoch, no preedit/selection/quarantine, authenticated one Reset and one-shot lease guards. Existing acknowledgement producer still accepts only its exact owned boundary; keep actual NBSP bytes.",
+      "score": 9,
+      "recommended": true,
+      "risk": "Prove unacknowledged tab/narrow NBSP/multiple boundaries cannot manufacture confirmation; run existing adverse19-case boundary guard and closing-Space14-case guard, plus new ASCII/NBSP/prefix/both release orders regression."
+    },
+    {
+      "solution": "Add another acknowledged-boundary state/token/explicit producer owner",
+      "score": 4,
+      "recommended": false,
+      "risk": "Duplicates existing acknowledgement and Reset restoration contract; more lifetime/invalidation/test work without need."
+    },
+    {
+      "solution": "Normalize NBSP back to ASCII Space across tail/snapshot",
+      "score": 1,
+      "recommended": false,
+      "risk": "Breaks exact client-byte checks and editing verifier; rejected."
+    },
+    {
+      "solution": "Change timeout or retry/request additional SSI after every Reset",
+      "score": 3,
+      "recommended": false,
+      "risk": "Client does not resend an unchanged snapshot; extra latency/work and no repair of representation mismatch."
+    }
+  ],
+  "proof_plan": "First add test-only actual Space press, exact SSI ASCII/NBSP, held-Space late Reset/no fresh SSI, both release orders and preserved prefix; reproduce RED without changing P production. Focused38 includes all P33 and four original Space guards. Independent plan review1/2, minimal predicate repair, affected source/full before final review2/2/build/native.",
+  "runtime_authority_changed": false,
+  "review": {
+    "used": 2,
+    "maximum": 2,
+    "score1": 9,
+    "reviewer1": "/root/acknowledged_owned_space_plan_review_20261014",
+    "requirements": "Keep all38/P33 and original adverse guards unchanged; fresh full eight-target source before final review2/2. Producer bounds generic whitespace; no normalization or authority widening.",
+    "score2": 9,
+    "reviewer2": "/root/acknowledged_owned_space_final_review_20261014",
+    "scope2": "Independent context-free read-only final code review; no material findings; widening is bounded by exact owned acknowledgement and current one-shot Reset guards; old adverse assertions unchanged"
+  },
+  "gui": "Closed/VT1, scope2876924 empty/all5ticks gone; no local input/install/RDP",
+  "delivery_routes_changed": false,
+  "source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/Q-source-probes/q-acknowledged-space-source-baf1zjgq/RESULT.json",
+    "sha256": "8a44eb0d3c3f742e8d4c0aea877f86bbba748f237c7d7be9f174e75f4202549e",
+    "selected": 38,
+    "passed": 37,
+    "failed": 1,
+    "seconds": 17.65325924899662,
+    "all_205_source_hashes_match": true,
+    "failure": "ASCII controls pass; actual acknowledged NBSP snapshot lost on matched held-Space Reset, before release/manual. Production still P."
+  },
+  "focused_source": {
+    "verdict": "PASS",
+    "selected": 38,
+    "seconds": 17.76443399200798,
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/Q-source-probes/q-acknowledged-space-source-x49x5hkq/RESULT.json",
+    "sha256": "4548d4e7e6a30f8031ad38ac80d1aaf4f1990d07d8e8661891e7ad6d36e143f0",
+    "all_205_source_hashes_match": true
+  },
+  "full_source": {
+    "verdict": "PASS",
+    "tests": {
+      "executed": 1105,
+      "failed": 0,
+      "passed": 1105,
+      "selected": 1105
+    },
+    "worker_seconds": 255.93838627300283,
+    "controller_seconds": 264.9,
+    "local_receipt": "/home/ubu/.cache/lay/development/run-61bj0v7o/RESULT.json",
+    "remote_gate": "/home/e/projects/lay-development-runner/run-cht3Zw",
+    "archive_sha256": "e1f0e3864aeb3f1f9669270960b3b0119367ce2e130d17f5f7a5214a56adf8f5",
+    "all_rust_rows_verified": 734,
+    "scope": "Fresh IME+daemon+six contracts, development source, not native/release"
+  },
+  "candidate_build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-cht3Zw",
+    "archive_sha256": "e1f0e3864aeb3f1f9669270960b3b0119367ce2e130d17f5f7a5214a56adf8f5",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791932016759951841.txt",
+    "elapsed_seconds": 183.31193099499797,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "399ffa890002bc6ce55b869bc30138f77656574b55be173fd59c91d37f7a5291",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791932200071791724/bin/lay-ibus-engine",
+      "bytes": 8243216
+    },
+    "lay-daemon": {
+      "sha256": "c49c44cb7776051433fc7d77ad0d5ac4d5f78f04b402895ffe1363950c3e3d97",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791932200071791724/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "runtime": "Both Q GUI scopes empty and all original five-process bindings gone; owned STOP/actual supervisors0; VT1 restored. Laptop untouched. Finite owned seat-ac3181 remains; verify/activate before next diagnostic.",
+  "focused_native": {
+    "verdict": "PASS",
+    "passed": 20,
+    "failed": 0,
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/Q-native-private-diagnostic/RESULT.json",
+    "sha256": "6a200e40701f9adce1e1b0afa8b83392b5cc12b169c2210a7be9b0bdde5572de",
+    "scope": "Original private20 diagnostic only; privateSpace8burst and oldprivateactive1 PASS; not full acceptance",
+    "speed": {
+      "ordinary": {
+        "required": 40,
+        "measured": 40,
+        "missing": 0,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": 102.5123905017972,
+        "p95_ms": 120.39646999537945,
+        "max_ms": 123.18445900082588
+      },
+      "burst": {
+        "required": 100,
+        "measured": 100,
+        "missing": 0,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": 105.92835400253534,
+        "p95_ms": 118.92128099501133,
+        "max_ms": 122.65567600727081
+      }
+    }
+  },
+  "full_native": {
+    "receipt": "/home/ubu/projects/lay-space-boundary-shift-20261007/tech_debt/evidence/td121-Q-full-browser-native-2026-10-14.json",
+    "total": {
+      "PASS": 322,
+      "FAIL": 77,
+      "BLOCKED": 33,
+      "NOT_TESTED": 0,
+      "required": 432
+    },
+    "vs_O": {
+      "new_pass": 1,
+      "lost_pass": 0
+    },
+    "scope": "Original nine jobs per browser; diagnostic20 excluded from denominator; all432 stable IDs compared"
+  }
+}

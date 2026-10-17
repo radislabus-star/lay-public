@@ -1,0 +1,162 @@
+{
+  "schema": "lay.td121.native-evidence.v1",
+  "experiment": "WG-marked-owned-preedit-manual-mode",
+  "at": "2026-10-14T10:02:47.127755+00:00",
+  "source_gate": {
+    "status": "PASS",
+    "local": "/home/ubu/.cache/lay/development/run-r32mz8sc/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-LItDwT",
+    "archive_sha256": "0d08b7e50a1996d3e17759a80686bb904a59b01a53fdb0dae5ed5256c22ea4f9",
+    "worker_seconds": 116.26094866701169,
+    "tests": {
+      "executed": 845,
+      "failed": 0,
+      "passed": 845,
+      "selected": 845
+    },
+    "all737RustHashesMatch": true
+  },
+  "full_native": {
+    "status": "FULL_BOTH432_AND_ALL18_PRIMARY_HASH_VERIFIED",
+    "counts": {
+      "firefox": {
+        "PASS": 164,
+        "BLOCKED": 19,
+        "FAIL": 33
+      },
+      "chrome": {
+        "PASS": 179,
+        "BLOCKED": 14,
+        "FAIL": 23
+      }
+    },
+    "total": {
+      "PASS": 343,
+      "BLOCKED": 33,
+      "FAIL": 56
+    },
+    "primary18": 18,
+    "cursor20PASS": true,
+    "proofs": [
+      {
+        "browser": "firefox",
+        "sha256": "f8e190304fe20794208e0a97ca2eb53e1f2a234d5058e15a450eee11c341ccaa",
+        "raw_manifest_sha256": "47b1a7109eb837a486a8d678260f80a788b021dc8ed9a4ef59b85f533853facd"
+      },
+      {
+        "browser": "chrome",
+        "sha256": "ba7c69c0235ae4a35a4edf61bb0e265130a2b1d972b21c13ab50941e31796a02",
+        "raw_manifest_sha256": "1dc10ee759026c93c2c9a2f90dfef1d149ad33819b973694f0f70ea1d0ff89a2"
+      }
+    ]
+  },
+  "stable_id_comparisons": {
+    "firefox": {
+      "matched216": true,
+      "gains": [
+        {
+          "id": [
+            "functional",
+            "normal",
+            "moved_boundary",
+            6
+          ],
+          "from": "FAIL",
+          "to": "PASS"
+        },
+        {
+          "id": [
+            "functional",
+            "normal",
+            "prefix",
+            2
+          ],
+          "from": "FAIL",
+          "to": "PASS"
+        },
+        {
+          "id": [
+            "functional",
+            "normal",
+            "prefix",
+            6
+          ],
+          "from": "FAIL",
+          "to": "PASS"
+        },
+        {
+          "id": [
+            "functional",
+            "normal",
+            "space_en_ru",
+            5
+          ],
+          "from": "FAIL",
+          "to": "PASS"
+        },
+        {
+          "id": [
+            "standard",
+            "fullscreen",
+            "space",
+            9
+          ],
+          "from": "FAIL",
+          "to": "PASS"
+        }
+      ],
+      "lost_PASS": [
+        {
+          "id": [
+            "functional",
+            "normal",
+            "space_ru_en",
+            1
+          ],
+          "from": "PASS",
+          "to": "FAIL"
+        }
+      ],
+      "counts": {
+        "PASS": 164,
+        "BLOCKED": 19,
+        "FAIL": 33
+      }
+    },
+    "chrome": {
+      "matched216": true,
+      "gains": [],
+      "lost_PASS": [],
+      "counts": {
+        "PASS": 179,
+        "BLOCKED": 14,
+        "FAIL": 23
+      }
+    }
+  },
+  "verdict": "INCOMPLETE_NO_PROMOTION",
+  "reason": "56failed/33blocked; FFSpaceRuEn1 lostPASS; independentreviewNOTRUN/threadlimit",
+  "source_vs_runtime": "845sourcePASS is not full native acceptance; private-byte native scope only; existing laptop unchanged",
+  "runtime_bytes": {
+    "lay-ibus-engine": {
+      "sha256": "81d71596e7382be0a61802c062368b46fa667bf3605ab83e8dc85818286d55ec",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791968597561595507/bin/lay-ibus-engine",
+      "bytes": 8282384
+    },
+    "lay-daemon": {
+      "sha256": "06104a4b6db123c5de372a126e7f5ea070be59b48428ca58a712347c35582627",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791968597561595507/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "no_model_fit": true,
+  "review": {
+    "at": "2026-10-14T08:51:49.957192+00:00",
+    "task": "marked_owned_preedit_review_20261014",
+    "fork_turns": "none",
+    "status": "NOT_RUN",
+    "reason": "agent thread limit reached",
+    "score": null,
+    "code_review_complete": false
+  }
+}

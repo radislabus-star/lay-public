@@ -22,7 +22,7 @@ const LEARNING_FEEDBACK_MAX_AGE_SECS: u64 = 30;
 pub struct WordBuffer {
     current: Vec<KeyEvent>,
     prev_words: Vec<Vec<KeyEvent>>,
-    prev_had_trailing_space: bool,
+    prev_trailing_spaces: u16,
     replay_toggle_words: usize,
     pending_learning: Option<PendingLearningCorrection>,
     pending_auto_undo: Option<PendingAutoUndo>,
@@ -100,7 +100,7 @@ impl WordBuffer {
         Self {
             current: Vec::with_capacity(32),
             prev_words: Vec::with_capacity(MAX_REPLACE_WORDS),
-            prev_had_trailing_space: false,
+            prev_trailing_spaces: 0,
             replay_toggle_words: 0,
             pending_learning: None,
             pending_auto_undo: None,
@@ -129,7 +129,7 @@ impl WordBuffer {
 
     #[inline]
     pub fn prev_had_trailing_space(&self) -> bool {
-        self.prev_had_trailing_space
+        self.prev_trailing_spaces > 0
     }
 
     #[inline]
@@ -140,7 +140,7 @@ impl WordBuffer {
     #[inline]
     pub fn push(&mut self, e: KeyEvent) {
         self.current.push(e);
-        self.prev_had_trailing_space = false;
+        self.prev_trailing_spaces = 0;
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
     }
@@ -152,7 +152,14 @@ impl WordBuffer {
             if self.prev_words.len() > MAX_HISTORY_WORDS {
                 self.prev_words.remove(0);
             }
-            self.prev_had_trailing_space = true;
+            self.prev_trailing_spaces = 0;
+        }
+        if !self.prev_words.is_empty() {
+            if let Some(count) = self.prev_trailing_spaces.checked_add(1) {
+                self.prev_trailing_spaces = count;
+            } else {
+                self.reset_all();
+            }
         }
     }
 
@@ -167,7 +174,7 @@ impl WordBuffer {
             return false;
         }
         self.current.pop();
-        self.prev_had_trailing_space = false;
+        self.prev_trailing_spaces = 0;
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
         true
@@ -182,7 +189,7 @@ impl WordBuffer {
     pub fn reset_all(&mut self) {
         self.current.clear();
         self.prev_words.clear();
-        self.prev_had_trailing_space = false;
+        self.prev_trailing_spaces = 0;
         self.replay_toggle_words = 0;
         self.pending_auto_undo = None;
     }
@@ -190,6 +197,19 @@ impl WordBuffer {
     #[inline]
     pub fn is_empty(&self) -> bool {
         self.current.is_empty() && self.prev_words.is_empty()
+    }
+
+    fn checked_replay_suffix_spaces(&mut self, text: &str) -> Option<u16> {
+        let suffix = &text[text.trim_end_matches(char::is_whitespace).len()..];
+        let count = suffix
+            .bytes()
+            .all(|ch| ch == b' ')
+            .then(|| u16::try_from(suffix.len()).ok())
+            .flatten();
+        if count.is_none() {
+            self.reset_all();
+        }
+        count
     }
 }
 

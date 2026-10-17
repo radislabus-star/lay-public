@@ -1,6 +1,7 @@
-use evdev::uinput::VirtualDevice;
+use evdev::{uinput::VirtualDevice, Device};
 use lay::config::{CorrectionEngine, LayConfig};
 use lay::desktop::LayoutBackend;
+use std::collections::HashSet;
 use std::path::PathBuf;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
@@ -10,7 +11,14 @@ use super::{
     active_enter_autocorrect_from_env, active_layout_backend, call_ime_ping, call_ping,
     find_all_keyboards, find_all_pointers, layout_niri, listen_keyboard, listen_pointer, log,
     make_virtual_keyboard, release_all_virtual_keys, startup_sanitize,
-    ENTER_AUTOCORRECT_EXPERIMENT_ENV, TYPING_ASSIST_RUNTIME_READY,
+    wait_for_keyboard_event_or_timeout, ENTER_AUTOCORRECT_EXPERIMENT_ENV, SHUTDOWN_REQUESTED,
+    TYPING_ASSIST_RUNTIME_READY,
+};
+
+#[path = "startup_runtime/device_access.rs"]
+mod device_access;
+use device_access::{
+    discover_paths, recover_output, refresh_listeners, DeviceKind, Listeners, OutputState,
 };
 
 include!("startup_runtime/warmup.rs");
@@ -23,8 +31,11 @@ pub(super) fn run_daemon(
     device: Option<String>,
     verbose: bool,
 ) -> std::io::Result<()> {
-    let device_paths = keyboard_device_paths(device)?;
-    log_startup_mode(&device_paths, detect_only);
+    let explicit_device = device.map(PathBuf::from);
+    log_startup_mode(
+        &explicit_device.iter().cloned().collect::<Vec<_>>(),
+        detect_only,
+    );
 
     let startup_cfg = LayConfig::load();
     let startup_backend = active_layout_backend();
@@ -33,15 +44,7 @@ pub(super) fn run_daemon(
     warm_runtime_if_needed(detect_only, &startup_cfg);
     probe_backends(detect_only, startup_backend, &startup_cfg);
 
-    let virtual_kbd = make_virtual_keyboard_for_runtime(detect_only);
-    spawn_keyboard_threads(device_paths, virtual_kbd, verbose)
-}
-
-fn keyboard_device_paths(device: Option<String>) -> std::io::Result<Vec<PathBuf>> {
-    match device {
-        Some(path) => Ok(vec![PathBuf::from(path)]),
-        None => find_all_keyboards(),
-    }
+    maintain_input_devices(explicit_device, detect_only, verbose)
 }
 
 fn log_startup_mode(device_paths: &[PathBuf], detect_only: bool) {
@@ -105,57 +108,156 @@ fn probe_backends(detect_only: bool, backend: LayoutBackend, cfg: &LayConfig) {
     }
 }
 
-fn make_virtual_keyboard_for_runtime(detect_only: bool) -> Option<VirtualDevice> {
-    if detect_only {
-        return None;
-    }
-    match make_virtual_keyboard() {
-        Ok(mut device) => {
-            if let Err(error) = release_all_virtual_keys(&mut device) {
-                log(&format!(
-                    "⚠ uinput startup release failed ({error}). Re-typing disabled"
-                ));
-                return None;
-            }
-            log("► uinput virtual keyboard создан и очищен");
-            Some(device)
-        }
-        Err(e) => {
-            log(&format!(
-                "⚠ uinput недоступен ({e}). Re-typing работать не будет"
-            ));
-            None
-        }
+fn make_ready_virtual_keyboard() -> std::io::Result<VirtualDevice> {
+    let mut device = make_virtual_keyboard()?;
+    release_all_virtual_keys(&mut device)?;
+    Ok(device)
+}
+
+/// A listener's lifetime invalidates existing field/gesture context, including panic exit.
+struct ListenerEpoch(Arc<AtomicU64>);
+
+impl ListenerEpoch {
+    fn enter(epoch: Arc<AtomicU64>) -> Self {
+        epoch.fetch_add(1, Ordering::AcqRel);
+        Self(epoch)
     }
 }
 
-fn spawn_keyboard_threads(
-    device_paths: Vec<PathBuf>,
-    virtual_kbd: Option<VirtualDevice>,
+impl Drop for ListenerEpoch {
+    fn drop(&mut self) {
+        self.0.fetch_add(1, Ordering::AcqRel);
+    }
+}
+
+fn report_device_access(label: &str, error: Option<&std::io::Error>, warned: &mut bool) {
+    let failed = error.is_some();
+    if failed != *warned {
+        if failed {
+            eprintln!(
+                "lay: {label} unavailable ({}); retrying device access once per second",
+                error.unwrap()
+            );
+        } else {
+            eprintln!("lay: {label} access recovered");
+        }
+        *warned = failed;
+    }
+}
+
+fn maintain_input_devices(
+    explicit_device: Option<PathBuf>,
+    detect_only: bool,
     verbose: bool,
 ) -> std::io::Result<()> {
-    let virtual_kbd = Arc::new(Mutex::new(virtual_kbd));
+    let virtual_kbd = Arc::new(Mutex::new(None));
     let field_context_epoch = Arc::new(AtomicU64::new(0));
-    let mut handles = Vec::new();
-    for path in find_all_pointers().unwrap_or_default() {
-        let field_context_epoch = Arc::clone(&field_context_epoch);
-        handles.push(std::thread::spawn(move || {
-            if let Err(e) = listen_pointer(path, field_context_epoch, verbose) {
-                log(&format!("⚠ thread pointer: {e}"));
+    let mut listeners = Listeners::new();
+    let mut listener_warnings = HashSet::new();
+    let (mut output_warning, mut keyboard_warning, mut pointer_warning) = (false, false, false);
+
+    while !SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
+        match recover_output(
+            &virtual_kbd,
+            detect_only,
+            &SHUTDOWN_REQUESTED,
+            make_ready_virtual_keyboard,
+        ) {
+            Ok(OutputState::Ready | OutputState::Recovered) => {
+                report_device_access("uinput", None, &mut output_warning);
             }
-        }));
-    }
-    for path in device_paths {
-        let virtual_kbd = Arc::clone(&virtual_kbd);
-        let field_context_epoch = Arc::clone(&field_context_epoch);
-        let cfg = LayConfig::load();
-        handles.push(std::thread::spawn(move || {
-            if let Err(e) = listen_keyboard(path, virtual_kbd, field_context_epoch, verbose, cfg) {
-                log(&format!("⚠ thread keyboard: {e}"));
+            Ok(OutputState::Skipped) => {}
+            Err(error) => report_device_access("uinput", Some(&error), &mut output_warning),
+        }
+        if SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
+            break;
+        }
+        let (keyboards, pointers) = discover_paths(
+            explicit_device.as_deref(),
+            find_all_keyboards,
+            find_all_pointers,
+        );
+        report_device_access("keyboards", keyboards.as_ref().err(), &mut keyboard_warning);
+        report_device_access("pointers", pointers.as_ref().err(), &mut pointer_warning);
+        let desired: Vec<_> = keyboards
+            .unwrap_or_default()
+            .into_iter()
+            .map(|path| (DeviceKind::Keyboard, path))
+            .chain(
+                pointers
+                    .unwrap_or_default()
+                    .into_iter()
+                    .map(|path| (DeviceKind::Pointer, path)),
+            )
+            .collect();
+        listener_warnings.retain(|key| desired.contains(key) || listeners.contains_key(key));
+        let attempts = refresh_listeners(
+            &mut listeners,
+            &desired,
+            &SHUTDOWN_REQUESTED,
+            |(kind, path)| {
+                // Pass the actual successfully opened fd to the listener, not a probe followed by a second open.
+                let device = Device::open(path)?;
+                if SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
+                    return Err(std::io::Error::from(std::io::ErrorKind::Interrupted));
+                }
+                let field_context_epoch = Arc::clone(&field_context_epoch);
+                let path = path.clone();
+                let virtual_kbd = Arc::clone(&virtual_kbd);
+                let kind = kind.clone();
+                let cfg = LayConfig::load();
+                if SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
+                    return Err(std::io::Error::from(std::io::ErrorKind::Interrupted));
+                }
+                Ok(std::thread::spawn(move || {
+                    if SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
+                        return;
+                    }
+                    let _epoch = ListenerEpoch::enter(Arc::clone(&field_context_epoch));
+                    let result = match kind {
+                        DeviceKind::Keyboard => listen_keyboard(
+                            path,
+                            device,
+                            virtual_kbd,
+                            field_context_epoch,
+                            verbose,
+                            cfg,
+                        ),
+                        DeviceKind::Pointer => {
+                            listen_pointer(path, device, field_context_epoch, verbose)
+                        }
+                    };
+                    if let Err(error) = result {
+                        log(&format!(
+                            "⚠ input listener exited; device will be rediscovered: {error}"
+                        ));
+                    }
+                }))
+            },
+        );
+        for (key, result) in attempts {
+            match result {
+                Ok(()) => {
+                    if listener_warnings.remove(&key) {
+                        eprintln!("lay: input listener access recovered: {key:?}");
+                    }
+                }
+                Err(error) => {
+                    if !SHUTDOWN_REQUESTED.load(Ordering::Acquire)
+                        && listener_warnings.insert(key.clone())
+                    {
+                        eprintln!("lay: input listener unavailable ({error}); retrying: {key:?}");
+                    }
+                }
             }
-        }));
+        }
+        if !SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
+            // poll ignores a negative fd: use the existing input-loop wait owner
+            // for a timeout even while no keyboard is available.
+            wait_for_keyboard_event_or_timeout(-1, std::time::Duration::from_secs(1))?;
+        }
     }
-    for handle in handles {
+    for (_, handle) in listeners {
         let _ = handle.join();
     }
     let mut virtual_kbd = match virtual_kbd.lock() {

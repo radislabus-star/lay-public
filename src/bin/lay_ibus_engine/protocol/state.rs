@@ -1,6 +1,12 @@
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct RecordedBoundaryPrecondition {
+    pub(crate) frame: crate::engine::InputFrameIdentity,
+    pub(crate) snapshot: crate::engine::SurroundingTextSnapshot,
+}
+
 #[derive(Debug, Clone)]
 pub(crate) struct PendingImeAutoUndo {
     pub(crate) original: String,
@@ -9,6 +15,8 @@ pub(crate) struct PendingImeAutoUndo {
     pub(crate) transition: lay::typing_cpu::ObservedSystemTransition,
     pub(crate) recorded_at: Instant,
     pub(crate) atomic_submission_proven: bool,
+    pub(crate) boundary_forward_action: Option<lay::text_edit::EditAction>,
+    pub(crate) recorded_boundary_precondition: Option<RecordedBoundaryPrecondition>,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -24,6 +32,9 @@ pub(crate) struct ShiftGestureHandoff {
     pub(crate) shift_pressed_at: Option<Instant>,
     pub(crate) shift_used_as_modifier: bool,
     pub(crate) last_shift_release_at: Option<Instant>,
+    pub(crate) space_pressed: bool,
+    pub(crate) space_cancelled: bool,
+    pub(crate) last_space_release_at: Option<Instant>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

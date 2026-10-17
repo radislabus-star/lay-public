@@ -33,6 +33,51 @@ fn header(epoch: ConnectionGeneration, serial: u32) -> HeaderKey {
 }
 
 #[test]
+fn word_reset_preserves_admitted_context_metadata_without_word_authority() {
+    for content_type in [None, Some((0, 0)), Some((0, 2048)), Some((8, 0))] {
+        let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+            ConnectionGeneration(11),
+            GlobalEngineMode::Verified,
+            GlobalProfile::Lay(profile("lay-us")),
+        );
+        let owner = reducer
+            .establish_source(
+                engine_path("/engine/source"),
+                context(ConnectionGeneration(11), "/context"),
+                WordCompleteness::KnownStart,
+                7,
+            )
+            .unwrap();
+        let before = reducer.bridge_admission_token().unwrap();
+        assert!(reducer.settle_bridge_output(
+            &before,
+            SettledWordState {
+                tail_epoch: 8,
+                lineage: before.lineage,
+                content_type,
+            },
+        ));
+        let before = reducer.admission_token().unwrap();
+        reducer.observed_word_reset();
+        let after = reducer.admission_token().unwrap();
+        assert!(!reducer.revalidate(&before));
+        assert!(reducer.revalidate(&after));
+        assert_eq!(after.owner, owner);
+        assert_eq!(after.activation, before.activation);
+        assert_eq!(after.lineage.completeness, WordCompleteness::UnknownStart);
+        assert_eq!(after.lineage.observed_suffix_chars, 0);
+        assert!(reducer.exact_manual_snapshot.is_none());
+        assert_eq!(reducer.settled_content_type, content_type);
+        // Owner loss and other unobserved work still invalidate metadata.
+        reducer.malformed_or_unobserved_lifecycle();
+        assert_eq!(reducer.settled_content_type, None);
+        assert!(!reducer.revalidate(&after));
+        reducer.owner_loss_or_disconnect();
+        assert_eq!(reducer.settled_content_type, None);
+    }
+}
+
+#[test]
 fn bridge_output_settlement_preserves_lineage_and_rejects_interposed_work() {
     let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
         ConnectionGeneration(11),
@@ -121,6 +166,7 @@ fn stale_foreign_snapshot_publish_cannot_clear_the_current_owner_receipt() {
         &token,
         7,
         "abc".into(),
+        None,
         3,
         Instant::now() + Duration::from_secs(1),
     ));
@@ -130,6 +176,7 @@ fn stale_foreign_snapshot_publish_cannot_clear_the_current_owner_receipt() {
         &stale_foreign,
         7,
         "foreign".into(),
+        None,
         4,
         Instant::now() + Duration::from_secs(1),
     ));
@@ -863,6 +910,7 @@ fn unknown_start_is_sticky_until_next_observed_boundary() {
         completeness: WordCompleteness::UnknownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: None,
+        observed_first_word: None,
     });
     scope.keep_or_revoke_unknown();
     assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
@@ -1353,6 +1401,7 @@ fn stale_settlement_revokes_but_old_owner_callbacks_cannot_modify_the_new_owner(
                 completeness: WordCompleteness::KnownStart,
                 observed_suffix_chars: 0,
                 observed_boundary_floor: None,
+                observed_first_word: None,
             },
         },
     ));
@@ -1508,6 +1557,7 @@ fn expect_stamp(outcome: RendezvousOutcome<u64>, stamp: &IngressStamp<u64>) {
         completeness: WordCompleteness::KnownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: None,
+        observed_first_word: None,
     });
     if outcome == RendezvousOutcome::Stamp(stamp.clone()) {
         delivered += 1;
@@ -1673,6 +1723,92 @@ fn rendezvous_ring_eviction_fails_closed() {
         pending.recheck(),
         Some(RendezvousOutcome::Failed(RendezvousFailure::Evicted))
     );
+}
+
+#[test]
+fn completed_release_record_is_exact_one_shot_and_grants_no_stamp() {
+    let (store, key, guard, _) = rendezvous_fixture(91);
+    let release = (97, 30, crate::protocol::RELEASE_MASK);
+    assert!(store.record_completed_release(key.clone(), release, guard));
+    assert!(!store.record_completed_release(key.clone(), release, guard));
+    assert!(matches!(
+        store.begin(key.clone(), guard),
+        RendezvousBegin::Ready(RendezvousOutcome::Failed(RendezvousFailure::Revoked))
+    ));
+    assert_eq!(
+        store.take_completed_release(&key, (98, 30, crate::protocol::RELEASE_MASK)),
+        None
+    );
+    assert_eq!(
+        store.take_completed_release(&header(key.connection, 92), release),
+        None
+    );
+    assert_eq!(
+        store.take_completed_release(&key, release),
+        Some(guard.owner)
+    );
+    assert_eq!(store.take_completed_release(&key, release), None);
+    assert!(matches!(
+        store.begin(key, guard),
+        RendezvousBegin::Pending(_)
+    ));
+}
+
+#[test]
+fn completed_release_cannot_relabel_an_observed_mutation_or_exceed_the_bound() {
+    let epoch = ConnectionGeneration(20);
+    let owner = OwnerGeneration(8);
+    let store = CallbackStampStore::with_capacity(epoch, owner, 1);
+    let guard = store.guard().unwrap();
+    let observed = IngressStamp {
+        header: header(epoch, 93),
+        position: 93_u64,
+        disposition: IngressDisposition::Key {
+            owner: EngineOwner {
+                path: engine_path("/engine/source"),
+                generation: owner,
+            },
+            revocation: 1,
+        },
+    };
+    assert!(store.publish(observed.clone()));
+    let release = (97, 30, crate::protocol::RELEASE_MASK);
+    assert!(!store.record_completed_release(observed.header.clone(), release, guard));
+    let RendezvousBegin::Ready(outcome) = store.begin(observed.header.clone(), guard) else {
+        panic!("old key must stay observed");
+    };
+    expect_stamp(outcome, &observed);
+    assert_eq!(store.guard(), Some(guard));
+    let late = header(epoch, 94);
+    assert!(store.record_completed_release(late.clone(), release, guard));
+    assert!(!store.record_completed_release(header(epoch, 95), release, guard));
+    assert_eq!(store.take_completed_release(&late, release), Some(owner));
+    assert!(store.record_completed_release(header(epoch, 95), release, guard));
+}
+
+#[test]
+fn completed_release_survives_word_revocation_only_as_inert_metadata() {
+    let (store, key, guard, _) = rendezvous_fixture(96);
+    let release = (97, 30, crate::protocol::RELEASE_MASK);
+    assert!(store.record_completed_release(key.clone(), release, guard));
+    store.revoke();
+    store.replace_owner(OwnerGeneration(99));
+    let fresh = store.guard().unwrap();
+    assert!(!store.record_completed_release(header(key.connection, 97), release, guard));
+    assert!(matches!(
+        store.begin(key.clone(), fresh),
+        RendezvousBegin::Ready(RendezvousOutcome::Failed(RendezvousFailure::Revoked))
+    ));
+    assert_eq!(
+        store.take_completed_release(&key, release),
+        Some(guard.owner)
+    );
+    assert_eq!(store.guard(), Some(fresh));
+    let last = header(key.connection, 98);
+    assert!(store.record_completed_release(last.clone(), release, fresh));
+    store.terminate_observer();
+    assert_eq!(store.take_completed_release(&last, release), None);
+    assert!(!store.record_completed_release(header(key.connection, 99), release, fresh));
 }
 
 #[test]
@@ -1997,6 +2133,7 @@ fn observed_boundary_floor_reopens_only_with_retained_provenance() {
         completeness: WordCompleteness::UnknownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: None,
+        observed_first_word: None,
     });
     assert_eq!(
         scope.close_at_observed_boundary(10, Some(3)),
@@ -2027,6 +2164,7 @@ fn observed_boundary_floor_rejects_deleted_or_unobserved_separators() {
             completeness: WordCompleteness::KnownStart,
             observed_suffix_chars: 0,
             observed_boundary_floor: Some(3),
+            observed_first_word: None,
         });
         scope.reopen_at_retained_boundary(retained);
         assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
@@ -2042,6 +2180,7 @@ fn observed_boundary_floor_does_not_infer_leftward_prefix_rebasing() {
         completeness: WordCompleteness::KnownStart,
         observed_suffix_chars: 0,
         observed_boundary_floor: Some(100),
+        observed_first_word: None,
     });
     scope.close_at_observed_boundary(11, Some(159));
     assert_eq!(scope.lineage().observed_boundary_floor, Some(100));
@@ -2055,4 +2194,112 @@ fn observed_boundary_floor_does_not_infer_leftward_prefix_rebasing() {
     scope.reopen_at_retained_boundary(Some(19));
     assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
     assert_eq!(scope.lineage().observed_boundary_floor, None);
+}
+
+#[test]
+fn first_observed_word_range_is_retained_without_promoting_unknown_start() {
+    let mut scope = WordScope::new(WordLineage {
+        generation: LineageGeneration(7),
+        completeness: WordCompleteness::UnknownStart,
+        observed_suffix_chars: 0,
+        observed_boundary_floor: None,
+        observed_first_word: None,
+    });
+    for count in 1..=5 {
+        scope.observe_tail_append(count);
+    }
+    assert_eq!(scope.lineage().completeness, WordCompleteness::UnknownStart);
+    assert_eq!(scope.lineage().observed_first_word, None);
+    assert_eq!(
+        scope.close_at_observed_boundary(10, Some(5)),
+        WordCompleteness::UnknownStart
+    );
+    assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    assert_eq!(scope.lineage().observed_suffix_chars, 0);
+    scope.close_at_observed_boundary(11, Some(11));
+    assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    scope.reopen_at_retained_boundary(Some(5));
+    assert_eq!(scope.lineage().observed_first_word, None);
+    scope.revoke_for_input_gap();
+    assert_eq!(scope.lineage().observed_first_word, None);
+    assert!(std::mem::size_of::<WordLineage>() <= 24);
+}
+
+#[test]
+fn first_observed_word_range_rejects_unobserved_and_unrepresentable_prefixes() {
+    for (observed, boundary, expected) in [
+        (0, Some(5), None),
+        (3, Some(5), Some((2, 5))),
+        (6, Some(5), None),
+        (5, None, None),
+        (300, Some(300), None),
+    ] {
+        let mut scope = WordScope::new(WordLineage {
+            generation: LineageGeneration(7),
+            completeness: WordCompleteness::UnknownStart,
+            observed_suffix_chars: observed,
+            observed_boundary_floor: None,
+            observed_first_word: None,
+        });
+        scope.close_at_observed_boundary(10, boundary);
+        assert_eq!(scope.lineage().observed_first_word, expected);
+    }
+}
+
+#[test]
+fn first_observed_word_range_retains_known_start_after_unretained_enter() {
+    let mut scope = WordScope::new(WordLineage {
+        generation: LineageGeneration(7),
+        completeness: WordCompleteness::UnknownStart,
+        observed_suffix_chars: 0,
+        observed_boundary_floor: None,
+        observed_first_word: None,
+    });
+    scope.close_at_observed_boundary(10, None);
+    assert_eq!(scope.lineage().completeness, WordCompleteness::KnownStart);
+    assert_eq!(scope.lineage().observed_first_word, None);
+    for count in 1..=5 {
+        scope.observe_tail_append(count);
+    }
+    assert_eq!(scope.lineage().completeness, WordCompleteness::KnownStart);
+    assert_eq!(
+        scope.close_at_observed_boundary(11, Some(5)),
+        WordCompleteness::KnownStart
+    );
+    assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    assert_eq!(scope.lineage().observed_suffix_chars, 0);
+    scope.revoke_for_input_gap();
+    assert_eq!(scope.lineage().observed_first_word, None);
+    for length in [3, 9] {
+        scope.revoke_for_input_gap();
+        scope.observe_tail_append_span(length, length);
+        scope.close_at_observed_boundary(12, Some(length));
+        assert!(scope.lineage().observed_first_word.is_some());
+        scope.close_at_observed_boundary(13, None);
+        assert_eq!(scope.lineage().completeness, WordCompleteness::KnownStart);
+        assert_eq!(scope.lineage().observed_boundary_floor, None);
+        assert_eq!(scope.lineage().observed_first_word, None);
+        for count in 1..=5 {
+            scope.observe_tail_append(count);
+        }
+        scope.close_at_observed_boundary(14, Some(5));
+        assert_eq!(scope.lineage().observed_first_word, Some((0, 5)));
+    }
+    assert!(std::mem::size_of::<WordLineage>() <= 24);
+}
+
+#[test]
+fn first_observed_word_range_does_not_infer_known_prefix_from_retained_boundary() {
+    let mut scope = WordScope::new(WordLineage {
+        generation: LineageGeneration(7),
+        completeness: WordCompleteness::KnownStart,
+        observed_suffix_chars: 0,
+        observed_boundary_floor: Some(3),
+        observed_first_word: None,
+    });
+    scope.observe_tail_append_span(8, 5);
+    assert_eq!(scope.lineage().observed_suffix_chars, 0);
+    scope.close_at_observed_boundary(11, Some(8));
+    assert_eq!(scope.lineage().observed_boundary_floor, Some(3));
+    assert_eq!(scope.lineage().observed_first_word, None);
 }

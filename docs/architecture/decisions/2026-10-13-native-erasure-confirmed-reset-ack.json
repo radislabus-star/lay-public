@@ -1,0 +1,346 @@
+{
+  "date": "2026-10-13",
+  "recorded_at": "2026-10-12T22:54:35.258912+00:00",
+  "status": "D_SOURCE747_REVIEW9_PRIVATE706EC6_FIREFOX_NATIVE_FAIL_CHROME_NOT_TESTED",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing native Backspace shortened PendingContextResetRereceipt and confirmed reset observation carry",
+  "runtime_authority_changed": false,
+  "problem": "Final739 be710 native first-word inverse fails after actual shortened SSI following unhandled native Backspace was confirmed and a later matched Reset cleared it. C only proves completed exact native replay; this is a different effect producer.",
+  "evidence": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/nativebe710-backspace-late-reset-causal.json",
+  "first_loss": [
+    "Managed extra character commits, actual 7/7 SSI confirmed",
+    "Unhandled Backspace settles exact one scalar erasure and shortens existing confirmed predecessor",
+    "Actual 6/6 fresh SSI confirms shortened receipt",
+    "Following matched Reset arms same range unconfirmed; snapshot cleared",
+    "Inverse RPC queues waiting exact SSI; no new identical SSI observed"
+  ],
+  "limits": "747 source tests and static review9 pass; exact changed-byte Firefox proof remains FAIL. All150 functional slots attempted with supplemental field10; original15 NOT_TESTED receipt retained. Chrome stock GTK4 zero-key crash isolated to unset font DPI, private standard settings repaired; native216 NOT_TESTED before standalone Chrome phase.",
+  "options": [
+    {
+      "name": "A: one-use reset ACK from the existing proved native erasure and independently confirmed full shortened SSI",
+      "score": 9,
+      "recommended": true,
+      "scope": "One inert record in the existing pending receipt seeded only by successful native unhandled Backspace delta from an exact full actual predecessor. Store whole actual predecessor and focus/lease/layout; first full actual shortened SSI must preserve every external byte, selection/caret/end and current epoch/revision/token. Only then produce one-use ACK; capture uses that actual receipt token as Reset-only predecessor. Reuse existing restore/post-await path; do not relax completed replay scope gate."
+    },
+    {
+      "name": "B: force another SSI/change browser cache or delivery",
+      "score": 2,
+      "recommended": false
+    },
+    {
+      "name": "C: preserve arbitrary confirmed snapshots across Reset",
+      "score": 1,
+      "recommended": false
+    },
+    {
+      "name": "D: suppress Reset or extend deadlines",
+      "score": 1,
+      "recommended": false
+    }
+  ],
+  "implementation_limits": [
+    "Keep one existing pending owner and current reducer/decision/verifier/output contracts",
+    "Native erasure seed may pass through matched Reset as inert metadata but never authorize text before full new actual SSI",
+    "No normalized separators, fabricated SSI, upgraded word completeness, suffix-only external prefix acceptance or new timer",
+    "ACK is spent at first matched Reset even missing output/snapshot; unchanged refresh cannot rearm; second Reset without new effect refuses",
+    "Definitive capability/content/focus/activation/layout/native command/selection/caret/effect epoch change clears seed/ACK; valid independently confirmed ordinary SSI remains available",
+    "Keep C completed replay producer/helper and its spent paired-scope condition unchanged; same shared restore logic may accept typed erasure proof only after its own proof checks",
+    "Use actual callback causal RED first; keep existing C06 native erasure tests and C marker one-use negatives unchanged"
+  ],
+  "required_tests": [
+    "Actual full before and after native Backspace, late Reset with no new SSI retains original shortened snapshot/revision and allows same-owner manual inverse",
+    "Reset before first shortened SSI cannot authorize deletion; later whole exact SSI may create ACK from preserved inert effect seed",
+    "Whole external prefix change, selection, off-end caret, missing/partial/wrong SSI, held command, handled Backspace or whole erase cannot create ACK",
+    "Identity, owner, content/password/change-back, layout, capability/raw-preedit, epoch and asynchronous revocation refuse carry",
+    "One use, identical SSI cannot rearm, missing output spends, subsequent distinct actual native erasure can produce its own ACK",
+    "Source C06 and C original full proof unchanged; changed-byte Firefox60+panel6+150/speed and Chrome same protocol required"
+  ],
+  "plan_review": {
+    "agent": "/root/native_erasure_reset_ack_plan_review_20261013",
+    "score": 9,
+    "passes": 1,
+    "blockers": [],
+    "scope": "Read-only plan, whole actual pre-key snapshot then full after confirmation; capture both arm/restore with receipt token. Keep original predecessor and unchanged C06/C tests."
+  },
+  "causal_red": {
+    "local": "/home/ubu/.cache/lay/development/run-kevupqdf/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-uYEhdc/RESULT.json",
+    "archive_sha256": "fbd23df28f5f416df931d968a29bab9fad12b5090fcdbd2b4b6623ca06795380",
+    "passed": 739,
+    "failed": 1,
+    "selected": 740,
+    "fmt": "PASS",
+    "first_failed_assertion": "Original actual shortened snapshot a missing after actual Reset; no new SSI injected"
+  },
+  "implementation": "Typed Awaiting whole actual predecessor/effect token and Confirmed actual shortened receipt token in existing pending owner. First actual SSI spends seed even if contradictory. Existing arm and restore capture use erasure receipt token only for matched Reset, preserving generic older predecessor/C06. First Reset spends ACK before await; existing source predicate and post-await checks retained; completed replay C paired-scope requirement untouched.",
+  "source_first_gate": {
+    "local": "/home/ubu/.cache/lay/development/run-jdx90ps4/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-2ADOHX/RESULT.json",
+    "archive_sha256": "571b3a4c163532988725672e4af1632eb519c9ee3800d495aeec14a84590038e",
+    "tests": {
+      "executed": 747,
+      "failed": 1,
+      "passed": 746,
+      "selected": 747
+    },
+    "verdict": "FAIL",
+    "first_loss": "New Reset-before-shortened-SSI test confirms ordinary SSI but seed not retained for later effect ACK; original causal test and all original tests PASS"
+  },
+  "code_review": {
+    "agent": "/root/native_erasure_reset_ack_code_review1_20261013",
+    "score": 9,
+    "passes": 1,
+    "blockers": [],
+    "scope": "Static read-only D source, repaired exact pinned predecessor Reset bridge; no checks or runtime by reviewer. Original C two-pass scope untouched; remote747 and physical proof pending."
+  },
+  "source_green": {
+    "local": "/home/ubu/.cache/lay/development/run-cah22ovv/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-OvGO7U/RESULT.json",
+    "archive_sha256": "98c334b015c3c782c16e78881c9bed802b6e3418b69638981a5cd4146acf21cd",
+    "tests": {
+      "executed": 747,
+      "failed": 0,
+      "passed": 747,
+      "selected": 747
+    },
+    "fmt": "PASS"
+  },
+  "private_build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-OvGO7U",
+    "archive_sha256": "98c334b015c3c782c16e78881c9bed802b6e3418b69638981a5cd4146acf21cd",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791846034206580725.txt",
+    "elapsed_seconds": 182.198838368,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "706ec6cb1a4c356ecad3766815ca0563b6ec5526cb2907b60a5a3197ad16a7f8",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791846216405329810/bin/lay-ibus-engine",
+      "bytes": 8218512
+    },
+    "lay-daemon": {
+      "sha256": "2467d7aedf603f965e25403e716dd3eb0f546a3cd842513b227fd11c144d9250",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791846216405329810/bin/lay-daemon",
+      "bytes": 9255760
+    }
+  },
+  "native_firefox": {
+    "schema": "lay.native706-firefox-proof.v1",
+    "verdict": "FAIL",
+    "ime_sha256": "706ec6cb1a4c356ecad3766815ca0563b6ec5526cb2907b60a5a3197ad16a7f8",
+    "daemon_sha256": "2467d7aedf603f965e25403e716dd3eb0f546a3cd842513b227fd11c144d9250",
+    "standard": {
+      "counts": {
+        "PASS": 55,
+        "FAIL": 5
+      },
+      "ordinary_counts": {
+        "PASS": 120
+      },
+      "receipts": [
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-standard-normal-6lm29gib/RESULT.json",
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-standard-private-ukfgdjbu/RESULT.json",
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-standard-fullscreen-5ppuskzl/RESULT.json"
+      ],
+      "failures": [
+        {
+          "window": "normal",
+          "word_mode": "active",
+          "field": 5,
+          "status": "FAIL",
+          "phase": "burst",
+          "errors": null
+        },
+        {
+          "window": "normal",
+          "word_mode": "space",
+          "field": 7,
+          "status": "FAIL",
+          "phase": "burst",
+          "errors": null
+        },
+        {
+          "window": "private",
+          "word_mode": "space",
+          "field": 7,
+          "status": "FAIL",
+          "phase": "burst",
+          "errors": null
+        },
+        {
+          "window": "fullscreen",
+          "word_mode": "space",
+          "field": 4,
+          "status": "FAIL",
+          "phase": "burst",
+          "errors": null
+        },
+        {
+          "window": "fullscreen",
+          "word_mode": "space",
+          "field": 8,
+          "status": "FAIL",
+          "phase": "burst",
+          "errors": null
+        }
+      ]
+    },
+    "panel": {
+      "counts": {
+        "PASS": 6
+      },
+      "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-c09-c10-cjk9nwyy/RESULT.json"
+    },
+    "functional": {
+      "initial_counts": {
+        "PASS": 79,
+        "FAIL": 40,
+        "BLOCKED": 16,
+        "NOT_TESTED": 15
+      },
+      "initial_receipts": [
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-functional-u_6_4vbg/RESULT.json",
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-functional-4zz4nw01/RESULT.json",
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-functional-izzs3xu9/RESULT.json",
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-functional-nmg7ofg4/RESULT.json",
+        "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-functional-ritxveuz/RESULT.json"
+      ],
+      "supplemental_counts": {
+        "PASS": 8,
+        "BLOCKED": 4,
+        "FAIL": 3
+      },
+      "supplemental_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-functional-dexuto9p/RESULT.json",
+      "unique150_counts": {
+        "PASS": 87,
+        "FAIL": 43,
+        "BLOCKED": 20
+      },
+      "body_sha256": "45ae44b96e767a61bec7fa6cbf5c82888fe65368fc3798d42b0ebd81c6cea5a6",
+      "failures_by_plan": {
+        "base": {
+          "PASS": 10
+        },
+        "short": {
+          "PASS": 10
+        },
+        "long": {
+          "PASS": 10
+        },
+        "mixed": {
+          "PASS": 10
+        },
+        "prefix": {
+          "FAIL": 7,
+          "BLOCKED": 3
+        },
+        "en_first": {
+          "PASS": 10
+        },
+        "space_en_ru": {
+          "PASS": 10
+        },
+        "space_ru_en": {
+          "PASS": 10
+        },
+        "clean_en": {
+          "PASS": 10
+        },
+        "undo": {
+          "FAIL": 10
+        },
+        "moved_boundary": {
+          "PASS": 7,
+          "BLOCKED": 3
+        },
+        "tab": {
+          "BLOCKED": 10
+        },
+        "cursor": {
+          "FAIL": 10
+        },
+        "selection": {
+          "FAIL": 7,
+          "BLOCKED": 3
+        },
+        "focus": {
+          "FAIL": 9,
+          "BLOCKED": 1
+        }
+      }
+    },
+    "latency": {
+      "standard": {
+        "required": 420,
+        "measured": 406,
+        "missing": 14,
+        "p50_ms": 109.79550050571561,
+        "p95_ms": 118.59467099606991,
+        "max_ms": 133.89635100215673,
+        "clock": "evdev write-return of last trigger release -> first exact AT-SPI target; kernel release NOT_MEASURED"
+      },
+      "panel": {
+        "required": 48,
+        "measured": 48,
+        "missing": 0,
+        "p50_ms": 111.06127550080419,
+        "p95_ms": 119.26014400273561,
+        "max_ms": 123.10827500373125,
+        "clock": "evdev write-return of last trigger release -> first exact AT-SPI target; kernel release NOT_MEASURED"
+      },
+      "functional_double_shift": {
+        "required": 210,
+        "measured": 103,
+        "missing": 107,
+        "p50_ms": 113.27900400012732,
+        "p95_ms": 146.2605020031333,
+        "max_ms": 165.2263519987464,
+        "clock": "evdev write-return of last trigger release -> first exact AT-SPI target; kernel release NOT_MEASURED"
+      },
+      "functional_space": {
+        "required": 50,
+        "measured": 37,
+        "missing": 13,
+        "p50_ms": 17.552537001669407,
+        "p95_ms": 23.646031007170677,
+        "max_ms": 24.783300004899502,
+        "clock": "evdev write-return of last trigger release -> first exact AT-SPI target; kernel release NOT_MEASURED"
+      },
+      "functional_tab": {
+        "required": 10,
+        "measured": 0,
+        "missing": 10,
+        "p50_ms": null,
+        "p95_ms": null,
+        "max_ms": null,
+        "clock": "evdev write-return of last trigger release -> first exact AT-SPI target; kernel release NOT_MEASURED"
+      },
+      "functional_selection": {
+        "required": 10,
+        "measured": 0,
+        "missing": 10,
+        "p50_ms": null,
+        "p95_ms": null,
+        "max_ms": null,
+        "clock": "evdev write-return of last trigger release -> first exact AT-SPI target; kernel release NOT_MEASURED"
+      }
+    },
+    "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native706-firefox-raw-1791848428889609934/RAW.json",
+    "chrome_native": "NOT_TESTED:216",
+    "runtime_authority_changed": false,
+    "delivery_routes_changed": false,
+    "wire": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-full-ssi-wire-b5zur1fi/WIRE.json",
+    "trace_completeness": "UNKNOWN",
+    "latency_observer_overhead": "NOT_MEASURED",
+    "scope_empty_verified": true
+  }
+}

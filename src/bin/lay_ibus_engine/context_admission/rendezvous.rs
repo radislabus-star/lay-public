@@ -39,13 +39,34 @@ pub(crate) enum RendezvousOutcome<P> {
 }
 
 #[derive(Debug)]
+enum CallbackRecord<P> {
+    Observed(IngressStamp<P>),
+    // Native callback completion is not an ingress stamp: it has no receive
+    // position and grants no word authority. It shares the existing bound.
+    CompletedRelease {
+        header: HeaderKey,
+        key: (u32, u32, u32),
+        owner: OwnerGeneration,
+    },
+}
+
+impl<P> CallbackRecord<P> {
+    fn header(&self) -> &HeaderKey {
+        match self {
+            Self::Observed(stamp) => &stamp.header,
+            Self::CompletedRelease { header, .. } => header,
+        }
+    }
+}
+
+#[derive(Debug)]
 struct StampState<P> {
     connection: ConnectionGeneration,
     owner: OwnerGeneration,
     revocation: u64,
     eviction: u64,
     terminated: bool,
-    stamps: VecDeque<IngressStamp<P>>,
+    stamps: VecDeque<CallbackRecord<P>>,
 }
 
 #[derive(Debug)]
@@ -99,7 +120,7 @@ where
                 || state
                     .stamps
                     .iter()
-                    .any(|existing| existing.header == stamp.header)
+                    .any(|existing| existing.header() == &stamp.header)
             {
                 state.revocation = next_generation(state.revocation);
                 state.stamps.clear();
@@ -109,7 +130,7 @@ where
                     state.stamps.pop_front();
                     state.eviction = next_generation(state.eviction);
                 }
-                state.stamps.push_back(stamp);
+                state.stamps.push_back(CallbackRecord::Observed(stamp));
                 (true, true)
             }
         };
@@ -117,6 +138,70 @@ where
             self.changed.notify(usize::MAX);
         }
         accepted
+    }
+
+    /// Complete only a callback whose ingress is still absent. An existing
+    /// observed key keeps its original admission/settlement path.
+    pub(crate) fn record_completed_release(
+        &self,
+        header: HeaderKey,
+        key: (u32, u32, u32),
+        guard: RendezvousGuard,
+    ) -> bool {
+        let Ok(mut state) = self.state.lock() else {
+            return false;
+        };
+        if state.terminated
+            || header.connection != state.connection
+            || state.connection != guard.connection
+            || state.owner != guard.owner
+            || state.revocation != guard.revocation
+            || state.stamps.iter().any(|record| record.header() == &header)
+        {
+            return false;
+        }
+        if state.stamps.len() == self.capacity {
+            // Do not spend another unobserved completion merely to record one.
+            let Some(index) = state
+                .stamps
+                .iter()
+                .position(|record| matches!(record, CallbackRecord::Observed(_)))
+            else {
+                return false;
+            };
+            state.stamps.remove(index);
+            state.eviction = next_generation(state.eviction);
+        }
+        state.stamps.push_back(CallbackRecord::CompletedRelease {
+            header,
+            key,
+            owner: guard.owner,
+        });
+        drop(state);
+        self.changed.notify(usize::MAX);
+        true
+    }
+
+    /// Canonical ingress consumes an exact one-shot completion fact. It can
+    /// retire late metadata across revocation, never authorize a successor.
+    pub(crate) fn take_completed_release(
+        &self,
+        header: &HeaderKey,
+        key: (u32, u32, u32),
+    ) -> Option<OwnerGeneration> {
+        let mut state = self.state.lock().ok()?;
+        if state.terminated || header.connection != state.connection {
+            return None;
+        }
+        let index = state.stamps.iter().position(|record| {
+            matches!(record,
+            CallbackRecord::CompletedRelease { header: recorded, key: recorded_key, .. }
+                if recorded == header && *recorded_key == key)
+        })?;
+        let CallbackRecord::CompletedRelease { owner, .. } = state.stamps.remove(index)? else {
+            return None;
+        };
+        Some(owner)
     }
 
     pub(crate) fn guard(&self) -> Option<RendezvousGuard> {
@@ -142,7 +227,12 @@ where
     pub(crate) fn revoke(&self) {
         if let Ok(mut state) = self.state.lock() {
             state.revocation = next_generation(state.revocation);
-            state.stamps.clear();
+            // An already completed release cannot become a future mutation of
+            // a successor. Preserve only these non-authoritative facts until
+            // their exact canonical ingress arrives (or the bound evicts them).
+            state
+                .stamps
+                .retain(|record| matches!(record, CallbackRecord::CompletedRelease { .. }));
         }
         self.changed.notify(usize::MAX);
     }
@@ -198,8 +288,13 @@ where
         {
             return Lookup::Failed(RendezvousFailure::Revoked);
         }
-        if let Some(stamp) = state.stamps.iter().find(|stamp| stamp.header == *key) {
-            return Lookup::Stamp(stamp.clone());
+        if let Some(record) = state.stamps.iter().find(|record| record.header() == key) {
+            return match record {
+                CallbackRecord::Observed(stamp) => Lookup::Stamp(stamp.clone()),
+                CallbackRecord::CompletedRelease { .. } => {
+                    Lookup::Failed(RendezvousFailure::Revoked)
+                }
+            };
         }
         // Publishing this exact stamp may evict an unrelated older entry.
         // Only a missing stamp is ambiguous after eviction; the epoch checks

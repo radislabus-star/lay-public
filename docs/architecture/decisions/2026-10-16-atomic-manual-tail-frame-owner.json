@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "status": "SOURCE_VERIFIED",
+  "task": "TD-147 existing Atomic manual frame owner",
+  "baseline_commit": "05e1e448269bb225f80d0f6c930b6f7b4217c012",
+  "decision": "Within an already admitted AtomicV1 speculative key frame, route committed-tail manual projection to the existing authorized AtomicEffectBuilder replacement executor. Legacy manual RPC keeps its current exact-tail delegation and ownership. No new backend or output protocol; no relaxed edit validation or client-specific branch.",
+  "reason": "The existing shared manual target method delegates a completed tail to the legacy daemon even while AtomicV1 exclusively owns the key frame; that delegation cannot execute. Double-Space necessarily completes the word, exposing the same missing owner transition as Atomic Double Shift after Space. Fix the shared authority transfer once, not a gesture-specific bypass.",
+  "verification": "Real Atomic manual-target-before-change regression pending. Options9/10 use existing frame executor,7/10 leave optional shortcut unavailable to Atomic clients,2/10 legacy RPC fallback from Atomic (rejected). Root selects9/10; include in full affected proof and independent implementation reviews(max2). Owning task tech_debt/147-explicit-undo-and-double-space.md. Genuine owner RED: td147-atomic-owner-red-qhc6cbhp/RESULT.json, expectedSome(true) vsactualNone on current shared manual method with existing AtomicEffectBuilder; no compile failure. Archivead205070fccfa0efffff938c95e974437b0c97e595edbb5a36ba1498738536d6. Small same-frame selector repair follows, all existing verifier/frame/profile restrictions preserved. Actual complete8-event Atomic stream passes; old-selector controlled reversion fails both2/2. Final complete3209/3209 and code review9/10; physical Atomic client NOT_TESTED.",
+  "not_tested": "New executable regression, production change, physical Atomic client behavior and native latency pending. Installed runtime1.0.87 unchanged; stock browser native proof separate.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/shift.rs",
+    "src/bin/lay_ibus_engine/atomic.rs"
+  ],
+  "runtime_authority_changed": true,
+  "authority_scope": "Already admitted AtomicOwned manual key keeps the existing same-frame executor; legacy RPC admission and transport authority unchanged.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

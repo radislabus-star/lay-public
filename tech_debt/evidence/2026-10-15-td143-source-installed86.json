@@ -1,0 +1,128 @@
+{
+  "schema": "lay.source-install-evidence.v1",
+  "task": "TD-143",
+  "version": "1.0.86",
+  "completed_utc": "2026-10-15T21:21:27.831514+00:00",
+  "scope": "native-terminal preference source proof and installed identities; physical-client acceptance separate",
+  "source": {
+    "passed": 868,
+    "failed": 0,
+    "selected": 868,
+    "ime_tests": 815,
+    "contract_tests": 53,
+    "receipt": "/home/ubu/.cache/lay/development/run-0tmq3hj2/RESULT.json",
+    "receipt_sha256": "1f13aa8e5a5601c128febde6db481da51a208f1fc3d8be81ac45fa58f7fde3bc",
+    "tested_archive_sha256": "7476ebb16e66367b76a6ea18360cfc390746b7ef59ae8a715326db9edde5e4d4",
+    "built_archive_sha256": "caa25a7721a2281e8d017bfef463f238814e6c954e40ac665be83d52558800ef",
+    "rust_files": 740,
+    "rust_source_parity": true,
+    "unchanged_rust_files": 731,
+    "private_ime_changed_files": [
+      "src/bin/lay_ibus_engine/composition_commit.rs",
+      "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+      "src/bin/lay_ibus_engine/engine.rs",
+      "src/bin/lay_ibus_engine/engine/types.rs",
+      "src/bin/lay_ibus_engine/ibus_interface.rs",
+      "src/bin/lay_ibus_engine/managed.rs",
+      "src/bin/lay_ibus_engine/state.rs",
+      "src/bin/lay_ibus_engine/tail_memory.rs",
+      "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+    ],
+    "library_and_daemon_unchanged": true,
+    "word_scope_reducer_and_delivery_primitives_unchanged": true
+  },
+  "native_preference_proof": {
+    "admitted_callbacks_before_repair": {
+      "passed": 4,
+      "failed": 1,
+      "total": 5
+    },
+    "after_repair": {
+      "passed": 5,
+      "failed": 0,
+      "total": 5
+    },
+    "three_distinct_user_correction_episodes_persisted": true,
+    "final_receipt": "/home/ubu/.cache/lay/development/td143-source-subset-dq9qpgfo/RESULT.json",
+    "first_and_second_words": true,
+    "real_press_release_callbacks": true,
+    "physical_kitty_gui_tested": false,
+    "initial_start": "KnownStart established by ordinary native Enter; fresh-focus UnknownStart is not upgraded"
+  },
+  "reviews": {
+    "plan": 7,
+    "code_pass1": 7,
+    "code_pass2": 8,
+    "max_passes": 2,
+    "material_runtime_defects_remaining": 0,
+    "nonblocking_extra_ordinary_key_revalidation_removed": true,
+    "td142_prior_scores_unchanged": [
+      6,
+      7
+    ]
+  },
+  "architecture": {
+    "verdict": "PASS",
+    "invariants_passed": 11,
+    "canon_tests_passed": 15,
+    "receipt": "/home/ubu/.cache/lay/development/td143-release86-20261015/GRAPH_RESULT.json"
+  },
+  "build": {
+    "features": [],
+    "dependency_parity": true,
+    "seconds": 185.58972029096913,
+    "binary_sha256": {
+      "lay": "68b40b86a6f85af245db1b1019586b382a3135b0eefd38ee4afb84dfc81e840b",
+      "lay-daemon": "d01d35389ebfe9abfbaed0a7da68b9c0dd9055c2383998eaa031a3a66f5dbf0e",
+      "lay-ibus-engine": "752dc328b1084a77dfba42cab81f57b9785c0f6e43e615e61c56f2bd8bc4950e"
+    },
+    "receipt": "/home/ubu/.cache/lay/development/td143-release86-20261015/BUILD.json"
+  },
+  "installation": {
+    "status": "INSTALLED_CORE86_IDENTITIES_VERIFIED_NATIVE_NOT_TESTED",
+    "receipt": "/home/ubu/.cache/lay/development/td143-release86-20261015/INSTALL.json",
+    "receipt_sha256": "675ef40efbb7665fe64fa63abadc26acf167af131be6617a409e1a612f88dac0",
+    "loaded_sha256": {
+      "daemon": "d01d35389ebfe9abfbaed0a7da68b9c0dd9055c2383998eaa031a3a66f5dbf0e",
+      "ime": "752dc328b1084a77dfba42cab81f57b9785c0f6e43e615e61c56f2bd8bc4950e"
+    },
+    "cli_version": "lay 1.0.86",
+    "extension_version": "1.0.86",
+    "protected_files": 24,
+    "global_ibus_l11_l3_preserved": true,
+    "config_sources_mode_preserved": true,
+    "functional_input_keys": 0,
+    "delivery_routes_changed": false,
+    "models_changed": false
+  },
+  "not_tested": [
+    "new physical Kitty rendering/input",
+    "native input latency",
+    "new full Firefox/Chrome matrix",
+    "all-helper release acceptance"
+  ],
+  "historical_browser_matrix": {
+    "Firefox": {
+      "PASS": 170,
+      "FAIL": 27,
+      "BLOCKED": 19,
+      "NOT_TESTED": 0,
+      "total": 216
+    },
+    "Chrome": {
+      "PASS": 179,
+      "FAIL": 24,
+      "BLOCKED": 13,
+      "NOT_TESTED": 0,
+      "total": 216
+    },
+    "total": {
+      "PASS": 349,
+      "FAIL": 51,
+      "BLOCKED": 32,
+      "NOT_TESTED": 0,
+      "total": 432
+    }
+  },
+  "full_release_acceptance": false
+}

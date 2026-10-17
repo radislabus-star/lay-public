@@ -248,6 +248,7 @@ where
 
 #[derive(Debug, Clone, Default, PartialEq, Eq)]
 pub(super) struct UsageHotState {
+    restored_words: HashMap<UsageTextId, Vec<UsageTextId>>,
     words: UsageHotCountMap<UsageTextId>,
     accepted_words: UsageHotCountMap<UsageTextId>,
     context_words: UsageHotCountMap<UsageContextWordKey>,
@@ -265,6 +266,20 @@ pub(super) struct UsageHotState {
 impl UsageHotState {
     pub(super) fn from_counts(counts: &UsageCounts) -> Self {
         Self {
+            restored_words: counts
+                .restored_words
+                .iter()
+                .map(|(word, votes)| {
+                    (
+                        usage_text_id(word),
+                        votes
+                            .iter()
+                            .take(super::restorations::THRESHOLD)
+                            .map(|vote| usage_text_id(vote))
+                            .collect(),
+                    )
+                })
+                .collect(),
             words: UsageHotCountMap::from_text_map(&counts.words, |text| Some(usage_text_id(text))),
             accepted_words: UsageHotCountMap::from_text_map(&counts.accepted_words, |text| {
                 Some(usage_text_id(text))
@@ -308,6 +323,12 @@ impl UsageHotState {
     pub(super) fn logical_payload_bytes(&self) -> usize {
         self.words
             .logical_payload_bytes()
+            .saturating_add(
+                self.restored_words
+                    .values()
+                    .map(|votes| mem::size_of::<UsageTextId>() * (1 + votes.len()))
+                    .sum::<usize>(),
+            )
             .saturating_add(self.accepted_words.logical_payload_bytes())
             .saturating_add(self.context_words.logical_payload_bytes())
             .saturating_add(self.context_frontier.logical_payload_bytes())
@@ -322,6 +343,13 @@ impl UsageHotState {
     }
 
     pub(super) fn apply_event(&mut self, event: &UsageEvent) {
+        if let Some(word) = super::restorations::restored_word(event) {
+            let episode = usage_text_id(event.episode_id.as_deref().expect("validated episode"));
+            let votes = self.restored_words.entry(usage_text_id(&word)).or_default();
+            if votes.len() < super::restorations::THRESHOLD && !votes.contains(&episode) {
+                votes.push(episode);
+            }
+        }
         let Some(projected) = UsageEventProjection::from_event(event) else {
             return;
         };
@@ -404,6 +432,12 @@ impl UsageHotState {
                 projected.operation,
             );
         }
+    }
+
+    pub(super) fn restoration_count(&self, word: &str) -> usize {
+        self.restored_words
+            .get(&usage_text_id(word))
+            .map_or(0, Vec::len)
     }
 
     pub(super) fn surface_coverage(&self, surface: &str) -> UsageSurfaceCoverage {

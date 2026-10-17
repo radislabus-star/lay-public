@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Reject policy-only repair. Apply existing repeated-run geometry before full-reference lookup in the existing repeated-letter selector and reuse unchanged candidates; explicitly bind IME latency proof to runtime policy with nonvacuity checks.",
+  "reason": "Frozen policy-only contrast fails591846us. Generic substage observer localizes581798us to the first repeated-letter call; exact-deletion lookup613us. Source calls full exact reference before repeated-run geometry, although this no-repeat input must return None. Select pure applicability before lexical evidence; no authority/rank/model/lattice change.",
+  "verification": "TDD RED1818selected/1817PASS/1FAIL exactly the new no-repeat cold-reference assertion, then controlled systemic GREEN6/6: actual IME3/3 and byte-identical baseline full-reference fixtures3/3; unchanged50000us debug budget, unique maxima6958/6938us and all requests12candidates. Fresh complete canonical source gate PASS3048/3048 required+11/11 serialized performance, format/canon/manifest/lint/release. Full receipt tab-full-4reofpse/FULL_GATE.json SHA248d9ecbd967fd39b1985a205041b514f798798f8640c0d6527999cf9e208212; archive4c53a2e550a38c42f4e73ed7d84e157e32e3ab169775a4e33a3a5da0361f1753 stable. Final product-code review2/2 score9/10, no material finding. Exact source/candidate bindings and all retained negative diagnostics are linked by tech_debt/evidence/2026-10-10-td138-complete-source-proof.json. TD138 DONE_SOURCE_SCOPE, no native or installation admission.",
+  "not_tested": "New-byte native acceptance, original2bd failure attribution, GTK/Qt Wayland aggregation, changed literal-Space native latency/RSS and startup first-key latency NOT_TESTED. Installed2bd unchanged. Native inverse requires actual four-path engine-process isolation and a fresh grant.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/nanda_wave/candidate_gate.rs",
+    "src/ru_typo/repeated.rs",
+    "scripts/test_lanes/discovery.py",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "owning_task": "tech_debt/138-bind-ime-latency-proof-to-runtime-authority.md",
+  "owner": "Existing HotFieldPolicy and candidate-gate proof fixtures; root implements, fresh-context reviewers read only.",
+  "scope": "Minimal existing-operator geometry reorder plus stronger IME proof fixtures; model, scorer, lexical protections, reference authority, candidate/lattice, cache, budget and TD133 transport frozen. Root implements; reviewers read only. One shared remote guarded lease."
+}

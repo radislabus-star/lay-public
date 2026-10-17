@@ -9,6 +9,23 @@ use super::context::ManualTriggerEventContext;
 use super::fire::{fire_configured_manual_trigger, fire_scoped_manual_trigger};
 
 pub(crate) fn handle_manual_trigger_event(mut ctx: ManualTriggerEventContext<'_>) -> bool {
+    if ctx.trigger_key == KeyCode::KEY_SPACE {
+        let fired = super::super::trigger_fsm::observe_double_space(
+            ctx.dshift_state,
+            ctx.key,
+            ctx.value,
+            ctx.shift_state.any_modifier_active(),
+            Instant::now(),
+            ctx.shift_window,
+        );
+        if fired {
+            let events = ctx.events_since_word_start;
+            super::fire::fire_literal_last_word_trigger(ctx.fire_context(), events);
+        }
+        // Presses and the first release continue through ordinary Space
+        // accounting. Only the completed command owns the second release.
+        return fired;
+    }
     if ignored_side_trigger_key(&ctx) {
         cancel_pending_manual_trigger_on_other_key(&mut ctx);
         return true;
@@ -172,14 +189,22 @@ fn pending_multi_tap_can_continue(ctx: &ManualTriggerEventContext<'_>, now: Inst
 fn cancel_pending_manual_trigger_on_other_key(ctx: &mut ManualTriggerEventContext<'_>) {
     if !ctx.dshift_state.is_idle() && ctx.value == 1 {
         if ctx.verbose {
-            log(&format!("· FSM: cancel → Idle (key {})", ctx.code));
+            if crate::config_runtime::daemon_input_retention_allowed() {
+                log(&format!("· FSM: cancel → Idle (key {})", ctx.code));
+            } else {
+                log("· FSM: cancel → Idle; payload retention disabled");
+            }
         }
         ctx.dshift_state.cancel();
     }
     if ctx.pending_multi_tap.is_some() && ctx.value == 1 {
         *ctx.pending_multi_tap = None;
         if ctx.verbose {
-            log(&format!("· FSM: multi-tap cancel (key {})", ctx.code));
+            if crate::config_runtime::daemon_input_retention_allowed() {
+                log(&format!("· FSM: multi-tap cancel (key {})", ctx.code));
+            } else {
+                log("· FSM: multi-tap cancel; payload retention disabled");
+            }
         }
     }
 }

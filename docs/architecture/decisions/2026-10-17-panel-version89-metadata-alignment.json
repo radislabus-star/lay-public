@@ -1,0 +1,32 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-17",
+  "status": "INSTALLED_AND_PUBLISHED_IDENTITIES_VERIFIED",
+  "owning_document": "docs/development/td121-core-experiments.md",
+  "decision": "Align only the exported panel APP_VERSION from1.0.88 to1.0.89. Preserve all exact tested core bytes, full3211/3211, main CI/Security firstattempt and whole native432+optional80 receipts. No behavior re-test or rebuild for this display-only correction. Use exact old-byte/one-literal/new-byte proof, never a generic source-hash exemption.",
+  "failed_install": "td155-install89-20261017/INSTALL.json: extension version did not settle; automatic six-file rollback VERIFIED and old88 loaded hashes independently checked.",
+  "evidence": "/home/ubu/.cache/lay/development/td155-install89-20261017/PANEL-VERSION-ALIGNMENT.json",
+  "source_tested_commit": "8562c2bbd690ed3d885f676e8f62145f1f11e0e0",
+  "before_sha256": "5e152ce0db238bfc86b75c23d8853852ebe44cfef8bb13e2b872dbdeeeca3517",
+  "after_sha256": "a64b41f3412ad37e69a2015c0c0b215ddfe0d41df46ceaf4ef60dd23bdaa5560",
+  "source_path": "extension/lay@radislabus-star.github.io/tray_support.js",
+  "literal_change": {
+    "before": "export const APP_VERSION = '1.0.88';",
+    "after": "export const APP_VERSION = '1.0.89';"
+  },
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false,
+  "gates": "993 full-source inputs must match except this exact reversible display literal and the normal generated graph receipt. All3 build/native core binaries identical. Private installer validates old proof SHA and full byte equality before accepting new displayed version. Original build/source/native/failed-install receipts are immutable. GlobalIBus/L1.1/L3/config/sources/mode and23protected files remain guarded.",
+  "final_evidence": {
+    "install_receipt": "/home/ubu/.cache/lay/development/td155-install89-20261017/install-aligned/INSTALL.json",
+    "completed_utc": "2026-10-16T22:40:07.399022+00:00",
+    "metadata_canonical": "/home/ubu/.cache/lay/development/td155-version-metadata-canonical-fy4002ss/RESULT.json",
+    "package_review": "9/10 pass2/2, separate from source review",
+    "protected_files": 23,
+    "new_functional_tests": 0,
+    "input_keys": 0,
+    "source_release": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.89",
+    "tag_commit": "e9d40144fff79c59ea7189599b6957b2cec326bb"
+  }
+}

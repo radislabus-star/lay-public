@@ -1,0 +1,105 @@
+{
+  "schema": "lay.td138.complete-source-proof.v1",
+  "status": "PASS_SOURCE_SCOPE",
+  "scope": "canonical_source_functional_performance_lint_release_not_native",
+  "full_gate": {
+    "path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/FULL_GATE.json",
+    "sha256": "248d9ecbd967fd39b1985a205041b514f798798f8640c0d6527999cf9e208212",
+    "result_path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/RESULT.json",
+    "result_sha256": "b23dc047e7d0ffeecec8745a54acd7fe7c13bde6905fbf5005cf6a06ba5c48e1",
+    "log_path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/run.log",
+    "log_sha256": "832974bd273ee0e148c36f90c6ed41d06e27a8dbad984efa0ca742361f88d429",
+    "source_archive_sha256": "4c53a2e550a38c42f4e73ed7d84e157e32e3ab169775a4e33a3a5da0361f1753",
+    "source_stable": true,
+    "elapsed_seconds": 817.090502864914
+  },
+  "functional": {
+    "selected": 3048,
+    "passed": 3048,
+    "failed": 0,
+    "correctness": 3012,
+    "package": 36,
+    "required_targets_executed": 33,
+    "manifest_targets": 38,
+    "ime": 710,
+    "known_failures": 0,
+    "infrastructure_failures": 0
+  },
+  "performance": {
+    "selected": 11,
+    "passed": 11,
+    "failed": 0,
+    "scope": "serialized unchanged identities and budgets; startup warmup excluded from prefix readout"
+  },
+  "remaining_canonical_gates": [
+    "format",
+    "architecture canon and manifest",
+    "default and research lint",
+    "GNOME Node metadata syntax",
+    "desktop Python and shell syntax",
+    "Firefox compatibility regression",
+    "CLI smoke",
+    "release all bins and research tools",
+    "git diff check"
+  ],
+  "lint": {
+    "default_dead_code_inventory": 530,
+    "research_dead_code_inventory": 354,
+    "non_dead_diagnostics": 0,
+    "baseline": "PASS"
+  },
+  "resource": {
+    "cargo_target_bytes": 8181723136,
+    "cargo_budget_bytes": 12884901888,
+    "profile": "dedicated-20cpu shared heavy lease",
+    "local_build": false
+  },
+  "source_binding": [
+    {
+      "path": "src/ru_typo/repeated.rs",
+      "sha256": "848ac3b55e5e4bceceea5ecb44e162c863d37d74cbc6f7fb5d45334c7c738572"
+    },
+    {
+      "path": "src/nanda_wave/candidate_gate.rs",
+      "sha256": "ca7e26c1e263788e6a80439c6db2602ebccb123562e755c82c828ff5ed2462ab"
+    },
+    {
+      "path": "scripts/test_lanes/discovery.py",
+      "sha256": "9c30af1a0909cab3da40c4265ef9e7a01de534958c146372379f9c835275b2e9"
+    },
+    {
+      "path": "scripts/test-lanes/manifest.json",
+      "sha256": "0e6300d02a18c9862c3f4b5cc2d717565c506b61f0ab221b9212e49a8c4b7745"
+    },
+    {
+      "path": "scripts/test-lanes/known_failures.json",
+      "sha256": "541478ab7f27dd31d1b1b81fc1962852155dea5013307ffc42b564667111b626"
+    }
+  ],
+  "candidate": {
+    "path": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "sha256": "5fe100db732bcc945d9c7d584a2c22bd06eb93c19bee09cc39788c85470dee7a",
+    "bytes": 8185232,
+    "version": "1.0.82",
+    "local_path": "/home/ubu/.cache/lay/development/tab-full-4reofpse/lay-ibus-engine",
+    "installed": false,
+    "native": "NOT_TESTED"
+  },
+  "review": {
+    "passes": 2,
+    "score": 9,
+    "material_findings": 0,
+    "path": "tech_debt/evidence/2026-10-10-td138-final-code-review-pass2.md",
+    "sha256": "06518b9b71a83c7ed92e6a4d8f07ff85a2bbcc23c6ca5998ed80938b8babed33"
+  },
+  "historical_failure_receipts_preserved": true,
+  "known_failure_observation_sha256": "0bcddcfabdb78fd2bbbaa8d37222eb076eed490a9b805e73dc4a73ccc99ecf3c",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "not_tested": [
+    "new-byte native fixed64",
+    "original2bd exact causal attribution",
+    "GTK/Qt Wayland aggregation and new literal Space native latency",
+    "startup first-key latency and RSS"
+  ]
+}

@@ -1,6 +1,81 @@
 use super::*;
 
 #[test]
+fn attested_verb_forms_use_current_ime_lemma_authority_without_full_generated_forms() {
+    let previous = crate::hot_field::process_policy();
+    crate::hot_field::set_process_policy(crate::hot_field::HotFieldPolicy::ime());
+    let generated_before = russian_generated_form_dictionary_is_warm();
+    for (surface, lemma) in [
+        ("несу", "нести"),
+        ("везу", "везти"),
+        ("ползу", "ползти"),
+        ("трясу", "трясти"),
+        ("привезу", "привезти"),
+        ("отвезу", "отвезти"),
+    ] {
+        assert!(
+            crate::nanda_wave::l2::l2_surface_foundation_has_authority(lemma),
+            "missing live lemma {lemma}"
+        );
+        assert!(
+            is_center_backed_russian_form(surface),
+            "missing center-backed {surface}"
+        );
+        assert!(
+            is_attested_center_backed_russian_form(surface),
+            "missing attested center proof {surface}"
+        );
+        assert!(
+            is_reference_backed_russian_form(surface),
+            "missing reference-backed {surface}"
+        );
+        assert!(
+            is_known_russian_word_or_form(surface),
+            "missing public form {surface}"
+        );
+    }
+    assert_eq!(
+        russian_generated_form_dictionary_is_warm(),
+        generated_before
+    );
+    crate::hot_field::set_process_policy(previous);
+}
+
+#[test]
+fn inflection_metadata_initialization_is_shared_and_reports_its_bounded_cost() {
+    let started = std::time::Instant::now();
+    let gate = std::sync::Arc::new(std::sync::Barrier::new(9));
+    let workers: Vec<_> = (0..8)
+        .map(|_| {
+            let gate = gate.clone();
+            std::thread::spawn(move || {
+                gate.wait();
+                russian_inflection_metadata().unwrap() as *const RussianInflectionMetadata as usize
+            })
+        })
+        .collect();
+    gate.wait();
+    let pointers: Vec<_> = workers
+        .into_iter()
+        .map(|worker| worker.join().unwrap())
+        .collect();
+    assert!(pointers.iter().all(|pointer| *pointer == pointers[0]));
+    let metadata = russian_inflection_metadata().unwrap();
+    let pairs: usize = metadata
+        .attested_forms
+        .values()
+        .map(std::collections::HashSet::len)
+        .sum();
+    let payload_bytes: usize = metadata
+        .attested_forms
+        .iter()
+        .map(|(lemma, surfaces)| lemma.len() + surfaces.iter().map(String::len).sum::<usize>())
+        .sum();
+    assert!((1..=4096).contains(&pairs));
+    eprintln!("attested_inflection_cost pairs={pairs} utf8_payload_bytes={payload_bytes} cold_shared_init_us={} os_cache=uncontrolled", started.elapsed().as_micros());
+}
+
+#[test]
 fn short_passive_participle_is_backed_by_attested_long_form() {
     assert!(is_reference_backed_short_passive_participle("подключен"));
     assert!(is_reference_backed_short_passive_participle("подключена"));

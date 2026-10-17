@@ -1,0 +1,46 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-07",
+  "status": "IMPLEMENTATION_AND_PROOF_PENDING",
+  "decision": "Keep the existing general BoundaryShift lattice and verifier unchanged; require unknown observed right and independently attested reconstructed forms solely for the new sealed pending-Space final-pair physical permission. Unknown requires an available bounded empty provider response; unavailable or overflowed evidence refuses permission.",
+  "reason": "Full fixed-set and focused receipts show global exact-membership checks delete grounded inflected lossless targets before competition; the positive-source OR unit passes but all16 semantic failures remain.",
+  "invariants": [
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/phrase_reader/moved_prefix.rs",
+    "src/typing_transition/verifier.rs",
+    "src/hot_field.rs",
+    "src/text_edit/gate.rs",
+    "tests/space_boundary_shift_mechanism.rs",
+    "tests/td113_hybrid_source_contract.rs",
+    "tech_debt/evidence/td113-implementation-preflight-v4.json"
+  ],
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "runtime_authority_changed": false,
+  "predecessor": {
+    "manifest": "tech_debt/evidence/td113-implementation-preflight-v4.json",
+    "manifest_sha256": "1c05cbed41785db7a5dae3e31f7d5e1b2d3c5dde17c312f20dfc0a8ce3b12c44",
+    "baseline_id": "text-edit-gate",
+    "path": "src/text_edit/gate.rs",
+    "sha256": "2de4d3b67a0a075ceadbe05ce66feb6c4e6755501672780f3d441fe631aaefb4",
+    "mode": "0664"
+  },
+  "successor": {
+    "path": "src/text_edit/gate.rs",
+    "sha256": "ef5c53b43df58adfdb0c42319db0930c216f53c07ec2da94e4ef8d66ca42fd31",
+    "mode": "0664"
+  },
+  "source_review": {
+    "verdict": "PASS",
+    "reviewer": "/root/boundary_scope_review",
+    "production_diff_sha256": "1ecc1d2dfdfe7f4e9b905424069afc6a946b8893db27b4e27084e999a3b79d7c",
+    "scope": "Updated production static review only; general producer/verifier unchanged, admitted bounded unknown-right and independently exact targets at shared final-pair permission factory. No functional, installed or physical verdict."
+  },
+  "not_tested": "Full release, installed bytes and all available real windows remain pending.",
+  "verification": "Static production and combined test/guard review2 PASS, diff1ecc1d2dfdfe7f4e9b905424069afc6a946b8893db27b4e27084e999a3b79d7c. Intermediate integration run-dp_n__0_7/7PASS predates bounded unknown-right and strengthened invalid-target assertions. Full fixed set, canon/graph/lints/MSRV and exact source artifact must pass before installation; physical windows remain untested. b4 canon precheck rejected this record for missing verification; this metadata repair preserves that failed receipt."
+}

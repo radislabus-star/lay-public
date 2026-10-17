@@ -1,0 +1,87 @@
+{
+  "schema": "lay.td133.client-ordering-plan.v1",
+  "status": "EXECUTED_ONE_AUTHORIZED_BATCH_GRANT_CONSUMED",
+  "source_checkout_head": "24bcea5256661954d5aba97ff037d6a419e1e2cb",
+  "installed_sha256": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+  "runtime_authority_changed": false,
+  "root_cause": "UNKNOWN; the two original failures have no retained key/client callback trace. Both earlier separately authorized two-stream probes preserved committed text. Their grants are consumed.",
+  "source_fact": "Legacy ordinary ManagedCommit can send letters through CommitText and return false for a no-apply Space. Local tail observation of that Space is not proof the client inserted it. The next letter can be handled before a fresh surrounding receipt. Ordered engine callbacks alone do not prove client consumption order.",
+  "hypothesis": "Native Space delivery may race with later IME text/preedit consumption. This is not yet established as the original failure cause; the active GTK/Qt transport must be observed rather than inferred from package inventory.",
+  "options": [
+    {
+      "option": "Repeat the previous uninstrumented positive standalone probe",
+      "score": 2,
+      "reason": "Adds no native widget delivery timing and already did not reproduce either original failure."
+    },
+    {
+      "option": "Capture widget events and engine callbacks in one bounded same-field contrast",
+      "score": 9,
+      "reason": "Adds the missing client-side chronology using existing owned fixtures and unchanged product bytes. Recommended before selecting a runtime fix."
+    },
+    {
+      "option": "Replace every legacy fallback Space with CommitText now",
+      "score": 2,
+      "reason": "No causal proof; consecutive legacy commits may share a Wayland done. Existing terminal/ordinary contracts need separate consequences and acceptance."
+    },
+    {
+      "option": "Add a queue, delay, retry or alternate transport",
+      "score": 1,
+      "reason": "Premature owner/state growth; a sleep or repeated PASS is not causal proof."
+    }
+  ],
+  "selected_script": "/home/ubu/.cache/lay/development/td133-client-ordering-diagnostic-20261010.py",
+  "script_sha256": "3d45c368b075dd3b5fffaf040fa66ea655ac32f48b5406fb49806256b5d70cba",
+  "parent_script_sha256": "ff3d3a19fb62d193e51ea301a00c99d4e0cdc01214011a80c327dd6d59f25f7b",
+  "client_fixture": "/home/ubu/.cache/lay/development/td133-client-event-fixture-20261010.py",
+  "client_fixture_sha256": "e7cb7709323c49b94e59090a38dc1d7bbf9ce51af309c0b642811b7e572935c1",
+  "input_stream_plan": [
+    "gtk.clean_opener: должен ",
+    "gtk.warm_control: должен ыбыть ",
+    "qt.clean_opener: должен ",
+    "qt.warm_control: должен ыбыть "
+  ],
+  "proposed_streams": 4,
+  "setup": "Two fresh owned GTK3 Entry and Qt QTextEdit fields. Raw Ctrl+A/Backspace and normal same-RU activation before the opener and again before the target. No input retry or Ready wait. An opener failure stops dependent target input.",
+  "timing": {
+    "press_ms": 18,
+    "release_gap_ms": 12,
+    "assertion_deadline_seconds": 1.5
+  },
+  "oracle": "Control preserves the prefix 'должен ', two tokens, one final Space, empty preedit and end caret. Ordinary correction of the right token is permitted, as in the original fixed matrix. Committed and render observations remain separate.",
+  "observer": "Bounded 4096-record RAM capture in owned child widgets, flushed at graceful exit. Native key/default handling is preserved; no added file writes in key observers, no extra render reads, poll interval or product timers. Instrumentation can perturb timing.",
+  "constraints": [
+    "No inverse, shared-feedback cleanup, model copy/fit, installation, IME/IBus restart or remote desktop.",
+    "Temporary existing debug_action_log must be restored; preserve exact runtime PID/starttick/loaded+installed SHA and coherent RU tuple.",
+    "This warm opener does not recreate all original predecessor cases or learning state.",
+    "A positive or incomplete trace cannot close TD133 or identify the original cause.",
+    "Client event PID/timestamps add a witness, but the shared InputContext relay identifier alone is not unique field-to-engine-context identity.",
+    "Remote worker has gi but no PySide6; native Qt observer binding remains NOT_TESTED until authorized execution. No dependency installation is selected."
+  ],
+  "execution_granted": true,
+  "execution_completed": true,
+  "permission_boundary": "AGENTS.md and DEVELOPMENT.md require remote build/test execution. The two earlier narrow local diagnostic grants are consumed; this new four-stream batch requires a fresh explicit exception.",
+  "original_matrix": "62 PASS / 2 FAIL / 0 BLOCKED out of 64, unchanged",
+  "oracle_difference_from_original": "The immutable historical predicate allowed repeated middle whitespace. This distinct diagnostic strengthens that one condition to exactly one middle boundary; the original receipt and denominator are unchanged.",
+  "observer_repairs": "Lazy payload evaluation inside bounded exception handling preserves default calls exactly once; GTK event direction is explicit; start-before-input attempts and best-effort partial client artifact receipts preserve aborted evidence. Actual toolkit versions/platform are captured before input, without inferring IME route.",
+  "review_pass1": {
+    "pass": 1,
+    "score": 7,
+    "verdict": "THREE_BLOCKERS_REPAIRED_AWAITING_FINAL_REVIEW",
+    "path": "/home/ubu/.cache/lay/development/td133-client-ordering-review-pass1-20261010.md",
+    "sha256": "e0dfacfed3cd62af104e7654bd84f38dcfcce6dbbc61d29c3f213a64b88133db"
+  },
+  "review": {
+    "pass": 2,
+    "score": 9,
+    "verdict": "PREPARATION_ACCEPTED_NO_BLOCKERS",
+    "path": "/home/ubu/.cache/lay/development/td133-client-ordering-review-pass2-20261010.md",
+    "sha256": "e1a2d41f56718e0de6cacf09ce0e00713c4def872a570a3f377bb179c1588e6f",
+    "execution_granted": false,
+    "toolkit_binding": "NOT_TESTED",
+    "native_causal_result": "UNKNOWN"
+  },
+  "authorization": "Разрешаю один прогон четырёх вводов",
+  "authorization_decision": "docs/architecture/decisions/2026-10-10-four-stream-client-ordering-diagnostic.json",
+  "grant_consumed": true,
+  "result": "2026-10-10-td133-client-ordering-result.json"
+}

@@ -1,0 +1,33 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-08",
+  "status": "FULL_SOURCE_RELEASE_PASS_PHYSICAL_LATENCY_UNRESOLVED",
+  "decision": "Evaluate the same complete ordered candidate vector on its existing calling worker instead of submitting the small per-candidate decisions to the shared Rayon pool.",
+  "reason": "Installed focus-return frame retains50 candidates and correct Apply but misses publication:13426us queue plus46610us evaluation, DecisionCore26639us of which L33643us. Blocking L1.1 contour queries and display jobs also occupy the global Rayon pool. Contention is a hypothesis to test.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/typing_transition/decision.rs"
+  ],
+  "owning_document": "docs/architecture/space-boundary-shift-2026-10-07.md",
+  "runtime_authority_changed": false,
+  "preserved": [
+    "All candidates and vector order",
+    "Identical evaluation inputs and calculations",
+    "Settlement, selection, receipts, verifier, SafetyGate",
+    "Existing Space wait and callback deadline",
+    "Existing workers and delivery routes"
+  ],
+  "verification": "Focused2519/2519, full3032/3032 and all17 release commands PASS. Exact artifact8b4e0be6f7b0669ce44b39653d2a036e8743f4dff063e40295564d4f8787e958 installed. First GTK3 physical run70/73 PASS,0 BLOCKED; focus and calculation remain late. No latency solution or physical promotion established.",
+  "not_tested": "No latency benefit or physical acceptance yet. At most two bounded physical attempts before explicit replan.",
+  "source_review": {
+    "reviewer": "/root",
+    "independent_agent": false
+  }
+}

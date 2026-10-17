@@ -6,7 +6,7 @@ use super::{WordBuffer, MAX_REPLACE_WORDS};
 
 impl WordBuffer {
     pub fn last_completed_words_events(&self, count: usize) -> Option<Vec<KeyEvent>> {
-        if (!self.prev_had_trailing_space && self.current.is_empty())
+        if (!self.prev_had_trailing_space() && self.current.is_empty())
             || count == 0
             || self.prev_words.len() < count
         {
@@ -18,7 +18,12 @@ impl WordBuffer {
             push_space_between_words(&mut events);
             events.extend(word.iter().copied());
         }
-        events.push(space_event());
+        let suffix = if self.current.is_empty() {
+            self.prev_trailing_spaces
+        } else {
+            1
+        };
+        events.extend(std::iter::repeat_n(space_event(), usize::from(suffix)));
         Some(events)
     }
 
@@ -31,7 +36,7 @@ impl WordBuffer {
                 mark_word_layout(word, layout_is_ru);
             }
             mark_word_layout(&mut self.current, layout_is_ru);
-        } else if self.prev_had_trailing_space && !self.prev_words.is_empty() {
+        } else if self.prev_had_trailing_space() && !self.prev_words.is_empty() {
             let take_prev = replace_words.min(self.prev_words.len());
             let first_prev = self.prev_words.len() - take_prev;
             for word in self.prev_words.iter_mut().skip(first_prev) {
@@ -67,7 +72,7 @@ impl WordBuffer {
             events.extend(self.current.iter().copied());
             let n = events.len() as u32;
             Some((events, n))
-        } else if self.prev_had_trailing_space && !self.prev_words.is_empty() {
+        } else if self.prev_had_trailing_space() && !self.prev_words.is_empty() {
             let take_prev = replace_words.min(self.prev_words.len());
             let mut events = Vec::new();
             for word in self
@@ -78,7 +83,10 @@ impl WordBuffer {
                 push_space_between_words(&mut events);
                 events.extend(word.iter().copied());
             }
-            events.push(space_event());
+            events.extend(std::iter::repeat_n(
+                space_event(),
+                usize::from(self.prev_trailing_spaces),
+            ));
             let n = events.len() as u32;
             Some((events, n))
         } else {

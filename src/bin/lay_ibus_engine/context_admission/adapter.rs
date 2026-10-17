@@ -80,6 +80,7 @@ fn context_admission_trace_disposition(
 ) -> (&'static str, Option<u64>) {
     match disposition {
         IngressDisposition::Passive => ("passive", None),
+        IngressDisposition::PassiveShift => ("passive_shift", None),
         IngressDisposition::Key { owner, .. } => ("key", Some(owner.generation.0)),
         IngressDisposition::Factory { .. } => ("factory", None),
         IngressDisposition::FocusOut { owner, .. } => ("focus_out", Some(owner.generation.0)),
@@ -469,6 +470,21 @@ pub(crate) struct KeyCallback {
     owner: EngineOwner,
 }
 
+pub(crate) enum KeyCallbackObservation {
+    Owned(Box<KeyCallback>),
+    PassiveShift,
+    Refused,
+}
+
+impl KeyCallbackObservation {
+    pub(crate) fn into_key(self) -> Option<KeyCallback> {
+        match self {
+            Self::Owned(callback) => Some(*callback),
+            Self::PassiveShift | Self::Refused => None,
+        }
+    }
+}
+
 #[derive(Debug, Clone)]
 pub(crate) struct FactoryCallback {
     pub(crate) ticket: TicketId,
@@ -676,6 +692,7 @@ impl ContextAdmissionAdapter {
         }
     }
 
+    #[cfg(test)]
     pub(crate) async fn begin_key_callback(
         &self,
         expected_owner: &EngineOwner,
@@ -686,14 +703,49 @@ impl ContextAdmissionAdapter {
         self.key_callback_from_observed(expected_owner, observed, false)
     }
 
-    pub(crate) async fn begin_atomic_key_callback(
+    pub(crate) fn record_text_inert_release_completion(
         &self,
-        expected_owner: &EngineOwner,
         header: &zbus::message::Header<'_>,
-        callback_entered: Instant,
-    ) -> Result<KeyCallback, AdapterError> {
-        let observed = self.observe_callback(header, callback_entered).await?;
-        self.key_callback_from_observed(expected_owner, observed, true)
+        token: &AdmissionToken,
+        content_type: (u32, u32),
+        keyval: u32,
+        keycode: u32,
+        state: u32,
+    ) -> bool {
+        if self.shared.cancelled.load(Ordering::Acquire)
+            || !crate::protocol::is_text_inert_legacy_release(keyval, state)
+            || header.message_type() != Type::MethodCall
+            || header.interface().map(|value| value.as_str()) != Some(ENGINE_INTERFACE)
+        {
+            return false;
+        }
+        let Some(key) = HeaderKey::from_zbus_header(self.shared.connection_generation, header)
+        else {
+            return false;
+        };
+        if key.member != "ProcessKeyEvent"
+            || key.path != token.owner_path()
+            || !self
+                .shared
+                .bindings
+                .accepts(HeaderRole::EngineCallback, &key)
+        {
+            return false;
+        }
+        let Ok(reducer) = self.shared.reducer.lock() else {
+            return false;
+        };
+        if !reducer.revalidate(token) || reducer.settled_content_type != Some(content_type) {
+            return false;
+        }
+        let Some(guard) = self.shared.stamps.guard() else {
+            return false;
+        };
+        guard.owner == token.owner.generation
+            && self
+                .shared
+                .stamps
+                .record_completed_release(key, (keyval, keycode, state), guard)
     }
 
     pub(crate) fn key_callback_from_observed(
@@ -718,6 +770,17 @@ impl ContextAdmissionAdapter {
             return Err(AdapterError::Denied);
         }
         Ok(KeyCallback { observed, owner })
+    }
+
+    pub(crate) fn passive_shift_observation_for(
+        &self,
+        path: &str,
+        observed: &ObservedCallback,
+    ) -> bool {
+        matches!(observed.disposition, IngressDisposition::PassiveShift)
+            && observed.header.member == "ProcessKeyEvent"
+            && observed.header.path == path
+            && observed.header.connection == self.shared.connection_generation
     }
 
     pub(crate) async fn observe_content_type_callback(
@@ -852,6 +915,25 @@ impl ContextAdmissionAdapter {
             reducer.align_completed_exact_replay_epoch(
                 source,
                 reset_token,
+                source_epoch,
+                completed_epoch,
+                projected_changes,
+            )
+        })
+    }
+
+    pub(crate) fn completed_exact_replay_boundary_is_current(
+        &self,
+        source: &AdmissionToken,
+        boundary_token: &AdmissionToken,
+        source_epoch: u64,
+        completed_epoch: u64,
+        projected_changes: usize,
+    ) -> bool {
+        self.shared.reducer.lock().is_ok_and(|reducer| {
+            reducer.completed_exact_replay_boundary_is_current(
+                source,
+                boundary_token,
                 source_epoch,
                 completed_epoch,
                 projected_changes,
@@ -1043,7 +1125,9 @@ impl ContextAdmissionAdapter {
                 owner: observed_owner,
             } => observed_owner != owner,
             IngressDisposition::UnchangedContentType { token, .. } => &token.owner != owner,
-            IngressDisposition::Passive | IngressDisposition::Factory { .. } => false,
+            IngressDisposition::Passive
+            | IngressDisposition::PassiveShift
+            | IngressDisposition::Factory { .. } => false,
         }
     }
 
@@ -1529,6 +1613,14 @@ impl ContextAdmissionAdapter {
             .is_ok_and(|reducer| reducer.revalidate(token))
     }
 
+    pub(crate) fn admitted_content_type(&self, token: &AdmissionToken) -> Option<(u32, u32)> {
+        let reducer = self.shared.reducer.lock().ok()?;
+        reducer
+            .revalidate(token)
+            .then_some(reducer.settled_content_type)
+            .flatten()
+    }
+
     pub(crate) fn revalidate_bridge(&self, token: &AdmissionToken) -> bool {
         self.shared
             .reducer
@@ -1566,6 +1658,7 @@ impl ContextAdmissionAdapter {
         token: &AdmissionToken,
         tail_epoch: u64,
         tail: String,
+        observed_external_prefix: Option<String>,
         observation_revision: u64,
         expires_at: Instant,
     ) -> bool {
@@ -1574,6 +1667,7 @@ impl ContextAdmissionAdapter {
                 token,
                 tail_epoch,
                 tail,
+                observed_external_prefix,
                 observation_revision,
                 expires_at,
             )
@@ -2947,26 +3041,37 @@ impl ContextAdmissionObserver {
 
         match member {
             "ProcessKeyEvent" | "ProcessKeyEventAtomicV1" => {
-                if let Some(owner) = path_owner {
-                    let legacy_key = if member == "ProcessKeyEvent" {
-                        match message.body().deserialize::<(u32, u32, u32)>() {
-                            Ok(key) => Some(key),
-                            Err(_) => {
-                                reducer.malformed_or_unobserved_lifecycle();
-                                return Err(AdapterError::Denied);
-                            }
+                let legacy_key = if member == "ProcessKeyEvent" {
+                    match message.body().deserialize::<(u32, u32, u32)>() {
+                        Ok(key) => Some(key),
+                        Err(_) => {
+                            reducer.malformed_or_unobserved_lifecycle();
+                            return Err(AdapterError::Denied);
                         }
-                    } else {
-                        None
-                    };
-                    let word_effect = if member == "ProcessKeyEvent"
-                        && legacy_key
-                            .is_some_and(|(keyval, _, _)| crate::protocol::is_shift_key(keyval))
-                    {
-                        KeyWordEffect::LegacyShiftObservation
-                    } else {
-                        KeyWordEffect::PossibleMutation
-                    };
+                    }
+                } else {
+                    None
+                };
+                if legacy_key.is_some_and(|key| {
+                    crate::protocol::is_text_inert_legacy_release(key.0, key.2)
+                        && self
+                            .shared
+                            .stamps
+                            .take_completed_release(&stamp.header, key)
+                            .is_some()
+                }) {
+                    // Only a proved completed callback can avoid a new pending
+                    // mutation. An observer-first release keeps the old fence.
+                    return Ok(IngressDisposition::Passive);
+                }
+                let word_effect = if legacy_key
+                    .is_some_and(|(keyval, _, _)| crate::protocol::is_shift_key(keyval))
+                {
+                    KeyWordEffect::LegacyShiftObservation
+                } else {
+                    KeyWordEffect::PossibleMutation
+                };
+                if let Some(owner) = path_owner {
                     if reducer.observe_key_start(&owner, stamp.header.clone(), word_effect) {
                         Ok(IngressDisposition::Key {
                             owner,
@@ -2981,10 +3086,19 @@ impl ContextAdmissionObserver {
                         matches!(ticket.status, TicketStatus::Pending | TicketStatus::Ready)
                             && ticket.target_path.as_ref() == Some(&target)
                     });
-                    if pending_target {
+                    // Shift still runs literally without target authority.
+                    // Its observation cannot invalidate the sealed word that
+                    // the existing native activation is about to transfer.
+                    if pending_target && word_effect == KeyWordEffect::PossibleMutation {
                         let _ = reducer.target_input_before_admission(&target);
                     }
-                    Ok(IngressDisposition::Passive)
+                    Ok(
+                        if pending_target && word_effect == KeyWordEffect::LegacyShiftObservation {
+                            IngressDisposition::PassiveShift
+                        } else {
+                            IngressDisposition::Passive
+                        },
+                    )
                 }
             }
             "FocusOut" | "FocusOutId" => {

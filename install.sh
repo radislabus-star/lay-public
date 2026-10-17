@@ -176,37 +176,8 @@ fi
 echo "✓ $(rustc --version)"
 
 echo ""
-echo "=== группа input (нужна для evdev) ==="
-if id -nG "$USER" | grep -qw input; then
-    echo "✓ уже в группе input"
-else
-    echo "→ добавляю $USER в группу input..."
-    sudo usermod -aG input "$USER"
-    echo "⚠ нужен перелогин чтобы группа применилась"
-fi
-
-echo ""
-echo "=== uinput permissions (нужно для обратной печати) ==="
-UINPUT_RULE='/etc/udev/rules.d/99-lay-uinput.rules'
-UINPUT_RULE_TEXT='KERNEL=="uinput", MODE="0660", GROUP="input", OPTIONS+="static_node=uinput"'
-if [ -e /dev/uinput ] && [ -w /dev/uinput ]; then
-    echo "✓ /dev/uinput доступен"
-else
-    echo "→ настраиваю /dev/uinput для группы input..."
-    printf '%s\n' "$UINPUT_RULE_TEXT" | sudo tee "$UINPUT_RULE" >/dev/null
-    sudo modprobe uinput 2>/dev/null || true
-    sudo udevadm control --reload-rules 2>/dev/null || true
-    sudo udevadm trigger --subsystem-match=misc 2>/dev/null || true
-    if [ -e /dev/uinput ]; then
-        sudo chgrp input /dev/uinput 2>/dev/null || true
-        sudo chmod 0660 /dev/uinput 2>/dev/null || true
-    fi
-    if [ -e /dev/uinput ] && [ -w /dev/uinput ]; then
-        echo "✓ /dev/uinput доступен"
-    else
-        echo "⚠ /dev/uinput пока недоступен; нужен перелогин или перезагрузка"
-    fi
-fi
+echo "=== доступ к устройствам ввода (udev/logind) ==="
+bash "$DIR/scripts/setup-input-access.sh"
 
 echo ""
 echo "=== legacy Ollama cleanup ==="

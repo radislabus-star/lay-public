@@ -98,6 +98,13 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         keyval: u32,
     ) -> fdo::Result<bool> {
+        if self.inactive_completion_waits_for_handled_release(emitter) {
+            // Unpublished material cannot be selected or recorded as a shown
+            // prediction. This navigation follows the existing client refusal.
+            self.cancel_precognition_display_generation();
+            self.clear_preedit(emitter).await?;
+            return Ok(false);
+        }
         let refreshed_pending = self.composition.preedit_display_only_pending;
         if refreshed_pending {
             // Up/Down selects but never accepts. Rebuild authority from the
@@ -150,7 +157,11 @@ impl LayIbusEngine {
         if self.composition.cursor == len {
             self.composition.buffer.push(ch);
             self.composition.cursor += 1;
-            self.push_tail_char(ch);
+            if self.composition.legacy_word_preedit_active {
+                self.push_owned_preedit_tail_char(ch);
+            } else {
+                self.push_tail_char(ch);
+            }
             return;
         }
         let byte_idx = char_to_byte_idx(&self.composition.buffer, self.composition.cursor);

@@ -99,6 +99,7 @@ pub(super) fn execute_exact_ime_tail_replay(
     replay: ImeCommittedTailReplay,
 ) -> Option<bool> {
     let (plan, lease) = replay.into_parts();
+    let may_retain = lease.allows_personalization();
     let source_path = lease.expected_source_path().to_string();
     let mut handoff_cleanup =
         ExactImeHandoffCleanup::new(lease.expected_epoch(), source_path.clone());
@@ -113,9 +114,11 @@ pub(super) fn execute_exact_ime_tail_replay(
     let focused_window = match capture_exact_focused_window_identity() {
         Ok(identity) => identity,
         Err(error) => {
-            log(&format!(
-                "warning: exact IME tail replay has no stable focused-window lease: {error}"
-            ));
+            log_replay_error(
+                "warning: exact IME tail replay has no stable focused-window lease",
+                &error,
+                may_retain,
+            );
             return None;
         }
     };
@@ -123,9 +126,11 @@ pub(super) fn execute_exact_ime_tail_replay(
     let prepared = match prepare_exact_replay(&plan, lease.expected_suffix()) {
         Ok(prepared) => prepared,
         Err(error) => {
-            log(&format!(
-                "warning: exact IME tail replay plan rejected: {error}"
-            ));
+            log_replay_error(
+                "warning: exact IME tail replay plan rejected",
+                &error,
+                may_retain,
+            );
             return None;
         }
     };
@@ -133,9 +138,11 @@ pub(super) fn execute_exact_ime_tail_replay(
     *executing = true;
     let _executing_guard = ExecutingGuard(executing);
     if let Err(error) = lease.validate_current(plan.backspaces) {
-        log(&format!(
-            "warning: exact IME tail replay lease changed before layout: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay lease changed before layout",
+            &error,
+            may_retain,
+        );
         return None;
     }
 
@@ -145,9 +152,11 @@ pub(super) fn execute_exact_ime_tail_replay(
     ) {
         Ok(handoff) => handoff,
         Err(error) => {
-            log(&format!(
-                "warning: exact IME tail replay one-shot layout handoff failed: {error}"
-            ));
+            log_replay_error(
+                "warning: exact IME tail replay one-shot layout handoff failed",
+                &error,
+                may_retain,
+            );
             return None;
         }
     };
@@ -157,24 +166,30 @@ pub(super) fn execute_exact_ime_tail_replay(
         Ok(path) => path,
         Err(error) => {
             layout_handoff.restore_initial_best_effort("exact IME tail replay lease");
-            log(&format!(
-                "warning: exact IME tail replay lease changed after layout handoff: {error}"
-            ));
+            log_replay_error(
+                "warning: exact IME tail replay lease changed after layout handoff",
+                &error,
+                may_retain,
+            );
             return None;
         }
     };
     if let Err(error) = verify_exact_focused_window_identity(&focused_window) {
         layout_handoff.restore_initial_best_effort("exact IME tail replay focus lease");
-        log(&format!(
-            "warning: exact IME tail replay focus changed after layout handoff: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay focus changed after layout handoff",
+            &error,
+            may_retain,
+        );
         return None;
     }
     if let Err(error) = release_possible_modifiers_fast(virtual_keyboard) {
         layout_handoff.restore_initial_best_effort("exact IME tail replay modifier cleanup");
-        log(&format!(
-            "warning: exact IME tail replay modifier cleanup failed: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay modifier cleanup failed",
+            &error,
+            may_retain,
+        );
         return None;
     }
 
@@ -193,6 +208,13 @@ pub(super) fn execute_exact_ime_tail_replay(
         return None;
     }
 
+    if may_retain {
+        lay::action_log::record_candidate_edit_action_before_apply(
+            action,
+            lay::action_log::MutationLogRoute::MANUAL_TEXT_REPLACE,
+            None,
+        );
+    }
     handoff_cleanup.arm_suppression(lease.expected_epoch(), target_path.clone(), source_path);
     if let Err(error) = suppress_next_ime_autocorrect_for_exact_replay(
         lease.expected_suffix(),
@@ -201,41 +223,53 @@ pub(super) fn execute_exact_ime_tail_replay(
         plan.target_layout_is_ru,
     ) {
         layout_handoff.restore_initial_best_effort("exact IME tail replay suppression");
-        log(&format!(
-            "warning: exact IME tail replay autocorrect suppression failed: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay autocorrect suppression failed",
+            &error,
+            may_retain,
+        );
         return None;
     }
     if let Err(error) = verify_exact_focused_window_identity(&focused_window) {
-        log(&format!(
-            "warning: exact IME tail replay focus changed before delete: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay focus changed before delete",
+            &error,
+            may_retain,
+        );
         return None;
     }
     if let Err(error) = emit_backspaces(virtual_keyboard, plan.backspaces) {
-        log(&format!(
-            "warning: exact IME tail replay delete became indeterminate: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay delete became indeterminate",
+            &error,
+            may_retain,
+        );
         return None;
     }
     if let Err(error) = verify_exact_focused_window_identity(&focused_window) {
-        log(&format!(
-            "warning: exact IME tail replay focus changed between delete and insert: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay focus changed between delete and insert",
+            &error,
+            may_retain,
+        );
         return None;
     }
     if let Err(error) =
         replay_keycodes_isolated_paced_after_modifier_cleanup(virtual_keyboard, &prepared.events)
     {
-        log(&format!(
-            "warning: exact IME tail replay insert became indeterminate after delete: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay insert became indeterminate after delete",
+            &error,
+            may_retain,
+        );
         return None;
     }
     if let Err(error) = verify_exact_focused_window_identity(&focused_window) {
-        log(&format!(
-            "warning: exact IME tail replay focus changed during insert: {error}"
-        ));
+        log_replay_error(
+            "warning: exact IME tail replay focus changed during insert",
+            &error,
+            may_retain,
+        );
         return None;
     }
     handoff_cleanup.disarm();
@@ -244,11 +278,23 @@ pub(super) fn execute_exact_ime_tail_replay(
             "warning: exact IME tail replay succeeded but daemon tail memory was not representable",
         );
     }
-    log(&format!(
-        "exact IME tail replay complete: backspaces={} replacement={:?}",
-        plan.backspaces, plan.replacement
-    ));
+    if may_retain {
+        log(&format!(
+            "exact IME tail replay complete: backspaces={} replacement={:?}",
+            plan.backspaces, plan.replacement
+        ));
+    } else {
+        log("exact IME tail replay complete; payload retention disabled");
+    }
     Some(plan.target_layout_is_ru)
+}
+
+fn log_replay_error(stage: &str, error: &dyn std::fmt::Display, may_retain: bool) {
+    if may_retain {
+        log(&format!("{stage}: {error}"));
+    } else {
+        log(&format!("{stage}; payload retention disabled"));
+    }
 }
 
 fn prepare_exact_replay(
@@ -272,8 +318,24 @@ fn prepare_exact_replay(
     let trailing = expected_suffix
         .strip_prefix(&plan.edit.original_token)
         .ok_or_else(|| "leased suffix does not begin with the exact original token".to_string())?;
-    if !trailing.chars().all(|ch| ch == ' ') || !plan.replacement.ends_with(trailing) {
-        return Err("exact replay supports only byte-preserved trailing spaces".to_string());
+    // The raw lease keeps every acknowledged ASCII Space/NBSP boundary.
+    // Replay uses the existing Space key for each, with an exact token projection
+    // and count; zero boundaries remain valid. No other whitespace is admitted.
+    let acknowledged_spaces = trailing.chars().all(|ch| matches!(ch, ' ' | '\u{a0}'))
+        && plan.replacement
+            == format!(
+                "{}{}",
+                lay::manual_toggle::project_to_opposite_layout(
+                    &plan.edit.original_token,
+                    !plan.target_layout_is_ru
+                ),
+                " ".repeat(trailing.chars().count())
+            );
+    if !acknowledged_spaces {
+        return Err(
+            "exact replay requires exact projected text and acknowledged Space boundaries"
+                .to_string(),
+        );
     }
     let prefix = plan
         .edit
@@ -302,11 +364,6 @@ fn prepare_exact_replay(
         &plan.replacement,
         replacement,
         1,
-    );
-    lay::action_log::record_candidate_edit_action_before_apply(
-        &action,
-        lay::action_log::MutationLogRoute::MANUAL_TEXT_REPLACE,
-        None,
     );
     let authorization = authorize_backend_edit(TextEditBackend::Daemon, action);
     let backend = authorization.backend;
@@ -418,5 +475,100 @@ mod tests {
         tab_plan.edit.original_tail = "ghbdtn\t".to_string();
 
         assert!(prepare_exact_replay(&tab_plan, "ghbdtn\t").is_err());
+    }
+
+    #[test]
+    fn exact_replay_reencodes_one_acknowledged_space_without_normalizing_other_suffixes() {
+        // Keep this manifest test ID while extending its original single-Space cases.
+        let mut cases = Vec::new();
+        for (source, mode, target) in [("ghbdtn", false, "привет"), ("привет", true, "ghbdtn")]
+        {
+            for prefix in ["", "文 🌍 ", "old\u{a0}prefix "] {
+                for count in [0, 1, 2, 4, 10] {
+                    let mixed: String = (0..count)
+                        .map(|index| if index % 2 == 0 { ' ' } else { '\u{a0}' })
+                        .collect();
+                    for separator in [" ".repeat(count), "\u{a0}".repeat(count), mixed] {
+                        let tail = format!("{prefix}{source}{separator}");
+                        let suffix = format!("{source}{separator}");
+                        let exact = plan(&tail, mode);
+                        let prepared = prepare_exact_replay(&exact, &suffix).expect(
+                            "an exact acknowledged Space series uses the existing Space keys",
+                        );
+                        let replacement = format!("{target}{}", " ".repeat(count));
+                        assert_eq!(map_events_to_layout(&prepared.events, !mode), replacement);
+                        assert_eq!(prepared.visible_after, format!("{prefix}{replacement}"));
+                        assert_eq!(prepared.authorized_edit.backend(), TextEditBackend::Daemon);
+                        assert_eq!(exact.backspaces as usize, source.chars().count() + count);
+                        assert_eq!(exact.edit.delete_chars, exact.backspaces);
+                        assert_eq!(exact.edit.insert_text, replacement);
+                        cases.push((exact, suffix, source, mode, target, count, separator));
+                    }
+                }
+                for separator in ["\t", "\u{202f}", "\n", "\u{2009}", "\u{a0}\t"] {
+                    let tail = format!("{prefix}{source}{separator}");
+                    let suffix = format!("{source}{separator}");
+                    assert!(prepare_exact_replay(&plan(&tail, mode), &suffix).is_err());
+                }
+                let suffix = format!("{source}{}", "\u{a0}".repeat(33));
+                let tail = format!("{prefix}{suffix}");
+                assert!(prepare_exact_replay(&plan(&tail, mode), &suffix).is_err());
+            }
+        }
+        for (exact, suffix, source, mode, target, count, separator) in cases {
+            if separator.contains('\u{a0}') {
+                assert!(
+                    prepare_exact_replay(&exact, &format!("{source}{}", " ".repeat(count)),)
+                        .is_err()
+                );
+                let mut contradictory = exact.clone();
+                contradictory.replacement = format!("{target}{separator}");
+                contradictory.edit.insert_text = contradictory.replacement.clone();
+                assert!(prepare_exact_replay(&contradictory, &suffix).is_err());
+            }
+            let mut replacements = vec![
+                format!("{target}{}", " ".repeat(count + 1)),
+                format!("other{}", " ".repeat(count)),
+            ];
+            if count > 0 {
+                replacements.push(format!("{target}{}", " ".repeat(count - 1)));
+            }
+            for replacement in replacements {
+                let mut contradictory = exact.clone();
+                contradictory.replacement = replacement.clone();
+                contradictory.edit.insert_text = replacement;
+                assert!(prepare_exact_replay(&contradictory, &suffix).is_err());
+            }
+            for mismatch in [
+                "count",
+                "delete",
+                "insert",
+                "source",
+                "route",
+                "layout",
+                "suppression",
+                "tail",
+            ] {
+                let mut contradictory = exact.clone();
+                match mismatch {
+                    "count" => contradictory.backspaces += 1,
+                    "delete" => contradictory.edit.delete_chars += 1,
+                    "insert" => contradictory.edit.insert_text.push(' '),
+                    "source" => contradictory.edit.source = VisibleTailSource::DaemonWordBuffer,
+                    "route" => contradictory.route = ManualToggleRoute::Daemon,
+                    "layout" => {
+                        contradictory.target_layout_is_ru = mode;
+                        contradictory.edit.target_layout_is_ru = mode;
+                    }
+                    "suppression" => contradictory.suppress_next_autocorrect = false,
+                    "tail" => contradictory.edit.original_tail.push('x'),
+                    _ => unreachable!(),
+                }
+                assert!(
+                    prepare_exact_replay(&contradictory, &suffix).is_err(),
+                    "{mismatch}"
+                );
+            }
+        }
     }
 }

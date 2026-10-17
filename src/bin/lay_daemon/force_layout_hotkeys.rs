@@ -51,6 +51,12 @@ impl ForceLayoutHotkeys {
         }
     }
 
+    pub(super) fn cancel_pending(&mut self) {
+        self.ru_pressed_at = None;
+        self.en_pressed_at = None;
+        self.other_key = false;
+    }
+
     pub(super) fn handle_event(
         &mut self,
         key: KeyCode,

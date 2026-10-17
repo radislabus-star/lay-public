@@ -8,6 +8,7 @@ use crate::pending_typing_assist::PendingTypingAssist;
 use super::super::{DShiftState, DaemonTextObservation, MultiTapPending, ShiftState};
 
 pub(crate) struct PendingMultiTapTimeoutContext<'a> {
+    pub(crate) trigger_key: KeyCode,
     pub(crate) buffer: &'a mut WordBuffer,
     pub(crate) device: &'a mut Device,
     pub(crate) virtual_kbd: &'a Arc<Mutex<Option<VirtualDevice>>>,
@@ -59,6 +60,7 @@ pub(crate) struct ManualTriggerEventContext<'a> {
 }
 
 pub(crate) struct ManualTriggerFireContext<'a> {
+    pub(crate) trigger_key: KeyCode,
     pub(crate) buffer: &'a mut WordBuffer,
     pub(crate) device: &'a mut Device,
     pub(crate) virtual_kbd: &'a Arc<Mutex<Option<VirtualDevice>>>,
@@ -79,6 +81,7 @@ pub(crate) struct ManualTriggerFireContext<'a> {
 impl<'a> ManualTriggerEventContext<'a> {
     pub(crate) fn fire_context(&mut self) -> ManualTriggerFireContext<'_> {
         ManualTriggerFireContext {
+            trigger_key: self.trigger_key,
             buffer: self.buffer,
             device: self.device,
             virtual_kbd: self.virtual_kbd,
