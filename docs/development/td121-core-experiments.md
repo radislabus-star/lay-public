@@ -1,5 +1,94 @@
 # TD-121: журнал изменений ядра и запрет повторения отвергнутых подходов
 
+## 2026-10-17 — `ltkfq` refusal reproduced in current learned source-state memory
+
+User redirected work from GitHub to diagnosis only. The exact layout target
+is generated and initially eligible, but current feedback has negative
+state-specific aliases for complete source `ltkfq`. L4 returns `Rejected`;
+DecisionCore records `reason=rejected`; committed_tail.rs:140 consumes the
+resulting `NoApply(Rank)`. The prefixed source has a different full-text state
+identity and remains allowed. Its apparent first-word dependence is reproduced
+with current user data, not by a numeric word-index runtime branch.
+
+Private ablation of only those six source-state rejection aliases restores
+the first-word decision while retaining generic negative word feedback.
+Removing only `rejected_words[делай]` does NOT restore it. Stored weight8 is
+not eight proven user interactions. No production code, guard, installed
+configuration/model or user learning was edited; no physical input injected.
+See [the complete diagnosis and immutable receipt scopes](first-word-learning-diagnostic-2026-10-17.md).
+Browser default432 remains349P/50F/33B, NOT_TESTED0. No native fix is claimed.
+
+## 2026-10-17 — autocorrection phrase diagnostic, installed 1.0.89 unchanged
+
+User input: `Вклюай балансировку скорость точно лучш еубдет `.
+Expected streaming result: `Включай балансировку скорость точно лучше будет `.
+Two damaged spans contain three edits: missing consonant, misplaced Space and
+adjacent transposition. The three intervening clean words must be preserved.
+
+Read-only executable diagnosis ran on e@192.168.3.94 under the existing
+dedicated-20cpu resource guard. CLI SHA256
+`7ea210de19b96e1c03ccfc6ceed0948d4db035aec56e434d1568ea06eb2c7bfe`
+matches the locally installed CLI89. The actual local configuration was copied
+privately, SHA256
+`20fe9fa76066463698ef4edee29733d9ce61bea7f97c901cf4fce22b03856bf5`:
+`auto_replace`, `typing_assist` and `nanda_autocorrect` enabled, normal safety.
+Existing remote L1.1 v9, L2 v13/DAFSA/productive v90 and all three phase model
+artifacts were verified against the local installed model identities. Only the
+private admission receipt's artifact/proof paths were relocated; original model
+and quality-proof bytes were retained. Private feedback/usage is a copy of the
+pre-existing remote snapshot, not asserted identical to current local learning.
+
+Final authoritative diagnostic receipt:
+`/home/ubu/.cache/lay/development/autocorrect-phrase-20261017/RESULT-READY.json`;
+remote raw output and receipt:
+`/home/e/projects/lay-development-runner/autocorrect-phrase-20261017-ready/`.
+The private L1.1 service reported `ready` BEFORE all measured queries; its
+PID was reaped in `finally`, with `service_closed=true`. Earlier receipts
+`RESULT.json` and `RESULT-MATCHED.json` remain separate: the first lacks the
+matching model environment, the latter admits queries before L1.1 readiness.
+The first direct L1.1 probe returned `still warming` and establishes no lexical
+verdict. Do not use those earlier attempts to diagnose missing lexical support.
+
+Final six CLI cases: 3 expected behaviors observed / 3 unresolved, not native
+acceptance and not a new browser denominator:
+
+| Case | Final selected action |
+| --- | --- |
+| `Вклюай ` | No apply. L2 productive typed exact retains `Включай `, but admission is `SuggestOnly/short_internal_consonant_drift`. |
+| `убдет ` | Selects `будет ` through the existing adjacent-transposition candidate. |
+| `лучш ебудет ` | Selects `лучше будет ` through the existing boundary candidate. |
+| `лучш еубдет ` | No apply. The boundary producer offers only `лучше убдет `; `edit_transition_not_verified` rejects this intermediate pair. |
+| Entire reported phrase | Same unresolved final-pair transition; no apply. A single CLI resolution acts on the final tail, and cannot establish earlier per-Space correction of its first word. |
+| Entire clean expected phrase | No rewrite selected; clean control preserved. |
+
+First semantic limitations, separately from delivery:
+
+1. Direct warmed L1.1 restore/lattice for `вклюай` abstains
+   (`outside_calibrated_basin`) without retaining `включай`. L2 recovers the
+   desired candidate, so its final loss of apply eligibility is the generic
+   short internal-consonant admission guard. There is no grounded L1.1 Winner
+   in this measurement that could justify bypassing that guard. Inspect general
+   missing-letter support/authority evidence before proposing a runtime fix;
+   never add this word or remove the guard to turn the example green.
+2. The existing pair producer moves a boundary character but does not compose
+   that operation with repair of the residual right token. Both individual
+   operations succeed in controls; their desired combined final candidate is
+   absent. The verifier correctly rejects `лучше убдет`, whose right token
+   remains corrupt. Any future bounded composition belongs in the existing
+   candidate/decision contract with one fully validated final pair, not two
+   independently emitted IME edits and not a relaxed verifier.
+
+Next discriminating evidence, before production edits: an actual remote IME
+per-Space trace on the owned Kitty test field, with the same model identities
+and explicit FieldSnapshotOnly scope. CLI FullReferenceAllowed, cold process
+startup/explanation timings (~1.5 s here), direct L1.1 readouts and physical
+client acceptance are different scopes. No UI latency or installed-client fix
+is claimed. No production code, runtime authority, delivery route, installed
+configuration, learning or model bytes changed; no new architecture promoted.
+Latest complete native browser receipt remains Firefox170P/27F/19B and
+Chrome179P/23F/14B, total349P/50F/33B of432, NOT_TESTED0; those layout results
+do not certify this autocorrection phrase.
+
 ## V whole native result rejected
 
 Full432339P60F33B, onegain/three lostPASS vsU; all20cursorPASS preserved.
