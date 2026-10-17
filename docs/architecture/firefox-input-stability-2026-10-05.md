@@ -1,5 +1,48 @@
 # Firefox input stability — 2026-10-05
 
+## 2026-10-17 — PR53 explicit replan for hot readout fixtures
+
+CI39074346533 at `e3557fb5` passes the repaired handler-first cursor Reset
+case, but fails `td121_inactive_completion_waits_for_matching_handled_release`
+with no selected suffix after release. Four other checks pass. Its trace does
+not identify the release-order arm or cache state. No runtime defect is proven.
+
+The inspected permitted failure path is a missing hot-material precondition:
+the fixture primes a generic query before engine setup, whereas synchronous
+release/receipt publication requires cached material for the actual current
+scene/input. On a miss the existing runtime correctly schedules background work.
+This differs from the prior Reset transport-order hypothesis. The managed
+release fast path intentionally supports handler completion before ingress;
+its helper, routes and deadlines remain unchanged.
+
+After the prior two-pass review, this distinct failure receives an explicit
+bounded replan (independent plan review9/10). Group single-release, overlapping
+release and exact-SSI hot-material fixtures. A helper inside the existing
+cfg(test) readout contract validates the actual stored computation frame or
+existing pending-reset frame, invokes production materialization, and verifies
+the actual cache hit with unchanged input/stored frame. No publication or
+learning is granted. Overlap retains its stronger display-identity checks;
+cold-worker/refusal scenarios and the prior Reset fix remain unchanged.
+
+Fresh remote IME verification passes827/827 (134.7s end-to-end).
+A private controlled omission of release-time draining makes the prepared
+fixture RED at its publication assertion. Exact production-byte restoration
+returns PASS. All three hot fixtures, the cold-worker, revoked-frame,
+unproved-release, prior Reset, unobserved-Reset and absolute-timeout controls
+pass:9 exact positive/control invocations after the single expected RED.
+This proves sensitivity to a controlled violation, not a historical CI cause.
+`READOUT-FOCUSED-PASS.json`, `READOUT-FIXTURE-PROOF.json` and
+`READOUT-CONTROLLED-VIOLATION.log` retain exact identities and effects.
+
+`READOUT-SOURCE-REUSE.json` verifies all Rust, dependency and configuration
+bytes outside the two private IME test files unchanged from the prior3211
+full gate. This composes fresh827 evidence with unchanged other targets;
+it is not a new remote full execution. Fresh full current-head CI remains
+mandatory. Exact receipts and both failed CI logs remain under
+`/home/ubu/.cache/lay/development/pr53-serde-20261018/`.
+Installed89 and runtime authority are unchanged. Historical browser default432
+remains349P/50F/33B, NOT_TESTED0; new dependency/native acceptance NOT_TESTED.
+
 ## 2026-10-17 — PR53 source-fixture receive-order repair
 
 At serde update head `8af0b6b6660ec7868512a3c0551572b23afce29a`, remote

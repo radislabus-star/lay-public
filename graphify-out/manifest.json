@@ -3070,8 +3070,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit_readout.rs": {
-    "mtime": 1792273180.6706975,
-    "ast_hash": "e3d33df87ec8869e4e3c1f10deae885c",
+    "mtime": 1792276388.3577917,
+    "ast_hash": "8fba66c734ded65a9152768327775132",
     "semantic_hash": ""
   },
   "src/nanda_wave/l2/surface.rs": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792273180.6831338,
-    "ast_hash": "c2832ef62aff1e063d77bdd7a44f870c",
+    "mtime": 1792275290.1322896,
+    "ast_hash": "7dbe9091d6a441da2a5d7e8bb6ff6ada",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1792273180.6674497,
-    "ast_hash": "221e1fc52cc2684619f5c2ed5a91fdd8",
+    "mtime": 1792276358.4516995,
+    "ast_hash": "b524f0dde6bd9c67a6535569703067c3",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
@@ -5745,7 +5745,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1792273180.67512,
+    "mtime": 1792276545.0316799,
     "ast_hash": "f8a4cfc912fd84577e68467deeb90f46",
     "semantic_hash": ""
   },
@@ -6085,8 +6085,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/firefox-input-stability-2026-10-05.md": {
-    "mtime": 1792275231.280567,
-    "ast_hash": "044eb0c3e1cc813fd4338ed130097215",
+    "mtime": 1792276578.616864,
+    "ast_hash": "c07965fee4035f9def2ae7b1dea8bf7c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-06-retired-disable-preserves-successor-lifecycle.json": {
@@ -7040,8 +7040,8 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1792275231.6705687,
-    "ast_hash": "1c05db7b9143ea28a57de3e4fb3bf57d",
+    "mtime": 1792276579.006866,
+    "ast_hash": "fea4fc8a15afe48c4cb55f9f809975d5",
     "semantic_hash": ""
   },
   "docs/development/wj-native-apps-2026-10-14.md": {

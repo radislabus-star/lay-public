@@ -1,5 +1,28 @@
 # TD-121: журнал изменений ядра и запрет повторения отвергнутых подходов
 
+## 2026-10-17 — PR53 explicit hot-material fixture replan
+
+CI39074346533 passes the Reset repair but fails immediate publication after a
+matching handled release at `e3557fb5`. Missing exact scene/input cache readiness
+is a permitted source path, not a historically timed CI diagnosis. Runtime
+correctly schedules background computation on a miss. Preserve the intentional
+handler-before-observer release path; do not apply Reset choreography there.
+
+The prior review budget is closed; explicit new bounded plan review9/10 groups
+three hot-material fixtures using the existing cfg(test) readout contract and
+production materializer. Assert unchanged input/frame, cache readiness, no
+publication/learning; keep overlap's display checks and all cold/refusal controls.
+Fresh827/827 remote source gate PASS. Private omission of release-time draining
+is RED at the prepared fixture's publication assertion; production restoration
+and9 exact hot/cold/refusal/Reset/timeout controls PASS. `READOUT-FIXTURE-PROOF.json`
+records exact bytes, identities and scope. `READOUT-SOURCE-REUSE.json` byte-verifies
+unchanged Rust/dependency/config outside the two private IME test files;
+combining fresh827 with prior3211 unchanged targets is composed evidence,
+not a new full remote run. Current-head full CI remains required.
+The [owning entry](../architecture/firefox-input-stability-2026-10-05.md)
+and task receipt directory retain both failed CI runs. No runtime/installed or
+native authority change is proposed.
+
 ## 2026-10-17 — PR53 handler-first Reset fixture schedule
 
 Baseline `8af0b6b` passes3211 remote source cases; GitHub run39071732596
