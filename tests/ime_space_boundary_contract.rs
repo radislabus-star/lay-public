@@ -1,11 +1,14 @@
 #[test]
 fn every_ime_space_route_finishes_the_full_precognition_boundary() {
-    let managed = include_str!("../src/bin/lay_ibus_engine/managed.rs");
+    let managed = include_str!("../src/bin/lay_ibus_engine/managed.rs")
+        .lines()
+        .map(str::trim)
+        .collect::<String>();
     let commit = include_str!("../src/bin/lay_ibus_engine/composition_commit.rs");
     let preedit = include_str!("../src/bin/lay_ibus_engine/preedit.rs");
 
     assert!(
-        managed.contains("self.commit_managed_passthrough_char(emitter, ' ').await?")
+        managed.contains("self.commit_managed_passthrough_char(emitter, ' ', keycode).await?")
             && managed.contains("self.push_tail_char(' ')")
             && managed.contains("self.commit_space(emitter).await?"),
         "every managed Space route must end in a shared boundary-owning operation"

@@ -415,6 +415,9 @@ fn cyrillic_layout_word_center_blocked(token: &str) -> bool {
     is_user_protected_word(&lower)
         || is_ru_live_protected_word(&lower)
         || input_has_settled_phase(&lower)
+        // A live center lemma plus an exact licensed affix is independent
+        // source evidence; decoder-only/coarse morphology is not admitted.
+        || crate::russian_lexicon::is_attested_center_backed_russian_form(&lower)
 }
 
 fn language_allows_layout(token: &str, converted: &str, learned_transition: bool) -> bool {

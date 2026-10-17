@@ -214,6 +214,8 @@ pub(crate) struct TestEngineOutput {
     pub(crate) fail_commit: bool,
     pub(crate) fail_input_mode_publication: bool,
     pub(crate) pause_before_commit: bool,
+    pub(crate) pause_before_preedit: bool,
+    pub(crate) pause_after_input_mode: bool,
 }
 
 impl<'a, 'e> EngineOutput<'a, 'e> {
@@ -348,6 +350,10 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             }
             #[cfg(test)]
             Self::Test(output) => {
+                if output.pause_before_preedit {
+                    output.pause_before_preedit = false;
+                    futures_lite::future::yield_now().await;
+                }
                 output.effects.push("update-preedit");
                 output
                     .preedit_attribute_updates
@@ -388,6 +394,10 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                     ))
                 } else {
                     output.input_mode_updates.push(is_ru);
+                    if output.pause_after_input_mode {
+                        output.pause_after_input_mode = false;
+                        futures_lite::future::yield_now().await;
+                    }
                     Ok(())
                 }
             }

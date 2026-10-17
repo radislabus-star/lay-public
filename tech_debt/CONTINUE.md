@@ -1,3 +1,41 @@
+# Current checkpoint — 2026-10-09, accepted1.0.81 + technical-debt loop
+
+Единственная текущая очередь: [tech_debt/README.md](README.md).
+Authoritative checkout `/home/ubu/projects/lay-space-boundary-shift-20261007`,
+branch `codex/space-boundary-shift-20261007`, accepted source `e7a25705`.
+Принятый installed IME SHA-256:
+`2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559`.
+Пользователь подтвердил target pair/first-word correction; эта приёмка закрыта.
+Source3044/3044 и native62PASS/2FAIL/64 — разные denominators;
+universal acceptance NOT_MET. Остальные old scopes не закрыты pair acceptance.
+
+План debt review ACCEPT9/10 после двух проходов. TD-129 current index
+DONE_METADATA_SCOPE, review9/10, опубликован `2401a4e4`. TD-131
+one Unicode tail limit DONE_SOURCE_ONLY, review7→9/10, runtime unchanged.
+Первый этап завершён; пользователь разрешил Stage2 («делай»). В нём завершены
+TD-130 connected private proof и TD-137 retirement unsafe shared cleanup
+(review9/10 каждый), TD-136 bounded map + cap41 callback characterization
+(review8/10, published89e075e2). Source3045 successful bodies и separate
+metadata admission не заменяют original command FAIL или native acceptance.
+TD-133 остаётся IN_PROGRESS: два отдельно разрешённых diagnostic2 не повторили
+original committed-surface FAIL. Во втором committed/preedit/caret2/2 PASS,
+GTK assertion layout отличается, один поздний layout совпадает; Qt render
+недоступен. Final diagnostic review9/10 не закрывает причину или отображение.
+Оба local grants исчерпаны; remote-only policy сохраняется. Deferred scopes
+не объявлены DONE. Source receipts/publication status
+смотреть в единственном current index. Каждая выполненная source-only
+задача получает fresh-context review, scopedDONE, commit/push/remote verification
+перед следующей. Никакой installation/restart из metadata task не следует.
+
+## Historical checkpoints below
+
+Весь последующий текст сохранён как история конкретных прежних версий.
+Слова Current/Latest, C20/R5/R7/R12, старые порядки задач и команды установки
+ниже не являются текущим заданием. За current source/status/rollback следовать
+единственному индексу выше и AGENTS.md; historical FAIL/receipts не стирать.
+
+---
+
 # Current TD-121 repair — 2026-09-14
 
 R12 development acceptance: **563/563 focused PASS**, two independent reviews,

@@ -216,6 +216,11 @@ impl TypingCpu {
         crate::nanda_wave::record_accepted_layout_projection_usage(original, replacement);
     }
 
+    /// The owning context has observed the exact manual restoration in the client.
+    pub fn record_observed_manual_restoration(original: &str, rejected: &str) {
+        crate::nanda_wave::record_observed_manual_restoration_usage(original, rejected);
+    }
+
     pub fn record_precognition_tick(stage: &str, text: &str, include_trace: bool) {
         crate::nanda_wave::precognition::record_precognition_tick(stage, text, include_trace);
         if crate::typing_memory::phrase_is_attested_for_learning(text) {

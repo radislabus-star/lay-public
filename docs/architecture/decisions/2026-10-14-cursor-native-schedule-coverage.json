@@ -1,0 +1,359 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-cursor-native-schedule-coverage",
+  "status": "NO_WIRE35_COMPLETE_CURSOR_PASS_SCOPE_CLEANUP75_EXPLAINED",
+  "updated_at": "2026-10-14T03:00:57.038666+00:00",
+  "baseline": "R source1109 PASS/review9; full432332P67F33B, Chrome cursor10/10 gains, Firefox cursor still10FAIL; no rollback of R",
+  "measured_gap": "R native Firefox excerpt before first Left: exact SSI6/caret6, locally committed six chars, UnknownStart and an actual visible display-only prediction. Source R positives disable prediction and call manual V3 directly without the four native Shift callbacks. The first exact loss of CursorEditing is not logged by R; no root cause is yet claimed.",
+  "options": [
+    {
+      "score": 8,
+      "recommended": true,
+      "solution": "Extend existing authenticated source choreography with actual published prediction and four Shift callbacks, retaining original8 cases and verdict/proof assertions. Source-only causal test first; no runtime edit."
+    },
+    {
+      "score": 7,
+      "recommended": false,
+      "solution": "Add scoped cursor-provenance metadata and one changed-byte native diagnostic if the extended source schedule does not reproduce.",
+      "reason": "Useful next fallback but needs new build/client evidence and overhead accounting."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Broaden UnknownStart authority or delete the reset/source predicates.",
+      "reason": "Unproved text ownership and lost safety; prohibited."
+    },
+    {
+      "score": 2,
+      "recommended": false,
+      "solution": "Add Space or another artificial trigger to the existing actor.",
+      "reason": "Does not meet the fixed original native protocol."
+    }
+  ],
+  "scope_contract": [
+    "Root edits/tests; execution only remote after old GUI fully closed. No agents implement.",
+    "Keep R production and all10Chrome gains. No retraining, word-specific exception, timeout increase, new owner or delivery route.",
+    "Fixture prediction must be emitted by production publication and drained without hiding CommitText/DeleteSurroundingText. Actual Shift callbacks must use real receive/callback paths.",
+    "A source PASS is not a Firefox fix; no unchanged-source native retry until PASS. If no RED, inspect additional callback interleaving or scoped metadata first."
+  ],
+  "runtime_authority_changed": false,
+  "production_runtime_changed": false,
+  "delivery_routes_changed": false,
+  "source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-causal-red-RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/s-cursor-native-schedule-source-s1k4afte/RESULT.json",
+    "proof_signature": "6928aa83a832ba5a3db159add7d2261b0155e6b41590bff649b3adfe11211c04",
+    "result": "44PASS1FAIL45",
+    "elapsed_seconds": 18.81011680199299,
+    "first_assertion": "manual source is not current after four Shift callbacks; exact first event pending",
+    "verdict_scope": "Invalid causal runtime inference: handler-first helper withheld observer until Shift callback returned. Unlike matched text-inert releases, Shift requires ordered stamp; timeout is expected. Three diagnostic RED receipts retained, not product acceptance."
+  },
+  "corrected_fixture": "Use existing real received legacy_key observer-first Shift press/release; retain both release orders for the cursor edit keys supported by their actual completion fact. Native Shift interleaving remains not reproduced.",
+  "source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-coverage-green45-RESULT.json",
+    "signature": "c95a51d54d1adc7cee242d061a011b32b75b6ecacac05fe7a16eba592dcf6535",
+    "elapsed_seconds": 19.016724185989005,
+    "result": "45/45PASS",
+    "all_source_hashes_match": true
+  },
+  "next": "Existing gated metadata-only cursor tracing, fresh scoped source/build, one original public Firefox field1 diagnostic. No behavior change or acceptance claim.",
+  "review1": "Fresh context-free review spawn rejected: agent thread limit reached. Not run; root reviews minimal diagnostic instrumentation. No reviewer score invented.",
+  "diagnostic_change": {
+    "files": [
+      "window_interaction/native_cursor_observation.rs",
+      "window_interaction/observation.rs"
+    ],
+    "contract": "Only existing trace::enabled-gated numeric/boolean cursor provenance records around original control flow. No content/token dump; no new predicate, owner, queue, timer, deadline, admission, route or model fit. Diagnostic speed/async completeness UNKNOWN until measured.",
+    "native_scope": "one original Firefox public field1 all15 plans with unchanged actors + passive wire, no full-matrix promotion",
+    "root_audit": "Original conditions/returns/receipt mutation unchanged. JSON optional scalars emit null/numbers, last key as two-number array. Trace calls after mutable borrows end."
+  },
+  "metadata_source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-metadata-green45-RESULT.json",
+    "signature": "b9394d4921849395cafed5f9cd12759658895b54cc687b19aa1759190db27b3b",
+    "result": "45/45PASS",
+    "elapsed_seconds": 19.399104651995003,
+    "all208RustHashesMatch": true,
+    "scope_correction": "probe template says no production edit; this run includes gated logging only, no runtime behavior/authority change"
+  },
+  "immutable_source_gate": {
+    "local_report": "/home/ubu/.cache/lay/development/run-9xuz3ad5/RESULT.json",
+    "remote_gate": "/home/e/projects/lay-development-runner/run-QyJfLT",
+    "archive_sha256": "925cb3c43883f4a97a7e4a7fb3b12102626811fdb9997f5a0201fa885338bb64",
+    "result": "837/837PASS",
+    "scope": "IME786 and6contracts51; not full release. R daemon273 prior source proof retained unchanged; no repeated daemon execution.",
+    "all737RustHashesMatch": true,
+    "worker_seconds": 113.13774650800042,
+    "controller_seconds": 121.5
+  },
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-QyJfLT",
+    "archive_sha256": "925cb3c43883f4a97a7e4a7fb3b12102626811fdb9997f5a0201fa885338bb64",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791945037405020526.txt",
+    "elapsed_seconds": 184.00113447400508,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "167ca91e23858c2d1a44832ca7689d7ba6201abbd83253b263105956bd57ab47",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791945221406063354/bin/lay-ibus-engine",
+      "bytes": 8272016
+    },
+    "lay-daemon": {
+      "sha256": "3708283f4969fe77057808a6e169734d26d1c33e53206a0461cd3c592abbfc69",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791945221406063354/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "staged": {
+    "status": "STAGED_PRIVATE_ONLY",
+    "backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-S-cursor-metadata-1791945256229331651",
+    "ime_sha256": "167ca91e23858c2d1a44832ca7689d7ba6201abbd83253b263105956bd57ab47",
+    "daemon_sha256": "3708283f4969fe77057808a6e169734d26d1c33e53206a0461cd3c592abbfc69",
+    "gate": "/home/e/projects/lay-development-runner/run-QyJfLT",
+    "original_actors_unchanged": true
+  },
+  "native_session": {
+    "actual_exec": 35196,
+    "driver_exec": 6958,
+    "scope": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-3678301.scope",
+    "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-firefox-zero-key.json",
+    "seat": {
+      "status": "OWNED_FINITE_SEAT_READY",
+      "unit": "lay-native-session-6onP5c-ae.service",
+      "seat": {
+        "pid": 3677200,
+        "starttick": "14278669",
+        "uid": 1000,
+        "session_id": "3480",
+        "session_type": "wayland",
+        "seat": "seat0",
+        "vt": "8"
+      },
+      "previous_vt": "1",
+      "old_seat_backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/S-seat-before-1791945256391846854.json",
+      "properties": {
+        "User": "1000",
+        "VTNr": "8",
+        "Seat": "seat0",
+        "Leader": "3677200",
+        "Type": "wayland",
+        "Active": "yes"
+      }
+    },
+    "input_plan": "one field, original15; diagnostic only",
+    "no_heavy_while_gui_live": true
+  },
+  "controller_path_error": "After staging/seat creation, config path config/lay/config.json absent. Corrected to existing home/.config/lay/config.json before GUI/native keys, no source/build/staging retry.",
+  "native_diagnostic": {
+    "actor_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-diagnostic-field1/RESULT.json",
+    "wire_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-diagnostic-field1/WIRE.json",
+    "actor_sha256": "879bc8676465ee0eaa07c13a63e601127ae39423b7633178eff011403fc4888d",
+    "wire_sha256": "5dd233267f21b2ca74e9680724f210ea04dd4d20f9fc14bada7ff59e0a68857b",
+    "result": "10PASS4FAIL1BLOCKED15",
+    "cursor": "PASS, exact phase seeded and actual receipts preserved in this run",
+    "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/S-firefox-closed.json",
+    "scope": "fresh public field1, original15; not original full9-job state history",
+    "full_matrix_replaced": false,
+    "async_trace_completeness": "UNKNOWN;512000B bounded trace prefix not preserved",
+    "logging_passive_observer_overhead": "NOT_MEASURED",
+    "latency": {
+      "double_shift": {
+        "required": 21,
+        "measured": 12,
+        "missing": 9,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": 106.46754549443722,
+        "p95_ms": 142.06786799430847,
+        "max_ms": 142.06786799430847
+      },
+      "space": {
+        "required": 5,
+        "measured": 4,
+        "missing": 1,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": 18.92723798751831,
+        "p95_ms": 21.512010991573334,
+        "max_ms": 21.512010991573334
+      },
+      "tab": {
+        "required": 1,
+        "measured": 0,
+        "missing": 1,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": null,
+        "p95_ms": null,
+        "max_ms": null
+      },
+      "selection": {
+        "required": 1,
+        "measured": 0,
+        "missing": 1,
+        "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+        "p50_ms": null,
+        "p95_ms": null,
+        "max_ms": null
+      }
+    },
+    "root_cause": "UNKNOWN; no exact loss in successful cursor diagnostic. R failed excerpt has allfourShiftaccepted, so do not infer Shift stamp timeout there.",
+    "next": "Compare successful and failed retained callbacks before choosing controlled scope/history or instrumentation change; no unchanged retry to obtain PASS."
+  },
+  "measured_order_difference": {
+    "R_failure": "owned letter CommitText/handled then actual SSI6/caret3 BEFORE Reset37507; EndSSI AFTER Reset37510. AllfourShiftaccepted.",
+    "S_success": "same managed insertion actual SSI6/caret3 AFTER Reset1361; EndSSI AFTER Reset1365. Nativephase seeded/all6Resetcaptured in successful run.",
+    "hypothesis": "Additional before-Reset SSI may invalidate/rebind cursor provenance differently. First exact loss in R still unknown; this order difference alone is not a proven cause.",
+    "test": "new actual owned-insert SSI-before-Reset variant of same8prefix/edit/release cases; original45 controls retained; no production repair yet"
+  },
+  "ssi_before_reset_source": {
+    "result": "46/46PASS",
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/s-cursor-native-schedule-source-fhaghmpf/RESULT.json",
+    "signature": "614959f8143bba1e354b81e4b1093e451dd96a3dc9623c3da13d06a68f1dfede",
+    "seconds": 19.80790526000783,
+    "scope": "before-insert-Reset SSI order alone did not reproduce loss; not proof that all interleavings are safe"
+  },
+  "history_diagnostic": {
+    "hypothesis": "Prior standard Double Shift/source activation history differs between full R FAIL and fresh S PASS. Test a bounded original normal20 prefix before identical field1/wire15 diagnostic. No repeated unchanged-to-random-PASS run.",
+    "runtime": "same S167ca/37082 metadata bytes; no build/source behavior changes",
+    "actors": "Original standard-normal wrapper exact copied bytes; original standard, functional and body SHA pins retained. Functional field1/wire unchanged except fresh bound zero-key tag.",
+    "denominator": "35 diagnostic scenarios only, never replaces full432",
+    "setup": "Archive closed S4jobs and parent0 receipts; retain originalsetup3; reactivate only owned ae seat after exact closure/VT1; existing keyboardACL immediate; STOP/strong5PIDclosure/VT1 at completion.",
+    "live": {
+      "actual_exec": 82881,
+      "driver_exec": 88031,
+      "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/SH-firefox-zero-key.json",
+      "scope": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-3715597.scope",
+      "keyboard_owner_pid": 3715619,
+      "keyboard_owner_starttick": "14353310",
+      "oldS_scope_closed": true,
+      "no_heavy_while_GUI_live": true
+    },
+    "result": {
+      "standard": "20/20PASS",
+      "functional": "10PASS4FAIL1BLOCKED15",
+      "cursor": "PASS",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/SH-history-diagnostic/RESULT.json",
+      "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/SH-firefox-closed.json",
+      "latency": {
+        "double_shift": {
+          "required": 21,
+          "measured": 12,
+          "missing": 9,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 103.80208650231361,
+          "p95_ms": 148.52784699201584,
+          "max_ms": 148.52784699201584
+        },
+        "space": {
+          "required": 5,
+          "measured": 4,
+          "missing": 1,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 18.3121739923954,
+          "p95_ms": 20.385223001241684,
+          "max_ms": 20.385223001241684
+        },
+        "tab": {
+          "required": 1,
+          "measured": 0,
+          "missing": 1,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null
+        },
+        "selection": {
+          "required": 1,
+          "measured": 0,
+          "missing": 1,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null
+        }
+      },
+      "conclusion": "This bounded normal20 history did not reproduce cursor failure. Other full-R history and instrumentation timing remain unproved. No functional fix claimed.",
+      "logging_passive_overhead": "NOT_MEASURED"
+    }
+  },
+  "s46_ast": {
+    "status": "PASS",
+    "scope": "S46 test-only source AST update, no private runtime replacement",
+    "seconds": 21.163154638023116,
+    "rust_verified": 710,
+    "artifacts": {
+      "graphify-out/graph.json": "7f0f8856791260bf3bd89aa51b51ee1227940994d14b7e92842f2c01ee04ed70",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "e2c3ce2874c989f6c501cf7fc1ac4167ae7c9151ff4e3b78c46629c0dd3a037f",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    },
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/S46-graph-1791945959186195261.log"
+  },
+  "controller_stdin_error": "First guarded Python via stdin command returned0 without output/artifact; NOT accepted as AST proof. Replaced by uploaded S46-graph.py and explicit immutable receipt; not a source/product failure.",
+  "no_wire_diagnostic": {
+    "hypothesis": "SH35 cursorPASS with passive IBus wire; compare same originalnormal20+field1functional15 WITHOUT passive wire. Isolate observer timing; same S bytes, originalactors/body, cadence, profile and setup.",
+    "changed_factor": "No additional dbus-monitor during the functional15 actor. Existing setup005 attachment observer is unchanged. Built-in engine logging retained; its overhead NOT_MEASURED.",
+    "scope": "35diagnostic scenarios, not fullR216; no repeated unchanged-to-random-PASS run. Root records whichever verdict occurs.",
+    "source": "No production edit/build/refit; S837 gate and46test-only source coverage retained.",
+    "live": {
+      "actual_exec": 55164,
+      "driver_exec": 87577,
+      "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/SI-firefox-zero-key.json",
+      "scope": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-3737830.scope",
+      "keyboard_owner_pid": 3737851,
+      "keyboard_owner_starttick": "14389999",
+      "oldSH_scope_closed": true,
+      "no_heavy_while_GUI_live": true
+    },
+    "result": {
+      "standard": "20/20PASS",
+      "functional": "10PASS4FAIL1BLOCKED15",
+      "cursor": "PASS",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/SI-no-wire-diagnostic/RESULT.json",
+      "actor_sha256": "3566b8f5aaa644a272f81057e403ef6aa210fc1362a74da871e1436939ef07cb",
+      "latency": {
+        "double_shift": {
+          "required": 21,
+          "measured": 12,
+          "missing": 9,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 102.41728350520134,
+          "p95_ms": 143.45637398958206,
+          "max_ms": 143.45637398958206
+        },
+        "space": {
+          "required": 5,
+          "measured": 4,
+          "missing": 1,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": 19.122050002217293,
+          "p95_ms": 22.759811967611313,
+          "max_ms": 22.759811967611313
+        },
+        "tab": {
+          "required": 1,
+          "measured": 0,
+          "missing": 1,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null
+        },
+        "selection": {
+          "required": 1,
+          "measured": 0,
+          "missing": 1,
+          "clock": "evdev write-return to AT-SPI exact target; kernel release NOT_MEASURED",
+          "p50_ms": null,
+          "p95_ms": null,
+          "max_ms": null
+        }
+      },
+      "comparison": "All15functional stable statuses equal SH with wire. Passive wire absence did not reproduce cursor failure. Built-in positive-path logging timing/fullRhistory still unproved.",
+      "actual_parent_exit": 75,
+      "driver_exit": 0,
+      "cause_of_75": "guard descendant_cleanup after completed original twojobs0/noheldkeys; one owned lay-l1.1-serve PID3738319/t14390320 remained in exactSIcgroup, pidfdSIGTERMclosed it; unrelated processes unchanged",
+      "cleanup": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/SI-owned-orphan-cleanup.json",
+      "strong_final_closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/SI-firefox-closed.json"
+    }
+  }
+}

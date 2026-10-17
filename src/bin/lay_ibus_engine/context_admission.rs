@@ -18,7 +18,7 @@ use std::time::{Duration, Instant};
 pub(crate) use adapter::tests::word_scope::residuals::assert_window_interaction_reset_rereceipt_contract;
 pub(crate) use adapter::{
     ActivationOutcome, AdapterConfig, AdapterError, ContextAdmissionAdapter, KeyCallback,
-    PendingContextAdapter, PendingFence,
+    KeyCallbackObservation, PendingContextAdapter, PendingFence,
 };
 pub(crate) use ordered_merge::{join_ordered_streams, next_ordered_message};
 pub(crate) use rendezvous::{
@@ -129,13 +129,17 @@ pub(crate) enum WordCompleteness {
 pub(crate) struct WordLineage {
     pub(crate) generation: LineageGeneration,
     pub(crate) completeness: WordCompleteness,
-    /// Contiguous mirrored suffix available only to an explicit manual action.
-    /// Zero for KnownStart; this never upgrades word completeness.
+    /// Contiguous locally observed suffix: manual unknown-start input or the
+    /// first word awaiting a retained closing boundary. Never upgrades completeness.
     pub(crate) observed_suffix_chars: u32,
     /// Earliest scalar offset whose retained suffix includes an observed
     /// boundary. Prefix trimming may make this floor conservative; it must
     /// never be moved left by inspecting an unproven mirror.
     pub(crate) observed_boundary_floor: Option<u32>,
+    /// Exact locally observed first word and its closing separator. This is
+    /// bounded-tail provenance, never a claim of absolute document start.
+    /// u8 offsets preserve the existing WordLineage size budget (tail <=160).
+    pub(crate) observed_first_word: Option<(u8, u8)>,
 }
 
 /// Completeness is an authority state, not a convenience boolean.
@@ -166,6 +170,15 @@ impl WordScope {
         retained_boundary: Option<u32>,
     ) -> WordCompleteness {
         let closed = self.lineage.completeness;
+        let observed_first_word = retained_boundary.and_then(|end| {
+            self.lineage.observed_first_word.or_else(|| {
+                if self.lineage.observed_suffix_chars == 0 {
+                    return None;
+                }
+                let start = end.checked_sub(self.lineage.observed_suffix_chars)?;
+                Some((u8::try_from(start).ok()?, u8::try_from(end).ok()?))
+            })
+        });
         let observed_boundary_floor = retained_boundary.map(|boundary| {
             self.lineage
                 .observed_boundary_floor
@@ -176,12 +189,17 @@ impl WordScope {
             completeness: WordCompleteness::KnownStart,
             observed_suffix_chars: 0,
             observed_boundary_floor,
+            observed_first_word,
         };
         #[cfg(test)]
         {
             self.last_boundary = Some(_boundary_revision);
         }
         closed
+    }
+
+    pub(crate) fn forget_observed_first_word(&mut self) {
+        self.lineage.observed_first_word = None;
     }
 
     /// Emptying, reset and re-receipt never manufacture a known start.
@@ -198,8 +216,14 @@ impl WordScope {
         self.observe_tail_append_span(retained_chars, 1);
     }
 
+    pub(crate) fn tracks_observed_suffix(&self) -> bool {
+        self.lineage.completeness == WordCompleteness::UnknownStart
+            || (self.lineage.observed_boundary_floor.is_none()
+                && self.lineage.observed_first_word.is_none())
+    }
+
     pub(crate) fn observe_tail_append_span(&mut self, retained_chars: u32, appended_chars: u32) {
-        if self.lineage.completeness == WordCompleteness::UnknownStart {
+        if self.tracks_observed_suffix() {
             self.lineage.observed_suffix_chars = self
                 .lineage
                 .observed_suffix_chars
@@ -210,6 +234,16 @@ impl WordScope {
 
     pub(crate) fn observe_tail_backspace(&mut self) {
         self.lineage.observed_suffix_chars = self.lineage.observed_suffix_chars.saturating_sub(1);
+    }
+
+    /// Losing the mirrored suffix does not retire an independently observed
+    /// word boundary. Unknown input retains its original full gap revocation.
+    pub(crate) fn invalidate_observed_suffix(&mut self) {
+        if self.lineage.completeness == WordCompleteness::UnknownStart {
+            self.revoke_for_input_gap();
+        } else {
+            self.lineage.observed_suffix_chars = 0;
+        }
     }
 
     pub(crate) fn observe_soft_reset_rereceipt(&mut self, observed_suffix_chars: u32) -> bool {
@@ -242,6 +276,7 @@ impl WordScope {
             completeness: WordCompleteness::UnknownStart,
             observed_suffix_chars: 0,
             observed_boundary_floor: None,
+            observed_first_word: None,
         };
         #[cfg(test)]
         {
@@ -303,6 +338,9 @@ impl HeaderKey {
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) enum IngressDisposition {
     Passive,
+    // A parsed legacy Shift at the exact pending factory target. It carries
+    // no key queue entry, word owner or mutation authority.
+    PassiveShift,
     Key {
         owner: EngineOwner,
         revocation: u64,
@@ -506,6 +544,7 @@ pub(crate) struct ExactManualSourceSnapshotReceipt {
     source_token: AdmissionToken,
     pub(crate) tail_epoch: u64,
     pub(crate) tail: String,
+    pub(crate) observed_external_prefix: Option<String>,
     pub(crate) observation_revision: u64,
     pub(crate) expires_at: Instant,
 }
@@ -571,6 +610,14 @@ pub(crate) struct AdmissionToken {
 }
 
 impl AdmissionToken {
+    /// Release pairing is bound to the actual input activation, independently
+    /// of word settlement or Reset revocation. This grants no text authority.
+    pub(crate) fn shares_input_activation(&self, other: &Self) -> bool {
+        self.connection == other.connection
+            && self.owner == other.owner
+            && self.activation == other.activation
+    }
+
     pub(crate) fn matches_word_scope(&self, scope: &WordScope) -> bool {
         self.lineage == scope.lineage()
     }
@@ -681,6 +728,7 @@ where
                 completeness: WordCompleteness::UnknownStart,
                 observed_suffix_chars: 0,
                 observed_boundary_floor: None,
+                observed_first_word: None,
             },
             latest_tail_epoch: 0,
             settled_content_type: None,
@@ -737,6 +785,7 @@ where
             completeness,
             observed_suffix_chars: 0,
             observed_boundary_floor: None,
+            observed_first_word: None,
         };
         self.latest_tail_epoch = tail_epoch;
         self.owner = Some(owner.clone());
@@ -1065,6 +1114,7 @@ where
             || settled.tail_epoch != self.latest_tail_epoch
             || settled.lineage.generation != self.lineage.generation
             || settled.lineage.observed_boundary_floor != self.lineage.observed_boundary_floor
+            || settled.lineage.observed_first_word != self.lineage.observed_first_word
             || self.lineage.completeness != WordCompleteness::UnknownStart
             || settled.lineage.completeness != WordCompleteness::UnknownStart
             || settled.lineage.observed_suffix_chars <= self.lineage.observed_suffix_chars
@@ -1072,6 +1122,7 @@ where
             return false;
         }
         self.lineage = settled.lineage;
+        self.settled_content_type = settled.content_type;
         true
     }
 
@@ -1089,6 +1140,7 @@ where
             return false;
         }
         self.latest_tail_epoch = settled.tail_epoch;
+        self.settled_content_type = settled.content_type;
         true
     }
 
@@ -1097,6 +1149,7 @@ where
         token: &AdmissionToken,
         tail_epoch: u64,
         tail: String,
+        observed_external_prefix: Option<String>,
         observation_revision: u64,
         expires_at: Instant,
     ) -> bool {
@@ -1117,6 +1170,7 @@ where
             source_token: token.clone(),
             tail_epoch,
             tail,
+            observed_external_prefix,
             observation_revision,
             expires_at,
         });
@@ -1699,6 +1753,7 @@ where
             completeness: WordCompleteness::UnknownStart,
             observed_suffix_chars: 0,
             observed_boundary_floor: None,
+            observed_first_word: None,
         };
         if let Some(seal) = self
             .ticket
@@ -1783,8 +1838,13 @@ where
 
     pub(crate) fn observed_word_reset(&mut self) {
         let floor = self.last_non_reset_revocation;
+        // Reset retires the word in this activation; it does not change the
+        // client's already admitted input purpose or privacy hints. Broader
+        // lifecycle and metadata changes still clear them through revoke().
+        let content_type = self.settled_content_type;
         self.revoke();
         self.last_non_reset_revocation = floor;
+        self.settled_content_type = content_type;
     }
 
     fn exact_replay_reset_provenance_is_current(&self, source: &AdmissionToken) -> bool {
@@ -1821,6 +1881,31 @@ where
         }
         self.latest_tail_epoch = completed_epoch;
         true
+    }
+
+    /// Without Reset, the closing native Space already settled this boundary.
+    /// Validate its exact current epoch/token; do not align or replace lineage.
+    fn completed_exact_replay_boundary_is_current(
+        &self,
+        source: &AdmissionToken,
+        boundary_token: &AdmissionToken,
+        source_epoch: u64,
+        completed_epoch: u64,
+        projected_changes: usize,
+    ) -> bool {
+        (self.exact_replay_reset_provenance_is_current(source)
+            || (self.mode == GlobalEngineMode::Verified
+                && self.lifecycle_is_settled()
+                && source.connection == self.connection
+                && self.owner.as_ref() == Some(&source.owner)
+                && self.activation.as_ref() == Some(&source.activation)
+                && source.revocation == self.revocation))
+            && self.revalidate_bridge(boundary_token)
+            && self.lineage.completeness == WordCompleteness::KnownStart
+            && self.lineage.observed_suffix_chars == 0
+            && self.latest_tail_epoch == completed_epoch
+            && source_epoch.checked_add(projected_changes as u64) == Some(completed_epoch)
+            && projected_changes != 0
     }
 
     pub(crate) fn consume(&mut self) -> Option<TransferGrant> {
@@ -1915,6 +2000,7 @@ where
             completeness: WordCompleteness::UnknownStart,
             observed_suffix_chars: 0,
             observed_boundary_floor: None,
+            observed_first_word: None,
         };
         self.latest_tail_epoch = 0;
         self.settled_content_type = None;
@@ -2355,6 +2441,7 @@ where
             completeness: WordCompleteness::UnknownStart,
             observed_suffix_chars: 0,
             observed_boundary_floor: None,
+            observed_first_word: None,
         };
     }
 

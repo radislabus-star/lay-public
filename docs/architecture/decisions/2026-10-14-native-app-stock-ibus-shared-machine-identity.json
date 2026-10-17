@@ -1,0 +1,180 @@
+{
+  "schema": "lay.architecture-experiment-decision.v1",
+  "at": "2026-10-14T11:53:02.319349+00:00",
+  "status": "COMPLETE_NATIVE88_WITH_KNOWN_FAILURES_SOURCE_FROZEN",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "experiment": "WJ other native clients; setup attempt1",
+  "measured": {
+    "receipt_remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-setup1-1791978664353212704/ARCHIVE.json",
+    "host_machine_id": "175871a82f5a4d2aa8e32cc1dd3cc4e2",
+    "guest_machine_id": "60e058a0453c4c3bb267afcbdbad793b",
+    "host_ibus_address": null,
+    "app_input_keys": 0,
+    "native_app_cases_not_tested": 88,
+    "owned5_gone": true,
+    "cgroup_empty": true,
+    "vt_restored": true
+  },
+  "decision": "App-only guest launcher shares host /etc/machine-id read-only so host toolkits and private GNOME use ordinary IBus discovery. Preserve stock discovery and exact owner/socket guards; no IBUS_ADDRESS override, duplicate bus, profile alias or production transport change. Correct GTK focus observer to return False. Write actor startup-error receipt and detect early death. Missing native preedit caret remains BLOCKED.",
+  "runtime_authority_changed": false,
+  "production_routes_changed": false,
+  "ime_sha256": "84f8510cc8e99ba552fe92837e71062f5121775ece1efe3588a462a668e1cccd",
+  "daemon_sha256": "08416956a6a94acb2446b1124311c7975bd4c05dbcdd99fcca3f26452d4fa068",
+  "acceptance": "No native app acceptance yet; source848 PASS and WG432343P56F33B are separate. Telegram logged out; no draft/message input, no authenticated profile copied.",
+  "setup2": {
+    "receipt_remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-setup2-1791978934553235625/ARCHIVE.json",
+    "ordinary_host_discovery_connected": true,
+    "owned_ibus_matches_private_vendor": true,
+    "next_failed_transition": "Host test guard compared private guest IBus executable to host vendor binary instead of private guest vendor binary.",
+    "app_input_keys": 0,
+    "not_tested": 88,
+    "owned_scope_closed": true
+  },
+  "guard_refinement": "Test helper accepts an explicit vendor binary path; host actor pins rootfs-v2/usr/bin/ibus-daemon, the exact immutable private package. Browser default stays /usr/bin/ibus-daemon. Executable hash comparison, exact ready identity equality, process parent/UID/starttick/cgroup, discovery and connection guards unchanged. Run host guard preflight before actor keys.",
+  "setup3": {
+    "receipt_remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-setup3-1791979158775405222/ARCHIVE.json",
+    "ordinary_host_discovery_and_owner_guard": "PASS",
+    "next_failed_transition": "Host fixture API mismatch before first app key: Accessible.clear_cache_single absent; evdev.InputDevice.syn absent.",
+    "app_input_keys": 0,
+    "not_tested": 88,
+    "owned_scope_closed": true
+  },
+  "host_api_refinement": "Use existing host Accessible.clear_cache() and native EV_SYN write; verified host APIs without input. Completion receipt checks actual active keys. Passive keyboard/focus ledger also covers terminal windows without a widget, and every application keeps its own ledger. No production change.",
+  "partial4": {
+    "receipt_remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-partial4-1791979559627252021/ARCHIVE.json",
+    "actual_native_keys": 380,
+    "completed": {
+      "PASS": 4,
+      "FAIL": 0,
+      "BLOCKED": 1,
+      "NOT_TESTED": 83
+    },
+    "first_native_cases": "GTK TextView short8/long8/mixed8/english8 PASS; prefix8 BLOCKED (preedit caret unavailable).",
+    "next_failed_transition": "Installed host screenshot CLI timed out; visual collector failure aborted unstarted cases.",
+    "owned_scope_closed": true
+  },
+  "visual_collector_decision": "Add one read-only CaptureVerificationFrame method only to private cached GNOME test extension. Use GNOME50 official Shell.Screenshot to Gio stream; no keyboard/focus changes, no public Screenshot policy change, no production files or existing input-method edits. Exact subtraction yields unchanged original extension source. Keep before/after foreground and pixel hash; a screenshot is not latency proof. Fail capture as BLOCKED without aborting functional matrix. Restore private extension after scope closure.",
+  "visual_api_source": "https://raw.githubusercontent.com/GNOME/gnome-shell/50.0/js/ui/screenshot.js",
+  "continuation": "Retain only five finalized exact-byte rows from partial4 with receipt hash and native provenance; do not retry unchanged PASS or BLOCKED. Execute only remaining83 planned cases in fresh owned windows.",
+  "partial5": {
+    "receipt_remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-partial5-1791980456252180239/ARCHIVE.json",
+    "completed": {
+      "PASS": 15,
+      "FAIL": 13,
+      "BLOCKED": 4,
+      "NOT_TESTED": 56
+    },
+    "qt_input_keys": 0,
+    "capture_native_frame": "PASS; no focus change",
+    "next_failed_transition": "Default Qt startup replaced IBus discovery file (old1331237/addressvGKsEUpY ->1334619/addressAp3BE075); old binding guard stopped. New IBus parent/cause UNKNOWN after teardown; no source core failure inferred.",
+    "closure": "actual80654 exit75 descendant-cleanup; late L1.1 descendant gone before attempted signal (0signals), exact5Gone/CGempty/VT1 verified."
+  },
+  "qt_bootstrap_decision": "New app-only guest-session copy initializes and focuses default host Qt with zero keys BEFORE original 5s stabilization/final ordinary GNOME-owned IBus bind. Host supervisor remains lifecycle owner. Actor reuses exact pinned prewarmed Qt process, never rebinds IBus after keys. Preserve browser guest session unchanged, normal Qt transport flags, all bus/foreground/context guard assertions. Retain all32 completed GTK cases including13FAIL without retry; continue56 remaining cases.",
+  "setup6": {
+    "receipt_remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-setup6-1791981057620922261/ARCHIVE.json",
+    "native_app_keys": 0,
+    "qt_zero_key_prewarm_and_final_gnome_bus_binding": "PASS",
+    "next_failed_transition": "Source unchanged; private Firefox executable bytes drifted to dc8d81e vs pinned b30896; verifier correctly refused before app actor.",
+    "closure": "actual10085exit0/driver51423exit1; five original ticks gone/CGempty/VT1."
+  },
+  "browser_fixture_decision": "Restore original exact b30896 Firefox from cached official archive0d92bf, preserve drifted tree/profile. DisableAppUpdate only in private Firefox package policy; use new empty test profile to avoid downgrade/profile mixing. Do not alter fixed byte guard/browser actors or use allow-downgrade. Root/pid/source-model/IME delivery unchanged. Renew only retired finiteak seat to ownedal1393969/t17871395/session4321.",
+  "setup7": {
+    "receipt_remote": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-setup7-1791981637844419533/ARCHIVE.json",
+    "app_input_keys": 0,
+    "remaining_not_tested": 56,
+    "measured": "Qt widget Component.grab_focus acknowledged and widget FOCUSED, but actual native foreground PID disagreed; guard stopped before keys."
+  },
+  "qt_window_activation_decision": "Explicitly activate the one existing owned compositor window before choosing its field; new private test helper checks process shares GNOME cgroup, then Meta.Window.activate with normal compositor time. Actor pins PID/starttick/cgroup and waits for both actual foreground PID and actual field FOCUSED. No keyboard injection, SSI manufacture, input route flag or existing production method modification. Capture still read-only; activation is declared native setup focus action.",
+  "native_result": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-native-app-acceptance-1791983329525303054/ARCHIVE.json",
+    "counts": {
+      "PASS": 32,
+      "FAIL": 49,
+      "BLOCKED": 7,
+      "NOT_TESTED": 0
+    },
+    "per_app": {
+      "GTK3 TextView": {
+        "PASS": 12,
+        "FAIL": 2,
+        "BLOCKED": 2,
+        "NOT_TESTED": 0
+      },
+      "GTK3 Entry": {
+        "PASS": 3,
+        "FAIL": 11,
+        "BLOCKED": 2,
+        "NOT_TESTED": 0
+      },
+      "Qt5 RichTextEdit": {
+        "PASS": 4,
+        "FAIL": 11,
+        "BLOCKED": 1,
+        "NOT_TESTED": 0
+      },
+      "Qt5 PlainTextEdit": {
+        "PASS": 4,
+        "FAIL": 11,
+        "BLOCKED": 1,
+        "NOT_TESTED": 0
+      },
+      "Qt5 LineEdit": {
+        "PASS": 4,
+        "FAIL": 11,
+        "BLOCKED": 1,
+        "NOT_TESTED": 0
+      },
+      "WezTerm": {
+        "PASS": 5,
+        "FAIL": 3,
+        "BLOCKED": 0,
+        "NOT_TESTED": 0
+      }
+    },
+    "speed": {
+      "required": 290,
+      "missing": 246,
+      "negative_clock_samples": 13,
+      "measured": 44,
+      "p50_ms": 75.90565699338913,
+      "p95_ms": 86.82761898636818,
+      "max_ms": 91.94583600759506,
+      "clock": "evdev write-return to actual native widget/PTY observation; not kernel release",
+      "unmeasured_actions_preserved": true
+    },
+    "scope": "other native clients; does not replace browser matrix",
+    "first_runtime_refusal_predicate": "UNKNOWN"
+  },
+  "closure": {
+    "actual_session": 5286,
+    "actual_exit": 0,
+    "driver_session": 33110,
+    "driver_exit": 0,
+    "five_original_ticks_gone": true,
+    "cgroup_empty": true,
+    "vt_restored": true
+  },
+  "owning_report": "docs/development/wj-native-apps-2026-10-14.md",
+  "core_package": {
+    "local": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/lay-1.0.82-WJ-core-candidate-20261014.tar.gz",
+    "sha256": "e31fbb4fbc8462d8b41b5fb9b2fa06426f158535f82bd74560d88b65cc1937de",
+    "bytes": 8150727,
+    "all11_payload_checksums_verified": true
+  },
+  "telegram_ui": {
+    "status": "PREPARED_LOGIN_UI_USER_AUTH_PENDING",
+    "actual_exec_session": 96785,
+    "foreground_pid": 1584358,
+    "profile": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/WJ-telegram-auth-window/profile",
+    "cpu_affinity": "0,1,2,3",
+    "task_ceiling_unchanged": 512,
+    "runtime_alias": "/run/user/1000/lay-tg-6onP5c -> existing private runtime; same directory device/inode",
+    "message_keys": 0,
+    "send_keys": 0,
+    "composer": "NOT_TESTED; user auth required",
+    "ime_acceptance": "NOT_TESTED_AUTH_UI_ONLY",
+    "screenshot": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/WJ-telegram-login-page.png",
+    "setup_gate": "auth UI has no key input or IME verdict; original browser attachment job archived and must be restored before any functional input",
+    "open_async_question": "Authorize test profile or accept Qt fixtures for interim scope; no response yet"
+  }
+}

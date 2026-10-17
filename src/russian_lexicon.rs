@@ -15,12 +15,13 @@ mod hunspell;
 mod word_set;
 
 pub(crate) use forms::{
-    is_center_backed_russian_form, is_known_cyrillic_hyphen_part, is_known_russian_adverb_o_form,
+    is_attested_center_backed_russian_form, is_center_backed_russian_form,
+    is_known_cyrillic_hyphen_part, is_known_russian_adverb_o_form,
     is_known_russian_ka_oblique_form, is_reference_backed_russian_form,
     looks_like_russian_adjective_lemma,
 };
 use hunspell::{
-    load_hunspell_adjective_classes, load_hunspell_generated_forms_min_len,
+    load_hunspell_generated_forms_min_len, load_hunspell_inflection_metadata,
     load_hunspell_words_min_len, load_word_list,
 };
 pub(crate) use word_set::WordSet;
@@ -29,14 +30,15 @@ static RUSSIAN_DICTIONARY: OnceLock<WordSet> = OnceLock::new();
 static RUSSIAN_SHORT_DICTIONARY: OnceLock<WordSet> = OnceLock::new();
 static RUSSIAN_TINY_DICTIONARY: OnceLock<WordSet> = OnceLock::new();
 static RUSSIAN_GENERATED_FORMS: OnceLock<WordSet> = OnceLock::new();
-static RUSSIAN_ADJECTIVE_CLASSES: OnceLock<Option<RussianAdjectiveClasses>> = OnceLock::new();
+static RUSSIAN_INFLECTION_METADATA: OnceLock<Option<RussianInflectionMetadata>> = OnceLock::new();
 static EMPTY_WORD_SET: OnceLock<WordSet> = OnceLock::new();
 static EMPTY_GENERATED_FORMS: OnceLock<WordSet> = OnceLock::new();
 
-struct RussianAdjectiveClasses {
+struct RussianInflectionMetadata {
     regular_iy: WordSet,
     possessive_iy: WordSet,
     comparative_ee: WordSet,
+    attested_forms: hunspell::AffixWitnesses,
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -50,24 +52,31 @@ pub fn warm_up() {
     let _ = russian_dictionary().len();
     let _ = russian_short_dictionary().len();
     let _ = russian_tiny_dictionary().len();
-    let _ = russian_adjective_classes();
+    let _ = russian_inflection_metadata();
 }
 
-fn russian_adjective_classes() -> Option<&'static RussianAdjectiveClasses> {
-    RUSSIAN_ADJECTIVE_CLASSES
+fn russian_inflection_metadata() -> Option<&'static RussianInflectionMetadata> {
+    RUSSIAN_INFLECTION_METADATA
         .get_or_init(|| {
-            let classes = load_hunspell_adjective_classes(RU_HUNSPELL).ok()?;
-            Some(RussianAdjectiveClasses {
+            let classes = load_hunspell_inflection_metadata(
+                RU_HUNSPELL,
+                RU_HUNSPELL_AFF,
+                &forms::attested_verb_relations(),
+                4096,
+            )
+            .ok()?;
+            Some(RussianInflectionMetadata {
                 regular_iy: WordSet::from_words(classes.regular_iy),
                 possessive_iy: WordSet::from_words(classes.possessive_iy),
                 comparative_ee: WordSet::from_words(classes.comparative_ee),
+                attested_forms: classes.attested_forms,
             })
         })
         .as_ref()
 }
 
 pub(super) fn russian_adjective_iy_class(lemma: &str) -> RussianAdjectiveIyClass {
-    let Some(classes) = russian_adjective_classes() else {
+    let Some(classes) = russian_inflection_metadata() else {
         return RussianAdjectiveIyClass::Unknown;
     };
     if classes.possessive_iy.contains(lemma) {
@@ -80,7 +89,16 @@ pub(super) fn russian_adjective_iy_class(lemma: &str) -> RussianAdjectiveIyClass
 }
 
 pub(super) fn russian_adjective_has_comparative_ee(lemma: &str) -> bool {
-    russian_adjective_classes().is_some_and(|classes| classes.comparative_ee.contains(lemma))
+    russian_inflection_metadata().is_some_and(|classes| classes.comparative_ee.contains(lemma))
+}
+
+pub(super) fn russian_verb_form_has_affix_witness(lemma: &str, surface: &str) -> bool {
+    russian_inflection_metadata().is_some_and(|metadata| {
+        metadata
+            .attested_forms
+            .get(lemma)
+            .is_some_and(|forms| forms.contains(surface))
+    })
 }
 
 pub fn russian_dictionary() -> &'static WordSet {

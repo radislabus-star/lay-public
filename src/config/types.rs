@@ -47,6 +47,7 @@ pub struct LayConfig {
     pub layout_backend: String,
     pub text_backend: String,
     pub trigger: String,
+    pub undo_on_backspace: bool,
     pub force_layout_hotkeys: bool,
     pub force_ru_key: String,
     pub force_en_key: String,

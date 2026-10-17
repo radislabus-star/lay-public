@@ -580,6 +580,9 @@ fn context(path: &str) -> ContextKey {
 fn ime_config() -> lay::config::LayConfig {
     lay::config::LayConfig {
         text_backend: "ime".to_string(),
+        // Preserve diagnostics explicitly enabled by the process sandbox;
+        // constructing a replacement engine must not silently disable them.
+        debug_action_log: lay::config::LayConfig::load().debug_action_log,
         ..lay::config::LayConfig::default()
     }
 }

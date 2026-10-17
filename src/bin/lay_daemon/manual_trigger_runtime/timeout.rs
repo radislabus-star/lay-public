@@ -15,6 +15,7 @@ pub(crate) fn fire_expired_pending_multi_tap(ctx: PendingMultiTapTimeoutContext<
         let replace_words = multi_tap_scope_for_taps(pending.tap_count).unwrap_or(1);
         fire_scoped_manual_trigger(
             ManualTriggerFireContext {
+                trigger_key: ctx.trigger_key,
                 buffer: ctx.buffer,
                 device: ctx.device,
                 virtual_kbd: ctx.virtual_kbd,

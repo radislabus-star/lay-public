@@ -188,9 +188,15 @@ export class LaySettingsView {
         });
         group.add(this._comboRow(
             'Исправить последнее слово',
-            'Основная команда ручного восстановления; повтор отменяет автозамену',
+            'Двойной пробел меняет раскладку и оставляет оба пробела; другие сочетания также отменяют автозамену',
             'trigger',
             TRIGGER_OPTIONS,
+            {restart: true}
+        ));
+        group.add(this._switchRow(
+            'Отмена автозамены по Backspace',
+            'Возвращать исходный текст после автозамены в режиме IME',
+            'undo_on_backspace',
             {restart: true}
         ));
         group.add(this._timingRow(
@@ -202,7 +208,7 @@ export class LaySettingsView {
             25
         ));
         group.add(this._timingRow(
-            'Интервал двойного Shift',
+            'Интервал двойного нажатия',
             'Максимальная пауза между двумя нажатиями, мс',
             'shift_window_ms',
             150,

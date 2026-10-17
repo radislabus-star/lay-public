@@ -1,0 +1,47 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Extend the shared Firefox/Chrome ten-field fixture with predefined input case plans and the existing bounded observer. Preserve the original baseline, native acceptance boundaries and delivery routes.",
+  "reason": "The user explicitly rejected greeting-only coverage. The first demonstrated defect is the hard-coded greeting plan, which cannot test Space, undo, Tab, caret, selection or focus behavior.",
+  "user_authorization": "User: check other tests, greeting round trips are insufficient. Earlier request makes this fixture the browser standard. No installation, service restart, shared-learning cleanup or input into existing user fields is authorized by this decision.",
+  "invariants": [
+    "C03",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "AGENTS.md",
+    "scripts/check-lay-changed.sh"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "options": [
+    {
+      "design": "Add only more words to greeting round trips",
+      "score": 6,
+      "reason": "Improves text diversity but leaves functional transitions untested."
+    },
+    {
+      "design": "Predefined case data plus the existing bounded observer",
+      "score": 9,
+      "reason": "Adds the missing functional transitions without a second native controller or product owner."
+    },
+    {
+      "design": "Build a new native cross-browser test framework",
+      "score": 4,
+      "reason": "Adds focus and process ownership complexity before the existing fixture coverage is sufficient."
+    }
+  ],
+  "verification": "Controlled RED:26 selected/25PASS/1FAIL/0SKIP on old observer; final remote49/49Node (25original preserved),4/4fixture Python,2/2compat,15/15canon and JS/bash/canon PASS. Remote headless900x600 render only; new native profiles NOT_TESTED. Independent plan9/10; implementation pass1 7/10 then final pass2 9/10; all three material findings repaired and covered by semantic regressions. Two passes, no third.",
+  "not_tested": "Native execution of the new profiles, Chrome native input, exact completion hint visibility from HTML, producer timing, GNOME icon and IBus InputMode.",
+  "runtime_authority_changed": false,
+  "runtime_delivery_changed": false,
+  "installed_runtime_changed": false,
+  "consequences": "Keep the greeting 60-cell baseline and eight-gesture C10 scope. Additional corpus selections follow the affected mechanism; fixed functional plans are not multiplied by incompatible word/burst controls. Retain failures and missing timing samples. Tab/caret/focus prerequisites are explicit; source PASS cannot close TD121 native failures.",
+  "controlled_red_receipt": "/home/ubu/.cache/lay/development/browser-functional-red-20261010/RESULT.json",
+  "evidence": "tech_debt/evidence/browser-functional-regression-cases-2026-10-10.json",
+  "source_receipt": "/home/ubu/.cache/lay/development/browser-functional-source-final49-20261010/RESULT.json",
+  "source_receipt_sha256": "aac186d952be6e519ad97aad548702a3744745c229d2265ccef1a16a57d198f7",
+  "source_archive_sha256": "12fc86c1d87f56d0f6baeefe395caa6cd5887d278cdc666261e988d4e07ac93d",
+  "graph_receipt": "/home/ubu/.cache/lay/development/browser-functional-graph-20261010/RESULT.json"
+}

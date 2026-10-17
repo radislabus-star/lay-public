@@ -1,0 +1,42 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-16",
+  "status": "SOURCE_VERIFIED",
+  "task": "TD-148 / public issue #59",
+  "baseline_commit": "798fa391f42362867f4931bad4799b236de700a2",
+  "decision": "Extend the existing Russian inflection-metadata owner with bounded exact lemma/surface affix witnesses for marked grammatical relations. Keep the caller's live lemma authority mandatory. Require actual Hunspell flag, applicable condition, successful strip/add and exact emission. Unknown relation markers, missing/unsupported affix data and witness-budget overflow abstain. Existing unmarked relations and adjective authority remain unchanged. No full generated reference dictionary may grant runtime authority.",
+  "reason": "The actual backed recognizer fails for licensed same-stem present forms; a bare table addition would also license irregular/nonverb reconstructions. Independent grammatical evidence is necessary before broadening clean-form authority.",
+  "verification": "Plan review6/10 then9/10. Genuine recognizer RED and controlled naive-table authority bypass FAIL. Focused10/10; full3189/3189 exact selected identities, finalized from368 retained logs and unchanged957 source hashes after metadata-only zero-ledger rebinding. Original BLOCKED_CONTRACT retained. Five additional source tests with user-host public Hunspell DIC5/5. Cold shared8-caller init232971us,71pairs,2018UTF8 payload bytes, OS cache uncontrolled; not incremental cost or native typing latency. Exact receipts /home/ubu/.cache/lay/development/td148-all-source-t6im7rni/{RESULT,FINALIZATION,SUMMARY-FINALIZED,METADATA_COST,LOCAL_DIC_COMPAT}.json. Independent code review pending; owning task tech_debt/148-recognize-backed-ti-present-forms.md. Post-review repair: both alias/full-strip loader regressions genuinely RED;12/12 focused PASS. Normal full all command now PASS3191 (3155correctness+36package),33targets,zero semantic/infrastructure/contract failures; archive28dc7c90e4d2bf508f688806db0ff9f0b31ae7f2ae198b58e0cb47f8913125a1, receipt /home/ubu/.cache/lay/development/td148-review-all-qgkgzc9t/RESULT.json and SUMMARY.json. Final cold8-callers229688us71pairs2018UTF8payload; not native latency. Final independent review2/2 pending. Final independent code review2/2:9/10,no unresolved P1/P2; same historical thread reused after blank-thread limit. No functional edits after final review. Native NOT_TESTED.",
+  "not_tested": "New installed runtime and physical-client behavior, complete browser matrix and native typing latency are not established by source proof. Current CLI clean preservation is separate from the recognizer defect.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/russian_lexicon.rs",
+    "src/russian_lexicon/forms/data.rs",
+    "src/russian_lexicon/forms.rs",
+    "src/russian_lexicon/forms/backed.rs",
+    "src/russian_lexicon/hunspell.rs",
+    "src/russian_lexicon_tests.rs",
+    "src/correction_core/tests.rs",
+    "src/nanda_wave/l2/layout_adapter.rs",
+    "scripts/test_lanes/discovery.py",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "data/lexicon/russian_verb_form_endings.tsv",
+    "Cargo.toml",
+    "Cargo.lock",
+    "extension/lay@radislabus-star.github.io/metadata.json",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
+  ],
+  "runtime_authority_changed": true,
+  "authority_scope": "Existing lexical owner gains only exact attested marked-relation evidence. Edit ownership, verifier, manual projection and transport authority are unchanged.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

@@ -32,6 +32,16 @@ fn sensitive_content_types_disable_text_assistance_but_terminal_allows_it() {
 
     engine.set_content_type_state(0, 1 << 11);
     assert!(!engine.content_allows_text_assistance());
+    assert!(
+        !engine.content_is_sensitive(),
+        "private ordinary content permits manual conversion without assistance or personalization"
+    );
+    engine.observe_external_surrounding_text(Some(super::SurroundingTextSnapshot::new(
+        "volatile".to_string(),
+        8,
+        8,
+    )));
+    assert!(engine.client_context.surrounding_text_snapshot.is_some());
 
     engine.set_content_type_state(0, 1 << 12);
     assert!(!engine.content_allows_text_assistance());
@@ -72,6 +82,92 @@ fn sensitive_content_discards_surrounding_text_snapshots() {
     )));
 
     assert!(engine.client_context.surrounding_text_snapshot.is_none());
+}
+
+#[test]
+fn private_content_keeps_volatile_manual_text_without_completion_learning() {
+    use crate::engine::PendingImeCompletionLearning;
+
+    assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+    for hints in [1 << 11, (1 << 11) | 64] {
+        let mut engine = engine();
+        engine.set_client_capabilities(IBUS_CAP_SURROUNDING_TEXT);
+        engine.set_content_type_state(0, hints);
+        assert!(engine.context_word_is_known());
+        assert!(!engine.content_is_sensitive());
+        assert!(!engine.content_allows_personalization());
+        assert!(!engine.content_allows_text_assistance());
+        for ch in "volatile ".chars() {
+            engine.push_tail_char(ch);
+        }
+        assert_eq!(engine.committed_tail.buffer, "volatile ");
+        engine.observe_external_surrounding_text(Some(super::SurroundingTextSnapshot::new(
+            "volatile ".to_string(),
+            9,
+            9,
+        )));
+        assert!(engine.client_context.surrounding_text_snapshot.is_some());
+        engine.arm_pending_ime_completion_learning(
+            "private context".to_string(),
+            "vol".to_string(),
+            "volatile".to_string(),
+            true,
+        );
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
+
+        // Negative-only stale personalization state must never be published.
+        for editing in [false, true] {
+            engine.committed_tail.pending_completion_learning =
+                Some(PendingImeCompletionLearning {
+                    context_tail: "private context".to_string(),
+                    typed_prefix: "vol".to_string(),
+                    accepted_word: "volatile".to_string(),
+                    editing,
+                    autocorrection: None,
+                });
+            if editing {
+                assert!(!engine.finalize_pending_ime_completion_edit("volatile"));
+            } else {
+                engine.confirm_pending_ime_completion_at_stable_boundary();
+            }
+            assert!(engine.committed_tail.pending_completion_learning.is_none());
+            assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+        }
+    }
+}
+
+#[test]
+fn private_to_public_discards_volatile_context_and_shared_handoff() {
+    let mut engine = engine();
+    assert!(engine.bind_focus_path());
+    engine.set_content_type_state(0, 1 << 11);
+    for ch in "private sentinel ".chars() {
+        engine.push_tail_char(ch);
+    }
+    assert!(engine.committed_tail.buffer.contains("private sentinel"));
+    assert!(engine
+        .shared
+        .lock()
+        .unwrap()
+        .handoff_tail_buffer
+        .contains("private sentinel"));
+    let epoch = engine.committed_tail.epoch;
+    engine.set_content_type_state(0, 0);
+    assert!(engine.content_allows_personalization());
+    assert!(engine.committed_tail.buffer.is_empty());
+    assert!(engine.shared.lock().unwrap().handoff_tail_buffer.is_empty());
+    assert!(engine.committed_tail.epoch > epoch);
+    assert!(engine.committed_tail.pending_completion_learning.is_none());
+    assert!(engine
+        .committed_tail
+        .pending_visible_postcondition
+        .is_none());
+    assert!(engine.atomic.deferred_learning_actions.is_empty());
+    for ch in "public ".chars() {
+        engine.push_tail_char(ch);
+    }
+    assert_eq!(engine.committed_tail.buffer, "public ");
+    assert_eq!(engine.shared.lock().unwrap().handoff_tail_buffer, "public ");
 }
 
 #[test]

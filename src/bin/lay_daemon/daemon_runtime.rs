@@ -34,12 +34,12 @@ use focus::{sync_field_context_epoch, update_focus_state, update_focus_state_for
 
 pub(super) fn listen_keyboard(
     device_path: std::path::PathBuf,
+    mut device: Device,
     virtual_kbd: Arc<Mutex<Option<VirtualDevice>>>,
     field_context_epoch: Arc<AtomicU64>,
     verbose: bool,
     cfg: LayConfig,
 ) -> std::io::Result<()> {
-    let mut device = Device::open(&device_path)?;
     device.set_nonblocking(true)?;
     let device_fd = device.as_raw_fd();
     log(&format!(
@@ -78,6 +78,7 @@ pub(super) fn listen_keyboard(
     let mut state = DaemonLoopState::new(&cfg, is_caps_trigger, is_single_trigger);
 
     while !SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
+        sync_field_context_epoch(&field_context_epoch, &mut state);
         let fetched_events = {
             device
                 .fetch_events()
@@ -117,6 +118,7 @@ pub(super) fn listen_keyboard(
                         field_context_epoch.as_ref(),
                     );
                     fire_expired_pending_multi_tap(PendingMultiTapTimeoutContext {
+                        trigger_key,
                         buffer: &mut state.buffer,
                         device: &mut device,
                         virtual_kbd: &virtual_kbd,
@@ -327,6 +329,12 @@ pub(super) fn listen_keyboard(
                         verbose,
                         text_context,
                     });
+                } else if value == 2 {
+                    super::boundary_runtime::handle_space_repeat(
+                        &mut state.buffer,
+                        &mut state.pending_typing_assist_after_space,
+                        &mut state.events_since_word_start,
+                    );
                 }
                 continue;
             }

@@ -1,0 +1,317 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "recorded_at": "2026-10-13T19:25:29Z",
+  "decision": "Preserve original Key admission and correlate an already completed text-inert owned release through the existing bounded callback stamp store",
+  "status": "FULL_BROWSER_NATIVE_FAIL_RETAINED_NO_PROMOTION",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "tech_debt/121-preserve-word-across-ime-layout-handoff.md",
+  "journal": "docs/development/td121-core-experiments.md",
+  "experiment": "O-R2",
+  "rejected_predecessor": "2026-10-13-late-managed-release-word-proof.json (O-R1 broad Passive, full15FAIL)",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "preferred_score": 9,
+  "mechanism": "Existing CallbackStampStore bounded deque holds either actual IngressStamp or non-authoritative CompletedRelease(header, exact key tuple, original owner). No receive position is invented. Existing observed stamp/duplicate/stale guard refuses fast cleanup. Before awaiting, an authenticated current-token/current-metadata managed or paired-native-terminal release records completion and retires its existing press exactly once. Actual later canonical parsed ingress consumes that fact and returns Passive; every other ordinary release keeps original Key/fence/settlement. Completion may retire across revocation/owner replacement but never provides a stamp or word authority. UnknownStart is not restored. Pending mutable input remains bridge-blocking.",
+  "alternatives": [
+    {
+      "score": 2,
+      "name": "Broad Passive for plain releases",
+      "rejected_reason": "Measured full15 regressions: violates existing bridge fence and ordered replay settlement."
+    },
+    {
+      "score": 3,
+      "name": "Longer timeout/retry",
+      "rejected_reason": "Masks scheduling race and adds latency, no ownership proof."
+    },
+    {
+      "score": 4,
+      "name": "Second completion queue/owner or generic KnownStart restoration",
+      "rejected_reason": "Unnecessary parallel state or unsafe authority reconstruction."
+    }
+  ],
+  "proof_required": [
+    "Original O causal handler-first/observer-first managed/native positive, exact surfaces/token/scope/epoch/composition/no Commit/Delete/orphan",
+    "Full complete-header and key tuple identity; one-shot, existing mutable stamp cannot be relabeled; old capacity/eviction/cancellation",
+    "Revocation/focus/ContentType/owner change can retire only old completion, cannot create successor authority",
+    "All prior O-R1 failed test IDs retained, then same full N development targets",
+    "Only after general source PASS: bounded code review, immutable build, original Firefox/Chrome216 each plus all speed/learning denominators"
+  ],
+  "runtime": "Both exact O-R2 private browser scopes closed/VT1 restored; laptop runtime unchanged; source retained for causal investigation, NOT_PROMOTED",
+  "review": {
+    "used": 2,
+    "maximum": 2,
+    "scope": "Replacement review1/2 after general source PASS, no third O-R1 review",
+    "reviewer": "/root/completed_release_canonical_ingress_review_20261013",
+    "score1": 8,
+    "proof_fix": "Unique negative headers; actual queued Reset and both dirty completion schedules; established serial-aware peer reader retains output signals. Fresh828PASS plus bound reused daemon273; final review2 pending.",
+    "score2": 9,
+    "final_reviewer": "/root/completed_release_final_code_review_20261013",
+    "verdict": "No blocking production defect; immutable build/native may proceed",
+    "retained_gap": "Full actual successor owner route not exercised; store-level generation change plus actual Reset/late ingress tested"
+  },
+  "updated_at": "2026-10-13T21:02:42Z",
+  "focused_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-source-probes/o-completed-release-source-49f0u4qb/RESULT.json",
+    "sha256": "54110681c04193e4a2704f885199b166dee6b259cf9240cd21c4e79510d0a17e",
+    "selected": 29,
+    "passed": 29,
+    "elapsed_seconds": 16.580660435996833,
+    "proof_signature": "605223c4c965ebf5cc94a386237f614601cfe743988b94e71a9d22348f1ba7ac",
+    "all205_source_sha_match": true
+  },
+  "full_source": {
+    "receipt": "/home/ubu/.cache/lay/development/run-5erfwyt3/RESULT.json",
+    "remote_gate": "/home/e/projects/lay-development-runner/run-CdwrRH",
+    "archive_sha256": "f30df6eefaee323eff17e0ec81acae2ec8fe7ffa93efbe7d90284870aa1f20de",
+    "selected": 1100,
+    "passed": 1100,
+    "failed": 0,
+    "scope": "development_only_not_release",
+    "worker_elapsed_seconds": 251.63050668900541,
+    "controller_wall_seconds": 259.891143269022
+  },
+  "supplemental_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-source-probes/o-completed-release-source-esjw0_ey/RESULT.json",
+    "sha256": "1cd6b66ba80eaf10b45bcfc5a255d4993ff0eca9b9795de64145a4a9bba9504f",
+    "selected": 30,
+    "passed": 30,
+    "elapsed_seconds": 16.818284944005427,
+    "proof_signature": "96f90f8ec9ad958a345def60ec0cf38e391d01c094d25d01275294fd12108ad1",
+    "all205_source_sha_match": true
+  },
+  "source_refresh": {
+    "fresh_result": "/home/ubu/.cache/lay/development/run-1t0exf6o/RESULT.json",
+    "remote_gate": "/home/e/projects/lay-development-runner/run-T9RNFT",
+    "archive_sha256": "c08324a27694bf79ab515f4cf20b8d61a9ca4f94384168839f55fa1b18d6f483",
+    "fresh_selected": 828,
+    "fresh_passed": 828,
+    "fresh_failed": 0,
+    "worker_elapsed_seconds": 104.38122035701235,
+    "reused_daemon_passed": 273,
+    "reuse_binding": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-R2-daemon-reuse-binding.json",
+    "prior_whole_gate_verdict": "FAIL_1099_PASS_2_FIXTURE_FIFO_FAILURES_RETAINED",
+    "scope": "fresh828 plus bound unchanged daemon273; development only, not release/native"
+  },
+  "graph": {
+    "verdict": "PASS",
+    "seconds": 46.58114831900457,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/O-R2-graph-1791922806460946036.log",
+    "local_artifact_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-R2-final-graph-receipt.json",
+    "refreshed_artifacts": 4,
+    "source_rust_match": "immutable run-T9RNFT"
+  },
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-T9RNFT",
+    "archive_sha256": "c08324a27694bf79ab515f4cf20b8d61a9ca4f94384168839f55fa1b18d6f483",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791923135510867627.txt",
+    "elapsed_seconds": 183.40810713599785,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "c99b31aaa4a37309bc56747c1edcfc5bad5004c010d76da054d0868ab566acce",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791923318918882500/bin/lay-ibus-engine",
+      "bytes": 8242832
+    },
+    "lay-daemon": {
+      "sha256": "6e67bfaed56891dec88cc0520a819ac9954a572ac360b2da187c811346be88aa",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791923318918882500/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "native": {
+    "firefox": {
+      "verdict": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativec99b3-firefox-proof.json",
+      "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/nativec99b3-firefox-raw-1791924302611571081/RAW.json",
+      "standard": {
+        "PASS": 59,
+        "FAIL": 1
+      },
+      "panel": {
+        "PASS": 6
+      },
+      "functional": {
+        "PASS": 87,
+        "BLOCKED": 19,
+        "FAIL": 44
+      },
+      "speed": {
+        "standard": {
+          "double_shift": {
+            "required": 420,
+            "measured": 414,
+            "missing": 6,
+            "p50_ms": 105.25982699543238,
+            "p95_ms": 118.29481001198292,
+            "max_ms": 133.7310289889574,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        },
+        "panel": {
+          "double_shift": {
+            "required": 48,
+            "measured": 48,
+            "missing": 0,
+            "p50_ms": 106.76944249868393,
+            "p95_ms": 119.37106400728226,
+            "max_ms": 123.77016998827457,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        },
+        "functional": {
+          "double_shift": {
+            "required": 210,
+            "measured": 101,
+            "missing": 109,
+            "p50_ms": 111.55699598789215,
+            "p95_ms": 144.05566100776196,
+            "max_ms": 152.34786300361156,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "space": {
+            "required": 50,
+            "measured": 37,
+            "missing": 13,
+            "p50_ms": 18.193047001957893,
+            "p95_ms": 25.323341012001038,
+            "max_ms": 27.00908999145031,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "tab": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "selection": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "comparison": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativec99b3-firefox-versus20df1.json"
+    },
+    "chrome": {
+      "verdict": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativec99b3-chrome-proof.json",
+      "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/nativec99b3-chrome-raw-1791925219090151196/RAW.json",
+      "standard": {
+        "PASS": 58,
+        "BLOCKED": 2
+      },
+      "panel": {
+        "PASS": 6
+      },
+      "functional": {
+        "PASS": 105,
+        "FAIL": 33,
+        "BLOCKED": 12
+      },
+      "speed": {
+        "standard": {
+          "double_shift": {
+            "required": 420,
+            "measured": 406,
+            "missing": 14,
+            "p50_ms": 91.78928499668837,
+            "p95_ms": 109.8249320089817,
+            "max_ms": 124.7169260084629,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        },
+        "panel": {
+          "double_shift": {
+            "required": 48,
+            "measured": 48,
+            "missing": 0,
+            "p50_ms": 92.6838004887104,
+            "p95_ms": 111.38429601490498,
+            "max_ms": 117.29970999062061,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        },
+        "functional": {
+          "double_shift": {
+            "required": 210,
+            "measured": 138,
+            "missing": 72,
+            "p50_ms": 89.12291800230742,
+            "p95_ms": 124.75754599273205,
+            "max_ms": 135.03132401406765,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "space": {
+            "required": 50,
+            "measured": 38,
+            "missing": 12,
+            "p50_ms": 18.538771502673626,
+            "p95_ms": 23.757617995142937,
+            "max_ms": 24.70464800298214,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "tab": {
+            "required": 10,
+            "measured": 0,
+            "missing": 10,
+            "p50_ms": null,
+            "p95_ms": null,
+            "max_ms": null,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          },
+          "selection": {
+            "required": 10,
+            "measured": 10,
+            "missing": 0,
+            "p50_ms": 20.385220006108284,
+            "p95_ms": 22.813581004738808,
+            "max_ms": 22.813581004738808,
+            "clock": "evdev write-return to first exact AT-SPI target",
+            "kernel_release": "NOT_MEASURED"
+          }
+        }
+      },
+      "comparison": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativec99b3-chrome-versus20df1.json"
+    },
+    "scope": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-2527394.scope",
+    "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-firefox-zero-key.json",
+    "speed": "NOT_ASSEMBLED",
+    "private_writer_audit": {
+      "verdict": "PASS_VISITED_LAY_SINK_ROOTS",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/O-chrome-private-sink-proof.json",
+      "native_private_rows_passed": 20,
+      "roots_files_unchanged": 3,
+      "public_positive_writer_changed": true,
+      "trace_completeness": "UNKNOWN"
+    }
+  }
+}

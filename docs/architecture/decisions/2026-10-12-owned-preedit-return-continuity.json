@@ -1,0 +1,85 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-12",
+  "task": "TD-121",
+  "status": "SOURCE_PASS_REVIEW_APPROVED_NATIVE_PARTIAL",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing ManagedWordStartWitness and exact closed-word receipt consumer",
+  "first_failed_transition": "Local preedit temporarily retires a confirmed closed-word receipt. On complete owned erasure, IBus suppresses identical fresh surrounding replies, so a new observation cannot restore it through the normal route.",
+  "decision": "Retain the actual already confirmed boundary snapshot inside the existing inert predecessor before local preedit starts. It authorizes neither word while preedit is open. After only authenticated same-owner local preedit input followed by exact final handled Backspace, retain that original observation with its unchanged revision and restore the existing exact closed-word receipt. Require unchanged focus, lease, layout, revision, scope generation, exact local append/erase epoch and full raw snapshot bounds; no intervening Reset, client commit/delete, selection/caret/content or unknown input. Do not construct a client snapshot from the mirror or claim a new SetSurroundingText. Any external Reset still requires fresh independent receipt. Existing verifier, reducer, daemon executor and IME delivery stay unchanged.",
+  "supersedes": "The fresh-receipt requirement only for the pure owned-preedit cancellation branch in 2026-10-12-owned-preedit-erasure-boundary.json; external Reset/native deletion branches remain unchanged.",
+  "alternatives": [
+    {
+      "solution": "Causal continuity of original confirmed receipt across only local preedit input/cancellation",
+      "score": 9
+    },
+    {
+      "solution": "Patch/ship stock IBus proxy to forward identical replies",
+      "score": 5
+    },
+    {
+      "solution": "Authorize a matching old snapshot or reconstructed tail without complete owned-effect proof",
+      "score": 1,
+      "rejected": true
+    }
+  ],
+  "delivery_routes_changed": false,
+  "installed_laptop_changed": false,
+  "proof": {
+    "native_root": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/frontend-proof/native-dedup-wire.json",
+    "planned_source": "Ordinary/NBSP plus actual completed replay, no SSI after owned return, real manual delegation/tail; existing external Reset still inert; missing original snapshot/predecessor and interrupted focus/layout/revision/epoch/content/selection/caret/word chains refused.",
+    "planned_native": "Four affected fields first/second inverse with probe/erasure, then full Firefox/Chrome standard and speed; no synthetic cache receipts.",
+    "source_red": {
+      "receipt": "/home/ubu/.cache/lay/development/run-2y6qfi2c/RESULT.json",
+      "passed": 713,
+      "failed": 1,
+      "failure": "Only the new no-client-receipt owned-cancellation manual delegation fails; old source returns NotHandled."
+    },
+    "implementation": "The existing inert predecessor carries the original actual observed snapshot. Capture and settled-erasure guards require unchanged owner/focus/layout/revision/raw bounds and exact local-only epoch transition. Only that branch retains the original snapshot without advancing its observation revision and confirms the existing receipt. Generic Reset/native deletion never carry this marker. Obsolete erasure fresh-request output removed; GTK experiment reverted.",
+    "source_green": {
+      "receipt": "/home/ubu/.cache/lay/development/run-9o8jqgpm/RESULT.json",
+      "remote": "/home/e/projects/lay-development-runner/run-MVxbM0/RESULT.json",
+      "passed": 714,
+      "failed": 0,
+      "scope": "Focused source only; changed-byte native acceptance pending"
+    },
+    "review_pass_1": {
+      "score": 8,
+      "production_defect_found": false,
+      "required": "Mid-chain interruptions before final erasure and original snapshot/revision comparison before first local key",
+      "implementation": "Negative matrix added for missing original snapshot, Reset, navigation, focus, layout, revision, epoch, content and rejected received-key settlement; no SSI supplied after capture. Positive fixture compares original snapshot/revision from before local input."
+    },
+    "causal_source_green": {
+      "receipt": "/home/ubu/.cache/lay/development/run-uasvr98v/RESULT.json",
+      "remote": "/home/e/projects/lay-development-runner/run-rAp9ae/RESULT.json",
+      "archive_sha256": "a0f1d5b3283dcd969d1a9d94c30e5f6966019a4c1aa1223bc2a17b23541d51e8",
+      "passed": 715,
+      "failed": 0
+    },
+    "review_pass_2": {
+      "score": 9,
+      "blockers": [],
+      "scope": "Read-only fresh-context source review; native acceptance not claimed"
+    },
+    "causal_negative_fixture_correction": "Initial added matrix failed only because missing original observation correctly prevents managed preedit from starting. Require inactive for that negative; all other cases require active preedit before interruption. Corrected full matrix GREEN715/715.",
+    "native_current": {
+      "run": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c",
+      "ime_sha256": "49c7f5d9b632563deca390e8cfdeb85419b641fbeac8a96a286c334e0325ac59",
+      "daemon_sha256": "a1e80130e5afceba2c99bdcd09b669f525f62e38fbd9820b55c614423e302d3f",
+      "standard": {"normal_receipt":"firefox-standard-normal-lyhnvndi/RESULT.json","normal_pass":20,"private_receipt":"firefox-standard-private-f2zhkoua/RESULT.json","private_pass":19,"fullscreen_receipt":"firefox-standard-fullscreen-x3kwptwr/RESULT.json","fullscreen_pass":17,"total":60,"failed":4},
+      "c09_c10": {"receipt":"firefox-c09-c10-s_86d2iv/RESULT.json","cells_pass":5,"cells_total":6,"transitions_pass":44,"transitions_total":48,"median_ms":108.873,"p95_ms":116.810,"max_ms":124.166,"kernel_release_time":"NOT_MEASURED"},
+      "remaining_first_loss": "Later short SSI rejected after accepted full SSI leaves the previous revision baseline; raw bytes require bounded passive wire evidence. Other replay snapshots require separator/provenance proof.",
+      "chrome": "Stock private Chrome launch exits -11 before test window; matrix NOT_TESTED",
+      "functional_corpora": "NOT_TESTED",
+      "scope": "Native remote evdev, not human hardware or laptop Snap parity; full browser acceptance remains open"
+    }
+  }
+}

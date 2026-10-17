@@ -28,8 +28,10 @@ pub(super) use state_groups::{
 };
 pub(super) use types::{
     DeferredLayoutAction, DeferredLearningAction, InputFrameIdentity, ManualToggleAuthority,
-    PendingImeCompletionLearning, PendingSystemOutcomeFeedback, PendingVisiblePostcondition,
-    RecentCommittedTailReplace, SystemOutcomeKind, WordInputMode,
+    NativeRestorationKeys, PendingAutocorrectionRestoration, PendingImeCompletionLearning,
+    PendingSpaceBoundaryCommit, PendingSpaceBoundarySelection, PendingSystemOutcomeFeedback,
+    PendingVisiblePostcondition, RecentCommittedTailReplace, SpaceBoundaryPairProvenance,
+    SpaceBoundaryPairScope, SystemOutcomeKind, WordInputMode,
 };
 
 #[derive(Clone)]
@@ -66,6 +68,7 @@ pub(crate) struct LayIbusEngine {
 impl LayIbusEngine {
     pub(super) fn set_layout_is_ru(&mut self, target_is_ru: bool) {
         if self.layout_gesture.layout_is_ru != target_is_ru {
+            self.cancel_native_autocorrection_restoration();
             self.layout_gesture.layout_is_ru = target_is_ru;
             self.layout_gesture.layout_generation = next_input_identity();
         }

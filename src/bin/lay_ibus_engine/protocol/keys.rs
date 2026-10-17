@@ -25,3 +25,12 @@ pub(crate) fn is_shift_key(keyval: u32) -> bool {
 pub(crate) fn is_accept_completion_with_space_key(keyval: u32) -> bool {
     matches!(keyval, KEY_LEFT_ALT | KEY_RIGHT_ALT | KEY_ISO_LEVEL3_SHIFT)
 }
+
+/// These legacy releases only retire press bookkeeping. Alt can accept text
+/// and Shift has its own gesture contract, so both keep ordered admission.
+pub(crate) fn is_text_inert_legacy_release(keyval: u32, state: u32) -> bool {
+    !is_key_press(state)
+        && !is_shift_key(keyval)
+        && !is_accept_completion_with_space_key(keyval)
+        && !super::has_command_modifier(state)
+}

@@ -42,6 +42,9 @@ pub(super) fn append_learning_log(
 }
 
 pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorrection) {
+    if !super::config_runtime::daemon_input_retention_allowed() {
+        return;
+    }
     record_user_correction_memory(correction);
     if !active_learning_log() {
         return;
@@ -70,6 +73,9 @@ pub(super) fn append_user_correction_learning_log(correction: &UserLearningCorre
 }
 
 pub(super) fn append_reverted_system_apply_learning_log(correction: &UserLearningCorrection) {
+    if !super::config_runtime::daemon_input_retention_allowed() {
+        return;
+    }
     let Some(user_target) = correction.user_target() else {
         return;
     };

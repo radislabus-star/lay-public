@@ -1,0 +1,309 @@
+{
+  "schema": "lay.td136.source-characterization.v1",
+  "status": "DONE_BOUNDED_MAP_AND_SOURCE_CHARACTERIZATION",
+  "baseline_commit": "60e0d095f4468d744762831d56336fe428583fb4",
+  "map": "tech_debt/evidence/2026-10-09-td136-effect-map.json",
+  "map_scope": "Immutable pre-test baseline:24 identities/12 selected families/13 matching prior-source hashes; inventory only, not current successors or coverage%.",
+  "map_review": "tech_debt/evidence/2026-10-09-td136-map-review-pass1.md",
+  "map_review_sha256": "43793796ca138edf92bb878a192f6c1297e4a9297c4635ed03120567d78bdb2e",
+  "test_path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+  "test_source_sha256": "29e23c2c6e913c7fa251a16b78d200860a3bc9d9902fa2a1a8ea23ebb718a48f",
+  "phases": [
+    {
+      "selected": 1,
+      "passed": 0,
+      "failed": 1,
+      "elapsed_seconds": 0.02184984995983541,
+      "test": {
+        "target": "bin:lay-ibus-engine",
+        "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+        "kind": "test",
+        "lane": "correctness",
+        "isolation": "process"
+      },
+      "mutation": null,
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "before_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "executed_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "before_sha256": "3a2b26ab77b41246a9bcb1aa64b274d01595e3663d96399def10ea74a384e419",
+          "executed_sha256": "3a2b26ab77b41246a9bcb1aa64b274d01595e3663d96399def10ea74a384e419",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+          "before_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+          "executed_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+          "mode": 436
+        }
+      ],
+      "failures": [
+        {
+          "target": "bin:lay-ibus-engine",
+          "test": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+          "failure_block": "thread 'context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs:4189:9:\nassertion `left == right` failed\n  left: [\"з\"]\n right: [\"п\"]\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        }
+      ],
+      "classification": "FIXTURE_PHYSICAL_KEYCODE_MISMATCH",
+      "recorded_status": "UNEXPECTED_RESULT",
+      "receipt": "/home/ubu/.cache/lay/development/tab-characterization-711ao2oo/REGRESSION.json",
+      "receipt_sha256": "676b37b7391db264c726e1c39139cc5d2a704cbf4d050115d8311e4121219c66",
+      "wrapper_result": "/home/ubu/.cache/lay/development/tab-characterization-711ao2oo/RESULT.json"
+    },
+    {
+      "selected": 1,
+      "passed": 0,
+      "failed": 1,
+      "elapsed_seconds": 0.18063423410058022,
+      "test": {
+        "target": "bin:lay-ibus-engine",
+        "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+        "kind": "test",
+        "lane": "correctness",
+        "isolation": "process"
+      },
+      "mutation": null,
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "before_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "executed_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "before_sha256": "d42a66d9a59e7bb0c495f380b156c71effa309c1be94bfd1ef10a1458b075082",
+          "executed_sha256": "d42a66d9a59e7bb0c495f380b156c71effa309c1be94bfd1ef10a1458b075082",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+          "before_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+          "executed_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+          "mode": 436
+        }
+      ],
+      "failures": [
+        {
+          "target": "bin:lay-ibus-engine",
+          "test": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+          "failure_block": "thread 'context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs:4268:9:\nassertion failed: engine.layout_gesture.layout_is_ru\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        }
+      ],
+      "classification": "FIXTURE_FACTORY_PROFILE_MODE_MISMATCH",
+      "recorded_status": "UNEXPECTED_RESULT",
+      "receipt": "/home/ubu/.cache/lay/development/tab-characterization-u7mbjfme/REGRESSION.json",
+      "receipt_sha256": "51c6e2ae7750da1a2105df52d46dd374dac14582165486ba3708b86a47d173a1",
+      "wrapper_result": "/home/ubu/.cache/lay/development/tab-characterization-u7mbjfme/RESULT.json"
+    },
+    {
+      "selected": 1,
+      "passed": 1,
+      "failed": 0,
+      "elapsed_seconds": 1.760283038020134,
+      "test": {
+        "target": "bin:lay-ibus-engine",
+        "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+        "kind": "test",
+        "lane": "correctness",
+        "isolation": "process"
+      },
+      "mutation": null,
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "before_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "executed_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "before_sha256": "29e23c2c6e913c7fa251a16b78d200860a3bc9d9902fa2a1a8ea23ebb718a48f",
+          "executed_sha256": "29e23c2c6e913c7fa251a16b78d200860a3bc9d9902fa2a1a8ea23ebb718a48f",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+          "before_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+          "executed_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+          "mode": 436
+        }
+      ],
+      "failures": [],
+      "classification": "GREEN_CHARACTERIZATION",
+      "recorded_status": "GREEN_CHARACTERIZATION",
+      "receipt": "/home/ubu/.cache/lay/development/tab-characterization-gk11hdws/REGRESSION.json",
+      "receipt_sha256": "42d6b1e74c0d8ecfcdb167b61ba09d2561527a2d2a5211aca2ad018b5e6b650f",
+      "wrapper_result": "/home/ubu/.cache/lay/development/tab-characterization-gk11hdws/RESULT.json"
+    },
+    {
+      "selected": 1,
+      "passed": 1,
+      "failed": 0,
+      "elapsed_seconds": 1.8386037268210202,
+      "test": {
+        "target": "bin:lay-ibus-engine",
+        "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+        "kind": "test",
+        "lane": "correctness",
+        "isolation": "process"
+      },
+      "mutation": {
+        "path": "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+        "before_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+        "after_sha256": "7b84efe7458069ccdb7a5410c00e6f43e65604b9f7b63980351849802faf02cd",
+        "removed_check": "fresh local surrounding receipt only; live-token/handoff guards preserved"
+      },
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "before_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "executed_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "before_sha256": "29e23c2c6e913c7fa251a16b78d200860a3bc9d9902fa2a1a8ea23ebb718a48f",
+          "executed_sha256": "29e23c2c6e913c7fa251a16b78d200860a3bc9d9902fa2a1a8ea23ebb718a48f",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+          "before_sha256": "4e34a14fddd2da2b055173237b67eb55a16d2b2f431101c8d8845ab2a480f180",
+          "executed_sha256": "7b84efe7458069ccdb7a5410c00e6f43e65604b9f7b63980351849802faf02cd",
+          "mode": 436
+        }
+      ],
+      "failures": [],
+      "classification": "FRESHNESS_MUTATION_SURVIVED_NOT_RED_PROOF",
+      "recorded_status": "UNEXPECTED_RESULT",
+      "receipt": "/home/ubu/.cache/lay/development/tab-controlled-red-o3f0n_hc/REGRESSION.json",
+      "receipt_sha256": "8a9564298a0729dec94bbf7f6653546f6a75f0fca05e6b725b38c8a418fa4fca",
+      "wrapper_result": "/home/ubu/.cache/lay/development/tab-controlled-red-o3f0n_hc/RESULT.json"
+    },
+    {
+      "selected": 1,
+      "passed": 0,
+      "failed": 1,
+      "elapsed_seconds": 1.7537331951316446,
+      "test": {
+        "target": "bin:lay-ibus-engine",
+        "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+        "kind": "test",
+        "lane": "correctness",
+        "isolation": "process"
+      },
+      "mutation": {
+        "path": "src/bin/lay_ibus_engine/output.rs",
+        "before_sha256": "936f934b8ba4d0a4fae6260317aaf2a2074641a93169bd5fb4f9fdcb0d1a60e4",
+        "after_sha256": "bed23c33e41e3038333398fcdd9aef869aced4e1a5b2a4cde5c18036614b77b8",
+        "violation": "add one scalar to the real legacy DeleteSurroundingText signal; all authority checks preserved"
+      },
+      "source_binding": [
+        {
+          "path": "scripts/test-lanes/manifest.json",
+          "before_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "executed_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs",
+          "before_sha256": "29e23c2c6e913c7fa251a16b78d200860a3bc9d9902fa2a1a8ea23ebb718a48f",
+          "executed_sha256": "29e23c2c6e913c7fa251a16b78d200860a3bc9d9902fa2a1a8ea23ebb718a48f",
+          "mode": 436
+        },
+        {
+          "path": "src/bin/lay_ibus_engine/output.rs",
+          "before_sha256": "936f934b8ba4d0a4fae6260317aaf2a2074641a93169bd5fb4f9fdcb0d1a60e4",
+          "executed_sha256": "bed23c33e41e3038333398fcdd9aef869aced4e1a5b2a4cde5c18036614b77b8",
+          "mode": 436
+        }
+      ],
+      "failures": [
+        {
+          "target": "bin:lay-ibus-engine",
+          "test": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+          "failure_block": "thread 'context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt' (3) panicked at src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs:4376:9:\nassertion `left == right` failed\n  left: [(-7, 8)]\n right: [(-7, 7)]\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+        }
+      ],
+      "classification": "CONTROLLED_TRANSPORT_RED",
+      "recorded_status": "CONTROLLED_TRANSPORT_RED",
+      "receipt": "/home/ubu/.cache/lay/development/tab-controlled-red-laqj4f3a/REGRESSION.json",
+      "receipt_sha256": "a3a4a22cebc22fdc58b35b69ddd3346d380c74b017e64cb67fa7ef8b12147d6b",
+      "wrapper_result": "/home/ubu/.cache/lay/development/tab-controlled-red-laqj4f3a/RESULT.json"
+    }
+  ],
+  "assertion_scope": {
+    "positive": "Actual existing P2P keys and focus callbacks; agreeing RU factory/bootstrap; caps41 before first key; distinct context owner, old owner rejection, per-character commits; real SetSurroundingText; prepared correction evidence; one real legacy Delete(-7,7) before Commit(работает ) and silent handled release.",
+    "negative": "Native Tab has no text edit. Capture has no Space correction frame before a fresh receipt or after actual Backspace/retype with equal text. This proves retirement/authority denial, not isolated freshness-floor sensitivity or actual stale Space effects.",
+    "controlled_red": "Only the isolated copy of production legacy output changes nchars to nchars+1. Same test fails precisely at Delete geometry left:[(-7,8)] vs right:[(-7,7)]; all source bytes except the declared output mutation are unchanged.",
+    "survived_mutation": "Removing fresh-local-receipt alone did not break this sequence. The appended managed character also retires its snapshot; no isolated freshness-guard sensitivity is claimed. The actual branch-specific receipt/focus/selection negative tests remain in the fixed proof.",
+    "pilots": "The two early failures are fixture keycode and US-factory/RU-mode disagreement, before correction assertions. Neither is a product defect or RED/GREEN runtime fix."
+  },
+  "runtime_authority_changed": false,
+  "production_source_change": false,
+  "installed_runtime": "UNCHANGED accepted1.0.81/2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+  "physical_client_acceptance": "NOT_TESTED",
+  "remaining": "TD128 native exact case and TD133 causal first failure remain open; general quality/cold package reload/performance/RSS/actual worker scheduling unproved.",
+  "manifest_successor": {
+    "path": "scripts/test-lanes/manifest.json",
+    "sha256": "d25685cfce7655d0a89c59209689cf8ba83a287512c44c46d65d703361801788",
+    "baseline_sha256": "e54c838bbd3033bd0cfd11a962d229adc650400b9fc763bd3317dead9d1b98ff",
+    "added": [
+      {
+        "isolation": "process",
+        "kind": "test",
+        "lane": "correctness",
+        "name": "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_tab_to_caps41_field_requires_fresh_first_word_receipt",
+        "target": "bin:lay-ibus-engine"
+      }
+    ],
+    "removed": [],
+    "unchanged_targets": 38,
+    "tests": 3071,
+    "selected_correctness_package": 3045,
+    "receipt": "/home/ubu/.cache/lay/development/tab-manifest-m_zsgmld/RESULT.json",
+    "fetch": "/home/ubu/.cache/lay/development/tab-manifest-m_zsgmld/fetch.json"
+  },
+  "fixed_proof_adjudication": {
+    "path": "tech_debt/evidence/2026-10-09-td136-fixed-proof-adjudication.json",
+    "status": "PASS_BODY_REUSE_AND_METADATA_ADMISSION",
+    "original_command_verdict": "FAIL",
+    "selected": 3045,
+    "passed": 3045,
+    "failed": 0,
+    "verified_source_files": 1176,
+    "scope": "Replay completed exact harness identities and admit current metadata; no new test execution, no original-command PASS, no native/quality/performance claim."
+  },
+  "implementation_review_pass1": {
+    "path": "tech_debt/evidence/2026-10-09-td136-code-review-pass1.md",
+    "sha256": "f74bcdb25c325f50bc9f5627d31f0a4521138546c42fbba73a4b3b09162ac4ba",
+    "score": 8,
+    "verdict": "ACCEPT",
+    "cutoff": "Whole affected verification pending at the original pass1 cutoff; do not retroactively rewrite the report."
+  },
+  "implementation_review_pass2": {
+    "path": "tech_debt/evidence/2026-10-09-td136-code-review-pass2.md",
+    "sha256": "187379a1dcda79e9a9ed1a37164a17d0a153ac7dc67e092c11a74df1406833a0",
+    "score": 8,
+    "verdict": "ACCEPT",
+    "passes": 2,
+    "blockers": [],
+    "cutoff": "Final graph and compiled metadata remain pending; original FAIL is preserved."
+  },
+  "toolchain_spec_reuse": {
+    "path": "rust-toolchain.toml",
+    "sha256": "8e390d6a0838315f972690f46ef8bae8b7ecc9ee6c1ed70140ef852869c2482e",
+    "independently_verified_by_review_pass2": true
+  },
+  "finalization": {
+    "path": "tech_debt/evidence/2026-10-09-td136-finalization.json",
+    "status": "PASS_BOUNDED_SOURCE_COMPLETION",
+    "scope": "Bounded12-family map and one source callback gap; native128/133, reload/cold data semantics, worker timing, floor-sensitivity, latency/RSS and quality remain unproven."
+  }
+}

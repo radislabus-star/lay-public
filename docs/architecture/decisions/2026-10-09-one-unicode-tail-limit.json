@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-09",
+  "status": "SOURCE_REFACTOR_PREFLIGHT",
+  "decision": "Reuse the existing fixed160 preedit::trim_tail_buffer helper from the composition-commit tail consumer; remove the private duplicate. Keep the generic token-limit helper private and preserve callback ordering. Preserve permanent composition-helper protection by adding preedit.rs to the existing exact PROTECTED set, with a one-file/no-new-decision negative guard regression.",
+  "reason": "The ordinary-append and composition-commit paths independently implement the same Unicode-scalar160 suffix invariant. No present trimming failure is claimed. A future one-sided limit or byte-index change could violate tail geometry and WordLineage offsets.",
+  "verification": "Before production changes, strengthen the existing tail_buffer_stays_bounded identity with exact ASCII/Cyrillic/emoji/combining suffixes at159/160/161/177 scalars through both existing producers. Record current-source GREEN characterization, then remote affected contracts and canonical graph/canon evidence. Obtain a fresh-context review with at most two passes. Preserve future one-file helper protection with the existing Python canon test: RED on the old PROTECTED set, then15/15 GREEN after the exact-path addition. Reuse3044 behavioral proof only after matching relevant source/fixture/Cargo/lane hashes; refresh canonical graph/binding and verify the current compiled receipt identity separately.",
+  "not_tested": "No installation, service restart, physical-client acceptance, latency/RSS measurement or quality promotion. Accepted installed2bd bytes and their bounded acceptance remain separate. Current native62/64 result remainsFAIL.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/preedit/tests.rs",
+    "scripts/check_architecture_canon.py",
+    "tests/test_architecture_canon.py"
+  ],
+  "runtime_authority_changed": false,
+  "baseline_commit": "2401a4e4dca5f99cc87c42415ab52c108c26bd74",
+  "owner": "Existing preedit fixed-tail helper, used by existing ordinary-append and composition-commit consumers",
+  "owning_document": "docs/architecture/tech-debt-maintenance-2026-10-09.md",
+  "consequences": "No new state, owner, module, queue, timer, cache, fallback, delivery route, normalization or public arbitrary-limit API. Candidate/rank/models/learning/verifier authority remain unchanged. The same scalar count and UTF-8 drain algorithm is reused; allocation/latency equivalence is expected, not measured. Revert helper visibility/call, duplicate removal and exact-path protection together; installed runtime is untouched. No Rust or Python test identity/manifest/ledger change is planned. Independent pass1 found a permanent guard gap: future changes only to preedit.rs would otherwise escape the former tail_memory.rs protection. The grouped repair broadens only this existing path guard, without a new checker or import traversal."
+}

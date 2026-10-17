@@ -1,0 +1,332 @@
+{
+  "schema": "lay.td121.full-browser-evidence.v1",
+  "experiment": "Q",
+  "recorded_at": "2026-10-13T23:49:40.941365+00:00",
+  "status": "FULL_BROWSER_NATIVE_FAIL_RETAINED_NO_PROMOTION",
+  "total": {
+    "PASS": 322,
+    "FAIL": 77,
+    "BLOCKED": 33,
+    "NOT_TESTED": 0,
+    "required": 432
+  },
+  "candidate": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-cht3Zw",
+    "archive_sha256": "e1f0e3864aeb3f1f9669270960b3b0119367ce2e130d17f5f7a5214a56adf8f5",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791932016759951841.txt",
+    "elapsed_seconds": 183.31193099499797,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "399ffa890002bc6ce55b869bc30138f77656574b55be173fd59c91d37f7a5291",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791932200071791724/bin/lay-ibus-engine",
+      "bytes": 8243216
+    },
+    "lay-daemon": {
+      "sha256": "c49c44cb7776051433fc7d77ad0d5ac4d5f78f04b402895ffe1363950c3e3d97",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791932200071791724/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "browsers": {
+    "firefox": {
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native399ff-firefox-proof.json",
+      "sha256": "93af9b30e3faf40622f4c6bda2dee877b5766ec4b6eed1dd35ad762753b72de6",
+      "verdict": "FAIL",
+      "groups": {
+        "standard": {
+          "required": 60,
+          "counts": {
+            "PASS": 60
+          },
+          "speed": {
+            "double_shift": {
+              "required": 420,
+              "measured": 420,
+              "missing": 0,
+              "p50_ms": 105.89482299983501,
+              "p95_ms": 120.98210500180721,
+              "max_ms": 135.11996498703957,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "panel": {
+          "required": 6,
+          "counts": {
+            "PASS": 6
+          },
+          "speed": {
+            "double_shift": {
+              "required": 48,
+              "measured": 48,
+              "missing": 0,
+              "p50_ms": 109.38108350336552,
+              "p95_ms": 120.45148000121117,
+              "max_ms": 131.92356200516224,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "functional": {
+          "required": 150,
+          "counts": {
+            "PASS": 87,
+            "FAIL": 44,
+            "BLOCKED": 19
+          },
+          "speed": {
+            "double_shift": {
+              "required": 210,
+              "measured": 101,
+              "missing": 109,
+              "p50_ms": 109.58824799954891,
+              "p95_ms": 136.33272998034954,
+              "max_ms": 147.16929599642754,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "space": {
+              "required": 50,
+              "measured": 37,
+              "missing": 13,
+              "p50_ms": 17.725728005170822,
+              "p95_ms": 23.735672011971474,
+              "max_ms": 24.472267985343933,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "tab": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "selection": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        }
+      },
+      "vs_O": {
+        "status": "COMPARED_216_STABLE_IDS",
+        "changed": [
+          {
+            "id": [
+              "standard",
+              "private",
+              "active",
+              1
+            ],
+            "before": "FAIL",
+            "after": "PASS"
+          }
+        ],
+        "lost_pass": 0,
+        "new_pass": 1
+      },
+      "closure": {
+        "status": "OWNED_SCOPE_CLOSED",
+        "at": "2026-10-13T23:22:08.243310+00:00",
+        "scope": "/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-2980379.scope",
+        "cgroup_empty": true,
+        "bound": {
+          "gnome": {
+            "pid": 2980697,
+            "starttick": "12977898",
+            "original_process_gone": true
+          },
+          "firefox": {
+            "pid": 2981060,
+            "starttick": "12978004",
+            "original_process_gone": true
+          },
+          "ibus": {
+            "pid": 2980783,
+            "starttick": "12977968",
+            "original_process_gone": true
+          },
+          "daemon": {
+            "pid": 2981976,
+            "starttick": "12978509",
+            "original_process_gone": true
+          },
+          "ime": {
+            "pid": 2980961,
+            "starttick": "12977993",
+            "original_process_gone": true
+          }
+        },
+        "stop": "AFTER_ORIGINAL_9_NO_HELD_KEYS",
+        "supervisor_exit": 0,
+        "owned_shutdown_signal": 15,
+        "vt_before": "8",
+        "previous_vt": "1",
+        "vt_restored": true
+      },
+      "raw_archive": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native399ff-firefox-raw-1791933808802713777/RAW.json",
+      "raw_sha256": "8523d0217a7c0ad5a4caefa1f1b1f36c8429a46eda4e20fe5f265b0062ac98af"
+    },
+    "chrome": {
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native399ff-chrome-proof.json",
+      "sha256": "73a88c47a24bff2d7d54cff2e9db09bec3f06865f8f23f5d74f926a0fd3d1365",
+      "verdict": "FAIL",
+      "groups": {
+        "standard": {
+          "required": 60,
+          "counts": {
+            "PASS": 58,
+            "BLOCKED": 2
+          },
+          "speed": {
+            "double_shift": {
+              "required": 420,
+              "measured": 406,
+              "missing": 14,
+              "p50_ms": 92.58985298126936,
+              "p95_ms": 113.86117200553417,
+              "max_ms": 127.6592089831829,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "panel": {
+          "required": 6,
+          "counts": {
+            "PASS": 6
+          },
+          "speed": {
+            "double_shift": {
+              "required": 48,
+              "measured": 48,
+              "missing": 0,
+              "p50_ms": 92.69740549474955,
+              "p95_ms": 109.72932802140713,
+              "max_ms": 124.65703597664833,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "functional": {
+          "required": 150,
+          "counts": {
+            "PASS": 105,
+            "FAIL": 33,
+            "BLOCKED": 12
+          },
+          "speed": {
+            "double_shift": {
+              "required": 210,
+              "measured": 138,
+              "missing": 72,
+              "p50_ms": 88.12895148992538,
+              "p95_ms": 127.69732297956944,
+              "max_ms": 134.04738102853298,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "space": {
+              "required": 50,
+              "measured": 38,
+              "missing": 12,
+              "p50_ms": 18.097288504242897,
+              "p95_ms": 23.97000300884247,
+              "max_ms": 24.644756972789764,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "tab": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "selection": {
+              "required": 10,
+              "measured": 10,
+              "missing": 0,
+              "p50_ms": 18.333866007626057,
+              "p95_ms": 21.46882700920105,
+              "max_ms": 21.46882700920105,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        }
+      },
+      "vs_O": {
+        "status": "COMPARED_216_STABLE_IDS",
+        "changed": [],
+        "new_pass": 0,
+        "lost_pass": 0
+      },
+      "closure": {
+        "status": "OWNED_SCOPE_CLOSED",
+        "at": "2026-10-13T23:46:56.746492+00:00",
+        "scope": "/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-3094715.scope",
+        "cgroup_empty": true,
+        "bound": {
+          "gnome": {
+            "pid": 3094932,
+            "starttick": "13196444",
+            "original_process_gone": true
+          },
+          "chrome": {
+            "pid": 3095687,
+            "starttick": "13196578",
+            "original_process_gone": true
+          },
+          "ibus": {
+            "pid": 3095784,
+            "starttick": "13196600",
+            "original_process_gone": true
+          },
+          "daemon": {
+            "pid": 3096117,
+            "starttick": "13197083",
+            "original_process_gone": true
+          },
+          "ime": {
+            "pid": 3095869,
+            "starttick": "13196605",
+            "original_process_gone": true
+          }
+        },
+        "stop": "AFTER_ORIGINAL_9_NO_HELD_KEYS",
+        "supervisor_exit": 0,
+        "owned_shutdown_signal": 15,
+        "vt_before": "8",
+        "previous_vt": "1",
+        "vt_restored": true
+      },
+      "raw_archive": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native399ff-chrome-raw-1791935217299974275/RAW.json",
+      "raw_sha256": "785dd0baaaba5dfe10ba56b197d6e67fb9b288ad1601b8068dffecd48fff9f57"
+    }
+  },
+  "chrome_private_sink_proof": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/Q-chrome-private-sink-proof.json",
+  "trace_completeness": "UNKNOWN",
+  "production_runtime_changed": false,
+  "delivery_routes_changed": false,
+  "source_scope": "38 focused and fresh1105 development tests; not release gate or human hardware acceptance"
+}

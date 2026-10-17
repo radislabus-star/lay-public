@@ -1,0 +1,266 @@
+{
+  "schema": "lay.td137.retirement-evidence.v1",
+  "status": "DONE_RETIRED_UNSAFE_SHARED_CLEANUP",
+  "baseline_commit": "fce8978b07aba23a7708b968c2cc328f70f208b1",
+  "user_selection": "Изоляция данных тестов (рекомендую)",
+  "decision": "docs/architecture/decisions/2026-10-09-retire-shared-inverse-cleanup.json",
+  "scope": "Supported-entrypoint retirement of unsafe shared test cleanup; unchanged private connected consumer; no historical helper repair or OS-level execution ban",
+  "supported_entrypoint": [
+    "existing remote scripts/lay-resource-guard.sh heavy lease",
+    "scripts/proof/ime-client/run.py --remote-worker --config EXACT_CONFIG --output FRESH_OUTPUT --scenario-set inverse-first-word|inverse-prefixed",
+    "scripts/proof/ime-client/driver.py"
+  ],
+  "scenario_sets": [
+    "inverse-first-word",
+    "inverse-prefixed"
+  ],
+  "source_identities_matching_td130_suite_archive": {
+    "scripts/proof/ime-client/run.py": "7d46594b06aa084c050e8b551e21e768db80cc347c652b0008913b1ceb69e7be",
+    "scripts/proof/ime-client/driver.py": "0518d043d23bf8e931569a316d52306105cd6bbff6085ce53c2a8a7fcc93035f",
+    "scripts/proof/ime-client/feedback_case.py": "92e091681171983e575e5672bdd5f9b4f15820ffcac9601fe1985db7b80581e5",
+    "tests/test_ime_client_harness.py": "3cb3244886552f1782fe8d855beb815f3d486d098d49e2c8a864ebc8a4bf22ba",
+    "scripts/dev-check.py": "430581d2ce761d04a96cab3f051804dac406946f360031fa18129a163814379a"
+  },
+  "reused_proof": {
+    "packet": "tech_debt/evidence/2026-10-09-td130-connected-inverse.json",
+    "packet_sha256": "63fa0e1028413fb94408996487570703d99d58d0b90e5a588e7e0e5245a917ed",
+    "suite_receipt": "/home/ubu/.cache/lay/development/run-os6fuz1y/RESULT.json",
+    "suite_receipt_sha256": "995f45bfda9db109ef62020563a4f5e0b120a0f94900b18dba1f6525278fc2ca",
+    "selected": 122,
+    "passed": 121,
+    "skipped": 1,
+    "failed": 0,
+    "smokes": [
+      {
+        "scenario": "inverse-first-word",
+        "status": "COMPLETED_1_BOUND_INVERSE_CASE",
+        "receipt": "/home/ubu/.cache/lay/development/td130-final-inverse-first-word-receipt-20261009.json",
+        "receipt_sha256": "4a184173e2c71f13a19719375eabd1400e383910c187661a4ba83f8474f2d245"
+      },
+      {
+        "scenario": "inverse-prefixed",
+        "status": "COMPLETED_1_BOUND_INVERSE_CASE",
+        "receipt": "/home/ubu/.cache/lay/development/td130-final-inverse-prefixed-receipt-20261009.json",
+        "receipt_sha256": "d96ee615e33bd64ea2b28b96334a82a1476685a18d5c31fa94b0f2411591c13f"
+      }
+    ],
+    "basis": "Exact matching runner/driver/selector/test and dev wrapper bytes, unchanged assets/dependencies/config/toolchain of recorded executions; this patch changes documentation/evidence only, no new functional execution"
+  },
+  "private_learning_paths": {
+    "LAY_NANDA_WORD_USAGE_EVENTS": "/tmp/proof/usage/events.jsonl",
+    "LAY_NANDA_WORD_USAGE_COUNTS": "/tmp/proof/usage/counts.json",
+    "LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS": "/tmp/proof/usage/feedback.json",
+    "LAY_NANDA_USAGE_PRIOR": "/tmp/proof/usage/prior.json"
+  },
+  "bounded_supported_source_inventory": [
+    {
+      "path": "scripts/proof/capture-process-exit.sh",
+      "sha256": "13b704e3cb140d28365f6a0fb8650e559a89d557ba5df87aca4c23b9a7f0c7f3"
+    },
+    {
+      "path": "scripts/proof/ime-client/driver.py",
+      "sha256": "0518d043d23bf8e931569a316d52306105cd6bbff6085ce53c2a8a7fcc93035f"
+    },
+    {
+      "path": "scripts/proof/ime-client/feedback_case.py",
+      "sha256": "92e091681171983e575e5672bdd5f9b4f15820ffcac9601fe1985db7b80581e5"
+    },
+    {
+      "path": "scripts/proof/ime-client/readline_consumer.py",
+      "sha256": "fb70ceaeb79caeb252d59fc1f63551350fddeee37fe1841b40a6767a7674ca5c"
+    },
+    {
+      "path": "scripts/proof/ime-client/run.py",
+      "sha256": "7d46594b06aa084c050e8b551e21e768db80cc347c652b0008913b1ceb69e7be"
+    },
+    {
+      "path": "scripts/proof/launch-patched-ibus-daemon.sh",
+      "sha256": "af9ee9bc4f25504682cf442cee779671b3af4d1167f37de5df97c6ab7e062bcd"
+    },
+    {
+      "path": "scripts/proof/prelaunch-patched-ibus-daemon.sh",
+      "sha256": "826bb3e67d21d92d4de6de6544e6cf88e5ebc33dcda87cd5089b2b7e02f52eae"
+    },
+    {
+      "path": "scripts/proof/remote-config.sh",
+      "sha256": "46e2ed6ac23e2d43c3f734a6504757e6e35fcde37805911bdad8b5e959bec379"
+    },
+    {
+      "path": "scripts/proof/reuse-prelaunched-ibus-daemon.sh",
+      "sha256": "7f227653a73c6ffcca9f481f3016e5e90a80481b1c60cfd9020896aa47ece65b"
+    },
+    {
+      "path": "scripts/proof/run-atomic-full-route-remote.sh",
+      "sha256": "2fef8b35b155d7dddc24fe939fc0c464d79167e812bbdc9e27d16e40cfcf7b58"
+    },
+    {
+      "path": "scripts/proof/stage-atomic-proof-engine-remote.sh",
+      "sha256": "5e16d1e3b6a2cf6a5cb5dc1dbf5774f55017556c6f91342ef4b514b7c517b0c2"
+    },
+    {
+      "path": "scripts/proof/verify-atomic-proof-engine.sh",
+      "sha256": "450225d7cd649596a6129074e739b3d622bdbec02fb96ec85d69d0cf717b074f"
+    },
+    {
+      "path": "scripts/dev-check.py",
+      "sha256": "430581d2ce761d04a96cab3f051804dac406946f360031fa18129a163814379a"
+    }
+  ],
+  "historical_cleanup_references_in_supported_source": [],
+  "historical_root": "/home/ubu/.cache/lay/development/space-boundary-client-commit-physical-20261008",
+  "historical_files": [
+    {
+      "path": "owned_inverse_feedback.py",
+      "bytes": 8875,
+      "sha256": "f4fa75e429b9f7c431f3c72aa127d3b0a61866e67ca602bf23cfd241f418f1ec",
+      "mode": "0o664",
+      "kind": "historical_helper_or_caller",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "owned_inverse_feedback_before_quiet_guard.py",
+      "bytes": 7778,
+      "sha256": "e74f6e0c9baededd7fe6c678873ee370af7b77775a7e667861f16704be716631",
+      "mode": "0o664",
+      "kind": "historical_helper_or_caller",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "private-harness-before-bounded-erase/run_tor_connected_only.py",
+      "bytes": 1861,
+      "sha256": "e21106d8a2dc55578116a4d6569886d0b6a7be8d83a542b682ef6465776d95fd",
+      "mode": "0o600",
+      "kind": "snapshot",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "private-harness-before-fast-pending/windows/space_boundary_matrix80.py",
+      "bytes": 21953,
+      "sha256": "7095ff109647e3a4257d9aebf15bf128fcea8e4d28fe7f77cbeafab0e0630dd4",
+      "mode": "0o664",
+      "kind": "snapshot",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "private-harness-before-native-commit-v6/windows/space_boundary_matrix80.py",
+      "bytes": 19992,
+      "sha256": "977032619d833dada39d790f9525a136de9f41da2ff4588f07f7984b671a4964",
+      "mode": "0o664",
+      "kind": "snapshot",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "private-harness-before-native-preedit-unknown/windows/space_boundary_matrix80.py",
+      "bytes": 18305,
+      "sha256": "de39b5f44574d333d0dbc1ec55cbac67eca34134eb9860535ec86016c0e386fa",
+      "mode": "0o664",
+      "kind": "snapshot",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "private-harness-before-pending-calculation/run_tor_matrix.py",
+      "bytes": 1691,
+      "sha256": "5e3ab9fe94472a3ab82c3660bc62d5caa53ec223859ce76e1cb9434c1249a488",
+      "mode": "0o600",
+      "kind": "snapshot",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "run_private_terminal_matrix.py",
+      "bytes": 1274,
+      "sha256": "5c46467c5c9a16f41e76f5e05c15a2792c88d44d95adc3a437be5b9aeb7ed76f",
+      "mode": "0o664",
+      "kind": "historical_helper_or_caller",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "run_private_writer_matrix.py",
+      "bytes": 1271,
+      "sha256": "c3a84dc3a2f8caa7c54d798538ef6419b2dd1d984dd61b3bb830c25bcdd3a458",
+      "mode": "0o664",
+      "kind": "historical_helper_or_caller",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "run_tor_connected_only.py",
+      "bytes": 1870,
+      "sha256": "d408ba561feb2fab3c5a9a49a3503847dd4335dcbc6be2e67cc9ca1ef1584fcb",
+      "mode": "0o600",
+      "kind": "historical_helper_or_caller",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "run_tor_matrix.py",
+      "bytes": 1754,
+      "sha256": "6bca9285bbbaddd19986bc2e42c08ffbb22cf17a670c2d62ac2e20224bd5e527",
+      "mode": "0o600",
+      "kind": "historical_helper_or_caller",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    },
+    {
+      "path": "windows/space_boundary_matrix80.py",
+      "bytes": 23022,
+      "sha256": "bb072273c60e99f55cddcbc13916d33681fdb6392289bc43e75bc91e5d6dc86c",
+      "mode": "0o664",
+      "kind": "historical_helper_or_caller",
+      "supported_execution": "RETIRED_FORENSIC_ONLY"
+    }
+  ],
+  "historical_tooling_modified": false,
+  "historical_tooling_chmod_or_renamed": false,
+  "native_shared_learning_inverse_admission": "BLOCKED_BEFORE_INPUT",
+  "removed_cleanup_flag_admits_shared_inverse": false,
+  "new_runtime_runner_owner_or_transport": false,
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "review_pass1": {
+    "path": "/home/ubu/.cache/lay/development/td137-boundary-review-pass1-20261009.md",
+    "sha256": "8cb5870b477eecac69b18ee12e1a3a6d8c2271da545141f8913e99708cb5b6a5",
+    "score": 9,
+    "verdict": "ACCEPT_RETIREMENT_DESIGN"
+  },
+  "characterization_packet": "tech_debt/evidence/2026-10-09-td137-characterization.json",
+  "not_tested": [
+    "general_shared_live_recovery",
+    "live_writer_exclusion_and_hot_cache_recovery",
+    "same_length_production_loader_execution",
+    "native_GUI_or_physical_inverse_parity",
+    "future_native_isolation_entrypoint",
+    "whole_machine_caller_absence",
+    "OS_level_execution_prevention",
+    "new_runtime_bytes_or_delivery_routes"
+  ],
+  "canonical_refresh": {
+    "result": "/home/ubu/.cache/lay/development/tab-graph-c2xeucl3/RESULT.json",
+    "result_sha256": "6f12a87d1078f9307c6e1a04eb76a4e80f1a00cb63d98eb64f301837e882945d",
+    "canon": "/home/ubu/.cache/lay/development/tab-graph-c2xeucl3/CANON_RESULT.json",
+    "status": "PASS",
+    "fetch": "/home/ubu/.cache/lay/development/tab-graph-c2xeucl3/fetch.json",
+    "stable_generated_files": 8
+  },
+  "review_pass2": {
+    "path": "tech_debt/evidence/2026-10-09-td137-review-pass2.md",
+    "sha256": "61173d9a0a3097edb58065af6978f155991c0bbaa70ceaab46cbc1e9e6be690b",
+    "score": 9,
+    "verdict": "ACCEPT",
+    "passes": 2
+  },
+  "default_wrapper_scope": "scripts/dev-check.py client selects default restoration; no inverse scenario-set passthrough",
+  "review_pass2_correction": "Name the guarded direct run.py entrypoint actually used by the existing inverse receipts; dev-check.py client is not claimed to select inverse",
+  "compiled_metadata": {
+    "result": "/home/ubu/.cache/lay/development/tab-compiled-receipt-test-1taj80uo/RESULT.json",
+    "result_sha256": "c3c25e425365314bc1cacb6302c6b90a20ca4150949c808772de33ca8c06aaeb",
+    "log": "/home/ubu/.cache/lay/development/tab-compiled-receipt-test-1taj80uo/run.log",
+    "selected": 1,
+    "passed": 1,
+    "failed": 0,
+    "exact_identity": "architecture_contract::tests::generated_receipt_proves_every_required_architecture_check",
+    "receipt_input_sha256": "cc8af19c900f1512edbbb41be0a8f8c8f06dbc5d67954aa45c10b990d6080f1e"
+  },
+  "earlier_graph_refresh": {
+    "result": "/home/ubu/.cache/lay/development/tab-graph-ls994ubb/RESULT.json",
+    "status": "PASS_BUT_PRE_ENTRYPOINT_CORRECTION",
+    "superseded": true
+  },
+  "publication_receipt": "/home/ubu/.cache/lay/development/td137-publication-20261009.json"
+}

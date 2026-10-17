@@ -41,7 +41,7 @@ impl WordBuffer {
 
         self.current = tail;
         self.prev_words.clear();
-        self.prev_had_trailing_space = false;
+        self.prev_trailing_spaces = 0;
         self.replay_toggle_words = 1;
         true
     }
@@ -51,6 +51,9 @@ impl WordBuffer {
         original_events: &[KeyEvent],
         plan: &TextReplacement,
     ) -> bool {
+        let Some(trailing_spaces) = self.checked_replay_suffix_spaces(&plan.insert) else {
+            return false;
+        };
         if plan.move_right != 0 || plan.insert.trim().is_empty() {
             return false;
         }
@@ -75,7 +78,10 @@ impl WordBuffer {
                 mark_word_layout(&mut tail, target_is_ru);
                 self.current = tail;
                 self.prev_words.clear();
-                self.prev_had_trailing_space = false;
+                if trailing_spaces > 0 {
+                    self.prev_words.push(std::mem::take(&mut self.current));
+                }
+                self.prev_trailing_spaces = trailing_spaces;
                 self.replay_toggle_words = 1;
                 return true;
             }
@@ -119,7 +125,9 @@ impl WordBuffer {
     }
 
     pub fn remember_completed_replacement_words_for_replay(&mut self, replacement: &str) -> bool {
-        let replacement_ends_with_space = text_ends_with_space(replacement);
+        let Some(trailing_spaces) = self.checked_replay_suffix_spaces(replacement) else {
+            return false;
+        };
         let Some(mut words) = replacement_word_events(replacement) else {
             return false;
         };
@@ -134,7 +142,7 @@ impl WordBuffer {
         }
 
         self.prev_words = words;
-        self.prev_had_trailing_space = replacement_ends_with_space;
+        self.prev_trailing_spaces = trailing_spaces;
         self.replay_toggle_words = 1;
         true
     }
@@ -144,6 +152,9 @@ impl WordBuffer {
         original_events: &[KeyEvent],
         replacement: &str,
     ) -> bool {
+        let Some(trailing_spaces) = self.checked_replay_suffix_spaces(replacement) else {
+            return false;
+        };
         let Some(original_words) = split_event_words(original_events) else {
             return false;
         };
@@ -162,7 +173,7 @@ impl WordBuffer {
         let original_ends_with_space = original_events
             .last()
             .is_some_and(|event| event.keycode == KeyCode::KEY_SPACE.code());
-        let replacement_ends_with_space = text_ends_with_space(replacement);
+        let replacement_ends_with_space = trailing_spaces > 0;
 
         if original_ends_with_space {
             if self.prev_words.len() < original_word_count {
@@ -175,10 +186,10 @@ impl WordBuffer {
             };
             truncate_prev_words_suffix(&mut self.prev_words, original_word_count);
             self.current.clear();
-            self.remember_replacement_words(replacement_words, replacement_ends_with_space);
+            self.remember_replacement_words(replacement_words, trailing_spaces);
             if let Some(current) = current_after_tail {
                 self.current = current;
-                self.prev_had_trailing_space = false;
+                self.prev_trailing_spaces = 0;
             }
             return true;
         }
@@ -189,7 +200,7 @@ impl WordBuffer {
                 return false;
             }
             truncate_prev_words_suffix(&mut self.prev_words, previous_words_in_tail);
-            self.remember_replacement_words(replacement_words, replacement_ends_with_space);
+            self.remember_replacement_words(replacement_words, trailing_spaces);
             return true;
         }
 
@@ -197,19 +208,19 @@ impl WordBuffer {
             return false;
         }
         truncate_prev_words_suffix(&mut self.prev_words, original_word_count);
-        self.remember_replacement_words(replacement_words, replacement_ends_with_space);
+        self.remember_replacement_words(replacement_words, trailing_spaces);
         true
     }
 
     fn remember_replacement_words(
         &mut self,
         mut replacement_words: Vec<Vec<KeyEvent>>,
-        replacement_ends_with_space: bool,
+        trailing_spaces: u16,
     ) {
-        if replacement_ends_with_space {
+        if trailing_spaces > 0 {
             self.current.clear();
             append_completed_words(&mut self.prev_words, replacement_words);
-            self.prev_had_trailing_space = true;
+            self.prev_trailing_spaces = trailing_spaces;
         } else {
             let current = replacement_words.pop();
             append_completed_words(&mut self.prev_words, replacement_words);
@@ -218,7 +229,7 @@ impl WordBuffer {
             } else {
                 self.current.clear();
             }
-            self.prev_had_trailing_space = false;
+            self.prev_trailing_spaces = 0;
         }
         self.replay_toggle_words = 1;
     }
@@ -247,8 +258,4 @@ fn append_completed_words(prev_words: &mut Vec<Vec<KeyEvent>>, words: Vec<Vec<Ke
         let keep_from = prev_words.len() - MAX_REPLACE_WORDS;
         prev_words.drain(0..keep_from);
     }
-}
-
-fn text_ends_with_space(text: &str) -> bool {
-    text.chars().next_back().is_some_and(char::is_whitespace)
 }

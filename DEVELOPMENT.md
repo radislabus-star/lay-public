@@ -127,6 +127,24 @@ and cleanup. Its own smaller envelope remains CPU200%,1536M,swap0,Tasks128,90s.
 Tooling tests and a reproduced product failure are separate verdicts. Never
 replace a failing cold case with sleeps, retries or a warm-only success.
 
+The `dev-check.py client` wrapper selects the default five restoration cases;
+it does not forward a scenario-set option. Inverse feedback proof uses the
+existing `scripts/proof/ime-client/run.py` on the distinct remote worker under
+`scripts/lay-resource-guard.sh`, with `--remote-worker`, exact `--config`, fresh
+`--output` and `--scenario-set inverse-first-word` or `inverse-prefixed`.
+Keep the existing dedicated-20cpu profile and heavy lease. One case runs per
+fresh private sandbox; all four learning paths belong to its engine process,
+and feedback observation is read-only. See [the shared-cleanup retirement decision](docs/architecture/decisions/2026-10-09-retire-shared-inverse-cleanup.json)
+and [TD-137](tech_debt/137-owned-feedback-partial-cleanup-recovery.md).
+
+Historical host launchers recorded in TD-137 are forensic-only and must not
+be used for new inverse/cleanup proof, including by removing their cleanup
+flag. Native/physical inverse using shared learning is BLOCKED before input.
+The existing headless private consumer cannot release native acceptance.
+A future native successor needs proven engine-process data isolation and
+separate execution authorization. Historical files remain manually executable;
+this supported-entrypoint rule does not impose an OS-level execution ban.
+
 ## What this deliberately does not solve
 
 - TD-121 product/client acceptance and release 1.0.66 remain separate work.

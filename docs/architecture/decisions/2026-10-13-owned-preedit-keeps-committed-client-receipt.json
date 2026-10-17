@@ -1,0 +1,387 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "decision": "H owned legacy preedit mirror must retain the actual unchanged committed-client observation",
+  "recorded_at": "2026-10-13T03:54:40.370784+00:00",
+  "status": "SOURCE_GREEN_BOTH_NATIVE_FAIL_CAUSAL_DIAGNOSTIC_NEXT",
+  "invariants": [
+    "C01 single owner",
+    "C02 actual ingress and effect settlement",
+    "C03 source retention and authoritative factory capture",
+    "C06 focus and field isolation",
+    "C08 exact edit proof and client acceptance",
+    "C09 manual gesture and current decoder"
+  ],
+  "owner": "Existing managed legacy-preedit producer and client-context snapshot; source guards and reducer remain owners",
+  "source_checkout": "/home/ubu/projects/lay-space-boundary-shift-20261007",
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "observed_native": {
+    "candidate_ime_sha256": "41443ef97c6c0add6776f6ea6c8de47ff63646e6d8ddb662e6a685edfdb43bda",
+    "wire": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-receipt-wire-c5csr4o6/WIRE.json",
+    "wire_sha256": "86256f339f36d6cdda7c0a532cf4a8c61645478532184f551e831550569dcf52",
+    "facts": "Whole target ghbdtnSpace7/7 confirmed after actual native replay. Managed Z and Backspace change only live legacy preedit, no next SSI. Next ManualToggle delegates, factory VisibleTail fails passive:unknown-context. Source emission shape independently exercised by the causal fixture (UpdatePreeditText, no CommitText/DeleteSurroundingText).",
+    "scope": "Separate one-cell diagnostic, not native acceptance. Both browser native matrices remain FAIL; no claim every failure shares this cause."
+  },
+  "causal_red": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/h-focused-dg2gqi6k/RESULT.json",
+    "selected": 5,
+    "passed": 4,
+    "failed": 1,
+    "first_loss": "Actual full external snapshot Some(phi-is-space4/4) becomes None at first owned legacy preedit letter; after local handled Backspace it remains None. Real subsequent ManualToggle3 then VisibleTail returns passive:unknown-context. No intervening SSI or document text effect is injected.",
+    "runtime_code_unchanged": true,
+    "fixture": "td121_confirmed_native_tail_probe_backspace_needs_no_new_client_receipt",
+    "earlier_fixture_setup_failure": "h-focused-dkvdrr4d/RESULT.json expected a CommitText where the actual owned producer emits only preedit; retained as choreography failure, not causal RED."
+  },
+  "root_cause": {
+    "function": "LayIbusEngine::push_tail_char",
+    "file": "src/bin/lay_ibus_engine/preedit.rs",
+    "mechanism": "Unconditional surrounding_text_snapshot=None treats the mirror append of a still uncommitted IME-owned word as a committed-document mutation. Existing legacy_word_preedit_active marks the real ownership path; after typed preedit is canceled, the committed document and its original actual observation remain unchanged."
+  },
+  "options": [
+    {
+      "solution": "Retain the existing raw actual snapshot only while the existing owned legacy-word preedit path appends to its mirror; ordinary committed/native/document changes retain their invalidation",
+      "score": 9,
+      "recommended": true
+    },
+    {
+      "solution": "Request or defer a fresh full context before every subsequent manual gesture",
+      "score": 6,
+      "limits": "Adds latency and relies on client snapshot publication for an unchanged committed document; do not add a new wait/timer."
+    },
+    {
+      "solution": "Bypass or weaken exact factory snapshot/source validation",
+      "score": 1,
+      "limits": "Rejected: changes authority safety rather than repairing the observation producer."
+    }
+  ],
+  "minimal_plan": [
+    "Use existing preedit ownership/mode in push_tail_char to distinguish mirror-only uncommitted input from committed document changes. Keep the actual raw snapshot and observation revision unchanged, do not fabricate target SSI or projected actual geometry.",
+    "Actual composition commit, native passthrough/replay, source mismatch, selection/caret, owner/focus/content/capability changes retain existing invalidation/refusal. Reuse existing single owner, source validators, expires/one-use and output contracts.",
+    "Positive exact effect fixture covers Reset/noReset and typing-assistance on/off, same actual confirmed native source, owned preedit letter and local handled Backspace, no client text effects/no new SSI, then real ManualToggle/VisibleTail capture. Add layout/prefix and adverse consumer controls where material.",
+    "Run remote focused causal fixtures first, then full scoped IME source gate and source contracts; context-free read-only review1-2 passes for H. Only then private changed-byte build and both immutable native60+6+150 receipts with speed coverage."
+  ],
+  "delivery_routes_changed": false,
+  "runtime_authority_changed": false,
+  "native_acceptance": "NOT_TESTED_FOR_H",
+  "test_manifest": "Two additional process correctness fixtures;3121 total/3059 correctness/306 process; original rows preserved and known_failures zero.",
+  "plan_review": {
+    "score": 9,
+    "pass": 1,
+    "blockers": 0,
+    "agent": "owned_preedit_receipt_plan_review_20261013",
+    "scope": "Explicit caller split; source or native GREEN not established"
+  },
+  "implementation": "push_tail_char unconditionally invalidates actual snapshot for all existing document callers. Only insert_composition_char end-append with existing legacy ownership calls push_owned_preedit_tail_char; both use same private append_tail_mirror_char. Actual composition commit separately clears cache; no take/restore, new owner/state, guard or route change. The pure local erasure capture uses its existing current actual observed boundary witness instead of requiring a custom fresh-refresh capability; witness/raw geometry/focus/layout/revision/current UnknownStart/mirror/end-caret/selection/content/single-owner and handled-output settlement remain mandatory. No fresh receipt is emitted or simulated. Any PREEDIT_TEXT capability change also retires legacy_preedit_start_boundary in its existing setter block. This prevents loss/restore reviving an old observed witness.",
+  "planned_proof": "Twelve owned-cancellation variants with Reset/noReset, assistance on/off, first word/non-ASCII prefix and raw NBSP, SAME raw actual snapshot/revision and real consumers; actual owned Space commit and subsequent unhandled native Backspace invalidate/refuse old document proof. Full IME756 and five changed input contracts49 plus FMT PASS; changed-byte native both60+6+150 pending. Six negative variants cover actual commit/native deletion with/without Reset and PREEDIT_TEXT41→40 or41→40→41 on Reset-history, real consumers and no new SSI.",
+  "causal_second_guard": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/h-focused-uii6c80u/RESULT.json",
+    "selected": 6,
+    "passed": 5,
+    "failed": 1,
+    "first_loss": "Reset path has actual raw snapshot and closed-word predecessor; prepare_owned_preedit_local_backspace rejects custom exact-refresh capability=false despite a current observed owned start. NoReset positive and document mutation negative controls pass.",
+    "native_capability_evidence": "native41443-chrome-raw-1791861061998153359/logs/ime-trace.jsonl caps41/surrounding supported true/exact refresh false, including lines130,154,183."
+  },
+  "negative_control_note": "Space may return safe exact-tail delegation3 with no edit; the actual factory VisibleTail must refuse an authoritative committed tail. The first stricter draft incorrectly treated delegation alone as accepted text authority; initial FAIL receipt h-focused-31pafnz2 preserved.",
+  "plan_review_pass2": {
+    "score": 9,
+    "pass": 2,
+    "blockers": 0,
+    "agent": "owned_preedit_receipt_plan_review_20261013",
+    "resolution": "Current actual observed witness replaces custom fresh-refresh promise only for pure local owned erasure. Any PREEDIT_TEXT change retires existing witness;41→40→41 cannot restore it. No NativeACK copy/rearm; remaining guards unchanged."
+  },
+  "focused_green": {
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/h-focused-yhpje5ul/RESULT.json",
+    "selected": 6,
+    "passed": 6,
+    "scope": "Before capability-loss setter/negative final addition; not full source or native proof."
+  },
+  "source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-itjvhvzx/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-GzZyxH/RESULT.json",
+    "archive_sha256": "293586743b2f690f503b9dfb7ec58477b032bea2dacf48c3b6e0bf940f0f5f94",
+    "selected": 756,
+    "passed": 756,
+    "failed": 0,
+    "fmt": "PASS",
+    "scope": "Focused entire lay-ibus-engine source development gate; not release or physical proof"
+  },
+  "code_review": {
+    "pass": 1,
+    "score": 9,
+    "blockers": 0,
+    "agent": "owned_preedit_receipt_code_review_20261013",
+    "scope": "Read-only H relative to immutable F, including capability lifecycle and strengthened C06 oracle; no source tests or native proof run by reviewer"
+  },
+  "source_failed_receipts": {
+    "manifest_order": "run-euctf7p8/RESULT.json tests not executed; corrected canonical JSON sort without runtime changes",
+    "stale_oracle": "run-dvkargof/RESULT.json752PASS4FAIL common helper expected snapshotNone for owned preedit. Updated equality with original raw snapshot and unchanged revision, strengthened noCommit/Delete; all downstream guards preserved."
+  },
+  "supporting_source_contracts": {
+    "receipt": "/home/ubu/.cache/lay/development/run-cpu1h6i_/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-kVVAhb/RESULT.json",
+    "archive_sha256": "a0a7d87624dc6c14f70065f69c8868b8912f8ff4f443ff99edb23ad6f4adba1e",
+    "selected": 49,
+    "passed": 49,
+    "failed": 0,
+    "fmt": "PASS",
+    "targets": [
+      "ime_space_boundary_contract",
+      "input_gate_space_contract",
+      "text_edit_gate_contract",
+      "text_mutation_monopoly_contract",
+      "typing_transition_authority_contract"
+    ],
+    "scope": "Source contracts only; does not establish physical client acceptance"
+  },
+  "private_build": {
+    "gate": "/home/e/projects/lay-development-runner/run-GzZyxH",
+    "archive_sha256": "293586743b2f690f503b9dfb7ec58477b032bea2dacf48c3b6e0bf940f0f5f94",
+    "receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791866176185256887/BUILD.json",
+    "seconds": 182.1469276179996,
+    "ime_sha256": "9458b59db6e570af9282c9eddf0ffaccb206d2ae621c944ee75c0baa252f8d1f",
+    "daemon_sha256": "ecee1d7ee238a481d017001afe917664a6384730185f38a5f84b3c0e5d42ec3a",
+    "scope": "PRIVATE_TEST_RUNTIME_ONLY"
+  },
+  "native_current": {
+    "chrome": {
+      "verdict": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native9458b-chrome-proof.json",
+      "remote_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/native9458b-chrome-proof.json",
+      "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native9458b-chrome-raw-1791867238165741500/RAW.json",
+      "groups": {
+        "standard": {
+          "required": 60,
+          "counts": {
+            "PASS": 38,
+            "BLOCKED": 2,
+            "FAIL": 20
+          },
+          "speed": {
+            "double_shift": {
+              "required": 420,
+              "measured": 266,
+              "missing": 154,
+              "p50_ms": 93.81439200416207,
+              "p95_ms": 112.43391400575638,
+              "max_ms": 122.19570499658585,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "panel": {
+          "required": 6,
+          "counts": {
+            "PASS": 6
+          },
+          "speed": {
+            "double_shift": {
+              "required": 48,
+              "measured": 48,
+              "missing": 0,
+              "p50_ms": 93.2327709980309,
+              "p95_ms": 122.2318759933114,
+              "max_ms": 126.70662299543619,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "functional": {
+          "required": 150,
+          "counts": {
+            "PASS": 96,
+            "FAIL": 42,
+            "BLOCKED": 12
+          },
+          "speed": {
+            "double_shift": {
+              "required": 210,
+              "measured": 129,
+              "missing": 81,
+              "p50_ms": 90.62626399844885,
+              "p95_ms": 131.23006499558687,
+              "max_ms": 145.6928530037403,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "space": {
+              "required": 50,
+              "measured": 38,
+              "missing": 12,
+              "p50_ms": 18.858589999377728,
+              "p95_ms": 24.782919004559517,
+              "max_ms": 27.953852005302906,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "tab": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "selection": {
+              "required": 10,
+              "measured": 10,
+              "missing": 0,
+              "p50_ms": 18.425743501633406,
+              "p95_ms": 21.468188002705574,
+              "max_ms": 21.468188002705574,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        }
+      },
+      "comparison_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/native9458b-chrome-versus41443.json",
+      "observed_delta": "18 standard and3 panel gainedPASS, previousPASS lost0; all150 functional classifications unchanged",
+      "scope": "Normal/fullscreen post-Space repeated toggles pass in9/10fields; Search seed blocked. Private20FAIL retain Sensitive policy. No broad browser acceptance."
+    },
+    "firefox": {
+      "verdict": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/native9458b-firefox-proof.json",
+      "remote_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/native9458b-firefox-proof.json",
+      "raw": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/native9458b-firefox-raw-1791868151324673810/RAW.json",
+      "groups": {
+        "standard": {
+          "required": 60,
+          "counts": {
+            "PASS": 42,
+            "FAIL": 6,
+            "BLOCKED": 1,
+            "NOT_TESTED": 11
+          },
+          "speed": {
+            "double_shift": {
+              "required": 420,
+              "measured": 312,
+              "missing": 108,
+              "p50_ms": 109.04288399964571,
+              "p95_ms": 120.57142200320959,
+              "max_ms": 131.11209500581026,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "panel": {
+          "required": 6,
+          "counts": {
+            "PASS": 6
+          },
+          "speed": {
+            "double_shift": {
+              "required": 48,
+              "measured": 48,
+              "missing": 0,
+              "p50_ms": 108.8519370034337,
+              "p95_ms": 118.1028139963746,
+              "max_ms": 123.0295720025897,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        },
+        "functional": {
+          "required": 150,
+          "counts": {
+            "PASS": 86,
+            "FAIL": 45,
+            "BLOCKED": 19
+          },
+          "speed": {
+            "double_shift": {
+              "required": 210,
+              "measured": 101,
+              "missing": 109,
+              "p50_ms": 111.46897800266743,
+              "p95_ms": 143.58431901037693,
+              "max_ms": 151.42321199923754,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "space": {
+              "required": 50,
+              "measured": 36,
+              "missing": 14,
+              "p50_ms": 18.178026501089334,
+              "p95_ms": 24.371293000876904,
+              "max_ms": 25.630041003227234,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "tab": {
+              "required": 10,
+              "measured": 0,
+              "missing": 10,
+              "p50_ms": null,
+              "p95_ms": null,
+              "max_ms": null,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            },
+            "selection": {
+              "required": 10,
+              "measured": 1,
+              "missing": 9,
+              "p50_ms": 15.721733994781971,
+              "p95_ms": 15.721733994781971,
+              "max_ms": 15.721733994781971,
+              "clock": "evdev write-return to first exact AT-SPI target",
+              "kernel_release": "NOT_MEASURED"
+            }
+          }
+        }
+      },
+      "comparison_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/native9458b-firefox-versus41443.json",
+      "scope": "Six standard actualFAIL, private field hidden blocked with11NOT_TESTED;17 priorPASS unavailable (6FAIL+1BLOCKED+10NOT_TESTED); one functional moved-boundary field2 lostPASS. Causal source effect not established. H not promoted."
+    },
+    "production_installation_changed": false,
+    "delivery_routes_changed": false
+  },
+  "native_diagnostic_normal_sequence": {
+    "status": "NOT_REPRODUCED",
+    "scope": "Original normal20 sequence with passive wire; diagnostic only, not replacement of full H Firefox FAIL",
+    "rows": {
+      "PASS": 20
+    },
+    "wire_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-receipt-wire-g23efdal/WIRE.json",
+    "wire_sha256": "d25ae4856c19a6a36c842a6ae0c356e42c2f7e1b6f8e2cbf9aa21bfe03e6d375",
+    "actor_receipt": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/firefox-receipt-actor-a4ooluu3/RESULT.json",
+    "actor_sha256": "27d25ae3917db105262b081249ccb73e68857500b0514668ba16a20ff335c332",
+    "monitor_alive_after_actor": true,
+    "wire_completeness": "UNKNOWN",
+    "helper_sha256": "e445314f451337ef3c490f09862e73c520a5e82f15a8340bfe76c9a57149af30",
+    "source_only_proof": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/job-results/native-wire-sequence-source-proof.json",
+    "review_scores": [
+      8,
+      9
+    ],
+    "review_passes": 2,
+    "final_cleanup_fix_after_pass2": true,
+    "native_scope_empty": true,
+    "prior_H_full_firefox_verdict": "FAIL",
+    "prior_H_full_chrome_verdict": "FAIL",
+    "promotion": "REJECTED",
+    "runtime_authority_changed": false,
+    "delivery_changed": false,
+    "speed": {
+      "required": 140,
+      "measured": 140,
+      "missing": 0,
+      "p50_ms": 109.69942849874496,
+      "p95_ms": 118.91484498977661,
+      "max_ms": 123.96275699138641,
+      "clock": "evdev-write-return to first exact AT-SPI target",
+      "kernel_release": "NOT_MEASURED",
+      "observer_overhead": "NOT_MEASURED"
+    },
+    "frozen": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/full-normal-wire-frozen-1791870590364254491",
+    "local_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/H-full-normal-wire-diagnostic.json",
+    "first_failed_transition": "Observed completed native replay -> off-caret SSI -> discarded Reset receipt -> exact SSI cannot recover authority; failed raw bytes not captured, no production repair authorized by evidence"
+  }
+}

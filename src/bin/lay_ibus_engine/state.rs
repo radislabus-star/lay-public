@@ -31,12 +31,14 @@ pub(crate) struct CommittedTailReplaceRequest {
     proved_managed_external_snapshot: Option<SurroundingTextSnapshot>,
     boundary_elided_external_snapshot: bool,
     causal_precondition_external_snapshot: Option<String>,
+    recorded_boundary_precondition: Option<super::protocol::RecordedBoundaryPrecondition>,
     /// Authority selected before this adapter boundary. When present, the
     /// committed-tail backend must preserve this exact action after structural
     /// verification instead of reconstructing a replacement from strings.
     winner_action: Option<EditAction>,
     outcome_feedback: Option<PendingSystemOutcomeFeedback>,
     layout_postcondition_owner: LayoutPostconditionOwner,
+    space_pair_scope: Option<super::engine::SpaceBoundaryPairScope>,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -57,9 +59,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -78,9 +82,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -95,9 +101,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -112,9 +120,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Ime,
+            space_pair_scope: None,
         }
     }
 
@@ -133,9 +143,11 @@ impl CommittedTailReplaceRequest {
             proved_managed_external_snapshot: None,
             boundary_elided_external_snapshot: false,
             causal_precondition_external_snapshot: None,
+            recorded_boundary_precondition: None,
             winner_action: None,
             outcome_feedback: None,
             layout_postcondition_owner: LayoutPostconditionOwner::Caller,
+            space_pair_scope: None,
         }
     }
 
@@ -165,8 +177,29 @@ impl CommittedTailReplaceRequest {
         self
     }
 
+    pub(crate) fn with_recorded_boundary_precondition(
+        mut self,
+        receipt: Option<super::protocol::RecordedBoundaryPrecondition>,
+    ) -> Self {
+        self.recorded_boundary_precondition = receipt;
+        self
+    }
+
     pub(crate) fn with_winner_action(mut self, winner_action: EditAction) -> Self {
         self.winner_action = Some(winner_action);
+        self
+    }
+
+    pub(crate) fn with_caller_layout_postcondition(mut self) -> Self {
+        self.layout_postcondition_owner = LayoutPostconditionOwner::Caller;
+        self
+    }
+
+    pub(crate) fn with_space_pair_scope(
+        mut self,
+        scope: Option<super::engine::SpaceBoundaryPairScope>,
+    ) -> Self {
+        self.space_pair_scope = scope;
         self
     }
 
@@ -317,6 +350,9 @@ impl LayIbusEngine {
         self.composition.pending_passthrough_preedit_clear = false;
         self.layout_gesture.shift_pressed_at = None;
         self.layout_gesture.last_shift_release_at = None;
+        self.layout_gesture.space_pressed = false;
+        self.layout_gesture.space_cancelled = false;
+        self.layout_gesture.last_space_release_at = None;
         if !preserve_tail {
             self.committed_tail.last_input_at = None;
             self.committed_tail.recent_replace = None;
@@ -364,11 +400,15 @@ impl LayIbusEngine {
         // alter the observed word boundary. Its one-use ticket is tied to the
         // exact tail epoch and can retain only that word's prepared Space work.
         let preserves_managed_commit_reset = self.take_managed_commit_reset_echo();
-        let preserved_space_frame = if preserves_managed_commit_reset {
-            self.capture_space_autocorrect_frame_identity()
-        } else {
-            self.capture_pending_reset_space_frame()
-        };
+        // Revocation temporarily unconfirms the retained client receipt. Keep
+        // its stable predecessor frame before the managed echo can select an
+        // independent surrounding-revision frame; restoration grants no new
+        // computation identity and cannot recover an already retired slot.
+        let preserved_space_frame = self.capture_pending_reset_space_frame().or_else(|| {
+            preserves_managed_commit_reset
+                .then(|| self.capture_space_autocorrect_frame_identity())
+                .flatten()
+        });
         self.cancel_precognition_display_generation();
         if let Some(identity) = preserved_space_frame.as_ref() {
             self.retain_space_autocorrect_across_reset(identity);
@@ -414,6 +454,9 @@ impl LayIbusEngine {
         self.composition.pending_passthrough_preedit_clear = false;
         self.layout_gesture.shift_pressed_at = None;
         self.layout_gesture.last_shift_release_at = None;
+        self.layout_gesture.space_pressed = false;
+        self.layout_gesture.space_cancelled = false;
+        self.layout_gesture.last_space_release_at = None;
         self.committed_tail.recent_replace = None;
         self.layout_gesture.shift_active = false;
         self.layout_gesture.shift_used_as_modifier = false;
@@ -490,18 +533,76 @@ impl LayIbusEngine {
         if request.is_noop() {
             return Ok(false);
         }
+        self.cancel_native_autocorrection_restoration();
         let source = request.source;
         let backspaces = request.backspaces;
         let intent = request.intent;
+        let pair_scope = request.space_pair_scope.as_ref();
+        if let Some(scope) = pair_scope {
+            let exact = self.capture_space_boundary_pair_scope().as_ref() == Some(scope)
+                && !matches!(
+                    scope.provenance,
+                    super::engine::SpaceBoundaryPairProvenance::OwnedPreedit { .. }
+                )
+                && intent == TextTransitionIntent::ImeAutocorrect
+                && request.winner_action.as_ref().is_some_and(|action| {
+                    action.from_text() == scope.text
+                        && action.transition().operator()
+                            == Some(lay::text_edit::TransitionOperator::BoundaryShift)
+                        && action.transition().changed_tokens() == Some(2)
+                });
+            if !exact {
+                return Ok(false);
+            }
+        }
         let boundary_elided_external_snapshot = request.boundary_elided_external_snapshot;
         let causal_precondition_external_snapshot =
             request.causal_precondition_external_snapshot.clone();
         let proved_managed_external_snapshot = request.proved_managed_external_snapshot.clone();
+        // This is a prior *observed* full client precondition of the recorded
+        // boundary action, never a new client snapshot or a mirrored target.
+        // A present observation always wins; only the exact equal-length
+        // recorded inverse in the unchanged lease may use it causally.
+        let recorded_precondition =
+            request
+                .recorded_boundary_precondition
+                .as_ref()
+                .filter(|receipt| {
+                    intent == TextTransitionIntent::ImeAutoUndo
+                        && self.client_context.surrounding_text_snapshot.is_none()
+                        && self.input_frame_authority_matches(&receipt.frame)
+                        && !receipt.snapshot.has_selection()
+                        && causal_precondition_external_snapshot
+                            .as_ref()
+                            .is_some_and(|original| {
+                                original == &request.text
+                                    && original.chars().count() == backspaces as usize
+                                    && original.len()
+                                        == lay::text_edit::tail_chars(
+                                            &self.committed_tail.buffer,
+                                            backspaces as usize,
+                                        )
+                                        .len()
+                                    && receipt
+                                        .snapshot
+                                        .suffix_before_cursor(backspaces as usize)
+                                        .as_deref()
+                                        == Some(original.as_str())
+                            })
+                        && request.winner_action.as_ref().is_some_and(|action| {
+                            action.allow_apply()
+                                && action.transition().operator()
+                                    == Some(lay::text_edit::TransitionOperator::Undo)
+                                && action.transition().proof()
+                                    == Some(lay::text_edit::TransitionProof::UndoRecord)
+                        })
+                });
         let external_snapshot = self
             .client_context
             .surrounding_text_snapshot
             .as_ref()
-            .or(proved_managed_external_snapshot.as_ref());
+            .or(proved_managed_external_snapshot.as_ref())
+            .or(recorded_precondition.map(|receipt| &receipt.snapshot));
         if !matches!(
             intent,
             TextTransitionIntent::ImeAutocorrect | TextTransitionIntent::ImeAutoUndo
@@ -557,7 +658,7 @@ impl LayIbusEngine {
         let (plan, edit_action) = match decide_text_transition(&visible_state, transition_candidate)
         {
             TextTransitionDecision::AlreadyApplied => {
-                trace::record_committed_tail_replace(
+                self.trace_committed_tail_replace(
                     source,
                     "target_state_already_observed",
                     backspaces,
@@ -568,19 +669,21 @@ impl LayIbusEngine {
             TextTransitionDecision::Apply { plan, action } => (plan, action),
             TextTransitionDecision::Reject { rejection, action } => {
                 if let Some(action) = action.as_ref() {
-                    lay::action_log::record_candidate_edit_action_before_apply(
-                        action,
-                        lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
-                        None,
-                    );
-                    trace::record_committed_tail_replace(
+                    if self.content_allows_personalization() {
+                        lay::action_log::record_candidate_edit_action_before_apply(
+                            action,
+                            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+                            None,
+                        );
+                    }
+                    self.trace_committed_tail_replace(
                         source,
                         rejection.reason(),
                         backspaces,
                         action.to_text(),
                     );
                 } else if rejection.reason() != "noop_transition" {
-                    trace::record_committed_tail_replace_guard(
+                    self.trace_committed_tail_replace_guard(
                         source,
                         rejection.reason(),
                         backspaces,
@@ -592,16 +695,18 @@ impl LayIbusEngine {
             }
         };
         let logical_text = edit_action.to_text().to_string();
-        lay::action_log::record_candidate_edit_action_before_apply(
-            &edit_action,
-            lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
-            None,
-        );
+        if self.content_allows_personalization() {
+            lay::action_log::record_candidate_edit_action_before_apply(
+                &edit_action,
+                lay::action_log::MutationLogRoute::IME_COMMITTED_TAIL,
+                None,
+            );
+        }
         let backend_action =
             lay::text_edit::authorize_backend_edit(TextEditBackend::Ime, edit_action.clone());
         let backend_reason = backend_action.reason;
         let Some(authorized_edit) = backend_action.into_authorized() else {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 backend_reason,
                 backspaces,
@@ -610,7 +715,7 @@ impl LayIbusEngine {
             return Ok(false);
         };
         let Some(authorized_plan) = authorized_edit.action().plan() else {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 "authorized_edit_without_plan",
                 backspaces,
@@ -618,8 +723,9 @@ impl LayIbusEngine {
             );
             return Ok(false);
         };
+        let physical_backspaces = authorized_plan.backspaces;
         if authorized_plan != &plan {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 "authorized_edit_plan_mismatch",
                 backspaces,
@@ -631,7 +737,7 @@ impl LayIbusEngine {
         let text_target_decision = self.text_target_decision(backspaces);
         let output_profile = text_target_decision.route;
         if !output_profile.can_execute() {
-            trace::record_committed_tail_replace_guard(
+            self.trace_committed_tail_replace_guard(
                 source,
                 output_profile.output_route(),
                 backspaces,
@@ -643,7 +749,7 @@ impl LayIbusEngine {
         if (authorized_plan.move_left != 0 || authorized_plan.move_right != 0)
             && output_profile != TextTargetEditRoute::ExactSurroundingText
         {
-            trace::record_committed_tail_replace(
+            self.trace_committed_tail_replace(
                 source,
                 "cursor_plan_requires_surrounding_text",
                 backspaces,
@@ -661,10 +767,10 @@ impl LayIbusEngine {
         {
             let Some(snapshot) = surrounding_replacement_final_snapshot(
                 external_snapshot,
-                authorized_plan.backspaces,
+                physical_backspaces,
                 &text,
             ) else {
-                trace::record_committed_tail_replace_guard(
+                self.trace_committed_tail_replace_guard(
                     source,
                     "exact_surrounding_snapshot_unavailable",
                     backspaces,
@@ -681,12 +787,7 @@ impl LayIbusEngine {
         self.committed_tail.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
         if self.should_skip_duplicate_committed_tail_replace(backspaces, &logical_text, now) {
-            trace::record_committed_tail_replace(
-                source,
-                "duplicate_skip",
-                backspaces,
-                &logical_text,
-            );
+            self.trace_committed_tail_replace(source, "duplicate_skip", backspaces, &logical_text);
             return Ok(true);
         }
         let total_started = Instant::now();
@@ -703,7 +804,7 @@ impl LayIbusEngine {
         } else {
             output_profile.output_route()
         };
-        trace::record_committed_tail_replace(
+        self.trace_committed_tail_replace(
             source,
             output_route,
             authorized_plan.backspaces,
@@ -712,7 +813,7 @@ impl LayIbusEngine {
         let mut delete_us = 0;
         let commit_text = if output_profile.uses_terminal_erase() {
             // The request covers the logical old token; execute only the verified physical edit.
-            terminal_erase_prefix(authorized_plan.backspaces) + &text
+            terminal_erase_prefix(physical_backspaces) + &text
         } else {
             forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left)
                 .await
@@ -720,12 +821,9 @@ impl LayIbusEngine {
                     LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
                 })?;
             let delete_started = Instant::now();
-            if authorized_plan.backspaces > 0 {
+            if physical_backspaces > 0 {
                 emitter
-                    .delete_surrounding_text(
-                        -(authorized_plan.backspaces as i32),
-                        authorized_plan.backspaces,
-                    )
+                    .delete_surrounding_text(-(physical_backspaces as i32), physical_backspaces)
                     .await
                     .map_err(|source| {
                         LocalExecutionFailure::new(LocalEffectProgress::DeleteDispatched, source)
@@ -842,6 +940,10 @@ impl LayIbusEngine {
                 outcome_feedback,
                 deferred_layout_sync_text,
             );
+        } else if output_profile.uses_terminal_erase() && emitter.is_legacy() {
+            // Successful emission retains an origin only. Actual subsequent
+            // native edits may evidence preference, never a client outcome.
+            self.arm_native_autocorrection_learning(outcome_feedback.as_ref());
         }
         Ok(true)
     }

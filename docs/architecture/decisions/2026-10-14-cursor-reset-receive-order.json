@@ -1,0 +1,241 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-cursor-reset-receive-order",
+  "status": "BOTH_FULL_NATIVE_FAIL_RETAIN_CURSOR20_PASS_PRIVATE7_LOST_PASS",
+  "first_failed_transition": "WindowInteraction Reset calls capture_native_cursor_reset BEFORE observe_context_revocation rendezvous. Handler-first Reset has current/live unchanged phase token but no observedReset provenance yet; capture refuses and next softReset loses phase.",
+  "measured_native": {
+    "T35": "20standardPASS +9functionalPASS5FAIL1BLOCKED; cursorFAIL",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/T-failure-only-diagnostic/RESULT.json",
+    "first_loss_packet": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/T-reset-order-first-failure.json",
+    "failure_line": 1178,
+    "Reset_serial": 11620,
+    "phase_present": true,
+    "identity_current": true,
+    "local_token_live": true,
+    "awaits_effect": true,
+    "last_key": [
+      65361,
+      105
+    ],
+    "reset_spent": false,
+    "atomic_active": false,
+    "sensitive": false,
+    "handoff_sealed": false,
+    "quarantine_active": false,
+    "capture": false,
+    "next_Left_phase_present": false,
+    "inference": "Given allothercapture predicates are provedtrue/falseappropriately, missing actualReset provenance is the failed conjunct. Subsequent actualobserver_ingress comesaftercapture in retained excerpt. Spositive logging beforecapture allowedobserver-first order/cursorPASS; not a functionalrepair.",
+    "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/T-firefox-closed.json"
+  },
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Capture an inert phase when either its exact current preReset identity is live or the existing reducer has already recorded that exact sourceReset. Restore only after the independently matched/authenticated actualReset and existing reducer provenance checks. Same one pendingreceipt, no word grant from capture.",
+      "reason": "Handles bothreceive/callback orders while keeping allfinalauthority/identity/actualSSI/safety guards."
+    },
+    {
+      "score": 6,
+      "recommended": false,
+      "solution": "Move capture after awaitedReset admission and separately retain the old source token/phase.",
+      "reason": "Needs another preawait carrier or refactor; easy to lose preReset identity when generic cleanup already replacedpendingrecord."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Raise callbackwait deadline or retain allReset snapshots without matching.",
+      "reason": "Masks race or grants unprovedauthority; prohibited."
+    }
+  ],
+  "source_plan": "Add real handler-first Reset with concurrent observer viafuture::zip, never withholdreceiver untilcallbacktimesout. FirstfixturefailsafterfirstLeftReset; keep original46/8variants/final surfaces/noeffects/UnknownStart. No coreedit untilcausalRED. Auditothercapture owners beforegeneralizing.",
+  "guards_retained": [
+    "Exactfocus/owner/lease/layout+tokenvalidation; atomic/sensitive/handoff refusals",
+    "Onependingreceipt/onematchedReset pereffect/no fabricatedSSI or epoch",
+    "Restore onlyactualMatchedReset+reduceroldsourceprovenance+sameactivation",
+    "Manual-only/endcaret/realexpectedfullSSI/pairedrelease; no Space/Tab/readout/learningpromotion",
+    "No routes/owner/deadline/model trainingchanges; R10Chrome gains retained"
+  ],
+  "fresh_review": "Context-free agent thread limit preventsfreshreview; no scoreclaimed; rootimplements/tests/audits.",
+  "runtime_authority_changed": "No new edit/word authority. Existing inert evidence survives handler-first canonicalReset; all actualRestore matching/provenance requirements stay.",
+  "delivery_routes_changed": false,
+  "updated_at": "2026-10-14T04:28:44.435366+00:00",
+  "causal_source_exec": 17072,
+  "review1": "NOT_RUN: new context-free review spawn rejected by agent thread limit. No scoreinvented; root stillimplements/tests/audits and keeps taskOPEN.",
+  "other_capture_audit": "Other existing owners use capture_confirmed_owned_reset_observation/capture_owned_context_reset_rereceipt_candidate with their independent completion/shape guards. Do not mechanically change their predicates from this cursor first-loss; inspect separate evidence before generalizing.",
+  "source_red": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/U-causal-red47-RESULT.json",
+    "signature": "1ba5e257c6b37f064cc49875e9f71ab3effa717b9399e4d704c3e35271fd1bc4",
+    "result": "46PASS1FAIL47",
+    "elapsed_seconds": 19.74127894602134,
+    "first_failure": "first handler-first cursor Reset lost inert phase before expected actualSSI",
+    "all208RustHashesMatch": true,
+    "order": "real Reset future polledfirst, actualobserver concurrently suppliesstamp; no artificialwithheldreceiver/timeout"
+  },
+  "implementation": "Only capture_native_cursor_reset admission of an inert clone changes: native_cursor_identity_is_current(receipt) OR existing reducer exactReset provenance. Alloldfocus/lease/layout/endspent/atomic/sensitive/localtoken predicates stay; restore/currentmanual gates unchanged.",
+  "source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/U-adverse-green48-RESULT.json",
+    "signature": "3fc549b58873cede13c701aa9a4b61e32521aa551ccfc06223001bad276d9638",
+    "result": "48/48PASS",
+    "seconds": 19.736221706989454,
+    "all208RustHashesMatch": true,
+    "included": "Handler-firstReset8variants +old46controls +unobservedReset cannot restoretentativecapture; noKnownStart/edit/readout/Space/Tab/learningauthority"
+  },
+  "review2": "NOT_RUN current agent thread limit. Root diffaudits only; no independent scoreinvented.",
+  "immutable_gate": {
+    "local": "/home/ubu/.cache/lay/development/run-eorp9z31/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-uA2KuH",
+    "archive_sha256": "b4c98b96e437fa9c978b2da6f0f944659885fa000f44236661b4aded1776a88a",
+    "result": "840/840PASS",
+    "scope": "IME789+6contracts51; priorRdaemon273 retained on unchangedsource, not reexecuted; development scope not fullrelease.",
+    "all737RustHashesMatch": true,
+    "worker_seconds": 115.06470862202696,
+    "controller_seconds": 123.4
+  },
+  "ast_build_exec": 56245,
+  "T_graph_artifact_copy": "T original AST receipt retained, but later currentgraph.json/GRAPH_REPORT hashes drifted after source edits/hooks on bothremote/local. Copy assertion failed; no hashverification claimed. Binding/generatedreceipt hashes still match. U freshAST pending, no rerunT justto obtain oldhash.",
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-uA2KuH",
+    "archive_sha256": "b4c98b96e437fa9c978b2da6f0f944659885fa000f44236661b4aded1776a88a",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791949431027609413.txt",
+    "elapsed_seconds": 183.5060702470073,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "ae225e1c43d3fbc3ce32c6617fa5575d4341446828e844c9bad935efa1c6b324",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791949614533588069/bin/lay-ibus-engine",
+      "bytes": 8272528
+    },
+    "lay-daemon": {
+      "sha256": "cbc060b2134886eb21c919ae690f400de712a32c2695813f4611ada4917e535c",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791949614533588069/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.708317527984036,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/U-final-graph-1791949410014913740.log",
+    "artifacts": {
+      "graphify-out/graph.json": "c905a3f2ec46d187aff65e379fcab115861380ba8c6f5c08f93510c1940b73c3",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "82a22469962f4c103fa53be40b4e149e2f2a8fc7d79401b217d53de92492ad50",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    }
+  },
+  "stage": {
+    "status": "STAGED_PRIVATE_ONLY",
+    "backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/staged-before-U-cursor-reset-order-1791949770000813254",
+    "ime_sha256": "ae225e1c43d3fbc3ce32c6617fa5575d4341446828e844c9bad935efa1c6b324",
+    "daemon_sha256": "cbc060b2134886eb21c919ae690f400de712a32c2695813f4611ada4917e535c",
+    "gate": "/home/e/projects/lay-development-runner/run-uA2KuH",
+    "original_actors_unchanged": true
+  },
+  "seat": {
+    "status": "OWNED_FINITE_SEAT_READY",
+    "unit": "lay-native-session-6onP5c-af.service",
+    "seat": {
+      "pid": 3925233,
+      "starttick": "14730050",
+      "uid": 1000,
+      "session_id": "3601",
+      "session_type": "wayland",
+      "seat": "seat0",
+      "vt": "8"
+    },
+    "previous_vt": "1",
+    "old_seat_backup": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/U-seat-before-1791949770198682799.json",
+    "properties": {
+      "User": "1000",
+      "VTNr": "8",
+      "Seat": "seat0",
+      "Leader": "3925233",
+      "Type": "wayland",
+      "Active": "yes"
+    }
+  },
+  "native_live": {
+    "actual_exec": 77126,
+    "driver_exec": 47546,
+    "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/UB-firefox-zero-key.json",
+    "scope": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-3927259.scope",
+    "keyboard_owner_pid": 3927280,
+    "keyboard_owner_starttick": "14734425",
+    "no_heavy_while_gui_live": true,
+    "plan": "alloriginal051\u2013059 once, full216; actor/code/cadence unchanged, no passivewire; fullChrome afterexactclosure"
+  },
+  "firefox_native": {
+    "proof": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativeae225-firefox-proof.json",
+    "comparison": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/U-firefox-vs-R-stable-ids.json",
+    "counts": "162PASS35FAIL19BLOCKED216",
+    "gains": "all10cursorfields",
+    "lost_PASS": "one standard/private/space/field7 burst after first flip; finalcase remainsFAIL",
+    "scope_closed": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/UB-firefox-closed.json",
+    "latency": "standard416/420p95118.806453ms, panel48/48p95117.754412ms, functionalDS122/210p95141.682285ms; missingexplicit/kernelreleaseNOTMEASURED",
+    "verdict": "FAIL retains10cursor gains; no promotion with existing/lostcases"
+  },
+  "chrome_live": {
+    "actual_exec": 33036,
+    "driver_exec": 32147,
+    "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/UB-chrome-zero-key.json",
+    "scope": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-3985161.scope",
+    "keyboard_owner_pid": 3985182,
+    "keyboard_owner_starttick": "14839017",
+    "plan": "original100\u2013108 once/private-sinks4snapshots",
+    "no_heavy_while_gui_live": true
+  },
+  "next_private7_evidence": {
+    "packet": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/U-firefox-private7-first-burst-loss.json",
+    "trace_sha256": "fafe86de5d65c0c9da11f034d866a40dfd8f9bcded3c380c12a717c39086f757",
+    "retained_fact": "FirstburstmanualV3delegate3 succeeded. NativeerasureSSI shrank7\u21920, targetreplaySSI text4/caret0; diagnostic2081 expected7/initialmatchtrue/asciiLatintrue/replayScopePresenttrue/identityCurrentfalse. Then receipt rejected and laterSSI4/caret4,5/caret5,7/caret7 cannot restore manualsource; nextburst RPCbridge_live true/manual_allowed false.",
+    "scope": "Existing completed-native-replay receiver evidence firstloss not yet located; no newinput or fix yet; do not weaken SSI/identity predicates.",
+    "coverage": "UNKNOWN bounded512000B trace",
+    "source_read_findings": {
+      "current_identity": "Generic pendingReset identity deliberately rejects KnownStart/zeroobservedSuffix; firstpartialtarget occursafterSpaceboundary settlesKnownStart. False genericidentity alone is not the exact defect.",
+      "existing_positive_contract": "Completed-native boundary progress path already exists. It requires exactpending/currenttoken, currentboundaryscope, recordedfullprefix, actualadjacenttargetgrowth/nonregressingcaret orboundedprior-snapshotshape. Read331eventpacket plus boundaryprovenance path beforeanychange.",
+      "unknown": "Which progress/boundary predicate was firstlost at private7 actualtext4/caret0 remainsunknown. No sourcecausalRED/nextcoreedit yet.",
+      "preserve": "Do not changegenericidentity/KnownStart/SafetyGate/range or fabricate earlierSSI to compensate."
+    }
+  },
+  "chrome_native": {
+    "proof": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativeae225-chrome-proof.json",
+    "comparison": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/U-chrome-vs-R-stable-ids.json",
+    "counts": "179PASS23FAIL14BLOCKED216",
+    "all216_statuses_equal_R": true,
+    "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/UB-chrome-closed.json",
+    "latency": "standard406/420p95111.628605ms, panel48/48p95108.788729ms, functionalDS158/210p95128.741448ms; Space38/50p9523.298681ms/selection10/10p9523.494113ms/Tab0/10; missingexplicit/kernelreleaseNOTMEASURED",
+    "privacy": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/U-chrome-private-sink-proof.json",
+    "privacy_scope": "3visitedLayfilesunchangedinprivate; publicrecent_actionspositive; tracecoverageUNKNOWN"
+  },
+  "combined_native": {
+    "same_candidate_bytes": true,
+    "Firefox": "162PASS35FAIL19BLOCKED216",
+    "Chrome": "179PASS23FAIL14BLOCKED216",
+    "total": "341PASS58FAIL33BLOCKED432",
+    "against_R": "10newPASS/1lostPASS/9netPASS; all432IDs matched, only11changes; all10FFcursor fixed and all10priorChrome cursorPASS retained",
+    "promotion": "DENIED/incomplete: remaining58FAIL+33BLOCKED and lostrequiredprivate7case; no taskDONE/push/install",
+    "proof_sha256": {
+      "Firefox": "152185ead8273ea3cd266052c7b3e23743267761051c5d17837b70ce4cebaf39",
+      "Chrome": "5e6679c4565f1f8bef57159b2ffb4900aeb2fbdcf9127fe88d769132f58128d7"
+    },
+    "all_scopes_closed": true,
+    "all5pid_ticksgone_each": true,
+    "VT_restored": "1",
+    "next": "PrivateFFspacefield7 completednativeReplay losescurrentidentity at intermediateactualtext4/caret0; actualtargetevent acceptedinitialmatching7expected butsourceidentityfalse, thenmanualbridgealive/no authority. Causalfirstsource loss beforecoreedit, no guardweakening/no rollback of20cursor gains."
+  },
+  "local_retention_verified": {
+    "firefox": {
+      "raw_manifest_sha256": "d9fda2da41d4ec82f045790a88297fe559c2c571a2ae8b916fa4a22bfabf4da4",
+      "primary9_hashes_verified": true,
+      "raw_local": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativeae225-firefox-raw-1791950651744313105/RAW.json"
+    },
+    "chrome": {
+      "raw_manifest_sha256": "78df9f4514206de67bcf744a6e24c2a73fadcb8ab7e3d517d67d3d786a155ed0",
+      "primary9_hashes_verified": true,
+      "raw_local": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/nativeae225-chrome-raw-1791951611824700170/RAW.json"
+    }
+  }
+}

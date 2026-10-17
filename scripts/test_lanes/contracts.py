@@ -269,8 +269,24 @@ def compare_known_failures(
         if expected != actual:
             signature_mismatches.append(identity)
     if unexpected or fixed or signature_mismatches:
+        detail = ""
+        failures_with_evidence = unexpected or signature_mismatches
+        if failures_with_evidence:
+            identity = failures_with_evidence[0]
+            block = observed_by_id[identity].get("failure_block", "").strip()
+            panic = re.search(PANIC_LOCATION.pattern, block, re.MULTILINE)
+            if panic is not None:
+                block = block[panic.start():]
+            excerpt = block[:2000] or "raw failure block unavailable"
+            if len(block) > 2000:
+                excerpt += " [truncated]"
+            detail = "\nfirst_failure=" + json.dumps(
+                {"target": identity[0], "test": identity[1], "failure_block": excerpt},
+                ensure_ascii=False,
+            )
         raise ContractError(
             "known-failure set drift: "
             f"unexpected={unexpected[:20]} fixed={fixed[:20]} "
             f"signature_mismatch={signature_mismatches[:20]}"
+            + detail
         )

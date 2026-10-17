@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-17",
+  "decision": "Validate zero or more exactly leased U+0020/U+00A0 Space boundaries uniformly in the existing exact IME tail replay consumer. Require literal projection of the exact original token plus exactly the same number of existing ASCII Space key outputs; retain the raw source lease and every other exact replay guard.",
+  "reason": "TD154 actual native rich field7 confirms both Space acknowledgements, receipt consumption and exact delegation, then daemon prepare_exact_replay rejects two NBSPs because its old contract admits only one. The existing planner already preserves separator count. No delivery route change is needed; replacing the weaker ASCII ends_with alternative with one exact check avoids a strict-check bypass.",
+  "verification": "Unchanged-production td155-exact-series-red-lggpkxju:5/6PASS,5.310s, archive df8eb00b703b1be766b1bfd2e108b6b16b363ace80e70291810ed040d9e62b4d; actual existing executor regression rejects two NBSPs at the intended old guard after single-boundary controls pass. Fresh-context plan review9/10 pass1/2, no blockers. Green, actual callback replay/negative proof, controlled reversion, full source and code review remain required.",
+  "not_tested": "New consumer bytes, actual client acceptance, full native matrices, latency, publication and installation. Candidate1.0.89 is unpublished; installed release1.0.88 remains unchanged. No assumption that executor admission proves later replay authority.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs"
+  ],
+  "runtime_authority_changed": true,
+  "authority_scope": "The existing exact leased-tail executor may replay the literal token projection followed by the same witnessed Space count. It may not rewrite the raw lease, authorize other Unicode whitespace, bypass focus/lease/current-source verification or accept an inconsistent output plan.",
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

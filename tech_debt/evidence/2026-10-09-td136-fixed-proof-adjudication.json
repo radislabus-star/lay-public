@@ -1,0 +1,1748 @@
+{
+  "failed": 0,
+  "harness_logs": 278,
+  "known_failures": 0,
+  "known_ledger_delta": [
+    "manifest_sha256"
+  ],
+  "logs": [
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-daemon.log",
+      "selected": 268,
+      "sha256": "74487277edad62d4e5215b79fe7b575aec5e8104582ad390bd66f00c1fb5bfad"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-daemon-305fedf8ffe14b59.log",
+      "selected": 1,
+      "sha256": "69f1f4dcfc2a147aef34ac5ed2292367428db7c86c64f46c1744731d334af84f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-daemon-a244a930a80e64f5.log",
+      "selected": 1,
+      "sha256": "b1ba1ae983421347de15c1df4fbbe934cf60f12659587b47aedfaad85835515c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-debug-actions.log",
+      "selected": 12,
+      "sha256": "08641cbd37fcbc73e0e56bc76ec1d830524004de719900fefe5de42ae99b1f89"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-ibus-engine.log",
+      "selected": 478,
+      "sha256": "2cab6c5c07c58cdb878bec8f95560c32789fb5a54c70213924d39859884be946"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-88e33b39238d7843.log",
+      "selected": 1,
+      "sha256": "d6a00d5e5981a4bcba3e09fc32a5602af1b6471ca4053d76eda720dcbcac6dd1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4ae0f1c2a88f16cf.log",
+      "selected": 1,
+      "sha256": "9124f982816e9fb9be67c0bb1bff819c82e7c88d7dc304e628ccbcb435e45ca8"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a40a0a099678da90.log",
+      "selected": 1,
+      "sha256": "81f03ef7c99c508a0ca55628d2358271f9bf87e530546394d50f934f99012e0e"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a5f255c757cbd8c3.log",
+      "selected": 1,
+      "sha256": "0aae2578176031a8be43c132a38fc3c7e6ee7a90cb0bfd84bf2495432d8d92f1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-722f3288cc0e9cca.log",
+      "selected": 1,
+      "sha256": "3cd14a0460b4404c73169f8ac00b1fdd40107d12f748a270277f49759dd1c8e5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3013b1e40db1cdfb.log",
+      "selected": 1,
+      "sha256": "7a944e44943df2792c98168e063a969094e3af1c01e140b5212ae22bb4ecbf1d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-495db1aca96d47d9.log",
+      "selected": 1,
+      "sha256": "8aed3ffe003ba300561f4e5659f927b8557525895def4f259a3cf704aa8b012c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-7b0ac116d188745f.log",
+      "selected": 1,
+      "sha256": "22b88951cef99e5ec6d85b8864cff1145f78bb4fccb660a7ac1141aefae32ce6"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-7f01973faf9659cb.log",
+      "selected": 1,
+      "sha256": "aae9800ca4692659680bd8da538f7f33f99818c6e6edaeac46a6ae57c3c41fe1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b4d25b06c7088131.log",
+      "selected": 1,
+      "sha256": "816fbbc870e0c3ed5a380a55abd55ff8cceb0434f35864f06845597ca5b3f0e9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-95a9ce4583962e55.log",
+      "selected": 1,
+      "sha256": "51e98dfbf3a764509fd127c06ba330e6a576c2abb467af2412c75f4eb3723fc1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-07742d1a1b5fb6ce.log",
+      "selected": 1,
+      "sha256": "abb2e53642f2429f8f0ff433e5575b0f8154c7d080a79d5d89a9e4428182e4f5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-5b6a180901efc3aa.log",
+      "selected": 1,
+      "sha256": "646bcfd6202ca5210be352dc2525f69310ed89bc7c2db01e834d7c2670b1871a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-33693de47374c859.log",
+      "selected": 1,
+      "sha256": "d3ca5f72bdf309c2f5d9211b63ccf946d781ad97455561c4bb9d76fa68951b11"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e44a4e19a50f9fc0.log",
+      "selected": 1,
+      "sha256": "63221736e274ef4f84eae24319995cf97b5bb652575796e48ee74d8e7d68313b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-221cf8bc49fd6b3a.log",
+      "selected": 1,
+      "sha256": "72e32e6bd25bd9b152dd85b5ecc9a4182d20e720fc8d33db7fb9020214381cbc"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-7671e9f55a9c015d.log",
+      "selected": 1,
+      "sha256": "88e9f9a58ed2184259ad6b48c7d230b95c49b219e41e865f5d23876edb639229"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3b3c1aa3c4c5da57.log",
+      "selected": 1,
+      "sha256": "587514b068a259dffb5f7645d7b4924c2886ca89ea8a5e8548a0dd0c09324ae6"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ed20b816176cf6d2.log",
+      "selected": 1,
+      "sha256": "3ebea510f5c708300fe2bf4fc5cd3cbf81b3ee5af79b9ac46fe0097b8028b275"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-92566c4689c60c46.log",
+      "selected": 1,
+      "sha256": "b32198147190d0e56bf68bb7be741a30ef99b80e78c5e3488251e26a5cc19c64"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-36b61ef34229f91c.log",
+      "selected": 1,
+      "sha256": "23d99c0b7ec6e393fb1d0782104a8264454fc1ce4d6bf2d4545d7e7d5cda7a49"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c7027ca5f7214e58.log",
+      "selected": 1,
+      "sha256": "91f8fc00587bcf8edb737fa76a755892d855dac30b03dcf42e823258e7e37b99"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-205c44d7bfbe7e8d.log",
+      "selected": 1,
+      "sha256": "8d8ea68649424ef32a8dadf591047ca0a470d0fdbd8b8e34e6fd8c272ce56ec9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-538fbe5799831fc2.log",
+      "selected": 1,
+      "sha256": "5f677052e79fa3bd4f0afcbd4a709e576a889a934a6af5dc20e40e4d7b4fa1c0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f6a20e327849a421.log",
+      "selected": 1,
+      "sha256": "d8f9598f60f7a4b52f6dcdb68303cc7b3a8d2b6d4d4b603e505ae15aa1085919"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-64d1304eaa223f93.log",
+      "selected": 1,
+      "sha256": "8132330cb4e9793b371229d371bdb4fd9b3eceb054dae222c4a1bab609ae1cec"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-36706db9bf7049bc.log",
+      "selected": 1,
+      "sha256": "12ca8ea42b32f422bb8db6b0a8a9d28746c1e19ea2cd21e9cac041c55e2b8f91"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a2aa27653e192bf7.log",
+      "selected": 1,
+      "sha256": "20587ea5505c3f8500a26401369533932c6c1985ad717f0461f32d8ab3aa26e0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-abb0dab1430c4d8e.log",
+      "selected": 1,
+      "sha256": "18f9641caea48a49eb776257b670775ce331b213164d735a4897474844608cfc"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0a475deb58b9b48a.log",
+      "selected": 1,
+      "sha256": "b7db6d9890caa9d8f16dba1b1b96c6dad4bd17c735f89c31b57f1f7283d42a0a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3c995c15e834cfdd.log",
+      "selected": 1,
+      "sha256": "19170c4d706e05449d3ed70edddca80f63f66926c5a9345a57a174481492937f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-bb57075712fdf1ce.log",
+      "selected": 1,
+      "sha256": "030240b200bd97bc276f59d84c431501c7f7f6884c3a32d0dbacfb91e17110be"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-8181da88f06367f3.log",
+      "selected": 1,
+      "sha256": "d81f9080ab253e186e089231043b1162a61d3db38095fbc7c6d4baddf84b968e"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-56f9e8e15fca9b7b.log",
+      "selected": 1,
+      "sha256": "2e3e88cdf5975e7a1c6c95c2aadefe9418677fded19431c15db1b8b9f7db0faf"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-342f7042d0d51643.log",
+      "selected": 1,
+      "sha256": "82ebddefeff5cd3953a98f2ba550d6a24fed3ce78ee8238a4348e3b12097df68"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d98f0253a9fe6761.log",
+      "selected": 1,
+      "sha256": "36252b9060f131bb27d451093d60f4c0b483e6197a944f9a04137cff2ca9a73f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f69419a2faa96866.log",
+      "selected": 1,
+      "sha256": "621200f83871b2c0e256b91f8422fa9022836ced45d2bf574f9fb17c4e9e524d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-7cfd641762fd1d9f.log",
+      "selected": 1,
+      "sha256": "be920feed18a3611d96d73a0be93d25c6689bbc56cd1739535fbf2a698731fd4"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-6657ccee18f1ce31.log",
+      "selected": 1,
+      "sha256": "d65897ab300d1c27756679298bf38932c7842a2091366745e1e57799a41887b1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-89e990cf7bad564c.log",
+      "selected": 1,
+      "sha256": "554a2ea7b9d4e060cc9917e151225c1fd5e27ae8df28b9c727d35f8ce163fc1b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d6549faaa581595a.log",
+      "selected": 1,
+      "sha256": "be7cce945b8cda298eec821879db2e625d422cd862c9bb373cb6e376e72a1f35"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4a61ef8396e8c4ec.log",
+      "selected": 1,
+      "sha256": "04c0be77c52c9b7451a4863e751391be31b07992f4ca19ded3c92eb9ba4131d5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3b4e9605859d3e46.log",
+      "selected": 1,
+      "sha256": "2d1fcfa74df588f7aa4173abfc5eed94c304340ed17d86e613fe85892a98ebeb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0ee9ae7540f1f911.log",
+      "selected": 1,
+      "sha256": "539794717b3f7c534e4a901f9f5ff56770d77300014d1cfa2111ee871a66c807"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e46790a989801d7d.log",
+      "selected": 1,
+      "sha256": "d1250da41e85990332fc7e5047cf54b8fa5d0fccd50ab41960a60a86c5fa2039"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-214adeb7780fe2e8.log",
+      "selected": 1,
+      "sha256": "5867403ca4a0485d23d5b132953e4f272961f1c15feac51f16f2143110118820"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-acc22f69d1edf0be.log",
+      "selected": 1,
+      "sha256": "fd6a3bc757e376332a361ac1a25f1f53a47dae706be56ec72b7ff5cf4deb1ad7"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4fe3e6c785b9a285.log",
+      "selected": 1,
+      "sha256": "d8206707b9b9aa1e1c65264ef6a50f074fd68d6800d0172dc74e3d45990ba7d7"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-12e83219c7244076.log",
+      "selected": 1,
+      "sha256": "cd545f62e4723415f402d81e9d30e5185a8409bf9eb5bd0f1e96052c7fb34538"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-eacaead58aeae32e.log",
+      "selected": 1,
+      "sha256": "805fb21ceafc3e7dc9210f73599e9f87cb42cb728b1e8ed9c594f1a67d13ed92"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ee56d0eba7eb6790.log",
+      "selected": 1,
+      "sha256": "7769685a1eab49f9956b239a760d8c22f71799acd8ce016e4785e2029b469e2a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b899443f22792c38.log",
+      "selected": 1,
+      "sha256": "d58f165375f85f75cf7f3ebe83035b4e1fbfdd26ab67e534a376f7d6a370758c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-19728095e08dfdc6.log",
+      "selected": 1,
+      "sha256": "6e82f6aa533860e84cbd7dc16c204aa0448ec3b7d09d5c986c684cc3ee6604c6"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-cccf2f4c5393bba9.log",
+      "selected": 1,
+      "sha256": "fee08b4377a4c93f393c0b576edcd4b64af6b6c193b0f865d8027ac13914763a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-df80d2dd704d2026.log",
+      "selected": 1,
+      "sha256": "f33fc26cde6062f907d0720c43266df71655db781f1f5577063be0a3e5e59a88"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-14dc4d11af7b0a0f.log",
+      "selected": 1,
+      "sha256": "257c1079f47b69da5dfd653566c2e0843f1b98229705373cef95d64ca6126065"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c9ee00cb11701d12.log",
+      "selected": 1,
+      "sha256": "644622768f7ee4583e90871eb66b0bdfac994e47d3f5b15098b87a3603bf3207"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-fa4d857d85425628.log",
+      "selected": 1,
+      "sha256": "61ea7521ff88ecd70cecd97b31d9dd1ebced7c03c1b2213ffef19c97e32cf7be"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b4b4ef11d8713c47.log",
+      "selected": 1,
+      "sha256": "0112cc26f5a27ce52f16567bb9d114ca6ccf947e13d48e0f8d0012e84efe25ba"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d0e08459aedfb44a.log",
+      "selected": 1,
+      "sha256": "5d3e6e9bc62b45c258ced63051d2addb73120f577f2bc480c2d8d2561ee7d56e"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ea44eab899e8d21c.log",
+      "selected": 1,
+      "sha256": "6ad1796c073aa63091167391348ce0eb17b05405209661ecff8b1598c2aca33b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c657bc5760290812.log",
+      "selected": 1,
+      "sha256": "4bdc286b3ed9bb1c6dcba4db82e2a57633653c8155476462729504b5b82bf48b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ca9b3842e6940b33.log",
+      "selected": 1,
+      "sha256": "27be64a4997d2040256eed5e74f9620f9e3021afb3ac8d86501acc8cca3a3713"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f90bdb6b3a9566db.log",
+      "selected": 1,
+      "sha256": "ae1b6009f7f669a3d30a7a79b8aefbb39483ee9135b7cae9e5e7a9ec94503a31"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-1dacb90804d263b6.log",
+      "selected": 1,
+      "sha256": "9195f0c82eee49d60d405ee3a27058364c6ec81edaf95b5d7a717a163bda0e7f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-79c9d0fcb0c07987.log",
+      "selected": 1,
+      "sha256": "9ebdac7470e9fd41713b7b905c708ba819c3624cc02884c5d785dce891d154ec"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-21584e02f616fd77.log",
+      "selected": 1,
+      "sha256": "70dfaa4a4ac977530de40f14af361924c28365504048ab2500c43c7f183c251c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c4b2ad02fc1684ea.log",
+      "selected": 1,
+      "sha256": "29cb15da0d2e0ca8db2fd2a04e6e2f5a7a53715b0652ce801c33818d16d7b927"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-36554ae7d4e0fc00.log",
+      "selected": 1,
+      "sha256": "572a41ea16744da6959dbde4865f93bbf06a911a9601ce5c8c29dc52d446e6f1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-46c6e3a3cbe2c1ea.log",
+      "selected": 1,
+      "sha256": "f29910a7792924978e2cc45429435b6e3fa2a6721ecf9654e1e31ee39c203b01"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0bfc69121c128089.log",
+      "selected": 1,
+      "sha256": "4d12b92a722fa6d31e273f9e74f0075613dc233c581fb23be6233af3336e557a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-148bdc23dadeae23.log",
+      "selected": 1,
+      "sha256": "2e5edced7902e2e34f7e80764f468ed13ae82dcc23621e22bb1a4b67377e8252"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-40f018a9268558a4.log",
+      "selected": 1,
+      "sha256": "6c19bb6dd2f8c486df5b8f098495cadaf556cefa93fe93e8ce393a831924c222"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0ffec0480e7b535f.log",
+      "selected": 1,
+      "sha256": "368e6871a587809e6e330f9b98b4ff08bce130e45e4e91d080152dffbd6659a9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-184d6672df0bdd86.log",
+      "selected": 1,
+      "sha256": "11e248e4b7e6890b03baa3c585655df19dffc8c7f508f0ba4e2a8123d398e474"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e8677e71128b14be.log",
+      "selected": 1,
+      "sha256": "9d0b3188fe7e302e97b35e2ffdb5ecda27470ff4dcee614fae294370aae50c2f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-35b9313d328af72a.log",
+      "selected": 1,
+      "sha256": "27d2264b6c09dbe474ba5103b0fb70d62d1212be2e0a59867ea4c541c2776e1a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-585b5e0cb66f53c2.log",
+      "selected": 1,
+      "sha256": "84523ac25519fe43f689499ee5c784b9559f15eefa34aaa0b0f7b4ae1efa5cec"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-30d17a2502faa417.log",
+      "selected": 1,
+      "sha256": "5be965e889668c0ef714c2da76fd0b565dd2d864e4070cca79533298828c88dd"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-483ee475b371325a.log",
+      "selected": 1,
+      "sha256": "de49fa35e0395d85e8879598ffe011aea4373115803a53f6c9e2930c6ff0b5c0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c40735bc710920c2.log",
+      "selected": 1,
+      "sha256": "fce18dd1bc1acb0b2562d8620a46bef019efb10e84d8ba28d71c98d4342b14db"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a5ac2bf5da7767f8.log",
+      "selected": 1,
+      "sha256": "f834bbe9187322c9eb765049faecea2f3a884991e13ae51872f915a35f9155c6"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4ee7283e6fb4f631.log",
+      "selected": 1,
+      "sha256": "cf8f5439456fd037c6c501e90ef6d92b52d306b2e9b52e74e2d3c21f154ba730"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b00756a690ca9bf6.log",
+      "selected": 1,
+      "sha256": "c92d4eec61f3177e5b9e89f1128234e6833702f98a4cabc43371ae8346f68164"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-6bbf866b542c53ca.log",
+      "selected": 1,
+      "sha256": "7d0221638a6b634f5f0f5f1ffcfc954800a2b4b9fdfc0ef13d7c8d79c4a73fcb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-dfd8dbeb2992d7fb.log",
+      "selected": 1,
+      "sha256": "82f99fdd660e47cb76354abf7e3b6e3e66fff793509b7febfbd995fde71e7388"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d50fafdfd0f99044.log",
+      "selected": 1,
+      "sha256": "89fa10fde4877e9f20b9ffdae3c407ac34df6b47ad8f10672262f73d8b4fdd2f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-579b9209db834415.log",
+      "selected": 1,
+      "sha256": "f66a58bb1a463efded0694aab1488cd6d4e14cd22bd939180bf9a506b8e2c10a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-71806a2ffdc8fcd4.log",
+      "selected": 1,
+      "sha256": "09738a8048db9372113e0c4b245e7be96fe04443be5860702ebe3e18fc36d570"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2960555eed791f62.log",
+      "selected": 1,
+      "sha256": "73bb46607fc4d3fefd652f5870f8131d4823bc27e45f5ed866fd7ff57239d1fc"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-68366b68a3d04e64.log",
+      "selected": 1,
+      "sha256": "db86eddc81a17735cbdf17e12f3e36b4b717a7c56400a38b75b7b7a4482eef4c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-147a619b9a17d770.log",
+      "selected": 1,
+      "sha256": "d4d1836ea2dd85b6cf8492a46e1a9d88e8e3f5a54806991e805a2c0dfd3f50d3"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-489f5915e3a66177.log",
+      "selected": 1,
+      "sha256": "e31279172ea56762f7de0588c1fbe625ef59ea525313e6257daffa17d430e99a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-15c50e331ae892a8.log",
+      "selected": 1,
+      "sha256": "61a3cb132509746d2f8952bb9a439ec7c76bab1c63eb549a2f27c3cdfb2418ae"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a0cba838bad5c9e4.log",
+      "selected": 1,
+      "sha256": "d883a807959487af30ef02d78b0415e224e6718e88b9698001de3f2923c6f78c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c012250c0e6081f7.log",
+      "selected": 1,
+      "sha256": "5062c9660278dcd57eb27b7042b0af8ee8f506aacdc45b2146e2bebd47e51680"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0645710c88777335.log",
+      "selected": 1,
+      "sha256": "2fbca7247aca5b20723b1fc60f97ee96afdd595108bd9ebe97f66eb41a64e451"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-249edb62cd1e07a2.log",
+      "selected": 1,
+      "sha256": "bc9f384c57aad4c66267758df2a5ffa3520d1cfa7308c1eb3796e54cc7142b2e"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0cf6e64f37715b04.log",
+      "selected": 1,
+      "sha256": "5332f2646bef0b5af03f407b60477ac637eed20872d1e3c1569952432215d178"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3fdb3fbd1c45f91c.log",
+      "selected": 1,
+      "sha256": "cac5dab4b75e428f7433f2f4bcd9c97cf2ab507f49fb6159c4b09c3803f1df15"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2e8a3a3eee79b194.log",
+      "selected": 1,
+      "sha256": "66177c10b9d25e80a2a95c91596d729c3ff151bddcdeb3afa399476cc49caeeb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a38f51b74c822669.log",
+      "selected": 1,
+      "sha256": "c60c068e2267641e0135dee17b9d68f274e0e9afb54ebc51e7d11f48531fe8f1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e7b89df251a18c39.log",
+      "selected": 1,
+      "sha256": "1071cbbeece10673167ef1afe5aa0b2b3a61e81a57da88cda81b2a3434214bcf"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2e93ce85c7abd040.log",
+      "selected": 1,
+      "sha256": "48953d3a0b3d2f75c15abb34b64feb69e9cb7dddfa28c5dafcfbc382a8e4c627"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-988cf554377031a2.log",
+      "selected": 1,
+      "sha256": "487a146d24743ac0484633b8c76b53f99ccba66639ad682c3e2cc69d8b598f4c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ca5aa8dd9eb9f7fc.log",
+      "selected": 1,
+      "sha256": "43d562775a4251e0797ddf12ac566897517e738adef94af147d7fd43747f5a16"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3fc3658c47495adf.log",
+      "selected": 1,
+      "sha256": "3fcabdf61df0daf81ed154c38db48e1c3603f0252ca9ed270d2f8906c434276f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-7748deb0ed25c9c3.log",
+      "selected": 1,
+      "sha256": "9ba2053f58b44309055b2098be51a1cf6a407d4bf24741bcee29883e75805645"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f4542c2781574cc4.log",
+      "selected": 1,
+      "sha256": "0eb40ab4529f1a634cf1b3689d55f556bf6beb63e41c88931e3c99ee11dfd811"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c40900cf41a82f16.log",
+      "selected": 1,
+      "sha256": "e4171533630d87fdb468b0c3f431acfd41987dd2d97752abaedd3aa4d42a58f5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-9e08d3cc33457d7d.log",
+      "selected": 1,
+      "sha256": "f195725a49b788d7b7464b06985d761bb5139a6297db77fad00b5ac0c03f675c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a73f68ffd0f87bfb.log",
+      "selected": 1,
+      "sha256": "5224046a5636d27c778bde3539bc0eceb7b770c79cfc43bd0de217a2abb0fc3c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-1c5c0179661ed698.log",
+      "selected": 1,
+      "sha256": "69f870924c4df0d0da0528910aca83ca00f0c5c1ab2b1ca858bc3170ab6a971d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d6b017de80716d52.log",
+      "selected": 1,
+      "sha256": "857ce462174a68ac55fd4aa543a80a36f09c1053c919535cc33f7f7b3bb45a86"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-8030021c39739efc.log",
+      "selected": 1,
+      "sha256": "d0dd84427dcb5dd6fc6c50ba6a3be5dcab7aeb054f7d8c849d3ebf56c83473df"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4081b66f0ac23743.log",
+      "selected": 1,
+      "sha256": "4c26beaedbeee5b9d2d2c219d9b85a234082ff9d1ef87c5c94b7688ba93a893b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f20a0fd55f89285e.log",
+      "selected": 1,
+      "sha256": "3697356bdf19646f9de16120d4a0345760f320f3c4e66421a93e0e3dfe65b95c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-8f4befcca80075d4.log",
+      "selected": 1,
+      "sha256": "b46bb1fcccb9d0dcef491c5836d801a92960a091a2b6296017216be30b776e47"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-79e1b1c61ba8ae37.log",
+      "selected": 1,
+      "sha256": "9da55c15db9a5a25d0c454c957ef4d4c1ac0fa96095a5f0377146440d43c4a52"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0875e653fcb27d70.log",
+      "selected": 1,
+      "sha256": "6d82cfb32249c43c115fab65a21b3b474d8ca81fbec053cdfa0162adf5b8bb98"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-548aff20ef4ea395.log",
+      "selected": 1,
+      "sha256": "60bd33b034568c8cab1c3a6603f4eda04efbc6f743d8c9b6bf3662084c25ad69"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-7267290752392db5.log",
+      "selected": 1,
+      "sha256": "09bf80f0f5737d84c1bba00ff2e4dece9c21620e3945d43497eae59af6ca24ae"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f4feeeb4b95b45a8.log",
+      "selected": 1,
+      "sha256": "c0df227c3253edced12c815fc96a0300a47783a0ca89da29a74d8c5a7b46e012"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4191fbba582d6f4a.log",
+      "selected": 1,
+      "sha256": "88efdfa974bc2cad22da2969ee4bcae788bf14bc84a5d9232e863d6b334ab8bb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c3f8eff97d07ee6b.log",
+      "selected": 1,
+      "sha256": "15b553ed7d54938bdb15b955b5d1d265e753c8c210376d6d2f53fb578df2eab9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-370601c0a5fa7595.log",
+      "selected": 1,
+      "sha256": "510eb86c5511d9437ea39e5f823ad6abcacfc2d489466c9bd1a4ee6a28018504"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2f82cd7cbeeb1d1b.log",
+      "selected": 1,
+      "sha256": "4577b74336120d31aa58bb0f8ea47b8c7d5369883ef9b350b82165304d1d4312"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f8154802b3a39110.log",
+      "selected": 1,
+      "sha256": "d84f5a0ece8593546b75939f3c4191277f2d56b0007d1e957d57ee34b137e6b9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-8c8e5b23c9adb650.log",
+      "selected": 1,
+      "sha256": "1a7696bb05279cb1a73aa06377db4dc202345782ef936f5ab42030408a72a01b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-9ddff1e0838635c3.log",
+      "selected": 1,
+      "sha256": "4367e9fc0a284fc1a8f3a477790a6cae2ae7be9900e034c3ff6524e7815f63bc"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2660a0efad0169a5.log",
+      "selected": 1,
+      "sha256": "44af6606bc8d4c9aab54cfc533a23dc3f3532a3b73174dac6159f418cea5e121"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c94b231a8fb81ef4.log",
+      "selected": 1,
+      "sha256": "bb8dc80bc6851877cf0cd6bd0aef48f2d4021dc13c432ef84906d36d153cc180"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-6ab1502cc7800c94.log",
+      "selected": 1,
+      "sha256": "9914d932adbced67556e3d89d8fc8659aefc531d7818b73dd23929ba339515fb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4ca7bf54fbdfb5b3.log",
+      "selected": 1,
+      "sha256": "ed7cb2f1d00dcd7be35e4899615f33a868c92967f9c1d737f0b69f67260ae02c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-716745890bdbdeb4.log",
+      "selected": 1,
+      "sha256": "da5fff1e0d182235dc1a52a0a5089d95768b0195093b1ac11b3ade286fa3e2f2"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ef482af20725304c.log",
+      "selected": 1,
+      "sha256": "1b38469618ea8f893c6f1c2a52a74d2611d7673abfe45ef9531607c984966df8"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-cd0fb9aa4db6dbe5.log",
+      "selected": 1,
+      "sha256": "c2d06d104166b9e7c9f59ad6e9db9d72002eecf3be014efa0c62c86195871294"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b0ca94f1a3a6deb4.log",
+      "selected": 1,
+      "sha256": "3478c49a434b61e14e25639d9bad2d7bec0469d41e59c45cc1e9956b7b168bf5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e9cfe187f75cfede.log",
+      "selected": 1,
+      "sha256": "8059c1f710e84f0efd3b8b60dbd7a0eb6b8a8a8936e3aa3732c4b1065aa30e32"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-eaba9fdfcc1f83cc.log",
+      "selected": 1,
+      "sha256": "a96e7df984246c067614b4f8521e86bac899e0b303a9bb096772bc6a1ae90dbb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e2e03ffbd4d11996.log",
+      "selected": 1,
+      "sha256": "6669bd51848d3ffc0b323cceea55f7956fe4e34ba8cf246b89fbd639e8c2edb5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-6828750be6250d8b.log",
+      "selected": 1,
+      "sha256": "0e2ef1ba7ccdf04cd495a33698db22ac494b24804bad57a908497ab0f9493a41"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2b8fa9cbfe7935d6.log",
+      "selected": 1,
+      "sha256": "b0d80f8828750afb9e68d1ba3a5c2202c12b827b736e31f7d4e46b4b6efd434b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-1bf18da9c4541447.log",
+      "selected": 1,
+      "sha256": "4483d2ec4a5fa71735cd0f91282370a2571aaeb7456578f06f70cdc0b4db3a66"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-85aa258221967ed7.log",
+      "selected": 1,
+      "sha256": "5ecca6c7f23b7bd9e7d7e6cd9e34ea7a8e5231d22f556864f4f1b68aa28629f5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0aabe29d2016ee01.log",
+      "selected": 1,
+      "sha256": "bb89e1cb4df127436311312c3fe1f5cb1507e0b87c95de76af3655c2e897a412"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-21a402a17c13f0fb.log",
+      "selected": 1,
+      "sha256": "13861a75313ab6108d08bac3e47464b536e59be6b7501243541dd558826fd119"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-97986ce3f52d6d69.log",
+      "selected": 1,
+      "sha256": "2e78691d71e3c919c0bc8428df4a3313ef0650e8931b7883d2d0d80e3c59cfc0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-473189d0a9273cea.log",
+      "selected": 1,
+      "sha256": "4eab59766cbe287bdb5de2243bdfdbd00499624673df95ef903546b4ccad439a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f723c96da722390c.log",
+      "selected": 1,
+      "sha256": "3f20b43e304bad0abda647c759464db247fd1f8326fc6a66bdd5e57cfaaaff61"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3d75bd39bae04b5e.log",
+      "selected": 1,
+      "sha256": "22a54af374dd761c1e61225764ef196f624586a4403a8129f28ef31d85006c5d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f2735e814cb731e2.log",
+      "selected": 1,
+      "sha256": "517f5c8fbed3c05d46dc9d391bd8498095c4183d6defe595f32b2a57136bcd0c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f447041d2ee134d3.log",
+      "selected": 1,
+      "sha256": "b69870f0d4253979ca4e94cf3e17f3907cab28b090b3a2c6190b805f8442a291"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-9075b6a642021230.log",
+      "selected": 1,
+      "sha256": "1449a2a0040a42b26c635bfba229bbe1df742eeebadcf17ac8d88c0bc73e494d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-efd21041eac08de7.log",
+      "selected": 1,
+      "sha256": "99f73e34c6f90cb2023b7e3daa3ede666a2aa032d93334b11722f0c247d86954"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a4365264e5dec781.log",
+      "selected": 1,
+      "sha256": "d074493e8797446e1f50c9c7a47fe40e72532b826cbfac44f10ad8c224bf664d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ec537430968a2f82.log",
+      "selected": 1,
+      "sha256": "1920f7b986fcb1acd1b645b01cff4e89778e27bad54de16731c0bbfd3fea4bec"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-378057488436e9ec.log",
+      "selected": 1,
+      "sha256": "1ddf3650eff1cf18a17fb1e0c2ff66bd6912689be0077f1b1275728a75f0f752"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-45c4c402af037717.log",
+      "selected": 1,
+      "sha256": "58f79d4b8f775beaa973c7eefbabadbefa44a4e27434f916b57c11d9126356f0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-25e3f46b6df38ded.log",
+      "selected": 1,
+      "sha256": "6b48f74cc6c3466b60ed40b837a93eb9a07e2523a878852e02b22a30598c7aff"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-becfc0bdc640ed4f.log",
+      "selected": 1,
+      "sha256": "f3dd1ce13bb7f4f11e95b03c7b2b24b25902cfee2bbd773c2e07a5120437c3fc"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-cb169c5922b5af6e.log",
+      "selected": 1,
+      "sha256": "c897e48a959a2d5cefd03ead89b1d91c83968251ce4f77dbf5be0548b06ee60f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-6ba5e0ea5c7ae11b.log",
+      "selected": 1,
+      "sha256": "80cb97646b0b44bfae742add7ac3aa86dddef0cc71994714ce28718b9f0c57eb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e058b04e950cbea1.log",
+      "selected": 1,
+      "sha256": "c7fe65a7b787b2b1d6af396985e04493dc36eef517f12fd65b5be344056f10af"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-cb40a760d90d66b4.log",
+      "selected": 1,
+      "sha256": "dd9f4a45a1f5fdc1781b80a5979de2798eb2e166974d93de278829b283e6ea25"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-9f4fd0c27e647b38.log",
+      "selected": 1,
+      "sha256": "7da0067b8b5c0984ed16cd62c55ea5b164963fc26f04a748c71cd0686220a8ea"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a05b90532efa7a79.log",
+      "selected": 1,
+      "sha256": "1148965d06a044fefa4f7b777a6511a8cad36742521958d6f6b1c108495e006f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-1fe26667fa21c803.log",
+      "selected": 1,
+      "sha256": "fdf59aff4dda017c1c37d908c91df5260bc0415a831738c754fb35f23df9af61"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-6e466f41dd6f697d.log",
+      "selected": 1,
+      "sha256": "b6ffa0df6094b84ba3590ff50fd2c68760310bc9cbb2695d0a53b4d7ae4dbff4"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2c14a769ff536f95.log",
+      "selected": 1,
+      "sha256": "06b59290a81b496283a6216215883a7ecf78dc042b62a7236847d238cf9e77c5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b62474b9d46c2952.log",
+      "selected": 1,
+      "sha256": "8339a3e72d0b1978c35a13f88920d54465c56fcfadec0e6defb987070ffb22ae"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-833577088dc85f04.log",
+      "selected": 1,
+      "sha256": "97412ff33222a08b781836125cf3568d8d761c1b6392271ea6f39ccff3000833"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b8e759d660b7a593.log",
+      "selected": 1,
+      "sha256": "660cccd8a7d997bb094e8d640a9b49083c69e79dace65e878f03fef3053ff425"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-4f39b2b077f26f08.log",
+      "selected": 1,
+      "sha256": "48227c5c8c958654770ccee5e3108e18fbefe0cfe35dd66a82d6cb5133681485"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-425c34ea1fb2e7eb.log",
+      "selected": 1,
+      "sha256": "b0c62fb293ce0b2541523defa8e0cc4cf47e895b13e9733970e201142449d87b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-278d0a2454e70660.log",
+      "selected": 1,
+      "sha256": "37af99ed41651257850983d4a9475ab1ecb9d52664d4a509472576d92705bb6c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-15fed7fa7a623220.log",
+      "selected": 1,
+      "sha256": "88cfb78f99050d33ad84f830bea228228f4ca81829549f78a1a2412611b9c3e0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-5c8b65b876079926.log",
+      "selected": 1,
+      "sha256": "83b7e3c959fc9b8a74035b1eec62e2ad81c188be0fc1b19f901ac58a15dc953b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-dab71b447e9163d8.log",
+      "selected": 1,
+      "sha256": "c45ed8e1618c7748ab006db16bf1ac6ede906e2bb922019abbfbd673b0813214"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-46a37c0b3cb7e477.log",
+      "selected": 1,
+      "sha256": "c52f0df211f97594a0d9fcf009a83211d91ef60cc9161cb77145dd543d7a4ae6"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-7585d3dc9533430a.log",
+      "selected": 1,
+      "sha256": "2306ebf3208bfa1134bf29b029782960a435b4922b96098850ffd4c2722e9ccd"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-535eae9a513c7aa8.log",
+      "selected": 1,
+      "sha256": "c9b2a905d2ef84a5644484fef1285a53655f85caabf36f428ff5c5ac79a038f9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-226f31ce39d98695.log",
+      "selected": 1,
+      "sha256": "b62c7301173b76380a4d0923e74d9134004dbe2284df3916b051c1f1645f106e"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-43a5733a05c24b79.log",
+      "selected": 1,
+      "sha256": "26cf1e4e448d7e3ec80b1f8a8a8673cda280fd39ec47f316010730a04682e5eb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c443e92406ce5075.log",
+      "selected": 1,
+      "sha256": "abad0d1f0b17dc09175cf4833a746e48e78254e45932823188b726bf87b764bc"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e58445b9e695d1a3.log",
+      "selected": 1,
+      "sha256": "17857bb8d619d49cd1cb17cdc136ebbffe176966a4b85b0d71805c6569701f42"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-253d13278b67be5c.log",
+      "selected": 1,
+      "sha256": "2ca7e90b0a8321acb507958b5800e4091999ddfee8dca268e981cfe6186704fd"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-bfcc1a310afe2d56.log",
+      "selected": 1,
+      "sha256": "f864ac7b5340512d6ea1111480584e6469ddcec837ae2a5edcb7d085a035ab90"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d849ba2359be1ae2.log",
+      "selected": 1,
+      "sha256": "59b18fa9392d48828aae6ee85ea1e81a425101d0048d42728c4a385bbb2eba97"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ea005b25c3ebc857.log",
+      "selected": 1,
+      "sha256": "9d2e3210e87fd526c17db1805c0b7d492c65b99a19dd9cf2fe6ff2f34831c8bf"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e12f086464b03f7f.log",
+      "selected": 1,
+      "sha256": "9baf3ddf989f7165e76e5a493c9f3d2f1654fcd5d08cb2b8ae13849c67756baa"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-0290ca35b95134af.log",
+      "selected": 1,
+      "sha256": "3a8c7ae9d54b99ea914451a8fe5eec1dd69d45beacece00488332a6e8f58a110"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-71c0b30a79e0dbe4.log",
+      "selected": 1,
+      "sha256": "b624f370c576abd1751b6f42c13df4c85cb7f6b6651d329a178c122c5884b3ce"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c40f0c5ad4550b9a.log",
+      "selected": 1,
+      "sha256": "bedc2967fc9145cc63f1b37f0c7897c8a5559908030259c20d5a7175eb69de54"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-fcb6ff9ca878f47c.log",
+      "selected": 1,
+      "sha256": "fe9a39dec4b7259b308f0d3ab692a854ddd3b80f0255b3097330f76c33133e98"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d255b0755eadd6ad.log",
+      "selected": 1,
+      "sha256": "dea6dc970131e60eab37063f5327583be18b08ce5a2301ee07e01db7bad30bfe"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-3085a52a7b8a78ff.log",
+      "selected": 1,
+      "sha256": "7634267e4de13dfa19371b17ce1c6e9173c75c87bdf118355ba0d2423d17ddeb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-fd863e08214dc2ca.log",
+      "selected": 1,
+      "sha256": "30a9e9b738577a0dbadf05da89fb6d1b1b1fe9983c6b6b70fdadc0feab343c14"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b4e7a4ba2532ecfd.log",
+      "selected": 1,
+      "sha256": "dcec63f770206d79186c0f5f65f1072fc5ca9219d7520dedf72301d1c97adceb"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ffa8c54176660ef9.log",
+      "selected": 1,
+      "sha256": "106c64131c28784687f1b4f7520e24994fc6cf906065a4337cf3afb4f0adfb9e"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-25736893662542d1.log",
+      "selected": 1,
+      "sha256": "d69920d9848bbb131356a87c9532db09c8d1a31331be6a313a6fc6ee39dbc647"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b833b13dc56972f3.log",
+      "selected": 1,
+      "sha256": "a4bd3198bd137ab817c5d8b6e50127842da61786f9834f3c6baabb7e471cf8e1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-07c6db733b7a244a.log",
+      "selected": 1,
+      "sha256": "10542c940ea113498d3f587328bf4466426a9e861c355a4b9d147c4fbcd51d5e"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e82c81d2b7f61825.log",
+      "selected": 1,
+      "sha256": "411720002ddc95fc534f83a1b78e3dc9751c473c1675e52ee9646ae8f41df0cf"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-6639130896657f6b.log",
+      "selected": 1,
+      "sha256": "6cce631e9a2f85f1398f58bdc9039fc2a283b9e94771f464638599a2c11d2be2"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-f305802886f87356.log",
+      "selected": 1,
+      "sha256": "473dce2bdc68986567e325ff6ca0d7c244b27e3c18ec432f3946523b6c7d5a55"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-73b57181bc0c0a2b.log",
+      "selected": 1,
+      "sha256": "6f29276bc90e9e2cc1839ea684bfe748096d90453c8d1969eca1ce7d28b93a41"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a775dc2ad6ad8290.log",
+      "selected": 1,
+      "sha256": "7072992be2c300d37054290ec1a053a0cdae0513c20b3af49d92c7d2faca4bb3"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-8f31c7f7a07b4af8.log",
+      "selected": 1,
+      "sha256": "1eae7acd4c7379076d442fca25c92ecffc88c7eb6324edc557b720fe495591e8"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-9bba9f91a6668584.log",
+      "selected": 1,
+      "sha256": "232ed696ddee96f87efc43275e0fa1576ac193ee6f17b69f9d8eb75020a31cd2"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-38356075d63576d4.log",
+      "selected": 1,
+      "sha256": "63e9a6fccd610a79103423c33432685ecf4b156a1c3648054f3e3ea3a1359cf3"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b81d3a42828e7c34.log",
+      "selected": 1,
+      "sha256": "63071df1dff41f835d6b8051311b77b349b4f367fe4408513e405dfc9bb3ac8b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-23a02f0c0750df38.log",
+      "selected": 1,
+      "sha256": "915d4a9a8bfb03ebf81ae54a810f8e2461bfbaa905c5d218bc439b25164f0174"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-e8074abe60e5931a.log",
+      "selected": 1,
+      "sha256": "c4adfa5f13a6c1863d849d5fee969928b8d6a8aa2ba6bc08bad89a8a2cbbe0a7"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2fe131384bfffb79.log",
+      "selected": 1,
+      "sha256": "1e71130042c201557622b0a7de17b1a01b5a7dee8e1934f839196464d3daaecd"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-2c284e93acecf4dc.log",
+      "selected": 1,
+      "sha256": "fcf2e5b801e2ff89953aaef19128cca8cf9efa5578cb71dcac7f527cd70806c7"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-357f4b1de2ef49bb.log",
+      "selected": 1,
+      "sha256": "3ecba573701baaf6d757e6d58005a71714cb0f08d6b0682d0a9f85a6943ec7f9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-818f921f3c9c6a02.log",
+      "selected": 1,
+      "sha256": "faff1ea9c334dcbe127f21088ce8d08aebc8d756ee9c397060a6264501faef34"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ddb23c9746aa5e85.log",
+      "selected": 1,
+      "sha256": "f6ec5be5bfc906206b3170ac8f1b3a23b768fa5b28fffcbdcdbab780696a7ae1"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-a5c437efb75cd713.log",
+      "selected": 1,
+      "sha256": "30bdeaec59a5b1b29ceaf84f2fe5cd490dafcedbb5ea43929decebcb3ea7dd90"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-11a053bedf60b797.log",
+      "selected": 1,
+      "sha256": "e602cac90efe7f1fd1cf5fc86a08e2f2f4ceac03860ff7b6c8336a7d87bf1bb4"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-b656c48c0f669e89.log",
+      "selected": 1,
+      "sha256": "2f078dcb5f235a3abed91d99d221416045c3f3e01f9841baaca33047f59ada43"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-c05150f2c55ea775.log",
+      "selected": 1,
+      "sha256": "9a0a87706d1fc1e208f1a3716f1945a541a29d40edfddc7fc9b420e12991d9f0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-bc6b90d2885c8b5a.log",
+      "selected": 1,
+      "sha256": "9a58834bbbe6fb312ac252b95b4b2e40c5801c1c59a91f0c83068965bd228996"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-fc5f3d753f90343b.log",
+      "selected": 1,
+      "sha256": "12cf69079a7ad76436b8653a0ed9ce7408b7b7999b65e1d41bc30f31a4185802"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-01accfcd953678e8.log",
+      "selected": 1,
+      "sha256": "5e4ed0ec3abb39ccee0d4d2219a074730dbcddbbbc9f38c0b4de7d6fd8bec9c0"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-738a679cd5c5765a.log",
+      "selected": 1,
+      "sha256": "5b376c47170d02975eb7cd81d0c8e0fe958fd50bae09b6ae1007373933f68791"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ed0755a06b654ec6.log",
+      "selected": 1,
+      "sha256": "3b228f658ea987de8f6bed35180dc13b7c3f083dda47aaec376c611065c6aa4a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-ff37a3232f396804.log",
+      "selected": 1,
+      "sha256": "f22aebd3fbf1df1fb95f5996a806a2ee892b2dd975e30c83fb06cb3d52f0e071"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/bin-lay-ibus-engine-d8561c6c5386298a.log",
+      "selected": 1,
+      "sha256": "f2533e2f2e29f57456dbd8be6bee2380c130187e170150cda64eb4f6fab43140"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-l11-serve.log",
+      "selected": 6,
+      "sha256": "22acefa9af50ed6ac996c019f1ef895380d07e1b36a863b22b0a5d3f8d569099"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-memory-report.log",
+      "selected": 1,
+      "sha256": "8e29366705870ca8fef9aa15bfd2ae53d83fdaf9b7ec494f342601b90caa0cd8"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-nanda-dataset.log",
+      "selected": 1,
+      "sha256": "7d085824c2e4f69eb2c3ec084089c2a99b9c82df9b7794932bf463d2c923394b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-nanda-wave-eval.log",
+      "selected": 42,
+      "sha256": "2b4b5888e744dca05652fed4999bb9f2d4a9b9379b346430503b5be311775779"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-nanda-wave-train.log",
+      "selected": 44,
+      "sha256": "2cc2224d2c46cea364972427b7f25a1a78b53402ceaddb26f3ea598e2353f215"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay-test-input.log",
+      "selected": 1,
+      "sha256": "12fb8652656df8c3796263799cc75f42d8da3249a7d0575bed06ab9e4566f836"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/bin-lay_output_transaction_microproof.log",
+      "selected": 8,
+      "sha256": "8f0bf12f7292a0b1dc34b8ff2c332c38a25c0374f8408a1f42b61ba7c81bc2a3"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/lib-lay.log",
+      "selected": 1807,
+      "sha256": "cf602109a266b19ce011f6a69fd2c54c9a99b973ef568b401f79a2f3da76615b"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-065a84e424504e2f.log",
+      "selected": 1,
+      "sha256": "456f036967d7d282cef75108126feba7a8cfca8fee764cd1e7aaab296c8e7b02"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-17e5e8bcfcde2cb4.log",
+      "selected": 1,
+      "sha256": "438735d7bccbd310b1087b929648539facb937d9f1ea927bb41811966e1301f3"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-d1d7934c8f904909.log",
+      "selected": 1,
+      "sha256": "f4d79f0386a627ba982da20851f3a4e10012bd13c89a81eea305e76e801fd720"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-c2c4c24eba8af359.log",
+      "selected": 1,
+      "sha256": "127b82aafa135d25ff08f2e0f4d315f2c3fa7871980c1618992530a75972ab2d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-6588e327db4f39ea.log",
+      "selected": 1,
+      "sha256": "193db691bd895201fd4cea985f1a356598cf6f86d5a61c028cbed46bf6ab5e1c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-16e64182cd79108e.log",
+      "selected": 1,
+      "sha256": "4d906800f38b79a4a17b1ff73e8b7f9913e48080bf5eeee8745343bbc297b87c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-ab0c9d8e5719bd5b.log",
+      "selected": 1,
+      "sha256": "caa327f44098247b2b391a224087fb952e91614c075af294ab50123b3608bfc6"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-0a4efdfb8044d7ce.log",
+      "selected": 1,
+      "sha256": "cc9753ffefd2b54b1fc988eb0efaa1df9bc9483d242b87cabe686d6fd407cc8c"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-f81818c8ef61501d.log",
+      "selected": 1,
+      "sha256": "fd8019ce8961e68702a85157f2e751d7e2e122193bb31cd4eea769dbe50ea407"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/lib-lay-dc9e8b6480877ce6.log",
+      "selected": 1,
+      "sha256": "8046c62050faaaca4a8d437a864a344bea0877abb9130887cdb6335f02a37b57"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-correction_gate_metrics.log",
+      "selected": 1,
+      "sha256": "411b59709934f7a470abea2293cdeeaef269b5bdf238c74510c7092ce1e11cc8"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-decoder_alternating_stress.log",
+      "selected": 1,
+      "sha256": "f5813cb3a725846416ab5e0281cfaea8f938bb8bcacd97d8d1519658f736dd48"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-decoder_transition_regression.log",
+      "selected": 5,
+      "sha256": "8a338dac39c5ae5da6a72bbc3131a782ff51bc18f887e444e4e61d91369890c5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-ime_space_boundary_contract.log",
+      "selected": 1,
+      "sha256": "9b7a9969e1eef21c9c643c616c912713c2072e4aba36ed0994f90911394f637a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-input_gate_operator_contract.log",
+      "selected": 2,
+      "sha256": "ca97fd570f1c8da60ea6c24a59dece0f0a37996f3208b7a5d65a836257a07bb9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-input_gate_space_contract.log",
+      "selected": 3,
+      "sha256": "fea63caa81500ca18c4dc60bdd6b94591b479633d52896adfe078a882ad4af29"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/test-input_gate_space_contract-46d6f999adfc5f10.log",
+      "selected": 1,
+      "sha256": "24a352ef142375475e02df64299b0dd296a4c3622f10b099d11a7f08d87271df"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/test-input_gate_space_contract-dce380678dfeaf8a.log",
+      "selected": 1,
+      "sha256": "36da5de1998f5011ff63f77ddc95c8d5869b757e2ac4641d768147796159b71a"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/process/test-input_gate_space_contract-be319cb602756364.log",
+      "selected": 1,
+      "sha256": "fde0823a8111e5b33a4d7f38c270797a8442ecd84622c44c62caa8ebdd3146e9"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-l3_context_feedback_overlay_contract.log",
+      "selected": 1,
+      "sha256": "d9474acc6baf213b6e891035e12ee8361906c13050fc0971abbc311e1e88153d"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-l3_context_metrics_contract.log",
+      "selected": 2,
+      "sha256": "add5edc65dae35eedb4174e8938a054575f7a82446216180ce60de11aa5c6a9f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-l3_online_resource_contract.log",
+      "selected": 2,
+      "sha256": "d57a6f36f5ac692ea8ca0bfd7560d99f0acf2d8f12960f2e6385f7bc9127ad10"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-l4_feedback_memory_contract.log",
+      "selected": 1,
+      "sha256": "6af5f04755232d8dbf5f8fa812bdcb092b925f55ae2316a5e09c920df739ac14"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-live_candidate_gate_metrics.log",
+      "selected": 6,
+      "sha256": "924246510cc54897782f672a0d34890f2cd99ee6957ff3d3219bfd55851d9def"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-protected_words_runtime.log",
+      "selected": 2,
+      "sha256": "c9ee243284ac583a4a96e1cf1df2da06ceefa4cd3e8313c2101d1838f097094f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-restore_word_cli.log",
+      "selected": 4,
+      "sha256": "7b79c06e0a78de6a8b54fdc736a9219fb4f23065b3bb3c1d8742d7472321c222"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-space_boundary_shift_mechanism.log",
+      "selected": 7,
+      "sha256": "881b5b5ba16bda58fd3c1a7377b6847420e0d89a8b2470ce127ac9b2a4a9ced8"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-td113_hybrid_source_contract.log",
+      "selected": 7,
+      "sha256": "7c88ce8f6f34cb679be65b3a4c658ca5c1aea98630753a612a6538b30fa697a5"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-text_edit_gate_contract.log",
+      "selected": 5,
+      "sha256": "d6998e091a813cec0e2ee8b05ca94e0edcc90fede2bf1be50e1df6ce8c0542ef"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-text_mutation_monopoly_contract.log",
+      "selected": 16,
+      "sha256": "499ed8fab84b911abf1c93bf3d7889e492f35e2613043feb0bd2f2faa6432946"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-tray_ui_contract.log",
+      "selected": 17,
+      "sha256": "dfd5407cec395bf5c9d46968ae23045b0a9d311ff3a70f65c5a902ce0f919457"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-typing_assist_alternating_stress.log",
+      "selected": 1,
+      "sha256": "5d2d061a8c89e2eb74c18cc1dcf33f645410293c011674a0d09cd70d677e334f"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-typing_assist_mixed_corpus.log",
+      "selected": 23,
+      "sha256": "034f8477487d166152dea67d7946fb5acbe1ade76defcf60d973e9ea92ec1c40"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-typing_assist_short_alternating.log",
+      "selected": 4,
+      "sha256": "802a006582c0114906b969df63f66252ab880eaf5fd7f0538fbc3a2eae8fc9d8"
+    },
+    {
+      "failed": 0,
+      "path": "tests/logs/test-typing_transition_authority_contract.log",
+      "selected": 21,
+      "sha256": "5aafb0ea41a1bad44bd55c8f415ede0b7afa1a7e6b4aadef09a76c4b81f458a9"
+    }
+  ],
+  "manifest_sha256": "d25685cfce7655d0a89c59209689cf8ba83a287512c44c46d65d703361801788",
+  "mismatches": [],
+  "original_archive_sha256": "1d9baa39fb90e8ae4fe1980c1fe5f298075b51545522f6b60d58a1599465d2f6",
+  "original_command_returncode": 1,
+  "original_command_verdict": "FAIL",
+  "original_lane_receipt_sha256": "b02aa3720ee5c1b86b8edb02c85f1ffed11335afe5a2eec6b2e0159c5c5b3e30",
+  "original_lane_verdict": "BLOCKED_CONTRACT",
+  "original_result_sha256": "5aec324a3f5181469a37e86ec16ef41ec7e2f5984d06d1db94e547251356b183",
+  "passed": 3045,
+  "preserved_observation_path": "tech_debt/evidence/v28-ru-en-zero-failure-observation-v1.json",
+  "preserved_observation_sha256": "0bcddcfabdb78fd2bbbaa8d37222eb076eed490a9b805e73dc4a73ccc99ecf3c",
+  "runtime_authority_changed": false,
+  "schema": "lay.td136.body-proof-metadata-adjudication.v1",
+  "scope": "Replay completed exact harness identities and admit current metadata; no new test execution, no original-command PASS, no native/quality/performance claim.",
+  "selected": 3045,
+  "selected_by_lane": {
+    "correctness": 3009,
+    "package": 36
+  },
+  "separately_validated_metadata": [
+    "scripts/test-lanes/known_failures.json",
+    "src/generated/architecture_graph_receipt.json"
+  ],
+  "source_head": "60e0d095f4468d744762831d56336fe428583fb4",
+  "status": "PASS_BODY_REUSE_AND_METADATA_ADMISSION",
+  "targets": 33,
+  "verified_source_files": 1176,
+  "receipts": {
+    "original_automatic_check": {
+      "path": "/home/ubu/.cache/lay/development/run-zib5c0pj/RESULT.json",
+      "sha256": "5aec324a3f5181469a37e86ec16ef41ec7e2f5984d06d1db94e547251356b183",
+      "verdict": "FAIL",
+      "returncode": 1
+    },
+    "original_request": {
+      "path": "/home/ubu/.cache/lay/development/run-zib5c0pj/request.json",
+      "sha256": "e689bd7f957f5260a541336f5f57dd770cd86904d7603b558838c2a4d31d9b2d"
+    },
+    "retained_log_bundle": {
+      "path": "/home/ubu/.cache/lay/development/td136-lane-logs-20261009.tar",
+      "sha256": "6a4a5c9cc50d008c8de7158f5b755d820653e05b86a031d55dd496e2aff43650"
+    },
+    "guarded_admission": {
+      "path": "/home/ubu/.cache/lay/development/tab-lane-admission-deq2sl20/RESULT.json",
+      "sha256": "544fb535382de35bf41e7dcb0da6ab6c44a2a4db44e3151e0d5373582ad6b55c",
+      "exit_code": 0
+    },
+    "admission_details": {
+      "path": "/home/ubu/.cache/lay/development/tab-lane-admission-deq2sl20/ADJUDICATION.json",
+      "sha256": "e616da26680bcd7c4f756b9a941b4f598914f1e5984f3dce58e36cf34221b8cb"
+    },
+    "canon": {
+      "path": "/home/ubu/.cache/lay/development/tab-lane-admission-deq2sl20/CANON_RESULT.json",
+      "sha256": "81231f4ae00d98f9523daf65e0addf72b80f4c30c631364c5fec171ce066b9df",
+      "status": "PASS",
+      "errors": []
+    },
+    "private_replay_script": {
+      "path": "/home/ubu/.cache/lay/development/td136-lane-admission-20261009.py",
+      "sha256": "8713ff951dac11ba7824e158ed5e7dfd1cbb57ddb831d834445cd4875f1419c0"
+    }
+  },
+  "source_selector": "All archived/current file identities and modes below scripts/src/tests/data/examples/benches/.cargo or Cargo.toml/Cargo.lock/build.rs, excluding only the known ledger and generated architecture receipt; fresh staged source has no additional relevant files. Both metadata files have separate admission/canon/graph/compiled checks.",
+  "execution_completion_evidence": "All 33 target completions precede the sole ledger error. Unchanged run_non_timing reaches ledger admission only after all run_target/run_harness status-coverage/exit checks and source-before/after equality. Retained logs independently have exact selected identities, ok statuses and matching success summaries. No original SUMMARY or RESULT is rewritten.",
+  "post_metadata_limits": [
+    "The original automatic check remains FAIL/BLOCKED_CONTRACT.",
+    "Current historical ledger observation remains immutable and is not the current proof.",
+    "Adjudication reuses completed bodies; it does not execute tests or create a fresh all-command PASS.",
+    "Final graph/compiled receipt checks and implementation review pass2 are pending at this packet cutoff."
+  ]
+}

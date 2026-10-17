@@ -344,6 +344,10 @@ impl LayIbusEngine {
         self.layout_gesture.shift_pressed_at = speculative.layout_gesture.shift_pressed_at;
         self.layout_gesture.last_shift_release_at =
             speculative.layout_gesture.last_shift_release_at;
+        self.layout_gesture.space_pressed = speculative.layout_gesture.space_pressed;
+        self.layout_gesture.space_cancelled = speculative.layout_gesture.space_cancelled;
+        self.layout_gesture.last_space_release_at =
+            speculative.layout_gesture.last_space_release_at;
         self.layout_gesture.alt_completion_active =
             speculative.layout_gesture.alt_completion_active;
         self.layout_gesture.alt_used_as_modifier = speculative.layout_gesture.alt_used_as_modifier;
@@ -376,6 +380,12 @@ impl LayIbusEngine {
             return;
         }
         self.backspace_committed_tail_only();
+        // Retain observation state only after the same validated native pop;
+        // it grants no output effects or learning from speculative submission.
+        self.committed_tail.pending_completion_learning = speculative
+            .committed_tail
+            .pending_completion_learning
+            .clone();
     }
 
     fn commit_atomic_speculation(
@@ -484,7 +494,11 @@ impl LayIbusEngine {
             self.exact_manual_target_snapshot = None;
             self.observe_visible_postcondition();
         }
+        if self.config.trigger == "double-space" {
+            self.publish_shift_gesture_handoff();
+        }
         self.apply_deferred_layout_actions();
+        self.confirm_manual_autocorrection_restoration();
         self.apply_deferred_learning_actions();
         true
     }
@@ -495,14 +509,39 @@ impl LayIbusEngine {
         rejected: &str,
         transition: lay::typing_cpu::ObservedSystemTransition,
     ) {
+        self.record_system_revert_evidence(original, rejected, transition, false);
+    }
+
+    pub(super) fn record_observed_manual_restoration(&mut self, original: &str, rejected: &str) {
+        self.record_system_revert_evidence(
+            original,
+            rejected,
+            lay::typing_cpu::ObservedSystemTransition::Correction,
+            true,
+        );
+    }
+
+    fn record_system_revert_evidence(
+        &mut self,
+        original: &str,
+        rejected: &str,
+        transition: lay::typing_cpu::ObservedSystemTransition,
+        restoration_observed: bool,
+    ) {
+        if !self.content_allows_personalization() {
+            return;
+        }
         if self.atomic.speculation {
             self.atomic.deferred_learning_actions.push(
                 DeferredLearningAction::RevertedSystemApply {
                     original: original.to_string(),
                     rejected: rejected.to_string(),
                     transition,
+                    restoration_observed,
                 },
             );
+        } else if restoration_observed {
+            lay::typing_cpu::TypingCpu::record_observed_manual_restoration(original, rejected);
         } else {
             lay::typing_cpu::TypingCpu::record_reverted_system_apply(
                 original, rejected, transition,
@@ -511,12 +550,17 @@ impl LayIbusEngine {
     }
 
     fn apply_deferred_learning_actions(&mut self) {
+        if !self.content_allows_personalization() {
+            self.atomic.deferred_learning_actions.clear();
+            return;
+        }
         for action in std::mem::take(&mut self.atomic.deferred_learning_actions) {
             match action {
                 DeferredLearningAction::RevertedSystemApply {
                     original,
                     rejected,
                     transition,
+                    restoration_observed,
                 } => {
                     #[cfg(test)]
                     self.atomic
@@ -524,9 +568,15 @@ impl LayIbusEngine {
                         .lock()
                         .expect("atomic feedback events")
                         .push("reverted");
-                    lay::typing_cpu::TypingCpu::record_reverted_system_apply(
-                        &original, &rejected, transition,
-                    )
+                    if restoration_observed {
+                        lay::typing_cpu::TypingCpu::record_observed_manual_restoration(
+                            &original, &rejected,
+                        );
+                    } else {
+                        lay::typing_cpu::TypingCpu::record_reverted_system_apply(
+                            &original, &rejected, transition,
+                        );
+                    }
                 }
             }
         }
@@ -614,6 +664,7 @@ pub(crate) fn td120_test_defer_reverted_feedback_on_pending(engine: &LayIbusEngi
             original: "source".to_string(),
             rejected: "target".to_string(),
             transition: lay::typing_cpu::ObservedSystemTransition::Correction,
+            restoration_observed: false,
         });
 }
 
@@ -642,6 +693,324 @@ mod tests {
         );
         assert!(engine.bind_focus_path());
         engine
+    }
+
+    #[test]
+    fn atomic_manual_completed_tail_keeps_the_existing_frame_executor() {
+        let mut live = engine();
+        live.set_client_capabilities(crate::window_interaction::IBUS_CAP_SURROUNDING_TEXT);
+        live.config.auto_switch_layout = false;
+        live.layout_gesture.layout_is_ru = false;
+        live.committed_tail.buffer = "ghbdtn".into();
+        let mut visible = "ghbdtn".to_string();
+        let mut prior = (RECEIPT_NONE, 0, Vec::new());
+        for index in 0..3 {
+            let cursor = visible.chars().count() as u32;
+            live.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                visible.clone(),
+                cursor,
+                cursor,
+            )));
+            let transaction = 1800 + index;
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                crate::protocol::KEY_SPACE,
+                57,
+                if index % 2 == 0 {
+                    0
+                } else {
+                    crate::protocol::RELEASE_MASK
+                },
+                (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                prior,
+            ))
+            .unwrap();
+            for (_, value) in proposal.1.iter().filter(|(tag, _)| *tag == 1) {
+                visible.push_str(&String::try_from(value.clone()).unwrap());
+            }
+            prior = match proposal.0 {
+                PROPOSAL_FRAME_READY => {
+                    (RECEIPT_SUBMITTED_ATOMIC, transaction, vec![7; DIGEST_BYTES])
+                }
+                PROPOSAL_CONSUMED_NO_EFFECT => (
+                    RECEIPT_CONSUMED_NO_EFFECT,
+                    transaction,
+                    vec![7; DIGEST_BYTES],
+                ),
+                _ => (RECEIPT_NONE, 0, Vec::new()),
+            };
+        }
+        assert!(live.settle_atomic_pending(41, &prior));
+        assert_eq!(visible, "ghbdtn  ");
+        live.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(visible, 8, 8)));
+        live.atomic.speculation = true;
+        let mut builder = AtomicEffectBuilder::default();
+        let (target, receipt) =
+            zbus::block_on(live.manual_toggle_active_text_target_with_disposition(
+                &mut EngineOutput::atomic(&mut builder),
+            ))
+            .unwrap();
+        assert_eq!(target,Some(true), "receipt={receipt:?} authority={:?} known={} active={} spec={} layout_ru={} snapshot={:?}", live.manual_toggle_authority(), live.context_word_is_known(), live.atomic.active, live.atomic.speculation, live.layout_gesture.layout_is_ru, live.client_context.surrounding_text_snapshot);
+        assert_eq!(
+            receipt,
+            crate::window_interaction::ExecutionReceipt::LocalComplete
+        );
+        let proposal = builder.finish(true);
+        assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+        assert_eq!(proposal.1.iter().filter(|(tag, _)| *tag == 2).count(), 1);
+        let commits: Vec<String> = proposal
+            .1
+            .iter()
+            .filter(|(tag, _)| *tag == 1)
+            .map(|(_, v)| String::try_from(v.clone()).unwrap())
+            .collect();
+        assert_eq!(commits, ["привет  "]);
+        assert_eq!(live.committed_tail.buffer, "привет  ");
+    }
+
+    #[test]
+    fn double_space_atomic_frames_preserve_four_spaces_and_two_commands() {
+        let mut live = engine();
+        live.config.trigger = "double-space".into();
+        live.set_client_capabilities(crate::window_interaction::IBUS_CAP_SURROUNDING_TEXT);
+        live.committed_tail.buffer = "привет".into();
+        live.composition.word_input_mode = Some(crate::engine::WordInputMode::ManagedCommit);
+        let mut visible = "привет".to_string();
+        let mut prior = (RECEIPT_NONE, 0, Vec::new());
+        let mut commands = 0;
+        for index in 0..8 {
+            let cursor = visible.chars().count() as u32;
+            live.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                visible.clone(),
+                cursor,
+                cursor,
+            )));
+            let transaction = 1600 + index;
+            let state = if index % 2 == 0 {
+                0
+            } else {
+                crate::protocol::RELEASE_MASK
+            };
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                crate::protocol::KEY_SPACE,
+                57,
+                state,
+                (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                prior,
+            ))
+            .unwrap();
+            let mut deleted = false;
+            for (tag, value) in &proposal.1 {
+                if *tag == 2 {
+                    let zbus::zvariant::Value::Structure(structure) = &**value else {
+                        panic!("delete structure")
+                    };
+                    let fields = structure.fields();
+                    let (zbus::zvariant::Value::I32(offset), zbus::zvariant::Value::U32(count)) =
+                        (&fields[0], &fields[1])
+                    else {
+                        panic!("delete range")
+                    };
+                    assert_eq!(*offset, -(*count as i32));
+                    let mut chars: Vec<_> = visible.chars().collect();
+                    assert!(*count as usize <= chars.len());
+                    chars.truncate(chars.len() - *count as usize);
+                    visible = chars.into_iter().collect();
+                    deleted = true;
+                } else if *tag == 1 {
+                    visible.push_str(&String::try_from(value.clone()).unwrap());
+                }
+            }
+            if deleted {
+                commands += 1;
+                assert_eq!(
+                    index % 4,
+                    3,
+                    "ordinary Space cannot replay a completed word"
+                );
+            }
+            prior = match proposal.0 {
+                PROPOSAL_FRAME_READY => {
+                    (RECEIPT_SUBMITTED_ATOMIC, transaction, vec![7; DIGEST_BYTES])
+                }
+                PROPOSAL_CONSUMED_NO_EFFECT => (
+                    RECEIPT_CONSUMED_NO_EFFECT,
+                    transaction,
+                    vec![7; DIGEST_BYTES],
+                ),
+                PROPOSAL_NATIVE_UNHANDLED => (RECEIPT_NONE, 0, Vec::new()),
+                _ => panic!("proposal disposition"),
+            };
+        }
+        assert!(live.settle_atomic_pending(41, &prior));
+        assert_eq!(commands, 2);
+        assert_eq!(visible, "привет    ");
+        assert_eq!(live.committed_tail.buffer, visible);
+        assert!(!live.layout_gesture.shift_active);
+    }
+
+    #[test]
+    fn rejected_atomic_space_press_cannot_arm_a_future_pair() {
+        let mut live = engine();
+        live.config.trigger = "double-space".into();
+        live.committed_tail.buffer = "слово".into();
+        let proposal = zbus::block_on(live.process_atomic_key_event(
+            crate::protocol::KEY_SPACE,
+            57,
+            0,
+            (1700, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+            capability(),
+            (RECEIPT_NONE, 0, Vec::new()),
+        ))
+        .unwrap();
+        assert_eq!(proposal.0, PROPOSAL_FRAME_READY);
+        assert!(!live.layout_gesture.space_pressed);
+        assert!(live.settle_atomic_pending(
+            41,
+            &(RECEIPT_REFUSED_ZERO_EFFECT, 1700, vec![7; DIGEST_BYTES])
+        ));
+        assert!(!live.layout_gesture.space_pressed);
+        assert!(live.layout_gesture.last_space_release_at.is_none());
+        assert_eq!(live.committed_tail.buffer, "слово");
+    }
+
+    #[test]
+    fn atomic_native_backspaces_retain_observed_autocorrection_learning() {
+        use crate::engine::{PendingSystemOutcomeFeedback, SystemOutcomeKind};
+        use lay::text_edit::VisibleTailSource;
+        let mut live = engine();
+        live.committed_tail.buffer = "Хунту ".into();
+        live.record_observed_system_outcome(Some(&PendingSystemOutcomeFeedback {
+            original: "Хунлу".into(),
+            replacement: "Хунту ".into(),
+            source: VisibleTailSource::ImeCommittedTail,
+            kind: SystemOutcomeKind::Correction,
+        }));
+        for transaction in 101..=102 {
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                KEY_BACKSPACE,
+                14,
+                0,
+                (transaction, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                (RECEIPT_NONE, 0, Vec::new()),
+            ))
+            .expect("native backspace");
+            assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
+            assert!(proposal.1.is_empty());
+            assert!(live
+                .committed_tail
+                .pending_completion_learning
+                .as_ref()
+                .is_some_and(|pending| pending.editing));
+        }
+        assert_eq!(live.committed_tail.buffer, "Хунт");
+        assert!(live.atomic.deferred_learning_actions.is_empty());
+    }
+
+    #[test]
+    fn private_system_and_deferred_sinks_keep_enabled_public_controls() {
+        use crate::engine::{PendingSystemOutcomeFeedback, SystemOutcomeKind};
+        use lay::text_edit::VisibleTailSource;
+        let stamp = std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos();
+        let directory = std::env::temp_dir().join(format!(
+            "lay-private-writers-{}-{stamp}",
+            std::process::id()
+        ));
+        std::fs::create_dir(&directory).unwrap();
+        let names = [
+            ("LAY_NANDA_WORD_USAGE_EVENTS", "events.jsonl"),
+            ("LAY_NANDA_WORD_USAGE_COUNTS", "counts.json"),
+            ("LAY_NANDA_WORD_USAGE_FEEDBACK_COUNTS", "feedback.json"),
+            ("LAY_NANDA_USAGE_PRIOR", "legacy.json"),
+            ("LAY_L4_CROSS_SCENE_INBOX", "l4-inbox"),
+        ];
+        let previous: Vec<_> = names
+            .iter()
+            .map(|(name, _)| (*name, std::env::var_os(name)))
+            .collect();
+        for (name, file) in names {
+            std::env::set_var(name, directory.join(file));
+        }
+        assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+        for private in [true, false] {
+            let mut engine = engine();
+            engine.config.learning_log = true;
+            engine.config.nanda_precognition = true;
+            engine.config.debug_action_log = true;
+            engine.config.correction_safety = "experimental".into();
+            lay::config::publish_runtime_config(&engine.config);
+            engine.set_content_type_state(0, if private { 2112 } else { 0 });
+            assert!(engine.context_word_is_known());
+            for kind in [
+                SystemOutcomeKind::LayoutProjection,
+                SystemOutcomeKind::Correction,
+            ] {
+                engine.record_observed_system_outcome(Some(&PendingSystemOutcomeFeedback {
+                    original: "ghbdtn".into(),
+                    replacement: "привет".into(),
+                    source: VisibleTailSource::ImeCommittedTail,
+                    kind,
+                }));
+            }
+            engine.record_reverted_system_apply(
+                "ghbdtn",
+                "привет",
+                lay::typing_cpu::ObservedSystemTransition::Correction,
+            );
+            // A queue prepared before a metadata change must also be dropped.
+            engine.atomic.deferred_learning_actions.push(
+                DeferredLearningAction::RevertedSystemApply {
+                    original: "source".into(),
+                    rejected: "target".into(),
+                    transition: lay::typing_cpu::ObservedSystemTransition::Correction,
+                    restoration_observed: false,
+                },
+            );
+            engine.apply_deferred_learning_actions();
+            assert!(engine.atomic.deferred_learning_actions.is_empty());
+            assert_eq!(
+                engine
+                    .atomic
+                    .settlement_feedback_events
+                    .lock()
+                    .unwrap()
+                    .as_slice(),
+                if private { &[][..] } else { &["reverted"][..] }
+            );
+            std::thread::sleep(std::time::Duration::from_millis(1300));
+            if private {
+                for (_, file) in names {
+                    assert!(!directory.join(file).exists(), "private wrote {file}");
+                }
+                assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
+            }
+        }
+        let events = std::fs::read_to_string(directory.join("events.jsonl")).unwrap();
+        let rows: Vec<serde_json::Value> = events
+            .lines()
+            .map(|line| serde_json::from_str(line).unwrap())
+            .collect();
+        assert!(
+            rows.len() >= 4,
+            "enabled public writers must emit complete events: {events}"
+        );
+        assert!(
+            events.contains("привет") && events.contains("target"),
+            "enabled public system/deferred writers must persist real events: {events}"
+        );
+        for (name, value) in previous {
+            if let Some(value) = value {
+                std::env::set_var(name, value);
+            } else {
+                std::env::remove_var(name);
+            }
+        }
+        std::fs::remove_dir_all(directory).unwrap();
     }
 
     fn atomic_base(engine: &LayIbusEngine) -> AtomicBaseSnapshot {

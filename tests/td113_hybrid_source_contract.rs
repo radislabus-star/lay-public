@@ -181,6 +181,82 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             .find(|check| check["id"].as_str() == Some(baseline_id))
             .unwrap_or_else(|| panic!("baseline check {baseline_id:?}"));
 
+        if baseline_id == "text-edit-gate" {
+            const DECISION: &str =
+                "docs/architecture/decisions/2026-10-07-space-boundary-authority-scope.json";
+            let decision_path = Path::new(ROOT).join(DECISION);
+            assert_eq!(
+                sha256(&decision_path),
+                "1121e41ad3fded93cb865e0ba74babfa770d16c9374cdb06af3bb04510af6064"
+            );
+            let decision: serde_json::Value =
+                serde_json::from_str(&read(DECISION)).expect("boundary scope decision");
+            assert_eq!(decision["schema"], "lay.architecture-decision.v1");
+            assert_eq!(decision["runtime_authority_changed"], false);
+            assert_eq!(decision["source_review"]["verdict"], "PASS");
+            assert_eq!(
+                decision["source_review"]["reviewer"],
+                "/root/boundary_scope_review"
+            );
+            let predecessor = &decision["predecessor"];
+            assert_eq!(
+                predecessor["manifest"],
+                "tech_debt/evidence/td113-implementation-preflight-v4.json"
+            );
+            assert_eq!(
+                predecessor["manifest_sha256"].as_str(),
+                Some(sha256(&manifest_path).as_str())
+            );
+            assert_eq!(predecessor["baseline_id"].as_str(), Some(baseline_id));
+            assert_eq!(baseline["path"], "../../src/text_edit/gate.rs");
+            assert_eq!(predecessor["path"], "src/text_edit/gate.rs");
+            assert_eq!(predecessor["sha256"], baseline["expect"]["sha256"]);
+            assert_eq!(predecessor["mode"], baseline["expect"]["mode"]);
+            let successor = &decision["successor"];
+            assert_eq!(successor["path"], predecessor["path"]);
+            assert_eq!(successor["mode"], predecessor["mode"]);
+            const CLIENT_COMMIT_DECISION: &str =
+                "docs/architecture/decisions/2026-10-08-space-boundary-client-commit-order.json";
+            assert_eq!(
+                sha256(&Path::new(ROOT).join(CLIENT_COMMIT_DECISION)),
+                "374db00b4128dd3cbc74875aab6cc2e866965dd86a2ae84cd3042d66facfbd43"
+            );
+            let client_commit: serde_json::Value =
+                serde_json::from_str(&read(CLIENT_COMMIT_DECISION))
+                    .expect("client commit successor decision");
+            assert_eq!(client_commit["schema"], "lay.architecture-decision.v1");
+            assert_eq!(client_commit["runtime_authority_changed"], false);
+            let binding = &client_commit["protected_artifact_successor"];
+            assert_eq!(binding["predecessor"]["decision"], DECISION);
+            assert_eq!(
+                binding["predecessor"]["decision_sha256"].as_str(),
+                Some(sha256(&decision_path).as_str())
+            );
+            for field in ["path", "sha256", "mode"] {
+                assert_eq!(binding["predecessor"][field], successor[field]);
+            }
+            assert_eq!(binding["source_review"]["reviewer"], "/root");
+            assert_eq!(binding["source_review"]["independent_agent"], false);
+            assert_eq!(
+                binding["source_review"]["verdict"],
+                "PASS_ROOT_STATIC_PREFLIGHT"
+            );
+            let client_successor = &binding["successor"];
+            assert_eq!(client_successor["path"], successor["path"]);
+            assert_eq!(client_successor["mode"], successor["mode"]);
+            let successor_path = Path::new(ROOT).join("src/text_edit/gate.rs");
+            assert_eq!(
+                client_successor["sha256"].as_str(),
+                Some(sha256(&successor_path).as_str())
+            );
+            assert_eq!(
+                successor_path.metadata().unwrap().permissions().mode() & PROTECTED_MODE_BITS,
+                u32::from_str_radix(client_successor["mode"].as_str().unwrap(), 8).unwrap()
+                    & PROTECTED_MODE_BITS
+            );
+            continue;
+        }
+
         // TD-115 deliberately changed this former TD-113 byte boundary to scope
         // Space mutation to the current token.  The immutable TD-113 preflight
         // remains historical evidence; its other protected artifacts must stay

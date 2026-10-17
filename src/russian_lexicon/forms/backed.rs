@@ -10,6 +10,11 @@ pub(crate) fn is_center_backed_russian_form(word: &str) -> bool {
     is_backed_russian_form(word, center_contains)
 }
 
+/// Exact marked grammatical evidence, excluding decoder-only/coarse forms.
+pub(crate) fn is_attested_center_backed_russian_form(word: &str) -> bool {
+    is_backed_russian_verb_form_with_attestation(word, center_contains, true)
+}
+
 pub(crate) fn is_reference_backed_russian_form(word: &str) -> bool {
     is_backed_russian_form(word, |surface| {
         crate::nanda_wave::l2::l2_surface_foundation_contains(surface)
@@ -317,19 +322,33 @@ pub(super) fn is_backed_russian_verb_form(
     word: &str,
     contains: impl Fn(&str) -> bool + Copy,
 ) -> bool {
+    is_backed_russian_verb_form_with_attestation(word, contains, false)
+}
+
+fn is_backed_russian_verb_form_with_attestation(
+    word: &str,
+    contains: impl Fn(&str) -> bool + Copy,
+    attested_only: bool,
+) -> bool {
     if word.chars().count() < 4 {
         return false;
     }
 
-    verb_form_endings().any(|(ending, lemmas)| {
+    verb_form_endings().any(|(ending, lemmas, require_affix_witness)| {
+        if attested_only && !require_affix_witness {
+            return false;
+        }
         let Some(stem) = word.strip_suffix(ending) else {
             return false;
         };
         let min_stem_len = if ending == "шу" { 2 } else { 3 };
         stem.chars().count() >= min_stem_len
-            && lemmas
-                .into_iter()
-                .any(|lemma_suffix| contains(&format!("{stem}{lemma_suffix}")))
+            && lemmas.into_iter().any(|lemma_suffix| {
+                let lemma = format!("{stem}{lemma_suffix}");
+                contains(&lemma)
+                    && (!require_affix_witness
+                        || super::super::russian_verb_form_has_affix_witness(&lemma, word))
+            })
     })
 }
 
@@ -390,4 +409,47 @@ pub(super) fn is_backed_russian_imperative_y_form(
             .last()
             .is_some_and(|ch| matches!(ch, 'а' | 'я'))
         && contains(&format!("{stem}ть"))
+}
+
+#[cfg(test)]
+mod attested_verb_relation_tests {
+    use super::is_backed_russian_verb_form;
+
+    #[test]
+    fn recognizes_licensed_same_stem_forms_from_live_backed_lemmas() {
+        for (surface, lemma) in [
+            ("несу", "нести"),
+            ("везу", "везти"),
+            ("ползу", "ползти"),
+            ("трясу", "трясти"),
+            ("привезу", "привезти"),
+            ("отвезу", "отвезти"),
+        ] {
+            assert!(
+                is_backed_russian_verb_form(surface, |candidate| candidate == lemma),
+                "missing licensed form {surface} from {lemma}"
+            );
+        }
+    }
+
+    #[test]
+    fn rejects_backed_but_unlicensed_inflections_and_nonverbs() {
+        for (surface, lemma) in [
+            ("найу", "найти"),
+            ("расу", "расти"),
+            ("гресу", "грести"),
+            ("почу", "почти"),
+            ("кривезу", "кривезти"),
+        ] {
+            assert!(
+                !is_backed_russian_verb_form(surface, |candidate| candidate == lemma),
+                "unlicensed authority {surface} from {lemma}"
+            );
+        }
+    }
+
+    #[test]
+    fn cached_grammar_never_replaces_live_lemma_authority() {
+        assert!(!is_backed_russian_verb_form("привезу", |_| false));
+    }
 }

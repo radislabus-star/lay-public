@@ -1,0 +1,75 @@
+{
+  "date": "2026-10-12",
+  "status": "SOURCE_PASS_NATIVE_PENDING",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing ContextAdmissionAdapter, WindowInteraction observation and exact replay scope; no additional runtime authority",
+  "runtime_authority_changed": false,
+  "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+  "review": {
+    "kind": "Fresh-context read-only plan review",
+    "overall_score": 8,
+    "native_evidence_independently_read_by_reviewer": false
+  },
+  "decision": "Retain the original confirmed whole client observation through only the first same-owner Reset before an owned closing Space release",
+  "mechanism_score": 8,
+  "scope": "Local KnownStart, same owner/token/tail epoch, pending confirmed and not awaiting owned append, exact raw whole snapshot and identical observation revision, no selection/composition/replay/atomic/handoff/pending edit, handled ledger exactly {57}, owned closing commit <=700ms. These are a narrow operation assumption, not proof that timing alone caused Reset.",
+  "implementation": "Use a stack-local copy of the existing predecessor candidate carrying the original real observation. Existing Reset still revokes old admission and arms its ordinary new token. Restore only after output clear and soft reset succeed, with fresh post-await token/owner/epoch/revision/raw bounds validation. Do not increment the SSI revision or synthesize a new client observation. UnknownStart after the first Reset prevents a second carry.",
+  "refusals": [
+    "Second Reset before release",
+    "Reset after release",
+    "Other handled/unhandled key, command/navigation ingress",
+    "Owner/focus/layout/content/revision/epoch change",
+    "Absent/unconfirmed/changed snapshot",
+    "Replay or unknown/partial edit postcondition",
+    "Late observer ingress during output await"
+  ],
+  "proof": "Press/release actual letters; closing Space press; whole actual SSI; observer-first matched Reset; Space release; bridge ManualToggle/VisibleTail with no new SSI. Original snapshot and revision equality, old token revoked, new token current, no Reset/release text effects, one consume. Full negative matrix and late-ingress interruption.",
+  "causal_red": {
+    "receipt": "/home/ubu/.cache/lay/development/run-5p_ecn8b/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-es95b5/RESULT.json",
+    "passed": 719,
+    "failed": 1,
+    "scope": "B and negative replay matrix pass; only A original snapshot lost after Reset fails at correct post-Reset assertion"
+  },
+  "initial_b_causal_red": {
+    "receipt": "/home/ubu/.cache/lay/development/run-19i1mgw_/RESULT.json",
+    "scope": "off_caret_exact fails; A precondition assertion subsequently corrected to KnownStart + pending confirmed"
+  },
+  "narrower_scope": "Visible preedit is excluded. preedit_clear_needed is exactly preedit_visible, so eligible carry has no asynchronous Update/Hide output-clear suspension. Every Reset needing output clear follows the existing fresh-SSI path. Post-Reset token validation remains mandatory, including observer-only revocation before ManualToggle.",
+  "review_pass_1": {
+    "A": 8,
+    "B": 9,
+    "combined": 8,
+    "production_defect_found": false,
+    "findings": "Narrow asynchronous-clear eligibility or add controlled I/O pause; add a genuine future-but-planned prefix fixture. Root selected the minimal narrower guard and both negative proofs."
+  },
+  "source_green_before_refinement": {
+    "receipt": "/home/ubu/.cache/lay/development/run-sdw4820c/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-IGF89B/RESULT.json",
+    "passed": 720,
+    "failed": 0
+  },
+  "source_green": {
+    "receipt": "/home/ubu/.cache/lay/development/run-scnveyr3/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-4VdbH0/RESULT.json",
+    "archive_sha256": "a94c7461d9550ad12cc1b31d0f2fde0b926aab9b8ddc2b120c22d5828909ed8f",
+    "passed": 721,
+    "failed": 0
+  },
+  "review_pass_2": {
+    "A": 9,
+    "B": 9,
+    "combined": 9,
+    "blockers": [],
+    "reviewer": "Fresh-context read-only final review",
+    "source_bytes_checked_against_frozen_archive": true,
+    "native_acceptance": "PENDING"
+  }
+}

@@ -422,6 +422,18 @@ pub(crate) fn cached_morphology_slot_identities_for_surface(
     Some(identities)
 }
 
+/// Exact positive surface evidence from an already admitted canonical package.
+/// This existential binding read allocates no readings and never warms a field.
+/// A cold or failed provider remains unavailable rather than lexical absence.
+pub(crate) fn cached_surface_has_imported_binding(surface: &str) -> Option<bool> {
+    let field = installed_l2_field_state().get()?.as_ref().ok()?;
+    Some(
+        field
+            .form_ref_for_surface(surface)
+            .is_some_and(|form_ref| field.imported_form_has_binding(form_ref)),
+    )
+}
+
 /// Bounded research metadata from the same warmed canonical generation used
 /// by ranking. This does not load a package, generate candidates or grant edit
 /// authority. Missing readings and work overflow remain distinct from a

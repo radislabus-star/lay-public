@@ -174,8 +174,48 @@ class ContractTests(unittest.TestCase):
             [{**observed[0], "test": "new"}],
             [{**observed[0], "failure_block": "different"}],
         ):
-            with self.assertRaises(contracts.ContractError):
+            with self.assertRaises(contracts.ContractError) as raised:
                 contracts.compare_known_failures(changed, known)
+            if changed:
+                self.assertIn(changed[0]["failure_block"], str(raised.exception))
+            else:
+                self.assertNotIn("first_failure=", str(raised.exception))
+
+        raw = "assertion marker\n" + "x" * 4000
+        with self.assertRaises(contracts.ContractError) as raised:
+            contracts.compare_known_failures(
+                [{**observed[0], "test": "new", "failure_block": raw}], known
+            )
+        detail = str(raised.exception)
+        self.assertIn("assertion marker", detail)
+        self.assertIn("[truncated]", detail)
+        self.assertNotIn(raw, detail)
+        self.assertLess(len(detail), 3000)
+
+        panic = "thread 'case' panicked at src/example.rs:12:3:\nassertion failed: expected latest"
+        with self.assertRaises(contracts.ContractError) as raised:
+            contracts.compare_known_failures(
+                [observed[0], {**observed[0], "test": "new",
+                 "failure_block": "captured stdout\n" * 4000 + panic}], known
+            )
+        self.assertIn("expected latest", str(raised.exception))
+        self.assertNotIn("captured stdout", str(raised.exception))
+        self.assertIn('"test": "new"', str(raised.exception))
+
+        with self.assertRaises(contracts.ContractError) as raised:
+            contracts.compare_known_failures(
+                [{"target": "lib:lay", "test": "missing"}], {"failures": []}
+            )
+        self.assertIn("raw failure block unavailable", str(raised.exception))
+
+        special = 'quote" backslash\\ CR\r LF\n ESC\x1b[31m'
+        with self.assertRaises(contracts.ContractError) as raised:
+            contracts.compare_known_failures(
+                [{**observed[0], "test": "escaped", "failure_block": special}],
+                {"failures": []},
+            )
+        encoded = str(raised.exception).split("\nfirst_failure=", 1)[1]
+        self.assertEqual(json.loads(encoded)["failure_block"], special)
 
     def test_known_failure_manifest_rejects_count_and_observation_drift(self) -> None:
         row = {

@@ -1,0 +1,187 @@
+{
+  "schema": "lay.td130.connected-inverse-evidence.v1",
+  "status": "PASS_CONNECTED_PRIVATE_PROOF",
+  "scope": "source semantic and one-case private IBus proof; historical host cleanup and physical acceptance are separate",
+  "baseline_commit": "55fd32bf418bf6331a29d0522892a8df689499f2",
+  "source_identities": {
+    "scripts/proof/ime-client/run.py": "7d46594b06aa084c050e8b551e21e768db80cc347c652b0008913b1ceb69e7be",
+    "scripts/proof/ime-client/driver.py": "0518d043d23bf8e931569a316d52306105cd6bbff6085ce53c2a8a7fcc93035f",
+    "scripts/proof/ime-client/feedback_case.py": "92e091681171983e575e5672bdd5f9b4f15820ffcac9601fe1985db7b80581e5",
+    "tests/test_ime_client_harness.py": "3cb3244886552f1782fe8d855beb815f3d486d098d49e2c8a864ebc8a4bf22ba"
+  },
+  "suite": {
+    "receipt": "/home/ubu/.cache/lay/development/run-os6fuz1y/RESULT.json",
+    "log": "/home/ubu/.cache/lay/development/run-os6fuz1y/run.log",
+    "selected": 122,
+    "passed": 121,
+    "skipped": 1,
+    "failed": 0,
+    "new_test_identities": [
+      "test_connected_inverse_missing_feedback_stops_at_existing_bound",
+      "test_inverse_observation_freezes_complete_effects_and_interval_after_focus_out",
+      "test_inverse_observation_refuses_extra_callbacks_during_feedback_or_focus_out",
+      "test_pair_frame_matches_exact_real_client_effects_in_both_directions",
+      "test_pair_frame_refuses_wrong_order_context_text_cursor_and_extra_effect",
+      "test_pair_frame_rejects_clamped_oversized_delete_in_both_directions",
+      "test_duplicate_extra_mixed_or_unknown_targets_stop_the_case",
+      "test_input_projection_separates_fixture_shift_releases_and_other_contexts",
+      "test_native_rotation_preserves_only_a_unique_unchanged_old_suffix",
+      "test_opt_in_inverse_consumer_binds_scenario_and_module_hash",
+      "test_partial_absent_or_outside_interval_feedback_never_completes",
+      "test_prefixed_and_first_word_cases_observe_exact_feedback_without_cleanup",
+      "test_wrong_case_binding_refuses_before_inverse_feedback_observation",
+      "test_wrong_pair_cannot_be_reported_as_zero_owned_feedback"
+    ],
+    "new_selected": 14,
+    "new_passed": 14,
+    "skip_reason": "explicit real-user-cgroup integration test",
+    "scope": "five existing Python self-test modules, not release or runtime quality"
+  },
+  "controlled_red": [
+    {
+      "mutation": "wrong_pair",
+      "test": "tests.test_ime_client_harness.InverseFeedbackCaseTests.test_wrong_pair_cannot_be_reported_as_zero_owned_feedback",
+      "selected": 1,
+      "failed_assertions_as_expected": 1,
+      "errors": 0,
+      "status": "EXPECTED_SEMANTIC_RED",
+      "log": "/home/e/.cache/lay/td130-connected-BKOyAG/final-kexpbqn3/red-wrong_pair/run.log",
+      "mutation_sha256": "fbb61b82f24d5a4358f680e5c7163f4968449bd32f8735d8fdc11e8adc42f2bc"
+    },
+    {
+      "mutation": "delete_geometry",
+      "test": "tests.test_ime_client_harness.ImeClientConsumerTest.test_pair_frame_rejects_clamped_oversized_delete_in_both_directions",
+      "selected": 1,
+      "failed_assertions_as_expected": 2,
+      "errors": 0,
+      "status": "EXPECTED_SEMANTIC_RED",
+      "log": "/home/e/.cache/lay/td130-connected-BKOyAG/final-kexpbqn3/red-delete_geometry/run.log",
+      "mutation_sha256": "4081c3d8a098d2328da81c0e8217f2d065966bc47d2c592215c0e5dbf3856709"
+    },
+    {
+      "mutation": "complete_effects",
+      "test": "tests.test_ime_client_harness.ImeClientConsumerTest.test_inverse_observation_refuses_extra_callbacks_during_feedback_or_focus_out",
+      "selected": 1,
+      "failed_assertions_as_expected": 6,
+      "errors": 0,
+      "status": "EXPECTED_SEMANTIC_RED",
+      "log": "/home/e/.cache/lay/td130-connected-BKOyAG/final-kexpbqn3/red-complete_effects/run.log",
+      "mutation_sha256": "5d136c88b83c7636e4a91a4c79a998b19f970cfed8d0f58aba84e6c96cd52075"
+    }
+  ],
+  "controlled_red_kind": "narrow guard violations in independent temporary remote copies; not original runtime RED",
+  "execution_receipt": "/home/ubu/.cache/lay/development/td130-final-verification-20261009.json",
+  "smokes": [
+    {
+      "scenario": "inverse-first-word",
+      "status": "COMPLETED_1_BOUND_INVERSE_CASE",
+      "case_status": "PASS_BOUND_PRIVATE_INVERSE",
+      "receipt": "/home/ubu/.cache/lay/development/td130-final-inverse-first-word-receipt-20261009.json",
+      "receipt_sha256": "4a184173e2c71f13a19719375eabd1400e383910c187661a4ba83f8474f2d245",
+      "elapsed_seconds": 4.579,
+      "forward_frames": 1,
+      "inverse_frames": 1,
+      "forward_geometry": [
+        -12,
+        12
+      ],
+      "inverse_geometry": [
+        -12,
+        12
+      ],
+      "prefix_and_final_surface_cursor": "EXACT_PASS",
+      "feedback_status": "MATCHED_CASE_FEEDBACK",
+      "selected_feedback_rows": 2,
+      "expected_feedback_rows": 2,
+      "interval": [
+        1791566395873953792,
+        1791566397017144172
+      ],
+      "journal_writes": 0,
+      "cleanup_authority": false,
+      "private_daemon_reaped": true,
+      "candidate_processes_remaining": 0
+    },
+    {
+      "scenario": "inverse-prefixed",
+      "status": "COMPLETED_1_BOUND_INVERSE_CASE",
+      "case_status": "PASS_BOUND_PRIVATE_INVERSE",
+      "receipt": "/home/ubu/.cache/lay/development/td130-final-inverse-prefixed-receipt-20261009.json",
+      "receipt_sha256": "d96ee615e33bd64ea2b28b96334a82a1476685a18d5c31fa94b0f2411591c13f",
+      "elapsed_seconds": 4.621,
+      "forward_frames": 1,
+      "inverse_frames": 1,
+      "forward_geometry": [
+        -12,
+        12
+      ],
+      "inverse_geometry": [
+        -12,
+        12
+      ],
+      "prefix_and_final_surface_cursor": "EXACT_PASS",
+      "feedback_status": "MATCHED_CASE_FEEDBACK",
+      "selected_feedback_rows": 2,
+      "expected_feedback_rows": 2,
+      "interval": [
+        1791566400495021248,
+        1791566401636680705
+      ],
+      "journal_writes": 0,
+      "cleanup_authority": false,
+      "private_daemon_reaped": true,
+      "candidate_processes_remaining": 0
+    }
+  ],
+  "pilot_failure": {
+    "status": "FAILED_BEFORE_INVERSE",
+    "reason": "fixture_shift included in text-key collector",
+    "remote_receipt": "/home/e/.cache/lay/td130-connected-BKOyAG/inverse-first-word/receipt.json",
+    "relabelled": false
+  },
+  "review": {
+    "passes_completed": 2,
+    "pass1_score": 7.5,
+    "pass1_report": "/home/ubu/.cache/lay/development/td130-review-pass1-20261009.md",
+    "repair": "one grouped exact geometry / complete closure effects repair",
+    "pass2": "ACCEPT",
+    "pass2_score": 9,
+    "pass2_report": "tech_debt/evidence/2026-10-09-td130-review-pass2.md"
+  },
+  "canonical_refresh": {
+    "status": "PASS",
+    "receipt": "/home/ubu/.cache/lay/development/tab-graph-izyykb7m/RESULT.json",
+    "canon_receipt": "/home/ubu/.cache/lay/development/tab-graph-izyykb7m/CANON_RESULT.json",
+    "fetch_receipt": "/home/ubu/.cache/lay/development/tab-graph-izyykb7m/fetch.json",
+    "fetched_members": 8,
+    "source_stable_before_fetch": true
+  },
+  "runtime_authority_changed": false,
+  "runtime_bytes_used": "2bd88bfcbc53e9916d56b3560ca8d7cf7cde17c8fdeb4e391d8f2c42f7310559",
+  "installed_runtime_changed": false,
+  "assets": {
+    "receipt": "/home/ubu/.cache/lay/development/td130-asset-preparation-20261009.json",
+    "roles": 9,
+    "model_bytes_copied": 0,
+    "phase_sha256": "a9f5d6f0411847627f35f4c48b1cec64a9d0c3de80f8477925a9cf231b0b51b8",
+    "installed_model_parity": "NOT_ESTABLISHED"
+  },
+  "not_tested": [
+    "GTK/Qt/browser physical acceptance",
+    "daemon physical Double Shift detector",
+    "shared cleanup/recovery (TD-137)",
+    "TD-133 causal failure fix",
+    "runtime installation/release gates",
+    "general Wave quality"
+  ],
+  "compiled_metadata": {
+    "status": "PASS",
+    "selected": 1,
+    "passed": 1,
+    "identity": "architecture_contract::tests::generated_receipt_proves_every_required_architecture_check",
+    "receipt": "/home/ubu/.cache/lay/development/tab-compiled-receipt-test-l6gjxwh9/RESULT.json",
+    "input_sha256": "2c0948933a8caafa5d4f15d6f355e5404ba33fced54405c10324087cf37696d9"
+  },
+  "recorded_at_utc": "2026-10-09T17:31:02.064970+00:00",
+  "publication_receipt": "/home/ubu/.cache/lay/development/td130-publication-20261009.json"
+}

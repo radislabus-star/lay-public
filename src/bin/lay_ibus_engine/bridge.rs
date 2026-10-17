@@ -14,6 +14,11 @@ pub(crate) struct LayImeBridge {
 
 #[interface(name = "io.github.radislabus_star.LayIme")]
 impl LayImeBridge {
+    #[zbus(name = "ObservedIbusEngine")]
+    pub(crate) async fn observed_ibus_engine(&self) -> fdo::Result<String> {
+        super::observed_ibus_engine::read(&self.ibus_connection).await
+    }
+
     #[zbus(name = "Ping")]
     fn ping(&self) -> String {
         let state = self.shared.lock().expect("lay ime state poisoned");
@@ -55,6 +60,13 @@ impl LayImeBridge {
     #[zbus(name = "VisibleTailV3")]
     async fn visible_tail_v3(&self) -> fdo::Result<(String, String, bool, u64, String, String)> {
         self.visible_tail_v3_inner().await
+    }
+
+    #[zbus(name = "VisibleTailV4")]
+    async fn visible_tail_v4(
+        &self,
+    ) -> fdo::Result<(String, String, bool, u64, String, String, bool)> {
+        self.visible_tail_v4_inner().await
     }
 
     #[zbus(name = "CanReplaceCommittedTail")]

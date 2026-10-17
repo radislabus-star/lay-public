@@ -6,6 +6,12 @@ use super::super::trigger_dispatch::{
 use super::context::ManualTriggerFireContext;
 use super::ime::{dispatch_ime_manual_toggle, ImeManualToggleDispatch};
 
+pub(crate) fn fire_literal_last_word_trigger(ctx: ManualTriggerFireContext<'_>, events: u32) {
+    ctx.buffer.invalidate_replay_and_auto_undo();
+    ctx.pending_typing_assist_after_space.take();
+    fire_scoped_manual_trigger(ctx, 1, events, "double-space literal projection");
+}
+
 pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) {
     let dispatch_plan = match dispatch_ime_manual_toggle(ctx.buffer) {
         ImeManualToggleDispatch::ReplayExactImeTail(replay) => {
@@ -15,8 +21,7 @@ pub(crate) fn fire_configured_manual_trigger(ctx: ManualTriggerFireContext<'_>) 
                 ctx.virtual_kbd,
                 ctx.executing,
                 replay,
-                ctx.shift_window,
-                ctx.dshift_state,
+                (ctx.shift_window, ctx.dshift_state, ctx.trigger_key),
             );
             complete_manual_trigger_with_result(correction_result, ctx, true);
             return;
@@ -56,8 +61,7 @@ pub(crate) fn fire_scoped_manual_trigger(
                 ctx.virtual_kbd,
                 ctx.executing,
                 replay,
-                ctx.shift_window,
-                ctx.dshift_state,
+                (ctx.shift_window, ctx.dshift_state, ctx.trigger_key),
             );
             complete_manual_trigger_with_result(correction_result, ctx, true);
             return;
@@ -74,6 +78,9 @@ pub(crate) fn fire_scoped_manual_trigger(
     };
     let correction_result = run_scoped_manual_correction(
         ScopedManualCorrectionContext {
+            trigger_key: ctx.trigger_key,
+            shift_window: ctx.shift_window,
+            queued_dshift_state: ctx.dshift_state,
             buffer: ctx.buffer,
             device: ctx.device,
             virtual_kbd: ctx.virtual_kbd,
@@ -85,7 +92,8 @@ pub(crate) fn fire_scoped_manual_trigger(
         reason,
         dispatch_plan,
     );
-    complete_manual_trigger_with_result(correction_result, ctx, false);
+    let preserve_queued = ctx.trigger_key == evdev::KeyCode::KEY_SPACE;
+    complete_manual_trigger_with_result(correction_result, ctx, preserve_queued);
 }
 
 fn reject_manual_trigger_with_context(ctx: ManualTriggerFireContext<'_>) {

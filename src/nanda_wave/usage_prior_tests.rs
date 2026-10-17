@@ -1,5 +1,224 @@
 use super::*;
 
+fn restoration_event(original: &str, proposal: &str) -> UsageEvent {
+    UsageEvent::from_typing_memory_event(
+        &TypingMemoryEvent::observed_manual_restoration(original, proposal)[0],
+    )
+}
+
+#[test]
+fn exact_restorations_need_three_distinct_episodes_in_hot_and_cold_memory() {
+    let mut counts = UsageCounts::default();
+    let mut hot = UsageHotState::default();
+    for index in 1..=3 {
+        let event = restoration_event("Хунлу", "Хунту");
+        // Re-delivery cannot turn one correction into three confirmations.
+        for _ in 0..3 {
+            add_usage_event_count(&mut counts, &event);
+            hot.apply_event(&event);
+        }
+        let cold = usage_snapshot_from_counts(counts.clone());
+        let live = UsagePriorSnapshot {
+            hot: Arc::new(hot.clone()),
+        };
+        for snapshot in [&cold, &live] {
+            assert_eq!(snapshot.hot.restoration_count("хунлу"), index);
+            assert_eq!(
+                snapshot.changes_protected_word("Хунлу ", "Хунту "),
+                index == 3
+            );
+        }
+    }
+    let snapshot = usage_snapshot_from_counts(counts);
+    assert!(snapshot.changes_protected_word("ООО Хунлу ", "ООО Хунту "));
+    assert!(!snapshot.changes_protected_word("Хунлу потм ", "Хунлу потом "));
+    assert!(!snapshot.changes_protected_word("Хунлуб ", "Хунту "));
+    assert!(!snapshot.changes_protected_word("Хунту ", "Хунлу "));
+}
+
+#[test]
+fn restoration_votes_exclude_unconfirmed_nonexact_and_unbound_feedback() {
+    let original = "Вербика";
+    let proposal = "Вербина";
+    let mut events = TypingMemoryEvent::observed_system_apply(
+        original,
+        proposal,
+        TypingMemoryEvidenceSource::Autocorrect,
+        TypingMemoryOperation::Replacement,
+    );
+    events.extend(TypingMemoryEvent::confirmed_user_correction(
+        original,
+        proposal,
+        "Вербила",
+        "replacement",
+    ));
+    events.extend(TypingMemoryEvent::accepted_ime("", original));
+    events.extend(TypingMemoryEvent::typed_tail(original));
+    for _ in 0..3 {
+        events.extend(TypingMemoryEvent::reverted_system_apply(
+            original,
+            proposal,
+            TypingMemoryEvidenceSource::Autocorrect,
+            TypingMemoryOperation::Replacement,
+        ));
+    }
+    let mut cold = UsageCounts::default();
+    let mut hot = UsageHotState::default();
+    for event in events.iter().map(UsageEvent::from_typing_memory_event) {
+        assert!(restorations::restored_word(&event).is_none());
+        for _ in 0..3 {
+            add_usage_event_count(&mut cold, &event);
+            hot.apply_event(&event);
+        }
+    }
+    for variant in 0..4 {
+        let mut event = restoration_event(original, proposal);
+        match variant {
+            0 => event.episode_id = None,
+            1 => event.schema = None,
+            2 => event.outcome = Some("censored".into()),
+            _ => event.restoration_observed = false,
+        }
+        assert!(restorations::restored_word(&event).is_none());
+    }
+    assert!(cold.restored_words.is_empty());
+    assert_eq!(hot.restoration_count("вербика"), 0);
+}
+
+#[test]
+fn exact_user_restoration_receipt_protects_only_the_changed_word() {
+    let events = TypingMemoryEvent::confirmed_user_correction(
+        "в ООО Хунлу",
+        "в ООО Хунту",
+        "в ООО Хунлу",
+        "typing-assist",
+    );
+    let mut counts = UsageCounts::default();
+    for event in events.iter().map(UsageEvent::from_typing_memory_event) {
+        add_usage_event_count(&mut counts, &event);
+    }
+    assert_eq!(counts.restored_words.len(), 1);
+    assert_eq!(counts.restored_words["хунлу"].len(), 1);
+}
+
+#[test]
+fn restoration_preferences_survive_journal_rotation_and_reload() {
+    let directory = std::env::temp_dir().join(format!(
+        "lay-restoration-preferences-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos(),
+    ));
+    std::fs::create_dir(&directory).unwrap();
+    let journal = directory.join("events.jsonl");
+    let mut rows = Vec::new();
+    for _ in 0..3 {
+        rows.push(serde_json::to_string(&restoration_event("Хунлу", "Хунту")).unwrap());
+    }
+    let text = rows.join("\n");
+    restorations::persist(&journal, &text).unwrap();
+    restorations::persist(&journal, &text).unwrap();
+    std::fs::write(&journal, "").unwrap();
+    let mut counts = UsageCounts::default();
+    restorations::merge(&mut counts.restored_words, restorations::load(&journal));
+    let reloaded = usage_snapshot_from_counts(compact_usage_counts_for_persist(&counts));
+    assert_eq!(reloaded.hot.restoration_count("хунлу"), 3);
+    assert!(reloaded.changes_protected_word("хунлу ", "хунту "));
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
+#[test]
+fn restoration_preferences_serialize_concurrent_processes() {
+    use std::process::{Child, Command, Stdio};
+    use std::time::{Duration, Instant};
+    const CHILD_ROOT: &str = "LAY_TEST_RESTORATION_CHILD_ROOT";
+    if let Some(root) = std::env::var_os(CHILD_ROOT) {
+        let directory = PathBuf::from(root);
+        let index: usize = std::env::var("LAY_TEST_RESTORATION_CHILD_INDEX")
+            .unwrap()
+            .parse()
+            .unwrap();
+        std::fs::write(directory.join(format!("ready-{index}")), "ready").unwrap();
+        let words = [
+            ("Вербика", "Вербина"),
+            ("Тарвис", "Тарсис"),
+            ("Лунвек", "Лунбек"),
+        ];
+        let rows = [
+            restoration_event("Хунлу", "Хунту"),
+            restoration_event(words[index].0, words[index].1),
+        ]
+        .iter()
+        .map(|event| serde_json::to_string(event).unwrap())
+        .collect::<Vec<_>>()
+        .join("\n");
+        restorations::persist(&directory.join("events.jsonl"), &rows).unwrap();
+        return;
+    }
+    struct Children(Vec<Child>);
+    impl Drop for Children {
+        fn drop(&mut self) {
+            for child in &mut self.0 {
+                if child.try_wait().ok().flatten().is_none() {
+                    let _ = child.kill();
+                }
+                let _ = child.wait();
+            }
+        }
+    }
+    let directory = std::env::temp_dir().join(format!(
+        "lay-restoration-processes-{}-{}",
+        std::process::id(),
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .unwrap()
+            .as_nanos()
+    ));
+    std::fs::create_dir(&directory).unwrap();
+    let journal = directory.join("events.jsonl");
+    let lock = restorations::lock_preferences(&journal).unwrap();
+    let mut children = Children(Vec::new());
+    for index in 0..3 {
+        children.0.push(Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", "nanda_wave::usage_prior::tests::restoration_preferences_serialize_concurrent_processes"])
+            .env(CHILD_ROOT, &directory).env("LAY_TEST_RESTORATION_CHILD_INDEX", index.to_string())
+            .stdout(Stdio::null()).stderr(Stdio::null()).spawn().unwrap());
+    }
+    let deadline = Instant::now() + Duration::from_secs(5);
+    while !(0..3).all(|index| directory.join(format!("ready-{index}")).exists()) {
+        assert!(Instant::now() < deadline, "child readiness deadline");
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    std::thread::sleep(Duration::from_millis(100));
+    for child in &mut children.0 {
+        assert!(
+            child.try_wait().unwrap().is_none(),
+            "writer must wait for the process lock"
+        );
+    }
+    drop(lock);
+    while children
+        .0
+        .iter_mut()
+        .any(|child| child.try_wait().unwrap().is_none())
+    {
+        assert!(Instant::now() < deadline, "child completion deadline");
+        std::thread::sleep(Duration::from_millis(5));
+    }
+    for child in &mut children.0 {
+        assert!(child.wait().unwrap().success());
+    }
+    let votes = restorations::load(&journal);
+    assert_eq!(votes["хунлу"].len(), 3);
+    for word in ["вербика", "тарвис", "лунвек"] {
+        assert_eq!(votes[word].len(), 1);
+    }
+    drop(children);
+    std::fs::remove_dir_all(directory).unwrap();
+}
+
 #[test]
 fn first_hot_readout_initializes_persisted_usage_memory_once() {
     let mut cache = UsageCache::default();
@@ -191,6 +410,7 @@ fn live_cache_make_mut_clones_when_snapshot_holds_hot_state() {
             ts: 1,
             schema: None,
             episode_id: None,
+            restoration_observed: false,
             kind: UsageEventKind::Typed,
             word: Some("дождь".to_string()),
             context: Vec::new(),
@@ -738,6 +958,7 @@ fn adjacent_duplicate_usage_events_ignore_timestamp() {
         ts: 1,
         schema: None,
         episode_id: None,
+        restoration_observed: false,
         kind: UsageEventKind::Typed,
         word: Some("лог".to_string()),
         context: vec!["смотри".to_string()],
@@ -794,6 +1015,7 @@ fn distinct_causal_episodes_are_not_adjacent_duplicates() {
         ts: 1,
         schema: None,
         episode_id: Some("episode-1".to_string()),
+        restoration_observed: false,
         kind: UsageEventKind::AcceptedFix,
         word: Some("новости".to_string()),
         context: vec!["читай".to_string()],
@@ -883,13 +1105,17 @@ fn compiled_feedback_snapshot_recovers_reverted_auto_undo_receipt() {
     std::fs::write(
         &input,
         r#"{"ts":1,"kind":"user-correction","lay_kind":"typing-assist","lay_from":"проверрка ","lay_to":"проверка ","from":"проверка ","to":"проверрка ","user_target":"проверрка "}
-"#,
+"#.repeat(3),
     )
     .unwrap();
 
     let report = compile_usage_feedback_snapshot(&input, &output).unwrap();
     let counts = load_persisted_usage_counts(&output, None).unwrap();
+    // Legacy imports generate fresh runtime IDs, but are not observed manual
+    // restorations. Duplicate receipts must retain only their old signed prior.
+    assert!(counts.restored_words.is_empty());
     let usage = usage_snapshot_from_counts(counts);
+    assert!(!usage.changes_protected_word("проверрка ", "проверка "));
     let state = crate::transition_relation::signed_memory_state_id("проверрка");
     let readout = usage.hot_readout(&[], "autocorrect", "replacement", &state, "проверка");
     let unseen = usage.hot_readout(
@@ -901,8 +1127,8 @@ fn compiled_feedback_snapshot_recovers_reverted_auto_undo_receipt() {
     );
 
     assert_eq!(report["usage_events"], 0);
-    assert_eq!(report["correction_receipts"], 1);
-    assert_eq!(report["correction_events"], 1);
+    assert_eq!(report["correction_receipts"], 3);
+    assert_eq!(report["correction_events"], 3);
     assert!(readout.transition.state_specific);
     assert!(readout.transition.repulsion > readout.transition.attraction);
     assert!(unseen.transition.state_specific);

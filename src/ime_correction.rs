@@ -20,7 +20,8 @@ use crate::config::{CorrectionSafety, LayConfig};
 use crate::correction_core::CorrectionMode;
 use crate::input_gate::{
     decide_closed_exact_input_gate_observed, decide_input_gate_observed,
-    decide_input_gate_observed_with_exact, InputGateAction, InputGateRequest, InputGateTrigger,
+    decide_input_gate_observed_with_exact, decide_space_input_gate_if_current, InputGateAction,
+    InputGateRequest, InputGateTrigger,
 };
 use crate::text_edit::TransitionProof;
 use crate::text_edit::{
@@ -146,6 +147,7 @@ pub fn decide_active_composition_autocorrect_observed(
     decide_active_composition_autocorrect_with_evidence(
         request,
         ActiveCompositionEvidence::FullField(None),
+        None,
     )
 }
 
@@ -156,6 +158,7 @@ pub fn decide_active_composition_autocorrect_observed_with_exact(
     decide_active_composition_autocorrect_with_evidence(
         request,
         ActiveCompositionEvidence::FullField(Some(certificate)),
+        None,
     )
 }
 
@@ -174,6 +177,7 @@ pub fn prepare_exact_layout_active_composition_autocorrect_observed(
     let observed = decide_active_composition_autocorrect_with_evidence(
         request,
         ActiveCompositionEvidence::ClosedExact(certificate.as_ref()),
+        None,
     );
     let prepared = certificate.map(|certificate| PreparedExactLayoutAutocorrect {
         decision: observed.decision,
@@ -183,6 +187,36 @@ pub fn prepare_exact_layout_active_composition_autocorrect_observed(
         prepared,
         telemetry: observed.telemetry,
     }
+}
+
+/// The frontend must independently bind/revalidate this exact editable pair.
+/// Lexical coordinates and candidate competition still own the current token.
+pub fn decide_space_autocorrect_observed_with_pair(
+    request: ActiveCompositionAutocorrectRequest<'_>,
+    certificate: Option<&crate::exact_layout_authority::ExactLayoutContourCertificate>,
+    editable_pair: &str,
+) -> ObservedActiveCompositionAutocorrect {
+    decide_active_composition_autocorrect_with_evidence(
+        request,
+        ActiveCompositionEvidence::FullField(certificate),
+        Some(editable_pair),
+    )
+}
+
+/// The existing worker supplies liveness of its request generation. Cancellation
+/// discards computation only; it grants neither a decision nor edit authority.
+pub fn decide_space_autocorrect_observed_if_current(
+    request: ActiveCompositionAutocorrectRequest<'_>,
+    certificate: Option<&crate::exact_layout_authority::ExactLayoutContourCertificate>,
+    editable_pair: Option<&str>,
+    is_current: &dyn Fn() -> bool,
+) -> Option<ObservedActiveCompositionAutocorrect> {
+    decide_active_composition_autocorrect_with_evidence_if_current(
+        request,
+        ActiveCompositionEvidence::FullField(certificate),
+        editable_pair,
+        Some(is_current),
+    )
 }
 
 #[derive(Clone, Copy)]
@@ -232,7 +266,23 @@ fn lexical_frame_matches_active_request(
 fn decide_active_composition_autocorrect_with_evidence(
     request: ActiveCompositionAutocorrectRequest<'_>,
     evidence: ActiveCompositionEvidence<'_>,
+    editable_pair: Option<&str>,
 ) -> ObservedActiveCompositionAutocorrect {
+    decide_active_composition_autocorrect_with_evidence_if_current(
+        request,
+        evidence,
+        editable_pair,
+        None,
+    )
+    .expect("uncancelled IME correction computation")
+}
+
+fn decide_active_composition_autocorrect_with_evidence_if_current(
+    request: ActiveCompositionAutocorrectRequest<'_>,
+    evidence: ActiveCompositionEvidence<'_>,
+    editable_pair: Option<&str>,
+    is_current: Option<&dyn Fn() -> bool>,
+) -> Option<ObservedActiveCompositionAutocorrect> {
     let (gate_text, active_prefix) =
         active_composition_gate_text(request.text, request.committed_tail);
     let gate_config = ActiveCompositionGateConfig::from_config(request.config);
@@ -255,9 +305,14 @@ fn decide_active_composition_autocorrect_with_evidence(
         correction_mode: gate_config.correction_mode(),
     };
     let observed = match evidence {
-        ActiveCompositionEvidence::FullField(None) => decide_input_gate_observed(gate_request),
-        ActiveCompositionEvidence::FullField(Some(certificate)) => {
-            decide_input_gate_observed_with_exact(gate_request, certificate)
+        ActiveCompositionEvidence::FullField(certificate) => {
+            if let Some(is_current) = is_current {
+                decide_space_input_gate_if_current(gate_request, certificate, is_current)?
+            } else if let Some(certificate) = certificate {
+                decide_input_gate_observed_with_exact(gate_request, certificate)
+            } else {
+                decide_input_gate_observed(gate_request)
+            }
         }
         ActiveCompositionEvidence::ClosedExact(certificate) => {
             decide_closed_exact_input_gate_observed(gate_request, certificate)
@@ -292,6 +347,32 @@ fn decide_active_composition_autocorrect_with_evidence(
         };
         if replacement.as_str() == gate_text {
             return None;
+        }
+        if let Some(pair) = editable_pair {
+            let pair_is_exact = request.committed_tail.ends_with(pair)
+                && pair.split_whitespace().count() == 2
+                && pair.ends_with(request.text.trim_end_matches(' '));
+            if pair_is_exact {
+                let stable_prefix = request.committed_tail.strip_suffix(pair)?;
+                if let Some(pair_replacement) = replacement.strip_prefix(stable_prefix) {
+                    if let Some(action) = crate::text_edit::plan_space_boundary_edit(
+                        "ibus-space-boundary-pair",
+                        pair,
+                        pair_replacement,
+                        &decision,
+                    ) {
+                        let input_gate = decision
+                            .trace
+                            .as_ref()
+                            .map(RecentActionGateTrace::from_input_gate)?;
+                        return Some(ActiveCompositionAutocorrectDecision {
+                            replacement: pair_replacement.to_string(),
+                            action,
+                            input_gate: Some(input_gate),
+                        });
+                    }
+                }
+            }
         }
         let replacement = if active_prefix.is_empty() {
             replacement.clone()
@@ -350,11 +431,11 @@ fn decide_active_composition_autocorrect_with_evidence(
     if let Some(metadata) = telemetry.gate_metadata.as_mut() {
         metadata.final_decision_present = decision.is_some();
     }
-    ObservedActiveCompositionAutocorrect {
+    Some(ObservedActiveCompositionAutocorrect {
         decision,
         no_apply_stage,
         telemetry,
-    }
+    })
 }
 
 fn frameless_boundary_action_is_authorized(action: &EditAction) -> bool {

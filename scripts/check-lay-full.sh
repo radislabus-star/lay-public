@@ -49,7 +49,7 @@ python3 -m py_compile scripts/*.py
 bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 
 echo "== Firefox compatibility adapter regressions =="
-python3 -m unittest tests.test_firefox_compat_adapter
+python3 -m unittest tests.test_firefox_compat_adapter tests.test_firefox_double_shift_probe
 
 echo "== CLI explain smoke =="
 LAY_CONFIG_PATH="$ROOT/scripts/proof/autocorrect-proof-config.json" \

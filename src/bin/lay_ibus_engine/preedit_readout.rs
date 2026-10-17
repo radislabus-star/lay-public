@@ -291,8 +291,27 @@ fn elapsed_us(started: Option<Instant>) -> u64 {
 }
 
 #[cfg(test)]
-mod preedit_readout_contract {
+pub(crate) mod preedit_readout_contract {
     use super::*;
+
+    pub(crate) fn current_pending_readout(
+        engine: &LayIbusEngine,
+    ) -> (PrecognitionInput, Option<Vec<ImeCandidateProposal>>) {
+        let frame = engine
+            .composition
+            .pending_display_frame
+            .as_ref()
+            .expect("pending completion frame");
+        assert!(engine.precognition_computation_identity_matches(frame));
+        assert!(engine.precognition_identity_matches(frame));
+        assert!(engine.precognition_display_ready());
+        let input = engine
+            .precognition_input()
+            .expect("actual current readout input");
+        let cached = cached_precognition_candidates(&input);
+        (input, cached)
+    }
+
 
     fn completion_input(tail: &str, context_prefix: &str, partial: &str) -> PrecognitionInput {
         PrecognitionInput {

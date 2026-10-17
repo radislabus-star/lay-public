@@ -241,14 +241,13 @@ async fn apply_completed(
         };
     }
     let mut output = super::output::EngineOutput::legacy(emitter);
-    let stage = if engine
+    let stage = match engine
         .apply_background_precognition(&mut output, candidates)
         .await
-        .is_ok()
     {
-        "applied"
-    } else {
-        "discarded"
+        Ok(true) => "applied",
+        Ok(false) => "deferred",
+        Err(_) => "discarded",
     };
     ApplyCompletion { stage, display_age }
 }

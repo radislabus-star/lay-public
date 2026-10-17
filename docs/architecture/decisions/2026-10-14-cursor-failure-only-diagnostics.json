@@ -1,0 +1,109 @@
+{
+  "schema": "lay.architecture.decision.v1",
+  "id": "2026-10-14-cursor-failure-only-diagnostics",
+  "status": "NATIVE_CURSOR_FAIL_FIRST_RESET_CAPTURE_LOCALIZED",
+  "baseline": "Rfull332P67F33B432; Chrome cursor10gains/no lostPASS retained. S positive metadata on fresh15, history20+15 withwire and no-wire all cursorPASS; no functional runtime repair.",
+  "measured_gap": "S calls several validation predicates and logging on every cursor/Shift/callback transition, so instrumentation can influence scheduling. S did not reproduce R full Firefox cursor10FAIL. Passive wire absence and one normal20 history prefix did not reproduce either. AllRfourShiftcallbacksaccepted; invalid source withheld-Shift timeout is not R cause.",
+  "options": [
+    {
+      "score": 9,
+      "recommended": true,
+      "solution": "Keep only metadata records emitted after an original rejection was already decided: cursor seed refusal, unexpected actual SSI/identity, rebind failure, reset capture/restore refusal and existing phase discard. Remove all successful-path/callback-enter validation/logging. Same original onefield15 without passivewire after fresh837/838scope/build.",
+      "reason": "Lowest diagnostic disturbance, no predicate/authority/timer changes, exact rejected metadata rather than guesses."
+    },
+    {
+      "score": 7,
+      "recommended": false,
+      "solution": "Replay fullR60+6 history before originalfunctional1\u20132 on S positive logging.",
+      "reason": "May locate history-specific loss but positive logging can still mask it, and longer native cost."
+    },
+    {
+      "score": 1,
+      "recommended": false,
+      "solution": "Increase rendezvous deadline or skip guards because diagnostic cursorPASS.",
+      "reason": "No causal native failure at that gate; prohibited change without evidence."
+    }
+  ],
+  "contract": [
+    "No runtime condition, ownership, route, word exception, guard, deadline or model fitting changes. Logging only after already decided rejection; original return/mutation order preserved.",
+    "No logging on successful key/SSI/Reset/manual paths. Existing trace switch/store, numeric/boolean fields only; no text or admission token dumps.",
+    "Source tests remain semantic: originalR44, emittedprediction/4properorderedShift, actualowned-insertSSIbeforeReset. SourcePASS is not native acceptance.",
+    "Fresh context-free sub-agent review unavailable due agent thread limit; no reviewer score claimed. Root performs bounded diff audit; no promotion/taskDONE from diagnostic evidence.",
+    "Remote only, guards/exclusivelease, oldSI exactcgroupempty/allfiveGone/VT1 before build; fresh gated private bytes +strongzero-key then original15 once, STOP/close/restore."
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_retrained": false,
+  "updated_at": "2026-10-14T03:27:19.315105+00:00",
+  "source_exec": 8158,
+  "root_diff_contract": "All original R predicates/returns/receipt mutation remain. Trace only after already-decided original refusal/discard; no positive-path callback admission, key rebind, SSI or Reset logging. Includes existing quarantine/atomic/sensitive/sealed flags as post-refusal metadata.",
+  "prior_source_evidence": "S46PASS incl owned-insertSSI beforeReset. T scoped IME+6contracts gate expected838 includes all46, no second focused repeat.",
+  "SI_comparison": "All15stable statuses equalSH, nativecursorPASS in both; no causal failure obtained.",
+  "immutable_gate": {
+    "local": "/home/ubu/.cache/lay/development/run-lrbaz0rx/RESULT.json",
+    "remote": "/home/e/projects/lay-development-runner/run-ITUHLh",
+    "archive_sha256": "6a17a45c31c47433340cafea006ebd022b738bb6f319ed825aaa2c05fafa692f",
+    "tests": "838/838PASS",
+    "worker_seconds": 114.05210126098245,
+    "controller_seconds": 122.3,
+    "all737RustHashesMatch": true,
+    "scope": "IME787+6contracts51; no release/global quality proof; priorRdaemon273 retained unchanged source"
+  },
+  "build_exec": 56231,
+  "native_plan": "Match SI35 comparison: unchanged originalnormal20 then unchangedfield1functional15 without passivewire; fresh T bytes/pins, fewer instrumentation calls only. Actual byte changes fingerprinted for both roles; no functional source changes to daemon. Partial35 never replaces full432.",
+  "build": {
+    "schema": "lay.remote-native-candidate.v1",
+    "gate": "/home/e/projects/lay-development-runner/run-ITUHLh",
+    "archive_sha256": "6a17a45c31c47433340cafea006ebd022b738bb6f319ed825aaa2c05fafa692f",
+    "source_head": "d362e7c82cb14f3d2aab123b9130707f1843ba02",
+    "build_log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-log-1791947313773167507.txt",
+    "elapsed_seconds": 183.83381713798735,
+    "runtime_installation": "PRIVATE_TEST_RUNTIME_ONLY",
+    "delivery_routes_changed": false,
+    "lay-ibus-engine": {
+      "sha256": "a540cd77246e1971fca26302b480bb3bcffcc0ac1c84f96810f8e281405f03b4",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791947497606895351/bin/lay-ibus-engine",
+      "bytes": 8272272
+    },
+    "lay-daemon": {
+      "sha256": "139cd34578673ffa43789cf3dfc0d87f3b435f3b93c74aa2b158726a0b6dc28a",
+      "path": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/candidate-build-1791947497606895351/bin/lay-daemon",
+      "bytes": 9264592
+    }
+  },
+  "ast": {
+    "status": "PASS",
+    "scope": "Remote AST-only update; unchanged Rust vs immutable full gate",
+    "seconds": 20.994683646975318,
+    "rust_rows_verified": 737,
+    "log": "/home/e/projects/lay-development-runner/firefox-legacy-native-20261012.6onP5c/T-final-graph-1791947292458944490.log",
+    "artifacts": {
+      "graphify-out/graph.json": "3774ac2e8bfb4a19d261cc7ed9d5d6623e24d6135e88a3e14a7e37bff7a00d33",
+      "graphify-out/source_graph_binding.json": "59226d754f4f9cc8d8160c6afc0f7f6976507b9d9a7b9a6f934041c3654dd5e8",
+      "graphify-out/GRAPH_REPORT.md": "4efdb1a224e1ba97952f5530a614ac5f8e2ad9ec1d70431f2eb16d6c4139e819",
+      "src/generated/architecture_graph_receipt.json": "2c9c5a2b19f85d8e1006198eaac1cb7b51fbe306bc18d486235225e54a575d60"
+    }
+  },
+  "native_live": {
+    "actual_exec": 83008,
+    "driver_exec": 60771,
+    "zero_key_receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/T-firefox-zero-key.json",
+    "scope": "0::/user.slice/user-1000.slice/user@1000.service/app.slice/lay-verify-1000-3809281.scope",
+    "keyboard_owner_pid": 3809302,
+    "keyboard_owner_starttick": "14516094",
+    "oldSIstrongClosed": true,
+    "no_heavy_while_gui_live": true
+  },
+  "native_result": {
+    "standard": "20/20PASS",
+    "functional": "9PASS5FAIL1BLOCKED15",
+    "cursor": "FAIL",
+    "receipt": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/T-failure-only-diagnostic/RESULT.json",
+    "firstloss": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/T-reset-order-first-failure.json",
+    "closure": "/home/ubu/.cache/lay/development/remote-firefox-setup-j2he3qf6/T-firefox-closed.json",
+    "original_parents_exit0_noheldkeys": true,
+    "actual_exec_exit": 0,
+    "diagnostic_replaces_full432": false
+  },
+  "next_decision": "2026-10-14-cursor-reset-receive-order"
+}

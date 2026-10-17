@@ -224,6 +224,20 @@ fn decide_space_autocorrect_observed(req: InputGateRequest<'_>) -> ObservedInput
     decide_space_autocorrect_observed_internal(req, SpaceCorrectionEvidence::FullField(None))
 }
 
+pub(crate) fn decide_space_input_gate_if_current(
+    req: InputGateRequest<'_>,
+    certificate: Option<&crate::exact_layout_authority::ExactLayoutContourCertificate>,
+    is_current: &dyn Fn() -> bool,
+) -> Option<ObservedInputGateDecision> {
+    let trigger = req.trigger;
+    let observed = crate::correction_core::resolve_full_text_correction_observed_if_current(
+        correction_request_from_input_gate(req),
+        certificate,
+        is_current,
+    )?;
+    Some(observed_boundary_decision(trigger, observed))
+}
+
 #[derive(Clone, Copy)]
 enum SpaceCorrectionEvidence<'a> {
     FullField(Option<&'a crate::exact_layout_authority::ExactLayoutContourCertificate>),
@@ -253,6 +267,13 @@ fn decide_space_autocorrect_observed_internal(
             )
         }
     };
+    observed_boundary_decision(trigger, observed)
+}
+
+fn observed_boundary_decision(
+    trigger: InputGateTrigger,
+    observed: crate::correction_core::ObservedCorrectionResolution,
+) -> ObservedInputGateDecision {
     let resolution = observed.resolution;
     let action = word_boundary_action(&resolution);
 
