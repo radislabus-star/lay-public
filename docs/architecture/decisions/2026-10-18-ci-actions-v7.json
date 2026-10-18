@@ -3,6 +3,7 @@
   "decision": "Upgrade actions/checkout and actions/setup-node to v7 in the existing CI workflows, retaining the security workflow's full checkout commit pin and refreshing the architecture receipt for the changed CI input.",
   "reason": "The user authorized completion of the remaining public dependency PRs. PRs 51 and 54 update the same CI surface. Their original heads lack a new decision for protected workflow changes and carry a stale architecture receipt. Those refusals must be satisfied without changing the guards, test selection or failure policy.",
   "verification": "The owning Markdown decision records the old failures, upstream compatibility requirements and acceptance boundary. Refresh the graph through scripts/update-architecture-graph.sh on the guarded remote worker. Require independent review and all five GitHub checks on the exact integrated PR head before merging.",
+  "not_tested": "New physical-client behavior, input latency, installed binaries and the reporter's Orange Pi login failure. No runtime input acceptance is claimed by this CI dependency update.",
   "invariants": ["C01", "C09", "C10"],
   "protected_paths": [
     ".github/workflows/architecture-canon.yml",
