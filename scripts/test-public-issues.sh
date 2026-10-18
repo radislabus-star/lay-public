@@ -15,6 +15,8 @@ search_quiet() {
     fi
 }
 
+python3 "$ROOT/tests/test_update_menu.py"
+
 echo "== Bazzite/rpm-ostree platform route =="
 platform="$(LAY_PACKAGE_MANAGER_OVERRIDE=rpm-ostree bash "$ROOT/install.sh" --check-platform)"
 grep -q '^package_manager=rpm-ostree$' <<<"$platform"

@@ -138,6 +138,7 @@ rm -f \
     "$HOME/.local/bin/lay-l1.1-restore" \
     "$HOME/.local/bin/lay-l1.1-serve" \
     "$HOME/.local/bin/lay-runtime-control" \
+    "$HOME/.local/bin/lay-update" \
     "$HOME/.local/bin/lay-kde-tray" \
     "$HOME/.local/bin/lay-host-vm-guard" \
     "$HOME/.local/bin/lay-nanda-train" \

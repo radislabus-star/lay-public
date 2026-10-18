@@ -217,6 +217,9 @@ def main() -> int:
             self.app = QApplication(sys.argv)
             self.app.setApplicationName("lay")
             self.app.setQuitOnLastWindowClosed(False)
+            # The updater restarts this tray after installation. Its terminal
+            # must survive tray destruction, including with kitty and xterm.
+            self.update_process: subprocess.Popen[bytes] | None = None
             self.menu = QMenu()
             self.tray = QSystemTrayIcon(self._icon(daemon_active()), self.app)
             self.tray.activated.connect(self._activated)
@@ -253,9 +256,13 @@ def main() -> int:
             title = QAction(f"Lay {lay_version().removeprefix('lay ')}", self.menu)
             title.setEnabled(False)
             self.menu.addAction(title)
-            self.status_action = QAction("", self.menu)
-            self.status_action.setEnabled(False)
-            self.menu.addAction(self.status_action)
+            self.menu.addSeparator()
+
+            enabled = QAction("Lay включён", self.menu)
+            enabled.setCheckable(True)
+            enabled.setChecked(daemon_active())
+            enabled.triggered.connect(self._set_enabled)
+            self.menu.addAction(enabled)
             self.menu.addSeparator()
 
             layout = QAction("Переключить раскладку RU / EN", self.menu)
@@ -273,12 +280,7 @@ def main() -> int:
                 mode_group.addAction(action)
                 mode_menu.addAction(action)
 
-            enabled = QAction("Lay включён", self.menu)
-            enabled.setCheckable(True)
-            enabled.setChecked(daemon_active())
-            enabled.triggered.connect(self._set_enabled)
-            self.menu.insertAction(mode_menu.menuAction(), enabled)
-
+            self.menu.addSeparator()
             self._add_switch("Помощь при наборе", "typing_assist", cfg)
             self._add_switch("Автозамена", "auto_replace", cfg)
             self.menu.addSeparator()
@@ -287,10 +289,15 @@ def main() -> int:
             settings.triggered.connect(self._open_settings)
             self.menu.addAction(settings)
 
+            updates = QAction(QIcon.fromTheme("system-software-update"), "Проверить обновления", self.menu)
+            updates.triggered.connect(self._open_updates)
+            self.menu.addAction(updates)
+
             diagnostics = self.menu.addMenu("Диагностика")
             diagnostic_status = QAction("Службы: работают" if daemon_active() else "Службы: остановлены", diagnostics)
             diagnostic_status.setEnabled(False)
             diagnostics.addAction(diagnostic_status)
+            self.status_action = diagnostic_status
             logs = QAction("Открыть журнал", diagnostics)
             logs.triggered.connect(self._open_logs)
             diagnostics.addAction(logs)
@@ -306,7 +313,7 @@ def main() -> int:
                 recent.addAction(row)
 
             close_tray = QAction("Закрыть значок", diagnostics)
-            close_tray.triggered.connect(self.app.quit)
+            close_tray.triggered.connect(self._close_tray)
             diagnostics.addAction(close_tray)
             self._refresh_status()
 
@@ -344,11 +351,34 @@ def main() -> int:
             if not open_settings():
                 QMessageBox.warning(None, "Lay", "Не удалось открыть настройки")
 
+        def _open_updates(self) -> None:
+            if self.update_process is not None and self.update_process.poll() is None:
+                return
+            try:
+                self.update_process = subprocess.Popen(
+                    [str(Path.home() / ".local/bin/lay-update"), "--menu"],
+                    start_new_session=True,
+                )
+            except OSError:
+                QMessageBox.warning(None, "Обновление Lay", "Не удалось запустить lay-update. Переустанови Lay.")
+
+        def _close_tray(self) -> None:
+            if self.update_process is not None and self.update_process.poll() is None:
+                QMessageBox.information(None, "Обновление Lay", "Дождись завершения обновления и закрой его терминал.")
+                return
+            self.app.quit()
+
         def _open_logs(self) -> None:
             if not open_logs():
                 QMessageBox.warning(None, "Lay", "Не найден терминал для журнала")
 
         def _refresh_status(self) -> None:
+            if self.update_process is not None:
+                code = self.update_process.poll()
+                if code is not None:
+                    self.update_process = None
+                    if code:
+                        QMessageBox.warning(None, "Обновление Lay", "Не удалось выполнить обновление или открыть терминал. Запусти lay-update в терминале.")
             active = daemon_active()
             self.tray.setIcon(self._icon(active))
             self.tray.setToolTip(f"Lay\nСлужбы: {'работают' if active else 'остановлены'}")

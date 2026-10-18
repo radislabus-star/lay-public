@@ -13,6 +13,7 @@ fn gnome_tray_is_a_compact_daily_surface() {
         "Помощь при наборе",
         "Автозамена",
         "Настройки",
+        "Проверить обновления",
         "Диагностика",
         "Открыть журнал",
     ] {
@@ -21,7 +22,6 @@ fn gnome_tray_is_a_compact_daily_surface() {
     assert!(read_extension("recent_actions_menu.js").contains("Последние действия"));
 
     for stale in [
-        "Проверить обновления",
         "Перезапустить службы",
         "Журнал отладки действий",
         "NANDA ячейки",
@@ -45,11 +45,55 @@ fn tray_actions_have_real_runtime_owners() {
         "saveConfig(this._cfg);",
         "restartDaemon();",
         "openPreferences()",
+        "openUpdateCheck(",
         "openDiagnosticsLog()",
         "createRecentActionsMenu(this)",
     ] {
         assert!(tray.contains(owner), "tray action has no owner: {owner}");
     }
+}
+
+#[test]
+fn both_trays_use_the_installed_updater_and_daily_group_order() {
+    let tray = read_extension("lay-impl.js");
+    let kde = read("scripts/lay-kde-tray.py");
+    for source in [&tray, &kde] {
+        assert!(source.contains("Проверить обновления"));
+        let labels = [
+            "Lay включён",
+            "Режим ввода:",
+            "Помощь при наборе",
+            "Автозамена",
+            "Настройки",
+            "Проверить обновления",
+            "Диагностика",
+        ];
+        // The GNOME build method delegates row construction; check its calls below.
+        if std::ptr::eq(source, &kde) {
+            let mut offset = source.find("def _build_menu").unwrap();
+            for label in labels {
+                offset += source[offset..].find(label).unwrap();
+            }
+        }
+    }
+    let build = nearby(&tray, "    _buildMenu() {", 1800);
+    let mut offset = 0;
+    for call in [
+        "this._enabledSwitchItem()",
+        "this._layoutSwitchItem()",
+        "this._inputModeMenu()",
+        "Помощь при наборе",
+        "Автозамена",
+        "this._preferencesItem()",
+        "this._updateItem()",
+        "this._diagnosticsMenu()",
+    ] {
+        offset += build[offset..].find(call).unwrap();
+    }
+    assert!(read_extension("tray_support.js").contains("/.local/bin/lay-update"));
+    assert!(kde.contains(".local/bin/lay-update"));
+    assert!(read("install.sh").contains("ln -sf \"$DIR/update.sh\" ~/.local/bin/lay-update"));
+    assert!(read("uninstall.sh").contains("/.local/bin/lay-update"));
 }
 
 #[test]

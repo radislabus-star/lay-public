@@ -3,20 +3,66 @@
 set -euo pipefail
 
 SOURCE_ONLY=0
-if [ "${1:-}" = "--source-only" ]; then
+INTERACTIVE=0
+CHECK_ONLY=0
+if [ "$#" -gt 1 ]; then
+    echo "Использование: lay-update [--menu|--check|--source-only]" >&2
+    exit 2
+elif [ "${1:-}" = "--source-only" ]; then
     SOURCE_ONLY=1
+elif [ "${1:-}" = "--check" ]; then
+    CHECK_ONLY=1
+elif [ "${1:-}" = "--interactive" ]; then
+    INTERACTIVE=1
+elif [ "${1:-}" = "--menu" ]; then
+    : # Handled below, after resolving the installed symlink.
 elif [ "$#" -gt 0 ]; then
-    echo "Использование: bash update.sh [--source-only]" >&2
+    echo "Использование: lay-update [--menu|--check|--source-only]" >&2
     exit 2
 fi
 
-DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT="$(readlink -f -- "${BASH_SOURCE[0]}")"
+DIR="$(dirname "$SCRIPT")"
+if [ "${1:-}" = "--menu" ]; then
+    command='bash "$1" --interactive; result=$?; if [ "$result" != 0 ]; then printf "\nОшибка обновления (код %s).\n" "$result"; fi; printf "\nНажми Enter, чтобы закрыть окно..."; read -r; exit "$result"'
+    terminals=(gnome-terminal kgx konsole wezterm kitty xterm)
+    if [[ "${XDG_CURRENT_DESKTOP:-}" =~ [Kk][Dd][Ee]|[Pp]lasma ]]; then
+        terminals=(konsole gnome-terminal kgx wezterm kitty xterm)
+    fi
+    for terminal in "${terminals[@]}"; do
+        if ! command -v "$terminal" >/dev/null 2>&1; then continue; fi
+        case "$terminal" in
+            gnome-terminal) exec "$terminal" --wait -- bash -c "$command" lay-update "$SCRIPT" ;;
+            kgx) exec "$terminal" -- bash -c "$command" lay-update "$SCRIPT" ;;
+            wezterm) exec "$terminal" start -- bash -c "$command" lay-update "$SCRIPT" ;;
+            *) exec "$terminal" -e bash -c "$command" lay-update "$SCRIPT" ;;
+        esac
+    done
+    echo "Не найден терминал для обновления Lay. Запусти lay-update в своём терминале." >&2
+    exit 1
+fi
 cd "$DIR"
 
 if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
     echo "update.sh работает только из git-копии lay." >&2
     exit 1
 fi
+
+state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/lay"
+mkdir -p "$state_dir"
+exec 9>"$state_dir/update.lock"
+if ! flock -n 9; then
+    echo "Обновление Lay уже выполняется в другом окне." >&2
+    exit 75
+fi
+
+confirm_install() {
+    if [ "$INTERACTIVE" != 1 ]; then return; fi
+    echo "Для обновления потребуется сборка и установка Lay; возможен запрос sudo."
+    printf 'Обновить сейчас? [y/N]: '
+    read -r answer || answer=''
+    case "$answer" in y|Y|д|Д|да|Да) ;; *) echo 'Обновление отменено.'; exit 0 ;; esac
+}
 
 preserve_local_changes() {
     if [ -z "$(git status --porcelain --untracked-files=normal)" ]; then
@@ -55,21 +101,24 @@ live_extension_version() {
 }
 
 refresh_runtime() {
-    if [ -x ./dev-reload.sh ]; then
-        bash ./dev-reload.sh
-        return
-    fi
-
-    if command -v gnome-extensions >/dev/null 2>&1; then
-        if gnome-extensions help reload >/dev/null 2>&1; then
-            gnome-extensions reload lay@radislabus-star.github.io || true
+    desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
+    if [[ "$desktop_hint" =~ [Gg][Nn][Oo][Mm][Ee]|[Uu]nity ]]; then
+        if [ -x ./dev-reload.sh ]; then
+            bash ./dev-reload.sh
         else
-            gnome-extensions disable lay@radislabus-star.github.io 2>/dev/null || true
-            sleep 1
-            gnome-extensions enable lay@radislabus-star.github.io 2>/dev/null || true
+            ./scripts/check-gnome-extension-runtime.sh --fix --reload
+            systemctl --user restart lay-daemon
         fi
+    else
+        systemctl --user restart lay-daemon
     fi
-    systemctl --user restart lay-daemon || true
+    if [[ "$desktop_hint" =~ [Kk][Dd][Ee]|[Pp]lasma ]] && [ -x "$HOME/.local/bin/lay-kde-tray" ]; then
+        pkill -f "$HOME/.local/bin/lay-kde-tray" 2>/dev/null || true
+        lay_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/lay"
+        mkdir -p "$lay_state_dir"
+        # A long-lived tray must not inherit the updater lock.
+        nohup "$HOME/.local/bin/lay-kde-tray" 9>&- >"$lay_state_dir/kde-tray.log" 2>&1 &
+    fi
 }
 
 echo "=== проверка обновлений ==="
@@ -104,7 +153,21 @@ if [ "$ahead" != "0" ]; then
     echo "локальных неопубликованных коммитов: $ahead"
 fi
 
+if [ "$CHECK_ONLY" = 1 ]; then
+    echo "source: $(source_version)"
+    echo "Проверка завершена; установка и перезапуск не выполнялись."
+    exit 0
+fi
+if [ "$behind" != 0 ] && [ "$ahead" != 0 ]; then
+    echo "Ветки разошлись. Обновление остановлено; локальные изменения сохранены на месте." >&2
+    exit 1
+fi
+
 if [ "$behind" = "0" ]; then
+    if [ "$SOURCE_ONLY" = 1 ]; then
+        echo "✓ исходники актуальны; установка пропущена (--source-only)"
+        exit 0
+    fi
     src_ver="$(source_version)"
     installed_ver="$(installed_version)"
     live_ver="$(live_extension_version)"
@@ -115,7 +178,8 @@ if [ "$behind" = "0" ]; then
     if [ -n "$src_ver" ] && [ "$installed_ver" != "$src_ver" ]; then
         echo ""
         echo "⚠ установленная версия отстала от рабочей копии, переустанавливаю..."
-        bash install.sh
+        confirm_install
+        LAY_KEEP_OLLAMA=1 bash install.sh
         refresh_runtime
         echo "✓ runtime обновлён до $(current_version)"
         exit 0
@@ -124,6 +188,7 @@ if [ "$behind" = "0" ]; then
     if [ -n "$src_ver" ] && [ -n "$live_ver" ] && [ "$live_ver" != "$src_ver" ]; then
         echo ""
         echo "⚠ трей/DBus держит старую версию, перезагружаю runtime..."
+        confirm_install
         refresh_runtime
         echo "✓ трей/DBus: $(live_extension_version)"
         exit 0
@@ -135,9 +200,10 @@ if [ "$behind" = "0" ]; then
 fi
 
 echo ""
+if [ "$SOURCE_ONLY" != 1 ]; then confirm_install; fi
 preserve_local_changes
 echo "=== git pull ==="
-git pull --ff-only
+git merge --ff-only "$upstream"
 
 if [ "$SOURCE_ONLY" = "1" ]; then
     echo "✓ исходники обновлены; установка пропущена (--source-only)"
@@ -146,24 +212,11 @@ fi
 
 echo ""
 echo "=== install ==="
-bash install.sh
+LAY_KEEP_OLLAMA=1 bash install.sh
 
 echo ""
 echo "=== reload runtime ==="
 refresh_runtime
-if [ -f "$HOME/.config/autostart/lay-kde-tray.desktop" ]; then
-    pkill -f "$HOME/.local/bin/lay-kde-tray" 2>/dev/null || true
-    lay_state_dir="$HOME/.local/state/lay"
-    mkdir -p "$lay_state_dir"
-    lay_kde_tray_log="$lay_state_dir/kde-tray.log"
-    desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
-    if [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] \
-        && { printf '%s' "$desktop_hint" | grep -Eiq 'kde|plasma' || pgrep -x plasmashell >/dev/null 2>&1; }; then
-        nohup "$HOME/.local/bin/lay-kde-tray" >"$lay_kde_tray_log" 2>&1 &
-    else
-        echo "ℹ KDE tray обновлён; он стартует при следующем входе в KDE"
-    fi
-fi
 if systemctl --user is-enabled --quiet lay-host-vm-guard.service 2>/dev/null; then
     systemctl --user restart lay-host-vm-guard.service || true
 fi

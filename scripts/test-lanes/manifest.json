@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3175,
+    "correctness": 3176,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 349,
-    "target": 2888
+    "target": 2889
   },
   "package_fixtures": [
     {
@@ -2935,6 +2935,13 @@
       "lane": "correctness",
       "name": "atomic::tests::td120_atomic_sensitive_callback_censors_real_pending_frame_and_feedback",
       "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "both_trays_use_the_installed_updater_and_daily_group_order",
+      "target": "test:tray_ui_contract"
     },
     {
       "isolation": "target",

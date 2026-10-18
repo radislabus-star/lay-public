@@ -38,6 +38,7 @@ import {
     loadConfig,
     normalizeConfig,
     openPreferences,
+    openUpdateCheck,
     openDiagnosticsLog,
     applyInputChannel,
     restartDaemon,
@@ -114,13 +115,16 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._statusItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        this.menu.addMenuItem(this._layoutSwitchItem());
         this.menu.addMenuItem(this._enabledSwitchItem());
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(this._layoutSwitchItem());
         this.menu.addMenuItem(this._inputModeMenu());
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._quickSwitchItem('Помощь при наборе', 'typing_assist', true));
         this.menu.addMenuItem(this._quickSwitchItem('Автозамена', 'auto_replace', true));
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._preferencesItem());
+        this.menu.addMenuItem(this._updateItem());
         this.menu.addMenuItem(this._diagnosticsMenu());
 
         this._refreshSelections();
@@ -278,6 +282,12 @@ class LayIndicator extends PanelMenu.Button {
     _preferencesItem() {
         const item = new PopupMenu.PopupImageMenuItem('Настройки', 'emblem-system-symbolic');
         item.connect('activate', () => openPreferences());
+        return item;
+    }
+
+    _updateItem() {
+        const item = new PopupMenu.PopupImageMenuItem('Проверить обновления', 'software-update-available-symbolic');
+        item.connect('activate', () => openUpdateCheck(message => this._notify('Обновление Lay', message, true)));
         return item;
     }
 

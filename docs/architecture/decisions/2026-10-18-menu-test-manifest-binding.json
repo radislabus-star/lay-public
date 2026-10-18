@@ -1,0 +1,12 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Rebind the existing zero-known-failures contract to the test manifest containing the new GNOME/KDE menu regression.",
+  "reason": "The first full source run executed all 3212 selected tests with zero failures, then rejected the old manifest digest during final aggregation. This is bookkeeping drift introduced by the additional tray contract test. Only manifest_sha256 changes; the empty allowed-failure list, observation bytes and all guard assertions remain unchanged.",
+  "verification": "Retain the original failed aggregate at /home/ubu/.cache/lay/development/run-qlkejm0j/RESULT.json. Verify the new digest against scripts/test-lanes/manifest.json and require a fresh canonical full source result with zero failures before building or installing. Final source/build/install receipts are linked from docs/lay-menu-settings-architecture.md.",
+  "not_tested": "This digest repair establishes no native-client acceptance, menu visual acceptance or latency improvement. Historical browser receipts remain historical.",
+  "invariants": ["C09", "C10"],
+  "protected_paths": ["scripts/test-lanes/known_failures.json"],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

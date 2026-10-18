@@ -17,7 +17,20 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.89` (published and installed CLI/daemon/IME/panel)
+- `1.0.90` (installed locally; publication pending)
+
+1.0.90 restores the update action and groups GNOME/KDE daily controls.
+See [release notes](docs/release-1.0.90.md).
+
+1.0.90 validation: 3,212/3,212 remote source tests, 10/10 updater tests and
+7/7 Qt offscreen checks passed. Review: 9/10. Release, security and architecture
+gates passed. After installation, CLI and panel report 1.0.90; loaded daemon
+and IME hashes match the build. The 23 protected files, global IBus, L1.1/L3,
+configuration, input sources and mode are preserved. Installed updater and KDE
+tray links point to the accepted checkout. Receipts:
+`/home/ubu/.cache/lay/development/menu90-20261018/installation/INSTALL.json`
+and `POST-VERIFY.json` alongside it. New native input acceptance and real Plasma
+desktop acceptance remain NOT_TESTED; the historical 432-case matrix below is retained.
 
 1.0.89: exact acknowledged Space-series replay (TD154/155), source3211/3211,
 review9/10, first-attempt source-main CI/Security. New whole432=349P50F33B,

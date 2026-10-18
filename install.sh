@@ -257,6 +257,7 @@ echo ""
 echo "=== установка release в ~/.local/lib/lay/bin/ ==="
 scripts/install-release-binaries.sh
 ln -sf "$DIR/scripts/lay-runtime-control.sh" ~/.local/bin/lay-runtime-control
+ln -sf "$DIR/update.sh" ~/.local/bin/lay-update
 ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
 ln -sf "$DIR/scripts/lay-host-vm-guard.sh" ~/.local/bin/lay-host-vm-guard
 rm -f ~/.local/bin/lay-nanda-train ~/.local/bin/lay-nanda-eval ~/.local/bin/lay-nanda-loop

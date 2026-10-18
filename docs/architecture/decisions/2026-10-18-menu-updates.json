@@ -1,0 +1,16 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Restore Check updates in both GNOME and KDE menus through the single installed lay-update --menu entrypoint; group daily controls before settings, updates and diagnostics.",
+  "reason": "The user explicitly requested the missing update action, a menu redesign and KDE support. The previous inventory omitted this action. Both frontends must use update.sh rather than a hardcoded checkout or a second updater. KDE updater terminals must survive the tray's own installation restart.",
+  "verification": "Isolated executable updater tests cover GNOME/KDE terminal argv, read-only check, confirmation, source-only operation, divergence, lock contention and dirty-work preservation. Tray source contracts cover the shared entrypoint and daily group order. Remote full source gate, independent implementation review, release build and installed identity evidence are recorded in docs/lay-menu-settings-architecture.md as they finish.",
+  "not_tested": "Historical Firefox/Chrome native input receipts do not certify this build. Input delivery routes and model authority are outside this menu change. A real Plasma desktop acceptance is distinct from offscreen Qt and source evidence.",
+  "invariants": ["C01", "C06", "C09", "C10"],
+  "protected_paths": [
+    "extension/lay@radislabus-star.github.io/lay-impl.js",
+    "extension/lay@radislabus-star.github.io/tray_support.js",
+    "scripts/test-lanes/manifest.json"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

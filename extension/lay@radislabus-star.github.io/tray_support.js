@@ -4,12 +4,12 @@ import GLib from 'gi://GLib';
 export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.89';
-export const APP_RELEASE_DATE = '2026-10-16';
+export const APP_VERSION = '1.0.90';
+export const APP_RELEASE_DATE = '2026-10-18';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
-export const MENU_WIDTH = 280;
+export const MENU_WIDTH = 300;
 export const COMPACT_SUBTITLE_STYLE = 'font-weight:normal; font-size:76%; opacity:180;';
 
 export const INPUT_MODE_OPTIONS = [
@@ -229,6 +229,21 @@ export function openPreferences() {
     const project = `${PROJECT_DIR}/extension/lay@radislabus-star.github.io/settings.js`;
     const script = GLib.file_test(installed, GLib.FileTest.EXISTS) ? installed : project;
     try { Gio.Subprocess.new(['gjs', '-m', script], Gio.SubprocessFlags.NONE); } catch(e) {}
+}
+
+export function openUpdateCheck(onError) {
+    const updater = `${GLib.get_home_dir()}/.local/bin/lay-update`;
+    try {
+        if (!GLib.file_test(updater, GLib.FileTest.IS_EXECUTABLE))
+            throw new Error('Не найден lay-update. Переустанови Lay.');
+        const child = Gio.Subprocess.new([updater, '--menu'], Gio.SubprocessFlags.NONE);
+        child.wait_check_async(null, (process, result) => {
+            try { process.wait_check_finish(result); }
+            catch (error) { onError('Не удалось выполнить обновление или открыть терминал. Запусти lay-update в терминале.'); }
+        });
+    } catch (error) {
+        onError(error.message);
+    }
 }
 
 export function openDiagnosticsLog() {

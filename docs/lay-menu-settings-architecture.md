@@ -1,6 +1,6 @@
 # Lay menu and settings architecture
 
-Status: accepted for Lay 1.0.27.
+Status: accepted for Lay 1.0.27; update/menu revision for 1.0.90 is recorded below.
 
 ## Ownership
 
@@ -30,6 +30,7 @@ defaults, config normalization, or runtime commands.
 | Input mode | `text_backend`, `nanda_precognition`, `lay-runtime-control channel` | Selects uinput or IME as one coherent route | KEEP |
 | Typing assistance | `typing_assist` | Enables live completion/correction assistance | KEEP |
 | Autocorrection | `auto_replace` | Enables admitted automatic replacements | KEEP |
+| Check updates | Installed `lay-update -> update.sh` | Opens a terminal; checks source upstream and asks before source build/install | KEEP |
 | Settings | `settings.js -> settings_view.js` | Opens the single settings surface | KEEP |
 | Runtime status | `systemctl --user is-active` | Read-only service observation | MOVE TO DIAGNOSTICS |
 | Recent actions | `recent_actions.jsonl` | Read-only recent edit receipt view | MOVE TO DIAGNOSTICS |
@@ -64,7 +65,6 @@ defaults, config normalization, or runtime commands.
 | Multiple trigger taps | Experimental behavior without a stable product workflow |
 | Correct before Enter | Not stable across applications and already documented as outside the public contract |
 | Window-bound layout (`ptah_alexs`) | No complete rule editor or cross-desktop owner; hidden focus execution was removed too |
-| Check updates | Repository/developer operation, not an installed runtime setting |
 | Restart services | Diagnostics must observe; routine recovery belongs to runtime/service tooling |
 | Daemon switch under diagnostics | Replaced by the explicit top-level `Lay enabled` product control |
 | About submenu | Version and GitHub are available once in Settings |
@@ -118,3 +118,63 @@ post-install PID/config parity are separate release gates.
 Post-install receipt:
 
 - `docs/receipts/menu-settings-1.0.27-post-install.json`
+
+## 1.0.90 menu and updater revision — 2026-10-18
+
+The user requested the update command back and a coordinated GNOME/KDE menu
+refresh. Both menus group enablement, layout/input mode, assistance/autoreplace,
+and settings/update/diagnostics with separators; status stays read-only. Existing
+config/runtime owners and IME delivery paths retain their contracts.
+
+`~/.local/bin/lay-update` resolves the installed symlink to the owning checkout.
+Both trays call `--menu`; the common updater chooses the terminal, preserves
+progress/errors and asks before a source build/install (including possible sudo).
+`--check` only fetches and reports; `--source-only` never repairs runtime. The
+existing installer is called with `LAY_KEEP_OLLAMA=1`. A per-user lock excludes
+concurrent updates. Divergence is refused before stashing; the checked upstream
+is explicitly merged ff-only. Refresh follows the current desktop without a
+global IBus restart. No release downloader, alternate settings owner, daemon RPC,
+background polling or input-delivery route is introduced.
+
+Consequences: updating still requires a Git checkout, network, build dependencies
+and a terminal. A terminal/install failure is visible; menu-launch success is
+not installation proof. GNOME and KDE visual acceptance must be stated separately.
+No native input acceptance or latency improvement is claimed by this menu-only
+change. Source, installation and physical-client evidence remain distinct.
+
+Verification records (private development receipts, not bundled runtime data):
+
+- `~/.cache/lay/development/menu90-20261018/UI-CHECK.log`: ten executable
+  updater checks and seven checks of the actual Qt menu class passed in an
+  isolated HOME. The installed-symlink regression fails against the previous
+  updater. Qt uses the offscreen platform; an actual Plasma session is untested.
+- `~/.cache/lay/development/menu90-20261018/REVIEW.json`: independent static
+  review approved the implementation and rollback installer, 9/10, after two
+  passes. The receipt pins the reviewed executable inputs and installer hash.
+- `~/.cache/lay/development/run-qlkejm0j/RESULT.json`: all 3212 selected tests
+  completed with zero failures, but final aggregation refused an obsolete
+  known-failure manifest binding. Updating that digest retains the empty
+  allowed-failure list; no test or assertion is waived. This failed aggregate
+  is retained rather than rewritten as PASS.
+- `~/.cache/lay/development/menu90-20261018/full-proof.json` binds the final
+  source run and original request to the tested executable inputs.
+  `BUILD.json` in the same directory records the remaining release gates,
+  locked binaries and extension hashes; `installation/INSTALL.json` records
+  the local outcome, backup/rollback, loaded process identities and preservation
+  of config, sources, input mode, global IBus, L1.1 and L3. Each receipt's own
+  verdict governs its scope; a build or menu-launch result does not establish
+  installation or native-input acceptance.
+
+KDE lifecycle repair: a `QProcess` parented to the tray would be destroyed when
+the updater itself restarts that tray, potentially killing a kitty/xterm update
+terminal. A detached-session `subprocess.Popen` survives that restart; the
+existing status timer observes completion/errors and prevents duplicate launches.
+Manual tray close reports an active update instead of silently exiting. This
+adds no input owner, model/cache identity or training behavior. No hot-path
+latency/allocation changes occur; the only process is the user-requested updater.
+The updater lock remains authoritative across tray lifetimes. Failed launches
+stay visible; installation backup/rollback and loaded-identity evidence remain
+separate from menu activation. A second background updater or delayed restart
+service would add ownership and removal cost and is unnecessary.
+
+Decision: [restore updater and unify daily grouping](architecture/decisions/2026-10-18-menu-updates.md).
