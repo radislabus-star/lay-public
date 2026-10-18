@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.90` (installed locally; publication pending)
+- `1.0.90`
 
 1.0.90 restores the update action and groups GNOME/KDE daily controls.
 See [release notes](docs/release-1.0.90.md).
