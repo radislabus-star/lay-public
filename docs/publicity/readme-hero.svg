@@ -1,78 +1,42 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="580" viewBox="0 0 1280 580" role="img" aria-labelledby="title desc">
-  <title id="title">Lay — два языка, один Lay</title>
-  <desc id="desc">Помощник русского и английского ввода для Linux. Два последовательных нажатия Shift превращают ghbdtn в привет. Также доступны автопереворот на пробеле и принятие подсказки клавишей Tab. Обычный ввод работает локально, без облака. Клавиши и результат показаны схематично.</desc>
-  <defs>
-    <linearGradient id="key" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="1" stop-color="#E9E8E1"/>
-    </linearGradient>
-    <linearGradient id="active-key" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#DDFF9B"/>
-      <stop offset="1" stop-color="#BDFA69"/>
-    </linearGradient>
-    <clipPath id="canvas">
-      <rect width="1280" height="580" rx="24"/>
-    </clipPath>
-  </defs>
-  <g clip-path="url(#canvas)">
-    <rect width="1280" height="580" fill="#F3F2EB"/>
-    <circle cx="1253" cy="3" r="237" fill="#DDF0C4"/>
-    <circle cx="1253" cy="3" r="178" fill="none" stroke="#F3F2EB" stroke-width="2"/>
-    <g font-family="DejaVu Sans, Arial, sans-serif">
-      <text x="52" y="79" fill="#172125" font-size="58" font-weight="700" letter-spacing="-4">lay</text>
-      <path d="M173 40V80" stroke="#C6CAC0"/>
-      <text x="199" y="64" fill="#46534C" font-size="16" font-weight="600" letter-spacing="1.2">RU / EN · LINUX</text>
-      <text x="1228" y="64" text-anchor="end" fill="#46534C" font-size="15" letter-spacing="1.5">ПОМОЩНИК ВВОДА</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="300" viewBox="0 0 1120 300" role="img" aria-labelledby="title desc">
+  <title id="title">Lay — RU / EN layout correction</title>
+  <desc id="desc">Illustration, not an application screenshot. Two successive taps of the left Shift turn ghbdtn into привет. Conversion also works from Russian to English.</desc>
+  <rect x="1" y="1" width="1118" height="298" rx="24" fill="#F6F8FC" stroke="#DCE3EF" stroke-width="2"/>
+  <g font-family="DejaVu Sans, Arial, sans-serif">
+    <text x="44" y="62" font-size="36" font-weight="700" letter-spacing="-2" fill="#17243D">lay</text>
+    <path d="M110 37v25" stroke="#DCE3EF" stroke-width="2"/>
+    <text x="130" y="56" font-size="18" fill="#54627A">Linux</text>
+    <rect x="930" y="30" width="146" height="38" rx="19" fill="#FFFFFF" stroke="#D8E0ED"/>
+    <text x="1003" y="55" font-size="17" font-weight="700" text-anchor="middle" fill="#17243D">RU ↔ EN</text>
 
-      <text x="52" y="223" fill="#172125" font-size="72" font-weight="700" letter-spacing="-3">Два языка.</text>
-      <text x="52" y="305" fill="#172125" font-size="72" font-weight="700" letter-spacing="-3">Один Lay.</text>
-      <path d="M53 330H227" stroke="#95CF52" stroke-width="7"/>
-      <text x="54" y="382" fill="#536057" font-size="24">Раскладка, подсказки,</text>
-      <text x="54" y="419" fill="#536057" font-size="24">команды Linux — под рукой.</text>
+    <rect x="44" y="112" width="294" height="132" rx="18" fill="#FFFFFF" stroke="#D8E0ED" stroke-width="2"/>
+    <circle cx="68" cy="135" r="4" fill="#ABB8CC"/>
+    <text x="84" y="140" font-size="13" letter-spacing="2" fill="#54627A">EN</text>
+    <text x="191" y="204" font-family="DejaVu Sans Mono, monospace" font-size="53" text-anchor="middle" fill="#54627A">ghbdtn</text>
 
-      <g transform="translate(653 126)">
-        <rect x="0" y="10" width="575" height="366" rx="23" fill="#D8DDD0"/>
-        <rect width="575" height="366" rx="23" fill="#172125"/>
-        <text x="32" y="43" fill="#D6DDCF" font-size="18">Два нажатия — нужная раскладка</text>
-        <rect x="486" y="24" width="56" height="25" rx="12" fill="#303D36"/>
-        <text x="514" y="42" text-anchor="middle" fill="#CFFF89" font-size="14" font-weight="700">2×</text>
+    <path d="M360 178h29m-9-9 9 9-9 9" fill="none" stroke="#ABB8CC" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
 
-        <g transform="translate(32 80)">
-          <rect y="10" width="237" height="128" rx="18" fill="#8A9589"/>
-          <rect width="237" height="128" rx="18" fill="url(#key)"/>
-          <rect x="8" y="7" width="221" height="108" rx="12" fill="none" stroke="#FFFFFF" stroke-width="2"/>
-          <path d="M26 48L40 32L54 48H46V66H34V48Z" fill="none" stroke="#25312C" stroke-width="2.5" stroke-linejoin="round"/>
-          <text x="24" y="99" fill="#25312C" font-size="31" font-weight="600">Shift</text>
-          <text x="211" y="100" text-anchor="end" fill="#79837B" font-size="16">01</text>
-        </g>
-        <g transform="translate(290 80)">
-          <rect y="10" width="253" height="128" rx="18" fill="#749943"/>
-          <rect width="253" height="128" rx="18" fill="url(#active-key)"/>
-          <rect x="8" y="7" width="237" height="108" rx="12" fill="none" stroke="#EAFFC7" stroke-width="2"/>
-          <path d="M26 48L40 32L54 48H46V66H34V48Z" fill="none" stroke="#25312C" stroke-width="2.5" stroke-linejoin="round"/>
-          <text x="24" y="99" fill="#25312C" font-size="31" font-weight="600">Shift</text>
-          <text x="227" y="100" text-anchor="end" fill="#547C2B" font-size="16">02</text>
-        </g>
-
-        <path d="M32 252H543" stroke="#465047"/>
-        <g font-family="DejaVu Sans Mono, monospace">
-          <text x="32" y="310" fill="#A3B1A5" font-size="36">ghbdtn</text>
-          <path d="M231 296H282M270 284L282 296L270 308" fill="none" stroke="#CFFF89" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-          <text x="314" y="310" fill="#CFFF89" font-size="36" font-weight="700">привет</text>
-        </g>
-      </g>
-
-      <path d="M52 526H1228" stroke="#CFD4C8"/>
-      <g font-size="18" fill="#354239">
-        <rect x="52" y="544" width="66" height="25" rx="5" fill="#172125"/>
-        <text x="85" y="561" text-anchor="middle" fill="#D9FCAC" font-size="13" font-weight="700">Space</text>
-        <text x="131" y="563">Автопереворот</text>
-        <rect x="438" y="544" width="49" height="25" rx="5" fill="#172125"/>
-        <text x="462" y="561" text-anchor="middle" fill="#D9FCAC" font-size="13" font-weight="700">Tab</text>
-        <text x="500" y="563">Принять подсказку</text>
-        <circle cx="877" cy="556" r="5" fill="#73AA39"/>
-        <text x="894" y="563">Локально · Без облака</text>
-      </g>
+    <g transform="translate(410 119)">
+      <rect y="9" width="116" height="110" rx="16" fill="#CCD5E4"/>
+      <rect width="116" height="110" rx="16" fill="#FFFFFF" stroke="#D8E0ED" stroke-width="2"/>
+      <path d="m22 39 12-14 12 14h-8v15h-8V39z" fill="none" stroke="#17243D" stroke-width="2" stroke-linejoin="round"/>
+      <text x="96" y="34" text-anchor="end" font-size="13" fill="#54627A">01</text>
+      <text x="21" y="87" font-size="25" font-weight="600" fill="#17243D">Shift</text>
     </g>
+    <path d="M540 178h18m-6-6 6 6-6 6" fill="none" stroke="#ABB8CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(572 119)">
+      <rect y="9" width="116" height="110" rx="16" fill="#1E40AF"/>
+      <rect width="116" height="110" rx="16" fill="#2563EB"/>
+      <path d="m22 39 12-14 12 14h-8v15h-8V39z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+      <text x="96" y="34" text-anchor="end" font-size="13" fill="#FFFFFF">02</text>
+      <text x="21" y="87" font-size="25" font-weight="600" fill="#FFFFFF">Shift</text>
+    </g>
+
+    <path d="M710 178h25m-9-9 9 9-9 9" fill="none" stroke="#2563EB" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="756" y="112" width="320" height="132" rx="18" fill="#E8F0FF"/>
+    <circle cx="780" cy="135" r="4" fill="#1D4ED8"/>
+    <text x="796" y="140" font-size="13" letter-spacing="2" fill="#1D4ED8">RU</text>
+    <text x="916" y="204" font-family="DejaVu Sans Mono, monospace" font-size="53" font-weight="700" text-anchor="middle" fill="#1D4ED8">привет</text>
   </g>
 </svg>

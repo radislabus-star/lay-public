@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="300" viewBox="0 0 1120 300" role="img" aria-labelledby="title desc">
+  <title id="title">Lay — RU / EN layout correction</title>
+  <desc id="desc">Illustration, not an application screenshot. Two successive taps of the left Shift turn ghbdtn into привет. Conversion also works from Russian to English.</desc>
+  <rect x="1" y="1" width="1118" height="298" rx="24" fill="#121B2B" stroke="#2B3A51" stroke-width="2"/>
+  <g font-family="DejaVu Sans, Arial, sans-serif">
+    <text x="44" y="62" font-size="36" font-weight="700" letter-spacing="-2" fill="#F0F5FF">lay</text>
+    <path d="M110 37v25" stroke="#2B3A51" stroke-width="2"/>
+    <text x="130" y="56" font-size="18" fill="#A7B6CE">Linux</text>
+    <rect x="930" y="30" width="146" height="38" rx="19" fill="#1B283D" stroke="#34465F"/>
+    <text x="1003" y="55" font-size="17" font-weight="700" text-anchor="middle" fill="#F0F5FF">RU ↔ EN</text>
+
+    <rect x="44" y="112" width="294" height="132" rx="18" fill="#1B283D" stroke="#34465F" stroke-width="2"/>
+    <circle cx="68" cy="135" r="4" fill="#60758F"/>
+    <text x="84" y="140" font-size="13" letter-spacing="2" fill="#A7B6CE">EN</text>
+    <text x="191" y="204" font-family="DejaVu Sans Mono, monospace" font-size="53" text-anchor="middle" fill="#A7B6CE">ghbdtn</text>
+
+    <path d="M360 178h29m-9-9 9 9-9 9" fill="none" stroke="#60758F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <g transform="translate(410 119)">
+      <rect y="9" width="116" height="110" rx="16" fill="#0A1120"/>
+      <rect width="116" height="110" rx="16" fill="#24344E" stroke="#34465F" stroke-width="2"/>
+      <path d="m22 39 12-14 12 14h-8v15h-8V39z" fill="none" stroke="#F0F5FF" stroke-width="2" stroke-linejoin="round"/>
+      <text x="96" y="34" text-anchor="end" font-size="13" fill="#A7B6CE">01</text>
+      <text x="21" y="87" font-size="25" font-weight="600" fill="#F0F5FF">Shift</text>
+    </g>
+    <path d="M540 178h18m-6-6 6 6-6 6" fill="none" stroke="#60758F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="translate(572 119)">
+      <rect y="9" width="116" height="110" rx="16" fill="#1C3D99"/>
+      <rect width="116" height="110" rx="16" fill="#3B6FF5"/>
+      <path d="m22 39 12-14 12 14h-8v15h-8V39z" fill="none" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"/>
+      <text x="96" y="34" text-anchor="end" font-size="13" fill="#FFFFFF">02</text>
+      <text x="21" y="87" font-size="25" font-weight="600" fill="#FFFFFF">Shift</text>
+    </g>
+
+    <path d="M710 178h25m-9-9 9 9-9 9" fill="none" stroke="#3B6FF5" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+
+    <rect x="756" y="112" width="320" height="132" rx="18" fill="#1B3158"/>
+    <circle cx="780" cy="135" r="4" fill="#A8C8FF"/>
+    <text x="796" y="140" font-size="13" letter-spacing="2" fill="#A8C8FF">RU</text>
+    <text x="916" y="204" font-family="DejaVu Sans Mono, monospace" font-size="53" font-weight="700" text-anchor="middle" fill="#A8C8FF">привет</text>
+  </g>
+</svg>
