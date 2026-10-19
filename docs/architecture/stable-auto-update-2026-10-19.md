@@ -140,3 +140,14 @@ run 2026-10-19 21:02:46 EEST. The global IME process remains PID 1166531.
 At this point public stable is still 1.0.92, so discovery correctly reports the
 installed version as newer. Publication and a real equal-version service run
 are verified afterward; their final receipt updates the installation evidence.
+
+Post-publication verification at 2026-10-19T15:19:16Z: public stable tag
+`v1.0.93` resolves to `a59bdab4c11507d861ae6f71d0e5314c698d7c22` and was
+published at 15:18:29Z. The actual installed `lay-update --check` reports
+installed 1.0.93 and stable 1.0.93 with exit status 0. One actual run of the
+installed `lay-auto-update.service` completes with `Result=success` and
+`ExecMainStatus=0`; its journal records the same equal-version result. The timer
+remains enabled. This proves installed stable discovery and the service's
+no-update path; applying a future newer stable release remains untested. The
+global IME process is unchanged, and no fresh native-input result is implied.
+Final receipt: `tech_debt/evidence/stable-auto-update-install-20261019.json`.

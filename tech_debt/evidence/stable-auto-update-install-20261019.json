@@ -145,8 +145,66 @@
     "stdout": "ActiveState=active\nMainPID=3947375",
     "stderr": ""
   },
-  "release_publication": "PENDING; prepublication stable is 1.0.92; installed newer version correctly retained",
+  "release_publication": {
+    "tag": "v1.0.93",
+    "commit": "a59bdab4c11507d861ae6f71d0e5314c698d7c22",
+    "published_at": "2026-10-19T15:18:29Z",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.93",
+    "refs": {
+      "argv": [
+        "git",
+        "ls-remote",
+        "public",
+        "refs/heads/main",
+        "refs/tags/v1.0.93",
+        "refs/tags/v1.0.93^{}"
+      ],
+      "returncode": 0,
+      "stdout": "a59bdab4c11507d861ae6f71d0e5314c698d7c22\trefs/heads/main\n576d06a866c33101476c0a618cd9d46e596baf96\trefs/tags/v1.0.93\na59bdab4c11507d861ae6f71d0e5314c698d7c22\trefs/tags/v1.0.93^{}",
+      "stderr": ""
+    }
+  },
   "fresh_native_input": "NOT_TESTED",
   "delivery_routes_changed": false,
-  "global_ibus_restarted": false
+  "global_ibus_restarted": false,
+  "at_final_verification": "2026-10-19T15:19:16.248425+00:00",
+  "postpublication_installed_check": {
+    "argv": [
+      "/home/ubu/.local/bin/lay-update",
+      "--check"
+    ],
+    "returncode": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.93\nстабильный релиз: 1.0.93\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия",
+    "stderr": ""
+  },
+  "actual_service_run": {
+    "argv": [
+      "systemctl",
+      "--user",
+      "show",
+      "lay-auto-update.service",
+      "--property=Result",
+      "--property=ExecMainStatus"
+    ],
+    "returncode": 0,
+    "stdout": "Result=success\nExecMainStatus=0",
+    "stderr": ""
+  },
+  "actual_service_journal": {
+    "argv": [
+      "journalctl",
+      "--user",
+      "-u",
+      "lay-auto-update.service",
+      "-n",
+      "12",
+      "--no-pager",
+      "-o",
+      "cat"
+    ],
+    "returncode": 0,
+    "stdout": "Starting lay-auto-update.service - Update Lay from the latest stable public release...\n=== проверка обновлений ===\nустановлено: 1.0.93\nстабильный релиз: 1.0.93\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\nFinished lay-auto-update.service - Update Lay from the latest stable public release.",
+    "stderr": ""
+  },
+  "verdict": "INSTALLED_STABLE_DISCOVERY_AND_TIMER_PASS"
 }
