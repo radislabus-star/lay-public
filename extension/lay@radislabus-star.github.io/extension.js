@@ -25,6 +25,7 @@ export default class LayExtension extends Extension {
             'tray_support.js',
             'dbus_service.js',
             'recent_actions_menu.js',
+            'ime_hint_style.js',
         ];
 
         // Уникальная папка = GJS не найдёт в кэше → свежий import, а relative

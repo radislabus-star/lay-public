@@ -49,10 +49,24 @@ fn legacy_unaccepted_completion_is_never_document_composition() {
                 Vec::new()
             }
         );
+        assert_eq!(
+            observed.auxiliary_attribute_updates,
+            if cursor == typed.chars().count() {
+                vec![vec![(2, 0x888888, 0, 5)]]
+            } else {
+                Vec::new()
+            }
+        );
         assert_eq!(engine.composition.preedit_visible, !typed.is_empty());
         zbus::block_on(engine.clear_preedit(&mut EngineOutput::test(&mut observed))).unwrap();
         assert!(!engine.has_live_composition_state() || !typed.is_empty());
         assert!(!engine.composition.auxiliary_visible);
+        if cursor == typed.chars().count() {
+            assert_eq!(
+                observed.auxiliary_attribute_updates.last(),
+                Some(&Vec::new())
+            );
+        }
         assert!(!engine.composition.preedit_visible);
         assert!(engine.selected_precognition_suffix().is_none());
         assert_eq!(engine.composition.buffer, typed);

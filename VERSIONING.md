@@ -17,7 +17,15 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.90`
+- `1.0.92`
+
+1.0.92 makes unaccepted IME hints muted gray in IBus-aware renderers and
+translucent in GNOME's system-colored auxiliary panel. It also aligns the
+package and GNOME panel version metadata. See [release notes](docs/release-1.0.92.md).
+
+1.0.91 published the accepted KDE input fixes and the closed 432-case native
+matrix: 391 PASS / 37 FAIL / 4 BLOCKED. Those results remain evidence for that
+candidate, not fresh acceptance of the presentation change.
 
 1.0.90 restores the update action and groups GNOME/KDE daily controls.
 See [release notes](docs/release-1.0.90.md).

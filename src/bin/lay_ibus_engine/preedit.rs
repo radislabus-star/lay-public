@@ -17,7 +17,7 @@ use lay::typing_cpu::{is_allowed_visible_completion_suffix, phrase_candidate_suf
 
 use super::engine::{InputFrameIdentity, LayIbusEngine};
 use super::precognition_worker::PrecognitionWork;
-use super::text::{make_ibus_text, make_preedit_ibus_text};
+use super::text::{make_hint_ibus_text, make_ibus_text, make_preedit_ibus_text};
 use super::trace;
 use lay::text_edit::{AuthorizedEdit, TextEditBackend};
 
@@ -676,7 +676,7 @@ impl LayIbusEngine {
         // Keep the additional D-Bus future out of every enclosing key/lifecycle
         // future. Those paths also run on the ordinary bounded Rust test stack.
         if let Err(error) =
-            Box::pin(emitter.update_auxiliary_text(make_ibus_text(hint), visible)).await
+            Box::pin(emitter.update_auxiliary_text(make_hint_ibus_text(hint), visible)).await
         {
             // The last successful display may still be on screen. Keep its
             // visibility for a later clear, but never accept an unseen result.

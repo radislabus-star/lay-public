@@ -9,6 +9,11 @@ pub(crate) fn make_ibus_text(text: String) -> Value<'static> {
     ibus_text(text, attrs::empty())
 }
 
+pub(crate) fn make_hint_ibus_text(text: String) -> Value<'static> {
+    let chars = text.chars().count() as u32;
+    ibus_text(text, attrs::hint(chars))
+}
+
 pub(crate) fn make_preedit_ibus_text(text: String, suggestion_start: u32) -> Value<'static> {
     let chars = text.chars().count() as u32;
     ibus_text(text, attrs::preedit(chars, suggestion_start))
@@ -140,6 +145,16 @@ mod tests {
         };
         assert_eq!(name.as_str(), "IBusAttribute");
         (*kind, *value, *start, *end)
+    }
+
+    #[test]
+    fn auxiliary_hint_styles_unicode_scalars_without_styling_document_text() {
+        assert_eq!(
+            preedit_attribute_geometry(&make_hint_ibus_text("а𐐀б".into())),
+            vec![(2, 0x888888, 0, 3)]
+        );
+        assert!(preedit_attribute_geometry(&make_hint_ibus_text(String::new())).is_empty());
+        assert!(preedit_attribute_geometry(&make_ibus_text("а𐐀б".into())).is_empty());
     }
 
     #[test]

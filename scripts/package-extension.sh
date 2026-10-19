@@ -32,8 +32,7 @@ TMP_DIR="$(mktemp -d)"
 trap 'rm -rf "$TMP_DIR"' EXIT
 rm -f "$ZIP_PATH"
 
-cp "$EXT_DIR/extension.js" "$TMP_DIR/"
-cp "$EXT_DIR/lay-impl.js" "$TMP_DIR/"
+cp "$EXT_DIR"/*.js "$TMP_DIR/"
 python3 - "$EXT_DIR/metadata.json" "$TMP_DIR/metadata.json" <<'PY'
 import json
 import sys
@@ -51,7 +50,7 @@ PY
 
 (
     cd "$TMP_DIR"
-    zip -X -q "$ZIP_PATH" metadata.json extension.js lay-impl.js
+    zip -X -q "$ZIP_PATH" metadata.json ./*.js
 )
 
 echo "Built: $ZIP_PATH"

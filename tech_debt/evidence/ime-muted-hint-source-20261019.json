@@ -1,0 +1,209 @@
+{
+  "schema": "lay.ime-hint-presentation-source.v1",
+  "release_version": "1.0.92",
+  "source_base": "513fb674d6b820adb9532c1c4c1ae91193009801",
+  "recorded_at": "2026-10-19T13:48:45.809241+00:00",
+  "verdict": "SOURCE_PRESENTATION_CHECKS_PASS_NATIVE_NOT_TESTED",
+  "source_sha256": {
+    "src/bin/lay_ibus_engine/text/attrs.rs": "02736146bbffa2d604c8d771cf398f5786b3d093a1dc2871569a4bdb23695d5a",
+    "src/bin/lay_ibus_engine/text.rs": "fff64708f7d0be6618130ee92435780fa29b60bd8135702de0973e597c88f977",
+    "src/bin/lay_ibus_engine/preedit.rs": "477eb60f446598739cf276b57f89fd8aedba6f99719a260dc74830ddaca3905b",
+    "src/bin/lay_ibus_engine/preedit/tests.rs": "902f1a4cf145e928a4e58939377bb2ff5e7578f4cd5a5e3d44d83df9bc38330c",
+    "src/bin/lay_ibus_engine/output.rs": "cffd56f881f95d30a99c0e0f7091a46034400428541c868e9c14bf8f40e88e62",
+    "extension/lay@radislabus-star.github.io/ime_hint_style.js": "731bc567a893036dd7f78ea61bb00cbd2bfe6b2078b1c8d99dd87ed5b85cf24b",
+    "extension/lay@radislabus-star.github.io/lay-impl.js": "5ff3d8aa8442d8650b519ed0d3466b37bde8f664ae89e6608e7c45f9948da076",
+    "extension/lay@radislabus-star.github.io/extension.js": "3c4041b11f9847ea9a270761e1d6465948a9d686eb72ac39b997d73be772097e",
+    "scripts/tests/test_ime_hint_style.mjs": "25b604f95a176de6874df937613b9fcbf38b78a9bfdd45dfbf07aa363803ca95",
+    "scripts/package-extension.sh": "8294d50cbff2306db6138e4c9df5e91e383710838aea1bebd8be72932903d639",
+    "Cargo.toml": "12e47977f6ce4b211dfa864165bffe9cb273263fcc25bb5453c3906a2a5a1914",
+    "Cargo.lock": "079cda2c82d9886fb0bf9d420f1bbe09bf969bd041d4c64ea4fffe84dfbb1e51",
+    "extension/lay@radislabus-star.github.io/metadata.json": "70fe994e1a19f541361d370db032c24ac3e8b7bb1505a741a6953c20298ea65b",
+    "extension/lay@radislabus-star.github.io/tray_support.js": "b263e0457c969705c94cc622373fda6e87bcb933d55a21191dff1c181e0eda47"
+  },
+  "source_results": [
+    {
+      "path": "/home/ubu/.cache/lay/development/run-t8n_7c4y/RESULT.json",
+      "sha256": "1a763f93627e52b6543be846487899a168cb9640b89cb43c78283d27fab6fa2f",
+      "verdict": "PASS",
+      "tests": {
+        "executed": 910,
+        "failed": 0,
+        "passed": 910,
+        "selected": 910
+      },
+      "elapsed_seconds": 156.1454263679916,
+      "compiled_package_metadata": "1.0.91; subsequent 1.0.92 metadata-only bump"
+    },
+    {
+      "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/ime-muted-presentation-source-one/RESULT.json",
+      "sha256": "98ee3139e99e673e5285bf97bdef1f41cd545da85cc700dd92b780fbb8d4578f",
+      "overall_verdict": "FAIL",
+      "accepted_components": [
+        {
+          "name": "gnome-style",
+          "argv": [
+            "node",
+            "--test",
+            "scripts/tests/test_ime_hint_style.mjs"
+          ],
+          "returncode": 0,
+          "log_sha256": "90ef9ba207b5e6fabaf85667b4d8698e96b6362d6136739f81d2be81bfceab00"
+        },
+        {
+          "name": "gjs-module",
+          "argv": [
+            "gjs",
+            "-m",
+            "extension/lay@radislabus-star.github.io/ime_hint_style.js"
+          ],
+          "returncode": 0,
+          "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "gnome_opacity_lifecycle_tests": {
+        "passed": 6,
+        "failed": 0
+      },
+      "excluded_failure": "Canon selected historical decisions against stale remote Git HEAD; corrected by using exact current-source diff at the pinned base; historical records and rules unchanged."
+    },
+    {
+      "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/ime-muted-presentation-source-two/RESULT.json",
+      "sha256": "56aeec596625d86a3b19467dc65377d7e310243374055fd345149ab3d0081ea8",
+      "verdict": "SOURCE_PRESENTATION_CHECKS_PASS_NATIVE_NOT_TESTED",
+      "canon": {
+        "status": "PASS",
+        "base": "513fb674d6b820adb9532c1c4c1ae91193009801",
+        "changed": 19,
+        "added": 5,
+        "log_sha256": "8b4008abb8fa42b121b8344dff839541443ee6ec7e5310073b495a48eb4badf8"
+      },
+      "commands": [
+        {
+          "name": "canon-controls",
+          "argv": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "tests",
+            "-p",
+            "test_architecture_canon.py"
+          ],
+          "returncode": 0,
+          "log_sha256": "9fc652a196457d4ff9b3a9b3d2f85a4d04bbc6bc99761301c9be2b7d148a4d0e"
+        },
+        {
+          "name": "extension-zip",
+          "argv": [
+            "scripts/package-extension.sh"
+          ],
+          "returncode": 0,
+          "log_sha256": "5f8e64fbf252b420afb641f6c1f9631c7707f7f190d0a4c9f7078fb8e4aeaf3b"
+        },
+        {
+          "name": "architecture",
+          "returncode": 0,
+          "log_sha256": "a0f89845efce27ffa4e93b24500331cbfa9d5fe541c9e345fdacd7e3a913ab68"
+        }
+      ],
+      "extension_zip": {
+        "version": "1.0.92",
+        "sha256": "9cf92adfc6f2dd1a5e8cb17a62e6aa49e6c33859682737ecf7edd4183db1963d",
+        "members": [
+          "dbus_service.js",
+          "extension.js",
+          "ime_hint_style.js",
+          "lay-impl.js",
+          "metadata.json",
+          "prefs.js",
+          "recent_actions_menu.js",
+          "settings.js",
+          "settings_view.js",
+          "tray_support.js"
+        ]
+      },
+      "gnome_source_compatibility": [
+        {
+          "version": "45.0",
+          "kind": "manager",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/45.0/js/misc/ibusManager.js",
+          "sha256": "d517ed2807178bfc965e16b8c81c30f9730dedc92901bbfbf876f13d4090e307"
+        },
+        {
+          "version": "45.0",
+          "kind": "popup",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/45.0/js/ui/ibusCandidatePopup.js",
+          "sha256": "4d8969f08eeefad94cc22c1032c32eb1ec06ab352395c34b6c490d3fc433cce8"
+        },
+        {
+          "version": "46.0",
+          "kind": "manager",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/46.0/js/misc/ibusManager.js",
+          "sha256": "ad57d83df27a6403d7ccdd65b6334acd70e7b31c57c726e6dd58b307821cf068"
+        },
+        {
+          "version": "46.0",
+          "kind": "popup",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/46.0/js/ui/ibusCandidatePopup.js",
+          "sha256": "dcd673d523c92c43696d2efcad869e8d6ca3c64f3c92c1da706797c9f9f92c50"
+        },
+        {
+          "version": "47.0",
+          "kind": "manager",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/47.0/js/misc/ibusManager.js",
+          "sha256": "37065507bc10a160e47a0f7168874ffeb8ad779f7dd873b0710c56f2fc20a123"
+        },
+        {
+          "version": "47.0",
+          "kind": "popup",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/47.0/js/ui/ibusCandidatePopup.js",
+          "sha256": "836e24d152233110ba16e408731089c1d440b40a61dad6bb3c56193519f96bbe"
+        },
+        {
+          "version": "50.1",
+          "kind": "manager",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/50.1/js/misc/ibusManager.js",
+          "sha256": "9630ae50c5aef0faceba31dc5b8e700ee53b60bb7485ceebea25ff06455e6fda"
+        },
+        {
+          "version": "50.1",
+          "kind": "popup",
+          "url": "https://raw.githubusercontent.com/GNOME/gnome-shell/50.1/js/ui/ibusCandidatePopup.js",
+          "sha256": "2725c3c19236ce6a6f8d38a7b40ae1ecd560fab5b3312f681cc66aca9fd65f4c"
+        }
+      ],
+      "generated_output_sha256": {
+        "graphify-out/.graphify_labels.json": "1f08ca2cfa593431ece84b7f9fe1b115c196465fab22a5b5554bc68f77f52eb6",
+        "graphify-out/GRAPH_REPORT.md": "62bfc4392896ba50ff2ee89d5bb307c91f92900e9f291c2ef71356fbd0159218",
+        "graphify-out/graph.json": "cf592d00e9ca9e83ff7fe281602936f1125f03200ec14cee931c392e8c0ba18a",
+        "graphify-out/manifest.json": "99c9fa5ce4dbae31b61ca9f058fa62d416d5d10495c4d22883c514f3f0a79a9f",
+        "graphify-out/source_graph_binding.json": "751898d8c717a85dfddb3cde51fec92065c7a4fde5044b20dd596fb58a64b343",
+        "src/generated/architecture_graph_receipt.json": "4cb41d80fe4a902b652bdc7832f3191202b48adca3c974e13a9e27c0ea24339e"
+      }
+    }
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "local_installation": false,
+  "global_ibus_restart": false,
+  "physical_rendering": {
+    "KDE": "NOT_TESTED",
+    "supported_GNOME": "NOT_TESTED"
+  },
+  "previous_native_baseline": {
+    "version": "1.0.91",
+    "scope": "accepted KDE input matrix, not fresh presentation acceptance",
+    "pass": 391,
+    "fail": 37,
+    "blocked": 4,
+    "not_tested": 0,
+    "total": 432,
+    "receipt": "tech_debt/evidence/td159-accepted-native-432-20261019.json"
+  },
+  "limitations": [
+    "GNOME display API checks and mocks do not establish physical-client rendering.",
+    "Remote GNOME Shell 42.9 is outside declared extension support.",
+    "Native speed measurements were not repeated for the presentation change."
+  ]
+}

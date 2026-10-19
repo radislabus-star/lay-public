@@ -11,7 +11,9 @@ import St from 'gi://St';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
+import {getIBusManager} from 'resource:///org/gnome/shell/misc/ibusManager.js';
 import {getInputSourceManager} from 'resource:///org/gnome/shell/ui/status/keyboard.js';
+import {ImeHintStyle} from './ime_hint_style.js';
 
 import {
     LayDaemonService,
@@ -421,6 +423,7 @@ export class LayImpl {
     constructor(_ext) {}
 
     enable() {
+        this._hintStyle = new ImeHintStyle(getIBusManager());
         this._service = new LayDaemonService();
         this._service.enable();
         this._indicator = new LayIndicator(this._service);
@@ -428,6 +431,7 @@ export class LayImpl {
     }
 
     disable() {
+        this._hintStyle?.destroy(); this._hintStyle = null;
         this._indicator?.destroy(); this._indicator = null;
         this._service?.disable();   this._service   = null;
     }

@@ -44,6 +44,13 @@ review and final-gate receipt routing are in
 [`TD-126`](../tech_debt/126-common-window-interaction-module.md); the installed
 runtime remains unchanged.
 
+## Muted hint presentation — 2026-10-19
+
+The [presentation owner](architecture/ime-hint-presentation-2026-10-19.md)
+records the auxiliary IBus foreground and GNOME auxiliary-label styling change.
+It adds no input, candidate acceptance or output-delivery authority. Source,
+renderer and physical acceptance evidence remain separate there.
+
 ## Main Finding
 
 IME is currently not just another output backend. It owns a separate word state

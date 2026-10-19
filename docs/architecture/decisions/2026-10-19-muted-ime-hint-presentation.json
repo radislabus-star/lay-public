@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "status": "SOURCE_VERIFIED_NATIVE_RENDERING_NOT_TESTED",
+  "owning_document": "docs/architecture/ime-hint-presentation-2026-10-19.md",
+  "reason": "Auxiliary hints lack IBus foreground attributes; GNOME Shell additionally discards auxiliary IBusText attributes while the GTK IBus panel honors them.",
+  "decision": "Apply the existing inline hint foreground to auxiliary IBusText. As explicitly permitted by the user, use 128/255 opacity for the existing GNOME auxiliary label while an exact Lay engine is active, retaining its system color and any already lower opacity. Keep text, visibility, candidate acceptance and delivery authority unchanged.",
+  "invariants": ["C01", "C03", "C05", "C06", "C09", "C10"],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "extension/lay@radislabus-star.github.io/lay-impl.js"
+  ],
+  "rejected": [
+    "Style every candidate-popup label globally, including typed text and other IMEs.",
+    "Change input routes or install a new panel to control a display color.",
+    "Use IBus attributes alone and claim GNOME honors them."
+  ],
+  "verification": "PASS: 910 focused IME/tray tests; 6 GNOME opacity/lifecycle controls; GJS module load; unchanged canon validators and refusal controls; complete 1.0.92 extension ZIP; upstream Shell 45/46/47/50 display API shape; canonical AST-only graph gate. Exact receipts and source hashes: tech_debt/evidence/ime-muted-hint-source-20261019.json. Physical rendering is recorded separately as NOT_TESTED.",
+  "not_tested": "New presentation bytes have not been physically accepted in KDE or supported GNOME. The previous accepted 432-case matrix is retained as baseline evidence, not regraded. No local installation or global IBus restart.",
+  "runtime_authority_changed": false,
+  "production_delivery_changed": false,
+  "rollback": "Remove the display-only GNOME helper and auxiliary foreground builder; retain the previous inline foreground and existing input/output protocol."
+}

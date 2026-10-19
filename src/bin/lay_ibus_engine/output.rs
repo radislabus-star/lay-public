@@ -210,6 +210,7 @@ pub(crate) struct TestEngineOutput {
     pub(crate) preedit_updates: Vec<(String, u32, bool, u32)>,
     pub(crate) preedit_attribute_updates: Vec<Vec<(u32, u32, u32, u32)>>,
     pub(crate) auxiliary_updates: Vec<(String, bool)>,
+    pub(crate) auxiliary_attribute_updates: Vec<Vec<(u32, u32, u32, u32)>>,
     pub(crate) fail_auxiliary_publication: bool,
     pub(crate) input_mode_updates: Vec<bool>,
     pub(crate) legacy_transport: bool,
@@ -279,6 +280,9 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                 if output.fail_auxiliary_publication {
                     return Err(fdo::Error::Failed("injected auxiliary failure".into()));
                 }
+                output
+                    .auxiliary_attribute_updates
+                    .push(crate::text::preedit_attribute_geometry(&text));
                 let text = ibus_text_value_to_string(&text)
                     .ok_or_else(|| fdo::Error::InvalidArgs("invalid IBusText auxiliary".into()))?;
                 output.effects.push("update-auxiliary");
