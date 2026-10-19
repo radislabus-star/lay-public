@@ -78,11 +78,11 @@ impl LayIbusEngine {
     }
 
     pub(super) fn remember_pending_ime_boundary_undo(&self, forward: lay::text_edit::EditAction) {
-        if lay::text_edit::plan_recorded_boundary_inverse(&forward).is_none() {
+        let Some(inverse) = lay::text_edit::plan_recorded_boundary_inverse(&forward) else {
             return;
-        }
+        };
         self.remember_pending_ime_auto_undo_with_action(
-            format!("{} ", forward.from_text()),
+            inverse.to_text().to_string(),
             forward.to_text().to_string(),
             lay::typing_cpu::ObservedSystemTransition::Correction,
             Some(forward),
@@ -959,6 +959,154 @@ impl LayIbusEngine {
         self.settle_context_bridge_output()
     }
 
+    pub(super) fn fresh_exact_manual_source_read_allowed(&self) -> bool {
+        if !self.context_admission_required
+            || self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || !self.composition.buffer.is_empty()
+            || self.composition.legacy_word_preedit_active
+            || !self.committed_tail.buffer.is_empty()
+            || self.completed_native_replay_awaits_exact_receipt()
+            || self.exact_replay_quarantine_active()
+            || self.exact_replay_tail_change_quarantined
+            || !self.client_context.surrounding_text_supported
+        {
+            return false;
+        }
+        self.context_token.as_ref().is_some_and(|token| {
+            self.context_admission
+                .as_ref()
+                .is_some_and(|admission| admission.fresh_exact_manual_source_allowed(token))
+        })
+    }
+
+    fn fresh_exact_manual_source_tail(&self) -> Option<String> {
+        if !self.fresh_exact_manual_source_read_allowed()
+            || !self.client_context.surrounding_text_callback_observed
+        {
+            return None;
+        }
+        let snapshot = self.client_context.surrounding_text_snapshot.as_ref()?;
+        if snapshot.has_selection() || snapshot.cursor_pos as usize != snapshot.text.chars().count()
+        {
+            return None;
+        }
+        let (start, _) = last_tail_token_range(&snapshot.text)?;
+        let tail = &snapshot.text[start..];
+        if tail.chars().count() > crate::preedit::PREEDIT_TAIL_LIMIT {
+            return None;
+        }
+        plan_manual_toggle(ManualToggleRequest {
+            visible_tail: VisibleTail::ime_committed_tail(tail),
+            current_layout_is_ru: self.layout_gesture.layout_is_ru,
+            preserve_trailing_whitespace: true,
+        })?;
+        Some(tail.to_owned())
+    }
+
+    pub(super) fn can_acquire_fresh_exact_manual_source(&self) -> bool {
+        !self.layout_gesture.pending_manual_toggle
+            && self.fresh_exact_manual_source_tail().is_some()
+    }
+
+    pub(super) fn fresh_exact_manual_refresh_ready(&self) -> bool {
+        self.layout_gesture.pending_manual_toggle
+            && self
+                .layout_gesture
+                .pending_manual_refresh_at
+                .is_some_and(|queued| queued.elapsed() <= std::time::Duration::from_millis(700))
+            && self.fresh_exact_manual_source_tail().is_some()
+    }
+
+    pub(super) fn revoke_pending_fresh_manual_source(&mut self) {
+        if self.layout_gesture.pending_manual_refresh_at.is_some()
+            && self.committed_tail.buffer.is_empty()
+        {
+            // Cancellation spends this empty-source read admission. A daemon
+            // follow-up must not revive the same gesture as a new read.
+            self.revoke_context_word();
+        }
+    }
+
+    pub(super) fn acquire_fresh_exact_manual_source(&mut self) -> bool {
+        if self.layout_gesture.pending_manual_toggle {
+            return false;
+        }
+        let Some(tail) = self.fresh_exact_manual_source_tail() else {
+            return false;
+        };
+        self.committed_tail.buffer = tail;
+        self.prepare_exact_manual_toggle_layout_handoff();
+        self.exact_snapshot_manual_source_is_current()
+    }
+
+    pub(super) fn exact_snapshot_manual_source_is_current(&self) -> bool {
+        if self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || !self.composition.buffer.is_empty()
+            || self.exact_replay_quarantine_active()
+            || self.exact_replay_tail_change_quarantined
+            || !self.exact_manual_toggle_handoff_is_live()
+        {
+            return false;
+        }
+        let Some(scope) = self.context_word_scope.as_ref() else {
+            return false;
+        };
+        if scope.lineage().completeness != super::context_admission::WordCompleteness::UnknownStart
+            || scope.lineage().observed_suffix_chars != 0
+        {
+            return false;
+        }
+        let (Some(admission), Some(token)) =
+            (self.context_admission.as_ref(), self.context_token.as_ref())
+        else {
+            return false;
+        };
+        admission.revalidate_bridge(token)
+            && ((self.current_external_snapshot_agrees_with_owned_tail()
+                && admission.exact_manual_snapshot_is_current(
+                    token,
+                    self.committed_tail.epoch,
+                    &self.committed_tail.buffer,
+                    self.client_context.surrounding_observation_revision,
+                ))
+                || self.inherited_exact_manual_snapshot_agrees_with_owned_tail())
+    }
+
+    pub(super) fn current_exact_manual_source_snapshot(
+        &self,
+    ) -> Option<super::context_admission::ExactManualSourceSnapshotReceipt> {
+        // The existing seal keeps its source path when the reducer transfers
+        // ownership. Only the receiver may refresh; a later source callback
+        // still consumes the original source observation.
+        let received_handoff = self.shared.lock().is_ok_and(|state| {
+            state
+                .exact_manual_toggle_handoff_path
+                .as_deref()
+                .is_some_and(|path| path != self.path.as_str())
+        });
+        if !received_handoff || !self.exact_snapshot_manual_source_is_current() {
+            return None;
+        }
+        if self.inherited_exact_manual_snapshot_agrees_with_owned_tail() {
+            return self
+                .exact_manual_target_snapshot
+                .as_ref()
+                .map(|receipt| receipt.source.clone());
+        }
+        self.context_admission
+            .as_ref()?
+            .current_exact_manual_snapshot(
+                self.context_token.as_ref()?,
+                self.committed_tail.epoch,
+                &self.committed_tail.buffer,
+                self.client_context.surrounding_observation_revision,
+            )
+    }
+
     pub(super) fn prepare_exact_manual_toggle_layout_handoff(&mut self) {
         let source_snapshot_is_exact = self.current_external_snapshot_agrees_with_owned_tail();
         let source_token = self.context_token.clone();
@@ -1099,7 +1247,7 @@ impl LayIbusEngine {
                 .is_some_and(|admission| admission.revalidate(&receipt.target_token))
     }
 
-    fn current_full_external_prefix(&self) -> Option<String> {
+    pub(super) fn current_full_external_prefix(&self) -> Option<String> {
         self.client_context
             .surrounding_text_snapshot
             .as_ref()
@@ -1267,7 +1415,8 @@ impl LayIbusEngine {
         self.invalidate_input_frame_background_work();
         self.committed_tail.pending_completion_learning = None;
         self.client_context.surrounding_text_snapshot = None;
-        self.composition.pending_passthrough_preedit_clear = self.composition.preedit_visible;
+        self.composition.pending_passthrough_preedit_clear =
+            self.composition.suggestion_display_visible();
         self.clear_preedit_completion_state();
         self.composition.preedit_fast.reset();
         true
@@ -1381,6 +1530,52 @@ impl LayIbusEngine {
             advance_suppression_revision(&mut shared);
         }
         Ok(acknowledged_replay)
+    }
+
+    /// Same ordinary client commit and same epoch; update only its observed
+    /// pair separator presentation after the full snapshot and sealed decision
+    /// have been checked by the existing continuation.
+    pub(super) fn acknowledge_space_pair_client_presentation(
+        &mut self,
+        pending: &super::engine::PendingSpaceBoundaryCommit,
+        actual: &super::engine::SurroundingTextSnapshot,
+        observed_pair: &str,
+    ) -> bool {
+        if !self.input_frame_authority_matches(&pending.frame)
+            || self.client_context.surrounding_text_snapshot.as_ref() != Some(actual)
+            || pending.observed_pair_commit(actual).as_deref() != Some(observed_pair)
+        {
+            return false;
+        }
+        let Some(scope) = pending.frame.space_boundary_pair.as_ref() else {
+            return false;
+        };
+        let Some(prefix) = self
+            .committed_tail
+            .buffer
+            .strip_suffix(&format!("{} ", scope.text))
+        else {
+            return false;
+        };
+        let tail = format!("{prefix}{observed_pair}");
+        if actual.suffix_before_cursor(tail.chars().count()).as_deref() != Some(tail.as_str()) {
+            return false;
+        }
+        let Ok(mut shared) = self.shared.lock() else {
+            return false;
+        };
+        if !self.owns_shared_context_state(&shared)
+            || shared.active_path.as_deref() != Some(self.path.as_str())
+            || shared.handoff_tail_epoch != self.committed_tail.epoch
+            || shared.handoff_tail_buffer != self.committed_tail.buffer
+        {
+            return false;
+        }
+        self.committed_tail.buffer = tail;
+        shared
+            .handoff_tail_buffer
+            .clone_from(&self.committed_tail.buffer);
+        true
     }
 
     pub(super) fn bind_exact_replay_external_prefix_from_snapshot(&mut self) {
@@ -2028,6 +2223,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn close_committed_tail_field(&mut self) {
+        self.revoke_pending_fresh_manual_source();
         self.client_context.native_replay_progress = None;
         if let Some(scope) = self.context_word_scope.as_mut() {
             scope.forget_observed_first_word();

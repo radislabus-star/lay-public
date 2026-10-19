@@ -1,0 +1,41 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-kde-owned-preedit-layout-group",
+  "status": "PRIVATE_NATIVE_BROWSER_275_PASS_45_FAIL",
+  "invariants": [
+    "C01",
+    "C03",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/layout_sync.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/kde_owned_preedit.rs"
+  ],
+  "reason": "Original native prefix cells fail in all ten Firefox and all ten Chrome fields: exact text, caret and selection pass, native InputMode changes, but KDE KeyboardLayouts group remains the source group. Owned preedit deliberately preserves its IBus engine; its existing InputMode transaction never completes the KDE group.",
+  "decision": "Complete only the KDE group in the existing layout_sync controller, under the existing direct latest-generation dispatch and live LayoutIntentToken. Keep the active IBus engine and owned composition. Do not change committed-text layout completion, text delivery, foreground checks, context admission or selection authority.",
+  "alternatives": [
+    {
+      "solution": "Reuse the existing bounded KDE group adapter in the owned-preedit transaction",
+      "rating": 9
+    },
+    {
+      "solution": "Switch the full IBus engine while preedit is open",
+      "rating": 4,
+      "risk": "Engine replacement may reset or commit the unfinished word"
+    },
+    {
+      "solution": "Accept InputMode alone and drop the KDE native group assertion",
+      "rating": 1,
+      "risk": "Conceals inconsistent system state and does not prove the next physical letter"
+    }
+  ],
+  "verification": "Controlled RED for actual callback-owned preedit in both directions, eight gestures, following physical letter, KDE rejection and owner loss; full affected source gate and private remote build; native original prefix cells and all original browser cases with timing and independent closure. GNOME must retain its existing mode-only preedit path.",
+  "not_tested": "Complete unchanged new-IME320 browser proof:Firefox139PASS/21FAIL/0BLOCKED,Chrome136PASS/24FAIL/0BLOCKED; independent CLOSED2026-10-19T02:04:16.607557+00:00. Forty authority refusals, three Chrome late group mismatches, one Chrome pre-gesture observation discrepancy and one Firefox URL Space layout mismatch remain FAIL. Other112 KDE cells, GNOME and user runtime are not regraded. Source852 correctness plus3 isolated performance PASS. Full receipts, pins and timings are in the owning document. No public installation or publication.",
+  "runtime_authority_changed": false,
+  "consequence_analysis": "One existing layout owner and worker remain. Require the same exact preedit owner plus current layout intent before KDE mutation; revalidate generation, service, layout mapping and observed group after it. A refused group cannot promote the decoder or report completion. Restore preedit and InputMode only while the original owner remains live; never restore into changed focus. No route, engine handoff or lexical rule is added. Source tests do not establish client acceptance."
+}

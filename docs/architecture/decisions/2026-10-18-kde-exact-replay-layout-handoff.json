@@ -1,0 +1,26 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Supply a bounded KDE backend to the existing exact committed-tail layout handoff; keep the existing replay transaction and IME lease owners.",
+  "reason": "The native changed-candidate GTK witness passes fresh KWin foreground capture and refuses at the independent GNOME-only handoff. Actual KWin5.24.7 provides getLayoutsList a(sss), getLayout uint, setLayout(uint) bool, with keyboard and KWin on the same unique bus owner.",
+  "invariants": ["C01", "C03", "C04", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": [
+    "src/bin/lay_daemon/layout_controller.rs",
+    "src/bin/lay_daemon/layout_controller/kde_exact.rs",
+    "src/bin/lay_daemon/layout_controller/kde_exact/tests.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_daemon/layout_controller/tests.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs"
+  ],
+  "verification": "Ordered production-adapter tests for target/readback and mapping/service/focus lifetime, one bounded restoration, causal RED, full affected source gate, scored independent review, private build, native mode/decoder/timing evidence and separate complete KDE and affected GNOME grids.",
+  "not_tested": "At decision time no new handoff implementation, source proof, successful native replacement, latency, full matrix, installation or publication exists.",
+  "runtime_authority_changed": true,
+  "consequence_analysis": {
+    "alternatives": ["9/10 selected: existing backend-aware handoff with fresh typed KDE observations and actual engine/mode readback", "4/10 rejected: ordinary cached KDE helper and process-exit success", "1/10 rejected: remove the guard or add generic replay fallback"],
+    "authority": "Pass the existing transaction's exact focused-window identity into the backend. Bind a transaction-local session connection, unique keyboard/KWin owner, fresh bounded layout mapping/index and same window at mutation/readback/restore boundaries. Require unique RU/US indices and unchanged owner/mapping. Existing lease, AuthorizedEdit, SafetyGate, verifier and sole text executor remain mandatory. PID, title, cached ordinary group and equal text confer no authority.",
+    "mode_relation": "KDE group, selected IBus engine and actual Lay InputMode are separate facts. Existing owned-IME fixed-source mode changes remain unchanged. This exact fallback requires an observed engine/decoder pair restorable through the existing RU/US aliases. Refuse an already divergent pair before mutation instead of forcing two engine changes or adding a mode-setting RPC. Verify actual engine AND actual IME mode after one target request; neither name nor group alone proves the decoder. Retain this limitation as a residual, not universal support or an engine-name migration.",
+    "latency_resources": "Bound each IPC call at250ms. One target setLayout, at most one target IBus engine request, existing ibus CLI bounded with timeout250ms. No retry, settle sleep, worker, timer or global synchronous IBus owner. Measure reached native latency separately from build duration.",
+    "failure_rollback": "Pre-dispatch refusal never changes text. One bounded restore through the captured KDE backend, only after exact window, owner and mapping revalidation. Do not redirect restoration to changed focus/service or overwrite an unrelated engine/layout. Verify restoration readbacks and report unresolved layout distinctly. Preserve existing partial-text failure semantics after dispatch; never retry an edit.",
+    "cache_reload": "No persistent new layout cache. Ordinary KDE OnceLock remains outside this exact capability. Owner/mapping changes invalidate the transaction. Existing IME lease validation still binds field, focus receipt, epoch, path and actual mode after controlled handoff.",
+    "maintenance": "One child module of the current controller and production-adapter tests. Reuse its session connection and observed-engine/visible-tail readers. Preserve GNOME activation/readback/restore behavior. No new delivery route, engine rename, model training, user install, service restart or release. Starting support scope is measured KDE5.24 Wayland only."
+  }
+}

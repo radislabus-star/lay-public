@@ -78,6 +78,77 @@ fn word_reset_preserves_admitted_context_metadata_without_word_authority() {
 }
 
 #[test]
+fn committed_layout_word_reset_preserves_only_forward_mode_intent() {
+    let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+        ConnectionGeneration(11),
+        GlobalEngineMode::Verified,
+        GlobalProfile::Lay(profile("lay-us")),
+    );
+    reducer
+        .establish_source(
+            engine_path("/engine/source"),
+            context(ConnectionGeneration(11), "/context"),
+            WordCompleteness::KnownStart,
+            7,
+        )
+        .unwrap();
+    let word = reducer.admission_token().unwrap();
+    let layout = reducer.layout_intent_token().unwrap();
+    for _ in 0..2 {
+        reducer.observed_word_reset();
+        assert!(reducer.revalidate_committed_layout_intent(&layout));
+        assert!(!reducer.revalidate_layout_intent(&layout));
+        assert!(!reducer.revalidate(&word));
+        assert_eq!(reducer.lineage.completeness, WordCompleteness::UnknownStart);
+        assert_eq!(reducer.lineage.observed_suffix_chars, 0);
+        assert!(reducer.exact_manual_snapshot.is_none());
+    }
+    let mut foreign_connection = layout.clone();
+    foreign_connection.connection = ConnectionGeneration(12);
+    assert!(!reducer.revalidate_committed_layout_intent(&foreign_connection));
+    let mut future_intent = layout;
+    future_intent.revocation = reducer.revocation + 1;
+    assert!(!reducer.revalidate_committed_layout_intent(&future_intent));
+}
+
+#[test]
+fn committed_layout_word_reset_cannot_cross_a_non_reset_revocation() {
+    for boundary in 0..4 {
+        let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+            ConnectionGeneration(11),
+            GlobalEngineMode::Verified,
+            GlobalProfile::Lay(profile("lay-us")),
+        );
+        let owner = reducer
+            .establish_source(
+                engine_path("/engine/source"),
+                context(ConnectionGeneration(11), "/context"),
+                WordCompleteness::KnownStart,
+                7,
+            )
+            .unwrap();
+        let layout = reducer.layout_intent_token().unwrap();
+        reducer.observed_word_reset();
+        assert!(reducer.revalidate_committed_layout_intent(&layout));
+        match boundary {
+            0 => reducer.malformed_or_unobserved_lifecycle(),
+            1 => reducer.owner_loss_or_disconnect(),
+            2 => reducer.global_engine_changed(GlobalProfile::Foreign(profile("xkb-us"))),
+            3 => {
+                reducer.focus_out(&owner, 100);
+            }
+            _ => unreachable!(),
+        }
+        reducer.observed_word_reset();
+        assert!(
+            !reducer.revalidate_committed_layout_intent(&layout),
+            "boundary={boundary}"
+        );
+        assert!(!reducer.revalidate_layout_intent(&layout));
+    }
+}
+
+#[test]
 fn bridge_output_settlement_preserves_lineage_and_rejects_interposed_work() {
     let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
         ConnectionGeneration(11),
@@ -1126,6 +1197,100 @@ fn lifecycle_empty_factory_supersession_requires_strictly_later_position() {
         assert!(reducer.owner().is_none());
         assert!(reducer.admission_token().is_none());
     }
+}
+
+fn td159_fresh_manual_reducer() -> ContextAdmissionReducer<u64> {
+    let epoch = ConnectionGeneration(40);
+    let mut reducer = ContextAdmissionReducer::new(
+        epoch,
+        GlobalEngineMode::Verified,
+        GlobalProfile::Lay(profile("lay-us")),
+    );
+    let nonce = BarrierNonce(401);
+    let request = reducer
+        .begin_source_free_activation(
+            engine_path("/engine/fresh"),
+            nonce,
+            ReceiptOrigin::Native,
+            10,
+        )
+        .unwrap();
+    assert!(reducer.context_reply(request, nonce, context(epoch, "/context/fresh"), 10));
+    assert!(reducer.marker(request, nonce, 11));
+    assert!(reducer.consume_source_free_activation().is_some());
+    reducer
+}
+
+#[test]
+fn td159_fresh_focus_manual_reducer_spends_phase_on_edit_and_broad_revocation() {
+    for effect in [
+        KeyWordEffect::LegacyShiftObservation,
+        KeyWordEffect::PossibleMutation,
+    ] {
+        let mut reducer = td159_fresh_manual_reducer();
+        let token = reducer.admission_token().unwrap();
+        assert!(reducer.fresh_exact_manual_source_allowed(&token));
+        let key = header(ConnectionGeneration(40), 412);
+        assert!(reducer.observe_key_start(&token.owner, key.clone(), effect));
+        assert_eq!(
+            reducer.fresh_exact_manual_source_allowed(&token),
+            effect == KeyWordEffect::LegacyShiftObservation
+        );
+        assert!(reducer.settle_key(
+            &token.owner,
+            &key,
+            SettledWordState {
+                tail_epoch: 0,
+                lineage: token.lineage,
+                content_type: None,
+            }
+        ));
+        assert_eq!(
+            reducer.fresh_exact_manual_source_allowed(&token),
+            effect == KeyWordEffect::LegacyShiftObservation
+        );
+        reducer.observed_word_reset();
+        let after = reducer.admission_token().unwrap();
+        assert!(!reducer.revalidate(&token));
+        assert_eq!(
+            reducer.fresh_exact_manual_source_allowed(&after),
+            effect == KeyWordEffect::LegacyShiftObservation
+        );
+        assert_eq!(after.lineage.completeness, WordCompleteness::UnknownStart);
+        assert_eq!(after.lineage.observed_suffix_chars, 0);
+        reducer.malformed_or_unobserved_lifecycle();
+        assert!(!reducer.fresh_exact_manual_source_allowed(&after));
+        assert!(!reducer.fresh_manual_source_available);
+    }
+}
+
+#[test]
+fn td159_fresh_focus_manual_reducer_receipt_pins_source_and_cannot_rearm_phase() {
+    let mut reducer = td159_fresh_manual_reducer();
+    let token = reducer.admission_token().unwrap();
+    assert!(reducer.publish_exact_manual_snapshot(
+        &token,
+        0,
+        "привет".to_string(),
+        Some("prefix ".to_string()),
+        4,
+        Instant::now() + std::time::Duration::from_secs(1),
+    ));
+    assert!(!reducer.fresh_exact_manual_source_allowed(&token));
+    assert!(reducer.exact_manual_snapshot_is_current(&token, 0, "привет", 4));
+    assert!(!reducer.exact_manual_snapshot_is_current(&token, 1, "привет", 4));
+    assert!(!reducer.exact_manual_snapshot_is_current(&token, 0, "другое", 4));
+    assert!(!reducer.exact_manual_snapshot_is_current(&token, 0, "привет", 5));
+    let mut foreign = token.clone();
+    foreign.connection = ConnectionGeneration(41);
+    assert!(!reducer.exact_manual_snapshot_is_current(&foreign, 0, "привет", 4));
+    reducer.exact_manual_snapshot.as_mut().unwrap().expires_at = Instant::now();
+    assert!(!reducer.exact_manual_snapshot_is_current(&token, 0, "привет", 4));
+    reducer.observed_word_reset();
+    let after = reducer.admission_token().unwrap();
+    assert!(!reducer.fresh_exact_manual_source_allowed(&after));
+    assert!(!reducer.exact_manual_snapshot_is_current(&token, 0, "привет", 4));
+    assert!(reducer.exact_manual_snapshot.is_none());
 }
 
 #[test]

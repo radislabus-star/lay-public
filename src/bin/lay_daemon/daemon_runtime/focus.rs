@@ -122,7 +122,7 @@ fn apply_focus_state(
 
     if focus.ignored != state.focus_ignored {
         if focus.ignored {
-            log("► focused window ignored: VM/remote viewer, host lay paused");
+            log("► focused window unavailable or ignored: host lay paused");
         } else {
             log("► focused window accepted: host lay resumed");
         }
@@ -142,6 +142,68 @@ mod device_recovery_tests {
     use crate::{
         pending_typing_assist::PendingTypingAssist, ForceLayoutHotkeyContext, MultiTapPending,
     };
+
+    #[test]
+    fn overlapping_kde_poll_keeps_word_gesture_and_shared_epoch_but_service_loss_invalidates() {
+        let mut state = DaemonLoopState::new(&lay::config::LayConfig::default(), false, true);
+        state.switch_window_input_state(Some("contention-fixture".into()));
+        state.field_context_epoch = 7;
+        state.buffer.push(lay::keyboard::KeyEvent {
+            keycode: KeyCode::KEY_A.code(),
+            shift: false,
+            layout_is_ru: false,
+        });
+        state.dshift_state = DShiftState::FirstPress;
+        state.pending_multi_tap = Some(MultiTapPending {
+            tap_count: 2,
+            last_release: std::time::Instant::now(),
+        });
+        let epoch = AtomicU64::new(7);
+        let (entered_tx, entered_rx) = std::sync::mpsc::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel::<()>();
+        let holder = std::thread::spawn(move || {
+            crate::kde_focus::with_occupied_provider_for_test(|| {
+                entered_tx.send(()).unwrap();
+                // Bound the fixture even if a regression assertion panics.
+                let _ = release_rx.recv_timeout(std::time::Duration::from_secs(2));
+            });
+        });
+        entered_rx
+            .recv_timeout(std::time::Duration::from_secs(1))
+            .unwrap();
+
+        let poll = crate::focus_guard::kde_focus_poll_state(crate::kde_focus::read());
+        apply_focus_state(&mut state, poll, &epoch);
+        assert!(!state.focus_ignored);
+        assert_eq!(
+            state.focused_window_identity.as_deref(),
+            Some("contention-fixture")
+        );
+        assert_eq!(epoch.load(Ordering::Acquire), 7);
+        assert_eq!(state.field_context_epoch, 7);
+        assert_eq!(
+            state.buffer.what_to_replay(1).unwrap().0[0].keycode,
+            KeyCode::KEY_A.code()
+        );
+        assert!(matches!(state.dshift_state, DShiftState::FirstPress));
+        assert_eq!(state.pending_multi_tap.as_ref().unwrap().tap_count, 2);
+        let exact = crate::focus_guard::exact_kde_window_identity(crate::kde_focus::read());
+        assert!(exact.unwrap_err().contains("provider busy"));
+        drop(release_tx);
+        holder.join().unwrap();
+
+        let loss = crate::focus_guard::kde_focus_poll_state(Err(
+            crate::kde_focus::ReadError::Unavailable("controlled service loss".into()),
+        ));
+        apply_focus_state(&mut state, loss, &epoch);
+        assert!(state.focus_ignored);
+        assert!(state.focused_window_identity.is_none());
+        assert_eq!(epoch.load(Ordering::Acquire), 8);
+        assert_eq!(state.field_context_epoch, 8);
+        assert!(state.buffer.current_is_empty());
+        assert!(matches!(state.dshift_state, DShiftState::Idle));
+        assert!(state.pending_multi_tap.is_none());
+    }
 
     #[test]
     fn late_permissions_epoch_cancels_both_force_layout_keys_before_release() {

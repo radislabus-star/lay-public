@@ -1,0 +1,31 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-18",
+  "status": "TEST_ONLY_COMPLETE_ORIGINAL_MATRIX_RETAINED",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "reason": "Nine native Firefox rich-editor seeds contain U+00A0 for physical Space; the ASCII-only actor blocks before the planned operation.",
+  "decision": "Add a pure full-field seed predicate: rich fields may expose U+00A0 only at expected U+0020 positions, with exact length, end caret and zero selections. Keep raw seed bytes for all later unchanged-prefix assertions and assert full selection bounds before replacement.",
+  "invariants": ["C05", "C07", "C10"],
+  "protected_paths": [
+    "tests/manual/browser_ime_native_surfaces.py",
+    "scripts/tests/test_browser_ime_native_surfaces.py",
+    "tests/manual/browser_ime_standard.md"
+  ],
+  "rejected": [
+    "Keep ASCII-only seeds: intended rich-editor operations stay untested.",
+    "Normalize every subsequent surface: this could hide changed prefix bytes."
+  ],
+  "verification": "Negative unit cases, then one separate nine-cell native series per browser with unchanged binary, focus guards, cadence and action clocks. Preserve the original 354PASS/45FAIL/33BLOCKED full matrix.",
+  "not_tested": "The supplemental series does not replace the original complete browser matrix. Changed-byte production NBSP behavior belongs to the separate bounded-presentation decision and its later receipts. KDE remains unaccepted.",
+  "results": {
+    "helper_unit_tests": "11 PASS",
+    "firefox_supplemental": "6 PASS / 3 FAIL / 0 BLOCKED",
+    "chrome_supplemental": "9 PASS / 0 FAIL / 0 BLOCKED",
+    "remaining_first_mechanism": "ASCII-only physical pair scope rejects rich NBSP separator; downstream single-token verifier correctly declines a two-word edit. Post-commit raw separator canonicalization needs a separate bounded proof before a runtime patch.",
+    "verified_evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/seed-space/evidence/",
+    "original_full_matrix": "354 PASS / 45 FAIL / 33 BLOCKED"
+  },
+  "runtime_authority_changed": false,
+  "production_delivery_changed": false,
+  "rollback": "Remove the test-only helper and supplemental actor; keep old receipts."
+}

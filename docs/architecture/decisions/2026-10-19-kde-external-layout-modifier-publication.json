@@ -1,0 +1,46 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-kde-external-layout-modifier-publication",
+  "status": "PRIVATE_NATIVE_277_PASS_43_FAIL_BASELINE_FAILURES_RETAINED",
+  "invariants": [
+    "C01",
+    "C03",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [
+    "scripts/compat/kwin-input-method-layout-modifiers-test.patch",
+    "scripts/compat/kwin-input-method-layout-modifiers.patch"
+  ],
+  "reason": "Three original Chrome prefix cells reach exact transformed text and native InputModeUS but retain KDERU. Passive D-Bus proves a completed US switch; existing IBus Wayland wire contains an old-RU modifier echo. Exact host-version KWin5.24.7 external setLayout forwards seat modifiers but leaves its existing input-method keyboard grab pending until another physical key. Its input-method echo handler can silently overwrite XKB group.",
+  "decision": "Test an upstream-scoped compatibility fix in KWin KeyboardLayoutDBusInterface::setLayout: after a valid XKB switch, immediately publish pending modifiers to the existing InputMethod grab through forwardModifiers(NoForce), when InputMethod exists. Preserve existing physical-key forwarding order. Build privately on the remote host before native qualification; do not install or replace the system compositor.",
+  "alternatives": [
+    {
+      "solution": "Publish pending group using existing compositor input-method owner",
+      "rating": 9,
+      "risk": "Requires an upstream/dependency compatibility patch; private proof is not a distributable Lay-only solution"
+    },
+    {
+      "solution": "Upgrade KWin without verifying this transition",
+      "rating": 3,
+      "risk": "The same input-method group acceptance is present in official5.27.12,6.0.0 and master; no fix established"
+    },
+    {
+      "solution": "Wait, poll or repeat setLayout in Lay",
+      "rating": 1,
+      "risk": "Adds timing-dependent synchronization/retry instead of completing the protocol transition"
+    },
+    {
+      "solution": "Commit open preedit and replace the IBus engine",
+      "rating": 2,
+      "risk": "Changes protected open-preedit and delivery semantics"
+    }
+  ],
+  "verification": "Controlled protocol RED on pristine official KWin5.24.7 plus only the regression test. Both group directions must reach the existing grab without an intervening key. Explicit delayed-old/new echo rows must settle the target after two observed server-side modifier state changes. Then full InputMethod and KeyboardLayout regression suites, private library ABI/source pins, original prefix and complete native browser proof. Keep failures and closure receipts.",
+  "not_tested": "Isolated causal RED4/GREEN4 confirmed on exact KWin5.24.7. KeyboardLayout suite10 cases PASS. ABI4207 names unchanged, stock4156 names retained. Full InputMethod still fails geometry and intermittently extra-client count; pristine upstream runtime/test reproduce both. Strict comparison receipt remains FAILED because modified baseline fixture reproduces only geometry. Full-suite prior modifier activity masks causal RED, so isolated process is required. Private prefix comparison18/2 to19/1; complete supplemental KDE browser actor277PASS/43FAIL/0BLOCKED of320. All three prior Chrome prefix layout mismatches passed; two Firefox Space layout failures remain. Exact case/action differences from the canonical GNOME browser protocol are recorded in the owning document. Other112 KDE cells, GNOME, packaging and release qualification remain unproved.",
+  "runtime_authority_changed": false,
+  "consequence_analysis": "This is a compositor protocol-completion candidate, not a new Lay owner, Shift detector, route, timer or authority source. Preserve invalid-layout refusal, locked/depressed modifiers, key-before-modifier ordering, existing InputMethod lifetime checks, foreground checks and native target assertions. Private legacy-compositor qualification must not be presented as a user installation or a general KDE release fix."
+}

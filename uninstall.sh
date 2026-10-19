@@ -125,6 +125,15 @@ remove_managed_runtime() {
 echo "=== остановка lay ==="
 run_runtime_cleanup
 
+if [ -f "$SOURCE_DIR/scripts/compat/lay-kde-panel-focus.py" ]; then
+    if python3 "$SOURCE_DIR/scripts/compat/lay-kde-panel-focus.py" --remove; then
+        dbus-send --session --type=method_call --dest=org.kde.KWin \
+            /KWin org.kde.KWin.reconfigure >/dev/null 2>&1 || true
+    else
+        echo "Не удалось удалить правило фокуса панели IBus для KDE" >&2
+    fi
+fi
+
 echo "=== удаление пользовательского runtime ==="
 rm -f \
     "$HOME/.local/bin/lay" \

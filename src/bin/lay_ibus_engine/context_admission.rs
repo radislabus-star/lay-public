@@ -649,8 +649,9 @@ impl AdmissionToken {
 /// Stable identity for layout work owned by one live input context.
 ///
 /// Layout synchronization is allowed to outlive an ordinary word settlement,
-/// so this token deliberately excludes `WordLineage`. It still fails closed
-/// across connection, revocation, owner, or focus-activation changes.
+/// so this token deliberately excludes `WordLineage`. Direct/open-preedit work
+/// still requires exact revocation equality. Committed background layout alone
+/// may survive an authenticated word Reset within the same live activation.
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct LayoutIntentToken {
     connection: ConnectionGeneration,
@@ -685,7 +686,8 @@ pub(crate) struct ContextAdmissionReducer<P = zbus::message::Sequence> {
     profile: GlobalProfile,
     revocation: u64,
     // Existing revocation counter, not another generation. Only authenticated
-    // word Reset can preserve inert native-replay provenance across this floor.
+    // word Reset can preserve inert replay provenance and committed layout
+    // intent across this floor. Neither restores word or text-edit authority.
     last_non_reset_revocation: u64,
     owner: Option<EngineOwner>,
     activation: Option<FocusActivation>,
@@ -698,6 +700,9 @@ pub(crate) struct ContextAdmissionReducer<P = zbus::message::Sequence> {
     request: Option<ContextRequest<P>>,
     unsettled: VecDeque<UnsettledKey>,
     exact_manual_snapshot: Option<ExactManualSourceSnapshotReceipt>,
+    // An untouched, authenticated fresh activation may supply a manual-only
+    // source on an explicit gesture. It never owns a known word or suffix.
+    fresh_manual_source_available: bool,
     next_owner: u64,
     next_activation: u64,
     next_lineage: u64,
@@ -738,6 +743,7 @@ where
             request: None,
             unsettled: VecDeque::with_capacity(MAX_UNSETTLED_KEYS),
             exact_manual_snapshot: None,
+            fresh_manual_source_available: false,
             next_owner: 1,
             next_activation: 1,
             next_lineage: 1,
@@ -1032,6 +1038,10 @@ where
         if self.owner.as_ref() != Some(owner) {
             return false;
         }
+        if word_effect == KeyWordEffect::PossibleMutation {
+            self.fresh_manual_source_available = false;
+            self.exact_manual_snapshot = None;
+        }
         if self.unsettled.len() == MAX_UNSETTLED_KEYS
             || self.unsettled.iter().any(|entry| entry.header == header)
         {
@@ -1174,7 +1184,66 @@ where
             observation_revision,
             expires_at,
         });
+        self.fresh_manual_source_available = false;
         true
+    }
+
+    pub(crate) fn fresh_exact_manual_source_allowed(&self, token: &AdmissionToken) -> bool {
+        self.fresh_manual_source_available
+            && self.revalidate_bridge(token)
+            && self.lineage.completeness == WordCompleteness::UnknownStart
+            && self.lineage.observed_suffix_chars == 0
+    }
+
+    /// The authenticated Reset handler retired actual owned preedit. This
+    /// permits a new manual observation, never the predecessor's word or lease.
+    pub(crate) fn admit_fresh_manual_source_after_owned_reset(
+        &mut self,
+        source: &AdmissionToken,
+        reset: &AdmissionToken,
+    ) -> bool {
+        if !self.exact_replay_reset_provenance_is_current(source)
+            || source.lineage.observed_suffix_chars == 0
+            || !self.revalidate_bridge(reset)
+            || self.lineage.completeness != WordCompleteness::UnknownStart
+            || self.lineage.observed_suffix_chars != 0
+            || self.exact_manual_snapshot.is_some()
+        {
+            return false;
+        }
+        self.fresh_manual_source_available = true;
+        true
+    }
+
+    pub(crate) fn exact_manual_snapshot_is_current(
+        &self,
+        token: &AdmissionToken,
+        tail_epoch: u64,
+        tail: &str,
+        observation_revision: u64,
+    ) -> bool {
+        self.revalidate_bridge(token)
+            && tail_epoch == self.latest_tail_epoch
+            && self.exact_manual_snapshot.as_ref().is_some_and(|receipt| {
+                receipt.source_token == *token
+                    && receipt.tail_epoch == tail_epoch
+                    && receipt.tail == tail
+                    && receipt.observation_revision == observation_revision
+                    && receipt.expires_at > Instant::now()
+            })
+    }
+
+    pub(crate) fn current_exact_manual_snapshot(
+        &self,
+        token: &AdmissionToken,
+        tail_epoch: u64,
+        tail: &str,
+        observation_revision: u64,
+    ) -> Option<ExactManualSourceSnapshotReceipt> {
+        if !self.exact_manual_snapshot_is_current(token, tail_epoch, tail, observation_revision) {
+            return None;
+        }
+        self.exact_manual_snapshot.clone()
     }
 
     pub(crate) fn invalidate_exact_manual_snapshot(&mut self, owner: &EngineOwner) {
@@ -1838,6 +1907,7 @@ where
 
     pub(crate) fn observed_word_reset(&mut self) {
         let floor = self.last_non_reset_revocation;
+        let fresh_manual_source_available = self.fresh_manual_source_available;
         // Reset retires the word in this activation; it does not change the
         // client's already admitted input purpose or privacy hints. Broader
         // lifecycle and metadata changes still clear them through revoke().
@@ -1845,6 +1915,7 @@ where
         self.revoke();
         self.last_non_reset_revocation = floor;
         self.settled_content_type = content_type;
+        self.fresh_manual_source_available = fresh_manual_source_available;
     }
 
     fn exact_replay_reset_provenance_is_current(&self, source: &AdmissionToken) -> bool {
@@ -2007,6 +2078,7 @@ where
         self.owner = Some(target_owner.clone());
         self.activation = Some(target_activation.clone());
         self.request = None;
+        self.fresh_manual_source_available = true;
         Some(ActivationGrant {
             revocation: self.revocation,
             target_owner,
@@ -2148,6 +2220,17 @@ where
             && token.revocation == self.revocation
             && self.owner.as_ref() == Some(&token.owner)
             && self.activation.as_ref() == Some(&token.activation)
+    }
+
+    pub(crate) fn revalidate_committed_layout_intent(&self, token: &LayoutIntentToken) -> bool {
+        self.revalidate_layout_intent(token)
+            || (self.mode == GlobalEngineMode::Verified
+                && self.lifecycle_is_settled()
+                && token.connection == self.connection
+                && self.owner.as_ref() == Some(&token.owner)
+                && self.activation.as_ref() == Some(&token.activation)
+                && token.revocation >= self.last_non_reset_revocation
+                && token.revocation < self.revocation)
     }
 
     pub(crate) fn enrich_native_activation(
@@ -2400,6 +2483,7 @@ where
     fn revoke(&mut self) {
         self.settled_content_type = None;
         self.exact_manual_snapshot = None;
+        self.fresh_manual_source_available = false;
         self.revocation = next_generation(self.revocation);
         self.last_non_reset_revocation = self.revocation;
         // A consumed receipt identifies a live admitted successor only until

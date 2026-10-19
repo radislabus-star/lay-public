@@ -1,8 +1,18 @@
 //! Final-pass adverse schedules through the production receive/callback paths.
 use super::*;
 
+#[path = "active_composition_space_receipt.rs"]
+mod active_composition_space_receipt;
+#[path = "exact_manual_observation.rs"]
+mod exact_manual_observation;
+#[path = "kde_owned_preedit.rs"]
+mod kde_owned_preedit;
 #[path = "late_native_replay_refresh.rs"]
 mod late_native_replay_refresh;
+#[path = "owned_preedit_focus.rs"]
+mod owned_preedit_focus;
+#[path = "owned_preedit_reset_source.rs"]
+mod owned_preedit_reset_source;
 use crate::bridge::LayImeBridge;
 use crate::protocol::{
     AutocorrectSuppression, KEY_ENTER, KEY_ISO_LEVEL3_SHIFT, KEY_KP_ENTER, KEY_LEFT_ALT,
@@ -2163,7 +2173,7 @@ async fn td121_pending_current_completion_with_compute_and_reset_lineage(
     exact_surrounding_receipt(harness, &mut engine, "пр").await;
     assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
     assert_eq!(
-        publish_fixture_append_completion(harness, &mut engine, "ивет").await,
+        publish_fixture_document_preedit_completion(harness, &mut engine, "ивет").await,
         "ивет"
     );
     if !retain_reset_lineage {
@@ -2277,13 +2287,7 @@ fn td121_pending_worker_fills_missing_material_before_exact_receipt() {
             engine.selected_precognition_suffix().as_deref(),
             Some("верка")
         );
-        assert_eq!(
-            effects
-                .iter()
-                .map(|effect| effect.header().member().unwrap().as_str().to_owned())
-                .collect::<Vec<_>>(),
-            ["UpdatePreeditText", "ShowPreeditText"]
-        );
+        assert_legacy_auxiliary_candidate(&effects, "верка", false);
         assert!(engine.committed_tail.pending_completion_learning.is_none());
         engine.cancel_precognition_display_generation();
     }));
@@ -2357,16 +2361,7 @@ fn td121_inactive_completion_waits_for_matching_handled_release() {
             );
             assert!(!engine.composition.preedit_dirty);
             assert!(!engine.composition.preedit_display_only_pending);
-            assert_eq!(effects.len(), 1, "matching release drains cached material without a later cursor or surrounding callback");
-            let body = effects[0].body();
-            let (text, cursor, visible, mode) = body
-                .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
-                .unwrap();
-            assert_eq!(
-                crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
-                Some("верка")
-            );
-            assert_eq!((cursor, visible, mode), (0, true, 0));
+            assert_legacy_auxiliary_candidate(&effects, "верка", true);
             assert_eq!(engine.client_context.surrounding_text_snapshot, snapshot);
             assert_eq!(
                 engine.client_context.surrounding_observation_revision,
@@ -2458,7 +2453,8 @@ fn td121_deferred_completion_is_inert_with_legacy_test_output() {
                 .flush_dirty_preedit(&mut EngineOutput::test(&mut emitted))
                 .await
                 .unwrap();
-            assert_eq!(emitted.preedit_updates, [("верка".into(), 0, true, 0)]);
+            assert_eq!(emitted.preedit_updates, [("".into(), 0, false, 0)]);
+            assert_eq!(emitted.auxiliary_updates, [("верка".into(), true)]);
             assert_eq!(
                 engine.selected_precognition_suffix().as_deref(),
                 Some("верка")
@@ -2532,7 +2528,7 @@ fn td121_overlapping_handled_releases_publish_only_the_latest_completion() {
                         engine.selected_precognition_suffix().as_deref(),
                         Some("ерка")
                     );
-                    assert_eq!(effects.len(), 1);
+                    assert_legacy_auxiliary_candidate(&effects, "ерка", true);
                     assert!(!engine.composition.preedit_dirty);
                 }
             }
@@ -2608,6 +2604,10 @@ fn td121_deferred_completion_cannot_survive_frame_revocation() {
                     );
                 }
             }
+            assert!(emitted
+                .auxiliary_updates
+                .iter()
+                .all(|(text, visible)| !visible || text != "верка"));
             engine.consume_handled_release(36);
             engine
                 .flush_dirty_preedit(&mut EngineOutput::test(&mut emitted))
@@ -2619,6 +2619,13 @@ fn td121_deferred_completion_cannot_survive_frame_revocation() {
                     .iter()
                     .all(|(text, _, visible, _)| !visible || text != "верка"),
                 "{change}: stale release must not publish"
+            );
+            assert!(
+                emitted
+                    .auxiliary_updates
+                    .iter()
+                    .all(|(text, visible)| !visible || text != "верка"),
+                "{change}: stale release must not publish auxiliary text"
             );
             assert!(engine.selected_precognition_suffix().is_none(), "{change}");
             assert!(engine.committed_tail.pending_completion_learning.is_none());
@@ -2681,20 +2688,9 @@ fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
             }
             assert_eq!(engine.selected_precognition_suffix().as_deref(), Some("верка"), "exact client receipt must publish already-computed current material before the next key callback");
             assert!(!engine.composition.preedit_display_only_pending);
-            assert_eq!(effects.len(), 1);
-            assert_eq!(
-                effects[0].header().member().unwrap().as_str(),
-                "UpdatePreeditText"
-            );
-            let body = effects[0].body();
-            let (text, cursor, visible, mode) = body
-                .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
-                .unwrap();
-            assert_eq!(
-                crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
-                Some("верка")
-            );
-            assert_eq!((cursor, visible, mode), (0, true, 0));
+            assert_legacy_auxiliary_candidate(&effects, "верка", true);
+            assert!(!engine.composition.preedit_visible);
+            assert!(engine.composition.auxiliary_visible);
             assert!(
                 !td121_readout_key(&mut harness, &mut engine, 24_020, KEY_LEFT_ALT, 56, 0).await
             );
@@ -6316,7 +6312,8 @@ fn firefox_retired_published_preedit_preserves_only_lineage_until_exact_client_t
                 assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
                 engine.config.ime_bracket_candidates = prefix_len == 4;
                 let published =
-                    publish_fixture_append_completion(&mut harness, &mut engine, "жλyz").await;
+                    publish_fixture_document_preedit_completion(&mut harness, &mut engine, "жλyz")
+                        .await;
                 let presentation = format!("{left}{prefix}{published}{right}");
                 for (i, &(ch, code)) in keys[prefix_len..prefix_len + append_count]
                     .iter()
@@ -6398,6 +6395,97 @@ async fn publish_fixture_append_completion(
     let message = bounded(next_peer_message(&mut harness.peer)).await;
     assert_eq!(
         message.header().member().unwrap().as_str(),
+        "UpdateAuxiliaryText"
+    );
+    let body = message.body();
+    let (text, visible) = body
+        .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
+        .unwrap();
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+        Some(expected.as_str())
+    );
+    assert!(visible);
+    assert!(!engine.composition.preedit_visible);
+    assert!(engine.composition.auxiliary_visible);
+    assert!(drain_output_to_proof(harness).await.is_empty());
+    expected
+}
+
+fn assert_legacy_auxiliary_candidate(
+    effects: &[zbus::Message],
+    suffix: &str,
+    retired_preedit: bool,
+) {
+    let members: Vec<_> = effects
+        .iter()
+        .map(|effect| effect.header().member().unwrap().as_str().to_owned())
+        .collect();
+    let expected = if retired_preedit {
+        vec![
+            "UpdatePreeditText",
+            "HidePreeditText",
+            "UpdateAuxiliaryText",
+        ]
+    } else {
+        vec!["UpdateAuxiliaryText"]
+    };
+    assert_eq!(members, expected);
+    if retired_preedit {
+        let body = effects[0].body();
+        let (text, cursor, visible, mode) = body
+            .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+            .unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+            Some("")
+        );
+        assert_eq!((cursor, visible, mode), (0, false, 0));
+        assert!(effects[1].body().deserialize::<()>().is_ok());
+    }
+    let body = effects.last().unwrap().body();
+    let (text, visible) = body
+        .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
+        .unwrap();
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+        Some(suffix)
+    );
+    assert!(visible);
+}
+
+// Replay a previously published document-preedit frame for compatibility tests
+// of delayed client receipts. Current legacy hints use the auxiliary publisher
+// above and must never acquire this historical document-presentation witness.
+async fn publish_fixture_document_preedit_completion(
+    harness: &mut Harness,
+    engine: &mut LayIbusEngine,
+    suffix: &str,
+) -> String {
+    set_fixture_append_completion(engine, suffix);
+    let expected = if engine.config.ime_bracket_candidates {
+        format!("[{suffix}]")
+    } else {
+        suffix.to_string()
+    };
+    let emitter =
+        zbus::object_server::SignalEmitter::new(&harness.connection, engine.path.clone()).unwrap();
+    let mut output = crate::output::EngineOutput::legacy(&emitter);
+    output
+        .update_preedit_text(
+            crate::text::make_preedit_ibus_text(expected.clone(), 0),
+            0,
+            true,
+            0,
+        )
+        .await
+        .unwrap();
+    output.show_preedit_text().await.unwrap();
+    engine.record_context_reset_preedit_publication(&expected, 0);
+    engine.composition.preedit_visible = true;
+    let message = bounded(next_peer_message(&mut harness.peer)).await;
+    assert_eq!(
+        message.header().member().unwrap().as_str(),
         "UpdatePreeditText"
     );
     let body = message.body();
@@ -6448,10 +6536,11 @@ fn firefox_published_preedit_retention_refuses_unproved_or_contradictory_snapsho
             if gap == "unpublished" {
                 set_fixture_append_completion(&mut engine, &suffix);
             } else {
-                publish_fixture_append_completion(&mut harness, &mut engine, &suffix).await;
+                publish_fixture_document_preedit_completion(&mut harness, &mut engine, &suffix)
+                    .await;
             }
             if gap == "replaced_publication" {
-                publish_fixture_append_completion(&mut harness, &mut engine, "uvw").await;
+                publish_fixture_document_preedit_completion(&mut harness, &mut engine, "uvw").await;
             }
             if gap != "unchanged_receipt" {
                 assert!(legacy_key(&mut harness, &mut engine, 14_120, 'd' as u32, 32, 0).await);
@@ -7216,7 +7305,7 @@ fn firefox_deferred_manual_refresh_retains_retired_preedit_from_previous_prefix(
         engine.set_client_capabilities(1_073_741_865);
         exact_surrounding_receipt(&mut harness, &mut engine, "ab").await;
         engine.config.nanda_precognition = true;
-        publish_fixture_append_completion(&mut harness, &mut engine, "cde").await;
+        publish_fixture_document_preedit_completion(&mut harness, &mut engine, "cde").await;
         surrounding_receipt(&mut harness, &mut engine, "ab\u{200b}", 2, 2).await;
         let input_mode_before_key = engine.layout_gesture.layout_is_ru;
         assert!(legacy_key(&mut harness, &mut engine, 19_210, 'c' as u32, 46, 0).await);
@@ -7289,7 +7378,7 @@ fn firefox_manual_toggle_defers_until_the_client_replies_after_rpc() {
         engine.set_client_capabilities(1_073_741_865);
         exact_surrounding_receipt(&mut harness, &mut engine, "ax").await;
         engine.config.nanda_precognition = true;
-        publish_fixture_append_completion(&mut harness, &mut engine, "cde").await;
+        publish_fixture_document_preedit_completion(&mut harness, &mut engine, "cde").await;
         surrounding_receipt(&mut harness, &mut engine, "ax\u{200b}", 2, 2).await;
         assert!(engine.context_reset_rereceipt_manual_refresh_allowed());
         assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
@@ -7404,7 +7493,7 @@ fn firefox_manual_toggle_defers_until_the_client_replies_after_rpc() {
         engine.set_client_capabilities(1_073_741_865);
         exact_surrounding_receipt(&mut harness, &mut engine, "ax").await;
         engine.config.nanda_precognition = true;
-        publish_fixture_append_completion(&mut harness, &mut engine, "cde").await;
+        publish_fixture_document_preedit_completion(&mut harness, &mut engine, "cde").await;
         surrounding_receipt(&mut harness, &mut engine, "ax\u{200b}", 2, 2).await;
         assert!(engine.context_reset_rereceipt_manual_refresh_allowed());
         let path = engine.path.clone();
@@ -9052,7 +9141,21 @@ fn no_surrounding_browser_accepts_only_its_live_owned_preedit_completion() {
             .unwrap();
         assert_eq!(
             crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
-            Some("abc")
+            Some("a")
+        );
+        assert!(visible);
+        let hint = bounded(next_peer_message(&mut harness.peer)).await;
+        assert_eq!(
+            hint.header().member().unwrap().as_str(),
+            "UpdateAuxiliaryText"
+        );
+        let body = hint.body();
+        let (text, visible) = body
+            .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
+            .unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+            Some("bc")
         );
         assert!(visible);
 
@@ -9171,14 +9274,28 @@ async fn c06_exact_refresh_owned_second_word(harness: &mut Harness, serial: u32)
         .unwrap();
     assert_eq!(
         crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
-        Some("abc")
+        Some("a")
     );
     assert_eq!((cursor, visible), (1, true));
     assert_eq!(
         crate::text::preedit_attribute_geometry(&text),
-        [(1, 0, 0, 1), (2, 0x888888, 1, 3), (1, 1, 1, 3)],
-        "the actual legacy signal must leave its owned typed prefix neutral"
+        [(1, 0, 0, 1)],
+        "the actual legacy composition must contain only the neutral typed prefix"
     );
+    let hints = effects
+        .iter()
+        .filter(|effect| effect.header().member().unwrap().as_str() == "UpdateAuxiliaryText")
+        .collect::<Vec<_>>();
+    assert_eq!(hints.len(), 1);
+    let body = hints[0].body();
+    let (text, visible) = body
+        .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
+        .unwrap();
+    assert_eq!(
+        crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
+        Some("bc")
+    );
+    assert!(visible);
     assert!(effects.iter().all(|effect| !matches!(
         effect.header().member().unwrap().as_str(),
         "CommitText" | "DeleteSurroundingText"
@@ -9800,7 +9917,8 @@ fn late_surrounding_capability_keeps_newly_published_native_completion_for_tab()
         exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
         assert!(engine.context_observed_suffix_is_current());
         publish_fixture_append_completion(&mut harness, &mut engine, "bc").await;
-        assert!(engine.composition.preedit_visible);
+        assert!(!engine.composition.preedit_visible);
+        assert!(engine.composition.auxiliary_visible);
 
         assert!(legacy_key(&mut harness, &mut engine, 12_881, KEY_TAB, 15, 0).await);
         td121_expect_legacy_commit_text(&mut harness.peer, "bc ").await;
@@ -10236,6 +10354,370 @@ async fn cycle09_manual_toggle_with_effects(
     let effects = cycle09_collect_no_local_text_effects(harness).await;
     let engine = cycle09_take_registered_engine(harness, &path).await;
     (engine, result.map_err(|error| error.to_string()), effects)
+}
+
+async fn td159_fresh_focus_source(harness: &mut Harness) -> LayIbusEngine {
+    let mut engine = new_engine(harness);
+    start_source_free_unknown(harness, &mut engine).await;
+    engine.try_install_pending_context_activation();
+    engine.set_client_capabilities(41);
+    engine.config.auto_replace = false;
+    engine.config.typing_assist = false;
+    engine.config.nanda_precognition = false;
+    engine
+}
+
+#[test]
+fn td159_fresh_focus_manual_source_requires_only_current_explicit_gesture() {
+    zbus::block_on(bounded(async {
+        for (text, expected_tail) in [
+            ("abcdef", "abcdef"),
+            ("test, abcdef", "abcdef"),
+            ("hello ", "hello "),
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = td159_fresh_focus_source(&mut harness).await;
+            exact_surrounding_receipt(&mut harness, &mut engine, text).await;
+            assert!(!engine.context_word_is_known());
+            assert!(engine.committed_tail.buffer.is_empty());
+            assert_eq!(
+                engine
+                    .context_word_scope
+                    .as_ref()
+                    .unwrap()
+                    .lineage()
+                    .observed_suffix_chars,
+                0,
+            );
+            assert!(
+                engine.can_acquire_fresh_exact_manual_source(),
+                "fresh source preflight"
+            );
+            let (engine, result, _effects) =
+                cycle09_manual_toggle_with_effects(&mut harness, engine).await;
+            assert_eq!(
+                result,
+                Ok((3, false)),
+                "fresh focus must admit only the explicit exact manual gesture: tail_chars={}, proof={}, fresh={}",
+                engine.committed_tail.buffer.chars().count(),
+                engine.exact_snapshot_manual_source_is_current(),
+                engine.can_acquire_fresh_exact_manual_source(),
+            );
+            assert_eq!(engine.committed_tail.buffer, expected_tail);
+            assert!(!engine.context_word_is_known());
+            assert!(!engine.context_allows_manual_toggle());
+            assert_eq!(
+                engine
+                    .context_word_scope
+                    .as_ref()
+                    .unwrap()
+                    .lineage()
+                    .observed_suffix_chars,
+                0,
+            );
+            let (engine, visible) = cycle09_visible_tail(&mut harness, engine).await;
+            assert!(cycle09_tail_is_authoritative(
+                &visible,
+                &engine.path,
+                engine.layout_gesture.layout_is_ru,
+                expected_tail,
+            ));
+        }
+    }));
+}
+
+#[test]
+fn td159_fresh_focus_manual_source_rejects_unproved_or_edited_fields() {
+    zbus::block_on(bounded(async {
+        for gap in [
+            "selection",
+            "interior",
+            "missing_callback",
+            "missing_capability",
+            "sensitive",
+            "composition",
+            "preedit",
+            "quarantine",
+            "atomic",
+            "oversized",
+            "control_edit",
+        ] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = td159_fresh_focus_source(&mut harness).await;
+            exact_surrounding_receipt(&mut harness, &mut engine, "prefix abcdef").await;
+            assert!(
+                engine.can_acquire_fresh_exact_manual_source(),
+                "negative fixture must first be eligible: {gap}"
+            );
+            match gap {
+                "selection" => {
+                    surrounding_receipt(&mut harness, &mut engine, "prefix abcdef", 13, 7).await
+                }
+                "interior" => {
+                    surrounding_receipt(&mut harness, &mut engine, "prefix abcdef", 9, 9).await
+                }
+                "missing_callback" => {
+                    engine.client_context.surrounding_text_callback_observed = false
+                }
+                "missing_capability" => engine.set_client_capabilities(9),
+                "sensitive" => engine.set_content_type_state(8, 0),
+                "composition" => engine.composition.buffer = "другое".to_string(),
+                "preedit" => engine.composition.legacy_word_preedit_active = true,
+                "quarantine" => engine.exact_replay_tail_change_quarantined = true,
+                "atomic" => engine.atomic.active = true,
+                "oversized" => {
+                    let text = "q".repeat(crate::preedit::PREEDIT_TAIL_LIMIT + 1);
+                    exact_surrounding_receipt(&mut harness, &mut engine, &text).await;
+                }
+                "control_edit" => {
+                    // The client can report a collapsed SSI even after Ctrl+A.
+                    // An observed edit must spend the phase independently of SSI.
+                    legacy_key(&mut harness, &mut engine, 8700, 97, 30, 4).await;
+                    cycle09_assert_no_local_text_effect(&mut harness).await;
+                    exact_surrounding_receipt(&mut harness, &mut engine, "prefix abcdef").await;
+                }
+                _ => unreachable!(),
+            }
+            let (engine, result, _) =
+                cycle09_manual_toggle_with_effects(&mut harness, engine).await;
+            assert!(matches!(result, Ok((0, _)) | Err(_)), "{gap}: {result:?}");
+            assert!(!engine.context_word_is_known(), "{gap}");
+            assert!(!engine.exact_snapshot_manual_source_is_current(), "{gap}");
+            assert!(engine.committed_tail.buffer.is_empty(), "{gap}");
+        }
+    }));
+}
+
+#[test]
+fn td159_fresh_focus_manual_source_cannot_revive_after_receipt_change_or_reset() {
+    zbus::block_on(bounded(async {
+        for reset in [false, true] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let mut engine = td159_fresh_focus_source(&mut harness).await;
+            exact_surrounding_receipt(&mut harness, &mut engine, "prefix abcdef").await;
+            let (mut engine, result, _) =
+                cycle09_manual_toggle_with_effects(&mut harness, engine).await;
+            assert_eq!(result, Ok((3, false)));
+            assert!(engine.exact_snapshot_manual_source_is_current());
+            if reset {
+                let mut serial = 8800;
+                firefox_replay_reset(&mut harness, &mut engine, &mut serial).await;
+            }
+            exact_surrounding_receipt(&mut harness, &mut engine, "prefix abcdef").await;
+            assert!(!engine.exact_snapshot_manual_source_is_current());
+            let (engine, result, _) =
+                cycle09_manual_toggle_with_effects(&mut harness, engine).await;
+            assert!(
+                matches!(result, Ok((0, _)) | Err(_)),
+                "reset={reset}: {result:?}"
+            );
+            assert!(!engine.context_word_is_known());
+        }
+    }));
+}
+
+#[test]
+fn td159_fresh_focus_manual_source_same_field_transfer_uses_exact_replay_contract() {
+    zbus::block_on(bounded(async {
+        let mut harness = cycle09_harness().await;
+        let mut source = td159_fresh_focus_source(&mut harness).await;
+        cycle09_surrounding_receipt(&mut harness, &mut source, "prefix abcdef", 13, 13).await;
+        let (source, result, _) = cycle09_manual_toggle_with_effects(&mut harness, source).await;
+        assert_eq!(result, Ok((3, false)));
+        let (source, visible) = cycle09_visible_tail(&mut harness, source).await;
+        assert!(cycle09_tail_is_authoritative(
+            &visible,
+            &source.path,
+            false,
+            "abcdef"
+        ));
+        let epoch = visible.as_ref().unwrap().3;
+        let path = format!("{TARGET_PATH}_fresh_manual");
+        let target =
+            cycle09_factory_handoff(&mut harness, source, 8900, &path, None, "lay-ime-ru").await;
+        assert!(!target.context_word_is_known());
+        assert!(target.exact_snapshot_manual_source_is_current());
+        let (target, visible) = cycle09_visible_tail(&mut harness, target).await;
+        assert!(cycle09_tail_is_authoritative(
+            &visible, &path, true, "abcdef"
+        ));
+        let (target, suppression) =
+            cycle09_suppress_exact_replay(&mut harness, target, "abcdef", epoch, &path, true).await;
+        assert_eq!(suppression, Ok(true));
+        assert!(cycle09_exact_suppression_is_armed(&target));
+        assert!(!target.context_word_is_known());
+        assert!(!target.exact_snapshot_manual_source_is_current());
+    }));
+}
+
+#[test]
+fn td159_fresh_focus_target_observation_preserves_only_exact_manual_transfer() {
+    zbus::block_on(bounded(async {
+        for (text, hints) in [
+            ("abcdef", 0),
+            ("prefix abcdef", 0),
+            ("πrefix abcdef", 0),
+            ("prefix abcdef", 2048),
+        ] {
+            let mut harness = cycle09_harness().await;
+            let mut source = td159_fresh_focus_source(&mut harness).await;
+            source.set_content_type_state(0, hints);
+            let cursor = text.chars().count() as u32;
+            cycle09_surrounding_receipt(&mut harness, &mut source, text, cursor, cursor).await;
+            let (source, result, _) =
+                cycle09_manual_toggle_with_effects(&mut harness, source).await;
+            assert_eq!(
+                result,
+                Ok((3, false)),
+                "source text={text:?}, hints={hints}"
+            );
+            let tail = source.committed_tail.buffer.clone();
+            let epoch = source.committed_tail.epoch;
+            let path = format!("{TARGET_PATH}_fresh_observed");
+            let target = cycle09_factory_handoff_with_capabilities(
+                &mut harness,
+                source,
+                8950,
+                &path,
+                Some(Some(SurroundingTextSnapshot::new(
+                    text.into(),
+                    cursor,
+                    cursor,
+                ))),
+                "lay-ime-ru",
+                (169, true, None),
+            )
+            .await;
+            assert!(
+                target.exact_snapshot_manual_source_is_current(),
+                "actual matching target observation must preserve exact manual transfer: {text:?}"
+            );
+            assert!(target.exact_manual_target_snapshot.is_none());
+            assert!(!target.context_word_is_known());
+            assert_eq!(
+                target
+                    .context_word_scope
+                    .as_ref()
+                    .unwrap()
+                    .lineage()
+                    .observed_suffix_chars,
+                0,
+            );
+            let (target, visible) = private_visible_tail_v4(&mut harness, target).await;
+            let visible = visible.unwrap();
+            assert_eq!(
+                (visible.1.as_str(), visible.3, visible.4.as_str()),
+                (tail.as_str(), epoch, path.as_str())
+            );
+            assert_eq!(
+                visible.6,
+                hints == 0,
+                "content permission must survive exact handoff"
+            );
+            let (target, suppression) =
+                cycle09_suppress_exact_replay(&mut harness, target, &tail, epoch, &path, true)
+                    .await;
+            assert_eq!(suppression, Ok(true));
+            assert!(cycle09_exact_suppression_is_armed(&target));
+            assert!(!target.context_word_is_known());
+        }
+    }));
+}
+
+#[test]
+fn td159_fresh_focus_target_observation_rejects_different_or_unproved_field() {
+    zbus::block_on(bounded(async {
+        for (snapshot, after_focus) in [
+            // FocusIn retires observations delivered before it. Even an exact
+            // old tuple must not count as this activation's current snapshot.
+            (
+                Some(SurroundingTextSnapshot::new("prefix abcdef".into(), 13, 13)),
+                false,
+            ),
+            (
+                Some(SurroundingTextSnapshot::new("other abcdef".into(), 12, 12)),
+                true,
+            ),
+            (
+                Some(SurroundingTextSnapshot::new("prefix abcdef".into(), 13, 7)),
+                true,
+            ),
+            (
+                Some(SurroundingTextSnapshot::new(
+                    "prefix abcdef later".into(),
+                    13,
+                    13,
+                )),
+                true,
+            ),
+            (
+                Some(SurroundingTextSnapshot::new("prefix abcdeg".into(), 13, 13)),
+                true,
+            ),
+            (None, false),
+        ] {
+            let mut harness = cycle09_harness().await;
+            let mut source = td159_fresh_focus_source(&mut harness).await;
+            cycle09_surrounding_receipt(&mut harness, &mut source, "prefix abcdef", 13, 13).await;
+            let (source, result, _) =
+                cycle09_manual_toggle_with_effects(&mut harness, source).await;
+            assert_eq!(result, Ok((3, false)));
+            let path = format!("{TARGET_PATH}_fresh_unproved");
+            let target = cycle09_factory_handoff_with_capabilities(
+                &mut harness,
+                source,
+                8970,
+                &path,
+                Some(snapshot),
+                "lay-ime-ru",
+                (169, after_focus, None),
+            )
+            .await;
+            assert!(!target.context_word_is_known());
+            assert!(!target.exact_snapshot_manual_source_is_current());
+            let (_target, visible) = private_visible_tail_v4(&mut harness, target).await;
+            let visible = visible.unwrap();
+            assert_eq!(visible.0, "passive:unknown-context");
+            assert!(visible.1.is_empty());
+            assert!(!visible.6);
+        }
+    }));
+}
+
+#[test]
+fn td159_fresh_focus_target_observation_changed_callback_still_revokes_manual_transfer() {
+    zbus::block_on(bounded(async {
+        let mut harness = cycle09_harness().await;
+        let mut source = td159_fresh_focus_source(&mut harness).await;
+        cycle09_surrounding_receipt(&mut harness, &mut source, "prefix abcdef", 13, 13).await;
+        let (source, result, _) = cycle09_manual_toggle_with_effects(&mut harness, source).await;
+        assert_eq!(result, Ok((3, false)));
+        let path = format!("{TARGET_PATH}_fresh_revoke");
+        let mut target = cycle09_factory_handoff_with_capabilities(
+            &mut harness,
+            source,
+            8990,
+            &path,
+            Some(Some(SurroundingTextSnapshot::new(
+                "prefix abcdef".into(),
+                13,
+                13,
+            ))),
+            "lay-ime-ru",
+            (169, true, None),
+        )
+        .await;
+        assert!(
+            target.exact_snapshot_manual_source_is_current(),
+            "actual matching target observation must preserve exact manual transfer"
+        );
+        cycle09_surrounding_receipt(&mut harness, &mut target, "otherx abcdef", 13, 13).await;
+        assert!(!target.exact_snapshot_manual_source_is_current());
+        cycle09_surrounding_receipt(&mut harness, &mut target, "prefix abcdef", 13, 13).await;
+        assert!(!target.exact_snapshot_manual_source_is_current());
+        let (_target, visible) = private_visible_tail_v4(&mut harness, target).await;
+        assert_eq!(visible.unwrap().0, "passive:unknown-context");
+    }));
 }
 
 fn td121_assert_word_mode_wire(effects: &[Message], path: &str, word: &str, target_ru: bool) {
@@ -11176,6 +11658,7 @@ fn td121_known_owned_manual_word_supersedes_preceding_space_layout_request() {
             engine.context_admission.clone().unwrap(),
             engine.live_layout_intent_token().unwrap(),
             true,
+            || {},
         );
         for (key, code) in [
             ('g', 34),
@@ -11212,12 +11695,76 @@ fn td121_known_owned_manual_word_supersedes_preceding_space_layout_request() {
         td121_assert_word_mode_wire(&effects, &engine.path, "ghbdtn", false);
         assert_eq!(
             dispatch_old(),
-            (true, 0),
+            (true, 0, false),
             "an older Space intent must be superseded without native dispatch"
         );
         assert_eq!(engine.committed_tail.buffer, "abc привет ghbdtn");
         assert!(!engine.layout_gesture.layout_is_ru);
         assert!(engine.live_context_token().is_some());
+    }));
+}
+
+#[test]
+fn td159_committed_layout_completes_across_same_activation_word_reset() {
+    zbus::block_on(bounded(async {
+        for reset_during_switch in [false, true] {
+            let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+            let (engine, mut serial) = td121_known_start_owned_legacy_word(&mut harness).await;
+            let (mut engine, outcome, effects) =
+                cycle09_manual_toggle_with_effects(&mut harness, engine).await;
+            assert_eq!(
+                outcome,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::handled(true).as_v3())
+            );
+            td121_assert_word_mode_wire(&effects, &engine.path, "привет", true);
+            assert!(legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0).await);
+            serial += 1;
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    serial,
+                    KEY_SPACE,
+                    57,
+                    RELEASE_MASK,
+                )
+                .await
+            );
+            serial += 1;
+            let (_, committed) = drain_output_to_text_proof(&mut harness).await;
+            assert_eq!(committed, ["привет "]);
+            let word_token = engine.live_context_token().unwrap();
+            let layout_token = engine.live_layout_intent_token().unwrap();
+            let reset_adapter = harness.adapter.clone();
+            let dispatch = crate::layout_sync::delayed_automatic_layout_dispatch_for_test(
+                harness.adapter.clone(),
+                layout_token.clone(),
+                true,
+                move || {
+                    if reset_during_switch {
+                        // The real authenticated Reset below proves ingress;
+                        // repeat its reducer effect inside the switch callback.
+                        reset_adapter
+                            .shared
+                            .reducer
+                            .lock()
+                            .unwrap()
+                            .observed_word_reset();
+                    }
+                },
+            );
+
+            actual_reset(&mut harness, &mut engine, serial, false).await;
+            assert!(!harness.adapter.revalidate(&word_token));
+            assert!(!harness.adapter.revalidate_layout_intent(&layout_token));
+            assert!(!engine.context_word_is_known());
+            assert_eq!(
+                dispatch(),
+                (false, 1, true),
+                "committed forward layout must survive word Reset without old word authority",
+            );
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+        }
     }));
 }
 
@@ -13606,14 +14153,25 @@ async fn td121_deliver_inherited_closed_replay(
     target: &mut LayIbusEngine,
     serial: &mut u32,
 ) {
-    for _ in 0..4 {
+    td121_deliver_inherited_word_replay(harness, target, serial, true).await;
+}
+
+async fn td121_deliver_inherited_word_replay(
+    harness: &mut Harness,
+    target: &mut LayIbusEngine,
+    serial: &mut u32,
+    closed: bool,
+) {
+    let keys = [('ф', 30), ('и', 48), ('с', 46), (' ', 57)];
+    let keys = &keys[..if closed { 4 } else { 3 }];
+    for _ in 0..keys.len() {
         for state in [0, RELEASE_MASK] {
             assert!(
                 !firefox_replay_callback(harness, target, serial, (KEY_BACKSPACE, 14, state)).await
             );
         }
     }
-    for (ch, code) in [('ф', 30), ('и', 48), ('с', 46), (' ', 57)] {
+    for &(ch, code) in keys {
         let key = if ch == ' ' {
             KEY_SPACE
         } else {
@@ -14200,6 +14758,105 @@ fn td121_confirmed_native_tail_probe_backspace_needs_no_new_client_receipt() {
                     cycle09_tail_is_authoritative(&tail, &path, true, &closed),
                     "reset={reset}, assistance={assistance}, prefix={prefix:?}, separator={separator:?}: confirmed native tail must remain capturable after the real owned probe round trip; before={before:?}, after_letter={after_letter:?}, after_backspace={after_backspace:?}, capture={tail:?}"
                 );
+                }));
+            }
+        }
+    }
+}
+
+#[test]
+fn td156_active_native_tail_probe_requires_actual_erasure_receipt() {
+    for prefix in ["", "文 🌍 "] {
+        for letter_receipt in [false, true] {
+            for erasure_receipt in [false, true] {
+                zbus::block_on(bounded(async {
+                    let mut harness = cycle09_harness().await;
+                    let (mut target, path, mut serial) =
+                        td121_inherited_first_closed_word(&mut harness, prefix, "", "").await;
+                    td121_deliver_inherited_word_replay(
+                        &mut harness,
+                        &mut target,
+                        &mut serial,
+                        false,
+                    )
+                    .await;
+                    let actual = format!("{prefix}фис");
+                    let n = actual.chars().count() as u32;
+                    cycle09_surrounding_receipt(&mut harness, &mut target, &actual, n, n).await;
+                    let before = target.client_context.surrounding_text_snapshot.clone();
+                    let before_revision = target.client_context.surrounding_observation_revision;
+                    assert!(
+                        firefox_observed_key_callback(
+                            &mut harness,
+                            &mut target,
+                            &mut serial,
+                            (0x0100_0000 | 'я' as u32, 44, 0),
+                        )
+                        .await
+                    );
+                    let letter_effects = drain_output_to_proof(&mut harness).await;
+                    firefox_replay_callback(
+                        &mut harness,
+                        &mut target,
+                        &mut serial,
+                        (0x0100_0000 | 'я' as u32, 44, RELEASE_MASK),
+                    )
+                    .await;
+                    if letter_receipt {
+                        cycle09_surrounding_receipt(
+                            &mut harness,
+                            &mut target,
+                            &format!("{actual}я"),
+                            n + 1,
+                            n + 1,
+                        )
+                        .await;
+                    }
+                    let handled_backspace = firefox_observed_key_callback(
+                        &mut harness,
+                        &mut target,
+                        &mut serial,
+                        (KEY_BACKSPACE, 14, 0),
+                    )
+                    .await;
+                    let backspace_effects = drain_output_to_proof(&mut harness).await;
+                    firefox_replay_callback(
+                        &mut harness,
+                        &mut target,
+                        &mut serial,
+                        (KEY_BACKSPACE, 14, RELEASE_MASK),
+                    )
+                    .await;
+                    if erasure_receipt {
+                        cycle09_surrounding_receipt(&mut harness, &mut target, &actual, n, n).await;
+                    }
+                    let state = format!(
+                        "prefix={prefix:?}, letter_receipt={letter_receipt}, erasure_receipt={erasure_receipt}, letter={letter_effects:?}, backspace_handled={handled_backspace}, backspace={backspace_effects:?}, before={before:?}@{before_revision}, after={:?}@{}, scope={:?}, pending={:?}",
+                        target.client_context.surrounding_text_snapshot,
+                        target.client_context.surrounding_observation_revision,
+                        target.context_word_scope,
+                        target.context_reset_rereceipt,
+                    );
+                    let (target, outcome) = cycle09_manual_toggle(&mut harness, target).await;
+                    assert_eq!(letter_effects, ["CommitText"], "{state}");
+                    assert!(!handled_backspace, "{state}");
+                    assert!(
+                        !letter_effects
+                            .iter()
+                            .chain(&backspace_effects)
+                            .any(|effect| effect == "DeleteSurroundingText"),
+                        "the ordinary client Backspace cannot gain a deletion route: {state}"
+                    );
+                    if erasure_receipt {
+                        assert_eq!(outcome, Ok((3, false)), "{state}");
+                        let (_, tail) = cycle09_visible_tail(&mut harness, target).await;
+                        assert!(
+                            cycle09_tail_is_authoritative(&tail, &path, true, "фис"),
+                            "{state}; tail={tail:?}"
+                        );
+                    } else {
+                        assert_eq!(outcome, Ok((0, false)), "{state}");
+                    }
                 }));
             }
         }
@@ -15456,7 +16113,8 @@ fn firefox_first_word_space_retires_published_preedit_before_exact_receipt() {
             );
             cycle09_assert_no_local_text_effect(&mut harness).await;
             let published =
-                publish_fixture_append_completion(&mut harness, &mut source, "bcdefgh").await;
+                publish_fixture_document_preedit_completion(&mut harness, &mut source, "bcdefgh")
+                    .await;
             assert_eq!(published, "bcdefgh");
 
             let native_space_was_visible = source.composition.preedit_visible;
@@ -16411,38 +17069,7 @@ fn c06_native_backspace_preserves_only_inert_confirmed_reset_predecessor() {
         assert_eq!(engine.committed_tail.buffer, "a");
         assert_eq!(engine.committed_tail.epoch, epoch.wrapping_add(1));
         let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
-        assert_eq!(
-            effects.len(),
-            2,
-            "published native hint must clear exactly once"
-        );
-        assert_eq!(
-            effects[0].header().member().unwrap().as_str(),
-            "UpdatePreeditText"
-        );
-        assert_eq!(
-            effects[1].header().member().unwrap().as_str(),
-            "HidePreeditText"
-        );
-        for effect in &effects {
-            let header = effect.header();
-            let member = header.member().unwrap().as_str();
-            assert!(
-                matches!(member, "UpdatePreeditText" | "HidePreeditText"),
-                "native BSP emitted {member}"
-            );
-            if member == "UpdatePreeditText" {
-                let body = effect.body();
-                let (text, _, visible, _) = body
-                    .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
-                    .unwrap();
-                assert_eq!(
-                    crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
-                    Some("")
-                );
-                assert!(!visible);
-            }
-        }
+        assert_single_auxiliary_hide(&effects);
         eprintln!(
             "NATIVE_BSP old_count={} scope={} pending={:?}",
             prior.observed_suffix_chars,
@@ -16575,28 +17202,28 @@ async fn c06_native_confirmed_prefix_fixture(
 
 async fn c06_native_backspace_clear_only(harness: &mut Harness) {
     let effects = super::terminal_delivery::legacy_effects(harness).await;
+    assert_single_auxiliary_hide(&effects);
+}
+
+fn assert_single_auxiliary_hide(effects: &[zbus::Message]) {
     assert_eq!(
         effects.len(),
-        2,
-        "one native empty update and one hide, no work republished during deletion"
+        1,
+        "one auxiliary hide, without a document edit"
     );
     assert_eq!(
         effects[0].header().member().unwrap().as_str(),
-        "UpdatePreeditText"
-    );
-    assert_eq!(
-        effects[1].header().member().unwrap().as_str(),
-        "HidePreeditText"
+        "UpdateAuxiliaryText"
     );
     let body = effects[0].body();
-    let (text, cursor, visible, mode) = body
-        .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+    let (text, visible) = body
+        .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
         .unwrap();
     assert_eq!(
         crate::ibus_interface::ibus_text_value_to_string(&text).as_deref(),
         Some("")
     );
-    assert_eq!((cursor, visible, mode), (0, false, 0));
+    assert!(!visible);
 }
 
 #[test]
@@ -18764,10 +19391,7 @@ fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_r
                     .iter()
                     .map(|effect| effect.header().member().unwrap().as_str().to_string())
                     .collect();
-                assert_eq!(
-                    members,
-                    ["UpdatePreeditText", "HidePreeditText", "CommitText"]
-                );
+                assert_eq!(members, ["UpdateAuxiliaryText", "CommitText"]);
                 for effect in &effects {
                     assert_eq!(effect.header().message_type(), Type::Signal);
                     assert_eq!(effect.header().path().unwrap().as_str(), engine.path);
@@ -18777,15 +19401,15 @@ fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_r
                     );
                 }
                 let body = effects[0].body();
-                let (text, cursor, visible, mode) = body
-                    .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+                let (text, visible) = body
+                    .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
                     .unwrap();
                 assert_eq!(
                     crate::ibus_interface::ibus_text_value_to_string(&text),
                     Some(String::new())
                 );
-                assert_eq!((cursor, visible, mode), (0, false, 0));
-                let body = effects[2].body();
+                assert!(!visible);
+                let body = effects[1].body();
                 let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
                 assert_eq!(
                     crate::ibus_interface::ibus_text_value_to_string(&value),
@@ -18926,20 +19550,17 @@ fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit(
                 .iter()
                 .map(|message| message.header().member().unwrap().as_str().to_string())
                 .collect();
-            assert_eq!(
-                members,
-                ["UpdatePreeditText", "HidePreeditText", "CommitText"]
-            );
+            assert_eq!(members, ["UpdateAuxiliaryText", "CommitText"]);
             let body = effects[0].body();
-            let (text, cursor, visible, mode) = body
-                .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
+            let (text, visible) = body
+                .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
                 .unwrap();
             assert_eq!(
                 crate::ibus_interface::ibus_text_value_to_string(&text),
                 Some(String::new())
             );
-            assert_eq!((cursor, visible, mode), (0, false, 0));
-            let body = effects[2].body();
+            assert!(!visible);
+            let body = effects[1].body();
             let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();
             assert_eq!(
                 crate::ibus_interface::ibus_text_value_to_string(&value),
@@ -19083,7 +19704,13 @@ fn native_space_observed_boundary_adopts_exact_client_nbsp() {
                         assert!(
                             legacy_key(&mut harness, &mut engine, serial, KEY_SPACE, 57, 0).await
                         );
-                        expect_legacy_managed_space(&mut harness, &engine, mode, index == 0).await;
+                        expect_legacy_auxiliary_managed_space(
+                            &mut harness,
+                            &engine,
+                            mode,
+                            index == 0,
+                        )
+                        .await;
                         let epoch = engine.committed_tail.epoch;
                         assert_eq!(engine.committed_tail.buffer, format!("{expected} "));
                         assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
@@ -19153,7 +19780,7 @@ async fn observed_closed_word_for_owned_preedit(
     publish_fixture_append_completion(harness, &mut engine, "de").await;
     let mode = engine.layout_gesture.layout_is_ru;
     assert!(legacy_key(harness, &mut engine, 64_020, KEY_SPACE, 57, 0).await);
-    expect_legacy_managed_space(harness, &engine, mode, true).await;
+    expect_legacy_auxiliary_managed_space(harness, &engine, mode, true).await;
     actual_reset(harness, &mut engine, 64_021, false).await;
     let closed = format!("abc{separator}");
     exact_surrounding_receipt(harness, &mut engine, &closed).await;
@@ -19506,9 +20133,10 @@ fn native_space_observed_boundary_refuses_missing_or_contradictory_receipts() {
             let old_token = engine.live_context_token().unwrap();
             let before_epoch = engine.committed_tail.epoch;
             let mode = engine.layout_gesture.layout_is_ru;
-            assert!(engine.composition.preedit_visible);
+            assert!(!engine.composition.preedit_visible);
+            assert!(engine.composition.auxiliary_visible);
             assert!(legacy_key(&mut harness, &mut engine, 63_020, KEY_SPACE, 57, 0).await);
-            expect_legacy_managed_space(&mut harness, &engine, mode, true).await;
+            expect_legacy_auxiliary_managed_space(&mut harness, &engine, mode, true).await;
             assert_eq!(engine.committed_tail.buffer, "abc ");
             assert_eq!(
                 engine.committed_tail.epoch,
@@ -19526,7 +20154,7 @@ fn native_space_observed_boundary_refuses_missing_or_contradictory_receipts() {
                     exact_surrounding_receipt(&mut harness, &mut engine, "abc\u{a0}").await;
                     assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
                     assert!(legacy_key(&mut harness, &mut engine, 63_023, KEY_SPACE, 57, 0).await);
-                    expect_legacy_managed_space(&mut harness, &engine, mode, false).await;
+                    expect_legacy_auxiliary_managed_space(&mut harness, &engine, mode, false).await;
                     assert_eq!(engine.committed_tail.buffer, "abc\u{a0} ");
                     assert!(
                         legacy_key(

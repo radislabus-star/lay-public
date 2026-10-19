@@ -235,6 +235,7 @@ impl LayIbusEngine {
 
     pub(super) fn has_live_composition_state(&self) -> bool {
         self.composition.preedit_visible
+            || self.composition.auxiliary_visible
             || !self.composition.buffer.is_empty()
             || !self.composition.preedit_suffix.is_empty()
             || !self.composition.preedit_candidates.is_empty()

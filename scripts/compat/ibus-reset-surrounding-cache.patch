@@ -1,0 +1,25 @@
+--- a/bus/engineproxy.c
++++ b/bus/engineproxy.c
+@@ -1501,7 +1501,21 @@
+                            -1, NULL, NULL, NULL);           \
+     }
+ 
+-DEFINE_FUNCTION (Reset, reset)
++void
++bus_engine_proxy_reset (BusEngineProxy *engine)
++{
++    g_assert (BUS_IS_ENGINE_PROXY (engine));
++    /* Reset retires the recipient's observation. Only a subsequent actual
++     * client callback may establish it again, including an identical tuple.
++     */
++    g_clear_object (&engine->surrounding_text);
++    g_dbus_proxy_call ((GDBusProxy *)engine,
++                       "Reset",
++                       NULL,
++                       G_DBUS_CALL_FLAGS_NONE,
++                       -1, NULL, NULL, NULL);
++}
++
+ DEFINE_FUNCTION (PageUp, page_up)
+ DEFINE_FUNCTION (PageDown, page_down)
+ DEFINE_FUNCTION (CursorUp, cursor_up)

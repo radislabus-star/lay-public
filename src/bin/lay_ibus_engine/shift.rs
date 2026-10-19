@@ -75,15 +75,19 @@ impl LayIbusEngine {
             }
             let reset_rereceipt_bound =
                 self.consume_context_reset_rereceipt_for_exact_manual_handoff();
+            let exact_manual_snapshot = self.exact_snapshot_manual_source_is_current();
             if (reset_rereceipt_bound
-                || self.context_observed_suffix_exact_manual_handoff_allowed())
+                || self.context_observed_suffix_exact_manual_handoff_allowed()
+                || exact_manual_snapshot)
                 && self.manual_toggle_authority() == ManualToggleAuthority::ImeCommittedTail
             {
                 let delete_chars = self.last_tail_token_text().chars().count() as u32;
                 if self.text_target_edit_route(delete_chars)
                     == super::window_interaction::TextTargetEditRoute::ExactSurroundingText
                 {
-                    self.prepare_exact_manual_toggle_layout_handoff();
+                    if !exact_manual_snapshot {
+                        self.prepare_exact_manual_toggle_layout_handoff();
+                    }
                     if !self.exact_manual_toggle_handoff_is_live() {
                         return Ok((None, ExecutionReceipt::Rejected));
                     }

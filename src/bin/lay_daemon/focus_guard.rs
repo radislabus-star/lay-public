@@ -25,6 +25,7 @@ const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
     "spice clipboard",
 ];
 static FOCUS_INFO_UNAVAILABLE: AtomicBool = AtomicBool::new(false);
+static KDE_FOCUS_UNAVAILABLE: AtomicBool = AtomicBool::new(false);
 
 pub(super) struct FocusedWindowState {
     pub(super) ignored: bool,
@@ -51,11 +52,18 @@ fn poll_focused_window_state_after(
     last_poll: &mut Instant,
     min_interval: Duration,
 ) -> Option<FocusedWindowState> {
+    let backend = active_layout_backend();
+    let min_interval =
+        if backend == LayoutBackend::Kde && KDE_FOCUS_UNAVAILABLE.load(Ordering::Relaxed) {
+            min_interval.max(Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS))
+        } else {
+            min_interval
+        };
     if last_poll.elapsed() < min_interval {
         return None;
     }
     *last_poll = Instant::now();
-    if active_layout_backend() != LayoutBackend::Gnome {
+    if !matches!(backend, LayoutBackend::Gnome | LayoutBackend::Kde) {
         return None;
     }
     focused_window_state()
@@ -125,6 +133,9 @@ fn deadline_remaining(now: Instant, started_at: Instant, delay: Duration) -> Dur
 }
 
 fn focused_window_state() -> Option<FocusedWindowState> {
+    if active_layout_backend() == LayoutBackend::Kde {
+        return kde_focus_poll_state(super::kde_focus::read());
+    }
     if FOCUS_INFO_UNAVAILABLE.load(Ordering::Relaxed) {
         return None;
     }
@@ -143,22 +154,54 @@ fn focused_window_state() -> Option<FocusedWindowState> {
     }
 }
 
+pub(super) fn kde_focus_poll_state(
+    observation: Result<super::kde_focus::Observation, super::kde_focus::ReadError>,
+) -> Option<FocusedWindowState> {
+    match observation {
+        Ok(observation) => {
+            KDE_FOCUS_UNAVAILABLE.store(false, Ordering::Relaxed);
+            Some(kde_window_state(observation))
+        }
+        // Another keyboard's fresh request is not evidence of lost focus.
+        Err(super::kde_focus::ReadError::Busy) => None,
+        Err(super::kde_focus::ReadError::Unavailable(error)) => {
+            if !KDE_FOCUS_UNAVAILABLE.swap(true, Ordering::Relaxed) {
+                log(&format!(
+                    "⚠ KWin foreground unavailable; host input paused: {error}"
+                ));
+            }
+            Some(unavailable_kde_focus())
+        }
+    }
+}
+
+pub(super) fn unavailable_kde_focus() -> FocusedWindowState {
+    FocusedWindowState {
+        ignored: true,
+        identity: None,
+    }
+}
+
+pub(super) fn kde_window_state(observation: super::kde_focus::Observation) -> FocusedWindowState {
+    let identity = serde_json::from_str::<serde_json::Value>(&observation.info)
+        .ok()
+        .and_then(|value| value.as_object().cloned())
+        .map(|object| window_identity_with_tab_title(observation.identity, &object));
+    FocusedWindowState {
+        ignored: identity.is_none() || focused_window_json_is_ignored(&observation.info),
+        identity,
+    }
+}
+
 pub(super) fn focused_window_identity_from_json(json: &str) -> Option<String> {
     let value = serde_json::from_str::<serde_json::Value>(json).ok()?;
     let object = value.as_object()?;
-    let title = json_text_field(object, "title");
-
     for key in ["stableSequence", "windowId"] {
         if let Some(text) = object.get(key).and_then(|item| item.as_str()) {
             let text = text.trim();
             if !text.is_empty() {
                 let base = format!("gnome-window:{key}:{text}");
-                return Some(match (is_tabbable_app(object), title.as_deref()) {
-                    (true, Some(title)) => {
-                        format!("{base}:tab-title:{}", title.to_ascii_lowercase())
-                    }
-                    _ => base,
-                });
+                return Some(window_identity_with_tab_title(base, object));
             }
         }
     }
@@ -187,10 +230,37 @@ pub(super) fn focused_window_identity_from_json(json: &str) -> Option<String> {
 }
 
 pub(super) fn capture_exact_focused_window_identity() -> Result<String, String> {
+    if active_layout_backend() == LayoutBackend::Kde {
+        return exact_kde_window_identity(super::kde_focus::read());
+    }
     let json = call_focused_window_info_once()
         .map_err(|error| format!("exact focused-window read failed: {error}"))?;
     focused_window_identity_from_json(&json)
         .ok_or_else(|| "exact focused-window identity is unavailable".to_string())
+}
+
+pub(super) fn exact_kde_window_identity(
+    observation: Result<super::kde_focus::Observation, super::kde_focus::ReadError>,
+) -> Result<String, String> {
+    let observation =
+        observation.map_err(|error| format!("exact KWin foreground read failed: {error}"))?;
+    let state = kde_window_state(observation);
+    if state.ignored {
+        return Err("exact KWin foreground is ignored or unavailable".into());
+    }
+    state
+        .identity
+        .ok_or_else(|| "exact KWin foreground identity unavailable".into())
+}
+
+fn window_identity_with_tab_title(
+    base: String,
+    object: &serde_json::Map<String, serde_json::Value>,
+) -> String {
+    match (is_tabbable_app(object), json_text_field(object, "title")) {
+        (true, Some(title)) => format!("{base}:tab-title:{}", title.to_ascii_lowercase()),
+        _ => base,
+    }
 }
 
 pub(super) fn verify_exact_focused_window_identity(expected: &str) -> Result<(), String> {

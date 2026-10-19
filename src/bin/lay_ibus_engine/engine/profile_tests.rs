@@ -220,20 +220,23 @@ fn surrounding_text_client_uses_managed_commit_even_with_cursor_width() {
 
 #[test]
 fn late_surrounding_text_capability_promotes_current_terminal_word() {
-    let mut engine = engine();
-    engine.client_context.cursor_cell_width = 2;
-    engine.composition.word_input_mode = Some(WordInputMode::TerminalPassthrough);
-    engine.composition.preedit_suffix = "suffix".to_string();
-    engine.composition.preedit_visible = true;
+    for auxiliary in [false, true] {
+        let mut engine = engine();
+        engine.client_context.cursor_cell_width = 2;
+        engine.composition.word_input_mode = Some(WordInputMode::TerminalPassthrough);
+        engine.composition.preedit_suffix = "suffix".to_string();
+        engine.composition.preedit_visible = !auxiliary;
+        engine.composition.auxiliary_visible = auxiliary;
 
-    engine.set_client_capabilities(1 << 5);
+        engine.set_client_capabilities(1 << 5);
 
-    assert_eq!(
-        engine.composition.word_input_mode,
-        Some(WordInputMode::ManagedCommit)
-    );
-    assert!(engine.composition.pending_passthrough_preedit_clear);
-    assert_eq!(engine.composition.preedit_suffix, "suffix");
+        assert_eq!(
+            engine.composition.word_input_mode,
+            Some(WordInputMode::ManagedCommit)
+        );
+        assert!(engine.composition.pending_passthrough_preedit_clear);
+        assert_eq!(engine.composition.preedit_suffix, "suffix");
+    }
 }
 
 #[test]

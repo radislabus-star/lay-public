@@ -1,0 +1,46 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Present unaccepted legacy IBus completion hints as standard auxiliary text; reserve legacy document preedit for the typed owned composition.",
+  "reason": "The pinned Firefox 157 TextComposition commit request saves mLastData before notifying the native IME and may restore/synthesize it after an empty reset response. Therefore a display-only suffix in document preedit can be committed on blur. A Reset-only adapter repair is rejected before implementation.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/preedit/tests.rs",
+    "src/bin/lay_ibus_engine/output.rs",
+    "src/bin/lay_ibus_engine/ibus_interface.rs",
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/engine/state_groups.rs",
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "src/bin/lay_ibus_engine/state.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/engine/profile_tests.rs",
+    "src/bin/lay_ibus_engine/atomic.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/native_cursor_edit.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "scripts/test-lanes/known_failures.json",
+    "scripts/test-lanes/manifest.json"
+  ],
+  "supersedes": "The legacy presentation compatibility clause of 2026-10-04-preedit-suggestion-visual-boundary; preserve typed neutral styling and the atomic protocol.",
+  "verification": "Planned: legacy candidate publication RED; owned/committed text conservation, separate display lifecycle and stale/failure controls, exact current Tab and unchanged atomic proposal proof; remote affected closure and independent review; native Firefox/Chrome ten-field plans, visible panel and latency, followed by separate Plasma acceptance.",
+  "not_tested": "Changed code, changed-byte native behavior, panel visibility/position, latency and Plasma acceptance remain NOT_TESTED at decision time.",
+  "runtime_authority_changed": false,
+  "source_head": "c8b244ef609ad9c5610b3e441311342abf17e9c5",
+  "consequences": {
+    "scope": "Same LayIbusEngine/EngineOutput owner, same IBus connection and standard UpdateAuxiliaryText signal. No new document-edit delivery, executor, reducer, authority, cache or client-specific bypass. See TD-156 preflight for full consequence analysis.",
+    "authority": "Keep actual preedit visibility distinct from auxiliary visibility. Existing candidates, current frame/owner, verified Tab, model generations and feedback remain authoritative. Display failure retires selectable candidates.",
+    "compatibility": "Legacy committed-tail and owned-word candidates use auxiliary presentation. Manual owned-word layout edits keep existing preedit. Atomic output has no auxiliary capability and retains its original proposal protocol and behavior; no out-of-transaction display or universal atomic repair claim.",
+    "cost": "No waits or deadlines grow. At most one bounded auxiliary update per candidate publication; suffix-only publication no longer starts a document composition. No workers, timers, queues or model/data changes. Native speed and panel support remain gates. Two existing async output boundaries are heap-pinned to bound nested key/lifecycle future sizes. Allocation cost is not a measured speed claim; ordinary-stack regression and native timing are gates.",
+    "rollback": "Revert the engine presentation change with its decision/evidence; preserve preceding fixes and exact native failure receipts. No data migration or local runtime replacement. Any future atomic display extension requires a separate versioned contract.",
+    "handover": "A legacy auxiliary visibility bit inherited by the first Atomic V1 request is inert bookkeeping. Clear selectable authority in every transport, but emit auxiliary clearing only through a transport that supports it. Preserve the bit for later legacy lifecycle cleanup; never send a legacy effect outside an atomic frame. Native panel cleanup across transport handover is not yet tested.",
+    "test_inventory_binding": "Refresh the test inventory for the new regression tests under the unchanged lane and ignored-test policy, then rebind the existing zero-known-failure contract to it. Preserve failure_count=0, failures=[], the historical observation and all runner validation. The first full run executed all 3219 selected tests with zero failures but correctly returned FAIL because this binding was stale. Obtain a new complete canonical PASS; do not promote that failed receipt or weaken the guard."
+  }
+}

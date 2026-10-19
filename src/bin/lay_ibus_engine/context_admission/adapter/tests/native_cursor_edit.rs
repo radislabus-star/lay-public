@@ -324,8 +324,9 @@ mod native_cursor_edit_tests {
                         assert!(effects.iter().any(|message| message
                             .header()
                             .member()
-                            .is_some_and(|member| member.as_str() == "UpdatePreeditText")));
-                        assert!(engine.composition.preedit_visible);
+                            .is_some_and(|member| member.as_str() == "UpdateAuxiliaryText")));
+                        assert!(!engine.composition.preedit_visible);
+                        assert!(engine.composition.auxiliary_visible);
                         assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
                     }
                     let mut serial = 95_030;

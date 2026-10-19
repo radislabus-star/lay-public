@@ -1,0 +1,448 @@
+{
+  "schema": "lay.accepted-release-evidence.v1",
+  "version": "1.0.91",
+  "recorded_at": "2026-10-19T13:27:26.885956+00:00",
+  "native_evidence_at": "2026-10-19T13:19:03.064954+00:00",
+  "native_evidence_source_version": "1.0.90",
+  "acceptance": {
+    "user_accepted": true,
+    "publication_requested": true,
+    "remaining_failures_accepted": true,
+    "selected_text_repair_deferred": true,
+    "installation_requested": false,
+    "update_route": "User will use the existing Check for updates menu"
+  },
+  "publication_only": {
+    "changes": [
+      "version metadata",
+      "release notes",
+      "evidence index",
+      "owning-document status"
+    ],
+    "new_functional_verification": false,
+    "build": false,
+    "installation": false,
+    "service_restart": false
+  },
+  "counts": {
+    "PASS": 391,
+    "FAIL": 37,
+    "BLOCKED": 4
+  },
+  "total": 432,
+  "not_tested_in_matrix": 0,
+  "by_application": {
+    "firefox": {
+      "PASS": 150,
+      "FAIL": 10
+    },
+    "chrome": {
+      "PASS": 150,
+      "FAIL": 10
+    },
+    "konsole": {
+      "FAIL": 10,
+      "PASS": 3,
+      "BLOCKED": 3
+    },
+    "kwrite": {
+      "PASS": 14,
+      "FAIL": 1,
+      "BLOCKED": 1
+    },
+    "qt": {
+      "PASS": 45,
+      "FAIL": 3
+    },
+    "gtk": {
+      "PASS": 29,
+      "FAIL": 3
+    }
+  },
+  "shared_pins": {
+    "binaries": {
+      "lay": "f8aec338504dadd72bd06fa78f4b3e8bd1863376897fce95dd3081e2d2e0c3c9",
+      "lay-daemon": "8a020332f85dc063ee5b7ab193ff0ef5b2d2d3f939bb125536cb6dff5a35eae7",
+      "lay-ibus-engine": "eaefe2dda24b6bd2630685995da6b0996348579af13217574b07cf347f57434a"
+    },
+    "configuration": "20fe9fa76066463698ef4edee29733d9ce61bea7f97c901cf4fce22b03856bf5",
+    "base_archive": "7daed3ca739db9656b54fc2d59b125e2f7a93ea49d706d09ff61e249547cf6ff",
+    "source_request": "dbfba2dbce602106ff0f1c3cd974a32290073f641cb2f25e64b258813778ffc5",
+    "source_head": "c8b244ef609ad9c5610b3e441311342abf17e9c5"
+  },
+  "dependencies": {
+    "ibus": {
+      "build_sha256": "f51957d941c0de19a9198f7871c52f2062a4fe852e7d88f7ba5d4c621e3bbf99",
+      "loaded_daemon_sha256": "0b907f7c969c6621c667a613ef0c5ad0b4cb0ecc74a7e62caeef775afab98af7",
+      "ime_sha256": "eaefe2dda24b6bd2630685995da6b0996348579af13217574b07cf347f57434a",
+      "cached_snapshot_authority": false,
+      "delivery_routes_changed": false
+    },
+    "kwin": "f2bce8fd91d59f720749acb5180affb8a79978ff57c3fa95530dc868919db37c",
+    "kwin_host": "cdceca37b6f4e52f970ce93e359abdfbc04b1c97066d5a26e98a48a6cf6ab982"
+  },
+  "original_aggregate_receipt": {
+    "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-432-comparison-source-one.json",
+    "sha256": "8ce882a24ac1e57c3f59128905debfe606fe04c2f40e12a04e50230e88ecc6c6",
+    "status": "COMPLETE_CLOSED_PRIVATE_KDE_432_NOT_PROMOTED"
+  },
+  "component_receipts": {
+    "browser": {
+      "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-browser-comparison-source-one.json",
+      "sha256": "9b5aa128af56bcd8867321ab9f961503fa7b8e4e26126c16780aa67400c0ff4f",
+      "closure": {
+        "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-browser-source-two/evidence/INDEPENDENT-CLOSED-source-one.json",
+        "sha256": "c8409a6e088021369e63be4c879cec6810e9ba7734b59e5cb6552153e664e215",
+        "at": "2026-10-19T13:11:43.042476+00:00"
+      },
+      "changes": [
+        {
+          "identity": [
+            "firefox",
+            "6",
+            "moved_boundary"
+          ],
+          "before": "FAIL",
+          "after": "PASS"
+        }
+      ],
+      "regressed": []
+    },
+    "native": {
+      "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-comparison-source-one.json",
+      "sha256": "aa698eedf578dd838c4c56e46e5d45d05b87aa645b99aa61942e3f8ce49b8259",
+      "closure": {
+        "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/INDEPENDENT-CLOSED-source-one.json",
+        "sha256": "bcc73f8792332a6c5d83db61724174889ba249db14bfed2e16148d1da6109fca",
+        "at": "2026-10-19T13:17:18.410158+00:00"
+      },
+      "changes": [],
+      "regressed": []
+    }
+  },
+  "successful_native_operation_latency": {
+    "firefox": {
+      "double_shift": {
+        "measured": 200,
+        "p50_ms": 29.916033506393433,
+        "p95_ms": 175.82990407943726,
+        "max_ms": 184.13561403751373,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "focus_return": {
+        "measured": 10,
+        "p50_ms": 168.097805082798,
+        "p95_ms": 174.28296494483948,
+        "max_ms": 174.28296494483948,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "space": {
+        "measured": 50,
+        "p50_ms": 28.782771944999695,
+        "p95_ms": 32.4628689289093,
+        "max_ms": 33.654327034950256,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "tab": {
+        "measured": 10,
+        "p50_ms": 31.013813495635986,
+        "p95_ms": 34.022421002388,
+        "max_ms": 34.022421002388,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      }
+    },
+    "chrome": {
+      "double_shift": {
+        "measured": 200,
+        "p50_ms": 30.487565517425537,
+        "p95_ms": 180.2910259962082,
+        "max_ms": 225.1629239320755,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "focus_return": {
+        "measured": 10,
+        "p50_ms": 174.36167603731155,
+        "p95_ms": 197.40089106559753,
+        "max_ms": 197.40089106559753,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "space": {
+        "measured": 50,
+        "p50_ms": 30.220097482204437,
+        "p95_ms": 112.42346501350403,
+        "max_ms": 123.01465797424316,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "tab": {
+        "measured": 10,
+        "p50_ms": 31.67226654291153,
+        "p95_ms": 110.95344996452332,
+        "max_ms": 110.95344996452332,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      }
+    },
+    "konsole": {
+      "space": {
+        "measured": 2,
+        "p50_ms": 30.424520015716553,
+        "p95_ms": 30.9933420419693,
+        "max_ms": 30.9933420419693,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      }
+    },
+    "kwrite": {
+      "double_shift": {
+        "measured": 20,
+        "p50_ms": 29.390917479991913,
+        "p95_ms": 142.07151591777802,
+        "max_ms": 145.62755405902863,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "space": {
+        "measured": 5,
+        "p50_ms": 30.597575902938843,
+        "p95_ms": 32.885449051856995,
+        "max_ms": 32.885449051856995,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "tab": {
+        "measured": 1,
+        "p50_ms": 24.725294947624207,
+        "p95_ms": 24.725294947624207,
+        "max_ms": 24.725294947624207,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      }
+    },
+    "qt": {
+      "double_shift": {
+        "measured": 60,
+        "p50_ms": 28.33457052707672,
+        "p95_ms": 139.8405408859253,
+        "max_ms": 169.1218000650406,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "focus_return": {
+        "measured": 3,
+        "p50_ms": 161.914981007576,
+        "p95_ms": 170.5460331439972,
+        "max_ms": 170.5460331439972,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "space": {
+        "measured": 15,
+        "p50_ms": 29.283823013305664,
+        "p95_ms": 31.182902932167053,
+        "max_ms": 31.182902932167053,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "tab": {
+        "measured": 3,
+        "p50_ms": 28.58626401424408,
+        "p95_ms": 29.514734029769897,
+        "max_ms": 29.514734029769897,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      }
+    },
+    "gtk": {
+      "double_shift": {
+        "measured": 40,
+        "p50_ms": 28.000318467617035,
+        "p95_ms": 164.62838006019592,
+        "max_ms": 167.0593980550766,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "focus_return": {
+        "measured": 1,
+        "p50_ms": 127.79611110687256,
+        "p95_ms": 127.79611110687256,
+        "max_ms": 127.79611110687256,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "space": {
+        "measured": 10,
+        "p50_ms": 29.275234520435333,
+        "p95_ms": 32.09151101112366,
+        "max_ms": 32.09151101112366,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "tab": {
+        "measured": 2,
+        "p50_ms": 27.900327563285828,
+        "p95_ms": 30.068069100379944,
+        "max_ms": 30.068069100379944,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      }
+    }
+  },
+  "deferred_selected_text_failures": 26,
+  "other_failures": [
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "roundtrip"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "short"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "long"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "mixed"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "prefix"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "burst5"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "space_burst5"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "space_ru_en"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "space_en_ru"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "moved_boundary"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "gtk",
+        "GTK3 Entry",
+        "focus_return"
+      ],
+      "status": "FAIL",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-cr8p2s0t/RESULT.json",
+      "receipt_sha256": "798a1f6f236d6d9799d59fab96d446ea445f055e7f9572f2e37966efd375e410"
+    }
+  ],
+  "blocked": [
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "selection"
+      ],
+      "status": "BLOCKED",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "focus_return"
+      ],
+      "status": "BLOCKED",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "konsole",
+        "konsole",
+        "tab_candidate"
+      ],
+      "status": "BLOCKED",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-0gj09l3o/RESULT.json",
+      "receipt_sha256": "8b72b4d2e6d714b9eb03cce34f22b68d764663d16c15dd76db66eccb1f96d60e"
+    },
+    {
+      "identity": [
+        "kwrite",
+        "kwrite",
+        "focus_return"
+      ],
+      "status": "BLOCKED",
+      "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-native-source-two/evidence/native-windows-7sk7lzd2/RESULT.json",
+      "receipt_sha256": "7103281a0c093e26364b9c4312bc37d9ac82f8c8e47f5cdb075bdf0cc0dff778"
+    }
+  ],
+  "change": "Firefox field6 moved_boundary FAIL -> PASS; no observed regression",
+  "limitations": [
+    "Private KWin and IBus dependencies only; not stock-KDE qualification",
+    "Fresh matching GNOME acceptance NOT_TESTED",
+    "Selected-text repair deferred; all 26 FAIL grades retained",
+    "Successful observer-inclusive latency samples only; failures remain in denominator"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "source_gate": {
+    "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-final-build-source-one/RESULT.json",
+    "correctness_and_package_pass": 891,
+    "performance_controls_pass": 3,
+    "focused_production_entrypoint_pass": 5,
+    "scope": "Completed before user acceptance; reused without rerunning for publication"
+  }
+}

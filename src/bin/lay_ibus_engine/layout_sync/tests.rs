@@ -1,3 +1,4 @@
+use lay::desktop::LayoutBackend;
 use std::cell::{Cell, RefCell};
 
 use super::super::context_admission::{ContextAdmissionAdapter, WordCompleteness, WordScope};
@@ -13,6 +14,7 @@ fn background_request(
 ) -> LayoutSwitchRequest {
     LayoutSwitchRequest {
         request_generation: 0,
+        backend: LayoutBackend::Gnome,
         target_is_ru: true,
         engine: "lay-ime-ru",
         authority: LayoutSwitchAuthority::Background {
@@ -37,6 +39,7 @@ fn direct_request(
 ) -> LayoutSwitchRequest {
     LayoutSwitchRequest {
         request_generation: 0,
+        backend: LayoutBackend::Gnome,
         target_is_ru: true,
         engine: "lay-ime-ru",
         authority: LayoutSwitchAuthority::Direct { admission, token },
@@ -67,7 +70,10 @@ fn space_layout_stack_completes_stale_ibus_once_in_both_directions() {
             });
         });
         let target_engine = ime_engine_for_layout(target_is_ru);
-        let result = switch_complete_layout_stack(target_is_ru, target_engine);
+        let result =
+            switch_complete_layout_stack(LayoutBackend::Gnome, target_is_ru, target_engine, || {
+                true
+            });
         let observed = LAYOUT_STACK_PROBE.with(|probe| probe.borrow_mut().take().unwrap());
 
         assert!(
@@ -77,6 +83,91 @@ fn space_layout_stack_completes_stale_ibus_once_in_both_directions() {
         assert_eq!(observed.activations, [target_is_ru]);
         assert_eq!(observed.ibus_switches, expected_switches);
         assert_eq!(observed.active_engine.as_deref(), Some(target_engine));
+    }
+}
+
+#[test]
+fn kde_space_layout_stack_uses_its_captured_backend_in_both_directions() {
+    use super::{LayoutStackProbe, LAYOUT_STACK_PROBE};
+    for is_ru in [false, true] {
+        LAYOUT_STACK_PROBE.with(|probe| {
+            *probe.borrow_mut() = Some(LayoutStackProbe {
+                active_engine: Some(ime_engine_for_layout(!is_ru).to_string()),
+                ..Default::default()
+            });
+        });
+        let mut request = request(None, None);
+        request.backend = LayoutBackend::Kde;
+        request.target_is_ru = is_ru;
+        request.engine = ime_engine_for_layout(is_ru);
+        let result = dispatch_layout_switch(&request, || true, || request.switch_stack(|| true));
+        let observed = LAYOUT_STACK_PROBE.with(|probe| probe.borrow_mut().take().unwrap());
+        assert_eq!(result, LayoutSwitchDispatch::Completed { switched: true });
+        assert_eq!(observed.kde_activations, [is_ru]);
+        assert!(observed.activations.is_empty(), "KDE must not invoke GNOME");
+        assert_eq!(observed.ibus_switches, [request.engine]);
+        assert_eq!(observed.active_engine.as_deref(), Some(request.engine));
+    }
+}
+
+#[test]
+fn kde_ibus_observation_cannot_overwrite_a_newer_completed_direct_request() {
+    use super::{LayoutStackProbe, LAYOUT_STACK_PROBE};
+
+    for old_is_ru in [false, true] {
+        let worker = super::layout_switch_worker();
+        let mut old = direct_request(None, None);
+        old.request_generation = worker.reserve_generation();
+        old.backend = LayoutBackend::Kde;
+        old.target_is_ru = old_is_ru;
+        old.engine = ime_engine_for_layout(old_is_ru);
+        let new_engine = ime_engine_for_layout(!old_is_ru);
+        LAYOUT_STACK_PROBE.with(|probe| {
+            *probe.borrow_mut() = Some(LayoutStackProbe {
+                active_engine: Some("xkb:us::eng".to_string()),
+                after_engine_read: Some(Box::new(move || {
+                    let newer = super::dispatch_direct_layout_switch(
+                        LayoutBackend::Kde,
+                        !old_is_ru,
+                        new_engine,
+                        None,
+                        None,
+                        |request| request.switch_stack(|| worker.request_is_current(request)),
+                    );
+                    assert_eq!(newer, LayoutSwitchDispatch::Completed { switched: true });
+                })),
+                ..Default::default()
+            });
+        });
+        let result = dispatch_layout_switch(
+            &old,
+            || worker.request_is_current(&old),
+            || old.switch_stack(|| worker.request_is_current(&old)),
+        );
+        let observed = LAYOUT_STACK_PROBE.with(|probe| probe.borrow_mut().take().unwrap());
+        assert_eq!(
+            result,
+            LayoutSwitchDispatch::SupersededCompletion { switched: false }
+        );
+        assert_eq!(observed.active_engine.as_deref(), Some(new_engine));
+        assert_eq!(observed.ibus_switches, [new_engine]);
+        assert_eq!(observed.kde_activations, [old_is_ru, !old_is_ru]);
+        assert!(observed.activations.is_empty());
+    }
+}
+
+#[test]
+fn superseded_layout_stack_does_not_activate_a_backend_or_complete_ibus() {
+    use super::{LayoutStackProbe, LAYOUT_STACK_PROBE};
+    for backend in [LayoutBackend::Gnome, LayoutBackend::Kde] {
+        LAYOUT_STACK_PROBE.with(|probe| *probe.borrow_mut() = Some(LayoutStackProbe::default()));
+        let mut request = request(None, None);
+        request.backend = backend;
+        assert!(request.switch_stack(|| false).is_err());
+        let observed = LAYOUT_STACK_PROBE.with(|probe| probe.borrow_mut().take().unwrap());
+        assert!(observed.activations.is_empty());
+        assert!(observed.kde_activations.is_empty());
+        assert!(observed.ibus_switches.is_empty());
     }
 }
 

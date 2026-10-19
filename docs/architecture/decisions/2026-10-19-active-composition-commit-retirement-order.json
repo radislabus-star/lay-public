@@ -1,0 +1,73 @@
+{
+  "status": "ACCEPTED_FOR_PUBLICATION_WITH_REMAINING_FAILURES",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "task": "TD-159",
+  "source_head": "c8b244ef609ad9c5610b3e441311342abf17e9c5",
+  "baseline": "Private IME ff544e70; closed browser320=299PASS21FAIL0BLOCKED and matching432=390PASS38FAIL4BLOCKED; not promoted.",
+  "first_failed_transition": "After ending preedit and committing the owned word, Firefox sends full12-scalar text with cursor11/anchor11. Exact pair admission correctly revokes the continuation. Intermediate Gecko ordering of this failed observation remains unknown.",
+  "new_evidence": "Exact Gecko source and successful logged diagnostic show empty preedit ends composition before CommitText; commit then follows the noncomposing insert-text path. Actual successful log measures cursor12/text11 followed by selection notification and correct12/12. It establishes incoherence, not the failed notification order.",
+  "decision": "Experiment with CommitText while the existing active composition is still visible; retire its presentation afterwards on the same output contract. Never retry or synthesize a cursor or retain an invalid pair continuation.",
+  "alternatives": [
+    {
+      "option": "Commit active composition before clearing its presentation",
+      "score_out_of_10": 8,
+      "reason": "Addresses the measured extra composition termination with a local ordering change; physical benefit still unproved."
+    },
+    {
+      "option": "Delay or repeat surrounding queries",
+      "score_out_of_10": 3,
+      "reason": "Changes timing without removing the incoherent intermediate state; adds scheduling and lifetime risks."
+    },
+    {
+      "option": "Accept full text with the wrong cursor",
+      "score_out_of_10": 1,
+      "reason": "Contradicts exact snapshot and existing interrupted-proof controls; rejected."
+    }
+  ],
+  "consequence_analysis": {
+    "authority": "Existing UserInput or AuthorizedEdit still gates CommitText. DecisionCore, owner/epoch, pair exactness, selection/caret revocation and verifier remain unchanged.",
+    "failure": "Commit failure preserves the typed buffer and visible composition. Once CommitText succeeds, later presentation-clear failure must retire the committed buffer and preserve only existing clear-retry bookkeeping, preventing duplicate insertion.",
+    "atomic": "AtomicEffectBuilder already serializes commit before hide. Preserve its effect payloads and speculative-transaction rejection on error; no new atomic operation.",
+    "race_and_lifetime": "No new owner, generation, cache, queue, timer, request, deadline or retry. Existing GTK/Qt clients may respond differently to signal ordering; original native scope required.",
+    "ranking_learning_privacy": "No candidate, dictionary, ranking or learning changes; metadata diagnostics only.",
+    "performance_package": "Same number of output effects, no extra RPC; measure successful latency separately from failed cases. No dependency, package or reload change.",
+    "consumers": "Generic active-composition commit only; committed-tail replacement, terminal transport and physical Double Shift detector/routes unchanged. GTK, Qt, Firefox, Chrome, KWrite and Konsole remain in acceptance scope. GNOME requires separate evidence.",
+    "rollback": "If fixed identities or affected scope regress, reject this ordering experiment and record the reason. Preserve earlier pair-source carry and all failed native evidence. No installation or promotion from focused tests."
+  },
+  "proof": "Five exact semantic regressions through the production active-composition entrypoint: output order, commit failure, preedit-clear failure, auxiliary-clear failure and atomic payload. Source red/green plus full affected IME tests, architecture/format gates and original native matrices required.",
+  "delivery_routes_changed": false,
+  "runtime_authority_changed": false,
+  "installed": false,
+  "id": "TD159-active-composition-commit-retirement-order-2026-10-19",
+  "source_evidence": {
+    "red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-red-source-one/RESULT.json",
+    "red_result": "1 PASS / 4 FAIL, exactly five controls; original ordering detected",
+    "green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-green-source-one/RESULT.json",
+    "green_result": "5 PASS / 0 FAIL; atomic payloads included; not native acceptance"
+  },
+  "native_evidence": {
+    "status": "COMPLETE_CLOSED_PRIVATE_KDE_432",
+    "aggregate_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-commit-order-432-comparison-source-one.json",
+    "counts": {
+      "PASS": 391,
+      "FAIL": 37,
+      "BLOCKED": 4
+    },
+    "total": 432,
+    "not_tested_in_matrix": 0,
+    "fresh_gnome": "NOT_TESTED",
+    "delivery_routes_changed": false,
+    "runtime_authority_changed": false,
+    "installed": false,
+    "evidence_index": "tech_debt/evidence/td159-accepted-native-432-20261019.json"
+  },
+  "publication": {
+    "version": "1.0.91",
+    "recorded_at": "2026-10-19T13:27:26.885956+00:00",
+    "user_accepted_remaining_failures": true,
+    "repair_scope_closed_by_user": true,
+    "stock_kde_qualified": false,
+    "new_verification_performed": false,
+    "installed": false
+  }
+}

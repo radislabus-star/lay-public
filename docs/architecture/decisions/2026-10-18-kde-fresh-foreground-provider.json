@@ -1,0 +1,32 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Supply authenticated fresh KWin foreground observations to the existing daemon focus owner, without changing IME text delivery or exact layout handoff.",
+  "reason": "TD159 native GTK Entry witness qualifies committed seed and physical Double Shift recognition, then exact-tail replay refuses at the GNOME-only foreground read. KWin 5.24.7 has stable internalId but no public exact active-window getter; queryWindowInfo is interactive and getWindowInfo omits active state.",
+  "invariants": ["C01", "C03", "C04", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": [
+    "src/bin/lay_daemon.rs",
+    "src/bin/lay_daemon/focus_guard.rs",
+    "src/bin/lay_daemon/kde_focus.rs",
+    "src/bin/lay_daemon/kde_focus/foreground.js",
+    "src/bin/lay_daemon/kde_focus/tests.rs",
+    "src/bin/lay_daemon/daemon_runtime/focus.rs",
+    "src/private_file.rs"
+  ],
+  "verification": "Remote guarded source tests for request/sender/deadline/lifetime, no-active-window refusal, title-independent stable identity and same-process/destroyed-window separation; actual IPC adapter controls and real KWin focus/lifecycle observations; unchanged full GNOME grid and separate changed-candidate KDE grid with speed denominators. All remain pending at decision time.",
+  "not_tested": "No candidate implementation, build, native acceptance, Plasma6 or X11 acceptance, installation or release is established by this decision. Downstream exact layout handoff remains a separately protected refusal under TD158.",
+  "runtime_authority_changed": true,
+  "consequence_analysis": {
+    "alternatives": [
+      "9/10 selected: embedded one-shot KWin script, requested by the existing daemon through direct zbus IPC. Every read gets a fresh request-bound activeClient/internalId reply authenticated against the current unique KWin bus owner. Unload after each query, no persistent observation cache, event timer or second process. Measure the cost of script load/run/unload before promotion.",
+      "4/10 rejected: persistent pushed observer with timestamp/sequence. Cheaper reads, but the installed KWin API has no script-exported request handler. A pushed file/snapshot cannot prove exact current focus. A long-poll challenge protocol would add a persistent queue and lifecycle complexity without present evidence of necessity.",
+      "2/10 rejected: native binary KWin plugin. Can expose synchronous focus, but adds version-specific private ABI, packaging and compositor crash risk. PID/title/accessibility substitution and interactive queryWindowInfo are not viable exact-read designs."
+    ],
+    "candidate_lattice_ranking": "Read-only platform observation changes no candidate, rank, training, dictionary, feedback, package or model identity. It only supplies previously missing foreground evidence to the existing owner. An exact KWin window is not browser editor identity or permission to mutate text.",
+    "authority": "Bind a validated internalId UUID to daemon connection lifetime, session bus GUID and KWin unique owner. Metadata may pause VM/viewer windows and preserve existing browser-tab title narrowing; it never substitutes for UUID. Arm one request before running the script; only its authenticated, bounded, on-time response can satisfy it. Clear request authority on every exit. Existing IME lease and verifier checks remain mandatory.",
+    "latency_resources": "Use one 250ms total read deadline across connection setup, owner reads, load/run, callback and normal unload; separately bounded best-effort cleanup may add at most25ms. No per-key subprocesses. Existing 50ms key/500ms idle poll owner remains; provider errors pause and invalidate focus, with recovery at the existing500ms boundary. One resident zbus connection and one small bounded mailbox; one ephemeral script per serial read. Files are embedded code, never observation authority. CPU/RSS and median/p95 must be measured remotely.",
+    "cache_reload": "No successful focus snapshot cache. Unique bus owner, bus GUID and local connection generation scope identities. Failure invalidates the prior lifetime. A pending remote script must be unloaded before another load in the same lifetime; bus/owner loss cannot authorize old replies. Model/package reloads have no provider authority.",
+    "concurrency": "Serialize reads in the existing daemon client; callback ingress only fills the currently armed request. Distinguish transient Busy from provider loss: another keyboard's background poll defers without changing identity, availability or field epochs; an exact read under contention safely refuses and never borrows the in-flight snapshot. Do not introduce unbounded mutex waiting or another retry owner. Authenticate message sender and nonce, reject malformed/oversize/empty UUID, unsolicited/duplicate/expired replies. Actual provider loss yields identityNone and paused input; the existing focus reducer increments its field epoch and cancels pending gestures. Recovery accepts only a fresh observation and cannot revive old tail authority.",
+    "failure_rollback": "No text or layout mutation in this provider. Missing service, timeout, failed unload, owner change or malformed data refuses. Retain one cleanup obligation rather than loading more scripts after cleanup failure. Roll back only the provider integration and this decision; do not revert preceding IME fixes or historical evidence.",
+    "maintenance": "One version-scoped embedded script and narrow daemon module. Ephemeral code creation uses the existing private_file owner through a create-new/no-follow helper; permission inspection is read-only metadata. Architecture scope owners and guards remain unchanged. No user autostart/plugin installation, helper daemon, writable snapshot service or generic fallback. Remove the script adapter if an independently proven native KWin exact-active-window API replaces it. Support claim starts at the tested KWin5.24 Wayland environment; other versions remain untested."
+  }
+}

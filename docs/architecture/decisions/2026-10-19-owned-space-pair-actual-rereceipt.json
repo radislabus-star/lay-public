@@ -1,0 +1,131 @@
+{
+  "id": "TD159-owned-space-pair-actual-rereceipt-2026-10-19",
+  "status": "SOURCE_GREEN_NATIVE432_CLOSED_FIREFOX_REGRESSION_NOT_PROMOTED",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "invariants": [
+    "C01",
+    "C02",
+    "C05",
+    "C07",
+    "C08"
+  ],
+  "problem": "KWrite moved-boundary native case selects an eligible candidate but forms no final edit. Source reproduction loses an already current owned two-word Space scope on an actual unchanged prefix callback. Existing witness carry depends on marked manual-toggle readiness instead of the independent Space proof.",
+  "evidence": {
+    "native": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-moved-boundary-causal-source-one.json",
+    "source_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-repro-source-two/RESULT.json",
+    "source_red_at": "2026-10-19T11:41:04.320611+00:00",
+    "source_red_result": "0 PASS, 2 FAIL; pair scope Some before actual unchanged callback, None afterwards, both capability variants. Does not independently establish a physical fix.",
+    "native_order": "Actual surrounding callbacks alternate prefix-only cursor6/anchor6 and visible preedit cursor9..11/anchor9..11. Last actual visible case retains original pair after Space.",
+    "extended_controlled_red": {
+      "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-repro-source-three/RESULT.json",
+      "at": "2026-10-19T11:44:13.139026+00:00",
+      "passed": 1,
+      "failed": 3
+    },
+    "focused_green": {
+      "path": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-green-source-one/RESULT.json",
+      "at": "2026-10-19T11:46:51.735907+00:00",
+      "passed": 4,
+      "failed": 0,
+      "scope": "Exact actual prefix/preedit callback order, single commit/delete, 12 interrupted-proof variants for both capability variants; physical result pending."
+    }
+  },
+  "alternatives": [
+    {
+      "solution": "Ignore the surrounding revision when reading an owned pair",
+      "rating": 1,
+      "reason": "Would revive stale coordinates after selection, text, focus or owner changes; violates C08."
+    },
+    {
+      "solution": "Make Space witness carry depend on manual-toggle readiness or advertise its capability",
+      "rating": 3,
+      "reason": "Conflates independent producers and client facts. Does not prove actual field coordinates or handle the observed prefix/preedit projection alternation."
+    },
+    {
+      "solution": "Carry an already current owned Space pair across one exact actual callback",
+      "rating": 9,
+      "reason": "Reuse existing pair/witness, actual observation ingress, adjacent revision and current word identity. No new owner, state, timer, request or transport."
+    }
+  ],
+  "decision": "Before invalidating the old observation, capture whether the existing OwnedPreedit Space pair scope is current. Transfer only that existing witness to the adjacent actual callback if its complete prefix/suffix and collapsed caret match either the unchanged committed field or that field with precisely the currently owned preedit inserted. Never reconstruct absent or stale evidence from matching text.",
+  "boundaries": {
+    "capture": "Current existing Space pair, live legacy preedit, no atomic transaction; capture_space_boundary_pair_scope retains sensitive/sealed, witness focus/owner/layout/revision/tail epoch, Cyrillic pair and local end-caret checks.",
+    "receipt": "Actual existing SurroundingText ingress; no selection; exact prefix and suffix; caret at original insertion boundary or at the end of the exact current owned preedit; adjacent checked revision; original witness still armed at previous revision.",
+    "revocation": "Changed text, suffix, selection, caret, unknown observation, focus/owner/layout/epoch mismatch or an unconfirmed revision must revoke. A later equal receipt cannot restore the old proof.",
+    "execution": "Carry is not permission to edit a composing field. Existing Space continuation must first finish composition, then receive the exact actual post-commit client snapshot, then use the same EditAction, verifier, AuthorizedEdit and executor. Existing partial output/undo/postcondition behavior remains.",
+    "other_producers": "Existing manual-toggle producer checks remain. No additional manual refresh capability, no first-word grant, no terminal/atomic transport change.",
+    "performance": "No RPC, read request, wait, retry or deadline change. Adds bounded local comparison on existing surrounding callbacks. Measure physical successful latency with reader identity and coverage."
+  },
+  "proof": {
+    "source": "Controlled red on actual callback ordering; exact fixed identities; green with alternating prefix/preedit observations and single final paired correction. Negative interrupted proofs must not revive. Retain old stale-witness, selection, caret/focus, partial-output and undo tests.",
+    "native": "Original112 independently closed:91PASS17FAIL4BLOCKED; only KWrite/moved_boundary FAIL to PASS,111 unchanged. Same-candidate browser320 closed299PASS21FAIL0BLOCKED; Firefox6/moved_boundary PASS->FAIL. Matching432:390PASS38FAIL4BLOCKED. Candidate not promoted; GNOME NOT_TESTED.",
+    "graph": "Remote graph/AST and architecture guards required; no weakened guards or expected outcomes."
+  },
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "rollback_boundary": "Remove only the new exact owned-Space rereceipt carry; retain old manual carry, revision checks, output routes and immutable diagnostic receipts.",
+  "full_source_proof": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-final-build-source-one/RESULT.json",
+    "at": "2026-10-19T11:55:15.439987+00:00",
+    "correctness_package": {
+      "passed": 886,
+      "failed": 0,
+      "executed": 886,
+      "discovered": 889,
+      "isolated": 347,
+      "elapsed_seconds": 121.67192339431494,
+      "failures": [],
+      "discovery_sha256": "ec3f1b7b8f0eed2d655d3d83716e648384e06fbc7c904a72ce0689495bb80a22"
+    },
+    "performance": {
+      "passed": 3,
+      "failed": 0,
+      "rows": [
+        {
+          "name": "preedit::tests::cold_english_wave_memory_does_not_block_precognition",
+          "elapsed_seconds": 0.3684620159910992
+        },
+        {
+          "name": "preedit::tests::precognition_candidate_generation_stays_under_budget",
+          "elapsed_seconds": 1.082906048046425
+        },
+        {
+          "name": "space_autocorrect_prefetch::proof::v27_component_latency_denominators",
+          "elapsed_seconds": 3.1106119439937174
+        }
+      ]
+    },
+    "build": {
+      "path": "/home/e/projects/lay-development-runner/kwrite-pair-prefix-final-build-source-one/bin/lay-ibus-engine",
+      "sha256": "ff544e707102459d6af7d43e26d3e57c6294b2e0134402d9877071bacebcf8dc",
+      "bytes": 8474432
+    },
+    "native": "See separately timed native112_proof; frozen build receipt remains immutable."
+  },
+  "native112_proof": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-native-comparison-source-one.json",
+    "at": "2026-10-19T12:00:09.731702+00:00",
+    "passed": 91,
+    "failed": 17,
+    "blocked": 4,
+    "total": 112,
+    "change": "kwrite/kwrite/moved_boundary FAIL->PASS;111 unchanged",
+    "browser320": "CLOSED_299_PASS_21_FAIL_FIREFOX_REGRESSION",
+    "gnome": "NOT_TESTED",
+    "installed": false
+  },
+  "browser320_proof": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-browser-comparison-source-one.json",
+    "at": "2026-10-19T12:13:38.046328+00:00",
+    "passed": 299,
+    "failed": 21,
+    "blocked": 0,
+    "total": 320,
+    "change": "firefox/6/moved_boundary PASS->FAIL;319 unchanged",
+    "first_failed_transition": "Actual GTK client SetSurroundingText contains the complete12-scalar field but collapsed cursor11/anchor11; exact post-commit pair admission rejects it. Later AT-SPI sample has cursor12. Intermediate-order cause is not yet proved.",
+    "matching432": "390PASS38FAIL4BLOCKED",
+    "qualification": "NOT_PROMOTED",
+    "installed": false
+  }
+}

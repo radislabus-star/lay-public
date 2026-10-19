@@ -29,6 +29,7 @@ const PREEDIT_VISIBLE_PREFIX_MIN_CHARS: usize = 1;
 #[cfg(test)]
 const PREEDIT_PROBE_SYMBOL: &str = "*";
 const PREEDIT_MODE_CLEAR: u32 = 0;
+const PREEDIT_MODE_COMMIT: u32 = 1;
 
 include!("preedit_readout.rs");
 
@@ -291,7 +292,7 @@ impl LayIbusEngine {
         // stays in its existing cache and cannot become a selectable candidate.
         let visible_suffix = self
             .composition
-            .preedit_visible
+            .suggestion_display_visible()
             .then(|| self.composition.preedit_suffix.clone());
         self.clear_visible_precognition_candidates();
         if let Some(suffix) = visible_suffix {
@@ -336,7 +337,7 @@ impl LayIbusEngine {
                 && background_supported
                 && emitter.is_legacy()
                 && self.context_callback_entered.is_some()
-                && self.composition.preedit_visible
+                && self.composition.suggestion_display_visible()
                 && !self.composition.preedit_suffix.is_empty()
             {
                 return self
@@ -437,7 +438,7 @@ impl LayIbusEngine {
         if !self.composition.buffer.is_empty() {
             let (text, cursor_pos) = self.composition_preedit_payload();
             return self
-                .publish_preedit_payload(emitter, text, cursor_pos)
+                .publish_precognition_payload(emitter, text, cursor_pos)
                 .await;
         }
         if self.defer_inactive_completion_until_release(emitter) {
@@ -453,7 +454,7 @@ impl LayIbusEngine {
         };
         self.composition.preedit_suffix = self.visible_case_completion_suffix(suffix);
         let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
-        self.publish_preedit_payload(emitter, preedit_text, cursor_pos)
+        self.publish_precognition_payload(emitter, preedit_text, cursor_pos)
             .await
     }
 
@@ -515,6 +516,29 @@ impl LayIbusEngine {
         if !was_visible {
             return Ok(());
         }
+        // Lifecycle and key futures embed this shared clear in several arms.
+        // Bound their stack footprint without changing either effect/order.
+        Box::pin(async {
+            // Legacy display bookkeeping may survive the first Atomic V1
+            // request. It is inert there: V1 cannot carry an auxiliary effect.
+            let auxiliary_clear = if emitter.supports_auxiliary_text() {
+                self.publish_auxiliary_hint(emitter, String::new()).await
+            } else {
+                Ok(())
+            };
+            let composition_clear = self.clear_visible_composition(emitter).await;
+            auxiliary_clear.and(composition_clear)
+        })
+        .await
+    }
+
+    async fn clear_visible_composition(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<()> {
+        if !self.composition.preedit_visible {
+            return Ok(());
+        }
         trace::record_preedit("clear", false, 0, 0, None);
         let diagnostic_started = trace::diagnostics_enabled_cached().then(Instant::now);
         self.trace_client_output_metadata("clear", "before", diagnostic_started, None, None, None);
@@ -564,7 +588,7 @@ impl LayIbusEngine {
     }
 
     fn preedit_clear_needed(&self) -> bool {
-        self.composition.preedit_visible
+        self.composition.preedit_visible || self.composition.auxiliary_visible
     }
 
     pub(super) async fn update_composition_preedit(
@@ -576,7 +600,7 @@ impl LayIbusEngine {
         }
         self.refresh_precognition_candidates();
         let (text, cursor_pos) = self.composition_preedit_payload();
-        self.publish_preedit_payload(emitter, text, cursor_pos)
+        self.publish_precognition_payload(emitter, text, cursor_pos)
             .await
     }
 
@@ -609,12 +633,69 @@ impl LayIbusEngine {
         Ok(())
     }
 
+    async fn publish_precognition_payload(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        text: String,
+        cursor_pos: u32,
+    ) -> fdo::Result<()> {
+        if !emitter.supports_auxiliary_text() {
+            return self
+                .publish_preedit_payload(emitter, text, cursor_pos)
+                .await;
+        }
+        // This publisher receives candidate display, never an authorized text
+        // replacement. Only the independently owned typed buffer may become
+        // document composition; even a client-forced commit cannot accept a hint.
+        let hint = text
+            .strip_prefix(&self.composition.buffer)
+            .unwrap_or(&text)
+            .to_owned();
+        if self.composition.buffer.is_empty() {
+            self.clear_visible_composition(emitter).await?;
+        } else {
+            let cursor = self
+                .composition
+                .cursor
+                .min(self.composition.buffer.chars().count()) as u32;
+            self.publish_preedit_payload(emitter, self.composition.buffer.clone(), cursor)
+                .await?;
+        }
+        self.publish_auxiliary_hint(emitter, hint).await
+    }
+
+    async fn publish_auxiliary_hint(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+        hint: String,
+    ) -> fdo::Result<()> {
+        let visible = !hint.is_empty();
+        if !visible && !self.composition.auxiliary_visible {
+            return Ok(());
+        }
+        // Keep the additional D-Bus future out of every enclosing key/lifecycle
+        // future. Those paths also run on the ordinary bounded Rust test stack.
+        if let Err(error) =
+            Box::pin(emitter.update_auxiliary_text(make_ibus_text(hint), visible)).await
+        {
+            // The last successful display may still be on screen. Keep its
+            // visibility for a later clear, but never accept an unseen result.
+            self.clear_visible_precognition_candidates();
+            return Err(error);
+        }
+        self.composition.auxiliary_visible = visible;
+        Ok(())
+    }
+
     async fn publish_preedit_payload(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         text: String,
         cursor_pos: u32,
     ) -> fdo::Result<()> {
+        if emitter.supports_auxiliary_text() && self.composition.preedit_suffix.is_empty() {
+            self.publish_auxiliary_hint(emitter, String::new()).await?;
+        }
         let show_transition = !self.composition.preedit_visible;
         // Styling follows the untyped suffix, independently of the caret.
         // An owned payload may contain the whole word; native payloads have
@@ -625,6 +706,23 @@ impl LayIbusEngine {
         } else {
             text.chars().count()
         } as u32;
+        // On blur, IBus must preserve the user's already typed composition.
+        // Only this exact live owner may opt in: a hint or an old context must
+        // never become document text through client-side finalization.
+        let preedit_mode = if emitter.is_legacy()
+            && !self.atomic.active
+            && !self.context_handoff_sealed
+            && !self.content_is_sensitive()
+            && self.exact_owned_legacy_preedit_is_current()
+            && text == self.composition.buffer
+            && self.context_word_scope.as_ref().is_some_and(|scope| {
+                self.live_context_token()
+                    .is_some_and(|token| token.matches_word_scope(scope))
+            }) {
+            PREEDIT_MODE_COMMIT
+        } else {
+            PREEDIT_MODE_CLEAR
+        };
         // UpdatePreeditText owns the visible frame. Install the new payload
         // before ShowPreeditText so a client cannot expose an empty or stale
         // frame while a previous completion is being replaced.
@@ -633,7 +731,7 @@ impl LayIbusEngine {
                 make_preedit_ibus_text(text.clone(), suggestion_start),
                 cursor_pos,
                 true,
-                PREEDIT_MODE_CLEAR,
+                preedit_mode,
             )
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
@@ -709,9 +807,20 @@ impl LayIbusEngine {
             original_tail_epoch,
             original.chars().count() as u64,
         );
-        if let Err(error) = emitter.register_input_mode(target_layout_is_ru).await {
-            // A failed indicator publication cannot count as a completed
-            // gesture. Restore the old preedit only while its owner is live.
+        let mode_publication = emitter.register_input_mode(target_layout_is_ru).await;
+        let mode_published = mode_publication.is_ok();
+        let layout_completion = mode_publication.and_then(|()| {
+            self.sync_layout_for_owned_preedit(target_layout_is_ru)
+                .map_err(fdo::Error::Failed)
+        });
+        if let Err(error) = layout_completion {
+            // Both the native mode and KDE group are postconditions. Restore
+            // only while the same exact preedit still owns this context.
+            if mode_published && self.context_owns_active_preedit_manual_toggle() {
+                let _ = emitter
+                    .register_input_mode(self.layout_gesture.layout_is_ru)
+                    .await;
+            }
             if self.context_owns_active_preedit_manual_toggle() {
                 let _ = self
                     .publish_preedit_payload(emitter, original.clone(), original_cursor)
@@ -905,16 +1014,16 @@ impl LayIbusEngine {
         let inert_suffix = (background_supported
             && matching_suffix.is_none()
             && self.composition.preedit_fast.target_surface().is_none()
-            && self.composition.preedit_visible)
-            .then(|| self.composition.preedit_suffix.clone())
-            .filter(|suffix| !suffix.is_empty());
+            && self.composition.suggestion_display_visible())
+        .then(|| self.composition.preedit_suffix.clone())
+        .filter(|suffix| !suffix.is_empty());
         self.clear_visible_precognition_candidates();
         let Some(retained_suffix) = matching_suffix.as_ref().or(inert_suffix.as_ref()) else {
             return self.clear_preedit(emitter).await;
         };
         self.composition.preedit_display_only_pending = true;
         self.composition.preedit_suffix.clone_from(retained_suffix);
-        if !self.composition.preedit_visible {
+        if !self.composition.suggestion_display_visible() {
             return Ok(());
         }
         if matching_suffix.is_none() {
@@ -925,7 +1034,7 @@ impl LayIbusEngine {
             return Ok(());
         }
         let (preedit_text, cursor_pos) = self.inactive_preedit_payload();
-        self.publish_preedit_payload(emitter, preedit_text, cursor_pos)
+        self.publish_precognition_payload(emitter, preedit_text, cursor_pos)
             .await?;
         trace::record(format!(
             r#"{{"kind":"ibus_precognition_display","stage":"retained_shortened","chars":{}}}"#,
@@ -1063,7 +1172,7 @@ impl LayIbusEngine {
                 return Ok(());
             }
             if self.composition.preedit_display_only_pending
-                && self.composition.preedit_visible
+                && self.composition.suggestion_display_visible()
                 && !self.composition.preedit_suffix.is_empty()
             {
                 return self.begin_pending_precognition_refresh(emitter, true).await;
@@ -1303,22 +1412,21 @@ impl LayIbusEngine {
         projected.context_bridge_token = None;
         projected.install_precognition_candidates(proposals);
         let publication = if projected.composition.buffer.is_empty() {
-            let Some(candidate) = projected
+            if let Some(candidate) = projected
                 .composition
                 .preedit_candidates
                 .get(projected.composition.preedit_candidate_index)
                 .cloned()
-            else {
-                projected.clear_preedit(emitter).await.map(|_| ())?;
-                *self = projected;
-                return Ok(true);
-            };
-            projected.composition.preedit_suffix =
-                projected.visible_case_completion_suffix(candidate);
-            let (preedit_text, cursor_pos) = projected.inactive_preedit_payload();
-            projected
-                .publish_preedit_payload(emitter, preedit_text, cursor_pos)
-                .await
+            {
+                projected.composition.preedit_suffix =
+                    projected.visible_case_completion_suffix(candidate);
+                let (preedit_text, cursor_pos) = projected.inactive_preedit_payload();
+                projected
+                    .publish_precognition_payload(emitter, preedit_text, cursor_pos)
+                    .await
+            } else {
+                projected.clear_preedit(emitter).await
+            }
         } else if projected.composition.preedit_candidates.is_empty() {
             projected.composition.preedit_suffix.clear();
             let cursor_pos = projected
@@ -1332,10 +1440,27 @@ impl LayIbusEngine {
         } else {
             let (text, cursor_pos) = projected.composition_preedit_payload();
             projected
-                .publish_preedit_payload(emitter, text, cursor_pos)
+                .publish_precognition_payload(emitter, text, cursor_pos)
                 .await
         };
-        publication?;
+        if let Err(error) = publication {
+            if emitter.supports_auxiliary_text() {
+                // Successful legacy display effects survive a later signal
+                // failure. Keep their visibility for cleanup, but revoke all
+                // candidates. An old pending hint remains display-only.
+                let pending_suffix = (self.composition.preedit_display_only_pending
+                    && projected.composition.suggestion_display_visible())
+                .then(|| self.composition.preedit_suffix.clone());
+                self.composition.preedit_visible = projected.composition.preedit_visible;
+                self.composition.auxiliary_visible = projected.composition.auxiliary_visible;
+                self.clear_visible_precognition_candidates();
+                if let Some(suffix) = pending_suffix {
+                    self.composition.preedit_suffix = suffix;
+                    self.composition.preedit_display_only_pending = true;
+                }
+            }
+            return Err(error);
+        }
         *self = projected;
         #[cfg(test)]
         self.composition

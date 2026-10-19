@@ -1,0 +1,53 @@
+{
+  "id": "2026-10-19-exact-manual-observation-refresh",
+  "status": "RECEIVER_ONLY_NATIVE_432_COMPLETE_DIAGNOSTIC_ONLY",
+  "problem": "The same-context target can install an exact manual source receipt before or after its first matching SetSurroundingText callback. Every callback currently invalidates the receipt. Native private Chrome kbed field7 loses V4 readiness after a matching collapsed end-of-field observation, while another ordering succeeds. No actual retention policy change was established.",
+  "decision": "Capture only a currently valid exact manual source receipt before advancing the surrounding observation revision. After an actual client observation, republish that same receipt through the existing ContextAdmissionReducer only when its full observed prefix is known and exactly equal, its tail and epoch still match, the caret is collapsed at the end, the same context owner remains current, the exact manual handoff is live, and its original expiry has not passed. Reuse the original expires_at. An absent, consumed, revoked, expired, sensitive or changed observation can never mint or resurrect a receipt. UnknownStart and zero observed suffix remain unchanged. No new owner, delivery route, output mutation, daemon decision or edit/verifier permission is introduced.",
+  "alternatives": [
+    {
+      "solution": "Refresh only a current exact receipt after a fully matching actual observation",
+      "rating": 9,
+      "risk": "Must prove both callback orders, original expiry, no output, and no revival after any conflicting observation or revocation"
+    },
+    {
+      "solution": "Wait longer before querying the target",
+      "rating": 2,
+      "risk": "The failing trace already contains the matching callback before the V4 request; waiting cannot restore invalidated authority and increases latency"
+    },
+    {
+      "solution": "Ignore target surrounding callbacks or accept an unknown-context reply",
+      "rating": 1,
+      "risk": "Loses changed-field evidence or weakens manual edit authority"
+    }
+  ],
+  "supersedes": "The assertion that every later target callback must revoke a manual transfer is narrowed only for a still-current receipt and an exactly matching complete observation. Changed callbacks still revoke irreversibly. The prior test must retain changed-prefix and no-revival assertions.",
+  "verification": "Remote controlled RED before runtime changes, focused GREEN with both callback orders and private metadata, negative ownership/selection/caret/text/expiry/consumption cases, official isolated IME correctness and performance, formatting, graph/architecture guard, pinned private build, then original native protocols with latency and independent cleanup receipts. Diagnostic subsets cannot replace a complete matrix.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "not_tested": "Original browser320 and native112 completed with identical pinned fbd4 IME bytes:379PASS49FAIL4BLOCKED/432, one Chrome focus_return recovery and no new failing identity versus510c. Remaining failures, private KWin dependency qualification and GNOME prevent release acceptance; no installation or publication.",
+  "evidence": {
+    "diagnostic_run": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-blur-focus-rpc-source-one/RUN.json",
+    "diagnostic_run_sha256": "9037c956839aa515844bea5c63b836fae3a2c49042f5c89c9407f466e10cd9eb",
+    "diagnostic_export_sha256": "bf278500efe455c34c38a411f2e5cd4952518eb509d3a4bebb6c372b25d5ae1b",
+    "diagnostic_closure_sha256": "00f387e1a0faa768f6f0e1167469ca0546c1f76707d1131749afdd96801933ef",
+    "red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-red-source-one/RESULT.json",
+    "green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-green-source-one/RESULT.json",
+    "formatted_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-green-source-two/RESULT.json",
+    "first_hermetic": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-hermetic-source-one/RESULT.json",
+    "receiver_only_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-green-source-three/RESULT.json",
+    "receiver_only_hermetic": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-hermetic-source-two/RESULT.json",
+    "receiver_only_hermetic_sha256": "1046c5e73f0779d8333957674fa0b30484ab91dc2b0d1ef895845a27b9259712",
+    "architecture_gate": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-architecture-source-one/RESULT.json",
+    "pinned_build": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-final-build-source-one/RESULT.json",
+    "frozen_build_decision_sha256": "5698507214204943aa17654ae650bfb2b84d7e86a651372d629b6bfb01767096",
+    "browser_comparison": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-browser-source-one/COMPARISON.json",
+    "native_comparison": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-native-source-one/COMPARISON.json",
+    "matching_432": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-matching-432-source-one.json",
+    "matching_432_sha256": "9846a075b736004898585d9a78be08d44be999a6a84f2a9fbc950c125725068d",
+    "native_export_sha256": "99b8ff39de4d1969856c56e0300128d7d3fa6f655a86078926ead2aca9cad9a9",
+    "native_closure_sha256": "c319524738a7ce9e8b7695437139c853ec3008803f7f6e349a9ffb6bbac168e0",
+    "completed_at": "2026-10-19T08:09:08.028376+00:00"
+  },
+  "receiver_only": "The existing Shared exact_manual_toggle_handoff_path retains the source engine path across an admitted transfer. Refresh is allowed only while that sealed source path differs from the current receiver path and all existing current-owner checks pass. In the original source engine, a later callback still revokes the consumed source receipt. No new state or owner is added."
+}

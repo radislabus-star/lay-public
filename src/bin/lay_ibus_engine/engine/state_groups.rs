@@ -53,6 +53,8 @@ pub(crate) struct CompositionState {
     pub(crate) legacy_preedit_start_boundary:
         Option<crate::window_interaction::ManagedWordStartWitness>,
     pub(crate) preedit_visible: bool,
+    /// Candidate panel visibility is display state, never composition ownership.
+    pub(crate) auxiliary_visible: bool,
     pub(crate) preedit_suffix: String,
     pub(crate) preedit_candidates: Vec<String>,
     pub(crate) preedit_replacement_targets: Vec<Option<String>>,
@@ -67,6 +69,12 @@ pub(crate) struct CompositionState {
     pub(crate) precognition_schedule_count: Arc<AtomicUsize>,
     #[cfg(test)]
     pub(crate) precognition_apply_count: Arc<AtomicUsize>,
+}
+
+impl CompositionState {
+    pub(crate) fn suggestion_display_visible(&self) -> bool {
+        self.preedit_visible || self.auxiliary_visible
+    }
 }
 
 #[derive(Clone)]

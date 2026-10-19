@@ -311,6 +311,14 @@ echo "✓ lay-daemon.service установлен и включён"
 echo "✓ lay-l3-online.service установлен и включён"
 echo "✓ старый lay-ibus-engine.service отключён; IME запускает IBus"
 if is_kde_available; then
+    if python3 "$DIR/scripts/compat/lay-kde-panel-focus.py"; then
+        if is_kde_session; then
+            dbus-send --session --type=method_call --dest=org.kde.KWin \
+                /KWin org.kde.KWin.reconfigure >/dev/null 2>&1 || true
+        fi
+    else
+        echo "Не удалось установить правило фокуса панели IBus для KDE" >&2
+    fi
     install_kde_autostart
     systemctl --user disable lay-kde-tray.service >/dev/null 2>&1 || true
     if is_kde_session; then

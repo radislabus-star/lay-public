@@ -1,0 +1,114 @@
+--- a/autotests/integration/inputmethod_test.cpp
++++ b/autotests/integration/inputmethod_test.cpp
+@@ -17,6 +17,8 @@
+ #include "wayland_server.h"
+ #include "workspace.h"
+ #include "inputmethod.h"
++#include "keyboard_input.h"
++#include <KConfigGroup>
+ #include "virtualkeyboard_dbus.h"
+ #include "qwayland-input-method-unstable-v1.h"
+ #include "qwayland-text-input-unstable-v3.h"
+@@ -62,6 +64,8 @@
+     void testV3Styling();
+     void testDisableShowInputPanel();
+     void testModifierForwarding();
++    void testLayoutChangeForwardsModifiers_data();
++    void testLayoutChangeForwardsModifiers();
+ 
+ private:
+     void touchNow() {
+@@ -87,6 +91,9 @@
+     QMetaObject::invokeMethod(kwinApp()->platform(), "setVirtualOutputs", Qt::DirectConnection, Q_ARG(int, 2));
+ 
+     static_cast<WaylandTestApplication *>(kwinApp())->setInputMethodServerToStart("internal");
++    kwinApp()->setKxkbConfig(KSharedConfig::openConfig(QString(), KConfig::SimpleConfig));
++    kwinApp()->kxkbConfig()->group("Layout").writeEntry("LayoutList", QStringLiteral("us,ru"));
++    kwinApp()->kxkbConfig()->sync();
+     kwinApp()->start();
+     QVERIFY(applicationStartedSpy.wait());
+     const auto outputs = kwinApp()->platform()->enabledOutputs();
+@@ -537,6 +544,83 @@
+     disconnect(modifiersChangedConnection);
+ }
+ 
++
++void InputMethodTest::testLayoutChangeForwardsModifiers_data()
++{
++    QTest::addColumn<uint>("initialGroup");
++    QTest::addColumn<uint>("targetGroup");
++    QTest::addColumn<bool>("echoOldGroup");
++    QTest::newRow("us-to-ru") << 0u << 1u << false;
++    QTest::newRow("ru-to-us") << 1u << 0u << false;
++    QTest::newRow("us-to-ru-queued-old-echo") << 0u << 1u << true;
++    QTest::newRow("ru-to-us-queued-old-echo") << 1u << 0u << true;
++}
++
++void InputMethodTest::testLayoutChangeForwardsModifiers()
++{
++    QFETCH(uint, initialGroup);
++    QFETCH(uint, targetGroup);
++    QFETCH(bool, echoOldGroup);
++    auto xkb = input()->keyboard()->xkb();
++    QCOMPARE(xkb->numberOfLayouts(), 2u);
++    QVERIFY(xkb->switchToLayout(initialGroup));
++
++    QScopedPointer<KWayland::Client::Surface> surface(Test::createSurface());
++    QScopedPointer<Test::XdgToplevel> shellSurface(Test::createXdgToplevelSurface(surface.data()));
++    AbstractClient *client = Test::renderAndWaitForShown(surface.data(), QSize(1280, 1024), Qt::red);
++    QVERIFY(client);
++    QVERIFY(client->isActive());
++    QScopedPointer<Test::TextInputV3> textInput(new Test::TextInputV3());
++    textInput->init(Test::waylandTextInputManagerV3()->get_text_input(*(Test::waylandSeat())));
++    textInput->enable();
++    QSignalSpy activated(Test::inputMethod(), &Test::MockInputMethod::activate);
++    textInput->commit();
++    QVERIFY(activated.count() || activated.wait());
++    QVERIFY(InputMethod::self()->isActive());
++    auto context = Test::inputMethod()->context();
++    QScopedPointer<KWayland::Client::Keyboard> keyboardGrab(new KWayland::Client::Keyboard);
++    keyboardGrab->setup(zwp_input_method_context_v1_grab_keyboard(context));
++    QSignalSpy modifiers(keyboardGrab.get(), &Keyboard::modifiersChanged);
++    QSignalSpy keys(keyboardGrab.get(), &Keyboard::keyChanged);
++    QVERIFY(modifiers.wait());
++    const auto old = modifiers.last();
++    QCOMPARE(old.size(), 4);
++    QCOMPARE(old.at(3).toUInt(), initialGroup);
++    modifiers.clear();
++
++    auto message = QDBusMessage::createMethodCall(QStringLiteral("org.kde.keyboard"),
++        QStringLiteral("/Layouts"), QStringLiteral("org.kde.KeyboardLayouts"), QStringLiteral("setLayout"));
++    message << targetGroup;
++    QDBusPendingReply<bool> reply = QDBusConnection::sessionBus().asyncCall(message);
++    QTRY_VERIFY_WITH_TIMEOUT(reply.isFinished(), 1000);
++    QVERIFY(!reply.isError());
++    QVERIFY(reply.value());
++    // An out-of-band change must reach the existing grab before any next key.
++    // Enter the real event loop: Display flushes outgoing Wayland events on
++    // aboutToBlock. QTRY's processEvents loop alone never reaches that hook.
++    QVERIFY(modifiers.count() || modifiers.wait(1000));
++    QCOMPARE(modifiers.count(), 1);
++    const auto current = modifiers.last();
++    QCOMPARE(current.size(), 4);
++    QCOMPARE(current.at(3).toUInt(), targetGroup);
++    QCOMPARE(xkb->currentLayout(), targetGroup);
++    QCOMPARE(keys.count(), 0);
++
++    if (echoOldGroup) {
++        // Model IBus returning the queued old modifier event, then the freshly
++        // published one. Two state changes form a server-side processing fence.
++        QSignalSpy stateChanges(xkb, &Xkb::modifierStateChanged);
++        zwp_input_method_context_v1_modifiers(context, 0,
++            old.at(0).toUInt(), old.at(1).toUInt(), old.at(2).toUInt(), old.at(3).toUInt());
++        zwp_input_method_context_v1_modifiers(context, 0,
++            current.at(0).toUInt(), current.at(1).toUInt(), current.at(2).toUInt(), current.at(3).toUInt());
++        Test::flushWaylandConnection();
++        QTRY_COMPARE_WITH_TIMEOUT(stateChanges.count(), 2, 1000);
++        QCOMPARE(xkb->currentLayout(), targetGroup);
++        QCOMPARE(keys.count(), 0);
++    }
++}
++
+ WAYLANDTEST_MAIN(InputMethodTest)
+ 
+ #include "inputmethod_test.moc"

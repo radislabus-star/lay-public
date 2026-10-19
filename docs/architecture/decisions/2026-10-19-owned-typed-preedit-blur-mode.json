@@ -1,0 +1,73 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-owned-typed-preedit-blur-mode",
+  "status": "SOURCE_GREEN_PRIVATE_432_NOT_PROMOTABLE_PENDING_CHROME_FOCUS_DIAGNOSIS",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/preedit.rs"
+  ],
+  "reason": "On exact private IME9804, original GTK TextView and Entry focus_return retain the typed word before focus-away but lose it before the gesture after focus-return. The current preedit publisher always sets PREEDIT_CLEAR. IBus bus/inputcontext.c focus_out and client/gtk2/ibusimcontext.c clear_preedit_text preserve visible composition only for PREEDIT_COMMIT. A hint is already split into auxiliary display on legacy transport.",
+  "decision": "Use the existing IBus PREEDIT_COMMIT flag only for a nonempty exact current legacy typed composition: exact tail/buffer mirror, payload equals buffer, live reducer token matches word scope, no sealed handoff, sensitive content or active Atomic path. Retain PREEDIT_CLEAR for all other payloads and explicit empty/hide. Publish no CommitText after FocusOut, inherit no old word authority, add no client-specific route or owner. UnknownStart is not promoted: preserving the user's already typed letters is not permission to edit committed text.",
+  "alternatives": [
+    {
+      "solution": "Select existing IBus commit mode at the exact typed composition publisher",
+      "rating": 9,
+      "risk": "Prove reset/Space and manual handoff do not duplicate text; unaccepted hint, atomic, revoked and sealed states stay CLEAR"
+    },
+    {
+      "solution": "Commit old buffer from the engine FocusOut callback",
+      "rating": 1,
+      "risk": "Writes after focus authority is revoked and may target the next field"
+    },
+    {
+      "solution": "Restore historical buffer on next FocusIn",
+      "rating": 1,
+      "risk": "Carries old text authority across contexts and duplicates client-committed composition"
+    }
+  ],
+  "verification": "Remote RED/GREEN through production reducer-owned legacy keys and existing preedit publisher, known/unknown starts, hint split and clear/revocation/atomic negatives. Then official isolated IME correctness/performance, formatting, architecture graph guard, private pinned build and unchanged physical focus cases/full affected protocol. Native preservation and subsequent Double Shift are separate outcomes; no source-only PASS promotion.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "not_tested": "Exact private510c complete native11287PASS21FAIL4BLOCKED and browser320291PASS29FAIL0BLOCKED; matching432378PASS50FAIL4BLOCKED. GTK TextView focus_return improves, Chrome8 focus_return newly fails after layout handoff. The new Chrome failure prevents promotion. Focus20 passive-RPC diagnostic completed: identical target SSI invalidates the current manual certificate; refresh decision recorded separately; no installed-runtime, GNOME acceptance or release qualification.",
+  "evidence": {
+    "red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-red-source-one/RESULT.json",
+    "red_sha256": "caac09fc7c1a497c4896ff5a69fd61a0973041f5560b3c800b1fd9932dabb9fb",
+    "green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-green-source-one/RESULT.json",
+    "green_sha256": "91fea1e17dc49b96629319879054579c0f2a5073528ce90906cb44b30ea84510",
+    "formatted_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-green-source-two/RESULT.json",
+    "formatted_green_sha256": "4d6c1d0a44602aa175627dbfca96648139cc8361b5a12c741ea541088886af4b",
+    "hermetic": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-hermetic-source-two/RESULT.json",
+    "hermetic_sha256": "e4663bb7d9f0d7fd5a341b0a968bd075a3863110c7288392d1947229b1de46f9",
+    "hermetic_preparation_failure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-hermetic-source-one/RESULT.json",
+    "hermetic_preparation_failure_sha256": "11c8931f16294cf698be9763fe6913bccfa051cf414d92b64a266aaca5f8c0f0",
+    "native": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-native-source-one/RUN.json",
+    "native_sha256": "1ca2fd7d651a969f3e78c1346b91b94437fb6f60720ad8f8d3451533b8483958",
+    "native_comparison": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-native-source-one/COMPARISON.json",
+    "native_comparison_sha256": "8f4ca55655db67fc9872485f0c17475dda5a120d9b0985a675fc51d4a10ac4fc",
+    "native_closure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-native-source-one/evidence/INDEPENDENT-CLOSED-source-three.json",
+    "native_closure_sha256": "a0b2d4508314bef4915f504ad922f1b6f92557aff545f68d00e7115374e85c51",
+    "graph": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-architecture-source-one/RESULT.json",
+    "graph_sha256": "b50ded8739387fee1a4a211447cc07d671809115cf7f6067762da66e8c228a5e",
+    "private_build": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-final-build-source-one/RESULT.json",
+    "private_build_sha256": "3ed3715719c4bd9a9ced6c4c57243876b8b6cce3699a34d469c7f88b920de646",
+    "browser": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-browser-source-one/RUN.json",
+    "browser_sha256": "55a40f3aa880df00f9b9126fbe995bbff3faded21d1ebd5e2511da7010c30715",
+    "browser_comparison": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-browser-source-one/COMPARISON.json",
+    "browser_comparison_sha256": "3f558bd169eb1260d461928bfffd3cf1c3100359cd161253021ea66fda4180c5",
+    "browser_closure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-browser-source-one/evidence/INDEPENDENT-CLOSED-source-three.json",
+    "browser_closure_sha256": "5843e004176e52ddec162470afee99af63a045a50bb0dbc4f89a5fb4e0ae3aa1",
+    "matching_432": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-blur-matching-432-source-one.json",
+    "matching_432_sha256": "784a72aef8e99f268707bb6f265e342b0b4fddde3c4dbf40d59e23c90ec693a9"
+  }
+}

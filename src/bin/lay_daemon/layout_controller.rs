@@ -15,6 +15,8 @@ mod ibus_bridge;
 mod ime_bridge;
 #[path = "layout_controller/ime_manual_toggle.rs"]
 mod ime_manual_toggle;
+#[path = "layout_controller/kde_exact.rs"]
+mod kde_exact;
 #[path = "layout_controller/reconcile.rs"]
 mod reconcile;
 #[path = "layout_controller/verify.rs"]
@@ -29,14 +31,20 @@ pub(super) use ime_bridge::{
 };
 pub(super) use verify::verify_current_layout;
 
-#[derive(Debug, Clone, Copy)]
-pub(super) struct ExactReplayLayoutHandoff {
-    initial_layout_is_ru: bool,
+pub(super) enum ExactReplayLayoutHandoff {
+    Gnome { initial_layout_is_ru: bool },
+    Kde(kde_exact::Handoff),
 }
 
 impl ExactReplayLayoutHandoff {
     pub(super) fn restore_initial_best_effort(&self, label: &str) {
-        if let Err(error) = activate_gnome_layout_once(self.initial_layout_is_ru) {
+        let result = match self {
+            Self::Gnome {
+                initial_layout_is_ru,
+            } => activate_gnome_layout_once(*initial_layout_is_ru),
+            Self::Kde(handoff) => handoff.restore_once(),
+        };
+        if let Err(error) = result {
             log(&format!(
                 "warning: {label} one-shot layout restore failed: {error}"
             ));
@@ -88,15 +96,21 @@ fn read_current_ibus_layout_is_ru() -> Result<bool, String> {
 pub(super) fn activate_target_layout_once_for_exact_replay(
     initial_layout_is_ru: bool,
     target_layout_is_ru: bool,
+    focused_window: &str,
 ) -> Result<ExactReplayLayoutHandoff, String> {
-    if active_layout_backend() != LayoutBackend::Gnome {
-        return Err("exact IME tail replay requires the GNOME layout backend".to_string());
-    }
     if !active_text_backend().should_try_ime() {
         return Err("exact IME tail replay requires the IBus text backend".to_string());
     }
     if initial_layout_is_ru == target_layout_is_ru {
         return Err("exact IME tail replay target must invert the observed layout".to_string());
+    }
+    match active_layout_backend() {
+        LayoutBackend::Kde => {
+            return kde_exact::activate(initial_layout_is_ru, target_layout_is_ru, focused_window)
+                .map(ExactReplayLayoutHandoff::Kde);
+        }
+        LayoutBackend::Gnome => {}
+        _ => return Err("exact IME tail replay requires a supported layout backend".to_string()),
     }
     let (initial_layout_id, initial_ibus_engine) = target_layout(initial_layout_is_ru);
     verify_gnome_layout_stack_once(initial_layout_id, initial_ibus_engine)
@@ -108,7 +122,7 @@ pub(super) fn activate_target_layout_once_for_exact_replay(
             .unwrap_or_default();
         return Err(format!("{error}{restore}"));
     }
-    Ok(ExactReplayLayoutHandoff {
+    Ok(ExactReplayLayoutHandoff::Gnome {
         initial_layout_is_ru,
     })
 }
@@ -269,7 +283,7 @@ pub(super) fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) 
         (
             "ru",
             if active_text_backend().should_try_ime() {
-                "lay-ime-ru"
+                ime_target_engine(true)
             } else {
                 "xkb:ru::rus"
             },
@@ -278,11 +292,19 @@ pub(super) fn target_layout(target_is_ru: bool) -> (&'static str, &'static str) 
         (
             "us",
             if active_text_backend().should_try_ime() {
-                "lay-ime-us"
+                ime_target_engine(false)
             } else {
                 "xkb:us::eng"
             },
         )
+    }
+}
+
+fn ime_target_engine(is_ru: bool) -> &'static str {
+    if is_ru {
+        "lay-ime-ru"
+    } else {
+        "lay-ime-us"
     }
 }
 

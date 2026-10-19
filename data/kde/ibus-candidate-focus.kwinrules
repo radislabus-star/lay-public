@@ -1,0 +1,14 @@
+[General]
+count=1
+rules=lay-ibus-candidate-focus
+
+[lay-ibus-candidate-focus]
+Description=Lay: keep keyboard focus in the input application
+wmclass=ibus-ui-gtk3
+wmclasscomplete=false
+wmclassmatch=1
+title=ibus-ui-gtk3
+titlematch=1
+types=1
+acceptfocus=false
+acceptfocusrule=2

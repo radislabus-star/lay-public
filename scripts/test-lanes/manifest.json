@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3176,
+    "correctness": 3224,
     "ignored": 15,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 349,
-    "target": 2889
+    "process": 350,
+    "target": 2936
   },
   "package_fixtures": [
     {
@@ -2121,6 +2121,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::td156_active_native_tail_probe_requires_actual_erasure_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::terminal_passthrough_command_preserves_native_mirror_without_owned_preedit_grant",
       "target": "bin:lay-ibus-engine"
     },
@@ -2850,6 +2857,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "atomic::tests::double_space_atomic_frames_preserve_four_spaces_and_two_commands",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "atomic::tests::legacy_auxiliary_display_cannot_block_first_atomic_native_backspace",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -4851,6 +4865,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "daemon_runtime::focus::device_recovery_tests::overlapping_kde_poll_keeps_word_gesture_and_shared_epoch_but_service_loss_invalidates",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "daemon_runtime::route_contract::busy_key_queue_polls_completed_boundary_decisions_between_events",
       "target": "bin:lay-daemon"
     },
@@ -4887,6 +4908,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "debug_log::tests::tail_boundary_keeps_complete_lines",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "debug_log::tests::tail_compaction_preserves_json_records_at_every_byte_budget",
       "target": "lib:lay"
     },
     {
@@ -6279,6 +6307,104 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "kde_focus::tests::actual_ipc_failed_cleanup_blocks_new_load_and_wrong_sender_refuses",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::actual_ipc_query_loads_calls_authenticated_ingress_and_unloads",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::actual_ipc_replacing_service_owner_changes_window_identity",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::actual_ipc_wrong_request_is_refused_and_cleanup_precedes_recovery",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::expired_and_previous_lifetime_replies_never_recover_authority",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::kde_consumer_uses_uuid_and_preserves_existing_tab_narrowing",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::kde_provider_error_invalidates_and_pauses_instead_of_retaining_old_focus",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::no_active_window_and_metadata_cannot_replace_stable_identity",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::one_deadline_bounds_the_whole_read_and_does_not_accept_late_success",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::only_current_authenticated_request_can_supply_foreground",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::runtime_script_rejects_shared_directory_and_never_overwrites_existing_file",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::script_is_request_bound_and_contains_no_text_or_layout_mutation",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::stable_uuid_is_canonical_and_oversize_metadata_is_refused",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "kde_focus::tests::windows_and_compositor_bus_connection_lifetimes_stay_distinct",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "kde_tray_has_a_real_ru_en_layout_action",
       "target": "test:tray_ui_contract"
     },
@@ -6881,6 +7007,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "layout_controller::ime_bridge::delegated_tail_tests::mode_readback_rejects_unavailable_sentinels_and_accepts_real_private_decoders",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "layout_controller::ime_bridge::delegated_tail_tests::queued_manual_toggle_waits_for_the_complete_previous_replay",
       "target": "bin:lay-daemon"
     },
@@ -6910,6 +7043,62 @@
       "kind": "test",
       "lane": "correctness",
       "name": "layout_controller::ime_manual_toggle::tests::physical_double_shift_owner_daemon_does_not_repeat_ime_layout_switch",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::both_directions_verify_actual_mode_and_restore_once_through_original_backend",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::changed_focus_owner_mapping_or_unrelated_state_blocks_forward_and_restore",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::engine_name_success_does_not_hide_failed_decoder_readback",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::failed_engine_request_restores_group_without_retrying_the_request",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::false_or_wrong_group_readback_never_advances_to_engine_mutation",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::mismatched_initial_group_engine_decoder_or_service_refuses_before_mutation",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::restoration_checks_false_reply_and_reports_unresolved_without_retries",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::kde_exact::tests::restoration_does_not_redirect_to_changed_focus_owner_mapping_engine_or_group",
       "target": "bin:lay-daemon"
     },
     {
@@ -7014,7 +7203,84 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "layout_sync::kde::tests::already_target_never_sets_group_but_completes_engine",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::both_directions_use_fresh_indices_and_verify_before_and_after_ibus",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::engine_failure_and_final_group_mismatch_are_real_failures",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::expired_deadline_does_not_poll_or_promote_work",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::false_set_or_wrong_readback_never_completes_engine",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::missing_ambiguous_or_unbounded_mapping_never_mutates",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::one_deadline_bounds_a_pending_backend_future",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::service_remap_or_independent_group_change_before_mutation_refuses",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::kde::tests::stale_context_or_generation_at_each_boundary_never_retries_or_restores",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "layout_sync::tests::chooses_managed_ime_engine_label_for_target_layout",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::tests::kde_ibus_observation_cannot_overwrite_a_newer_completed_direct_request",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::tests::kde_space_layout_stack_uses_its_captured_backend_in_both_directions",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -7036,6 +7302,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "layout_sync::tests::space_layout_stack_completes_stale_ibus_once_in_both_directions",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_sync::tests::superseded_layout_stack_does_not_activate_a_backend_or_complete_ibus",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -15771,6 +16044,48 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "preedit::tests::legacy_auxiliary_failure_retires_candidates_and_keeps_clear_retry",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::legacy_auxiliary_pending_surface_remains_inert_and_retires_without_an_edit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::legacy_background_display_failure_cannot_authorize_old_or_new_candidates",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::legacy_exact_replay_press_clears_auxiliary_only_hint_without_editing_text",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::legacy_reset_retries_failed_auxiliary_hide_after_retiring_owned_composition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::legacy_unaccepted_completion_is_never_document_composition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "preedit::tests::live_completion_requires_an_all_letter_current_token",
       "target": "bin:lay-ibus-engine"
     },
@@ -16933,7 +17248,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_nbsp_commit_rejects_every_other_field_or_authority_change",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "space_boundary_pair_tests::space_pair_owned_and_committed_corrections_undo_the_exact_original_pair",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "space_boundary_pair_tests::space_pair_owned_nbsp_commit_preserves_observed_surface_and_inverse",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -19650,6 +19979,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "text_edit::gate::tests::arbitrary_verified_audit_cannot_self_seal_without_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "text_edit::gate::tests::boundary_space_presentation_is_exact_sealed_and_preserves_raw_inverse",
       "target": "lib:lay"
     },
     {

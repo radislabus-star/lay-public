@@ -3,6 +3,315 @@ use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 
 #[test]
+fn legacy_unaccepted_completion_is_never_document_composition() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    // A client may confirm its last preedit on blur even after an empty Reset
+    // response. Only letters owned as typed composition may be exposed there.
+    for (typed, cursor) in [("", 0), ("про", 3), ("про", 0)] {
+        let mut engine = LayIbusEngine::new(
+            "/test".into(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.composition.buffer = typed.into();
+        engine.composition.cursor = cursor;
+        engine.committed_tail.buffer = "про".into();
+        engine.composition.preedit_candidates = vec!["верка".into()];
+        engine.composition.preedit_replacement_targets = vec![None];
+        let mut observed = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        zbus::block_on(
+            engine.publish_selected_precognition_candidate(&mut EngineOutput::test(&mut observed)),
+        )
+        .unwrap();
+
+        for (text, _, visible, _) in &observed.preedit_updates {
+            assert!(
+                !visible || text == typed,
+                "unaccepted hint became document composition: typed={typed:?}, text={text:?}"
+            );
+        }
+        assert_eq!(engine.composition.buffer, typed);
+        assert_eq!(engine.composition.cursor, cursor);
+        assert_eq!(engine.committed_tail.buffer, "про");
+        assert!(observed.committed_texts.is_empty());
+        assert!(observed.surrounding_deletes.is_empty());
+        assert_eq!(
+            observed.auxiliary_updates,
+            if cursor == typed.chars().count() {
+                vec![("верка".to_owned(), true)]
+            } else {
+                Vec::new()
+            }
+        );
+        assert_eq!(engine.composition.preedit_visible, !typed.is_empty());
+        zbus::block_on(engine.clear_preedit(&mut EngineOutput::test(&mut observed))).unwrap();
+        assert!(!engine.has_live_composition_state() || !typed.is_empty());
+        assert!(!engine.composition.auxiliary_visible);
+        assert!(!engine.composition.preedit_visible);
+        assert!(engine.selected_precognition_suffix().is_none());
+        assert_eq!(engine.composition.buffer, typed);
+        assert!(observed.committed_texts.is_empty());
+        assert!(observed.surrounding_deletes.is_empty());
+    }
+}
+
+#[test]
+fn legacy_auxiliary_failure_retires_candidates_and_keeps_clear_retry() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+    for prior_visible in [false, true] {
+        let mut engine = LayIbusEngine::new(
+            "/test".into(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.committed_tail.buffer = "про".into();
+        engine.composition.auxiliary_visible = prior_visible;
+        engine.composition.preedit_candidates = vec!["верка".into()];
+        engine.composition.preedit_replacement_targets = vec![None];
+        let mut observed = TestEngineOutput {
+            legacy_transport: true,
+            fail_auxiliary_publication: true,
+            ..Default::default()
+        };
+        assert!(zbus::block_on(
+            engine.publish_selected_precognition_candidate(&mut EngineOutput::test(&mut observed),)
+        )
+        .is_err());
+        assert_eq!(engine.composition.auxiliary_visible, prior_visible);
+        assert!(engine.selected_precognition_suffix().is_none());
+        assert!(!zbus::block_on(
+            engine.accept_completion(&mut EngineOutput::test(&mut observed), true,)
+        )
+        .unwrap());
+        observed.fail_auxiliary_publication = false;
+        zbus::block_on(engine.clear_preedit(&mut EngineOutput::test(&mut observed))).unwrap();
+        assert!(!engine.composition.auxiliary_visible);
+        assert_eq!(engine.committed_tail.buffer, "про");
+        assert!(observed.preedit_updates.is_empty());
+        assert!(observed.committed_texts.is_empty());
+        assert!(observed.surrounding_deletes.is_empty());
+    }
+}
+
+#[test]
+fn legacy_background_display_failure_cannot_authorize_old_or_new_candidates() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    for typed in ["", "про"] {
+        for pending in [false, true] {
+            for empty_result in [false, true] {
+                let mut engine = LayIbusEngine::new(
+                    "/test".into(),
+                    Arc::new(Mutex::new(Default::default())),
+                    true,
+                    true,
+                    LayConfig::default(),
+                );
+                engine.composition.buffer = typed.into();
+                engine.composition.cursor = typed.chars().count();
+                engine.committed_tail.buffer = "про".into();
+                engine.composition.preedit_visible = !typed.is_empty();
+                engine.composition.auxiliary_visible = true;
+                engine.composition.preedit_display_only_pending = pending;
+                engine.composition.preedit_suffix = "верка".into();
+                engine.composition.preedit_candidates = vec!["верка".into()];
+                engine.composition.preedit_replacement_targets = vec![None];
+                let proposals = if empty_result {
+                    Vec::new()
+                } else {
+                    vec![ImeCandidateProposal::new(
+                        "ект",
+                        1.0,
+                        lay::typing_cpu::ImeCandidateSource::L2Completion,
+                    )]
+                };
+                let mut observed = TestEngineOutput {
+                    legacy_transport: true,
+                    fail_auxiliary_publication: true,
+                    ..Default::default()
+                };
+                assert!(zbus::block_on(engine.apply_background_precognition(
+                    &mut EngineOutput::test(&mut observed),
+                    proposals,
+                ))
+                .is_err());
+                assert!(engine.composition.auxiliary_visible);
+                assert_eq!(engine.composition.preedit_display_only_pending, pending);
+                assert!(engine.selected_precognition_suffix().is_none());
+                assert!(engine.composition.preedit_candidates.is_empty());
+                assert_eq!(engine.composition.buffer, typed);
+                assert_eq!(engine.committed_tail.buffer, "про");
+                assert!(observed.committed_texts.is_empty());
+                assert!(observed.surrounding_deletes.is_empty());
+                observed.fail_auxiliary_publication = false;
+                zbus::block_on(engine.clear_preedit(&mut EngineOutput::test(&mut observed)))
+                    .unwrap();
+                assert!(!engine.composition.auxiliary_visible);
+            }
+        }
+    }
+}
+
+#[test]
+fn legacy_reset_retries_failed_auxiliary_hide_after_retiring_owned_composition() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+    use crate::window_interaction::{WindowInteraction, WindowLifecycleEvent};
+
+    let mut engine = LayIbusEngine::new(
+        "/test".into(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    engine.composition.buffer = "про".into();
+    engine.composition.cursor = 3;
+    engine.composition.preedit_visible = true;
+    engine.composition.auxiliary_visible = true;
+    engine.composition.preedit_candidates = vec!["верка".into()];
+    engine.composition.preedit_replacement_targets = vec![None];
+    let message = zbus::Message::method_call("/test", "Reset")
+        .unwrap()
+        .build(&())
+        .unwrap();
+    let mut observed = TestEngineOutput {
+        legacy_transport: true,
+        fail_auxiliary_publication: true,
+        ..Default::default()
+    };
+    assert!(zbus::block_on(WindowInteraction::observe_lifecycle(
+        &mut engine,
+        WindowLifecycleEvent::Reset {
+            header: &message.header(),
+        },
+        Some(&mut EngineOutput::test(&mut observed)),
+    ))
+    .is_err());
+    assert_eq!(
+        observed.preedit_updates,
+        [(String::new(), 0, false, PREEDIT_MODE_CLEAR)]
+    );
+    assert!(!engine.composition.preedit_visible);
+    assert!(engine.composition.auxiliary_visible);
+    assert!(engine.composition.buffer.is_empty());
+    assert!(engine.selected_precognition_suffix().is_none());
+    assert!(engine.composition.preedit_candidates.is_empty());
+    observed.fail_auxiliary_publication = false;
+    zbus::block_on(engine.clear_preedit(&mut EngineOutput::test(&mut observed))).unwrap();
+    assert_eq!(observed.auxiliary_updates, [(String::new(), false)]);
+    assert!(!engine.composition.auxiliary_visible);
+    assert!(observed.committed_texts.is_empty());
+    assert!(observed.surrounding_deletes.is_empty());
+}
+
+#[test]
+fn legacy_exact_replay_press_clears_auxiliary_only_hint_without_editing_text() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+    use crate::protocol::KEY_BACKSPACE;
+
+    let shared = Arc::new(Mutex::new(Default::default()));
+    let config = LayConfig {
+        text_backend: "ime".into(),
+        ..LayConfig::default()
+    };
+    let mut source = LayIbusEngine::new(
+        "/source".into(),
+        Arc::clone(&shared),
+        false,
+        true,
+        config.clone(),
+    );
+    assert!(source.bind_focus_path());
+    source.committed_tail.buffer = "ghbdtn".into();
+    source.prepare_exact_manual_toggle_layout_handoff();
+    let epoch = source.committed_tail.epoch;
+    let mut target = LayIbusEngine::new("/target".into(), shared, true, true, config);
+    assert!(target.bind_focus_path());
+    target.reset_for_ibus_soft_reset();
+    target.set_client_capabilities(1 << 5);
+    target.client_context.surrounding_text_snapshot = Some(
+        crate::window_interaction::SurroundingTextSnapshot::new("ghbdtn".into(), 6, 6),
+    );
+    target.composition.auxiliary_visible = true;
+    assert!(
+        target.arm_exact_manual_toggle_autocorrect_suppression("ghbdtn", epoch, "/target", true,)
+    );
+    assert!(target.composition.pending_passthrough_preedit_clear);
+    let mut observed = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    assert!(!zbus::block_on(target.process_key_event_with_output(
+        &mut EngineOutput::test(&mut observed),
+        KEY_BACKSPACE,
+        14,
+        0,
+    ))
+    .unwrap());
+    assert_eq!(observed.auxiliary_updates, [(String::new(), false)]);
+    assert!(!target.composition.auxiliary_visible);
+    assert!(!target.composition.pending_passthrough_preedit_clear);
+    assert!(observed.preedit_updates.is_empty());
+    assert!(observed.committed_texts.is_empty());
+    assert!(observed.surrounding_deletes.is_empty());
+}
+
+#[test]
+fn legacy_auxiliary_pending_surface_remains_inert_and_retires_without_an_edit() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+    let mut engine = LayIbusEngine::new(
+        "/test".into(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    for ch in "пров".chars() {
+        engine.push_tail_char(ch);
+    }
+    engine.composition.auxiliary_visible = true;
+    engine.composition.preedit_suffix = "ерка".into();
+    engine.composition.preedit_candidates = vec!["ерка".into()];
+    engine.composition.preedit_replacement_targets = vec![None];
+    engine
+        .composition
+        .preedit_fast
+        .remember_target(Some("проверка".into()));
+    let mut observed = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(
+        engine.begin_pending_precognition_refresh(&mut EngineOutput::test(&mut observed), true),
+    )
+    .unwrap();
+    assert!(engine.composition.auxiliary_visible);
+    assert!(engine.composition.preedit_display_only_pending);
+    assert!(engine.selected_precognition_suffix().is_none());
+    assert_eq!(observed.auxiliary_updates, [("ерка".into(), true)]);
+    assert!(zbus::block_on(
+        engine.retire_pending_precognition(&mut EngineOutput::test(&mut observed),)
+    )
+    .unwrap());
+    assert_eq!(
+        observed.auxiliary_updates.last(),
+        Some(&(String::new(), false))
+    );
+    assert!(observed.preedit_updates.is_empty());
+    assert!(observed.committed_texts.is_empty());
+    assert!(observed.surrounding_deletes.is_empty());
+    assert_eq!(engine.committed_tail.buffer, "пров");
+}
+
+#[test]
 fn inactive_handled_release_selector_cannot_track_an_unpublished_prediction() {
     use crate::output::{EngineOutput, TestEngineOutput};
     use crate::protocol::{KEY_DOWN, KEY_UP};

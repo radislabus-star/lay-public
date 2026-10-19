@@ -1,0 +1,129 @@
+{
+  "id": "TD159-fresh-manual-read-same-gesture",
+  "date": "2026-10-19",
+  "recorded_at": "2026-10-19T09:11:08.131847+00:00",
+  "status": "PARTIAL_NATIVE_IMPROVEMENT_NOT_ACCEPTED",
+  "native_proof": {
+    "at": "2026-10-19T09:40:35.346737+00:00",
+    "ime_sha256": "a46dd831f94f29d244671f64096ebe1a0e04ae2663fca442f9137814fa547adc",
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-matching-432-source-one.json",
+    "counts": {"PASS": 380, "FAIL": 48, "BLOCKED": 4},
+    "baseline_counts": {"PASS": 379, "FAIL": 49, "BLOCKED": 4},
+    "recovered": ["Qt5 LineEdit focus_return", "Qt5 PlainTextEdit focus_return"],
+    "remaining_target_failure": "Qt5 RichTextEdit focus_return",
+    "regressed": ["Chrome field2 moved_boundary: original12 characters remain before corrected12 characters"],
+    "scope": "Complete same-byte browser320 plus native112, unchanged identities/cadences/deadlines after phase-only normalization, independent closures and all export members verified. No overall acceptance: a new Chrome regression remains, GNOME is NOT_TESTED and private upstream KWin qualification remains FAIL. Source proof alone does not establish a callback cause for any physical recovery.",
+    "installation": false,
+    "delivery_routes_changed": false
+  },
+  "invariants": [
+    "C01",
+    "C02",
+    "C06",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owner": "Existing ContextAdmissionReducer fresh manual admission and existing pending_manual_toggle/pending_manual_refresh_at; daemon remains physical gesture owner",
+  "first_failed_transition": "Actual Qt has owned preedit -> surrounding -> Reset -> surrounding -> Reset -> gesture. Source reproduction confirms fresh_manual_source_available=true but snapshot absent; ManualToggleV3 returns NotHandled without RequireSurroundingText. Controlled RED2PASS1FAIL stops exactly at required AwaitingExactSnapshot.",
+  "decision": "Factor current fresh manual read eligibility from actual snapshot readiness. Only a live admitted explicit bridge gesture with empty owned composition/tail and no snapshot may request one actual surrounding read. Reuse existing pending manual state, 700ms deadline and daemon same-gesture continuation. No text mutation before new exact snapshot; callback remains read-only and final existing exact-tail executor owns edits.",
+  "alternatives": [
+    {
+      "solution": "Keep pre-final-Reset text as source",
+      "rating": 2,
+      "reason": "Shared Qt contexts can represent another widget; old text must remain retired."
+    },
+    {
+      "solution": "Unconditional refresh for all manual gestures",
+      "rating": 4,
+      "reason": "Broader than demonstrated eligibility, needless reads for active sources, unclear cancellation."
+    },
+    {
+      "solution": "One read under existing fresh admission and same-gesture pending state",
+      "rating": 9,
+      "reason": "Matches proven missing transition without a new owner, timer, fallback or delivery route."
+    }
+  ],
+  "consequences": {
+    "authority": "Read permission is not word/edit authority. Requires current live token, UnknownStart/zero suffix, actual observed callback at collapsed end caret, bounded convertible last token and existing exact-handoff checks. Never grants automatic word correction authority.",
+    "cancellation": "Existing Reset/focus/privacy/key revocation remains. Pending continuation cancels on revoked fresh admission or 700ms timeout. Selection/interior snapshots must never hand off a word. No second surrounding request on same-gesture polling.",
+    "performance": "At most one existing read request per admitted gesture; retain existing700ms ceiling/10ms daemon cadence. Measure actual successful DS latency and failure coverage separately, do not increase timeout.",
+    "compatibility": "Existing reset-rereceipt refresh retains its own proofs and text. Atomic, private/sensitive eligibility and terminal transport guards remain. Existing automatic Space pair correction is independent and must recover the newly observed Firefox2 regression in the final fixed proof.",
+    "complexity": "Reuse existing pending fields and reducers. No new persistent state, generation, cache, field-name/app-name branch or edit transport.",
+    "cancellation_repair": "When a pending fresh read has no retained tail receipt, Reset, field close/privacy change and loss of surrounding capability spend the existing fresh admission before clearing pending state. A daemon follow-up cannot requeue a cancelled gesture. Other field-close behavior is unchanged."
+  },
+  "proof": {
+    "red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-red-source-one/RESULT.json",
+    "focused": "Positive actual Qt ordering, one read/zero text mutations, new different Unicode-prefixed word; repeated poll produces no second read. Negative selection, interior, sensitive, revoked owner, privacy change, Reset, expired lease.",
+    "regressions": "All IME correctness/package/performance and architecture gates unchanged; exact original browser320+native112 on one pinned binary. Retain complete rejected378/50/4 evidence and identity comparison.",
+    "denominators": "Focused exact discovered identities; complete IME manifest discovery, no test suppression; physical432 fixed identities, FAILED/BLOCKED retained."
+  },
+  "rollback_boundary": "New fresh-read request/resume integration in existing manual bridge and pending callback. Existing receiver-only exact-observation refresh and source reset provenance remain prerequisites; if a needed premise fails, revise owning decision rather than retain stale snapshots or relax verifier.",
+  "removal_plan": "No parallel mechanism to retire. Existing no-snapshot rejection is replaced only for the live fresh-admission explicit-gesture case. The narrower previously green source tests remain; actual-order regression is added.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "native_acceptance": "NOT_TESTED",
+  "evidence": {
+    "controlled_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-red-source-one/RESULT.json",
+    "first_implementation": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-green-source-one/RESULT.json"
+  },
+  "cancellation_repair": {
+    "measured_first_failure": "2026-10-19T09:14:28.698446+00:00 privacy_change delegates after cancelled read (3PASS1FAIL)",
+    "measured_second_failure": "2026-10-19T09:17:09.813213+00:00 expired callback delegates after deadline (3PASS1FAIL); previous privacy/capability cases pass",
+    "selected_change": "Revoke existing fresh admission before pending-read cancellation clears its timestamp: field close, capability loss, Reset, callback expiry and RPC expiry. Preserve same 700ms lease, single current read and exact-tail executor.",
+    "negative_cases": [
+      "selection",
+      "interior",
+      "sensitive",
+      "revoked",
+      "privacy_change",
+      "capability_loss",
+      "reset",
+      "expired",
+      "expired_rpc"
+    ],
+    "native": "NOT_TESTED"
+  },
+  "focused_proof": {
+    "at": "2026-10-19T09:20:46.454849+00:00",
+    "passed": 4,
+    "failed": 0,
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-green-source-three/RESULT.json",
+    "scope": "Actual Qt Reset ordering, one fresh read, same-gesture exact-tail handoff; nine cancellation gaps and later polls; zero local Delete/Commit in callback/request checks",
+    "native": "NOT_TESTED"
+  },
+  "full_source_proof": {
+    "at": "2026-10-19T09:23:15.969740+00:00",
+    "ime_tests": {
+      "passed": 882,
+      "failed": 0,
+      "executed": 882,
+      "discovered": 885,
+      "isolated": 347,
+      "elapsed_seconds": 117.49303797795437,
+      "failures": [],
+      "discovery_sha256": "baa0d17f48bdcc66cf829823e3c480620f1da6f508d43662ba6527472f3d19d2"
+    },
+    "performance_tests": {
+      "passed": 3,
+      "failed": 0,
+      "rows": [
+        {
+          "name": "preedit::tests::cold_english_wave_memory_does_not_block_precognition",
+          "elapsed_seconds": 0.3649617499904707
+        },
+        {
+          "name": "preedit::tests::precognition_candidate_generation_stays_under_budget",
+          "elapsed_seconds": 1.1180722629651427
+        },
+        {
+          "name": "space_autocorrect_prefetch::proof::v27_component_latency_denominators",
+          "elapsed_seconds": 3.1257222070125863
+        }
+      ]
+    },
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-hermetic-source-one/RESULT.json",
+    "native": "NOT_TESTED"
+  }
+}

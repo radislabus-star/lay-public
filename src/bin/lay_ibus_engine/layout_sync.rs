@@ -5,7 +5,11 @@ use std::sync::{Arc, Condvar, Mutex, OnceLock};
 #[cfg(test)]
 use std::cell::RefCell;
 
+use lay::desktop::LayoutBackend;
 use lay::keyboard::preferred_layout_for_text;
+
+#[path = "layout_sync/kde.rs"]
+mod kde;
 
 use super::context_admission::{ContextAdmissionAdapter, LayoutIntentToken};
 use super::engine::{DeferredLayoutAction, LayIbusEngine};
@@ -16,15 +20,19 @@ const US_ENGINE: &str = "lay-ime-us";
 
 #[cfg(test)]
 #[derive(Default)]
-struct LayoutStackProbe {
-    active_engine: Option<String>,
-    activations: Vec<bool>,
-    ibus_switches: Vec<String>,
+pub(super) struct LayoutStackProbe {
+    pub(super) active_engine: Option<String>,
+    pub(super) after_engine_read: Option<Box<dyn FnOnce()>>,
+    pub(super) activations: Vec<bool>,
+    pub(super) kde_activations: Vec<bool>,
+    pub(super) ibus_switches: Vec<String>,
+    pub(super) fail_kde_activation: bool,
+    pub(super) after_kde_activation: Option<Box<dyn FnOnce()>>,
 }
 
 #[cfg(test)]
 thread_local! {
-    static LAYOUT_STACK_PROBE: RefCell<Option<LayoutStackProbe>> = const { RefCell::new(None) };
+    pub(super) static LAYOUT_STACK_PROBE: RefCell<Option<LayoutStackProbe>> = const { RefCell::new(None) };
 }
 
 impl LayIbusEngine {
@@ -80,6 +88,7 @@ impl LayIbusEngine {
             r#"{{"kind":"ibus_layout_sync_owner","owner":"{owner}","target_is_ru":{target_is_ru}}}"#
         ));
         request_active_ime_engine_switch(
+            self.config.active_layout_backend(),
             target_is_ru,
             target_engine,
             self.context_admission.clone(),
@@ -91,6 +100,41 @@ impl LayIbusEngine {
 
     pub(super) fn sync_layout_after_manual_toggle(&mut self, text: &str) {
         self.sync_layout_for_text_blocking(text);
+    }
+
+    pub(super) fn sync_layout_for_owned_preedit(&self, target_is_ru: bool) -> Result<(), String> {
+        let backend = self.config.active_layout_backend();
+        if backend != LayoutBackend::Kde {
+            // The existing native InputMode publication owns this boundary on
+            // GNOME. Replacing the IBus engine would discard its open preedit.
+            return Ok(());
+        }
+        if !self.context_owns_active_preedit_manual_toggle() {
+            return Err("owned preedit lost authority before KDE layout completion".into());
+        }
+        let (Some(admission), Some(token)) = (
+            self.context_admission.clone(),
+            self.live_layout_intent_token(),
+        ) else {
+            return Err("owned preedit has no live KDE layout intent".into());
+        };
+        let dispatch = dispatch_direct_layout_switch(
+            backend,
+            target_is_ru,
+            ime_engine_for_layout(target_is_ru),
+            Some(admission),
+            Some(token),
+            |request| {
+                request.switch_owned_preedit_group(|| {
+                    layout_switch_worker().request_is_current(request)
+                })
+            },
+        );
+        if dispatch.promotes_decoder() {
+            Ok(())
+        } else {
+            Err(format!("owned preedit KDE layout refused: {dispatch:?}"))
+        }
     }
 
     fn sync_layout_for_text_blocking(&mut self, text: &str) {
@@ -132,11 +176,12 @@ impl LayIbusEngine {
             return;
         }
         let dispatch = dispatch_direct_layout_switch(
+            self.config.active_layout_backend(),
             target_is_ru,
             target_engine,
             self.context_admission.clone(),
             self.live_layout_intent_token(),
-            || switch_complete_layout_stack(target_is_ru, target_engine),
+            |request| request.switch_stack(|| layout_switch_worker().request_is_current(request)),
         );
         let ok = dispatch.promotes_decoder();
         if !ok && trace::enabled() {
@@ -171,11 +216,12 @@ impl LayIbusEngine {
             return true;
         }
         let dispatch = dispatch_direct_layout_switch(
+            self.config.active_layout_backend(),
             target_is_ru,
             target_engine,
             self.context_admission.clone(),
             self.live_layout_intent_token(),
-            || switch_complete_layout_stack(target_is_ru, target_engine),
+            |request| request.switch_stack(|| layout_switch_worker().request_is_current(request)),
         );
         let ok = dispatch.promotes_decoder();
         if ok {
@@ -196,6 +242,7 @@ impl LayIbusEngine {
                 } => {
                     let _ = previous_is_ru;
                     request_active_ime_engine_switch(
+                        self.config.active_layout_backend(),
                         target_is_ru,
                         engine,
                         self.context_admission.clone(),
@@ -215,19 +262,25 @@ impl LayIbusEngine {
                 } => {
                     let dispatch = if activate_gnome {
                         dispatch_direct_layout_switch(
+                            self.config.active_layout_backend(),
                             target_is_ru,
                             engine,
                             self.context_admission.clone(),
                             self.live_layout_intent_token(),
-                            || switch_complete_layout_stack(target_is_ru, engine),
+                            |request| {
+                                request.switch_stack(|| {
+                                    layout_switch_worker().request_is_current(request)
+                                })
+                            },
                         )
                     } else {
                         dispatch_direct_layout_switch(
+                            self.config.active_layout_backend(),
                             target_is_ru,
                             engine,
                             self.context_admission.clone(),
                             self.live_layout_intent_token(),
-                            || switch_active_ime_engine(engine),
+                            |_| switch_active_ime_engine(engine),
                         )
                     };
                     let ok = dispatch.promotes_decoder();
@@ -243,12 +296,31 @@ impl LayIbusEngine {
 #[derive(Clone)]
 struct LayoutSwitchRequest {
     request_generation: u64,
+    backend: LayoutBackend,
     target_is_ru: bool,
     engine: &'static str,
     authority: LayoutSwitchAuthority,
 }
 
 impl LayoutSwitchRequest {
+    fn switch_owned_preedit_group(
+        &self,
+        request_is_current: impl Fn() -> bool,
+    ) -> Result<(), String> {
+        if self.backend != LayoutBackend::Kde {
+            return Err("owned preedit group completion requires KDE".into());
+        }
+        complete_kde_owned_preedit_group(self.target_is_ru, || {
+            request_is_current() && self.context_is_live()
+        })
+    }
+
+    fn switch_stack(&self, request_is_current: impl Fn() -> bool) -> Result<(), String> {
+        switch_complete_layout_stack(self.backend, self.target_is_ru, self.engine, || {
+            request_is_current() && self.context_is_live()
+        })
+    }
+
     fn context_is_live(&self) -> bool {
         self.authority.context_is_live()
     }
@@ -279,7 +351,11 @@ impl LayoutSwitchAuthority {
                 admission,
                 token,
             } => match (admission, token) {
-                (Some(admission), Some(token)) => admission.revalidate_layout_intent(token),
+                (Some(admission), Some(token)) => {
+                    // This request completes forward input mode for already
+                    // dispatched text. Reset still retires all word authority.
+                    admission.revalidate_committed_layout_intent(token)
+                }
                 (None, None) => !admission_required,
                 _ => false,
             },
@@ -401,7 +477,7 @@ fn run_layout_switch_worker(shared: Arc<(Mutex<LayoutSwitchState>, Condvar)>) {
         match dispatch_layout_switch(
             &request,
             || layout_request_is_current(&shared, &request),
-            || switch_complete_layout_stack(request.target_is_ru, request.engine),
+            || request.switch_stack(|| layout_request_is_current(&shared, &request)),
         ) {
             LayoutSwitchDispatch::Superseded => {
                 trace::record(
@@ -479,6 +555,7 @@ fn dispatch_layout_switch(
 }
 
 fn request_active_ime_engine_switch(
+    backend: LayoutBackend,
     target_is_ru: bool,
     engine: &'static str,
     admission: Option<ContextAdmissionAdapter>,
@@ -487,6 +564,7 @@ fn request_active_ime_engine_switch(
 ) {
     layout_switch_worker().schedule(LayoutSwitchRequest {
         request_generation: 0,
+        backend,
         target_is_ru,
         engine,
         authority: LayoutSwitchAuthority::Background {
@@ -508,11 +586,13 @@ pub(crate) fn delayed_automatic_layout_dispatch_for_test(
     admission: ContextAdmissionAdapter,
     token: LayoutIntentToken,
     target_is_ru: bool,
-) -> impl FnOnce() -> (bool, usize) {
+    during_switch: impl FnOnce(),
+) -> impl FnOnce() -> (bool, usize, bool) {
     let worker = layout_switch_worker();
     let request_generation = worker.state.0.lock().unwrap().latest_request_generation;
     let request = LayoutSwitchRequest {
         request_generation,
+        backend: LayoutBackend::Gnome,
         target_is_ru,
         engine: ime_engine_for_layout(target_is_ru),
         authority: LayoutSwitchAuthority::Background {
@@ -528,22 +608,29 @@ pub(crate) fn delayed_automatic_layout_dispatch_for_test(
             || worker.request_is_current(&request),
             || {
                 switches += 1;
+                during_switch();
                 Ok(())
             },
         );
-        (matches!(result, LayoutSwitchDispatch::Superseded), switches)
+        (
+            matches!(result, LayoutSwitchDispatch::Superseded),
+            switches,
+            result.promotes_decoder(),
+        )
     }
 }
 
 fn dispatch_direct_layout_switch(
+    backend: LayoutBackend,
     target_is_ru: bool,
     engine: &'static str,
     admission: Option<ContextAdmissionAdapter>,
     token: Option<LayoutIntentToken>,
-    switch: impl FnOnce() -> Result<(), String>,
+    switch: impl FnOnce(&LayoutSwitchRequest) -> Result<(), String>,
 ) -> LayoutSwitchDispatch {
     let request = LayoutSwitchRequest {
         request_generation: layout_switch_worker().reserve_generation(),
+        backend,
         target_is_ru,
         engine,
         authority: LayoutSwitchAuthority::Direct { admission, token },
@@ -551,7 +638,7 @@ fn dispatch_direct_layout_switch(
     dispatch_layout_switch(
         &request,
         || layout_switch_worker().request_is_current(&request),
-        switch,
+        || switch(&request),
     )
 }
 
@@ -599,14 +686,116 @@ fn switch_active_ime_engine(engine: &str) -> Result<(), String> {
     }
 }
 
-fn switch_complete_layout_stack(target_is_ru: bool, engine: &str) -> Result<(), String> {
+fn switch_complete_layout_stack(
+    backend: LayoutBackend,
+    target_is_ru: bool,
+    engine: &str,
+    is_live: impl Fn() -> bool,
+) -> Result<(), String> {
+    if !is_live() {
+        return Err("layout intent is no longer current".to_string());
+    }
+    if backend == LayoutBackend::Kde {
+        return complete_kde_layout_stack(target_is_ru, engine, is_live);
+    }
     activate_gnome_layout_for_ime(target_is_ru)?;
     // GNOME may select the Lay source while IBus still reports its fallback
     // XKB engine, especially when Firefox resets the context during the same
     // Space callback. Complete this one layout operation at the IBus boundary
     // only if the selected engine has not followed GNOME yet.
-    if current_active_ime_layout_is_ru() != Some(target_is_ru) {
+    complete_ibus_layout(target_is_ru, engine, || true)?;
+    Ok(())
+}
+
+fn complete_ibus_layout(
+    target_is_ru: bool,
+    engine: &str,
+    is_live: impl Fn() -> bool,
+) -> Result<(), String> {
+    let observed = current_active_ime_layout_is_ru();
+    if !is_live() {
+        return Err("layout intent changed during IBus observation".to_string());
+    }
+    if observed != Some(target_is_ru) {
         switch_active_ime_engine(engine)?;
+    }
+    Ok(())
+}
+
+#[cfg(not(test))]
+fn complete_kde_owned_preedit_group(
+    target_is_ru: bool,
+    is_live: impl Fn() -> bool,
+) -> Result<(), String> {
+    // Reuse the same bounded unique-owner/mapping/readback transaction. Its
+    // engine step is deliberately empty while this engine owns open preedit.
+    kde::switch(target_is_ru, is_live, || Ok(()))
+}
+
+#[cfg(test)]
+fn complete_kde_owned_preedit_group(
+    target_is_ru: bool,
+    is_live: impl Fn() -> bool,
+) -> Result<(), String> {
+    if !is_live() {
+        return Err("owned preedit layout intent is no longer current".into());
+    }
+    let (failed, after_activation) = LAYOUT_STACK_PROBE.with(|slot| {
+        let mut slot = slot.borrow_mut();
+        let Some(probe) = slot.as_mut() else {
+            return (false, None);
+        };
+        probe.kde_activations.push(target_is_ru);
+        (probe.fail_kde_activation, probe.after_kde_activation.take())
+    });
+    if failed {
+        return Err("injected KDE group rejection".into());
+    }
+    if let Some(after_activation) = after_activation {
+        after_activation();
+    }
+    if !is_live() {
+        return Err("owned preedit layout intent changed during KDE activation".into());
+    }
+    Ok(())
+}
+
+#[cfg(not(test))]
+fn complete_kde_layout_stack(
+    target_is_ru: bool,
+    engine: &str,
+    is_live: impl Fn() -> bool,
+) -> Result<(), String> {
+    kde::switch(target_is_ru, &is_live, || {
+        complete_kde_ibus_layout(target_is_ru, engine, &is_live)
+    })
+}
+
+#[cfg(test)]
+fn complete_kde_layout_stack(
+    target_is_ru: bool,
+    engine: &str,
+    is_live: impl Fn() -> bool,
+) -> Result<(), String> {
+    LAYOUT_STACK_PROBE.with(|probe| {
+        if let Some(probe) = probe.borrow_mut().as_mut() {
+            probe.kde_activations.push(target_is_ru);
+        }
+    });
+    if !is_live() {
+        return Err("layout intent changed during activation".to_string());
+    }
+    complete_kde_ibus_layout(target_is_ru, engine, is_live)
+}
+
+fn complete_kde_ibus_layout(
+    target_is_ru: bool,
+    engine: &str,
+    is_live: impl Fn() -> bool,
+) -> Result<(), String> {
+    complete_ibus_layout(target_is_ru, engine, is_live)?;
+    if current_active_ime_layout_is_ru() != Some(target_is_ru) {
+        return Err("IBus engine did not follow the KDE layout intent".to_string());
     }
     Ok(())
 }
@@ -636,12 +825,17 @@ fn read_active_ime_engine() -> Option<String> {
 
 #[cfg(test)]
 fn read_active_ime_engine() -> Option<String> {
-    LAYOUT_STACK_PROBE.with(|probe| {
+    let (engine, after_read) = LAYOUT_STACK_PROBE.with(|probe| {
         probe
-            .borrow()
-            .as_ref()
-            .and_then(|probe| probe.active_engine.clone())
-    })
+            .borrow_mut()
+            .as_mut()
+            .map(|probe| (probe.active_engine.clone(), probe.after_engine_read.take()))
+            .unwrap_or_default()
+    });
+    if let Some(after_read) = after_read {
+        after_read();
+    }
+    engine
 }
 
 fn activate_gnome_layout_for_ime(target_is_ru: bool) -> Result<(), String> {

@@ -1,0 +1,69 @@
+{
+  "id": "TD159-owned-preedit-reset-current-manual-source",
+  "date": "2026-10-19",
+  "status": "SOURCE_GREEN_PHYSICAL_REJECTED",
+  "recorded_at": "2026-10-19T08:23:19.659920+00:00",
+  "invariants": [
+    "C01",
+    "C02",
+    "C06",
+    "C09",
+    "C10"
+  ],
+  "owner": "ContextAdmissionReducer; existing authenticated Reset adapter and exact manual source admission",
+  "first_failed_transition": "Actual Qt focus_return has two Reset callbacks with surrounding observations between them. Final Reset leaves no snapshot at the gesture; source tests had supplied a snapshot after final Reset. Fresh source admission alone does not recover physical Qt.",
+  "decision": "Retire all old owned-preedit and committed-prefix mirrors without transferring any word authority. Only a matched, current-owner Reset that successfully retires real owned preedit may enable the existing fresh exact-manual snapshot acquisition. A new actual post-reset surrounding callback and explicit manual gesture remain mandatory. Use the existing reducer and exact executor. Repeated Reset can retain an unspent eligibility but never renew a consumed one.",
+  "alternatives": [
+    {
+      "solution": "Retain old preedit or old committed prefix across Reset",
+      "rating": 3,
+      "risk": "Qt reuses one IME context for different widgets; old text can be applied to another field."
+    },
+    {
+      "solution": "Rearm fresh manual admission after every Reset",
+      "rating": 2,
+      "risk": "Revives spent or revoked permissions without an independently owned input transition."
+    },
+    {
+      "solution": "Authenticated owned-preedit retirement enables a new current-field manual read in the existing reducer",
+      "rating": 8,
+      "risk": "Must preserve privacy and revocation floors, require actual post-reset snapshot, and reject stale owners and unobserved resets."
+    }
+  ],
+  "verification": "Semantic RED/GREEN through actual observed key, Reset and surrounding callbacks and the existing manual bridge. Cover one/repeated Reset, different old/new text, Unicode prefix, old mirrors empty, UnknownStart, zero observed suffix and no automatic word authority. Negative cases include selection/interior caret, sensitive field, unobserved reset, revoked owner, privacy-mode change and actual committed private input lacking owned-preedit prerequisite. Private input uses its existing committed route and must not be forged into an owned-preedit fixture. Preserve existing TD125 cancellation and consumed-lease reset guards. Then official isolated IME correctness/performance, formatting and architecture graph gates before immutable private build and unchanged original physical matrices.",
+  "not_tested": "GNOME and upstream KDE qualification remain unaccepted. No installation/publication. Source880 correctness+3 performance and architecture PASS; complete private KDE432 measured and candidate rejected.",
+  "runtime_authority_changed": true,
+  "runtime_authority_scope": "Proposed narrow eligibility for a new current-field manual read only; no delivery route or automatic authority change.",
+  "evidence": {
+    "baseline_matching_432": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-matching-432-source-one.json",
+    "first_fixture_failure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-red-source-one/RESULT.json",
+    "controlled_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-red-source-two/RESULT.json",
+    "initial_implementation_failure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-green-source-two/RESULT.json",
+    "diagnostic_implementation_failure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-green-source-three/RESULT.json",
+    "private_fixture_prerequisite_failure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-green-source-four/RESULT.json",
+    "focused_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-green-source-six/RESULT.json",
+    "format": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-format-source-one/RESULT.json",
+    "hermetic_source_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-hermetic-source-one/RESULT.json",
+    "matching_432_rejected": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-matching-432-source-one.json"
+  },
+  "implementation": "The matched Reset callback supplies the owned predecessor token to existing soft-reset cleanup. Only a reset-only current owner lineage may retire the old preedit and all committed-prefix mirrors without a redundant broad revocation. After successful presentation clear and same-owner/current-token/layout revalidation, the existing reducer arms fresh manual eligibility. Acquisition still requires a new actual surrounding callback and an explicit manual gesture; UnknownStart/zero suffix and existing exact executor are unchanged.",
+  "fixture_findings": {
+    "at": "2026-10-19T08:35:08.287755+00:00",
+    "source_three": "Ordinary owned-preedit case reaches actual new manual admission; changing privacy after typing correctly retires the source, so that private fixture was invalid.",
+    "source_four": "Private metadata before typing selects the existing committed route: owned-preedit-only no-CommitText fixture premise fails before Reset. No product guard was weakened; source-five asserts real private commits and retains private mode as a negative owned-source admission case."
+  },
+  "initial_first_failed_transition_hypothesis": "Qt focus_return: owned preedit is retired at authenticated Reset, but cleanup revokes its current activation again and leaves fresh manual source eligibility spent. Actual new surrounding text cannot acquire the manual source; the Double Shift RPC refuses context_authority.",
+  "physical_verdict": {
+    "at": "2026-10-19T09:06:46.955350+00:00",
+    "matching_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-matching-432-source-one.json",
+    "counts": {
+      "PASS": 378,
+      "FAIL": 50,
+      "BLOCKED": 4
+    },
+    "accepted": false,
+    "unrecovered": "all three Qt focus_return",
+    "regression": "Firefox2 moved_boundary PASS->FAIL",
+    "causality": "Actual ordering gap demonstrated; product cause of Firefox regression unproved."
+  }
+}

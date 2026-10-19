@@ -8,6 +8,18 @@ use std::sync::atomic::{AtomicU64, Ordering};
 
 static ATOMIC_WRITE_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
+/// Create a private file without replacing any existing path or following links.
+/// The caller owns and validates the parent directory.
+pub fn create_private_file_new(path: &Path) -> std::io::Result<std::fs::File> {
+    let mut options = std::fs::OpenOptions::new();
+    options.write(true).create_new(true);
+    #[cfg(unix)]
+    options
+        .mode(0o600)
+        .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW);
+    options.open(path)
+}
+
 /// Hold a separate lock file for a complete read/modify/rename transaction.
 pub(crate) fn lock_private_file(path: &Path) -> std::io::Result<std::fs::File> {
     ensure_parent(path)?;

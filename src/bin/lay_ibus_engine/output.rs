@@ -209,9 +209,12 @@ pub(crate) struct TestEngineOutput {
     pub(crate) surrounding_deletes: Vec<(i32, u32)>,
     pub(crate) preedit_updates: Vec<(String, u32, bool, u32)>,
     pub(crate) preedit_attribute_updates: Vec<Vec<(u32, u32, u32, u32)>>,
+    pub(crate) auxiliary_updates: Vec<(String, bool)>,
+    pub(crate) fail_auxiliary_publication: bool,
     pub(crate) input_mode_updates: Vec<bool>,
     pub(crate) legacy_transport: bool,
     pub(crate) fail_commit: bool,
+    pub(crate) fail_preedit_publication: bool,
     pub(crate) fail_input_mode_publication: bool,
     pub(crate) pause_before_commit: bool,
     pub(crate) pause_before_preedit: bool,
@@ -247,6 +250,41 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             Self::Atomic(_) => false,
             #[cfg(test)]
             Self::Test(output) => output.legacy_transport,
+        }
+    }
+
+    pub(crate) const fn supports_auxiliary_text(&self) -> bool {
+        // Atomic V1 has no auxiliary effect. Do not emit outside its frame or
+        // silently reinterpret an existing preedit opcode.
+        self.is_legacy()
+    }
+
+    pub(crate) async fn update_auxiliary_text(
+        &mut self,
+        text: Value<'_>,
+        visible: bool,
+    ) -> fdo::Result<()> {
+        match self {
+            Self::Legacy(emitter) => LayIbusEngine::update_auxiliary_text(emitter, text, visible)
+                .await
+                .map_err(|error| fdo::Error::Failed(error.to_string())),
+            Self::Atomic(builder) => {
+                builder.unsupported = true;
+                Err(fdo::Error::Failed(
+                    "Atomic V1 has no auxiliary display capability".into(),
+                ))
+            }
+            #[cfg(test)]
+            Self::Test(output) => {
+                if output.fail_auxiliary_publication {
+                    return Err(fdo::Error::Failed("injected auxiliary failure".into()));
+                }
+                let text = ibus_text_value_to_string(&text)
+                    .ok_or_else(|| fdo::Error::InvalidArgs("invalid IBusText auxiliary".into()))?;
+                output.effects.push("update-auxiliary");
+                output.auxiliary_updates.push((text, visible));
+                Ok(())
+            }
         }
     }
 
@@ -355,6 +393,11 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
                     futures_lite::future::yield_now().await;
                 }
                 output.effects.push("update-preedit");
+                if output.fail_preedit_publication {
+                    return Err(fdo::Error::Failed(
+                        "injected preedit publication failure".into(),
+                    ));
+                }
                 output
                     .preedit_attribute_updates
                     .push(super::text::preedit_attribute_geometry(&text));

@@ -366,7 +366,7 @@ fn decide_active_composition_autocorrect_with_evidence_if_current(
                             .as_ref()
                             .map(RecentActionGateTrace::from_input_gate)?;
                         return Some(ActiveCompositionAutocorrectDecision {
-                            replacement: pair_replacement.to_string(),
+                            replacement: action.to_text().to_string(),
                             action,
                             input_gate: Some(input_gate),
                         });

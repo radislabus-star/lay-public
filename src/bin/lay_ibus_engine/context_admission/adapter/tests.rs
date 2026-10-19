@@ -17,6 +17,8 @@ use crate::engine::{LayIbusEngine, SurroundingTextSnapshot, WordInputMode};
 use crate::output::{PROPOSAL_FRAME_READY, PROPOSAL_NATIVE_UNHANDLED};
 use crate::protocol::SharedState;
 
+#[path = "tests/native_focus_restart.rs"]
+mod native_focus_restart;
 #[path = "tests/native_transfer.rs"]
 mod native_transfer;
 #[path = "tests/word_scope.rs"]

@@ -4,6 +4,23 @@ use super::transition::TransitionAuthority;
 use super::types::TextReplacement;
 use crate::typing_transition::decision::DecisionTransitionReceipt;
 
+/// One observed physical Space between two complete Cyrillic words. This is a
+/// parser only; callers must still prove the field and the editable range.
+pub fn split_observed_space_pair(text: &str) -> Option<(&str, char, &str)> {
+    let index = text.find([' ', '\u{a0}'])?;
+    let left = &text[..index];
+    let separator = text[index..].chars().next()?;
+    let right = &text[index + separator.len_utf8()..];
+    (crate::word_reader::is_cyrillic_letters_only(left)
+        && crate::word_reader::is_cyrillic_letters_only(right))
+    .then_some((left, separator, right))
+}
+
+pub(super) fn strip_observed_boundary_space(text: &str) -> Option<(&str, char)> {
+    let ch = text.chars().next_back()?;
+    matches!(ch, ' ' | '\u{a0}').then(|| (&text[..text.len() - ch.len_utf8()], ch))
+}
+
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub(super) struct VerifiedTransitionReceipt {
     from_text: String,
@@ -49,10 +66,10 @@ impl VerifiedTransitionReceipt {
                 .semantic_pending_space_from
                 .as_ref()
                 .is_none_or(|semantic| {
-                    semantic == &format!("{} ", action.from_text())
-                        && action.transition().operator() == Some(TransitionOperator::BoundaryShift)
+                    strip_observed_boundary_space(semantic).is_some_and(|(pair, space)| {
+                        pair == action.from_text() && action.to_text().ends_with(space)
+                    }) && action.transition().operator() == Some(TransitionOperator::BoundaryShift)
                         && action.transition().changed_tokens() == Some(2)
-                        && action.to_text().ends_with(' ')
                         && super::diff_plan::replacement_plan_matches(
                             action.from_text(),
                             action.to_text(),
@@ -70,7 +87,9 @@ impl VerifiedTransitionReceipt {
             return None;
         }
         Some(Self {
-            from_text: action.from_text().strip_suffix(' ')?.to_string(),
+            from_text: strip_observed_boundary_space(action.from_text())?
+                .0
+                .to_string(),
             to_text: self.to_text.clone(),
             plan: physical_plan.clone(),
             operator: self.operator,
@@ -96,13 +115,51 @@ impl VerifiedTransitionReceipt {
             semantic_pending_space_from: None,
         })
     }
+
+    pub(super) fn pending_source(&self) -> Option<&str> {
+        self.is_pending_boundary_projection()
+            .then_some(self.semantic_pending_space_from.as_deref())
+            .flatten()
+    }
+
+    pub(super) fn commit_observed_space_presentation(
+        &self,
+        action: &EditAction,
+        from: &str,
+        to: &str,
+        plan: &TextReplacement,
+    ) -> Option<Self> {
+        if !self.matches(action) || !self.is_pending_boundary_projection() {
+            return None;
+        }
+        let (old_left, _, old_right) = split_observed_space_pair(action.from_text())?;
+        let (from_pair, space) = strip_observed_boundary_space(from)?;
+        let (left, separator, right) = split_observed_space_pair(from_pair)?;
+        let (target_pair, _) = strip_observed_boundary_space(action.to_text())?;
+        let (target_left, _, target_right) = split_observed_space_pair(target_pair)?;
+        if old_left != left
+            || old_right != right
+            || to != format!("{target_left}{separator}{target_right}{space}")
+            || !super::diff_plan::replacement_plan_matches(from, to, plan)
+        {
+            return None;
+        }
+        Some(Self {
+            from_text: from.to_string(),
+            to_text: to.to_string(),
+            plan: plan.clone(),
+            operator: self.operator,
+            proof: self.proof,
+            semantic_pending_space_from: None,
+        })
+    }
 }
 
 /// An exact inverse of the recorded, sealed Space pair action. No unrelated
 /// multiword undo or a target reconstructed from strings can obtain this proof.
 pub fn plan_recorded_boundary_inverse(forward: &EditAction) -> Option<EditAction> {
     let from_text = forward.to_text();
-    let to_text = format!("{} ", forward.from_text());
+    let to_text = forward.recorded_boundary_source()?.to_string();
     let authority = TransitionAuthority::recorded_undo(from_text, &to_text);
     let mut action = EditAction::planned_replacement(PlannedReplacementInput {
         source: "ime-recorded-boundary-inverse",
@@ -137,8 +194,8 @@ pub fn plan_space_boundary_edit(
     if decision.trigger != crate::input_gate::InputGateTrigger::Space {
         return None;
     }
-    let (original_left, original_right) = physical_from.split_once(' ')?;
-    let (target_left, target_right) = physical_to.strip_suffix(' ')?.split_once(' ')?;
+    let (original_left, _, original_right) = split_observed_space_pair(physical_from)?;
+    let (target_left, _, target_right) = split_observed_space_pair(physical_to.strip_suffix(' ')?)?;
     if [original_left, original_right, target_left, target_right]
         .iter()
         .any(|word| !crate::word_reader::is_cyrillic_word(word))
@@ -156,7 +213,7 @@ pub fn plan_space_boundary_edit(
         return None;
     }
     let semantic_from = format!("{physical_from} ");
-    plan_input_gate_edit(
+    let semantic_action = plan_input_gate_edit(
         source,
         &semantic_from,
         physical_to,
@@ -167,8 +224,8 @@ pub fn plan_space_boundary_edit(
             move_right: 0,
         },
         decision,
-    )
-    .project_pending_boundary_space()
+    );
+    semantic_action.project_pending_boundary_space()
 }
 
 pub(crate) fn plan_decision_transition_edit(
@@ -412,6 +469,95 @@ mod tests {
         TextReplacement, TransitionAudit, TransitionOperator, TransitionProof,
     };
     use crate::typing_transition::decision::DecisionTransitionReceipt;
+
+    #[test]
+    fn boundary_space_presentation_is_exact_sealed_and_preserves_raw_inverse() {
+        let from = "должн\u{a0}ыбыть ";
+        let to = "должны\u{a0}быть ";
+        let receipt = DecisionTransitionReceipt::for_visible_tail(
+            from.into(),
+            to.into(),
+            TransitionAudit::proven(
+                TransitionOperator::BoundaryShift,
+                TransitionProof::Boundary,
+                true,
+                true,
+                2,
+            ),
+        );
+        let forward = super::plan_decision_transition_edit(
+            crate::text_edit::DecisionTransitionEditInput {
+                source: "test",
+                confidence_milli: 1000,
+                from_text: from,
+                to_text: to,
+                plan: TextReplacement {
+                    move_left: 0,
+                    backspaces: 12,
+                    insert: to.into(),
+                    move_right: 0,
+                },
+                selected_source_id: None,
+                selected_error_class: Some("boundary-shift"),
+            },
+            &receipt,
+        )
+        .project_pending_boundary_space()
+        .expect("sealed pending pair");
+        for separator in [' ', '\u{a0}'] {
+            for space in [' ', '\u{a0}'] {
+                let raw = format!("должн{separator}ыбыть{space}");
+                let target = format!("должны{separator}быть{space}");
+                let rebound = forward
+                    .clone()
+                    .with_observed_boundary_space(&raw)
+                    .expect("same observed words");
+                let committed = rebound
+                    .clone()
+                    .with_committed_boundary_space()
+                    .expect("exact committed plan");
+                assert_eq!(committed.from_text(), raw);
+                assert_eq!(committed.to_text(), target);
+                assert!(committed.allow_apply());
+                let inverse =
+                    super::plan_recorded_boundary_inverse(&rebound).expect("recorded raw inverse");
+                assert_eq!(inverse.from_text(), target);
+                assert_eq!(inverse.to_text(), raw);
+                assert!(inverse.allow_apply());
+            }
+        }
+        for bad in [
+            "должн\tыбыть ",
+            "должн\u{202f}ыбыть ",
+            "должн  ыбыть ",
+            "должн ыбытх ",
+            "Должн ыбыть ",
+            "prefix должн ыбыть ",
+            "должн ыбыть z",
+            "должн ыбыть",
+            "должн ыбыть\n",
+        ] {
+            assert!(
+                forward.clone().with_observed_boundary_space(bad).is_none(),
+                "refuse {bad:?}"
+            );
+        }
+        assert!(super::plan_manual_edit(
+            "test",
+            1000,
+            "a",
+            "b",
+            TextReplacement {
+                move_left: 0,
+                backspaces: 1,
+                insert: "b".into(),
+                move_right: 0
+            },
+            1
+        )
+        .with_observed_boundary_space("должн ыбыть ")
+        .is_none());
+    }
 
     #[test]
     fn gate_authorizes_last_token_replacement() {

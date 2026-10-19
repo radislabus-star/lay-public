@@ -185,6 +185,9 @@ fn main() -> std::io::Result<()> {
 mod focus_guard;
 use focus_guard::*;
 
+#[path = "lay_daemon/kde_focus.rs"]
+mod kde_focus;
+
 // ─── Trigger FSM and word-boundary helpers ─────────────────
 
 #[path = "lay_daemon/trigger_fsm.rs"]

@@ -133,9 +133,11 @@ impl EditAction {
         {
             return None;
         }
-        let physical_from = self.from_text.strip_suffix(' ')?;
-        let physical_to_core = self.to_text.strip_suffix(' ')?;
-        if physical_from.ends_with(char::is_whitespace)
+        let (physical_from, space) = super::gate::strip_observed_boundary_space(&self.from_text)?;
+        let (physical_to_core, target_space) =
+            super::gate::strip_observed_boundary_space(&self.to_text)?;
+        if space != target_space
+            || physical_from.ends_with(char::is_whitespace)
             || physical_to_core.ends_with(char::is_whitespace)
             || physical_from.split_whitespace().count() != 2
             || !super::safety::surface_preserving_right_to_left_boundary_shift(
@@ -181,7 +183,7 @@ impl EditAction {
         if !self.allow_apply() {
             return None;
         }
-        let from = format!("{} ", self.from_text);
+        let from = self.recorded_boundary_source()?.to_string();
         let plan = TextReplacement {
             move_left: 0,
             backspaces: u32::try_from(from.chars().count()).ok()?,
@@ -206,6 +208,46 @@ impl EditAction {
         self.allow_apply().then_some(self)
     }
 
+    /// Rebind only the two physical Space positions of the same sealed pair.
+    /// The caller must additionally prove the entire client commit snapshot.
+    /// The result retains a pending projection for exact recorded undo.
+    pub fn with_observed_boundary_space(mut self, observed_source: &str) -> Option<Self> {
+        if !self.allow_apply() {
+            return None;
+        }
+        let (pair, space) = super::gate::strip_observed_boundary_space(observed_source)?;
+        let (_, separator, _) = super::gate::split_observed_space_pair(pair)?;
+        let (target_pair, _) = super::gate::strip_observed_boundary_space(&self.to_text)?;
+        let (left, _, right) = super::gate::split_observed_space_pair(target_pair)?;
+        let to = format!("{left}{separator}{right}{space}");
+        let plan = TextReplacement {
+            move_left: 0,
+            backspaces: u32::try_from(observed_source.chars().count()).ok()?,
+            insert: to.clone(),
+            move_right: 0,
+        };
+        let receipt = self
+            .verification
+            .as_ref()?
+            .commit_observed_space_presentation(&self, observed_source, &to, &plan)?;
+        let safety = autocorrect_edit_safety(observed_source, &to, &plan, &self.transition);
+        if !safety.allow_apply {
+            return None;
+        }
+        self.from_text = observed_source.to_string();
+        self.to_text = to;
+        self.plan = Some(plan);
+        self.kind = classify_planned_replacement(&safety);
+        self.safety = Some(safety);
+        self.verification = Some(receipt);
+        self.project_pending_boundary_space()
+    }
+
+    pub fn recorded_boundary_source(&self) -> Option<&str> {
+        self.allow_apply().then_some(())?;
+        self.verification.as_ref()?.pending_source()
+    }
+
     pub(super) fn validate_recorded_boundary_inverse(&mut self, forward: &Self) -> bool {
         if !forward.allow_apply()
             || forward.transition.operator() != Some(TransitionOperator::BoundaryShift)
@@ -215,7 +257,7 @@ impl EditAction {
                 .as_ref()
                 .is_some_and(|receipt| receipt.is_pending_boundary_projection())
             || self.from_text != forward.to_text
-            || self.to_text != format!("{} ", forward.from_text)
+            || Some(self.to_text.as_str()) != forward.recorded_boundary_source()
             || self.transition.operator() != Some(TransitionOperator::Undo)
             || self.transition.proof() != Some(TransitionProof::UndoRecord)
         {

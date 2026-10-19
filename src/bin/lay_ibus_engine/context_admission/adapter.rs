@@ -1680,6 +1680,47 @@ impl ContextAdmissionAdapter {
         }
     }
 
+    pub(crate) fn fresh_exact_manual_source_allowed(&self, token: &AdmissionToken) -> bool {
+        self.shared
+            .reducer
+            .lock()
+            .is_ok_and(|reducer| reducer.fresh_exact_manual_source_allowed(token))
+    }
+
+    pub(crate) fn admit_fresh_manual_source_after_owned_reset(
+        &self,
+        source: &AdmissionToken,
+        reset: &AdmissionToken,
+    ) -> bool {
+        self.shared.reducer.lock().is_ok_and(|mut reducer| {
+            reducer.admit_fresh_manual_source_after_owned_reset(source, reset)
+        })
+    }
+
+    pub(crate) fn exact_manual_snapshot_is_current(
+        &self,
+        token: &AdmissionToken,
+        tail_epoch: u64,
+        tail: &str,
+        observation_revision: u64,
+    ) -> bool {
+        self.shared.reducer.lock().is_ok_and(|reducer| {
+            reducer.exact_manual_snapshot_is_current(token, tail_epoch, tail, observation_revision)
+        })
+    }
+
+    pub(crate) fn current_exact_manual_snapshot(
+        &self,
+        token: &AdmissionToken,
+        tail_epoch: u64,
+        tail: &str,
+        observation_revision: u64,
+    ) -> Option<ExactManualSourceSnapshotReceipt> {
+        self.shared.reducer.lock().ok().and_then(|reducer| {
+            reducer.current_exact_manual_snapshot(token, tail_epoch, tail, observation_revision)
+        })
+    }
+
     pub(crate) fn current_token(&self) -> Option<AdmissionToken> {
         self.shared
             .reducer
@@ -1704,6 +1745,13 @@ impl ContextAdmissionAdapter {
             .reducer
             .lock()
             .is_ok_and(|reducer| reducer.revalidate_layout_intent(token))
+    }
+
+    pub(crate) fn revalidate_committed_layout_intent(&self, token: &LayoutIntentToken) -> bool {
+        self.shared
+            .reducer
+            .lock()
+            .is_ok_and(|reducer| reducer.revalidate_committed_layout_intent(token))
     }
 
     pub(crate) fn revoke_layout_intent(&self, token: &LayoutIntentToken) -> bool {
@@ -1903,6 +1951,10 @@ impl ContextAdmissionAdapter {
         focus_position: Sequence,
         native_context_hint: Option<&ContextKey>,
     ) -> Result<RequestGeneration, AdapterError> {
+        // Different-context native enrichment can revoke its request before
+        // the old marker arrives. Retire only that stale acquisition through
+        // the existing publication boundary before testing slot occupancy.
+        self.refresh_acquisition_fence_ready();
         let trace_target = (origin == ReceiptOrigin::Native && trace::enabled())
             .then(|| target_path.as_str().to_owned());
         // Serialize reducer begin with completed-result publication. Reuse

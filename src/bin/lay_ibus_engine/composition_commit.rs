@@ -97,7 +97,7 @@ impl LayIbusEngine {
         };
         if !self.context_word_is_known()
             && !(self.context_observed_suffix_is_current()
-                && self.composition.preedit_visible
+                && (self.composition.preedit_visible || self.composition.auxiliary_visible)
                 && self.selected_precognition_replacement().is_none())
             && !self.context_owns_active_preedit_append_completion()
             && transient_append_suffix.is_none()
@@ -363,15 +363,20 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
             return Ok(());
         }
-        let clear_started_at = Instant::now();
-        self.clear_preedit(emitter).await?;
-        let clear_us = clear_started_at.elapsed().as_micros() as u64;
+        let owned_space_snapshot = matches!(&authority, ActiveCompositionAuthority::UserInput)
+            .then(|| self.owned_preedit_space_commit_snapshot(&text))
+            .flatten();
         let output_started_at = Instant::now();
         if let Err(error) = emitter.commit_text(make_ibus_text(text.clone())).await {
             let _ = self.update_composition_preedit(emitter).await;
             return Err(fdo::Error::Failed(error.to_string()));
         }
         let output_ms = output_started_at.elapsed().as_micros() as u64;
+        // CommitText must finish the live composition before its presentation
+        // is retired. A later clear failure must not retain already sent text.
+        let clear_started_at = Instant::now();
+        let clear_result = self.clear_preedit(emitter).await;
+        let clear_us = clear_started_at.elapsed().as_micros() as u64;
         if sync_layout
             || self.layout_gesture.layout_is_ru
                 != self
@@ -387,7 +392,11 @@ impl LayIbusEngine {
         if protect_current_word {
             self.arm_current_word_autocorrect_suppression();
         }
-        self.arm_visible_postcondition(Instant::now());
+        if let Some(expected) = owned_space_snapshot {
+            self.arm_owned_preedit_space_visible_postcondition(Instant::now(), expected);
+        } else {
+            self.arm_visible_postcondition(Instant::now());
+        }
         if text.ends_with(char::is_whitespace) {
             self.close_precognition_word_boundary();
             self.retire_current_word_autocorrect_suppression();
@@ -399,7 +408,7 @@ impl LayIbusEngine {
             output_ms,
             started_at.elapsed().as_micros() as u64,
         );
-        Ok(())
+        clear_result
     }
 
     fn decide_active_composition_autocorrect(
@@ -434,6 +443,159 @@ impl ActiveCompositionAuthority {
             }
             Self::UserInput => true,
         }
+    }
+}
+
+#[cfg(test)]
+mod active_composition_output_tests {
+    use super::*;
+    use crate::output::{AtomicEffectBuilder, TestEngineOutput};
+    use lay::config::LayConfig;
+    use std::sync::{Arc, Mutex};
+
+    fn visible_engine() -> LayIbusEngine {
+        let mut engine = LayIbusEngine::new(
+            "/test/commit-order".into(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        assert!(engine.bind_focus_path());
+        engine.composition.buffer = "пример".into();
+        engine.composition.cursor = 6;
+        engine.composition.preedit_visible = true;
+        engine
+    }
+
+    #[test]
+    fn td159_active_commit_ends_visible_preedit_before_retirement() {
+        for with_space in [false, true] {
+            let mut engine = visible_engine();
+            let mut output = TestEngineOutput {
+                legacy_transport: true,
+                ..Default::default()
+            };
+            let request = if with_space {
+                ActiveCompositionCommit::with_space_in_current_layout()
+            } else {
+                ActiveCompositionCommit::plain()
+            };
+            zbus::block_on(
+                engine.commit_active_composition(&mut EngineOutput::test(&mut output), request),
+            )
+            .unwrap();
+            assert_eq!(
+                output.effects,
+                ["commit", "update-preedit", "hide-preedit"],
+                "CommitText must finish the live composition before presentation is retired"
+            );
+            assert_eq!(
+                output.committed_texts,
+                [if with_space {
+                    "пример "
+                } else {
+                    "пример"
+                }]
+            );
+            assert!(output.surrounding_deletes.is_empty());
+            assert!(engine.composition.buffer.is_empty());
+            assert!(!engine.composition.preedit_visible);
+        }
+    }
+
+    #[test]
+    fn td159_active_commit_failure_keeps_original_preedit() {
+        let mut engine = visible_engine();
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            fail_commit: true,
+            ..Default::default()
+        };
+        assert!(zbus::block_on(engine.commit_active_composition(
+            &mut EngineOutput::test(&mut output),
+            ActiveCompositionCommit::plain(),
+        ))
+        .is_err());
+        assert_eq!(engine.composition.buffer, "пример");
+        assert!(engine.composition.preedit_visible);
+        assert_eq!(output.effects.first(), Some(&"commit"));
+        assert!(!output.effects.contains(&"hide-preedit"));
+        assert!(output
+            .preedit_updates
+            .iter()
+            .all(|(_, _, visible, _)| *visible));
+        assert!(output.surrounding_deletes.is_empty());
+    }
+
+    #[test]
+    fn td159_active_commit_clear_failure_cannot_replay_text() {
+        let mut engine = visible_engine();
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            fail_preedit_publication: true,
+            ..Default::default()
+        };
+        assert!(zbus::block_on(engine.commit_active_composition(
+            &mut EngineOutput::test(&mut output),
+            ActiveCompositionCommit::with_space_in_current_layout(),
+        ))
+        .is_err());
+        assert_eq!(output.committed_texts, ["пример "]);
+        assert!(engine.composition.buffer.is_empty());
+        assert!(engine.composition.preedit_visible);
+        assert!(engine.committed_tail.last_commit_at.is_some());
+        output.fail_preedit_publication = false;
+        zbus::block_on(engine.clear_preedit(&mut EngineOutput::test(&mut output))).unwrap();
+        assert_eq!(output.committed_texts, ["пример "]);
+        assert!(!engine.composition.preedit_visible);
+        assert!(output.surrounding_deletes.is_empty());
+    }
+
+    #[test]
+    fn td159_active_commit_auxiliary_failure_cannot_replay_text() {
+        let mut engine = visible_engine();
+        engine.composition.auxiliary_visible = true;
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            fail_auxiliary_publication: true,
+            ..Default::default()
+        };
+        assert!(zbus::block_on(engine.commit_active_composition(
+            &mut EngineOutput::test(&mut output),
+            ActiveCompositionCommit::plain(),
+        ))
+        .is_err());
+        assert_eq!(output.committed_texts, ["пример"]);
+        assert!(engine.composition.buffer.is_empty());
+        assert!(engine.composition.auxiliary_visible);
+        assert!(!engine.composition.preedit_visible);
+        output.fail_auxiliary_publication = false;
+        zbus::block_on(engine.clear_preedit(&mut EngineOutput::test(&mut output))).unwrap();
+        assert_eq!(output.committed_texts, ["пример"]);
+        assert!(!engine.composition.auxiliary_visible);
+        assert!(output.surrounding_deletes.is_empty());
+    }
+
+    #[test]
+    fn td159_active_commit_atomic_proposal_preserves_effects() {
+        let mut engine = visible_engine();
+        let mut builder = AtomicEffectBuilder::default();
+        zbus::block_on(engine.commit_active_composition(
+            &mut EngineOutput::atomic(&mut builder),
+            ActiveCompositionCommit::plain(),
+        ))
+        .unwrap();
+        let proposal = builder.finish(true);
+        assert_eq!(proposal.0, crate::output::PROPOSAL_FRAME_READY);
+        assert_eq!(
+            proposal.1.iter().map(|effect| effect.0).collect::<Vec<_>>(),
+            [1, 4]
+        );
+        assert_eq!(String::try_from(proposal.1[0].1.clone()).unwrap(), "пример");
+        assert!(!bool::try_from(proposal.1[1].1.clone()).unwrap());
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.preedit_visible);
     }
 }
 

@@ -1,0 +1,51 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-revoked-native-acquisition-retirement",
+  "status": "FULL_SOURCE_GREEN_GRAPH_BUILD_NATIVE_PENDING",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs"
+  ],
+  "reason": "Original Firefox field1 focus_return fails after two ordered real/fake/real IBus InputContext sequences. FocusInId10707 differs from pending native acquisition307/nonce1038. Existing reducer enrichment correctly revokes the different-context request; its adapter acquisition fence remains occupied until expiry. Successor begin returns Busy before existing stale-fence retirement runs. This is protocol context sequencing, not proof that a physical panel window stole focus.",
+  "decision": "Before starting an acquisition, run the adapter's existing refresh_acquisition_fence_ready boundary. It removes only an acquisition whose request is no longer current. Preserve its existing pending/ready/reducer lock order, current acquisition and bridge fences, ready-outcome validation, marker identity and absolute deadlines. Never reuse the old context or word authority. The successor uses the existing native activation and marker protocol; no queue, retry, sleep or delivery route is added.",
+  "alternatives": [
+    {
+      "solution": "Reuse existing stale acquisition retirement before testing slot occupancy",
+      "rating": 9,
+      "risk": "Prove current acquisition and bridge fences remain occupied and late old markers or expiry cannot erase a successor"
+    },
+    {
+      "solution": "Clear any occupied fence when FocusInId arrives",
+      "rating": 1,
+      "risk": "Can destroy a current bridge or activation and break output admission"
+    },
+    {
+      "solution": "Retry activation after waiting for the old deadline",
+      "rating": 3,
+      "risk": "Adds latency and a second scheduling policy without repairing the missed ownership transition"
+    }
+  ],
+  "verification": "First obtain controlled RED for different-context native FocusInId both before reply and after reply/before marker, through actual observed P2P callbacks and engine activation. Prove same-context enrichment is idempotent, live acquisition and bridge remain Busy. After GREEN require fresh exact-context owner, UnknownStart/suffix0, no inherited text, and immunity to old marker/expiry. Run full official isolated IME and performance lanes, formatting and architecture graph guard remotely. Then repeat unchanged native focus-return cases and original full browser/native scope on exact private bytes.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "not_tested": "Remote formatting and formatted focused3PASS; official frozen-source IME872PASS/0FAIL and performance3PASS/0FAIL at 2026-10-19T05:55:57.983688+00:00. Graph, private build and native checks pending. These are source results, not physical-client acceptance. Latest complete browser291/29/0 and matching KDE432342/86/4 remain unchanged; no promotion of aggregate regression.",
+  "evidence": {
+    "red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/native-focus-restart-red-source-one/RESULT.json",
+    "red_sha256": "b02700d9ba8f931801831ea3dcedffe3575f37f2b52b9786dd6152cd98bf2bfc",
+    "green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/native-focus-restart-green-source-one/RESULT.json",
+    "green_sha256": "6b6fad394d3bff4b4b4822adce45ff0976fba6d11ed1671ed9d28f8db2af9d76",
+    "full_source": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/native-focus-restart-hermetic-source-one/RESULT.json",
+    "full_source_sha256": "ac014396f1111bf9c0ffc8ffd570819b3db9a3591b7eaf66ad8fbbfc2e9911dc"
+  }
+}

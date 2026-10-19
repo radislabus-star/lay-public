@@ -293,6 +293,13 @@ impl LayIbusEngine {
         properties: Value<'_>,
     ) -> zbus::Result<()>;
 
+    #[zbus(signal, name = "UpdateAuxiliaryText")]
+    pub(crate) async fn update_auxiliary_text(
+        emitter: &SignalEmitter<'_>,
+        text: Value<'_>,
+        visible: bool,
+    ) -> zbus::Result<()>;
+
     #[zbus(signal, name = "UpdateProperty")]
     pub(crate) async fn update_property(
         emitter: &SignalEmitter<'_>,

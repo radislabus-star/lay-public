@@ -339,6 +339,7 @@ impl LayIbusEngine {
         self.composition.cursor = 0;
         self.composition.legacy_word_preedit_active = false;
         self.composition.preedit_visible = false;
+        self.composition.auxiliary_visible = false;
         self.composition.preedit_suffix.clear();
         self.composition.preedit_candidates.clear();
         self.composition.preedit_replacement_targets.clear();
@@ -389,6 +390,31 @@ impl LayIbusEngine {
     }
 
     pub(super) fn reset_for_ibus_soft_reset(&mut self) {
+        self.reset_for_ibus_soft_reset_retiring_owned_source(None);
+    }
+
+    /// Only the matched Reset callback may supply its actual preedit source.
+    /// An unobserved reset retains the existing broad revocation behavior.
+    pub(super) fn reset_for_ibus_soft_reset_retiring_owned_source(
+        &mut self,
+        owned_source: Option<&super::context_admission::AdmissionToken>,
+    ) -> bool {
+        let retires_observed_owned_source = owned_source.is_some_and(|source| {
+            self.context_admission_required
+                && !self.context_handoff_sealed
+                && !self.atomic.active
+                && !self.content_is_sensitive()
+                && self.composition.legacy_word_preedit_active
+                && !self.composition.buffer.is_empty()
+                && self
+                    .committed_tail
+                    .buffer
+                    .ends_with(&self.composition.buffer)
+                && self.live_context_token().is_some()
+                && self.context_admission.as_ref().is_some_and(|admission| {
+                    admission.exact_replay_reset_provenance_is_current(source)
+                })
+        });
         let preserves_exact_replay = self.exact_replay_quarantine_active();
         let preserves_pending_manual_refresh = self.layout_gesture.pending_manual_toggle
             && self
@@ -425,7 +451,13 @@ impl LayIbusEngine {
             self.context_handoff_sealed = false;
             self.context_reset_rereceipt = None;
             if self.context_admission_required {
-                self.revoke_context_word();
+                if retires_observed_owned_source {
+                    // No old committed prefix may become the new field's
+                    // manual source. Reset already revoked its word lineage.
+                    self.committed_tail.buffer.clear();
+                } else {
+                    self.revoke_context_word();
+                }
             }
         }
         // GTK resets the IBus context after an unhandled committed-tail
@@ -443,6 +475,7 @@ impl LayIbusEngine {
         self.composition.cursor = 0;
         self.composition.legacy_word_preedit_active = false;
         self.composition.preedit_visible = false;
+        self.composition.auxiliary_visible = false;
         self.composition.preedit_suffix.clear();
         self.composition.preedit_candidates.clear();
         self.composition.preedit_replacement_targets.clear();
@@ -471,6 +504,7 @@ impl LayIbusEngine {
         self.layout_gesture.native_letter_release_focus.clear();
         self.client_context.surrounding_text_snapshot = None;
         if !preserves_pending_manual_refresh {
+            self.revoke_pending_fresh_manual_source();
             self.layout_gesture.pending_manual_toggle = false;
             self.layout_gesture.pending_manual_refresh_at = None;
         }
@@ -507,6 +541,7 @@ impl LayIbusEngine {
         {
             self.publish_tail_handoff();
         }
+        discarded_owned_preedit && retires_observed_owned_source
     }
 
     /// Replaces text that has already been committed into the focused client.

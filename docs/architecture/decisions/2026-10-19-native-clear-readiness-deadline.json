@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "status": "PROPOSED_TEST_ONLY_SOURCE_VERIFIED",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "reason": "The retained kbct first Firefox iframe clear is empty and stable, but lacks required root attributes; the next physical clear reports them. This establishes a metadata-only qualification failure, without establishing its cause.",
+  "decision": "Observe complete readiness using the existing strict clear predicate, within the original 1.8 second settling deadline and at most eight bounded captures. Send only the original one Ctrl+A/Backspace; retain every observation and its deadline outcome. Do not retry the behavioral case.",
+  "invariants": ["C05", "C07", "C10"],
+  "consequences": {
+    "qualification": "One complete individual capture must meet the unchanged predicate. Never combine properties across captures. Check the deadline after capture and reject late qualification.",
+    "hard_failures": "Foreground/seat guard failure, observed false raw or root focus, changed endpoint, missing root, incomplete or unstable tree, and read issues terminate observation rather than being retried until a good sample appears. Save a received tree before post-capture guard/layout checks; record a postcheck error and rethrow without retry.",
+    "scope": "Private native actor clear prerequisite only. Measured target checks, operation cadence, original case identities and Lay runtime authority and delivery routes remain unchanged.",
+    "causality": "Additional prerequisite waiting can change a panel race. Compare stock and candidate panels with identical readiness; a candidate-only PASS does not isolate the panel fix.",
+    "evidence": "Preserve the original failed row and first unqualified capture. Source controls or a prerequisite PASS cannot regrade behavioral cases or complete matrices. Corrected source-three remote gate: 59 PASS, actual API zero-key PASS, original clear controlled RED. Source-one's 58 PASS is retained but rejected after review exposed focus-retry and snapshot-retention gaps; no native input used that version.",
+    "rollback": "Use the preceding frozen actor; retain both actors, manifests and receipts. No installation or data migration."
+  },
+  "runtime_authority_changed": false,
+  "production_delivery_changed": false
+}

@@ -1,5 +1,130 @@
 # TD-121: журнал изменений ядра и запрет повторения отвергнутых подходов
 
+## 2026-10-18 — active two-environment residual reduction after frozen C
+
+20:19:30Z: qualified the missing stock KDE prerequisite, not a Lay fix.
+The previous private IBus build disabled Wayland/UI; exact Chrome155 defaults
+to native text-input-v3. Same pinned IBus1.5.34-rc2 now builds with GTK3/UI and
+Wayland in a separate private prefix (BUILD PASS, ldd-r clean). Retain failed
+generated-header/Vala-prerequisite attempts; the final continuation follows
+the exact upstream VAPI recipe. Source11/11 PASS and fresh diagnostic review9/10
+preceded knic. KWin launched its native panel, but setup stopped before actor
+input because host1.5.26 GSettings lacks use-custom-theme. knic CLOSED, cgroup
+empty, temporary policy absent, VT1. Do not rerun it unchanged. New knid stages
+the matching pinned schema privately, preserving system fallback; source13/13
+PASS. Review/native pending. GNOME capability package source36/36 PASS with
+controlled RED2 baseline PASS ->2 mutant FAIL, fresh review9/10; native pending.
+Exact evidence/preflight/source pins are in owner entry20:19:30Z. Full grids
+remain GNOME354/46/32 and KDE175/233/24, runtime authority unchanged.
+
+19:54:36Z: revised rich observer diagnostic remains UNQUALIFIED, Firefox0P3F
+and Chrome0P3F outside original432 grids. Source19PASS+RED1EXPECTED/app,
+review9/10. A seat-label guard caught the first zero-input attempt; corrected
+letters-only labels and independent closure are qualified. Both field8 controls
+reach all7 physical steps: initial raw empty differs from post-clear LF/caret0;
+real Enter gives twoLF/caret1. Fields7/10 parent Text instead contains embedded
+U+FFFC objects after Enter. Do not repeat the strict raw-equality assertion or
+strip LF/FFFC blindly. Next: bounded native subtree/Text/Hypertext observation
+with real-newline negatives; DOM only supplemental. Exact primary hashes,
+both CLOSED/no keys/VT1 and limits are in owner entry19:54:36Z. No runtime edit,
+new build, installation or original regrade; GNOME354/46/32,KDE175/233/24.
+
+19:44:30Z: first rich diagnostic Firefox0P/3F/0B. All three physical
+`hello ` observations are `hello\u00a0`/caret6; the diagnostic's raw ASCII-Space
+collector failed before newline qualification. Initial empties exact; no
+original90 clear-case conclusion. Chrome not launched with the known-invalid
+collector. Seat CLOSED/empty/keys released/VT1. Primary/evidence archive and
+unchanged matrices are in owner entry2026-10-18T19:44:30Z. Changed diagnostic
+reuses existing positional rich-space observer under a fresh preflight;
+no runtime authority or delivery change.
+
+19:41:16Z: trace-observer experiment COMPLETE after fresh review9/10.
+Remote guarded private-file controls3/3 PASS; same-inode nonshrinking
+compaction defeats legacy offsets, immutable-prefix relation detects it.
+Retained URL3 audit stays CAUSAL_WINDOW_UNQUALIFIED; neither absent events
+nor producer completeness is inferred. Receipts under
+`kde-causal-window-next/remote-results-a/`, top SHA
+`2195580bf2cbcf2eae6c58b7a7c66b6f52467a83f44ada725a35039d25f6589f`.
+No native input/runtime authority change or matrix regrade. Owner entry
+2026-10-18T19:41:16Z records limits and subordinate hashes. Next: reviewed
+six-field reversible rich diagnostic on exact frozen C/config/data bytes.
+
+At19:35:35Z the user's target is at most20 FAIL per environment, on the same
+fixed complete grids. Actual baselines stay GNOME354P46F32B and
+KDE175P233F24B of432, NOT_TESTED0 each. Root owns the remote/native lease;
+shared-runtime diagnosis and observer diagnosis proceed in two disjoint streams.
+No runtime/build/native change yet. Read-only Chrome Backspace trace hashes
+are verified; whole-word refocus proof is absent and may not be manufactured
+from a generic SSI or a live bridge token. The20 SuggestOnly typo-undo cases
+retain their recorded lexical authority diagnosis, with no literal model fit.
+KDE raw-newline clear90 has a written six-field/seven-stage reversible control;
+remote source controls7/7 per browser PASS, fresh review/native pending.
+The38 selection/focus-return cases formerly labelled seed already reached
+Double Shift; preserve all original verdicts. Trace compaction qualification
+is separate from producer completeness and native correction quality.
+Exact preparation, alternatives, evidence and next gates are in the owning
+document's19:35:35 entry and cache `browser-final-fixes-20261018/`.
+
+## 2026-10-18 — current frozen KDE Space-backend C checkpoint
+
+As of2026-10-18T19:14:31Z, current source3260 PASS, final fresh Space-backend code review9/10
+(two passes), private C build and four actual-engine/next-letter controls PASS.
+Complete KDE J175P233F24B/432, NOT_TESTED0:27 F-to-P, one P-to-F versus E,
+148/149 old PASS retained. Firefox URL3/moved_boundary regression remains
+UNKNOWN, so KDE acceptance is not passed. Same-byte GNOME J354P46F32B/432
+retains all353 preceding E PASS; one Firefox F-to-P, Chrome unchanged.
+All eight finite sessions CLOSED. No install/publication, model/lexical or
+text-delivery-route change. Exact receipts/hashes, latency coverage, failed
+preparations/old verdicts and limits: [current architecture owner](../architecture/firefox-input-stability-2026-10-05.md),
+frozen-Space-backend-stage-complete entry; cache `browser-final-fixes-20261018/`
+`kde-space-matrix-j/` and `gnome-space-regression-j/`.
+
+Preserve the implemented backend. Next qualify the retained regression window
+and independent stock-ingress/rich-clear families under TD156/159, with a fresh
+bounded written plan before further runtime edits. Native provider lifecycle
+controls remain open in TD157/158. Historical entries below retain their
+then-current verdicts; do not restart their completed source/build stages.
+
+## 2026-10-18 — TD-156 first transition and rejected Reset-only repair
+
+Follow-up: final code review 8/10 after two passes. Exact replay/capability
+cleanup and Reset hide-failure retry now have entrypoint controls. New atomic
+handover regression is causally RED at unsupported auxiliary clear in
+`/home/ubu/.cache/lay/development/run-k8bw_66_/RESULT.json` (remote `run-ezO1J4`).
+Guard that output by the existing transport capability, preserving authority
+retirement and actual composition clear. The unchanged ordinary-stack isolated
+native-transfer regression passes after heap-pinning the shared clear-output
+future; pinning only the emitter was insufficient. Focused result remains
+796P/38F/834: atomic RED plus 37 old presentation assertions at four shared
+sites. Align typed-only preedit/auxiliary expectations without relaxing exact
+edit, refusal or learning assertions. Full source and changed-byte native
+acceptance are pending; original browser matrix remains 349P/50F/33B/432.
+
+Owner: `firefox-input-stability-2026-10-05.md`, TD-156. Unchanged menu-90
+Firefox field-1 original fifteen-plan diagnostic **11P/3F/1B** at
+`firefox-legacy-native-20261012.6onP5c/firefox-functional-rvdztq1d/RESULT.json`.
+Native seat closed 01:43:25Z, all owned processes gone and VT1 restored.
+Pinned Firefox 157 TextComposition saves the last preedit before notifying
+the IME and can restore it after an empty response. Reject synchronous
+Reset-only clearing before implementation; no repeat without new evidence
+addressing that saved commit. Plan review reset2/auxiliary8/lookup6 of10.
+Bounded next route: standard auxiliary presentation for legacy candidates,
+typed owned preedit preserved, same owner/edit delivery and Tab verifier;
+atomic protocol unchanged/outside acceptance claim. Full preflight and new ADR
+are recorded before production code. No local runtime install/restart.
+CLI undo precondition independently remains SuggestOnly/common-L3 refusal;
+never convert a timing change into an asserted semantic correction.
+Full historical matrix **349P/50F/33B/432** remains; no new full native claim.
+
+Source proof: `run-nk_vyipc/RESULT.json` records827PASS plus the intended
+new RED at unaccepted legacy document composition. First implementation
+`run-2ii4lknx/RESULT.json` passes new legacy controls but fails the existing
+atomic pending-display publication failure control; runner status coverage is
+also incomplete. Do not accept that run. Keep atomic failure semantics intact,
+scope the new visibility/authority cleanup to auxiliary-capable legacy output,
+and cover background publication/clear failures and inert pending retention.
+Affected-closure verification and independent code review are pending.
+
 ## 2026-10-17 — PR53 explicit hot-material fixture replan
 
 CI39074346533 passes the Reset repair but fails immediate publication after a
@@ -1398,3 +1523,1526 @@ posted once and exact body read back. #47 remains NEEDS_REPORTER_RETEST; prior
 TD121 known compatibility limits remain OPEN. Only publication metadata changes
 follow the exact tested core; no repeated tests/builds/input/install/restarts.
 BASE/PUBLICATION.json, METADATA-PUSH.json, ISSUE46-REPLY.json.
+
+### TD-156 source closure checkpoint — 2026-10-18T02:28:18+00:00
+
+Remote focused IME closure is PASS: **834/834**, receipt
+`/home/ubu/.cache/lay/development/run-aozwx8jf/RESULT.json`, remote
+`run-lfWZP1`. The actual first Atomic V1 Backspace handover regression and the
+unchanged ordinary-stack isolated native-transfer test both pass. No protocol,
+stack limit, safety gate or delivery authority was relaxed.
+
+The preceding `run-rg14z0xt` / `run-ftkZO2` was 809 PASS / 25 FAIL. The failures
+were grouped presentation contracts and historical document-preedit fixtures.
+Current legacy publication fixtures now assert auxiliary updates and exact
+hide/Space/Tab effects; historical delayed-document controls replay an explicit
+document-preedit publication through the existing output and witness entrypoints.
+They no longer pretend that a new auxiliary hint is document composition.
+Current deferred publication and stale-release tests check auxiliary effects as
+well as preedit; ownership, refusal and learning assertions remain.
+
+Canonical manifest refresh `tab-manifest-ds_n3fce` / `tab-manifest-meIIjJ`: PASS,
+3245 discovered; the focused closure selects 834. Independent production review
+remains the completed two passes (7/10 then 8/10); no third review was added.
+Full source gate, changed-byte native acceptance, visible panel, latency and
+Plasma remain pending. No local installation/restart and no runtime authority
+change occurred. The historical 349 PASS / 50 FAIL / 33 BLOCKED native matrix
+remains the latest complete receipt.
+
+### TD-156 complete test execution, stale inventory binding — 2026-10-18T02:38:48.108823+00:00
+
+Canonical full run `run-0st554ds` / remote `run-y5ihP7` returned **FAIL**,
+not a release proof. Anchored per-target execution records show 33 selected
+targets, 3219 tests and zero test failures. Final aggregation refused the stale
+`known_failures.json.manifest_sha256` after the regression inventory refresh.
+Rebind that hash only; keep zero allowed failures, the historical observation
+and every runner check. No runtime source change or rerouted delivery is made.
+Refresh the graph and rerun the canonical full gate before the private build.
+Native changed bytes and KDE remain NOT_TESTED.
+
+### TD-156 complete browser candidate — 2026-10-18T03:30:51Z
+
+Both original changed-byte native matrices are complete: Firefox 176/20/20,
+Chrome 178/25/13 (PASS/FAIL/BLOCKED), total 354/45/33 of 432. No missing cells;
+both exact GUI scopes/seats closed, no held keys, VT1 restored. Identity delta
+against the immutable local v1.0.89 receipts, successful timing coverage and
+all residual first transitions are recorded in the owning stability document
+under “TD-156 complete browser candidate and KDE preparation”. Supplementary
+Chrome actual-panel/Tab observation is 8 PASS / 2 focus-caret FAIL, separate
+from the original matrix. No passing source test or engine-only output is
+claimed as client acceptance. Remote Plasma packages are installing under the
+canonical resource guard; its native gate is pending. No local install/restart,
+new production edit or authority change in this checkpoint.
+
+### TD-156 source closure — 2026-10-18T02:49:43Z
+
+`run-zri9cql9` / remote `run-y0fkQZ`: **PASS, 3219 selected**, zero allowed
+failures. Only the stale inventory hash was rebound; no additional runtime edit.
+Private source-bound build is now running. Exact archive/receipt and the pending
+native/Plasma gates are recorded in the owning Firefox stability document under
+“TD-156 full source closure”. Historical native matrix remains 349/50/33.
+
+### TD-156 Plasma zero-key startup checkpoint — 2026-10-18T03:51:26Z
+
+Minimal installed Plasma starts on real VKMS DRM/libinput. Old host IBus1.5.26
+causes candidate zbus5.15 InvalidName panic before input; complete stack/signal
+trace and exact owned-scope closure are retained. The owning stability document
+records temporary setup authorization removal, package versions, and a separate
+pinned IBus1.5.34-rc2 coverage plan. No production edit or native PASS is inferred.
+
+### 2026-10-18T04:05:03Z — TD-156 sequential Plasma native proof
+
+Matching host-built private IBus 1.5.34-rc2 build/relocations PASS; the mixed-version client diagnostic and concurrent-client 512-task-cap attempt remain unaccepted and preserved. One actual client group at a time in genuine Plasma/Wayland now runs under the same ceiling. GTK ordinary-input preflight precedes its cells. Native KDE/menu NOT_TESTED pending receipts; original full browser matrix remains 354P/45F/33B and source3219PASS. No candidate bytes, model, delivery route or local runtime changed. Full evidence/limits in the owning Firefox stability document.
+
+
+### 2026-10-18T04:14:51Z — TD-156 KDE GTK and wire diagnosis
+
+Ordinary GTK input PASS after correcting private IBUS_USE_PORTAL presence and
+restoring original private Plasma setup. GTK32 raw8PASS/22FAIL/2BLOCKED;
+6 Space median15.51ms/p9516.95ms. Confirmed product refusal is GNOME-only
+exact-focus lease, before replay; no guard/route weakened. Remaining KDE
+clients running. See owning firefox-input-stability entry at this timestamp
+for raw receipts, rejected hypotheses and observation limits. Original full
+browser354PASS/45FAIL/33BLOCKED unchanged, candidate bytes unchanged.
+
+### 2026-10-18T04:32:35Z — TD-156 KDE partial native milestone
+
+Complete genuine Plasma grids: GTK 8P/22F/2B of32, Qt12P/33F/3B of48,
+Chrome21P/132F/7B of160. KWrite accessibility setup and Konsole focus setup
+do not certify their functional cells. Production tray registration observed;
+visible menu labels BLOCKED. Shared confirmed product refusal is exact focus
+lease being GNOME-only, not a delivery-route failure. Retain 45 Chrome empty
+prerequisite failures and preedit/caret gaps as raw evidence. Successful Space
+medians15.29–15.90ms exclude missing operations. Firefox exit-capture diagnostic
+running; no crash reason claimed. Completed scopes closed with receipts. Owning
+stability document records exact paths, cleanup, limitations and next gate.
+Original browser354P/45F/33B and source3219PASS unchanged; no local installation.
+
+
+### 2026-10-18T04:40:53Z — TD-156 KDE baseline completed; browser repair remains open
+
+Unchanged candidate: KDE-native grid69P312F19B32NT/432, Firefox completed
+28P125F7B/160. No repeated unexpected exit in the final diagnostic; first exit
+cause remains unknown. KWrite/Konsole functional coverage untested, actual tray
+labels BLOCKED. Ninety browser cells failed empty-newline prerequisites before
+the intended operation. Confirmed KDE Double Shift refusal is the GNOME-only
+exact-focus lease; no guard bypass. Final RESULT/CLOSED and local FINAL-FETCH
+are at `browser-final-fixes-20261018/kde-native/`. Empty owned scope, no held
+keys, VT1 restored, finite seat stopped at04:37:20UTC. Owning architecture entry
+at the same timestamp records scope and successful-only Space timing. Original
+browser354P45F33B, source3219PASS unchanged; no local install, source-byte or
+route/authority change. Continue the original browser first-transition work.
+
+
+### 2026-10-18T05:07:00Z — editor follow-up and Search observation evidence
+
+KDE KWrite/Konsole now have complete 16-cell native receipts: 3P11F2B and
+3P10F3B. Their original setup failures remain immutable. Cumulative same-byte
+KDE432 is 75PASS/333FAIL/24BLOCKED/0NOT_TESTED, not one run or KDE acceptance.
+The editor first manual refusal is IME context_authority, earlier than the
+GNOME-only exact-window lease observed in GTK. Clean Space timing n2 each:
+KWrite median16.01/p9517.80ms; Konsole14.44/14.64ms. No correction/DS speed or
+terminal visual-preedit acceptance. The finite scope/seat are closed, VT1 and
+key cleanup verified; local runtime untouched.
+
+Six native Chrome Search probes with a read-only document mirror support stale
+AT-SPI text in two after-Backspace failures, including the no-Double-Shift
+control. Two other mirror controls have an early-frame sampling race; this is
+diagnostic evidence only, not a new PASS matrix or permission to alter delivery.
+Exact receipts, hashes, setup failures and next gates are in the owning Firefox
+stability entry at this timestamp. Local KDE evidence:
+`browser-final-fixes-20261018/kde-editors/evidence/` and `COMBINED.json`;
+Search: `browser-final-fixes-20261018/search-document/`. Original full browser
+354P45F33B and source3219PASS unchanged. Main task remains IN PROGRESS.
+
+### 2026-10-18T05:31:15Z — TD-156 focus and rich seed first-transition proof
+
+Focus-return End diagnostic: six native FAIL remain at context_authority after
+correct letter/Backspace targets. Rich seed helper: 11 guarded unit PASS; one
+nine-cell supplemental native series each gives Firefox6P3F0B and Chrome9P0F0B.
+Six previously blocked Firefox prefix/selection operations are now observed PASS
+in this separate series; three moved-boundary failures reach the core Apply but
+lose the ASCII-only physical pair scope, then correctly fail adapter verification.
+Initial NBSP parsing and post-commit separator canonicalization must both be
+proved before a production patch. No normalization/authority/delivery bypass.
+Owning architecture entry contains exact receipts, hashes, closure, timings and
+next options. Original full354P45F33B and core3219PASS retained; no local install.
+
+### 2026-10-18T05:49:38Z — TD-156 bounded raw pair presentation
+
+Two ASCII-only adapter parsers lose an already selected NBSP BoundaryShift.
+The existing core preserves the raw separator; do not normalize or reseal that
+initial decision. The existing pending client commit now validates the entire
+observed snapshot with ASCII/NBSP allowed only at the two already owned Space
+positions, retains every authority/deadline check and stores the actual raw
+source for exact recorded inverse. Same delivery routes and decision owner.
+
+Corrected-fixture controlled RED overlays only its test module on 1717 unchanged
+preceding production archive members. First GREEN and focused 22 owner + five
+sealed gate tests pass, including 14 contradictory-state rejections. Initial RED
+was a fixture failure and is not counted as root evidence. Exact hashes, receipts
+and scope are in the architecture owner's 05:49:01Z entry. Full new source and
+changed-byte native proof remain pending; original354P45F33B retained, no install.
+
+### 2026-10-18T06:02:41Z — NBSP full closure: protected source chain refusal
+
+`run-mcm5gdsg/RESULT.json` FAIL, remote `run-PNDFPe`, 509.5s: one reported
+TD113 source protection failure at the old gate.rs successor hash. Preserve that
+valid negative result. Add the explicit October18 predecessor/successor binding
+and exact pinned-chain assertions; no guard bypass, old receipt edit, production
+change, failure waiver or ranking change. Focused27PASS remains unchanged; new
+seven-contract/full source closure, build and native acceptance are pending.
+
+2026-10-18T06:03:41Z: protected-chain follow-up7/7PASS, `run-6tdb482o/RESULT.json`,
+12.7s. Same existing test identities, predecessor decisions immutable, actual
+successor hash/mode still enforced. Full source/native acceptance pending.
+
+### 2026-10-18T06:15:09Z — NBSP full correctness/package closure PASS
+
+`run-kf2jyn8d/RESULT.json`, remote `run-dUQNEJ`, archive
+`8688ea790ec8d4e3a545c133ed0210011cf792873ee03f084c1449a1b6343cf2`:
+3222 selected tests PASS, 3186 correctness + 36 package; zero reported failures.
+Worker493.16s, overall501.6s. Formatting and runner self-test also pass. This is
+the first full PASS for the additional bounded NBSP source; old failed receipt
+and protected artifact chain remain intact. Build and native proof are next;
+preceding native354P45F33B is unchanged. No local installation or authority bypass.
+
+### 2026-10-18T06:18:32Z — NBSP build preflight rejects test-decision schema
+
+`build-nbsp/BUILD-RUN.log`: actual changed-file canon rejects the test-only rich
+seed ADR's missing required fields before release compilation. Retain the failed
+stage; repair only its unpinned metadata. Preserve the full3222PASS receipt and
+require exact executable/test/package parity before a separate build stage.
+No Rust change or repeated full suite; native behavior remains untested.
+
+
+### 2026-10-18T06:23:30Z — NBSP private release built, native phase started
+
+The second, distinct private build passed the strict actual changed/added-file
+architecture inventory, 15 canon tests, the 50-pass audit, architecture/lint
+checks and guarded offline release compilation. The preceding build's ADR
+schema refusal remains preserved; its only repair was test-only ADR metadata.
+No Rust bytes changed after the 3222-test source closure. The new frozen source
+archive is `f4e9ac774848485d3856443cfb49656cecdda870a0fd86b72dd63d0c72e10648`.
+Exact build receipts: local `browser-final-fixes-20261018/build-nbsp-b/BUILD.json`,
+`RESULT.json`, `CHECK.log` and `FINAL-AUDIT.json`; remote
+`/home/e/projects/lay-development-runner/td156-nbsp-build-20261018-b/`.
+Build status is BUILT_VERIFIED_SOURCE_NATIVE_PENDING, version 1.0.90,
+227.359 seconds including preflight; source HEAD c8b244ef609ad9c5610b3e441311342abf17e9c5
+plus the frozen dirty snapshot. Exact executable SHA-256:
+
+- lay: `f8aec338504dadd72bd06fa78f4b3e8bd1863376897fce95dd3081e2d2e0c3c9`.
+- daemon: `e6792f7cb165735e5052e48865490c96110973619c5bc5656d32e7c99de68cd7`.
+- IME: `959d828c2d0557281ce8a30ee31689501538bb2e89f9506f5ecfa05b9ea05d35`.
+
+Before staging, all old pinned native processes were dead, the owned cgroup
+was empty and VT1 was active. The private harness preserved its old binaries,
+extension, manifest, jobs, results and learning/usage data under
+`TD156-nbsp-candidate-20261018`, restored the frozen isolated test data and
+original double-lshift/undo-disabled configuration, then bound the three new
+executables and matching extension. Local staging receipt:
+`browser-final-fixes-20261018/nbsp-native/STAGED.json`.
+Only this stopped private harness changed; no local installation or service
+restart. Delivery routes, runtime authority and model bytes are unchanged.
+
+The finite nine-cell Firefox rich-editor native phase has now started. Its
+result, new-byte full browser matrices and speed measurements are PENDING.
+The complete preceding-byte matrix remains Firefox 176P20F20B / Chrome
+178P25F13B, total354P45F33B of432. KDE remains unaccepted with its separately
+recorded cumulative75P333F24B of432; do not combine these denominators.
+
+
+### 2026-10-18T06:25:54Z — NBSP changed-byte rich-editor native 18/18 PASS
+
+The two finite supplemental native phases completed against the new private
+IME `959d828c2d0557281ce8a30ee31689501538bb2e89f9506f5ecfa05b9ea05d35`:
+fields7/8/10, prefix + moved_boundary + selection, nine cells per browser.
+Firefox9PASS/0FAIL/0BLOCKED; Chrome9/0/0. Actor errors are empty. The unchanged
+key/target functions were pinned by SCOPE.json; only the previously documented
+bounded raw-rich seed observer admits the actual NBSP seed. No DOM setter,
+normalization of runtime text, changed expected word or output-route bypass.
+All three Firefox physical pair seeds are raw `должн\u00a0ыбыть`; final exact
+observed targets are `должны быть\u00a0`. The preceding-byte supplemental result
+was Firefox6P3F and Chrome9P, so the three reached Firefox pair failures now
+pass while all previously passing supplemental cells remain PASS.
+
+Exact primary receipts, also fetched and individually hash-verified:
+
+- Firefox `firefox-functional-mwmo_m9n/RESULT.json`, SHA
+  `c96063ee95d9f0122f9be359f33cbdee78d8573e72a101bc21a3147416cd6aa5`.
+  Local archive `nbsp-native/evidence/firefox/evidence.tar.gz`, SHA
+  `775866b66279e8c6d2c75185b8aa1a877e35e38f2e8062124544608705391e85`.
+- Chrome `chrome-functional-j3c2_zmp/RESULT.json`, SHA
+  `c8ba1779fe03d0fa595075a20e94206c565818cf300e8ae1a79e4c1b1b2fbcd7`.
+  Local archive `nbsp-native/evidence/chrome/evidence.tar.gz`, SHA
+  `ee6a42d197119a62fe8dbe3bf20880ca87f6495eaed17dae9b3fa80dc54e447e`.
+
+Each archive has19 verified files including full actor/IME trace, candidate
+binding, scope and CLOSED receipt. Both phases returned parent exit0 with no
+held/released keys; all pinned processes dead, owned cgroup empty, seat stopped,
+VT1 restored. Closed at06:24:01.100308Z and06:24:48.011451Z respectively.
+
+Action-only physical-write-return to exact AT-SPI target latency (ms):
+Firefox DoubleShift n12 median41.61/p9580.43, Space n3 median18.95/p9519.93,
+selection n3 median18.87/p9521.06. Chrome DoubleShift n12 median50.22/p9575.50,
+Space n3 median18.84/p9520.33, selection n3 median17.41/p9520.01. All attempted
+actions measured; n3 p95 is the sample maximum. This supplemental series is
+not a matched full-matrix speed claim or evidence for the unreached old failures.
+
+Full original-protocol216/browser remains pending. Its first controller setup
+was rejected before any session/input because `tdnbsp-full-firefox` violates
+the existing two-word seat-label allowlist. Preserved original phase
+`TD156-nbsp-native-20261018/full-firefox/FAILURE.json` records input_keys0,
+empty scope, dead old pinned processes and VT1. No runtime defect inferred.
+A distinct `run-full-b.py` changes only phase directory (`full-b-`) and valid
+seat label (`tdnbspfull-`), not actors/key actions/targets. Controller SHA
+`278747675701756462e475decf052d08003a8f25383aa11d26e1a613af43843b`;
+local FULL-CONTROLLER-CORRECTION.json records the old/new binding. Its fresh
+Firefox full phase has started once; no product retry-until-green.
+
+Verdict: bounded NBSP pair mechanism has source3222PASS plus18/18 supplemental
+native acceptance. No full-matrix, focus, undo-precondition, Search-observer or
+KDE acceptance is inferred. Complete preceding matrix354P45F33B remains the
+status denominator until the new full closure. Runtime authority unchanged;
+no local installation, model change or delivery-route change.
+
+
+### 2026-10-18T06:32:35Z — controller isolation and Search causality plan
+
+Full-controller two pre-matrix setup refusals are preserved; distinct proof tags
+and a static chain audit precede the running full-c Firefox phase (40 baseline
+cells PASS so far). The owning Firefox stability entry at this timestamp records
+exact hashes, closure and the selected9/10 read-only Search event-barrier
+diagnostic, rejected alternatives, negative gates and limits. No Rust change.
+
+### 2026-10-18T06:55:43Z — complete NBSP-byte browser closure and diagnostic boundary
+
+The owner's06:39:28 source-audit entry,06:44:49 Firefox entry and06:54:10 Chrome
+entry retain the current3222-test source proof,18/18 supplemental rich-editor
+proof and complete original browser354PASS/46FAIL/32BLOCKED of432 (zero untested).
+Chrome is unchanged at178/25/13. Firefox176/21/19 includes a newly observed
+email short-word FAIL and a separately reached visibility precondition; neither
+is hidden by supplemental success. Six Search causal controls are BLOCKED at
+the trusted-keyup evidence barrier, not a native acceptance proof. Exact hashes,
+closures, fixed latency coverage and first-failure limits are owned by the
+Firefox stability document at these timestamps. The two-cell original Firefox
+email diagnostic is finite and separate. No Rust, model, route or local-runtime
+change follows; whole candidate acceptance remains FAIL and TD156 IN PROGRESS.
+
+### 2026-10-18T07:19:40Z — Search representation separated; first-refusal capture bounded
+
+The owner's07:01:49 entry closes a causally fresh six-cell Search supplement:
+native4PASS/2FAIL, raw document value/caret6PASS. Those two native failures show
+stale AT-SPI after the actual field completed deletion. They do not justify a
+production edit or relabel the original matrix. The owner's07:16:49 entry retains
+the two successful short controls (two-cell and30-cell24P4F2B), the zero-input
+nested-lease setup refusal and exact closure, hashes and constraints. The original
+short FAIL remains unexplained. One full-prefix original Firefox216 observation
+is now running with nine byte-identical native jobs and a passive capture hook in
+the existing bounded controller wait; four observer source controls PASS, zero
+input scope audit PASS. No extra worker, changed key/target/deadline or production
+Rust change. Source3222PASS and original complete354P46F32B/432 remain the status
+boundaries pending native closure. TD156 IN PROGRESS; local runtime untouched.
+
+### 2026-10-18T07:34:56Z — finite full-prefix observation closed
+
+The unchanged Firefox216 replay closes176P21F19B; aggregate354P46F32B/432
+with Chrome remains unchanged. The numeric field4/short now passes while
+field1/prefix fails reverse Double Shift after a successful first transformation
+and letter/Backspace. No short capture was triggered; capped final traces do
+not preserve the prefix failure. This is neither a fix nor new causal evidence.
+Archive `ddc6fd32a76fa7f6e12b0beeb55dd33d5a9f2207cbe5785ffbdbb1452af9ef2b`,
+38verified files in `full-prefix-capture/evidence/firefox`; CLOSED07:31:45Z,
+scope empty, pins gone, VT1 restored. No more identical repeat without a causal
+change. The independent first-pass NBSP static review scores9/10, no blocker;
+raw physical inverse remains an explicit native gap. No runtime code change.
+
+### 2026-10-18T07:54:28Z — distinguish native deletion from local preedit cancellation
+
+The retained daemon excerpt now confirms both gestures in the intermittent
+Firefox prefix cell: handled, then blocked by the focused IME after letter/BS.
+Its IME reducer trace remains incomplete. Two invalid closed-preedit fixture
+extensions are retained as exploratory failures. A dedicated active-native source
+regression passes8 receipt-order controls:4 exact handoffs with an actual final
+erasure receipt,4 refusals without it. It preserves CommitText plus client
+Backspace and cannot authorize an unobserved return. No production edit follows.
+The source receipt is `active-probe/green-6zamm44h/RESULT.json` under the TD156
+cache; final formatting/full closure pending. Current visible-Tab supplements
+close20BLOCKED before any Tab, due the bounded GNOME tree/application evidence
+provider. Both exact owned seats close cleanly. Six separate raw-pair native
+inverse cells are prepared for review. Original354P46F32B/432 and preceding-byte
+KDE75P333F24B remain distinct; TD156 IN PROGRESS, local runtime untouched.
+
+
+### 2026-10-18T08:02:32Z — raw inverse evidence is not yet qualified acceptance
+
+The finite six-cell raw inverse supplement closes0P6F0B with exact cleanup.
+Both first corrections pass; Chrome's immediate inverse passes, but its letter
+canonicalizes NBSP. Firefox restores the word surfaces with a different internal
+Space presentation. The pre-Space seed cannot establish the actual post-Space
+source of the sealed inverse. The first inverse records negative learning in
+both isolated phases; later fields stop before correction. Preserve all raw
+failures and do not infer six new product bugs or change runtime/learning to
+satisfy this oracle. The owning architecture entry at this timestamp retains
+exact hashes, timings, source review10/10 and evidence limits. Source-only active
+word regression formatting is complete; final source closure remains pending.
+Original354P46F32B/432 and preceding KDE75P333F24B are unchanged; TD156 IN PROGRESS.
+
+### TD-156 — 2026-10-18T08:24:09Z: Qt connection diagnostic and metadata closure
+
+One current-byte KWrite physical `п` reaches stock Qt IBus and Lay: two accepted
+press/release serials33/36; actual empty field -> `п`, caret1. Old KDE zero-key
+trace is not a universal Qt-disconnection proof. No causal runtime repair or
+functional acceptance follows. Actor succeeds; overall run ABORTS on launcher
+descendant-cleanup refusal. Independent CLOSED verifies empty scope, pinned
+processes gone, no held keys, VT1 and stopped owned seat. Receipt39files:
+`browser-final-fixes-20261018/kde-link/evidence/`, archive
+`e3813d3c09034910bb429de2396d6b7024f06d37bd65d172e7151f5181540c5f`.
+Two static review passes6/10,8/10; final interruption finding fixed, no third
+score claimed. Production Rust, runtime authority and delivery unchanged.
+
+Full source run-r4_246uk executes3223 selected tests with zero actual target
+failures, then FAILS stale known-failure/manifest binding. Corrected manifest
+hash only; zero failures permitted, no guard weakened. Clean closure pending.
+Original browsers354P46F32B/432; old KDE75P333F24B/432 remains separate.
+See the architecture owner entry 2026-10-18T08:24:09Z for exact proof boundaries.
+
+### TD-156 — 2026-10-18T08:36:04Z: clean source closure; bounded prefix diagnosis
+
+Full development gate now PASS3223, zero actual test failures after the
+known-failure manifest hash correction. Receipt run-90h0cm7a/RESULT.json; archive
+ea727cffbf60a42c06599f5d9964da05d6870a2d1d6bf99a7057a304e872f315.
+No runtime Rust change or installation. Next first-transition evidence is one
+unchanged original Firefox field1 prefix round trip; the prior trace capped
+before inverse refusal. New diagnostic is prepared, not yet executed; first
+static review6/10, fixes pending final review. Never bypass missing erasure
+authority. Source PASS does not reclassify original354P46F32B/432 or KDE
+75P333F24B/432. Owning architecture entry at this timestamp retains the limits.
+
+### TD-156 — 2026-10-18T08:53:23Z: prefix controls; complete-line log repair
+
+One unchanged fresh original prefix control passes2/2 Double Shifts through
+active composition; it does not reproduce the original refusal. Archive
+1078c251aea93efcdfc74120b0f1fba01bdf91d88d8c9d82070d4e162303b3ab.
+A distinct unchanged first-five-plan predecessor comparison records five raw
+actor PASS but orchestration ABORTS on its fragmented first capped trace line.
+Archive f72dc1943fcd25fd4d9e0ec34aa49379f8fd0c1c70f0bc7add3e095635c12be7;
+41 raw checkpoints retained, independent CLOSED/VT1 verified, no rerun to seek PASS.
+Both are supplements; asynchronous log delivery completeness remains UNKNOWN.
+
+First diagnostic defect reproduced in source: the debug-log byte cap selected
+an earlier newline then hard-sliced its first JSON record. Fixed by keeping the
+newest whole records within the same500KiB cap; oversized record dropped whole,
+exact fits and UTF-8 retained. Options5/10 collector tolerance,3/10 larger cap,
+9/10 whole-line compaction selected. Remote RED0PASS/3FAIL, GREEN3/3; isolated
+read-only review10/10, one pass. Receipts under browser-final-fixes-20261018/
+log-compaction/{red-4826a6ya,green-mau5ulk_,format-lulrdapm}/. This repair does not
+identify or fix the intermittent Firefox refusal. The previous full3223-test
+receipt certifies preceding bytes only. No new candidate or installed runtime.
+
+KDE production code has layout switching but rejects exact focused-window
+identity outside GNOME. A production KDE provider needs its own contract stage;
+never replace it with the observer or remove the identity guard. This source gap
+does not classify all333 KDE failures. Original354P46F32B/432 and separate KDE
+75P333F24B/432 unchanged. Detailed boundaries in the architecture owner08:53:23Z.
+
+### TD-156 — 2026-10-18T09:01:51Z: inventory and KDE capability task
+
+Remote manifest refresh tab-manifest-uctnv_cj/RESULT.json PASS:3188 correctness
++36 package =3224 selected,15 ignored,11 performance. Known-failure binding is
+updated with zero failures permitted. This is inventory, not a new full-suite
+PASS; retain preceding full3223 and later focused debug-log3/3 separately.
+Final graph/check-architecture evidence is read through the TD156 cache
+GRAPH-CLOSURE.json pointer; this planned step does not predict its verdict.
+
+KDE exact-replay layout handoff independently requires GNOME. A foreground
+provider alone cannot close it. Planned TD157 now includes stable backend-scoped
+identity admission and bounded recovery from the current unavailable latch;
+exact-replay handoff remains a separate capability. Isolated description review
+8/10 ->10/10, two passes; no implementation/native acceptance claimed.
+Latest original46 FAIL group20 Space preconditions +20 focus-return +1 prefix
++5 Chrome Search/Backspace observations; the last five are not established
+product defects while raw client text contradicts stale accessibility. Original
+354P46F32B/432 and separate KDE75P333F24B/432 retained. No runtime authority change.
+
+### 2026-10-18T09:24:15Z — TD156 observer-only published Tab supplement
+
+The first shared failure is the old accessibility traversal budget, not Tab
+delivery. Bounded visible bus/path traversal, no partial evidence and post-Tab
+BLOCKED classification pass source21/21; isolated review7->9 in two passes.
+Three later namespace/immutable-receipt setup refusals and exact independent
+closure are preserved; no diagnostic cell ran in them and the final metadata
+corrections are later than the review snapshot. Native supplement completes
+Firefox10P and Chrome7P3F, all20 Tab targets reached, three further probes FAIL.
+The original Tab plan also requires Double Shift and is not replaced. Exact
+receipts and qualified/action timing are in the architecture owner at 2026-10-18T09:24:15Z.
+Permanent byte-identical Python helper+seed controls21/21PASS remotely; this is
+not new runtime or Rust full-suite acceptance. Original354P46F32B/432 and older
+KDE75P333F24B/432 remain separate. No core authority, route, model or local
+runtime changed; TD156 remains open, KDE capability is planned TD157.
+
+### 2026-10-18T09:48:38Z — TD156 full source closure and lexical refusal boundary
+
+Current remote full development check PASS3224, zero failures, receipt
+`run-1ygbhlgc/RESULT.json`, source archive6e8c3e89196e. It covers the later
+debug-log regression; it is neither release nor physical acceptance.
+
+Space diagnosis review7/10 ->9/10, two passes, correctly requires consumer evidence. The
+ready-service read-only trace now retains72 suggestions and target `привет`;
+separate direct L1.1 restore ABSTAIN/outside_calibrated_basin (not a measurement
+of live composite original_l11_verdict), L3 not_applicable/no pairwise
+certificate, no exact positive state-specific L4 witness, Normal safety and no
+CLI lexical frame. Both resolutions keep the original. This does not establish
+the native prefetch's final outcome or an undo defect. No promotion, deadline
+change, model fit or delivery/authority edit is justified. Preceding mount,
+absent-service and warming diagnostics remain separate. Exact hashes, unchanged
+inputs, owned-service closure and limitations: architecture owner09:48:38Z,
+TD156 cache `core-authority-d/`. Original354P46F32B/432 and older
+KDE75P333F24B/432 remain unchanged; source PASS does not erase native failures.
+
+### 2026-10-18T10:05:25Z — TD156 native Space lease READY, producer remains SuggestOnly
+
+One fresh remote native Firefox normal field1 undo-plan prerequisite reproduces
+`превет ` instead of `привет `; undo is NOT REACHED. Matching generation11,
+tail_epoch16 and engine path show72 SuggestOnly candidates, no selected
+transition, terminal no_apply/rank and a READY lease after3277us within4ms.
+This resolves the old not_ready ambiguity for this cell: waiting longer cannot
+repair a result which already has no eligible correction. Internal3392us Space
+fallback time is not correction acceptance latency. Native candidate identities,
+actual composite L1.1 verdict and the other19 prerequisites remain unmeasured.
+Do not infer them from the separate CLI target or matching candidate counts.
+
+Exact pins,19 hash-verified fetched files,435 trace records and owned closure
+09:57:24.130792Z are recorded in the architecture owner10:05:25Z and TD156 cache
+`space-native-authority/`. Runtime implementation final independent review9/10,
+one pass, no new blocker; it does not grant native acceptance. Full source3224
+and original354P46F32B/432 remain distinct from older KDE75P333F24B/432. No
+model, gate, ownership, route, production install or release changed.
+
+### 2026-10-18T10:13:25Z — TD156 full published-Tab native supplement
+
+The new supplement reuses the original two-direction roundtrip after accepting
+the actual complete visible auxiliary hint. Native Firefox10P/0F/0B and
+Chrome9P/1F/0B of ten fields each; all20 Tab targets,39/40 Double Shift targets
+and38/40 decoder/Backspace probes complete. Chrome Search fails first Backspace
+return and never attempts its second direction. It is not a passed row or proven
+IME defect; prior raw-client/AT-SPI contradiction remains relevant. Both exact
+seat sessions close and are independently verified with zero keys at10:11:14Z.
+
+Reached-action Double Shift median/p95: Firefox117.829/134.797ms n20/20;
+Chrome105.440/131.041ms n19/20. Tab has n10/10 per browser. Clock, maximums,
+hashes,20-file archives per browser and limitations are in architecture
+owner10:13:25Z and `published-tab-roundtrip/SUMMARY.json`. Capped old native debug
+logs are causally unqualified; exact client receipts are separate. Diagnostic
+review9/10, one pass; terminal-receipt filtering corrected before native input,
+inherited finite-seat setup-cleanup gap preserved. Original fixed-literal cells,
+354P46F32B/432, older KDE75P333F24B/432 and source3224PASS stay separate. No
+runtime/authority/delivery/model change, release or local installation.
+
+
+### 2026-10-18T10:24:24Z — TD156 intended prefix window, diagnosis only
+
+Prior collector selects field4/short, so it cannot explain earlier field1/prefix.
+Prepared one remote96-cell original predecessor sequence; observer now captures
+only fresh [1,2]/row4 prefix FAIL. Runtime/actors/cadence unchanged. Four observer
+controls and context-free review before input; verified and independent closure
+after. No reproduction is not repair. Owner: firefox-input-stability-2026-10-05.md
+entry at2026-10-18T10:24:24Z; evidence TD156 cache prefix-window-capture/.
+
+### 2026-10-18T10:40:17Z — TD156 prefix history finished, no reproduced inverse refusal
+
+The single96-cell original predecessor sequence closes90P/4F/2B, no NOT_TESTED;
+120original cells were not selected. Normal/private/fullscreen and panel66/66P;
+functional fields1/2 close24P/4F/2B. The intended field1/prefix passes both DS
+(18.542802/18.447612ms) and both decoder/Backspace returns. This is NO REPRO,
+not repair. The old intermittent FAIL and full original354P46F32B/432 remain.
+No further native repeat or runtime edit. Collector controls5/5P, two read-only
+review passes7->9/10; selected/saved RESULT bytes are one snapshot.
+
+Thirty-one fetched files are hash-verified; archive69e42926463113da. Finally
+closure10:38:49.017535Z and independent exact-seat closure10:39:09.762746Z are
+clean. End trace512000bytes/2288JSON plus one retained fragmented line; no
+native failure capture, asynchronous completeness UNKNOWN. Four FAIL are the
+two Space prerequisites and two focus-return cases; two BLOCKED are old fixed
+literal Tab prerequisites. Full timings, identities, hashes and next ownership
+gates are in architecture owner10:40:17Z and cache prefix-window-capture/SUMMARY.json.
+KDE75P333F24B/432 and source3224PASS stay separate; no route/model/authority,
+local install, release or publication change. TD156 remains open.
+
+### 2026-10-18T10:57:35Z — KDE plan inventory; no runtime experiment
+
+Six SHA-verified native receipt inputs and432unique cell identities retain
+KDE75P333F24B/432. A read-only inventory separates333FAIL into90rich-clear,
+6seed/return prerequisites,186post-actor-Double-Shift target failures and51Space
+target failures. These are first failed actor steps, not verified runtime causal
+classes; target checks combine text/caret/selection/layout. No verdict changes.
+
+Architecture owner10:57:35Z contains the per-app breakdown and exact receipt
+scope. Cache`kde-plan-triage/TRIAGE.json`, SHA-256ee84c5365b20bf25, indexes every
+failed primary row. TD157 is the KDE plan entrypoint, referencing TD159 bounded
+prerequisites/causal evidence, TD157 foreground identity/lifecycle, TD158 exact
+layout activation/readback/restoration, then TD156 residuals. GNOME-only restore
+is independently required even after a provider exists. No second reducer,
+delivery route, ranker fit or weakened safety/verifier is proposed.
+
+No runtime source/binary/data, native input or authority change; no new source
+tests, installation, publication or universal latency claim. Original GNOME
+354P46F32B/432 and prior3224source PASS stay separate from KDE's older bytes.
+Descriptions received two context-free review passes,9/10 then10/10. The single
+P2 about an unnecessary global evidence-task dependency is resolved with
+boundary-specific gates; no remaining substantial P1/P2 or blockers. Review
+record: cache`kde-plan-triage/REVIEW.json`. Runtime and native acceptance remain
+unproved. TD156 IN PROGRESS, KDE capabilities PLANNED.
+
+### 2026-10-18T12:47:41Z — TD159 stage-observer controls; native attempt pending
+
+Five-case KDE witness prepared in cache`kde-witness/`, reusing the existing shared
+actor/seat. Remote guarded six helper/adapter controls PASS; twelve script syntax
+and SHA checks PASS. Key bodies, deadlines, semantic targets and verdicts stay
+fixed; stage marks are memory-buffered, raw traces retain fragment/completeness
+limits, and exact selected cell identities gate completion. Second harness
+review and one finite native attempt pending. No runtime edit, data fit, install,
+route/authority change or new native acceptance. KDE75P333F24B and original GNOME
+354P46F32B remain historical for their own bytes. Owner entry has full scope.
+
+### 2026-10-18T12:53:10Z — TD159 foreground failure qualified; provider starts
+
+Single five-case budget ABORTED after three GTK FAIL observations. Native Entry
+seed is committed; physical Double Shift reaches exact-tail delegation then
+fails the GNOME-only focused-window read. TD157 may proceed independently of
+remaining seed/browser prerequisites. TextView prefix fails before gesture;
+Entry Space restores text but retains RU mode. Firefox cleanup cannot create a
+thread; Chrome not started, resource cause unproved. Independent closure CLOSED
+with empty cgroup, VT1 and policy absent. No success latency sample. Full hashes,
+scope and owning evidence: architecture entry2026-10-18T12:53:10Z and cache
+`kde-witness/CAUSAL-WITNESS.json`. No runtime/source authority change or new grid;
+KDE75P333F24B and original GNOME354P46F32B unchanged.
+
+TD157 checkpoint2026-10-18T13:18:18Z: fresh authenticated KWin provider implemented
+under its preflight/decision. Daemon initial307 selected304P3F; repaired private
+bus fixture yields14/14 provider PASS in0.194s execution. One controlled removal
+of sender authentication produces the expected real-bus refusal-test RED and is
+restored by hash. Inventory refreshed; zero known failures remains strict, no new
+candidate PASS inferred from historical observation. Owning architecture entry
+above records exact receipts and pending full source/review/compositor gates.
+No native acceptance, delivery-route, model, installation or release change.
+### 2026-10-18T13:36:58Z — TD157 full affected source gate PASS
+
+Full development receipt `~/.cache/lay/development/run-sy49nis0/RESULT.json`:
+3238 selected, zero failures; format/self-test/all PASS. Remote commands504.800s,
+transport514.426s; source-only durations. Archive3010f5f94496483bb0b06860684183cf80a6da43ddc166289ba1c305c30368f8.
+Graph gate `tab-graph-k0gaykxb/RESULT.json` PASS after retaining private-file guard
+ownership. The architecture owner records scope and native gaps. Next: independent
+TD157 review, frozen build, one changed-candidate GTK witness. Historical grids
+unchanged: KDE75/333/24; GNOME354/46/32. No installation or release.
+
+
+### 2026-10-18T14:01:00Z — TD157 shared-provider contention repair
+
+Full affected source PASS3239/3239, no failures; `run-g0ss9and/RESULT.json`,
+archive433caec7f63aaf4f325939144bffe6024d16a3706d373fc30d1aa10b036db47d.
+Focused15PASS and controlled Busy-as-loss RED qualify the new regression.
+Details and limits: owning `firefox-input-stability-2026-10-05.md` TD157 entry.
+Final review, private build and changed-candidate native witness pending.
+KDE75/333/24 and GNOME354/46/32 are unchanged; no runtime promotion.
+
+### TD157/158 — 2026-10-18T14:59:37Z: exact KDE handoff source closure
+
+TD158 follows the qualified native GNOME-only layout-handoff refusal, not a
+ranking failure. Existing exact replay now has captured-backend KDE activation,
+fresh group/engine/actual-decoder readback and bounded same-focus restoration.
+Full source gate PASS3248 (`run-3b5ymuu_/RESULT.json`, archive
+`70db3455a142e5b189a4904a19f72cfd62da982ae90d180f22775158ad1b57eb`), final code review10/10, causal
+missing-decoder-readback RED with source restored. The earlier full FAIL was a
+stale zero-known-failure inventory binding; no semantic failure was waived.
+No ranking/training/model change, text delivery route migration, installation
+or publication. Native witness and complete matrices remain pending. See the
+architecture owner entry `2026-10-18T14:59:37Z` for proof boundaries.
+
+### TD158 — 2026-10-18T15:13:57Z: declaration repair source closure
+
+After the private build's strict visibility-lint refusal, four declaration
+visibilities were repaired without changing runtime statements. Strict lint
+and generated graph PASS; fresh complete source gate PASS3248/3248,
+`run-0z2k24yk/RESULT.json`, archive
+`4675521392446586c8c1c5c41fd1b4c895515417fe4a387471b5e887bfafb0a6`.
+No semantic/infrastructure failure was accepted. Private build B and native
+witness remain pending; no ranker, model, training, text route or runtime
+promotion changed. Historical complete native matrices remain unchanged.
+
+### TD159 — 2026-10-18T20:41:33Z: distinguish harness failures before further input
+
+Zero-input knid failed on an unsupported IBus PID method after schema setup;
+knie replaced it with actual GIO transport credentials and supported name calls.
+Source20/20 PASS; actual panel/registration passed, but setup engine activation
+was cancelled before input. Hypothesis: competing initial engine selectors.
+Do not rerun unchanged. Raw Firefox source-two76/76 controls passed across both
+browser packages; actual3x7 observations remain PARTIAL/UNQUALIFIED because
+clear_cache_single is absent. Text/tree topology survives; no LF trimming or
+semantic verdict change is justified. Chrome raw native remains NOT_TESTED.
+
+GNOME partial observation proves IC reuse across DOM fields, not persistent
+field binding; four rich-return rows expose a caret0 append-premise failure.
+No authority expansion is justified. Exact receipts, hashes and independent
+closure facts are in the architecture owner entry at20:41:33Z. Complete grids
+remain KDE175/233/24 and GNOME354/46/32 of432, NOT_TESTED0. The browser protocol
+now records zero-key API/setup preflight and first-shared-failure triage before
+full replay. Runtime, model, user install and publication unchanged this step.
+
+### TD159 — 2026-10-18T20:54:02Z: actual-API-first isolation
+
+Raw rich observer API preflight and76 source controls PASS. Firefox/Chrome each
+capture21/21 complete stable trees without issues; CAPTURED/UNQUALIFIED only,
+not behavioral PASS. Both finite sessions CLOSED/empty/VT1/no held keys/policy.
+Receipts: kde-rich-raw-capture-api-next/{firefox,chrome}/EVIDENCE.json. Next is
+a narrowly scoped physical-clear presentation predicate, never general LF or
+U+FFFC normalization. Separately knif controlled RED1/1 expected failure PASS,
+but normal source controls abort after26 tests on GI reference/type assertions;
+37-test suite incomplete and native NOT_TESTED. Preserve SOURCE-ABORT.json;
+distinguish fixture ownership from decode lifetime with a finite zero-key API
+probe before proceeding. No runtime/model/training/route/install/publication
+change. Original complete GNOME354/46/32 and KDE175/233/24 of432 retained.
+
+### 2026-10-18T20:58:52Z — TD159 GI ownership control before native replay
+
+Hypothesis: knif's source abort comes from floating synthetic-fixture ownership.
+Actual zero-key host/private IBus controls: inspect2 PASS; naive sink-pair2 FAIL
+at final owner collection, after successful decoding and container release.
+G_DEBUG=fatal-warnings converted the double-unref warning to exit -5. Reject
+sink-pair; next is a balanced-ownership API control, then the source suite.
+Receipt: kde-native-ibus-integration-ownership-probe-next/RESULT.json and4
+per-run JSONs; no bus/session/keys, no client or latency verdict. Original
+GNOME354/46/32 and KDE175/233/24 of432 retained. Runtime authority unchanged.
+
+### 2026-10-18T21:02:54Z — TD159 finite ownership control passes
+
+Different parse-owned fixture control:2 actual host/private processes,4 object
+cases PASS, empty stderr, normal exit and full GC. Stock GLib creates an equal
+independent nonfloating value before embedding; no manual reference operations
+or decoder change. Receipt: kde-native-ibus-integration-ownership-parse-next/
+RESULT.json plus2 per-provider receipts. Source fixture only is eligible to
+change;37 source controls and native remain pending. No bus/session/keys or IME
+latency claim. Original complete matrices and runtime authority unchanged.
+
+### 2026-10-18T21:09:09Z — TD159 two bounded source gates pass
+
+knig:37 source controls PASS under fatal GI warnings,22 pins,normal exit,
+0 failures/errors,0.258s. Four unchanged Chrome identities are admitted only
+to a separate finite native diagnostic, still pending. Receipt:
+kde-native-ibus-integration-engine-fixture-next/chrome/SOURCE-CONTROLS.json.
+Rich-clear:12/12 pure controls PASS,0 skips;24 excerpts independently matched
+the actual pinned raw trees. Receipt: kde-rich-clear-qualified-next/
+REMOTE-SOURCE-ONE.json. Prepare the native clear-only bundle separately, with
+original J setup and unchanged measured cases. Neither gate regrades original
+GNOME354/46/32 or KDE175/233/24, changes runtime authority or measures IME speed.
+
+### 2026-10-18T21:10:23Z — TD159 knig native separates setup from owner/replay failures
+
+Matching private IBus/schema/stock panel setup succeeds; original4-cell native
+diagnostic completes in21.118s,4 FAIL. Three cells reach Double Shift: two
+roundtrips are physically detected but blocked by focused IME owner; one Space
+cell rejects exact committed-tail capture. The fourth fails rich clear on
+LF/caret0 before any gesture. Reject the setup-change-alone remedy; analyze
+the captured first transitions rather than rerun unchanged. Receipt:
+kde-native-ibus-integration-engine-fixture-next/chrome/RUN.json and92 pinned
+artifacts in EVIDENCE.json/archive SHA
+fd39dccae919f294b9e235ee30ca9298dd96b0a0e92897b048374d6bbb833648.
+Independent CLOSED21:10:23Z: empty cgroup, pinned processes gone, no held keys,
+VT1, own seat stopped, temporary policy absent. No successful latency sample,
+runtime/source authority or route change. Original full matrices retained.
+
+### 2026-10-18T21:19:36Z — TD159 rich-clear package fails source contract before native
+
+Controlled RED: six expected structural-LF failures/browser. Actual-host zero-key
+API: PASS. Firefox source22:21 PASS,1 FAIL; version-dependent ast.dump defaults
+produce different hashes for identical abort() AST. Recreating the older format
+matches the exact remote hash. The initial unit-literal hypothesis was wrong;
+abort() has no unit literal. Retain source-one/RESULT.json in
+kde-rich-qualified-native-next. Chrome
+normal source controls and both native phases NOT RUN; no keys or clients.
+Correct only portable empty/default AST serialization, with mutation negatives.
+Original matrices, delivery routes and runtime authority remain unchanged.
+
+### 2026-10-18T21:21:52Z — TD159 safe capture rejection diagnostic candidate
+
+Retained trace separates two context_authority roundtrip rejections from one
+exact-tail capture rejection whose original reason was redacted. The later
+actor readout cannot identify the capture-time cause. Applied the minimal
+rejection-only source candidate from kde-ime-tail-capture-diagnostic-next:
+static reason/source kind/permission/presence flags from the existing reply;
+no text, paths, extra RPC or wait. Shared validators, guards and routes unchanged.
+Source/native checks and a new private binary are NOT RUN. Existing complete
+native counts and installed runtime retained; see owning architecture entry.
+
+### 2026-10-18T21:27:27Z — TD159 qualified-clear finite native subset
+
+Source-two portable AST contract and actual-host API preflight:22 PASS/browser,
+zero skips. Original fields7/8/10, roundtrip then short: Firefox5 PASS/1 FAIL,
+Chrome0 PASS/6 FAIL. Clears qualify5/6 and6/6 respectively. Firefox first field10
+has empty text/caret0 but missing required attributes; guard rejects before
+gesture. Chrome reaches first Double Shift and leaves text unchanged. Keep
+setup failures distinct from product behavior.60 artifacts/browser SHA-verified
+in kde-rich-qualified-native-source-two; independent closures21:24:47Z/21:27:27Z
+prove empty cgroups, pinned processes gone, no held keys, VT1, owned seats
+stopped and absent policies. No original full-matrix regrade or route change.
+
+### 2026-10-18T21:29:31Z — TD159 formatted capture diagnostic, architecture PASS
+
+Fresh static review9/10, no blockers. Formatted ime_bridge SHA
+8eae0978dde2e3a4e1c5d2e4ea6b79812cdd409252549524c21b10ed6b2f75c7;
+graph/source-binding/canonical checks PASS. Only this Rust file differs among
+751 frozen-C Rust/Cargo/build files. Focused15 Rust tests/private daemon build
+NOT RUN; old full source proof is not transferred to changed bytes. No
+additional RPC/wait, text retention, owner or delivery route change.
+
+### 2026-10-18T21:37:14Z — TD159 capture diagnostic source15 PASS/private build
+
+Actual13 delegated-tail tests PASS; the first runner incorrectly expected15
+from that one module and stopped before build. Preserve its failed receipt.
+Continuation runs only the two omitted existing RPC tests; source inventory
+union15 PASS/zero FAIL/ignored. Private daemon release build PASS, SHA-256
+8a020332f85dc063ee5b7ab193ff0ef5b2d2d3f939bb125536cb6dff5a35eae7.
+Verified receipt/logs: kde-ime-tail-capture-diagnostic-build-next/executed-b/;
+B-RESULT SHA809525db09693d00c275789be023c56dab941d06999e0eb8900fe73c4e61bd98.
+Shared target7135436800/12884901888 bytes. Native NOT RUN; no installation,
+publication, delivery-route or authority change. Full native matrices retained.
+
+### 2026-10-18T21:47:13Z — TD159 four original Chrome cells, capture reason known
+
+Actual-host source51 PASS/zero errors/skips and one expected schema RED.
+Diagnostic-only daemon B, unchanged C IME/CLI/models and knig IBus/panel setup.
+Native four-cell experiment22.761s wall time,4 FAIL: two roundtrip authority
+refusals; two post-Space capture rejections explicitly source_unknown,
+permission denied, engine present, field receipt absent. Last plain-input trace
+has managed owned7 then external SSI6, accepted same-owner Shift callbacks,
+then delegation. A later successful raw tail read does not certify the refused
+exact handoff. Do not weaken its validation or infer complete producer delivery.
+
+Local evidence: kde-native-ibus-integration-daemon-diagnostic-next/chrome/;
+native RESULT SHA8dbbd2bd45f65a79743fdfac170102c504f031464b93e40fdf942b0a272dc977.
+Independent CLOSED21:47:13Z;94 artifacts SHA/size verified, archive SHA
+36da7b2cf90b6be5c6018e19d493bb96c48a92b8282e9ce15817cd104ab80d7a.
+An export-only directory selection error was corrected without repeating
+native input. GNOME354/46/32 and KDE175/233/24 of432 remain unchanged;
+no installation/publication, runtime authority or delivery route change.
+
+### 2026-10-18T22:04:40Z — kwdh Chrome/KDE wire diagnostic
+
+Corrected package:51 actual-host source PASS, zero-key GI PASS, one expected
+controlled RED/zero errors, static review9/10. Earlier kwdg source50/1 is
+retained and never ran native input. Same fields7/1 × roundtrip/space_burst5:
+4 native FAIL in22.900s orchestration wall time, no successful latency samples.
+RESULT SHAe426e98f7ab06329767023be67257036a585e16a28a25ccd2f851848c8a18519.
+Independent CLOSED22:04:40Z;95 export hashes/sizes verify; archive SHA
+2f98e42b3bd520b81bca92eabf0f52cc6d110c85195149859ca2077e66c4df6a.
+
+Chrome object33 wire proves stale SSI at outgoing boundary: gestures retain
+commit/done19/18,28/27,52/51,60/59. Final post-Space SSI6 versus actual7;
+no done60 during gesture. Renderer-internal pending contents not proved.
+Sibling WIRE-ANALYSIS-source-one.json SHA
+5efbc35dd4fd3c4ccff36634824d845a330b814f4dba50c5cc26437ace6386b5.
+Primary upstream KDE a74c436 provides pending/current preedit-preserving acks,
+absent5.25.0/present5.25.1. Backport build/native comparison NOT RUN. Detailed
+receipt/source pins and proof boundary are in the owning architecture entry
+at the same timestamp. No core/model/Lay route/authority/install change.
+Full GNOME354/46/32 and KDE175/233/24 of432 unchanged.
+
+### 2026-10-18T22:24:28Z — upstream KDE protocol RED/GREEN established
+
+Private upstream a74c436 backport: actual loaded stock library reproduces
+testEvents missing acknowledgement (2 PASS/1 FAIL); candidate29 PASS/0 FAIL/
+0 SKIP. All2379 exports retained, installed library SHA unchanged. Exact
+receipt SHA b37d44e9c353eb0e51ad834dca475bb1f0f53851c2d297a30d4089020e3c0a2b;
+local kde-upstream-done-backport-source-one/REMOTE-PROTOCOL-RESULT-source-four.json.
+Earlier socket-length failure and event-loop timeout remain recorded; final
+test uses a short private socket and blocking signal waits. Test adapter
+preserves active preedit and forbids pending-state resurrection. Production
+CPP matches pinned5.25.1; no extra production flush or client input.
+
+Next frozen private native source-two:51 host source PASS, zero-key GI PASS,
+one expected schema RED; static review9/10/no blockers. Manifest
+85013e811ecf3b4df7093d45b0b587dfb315d812489ecb6219bb592d546ba7e6.
+Private dependency bind and exact KWin maps/root/host identity are required
+before the same four original Chrome cells. Native NOT_TESTED; detailed
+provenance, failed attempts and proof boundaries are in the owning entry.
+Full GNOME354/46/32 and KDE175/233/24 of432 unchanged; no install, publish,
+Lay delivery-route, model or runtime-authority change.
+
+### 2026-10-18T22:30:12Z — kbpa four Chrome failures become native PASS
+
+Same original Chrome fields7/1 × roundtrip/space_burst5:4 PASS/0 FAIL after
+the private upstream KDE dependency fix, compared with kwdh4 FAIL.14 successful
+Double Shift samples: p50 172.759ms, p95/max178.456ms. No changed Lay/IME/model
+bytes, keys, cadence, targets, deadlines, runtime authority or delivery route.
+Before input, exact KWin process/maps and /proc/PID/root identify the bound
+candidate dependency; host library is stock. Retained wire commit/last-done
+serials agree at both ends of every gesture (14/14), versus stale pairs before.
+
+RESULT SHA ae0d977155b55db1e92012a53c074a45f9f73c5cf18ed825d6e197dc51bac08a.
+Independent CLOSED22:30:12Z;96 files SHA/size verified; archive SHA
+5b434264834dd9ffa8939165844bb3c8f0e9112f66020c34a64edac72d7a7667.
+Cache kde-private-upstream-backport-native-source-two/chrome/EVIDENCE.json;
+wire analysis SHA7c3166d580a9a1ec6d2979879cfe29d4e6e5c990d3e7a95c8d8ade77b1876efa.
+Next restore original J full selector in the same qualified harness. Complete
+GNOME354/46/32 and KDE175/233/24 of432 unchanged. No install or publication.
+
+### 2026-10-18T22:42:55Z — frozen original KDE432 native expansion started
+
+Same upstream dependency and Lay/data pins as kbpa, original J432 identities
+and case bodies restored;6x51 source PASS,6 expected RED,6 zero-key GI PASS.
+Outer orchestration11 offline controls PASS and review9/10. Review fixed
+timeout cleanup/export and missing raw snapshots before native input. Archives
+stream their bytes; every referenced2MiB-bounded snapshot is hash/size checked.
+Exact phase/unit/cgroup/CLOSED-SHA independent closure is required before the
+next app; only all432 identities can replace the full result.
+
+Cache kde-upstream-full-matrix-source-one; PLAN SHA
+65ad5f5f2dfa688bfaf824ace0723bf0dbe45efe2b765bfc56e63f07ff501300;
+ORCHESTRATION-PINS SHA
+a7d6a6cf90d5d010d31f580bffaa443c6e0718b629cbb94a4e2758539bfe3993.
+kbpa missing16 raw snapshots recovered separately, no repeated native input;
+supplement archive SHA
+a50ee97d00b20d16affe6928af1923eeb4141d89352e2c76b77af5d34a21511b.
+Details and proof limits are in the owning architecture entry at this timestamp.
+Chrome/kbpb RUNNING; no new complete matrix. GNOME354/46/32 and KDE175/233/24
+of432 unchanged, NOT_TESTED0; no install/publish/model/Lay route/authority change.
+
+### 2026-10-18T22:55:31Z — KDE Chrome160 complete, full expansion interrupted
+
+Original frozen Chrome160:130 PASS/30 FAIL/0 BLOCKED, all21 former PASS retained.
+FAIL families prefix10/selection10/focus_return10. Successful measured Double
+Shift180 samples p50 167.812ms/p95 178.287ms; Space50 p50 29.068ms/p95 31.564ms.
+Private IBus prerequisites and upstream dependency backport are included in
+the comparison; this is not isolated Lay-code or installed-runtime acceptance.
+RESULT SHA454d9c46392466724e2461e88efe443abc78427be24902abe33a744f5049db44.
+
+Firefox stopped after two finished FAIL rows: first rich clear unqualified,
+then field10/short exact-tail replay refused between deletion and insertion.
+KWin UUID differs; AT-SPI deactivation and IME Reset/FocusOut/new FocusIn are
+recorded. Cause and actual panel involvement remain UNKNOWN. Not Responding
+caption alone is not a hang proof. No third behavioral cell or later app phase
+completed. Frozen success collector remains failed; separate101-file aborted
+forensic export SHA
+bb090f96a2e9b14bc0466016afb68a708e381cb2941f423c92b42072cd61cc85
+independently confirms empty cgroup/VT1/no held keys without changing original
+CLOSED's null field. See owning architecture22:55:31 entry and caches
+kde-upstream-full-matrix-source-one, kde-upstream-aborted-firefox-forensic-source-one.
+GNOME354/46/32 and KDE175/233/24 complete denominators remain unchanged. Next
+is causal context/focus evidence; no unchanged retry or promotion. No user
+installation/publication, model, Lay delivery-route or authority change.
+
+2026-10-18T23:08:06Z: prepare a bounded Firefox field10 roundtrip/short causal
+diagnostic in cache kde-firefox-panel-causal-source-two. Exact original case
+AST/keys/targets/waits/binaries/guards retained. Passive KWin activation/window
+type events and same-panel Wayland wire logging only; no runtime repair yet.
+Source-one50 PASS/1 FAIL caught integer-vs-string selector before keys and is
+preserved. Source-two remote guarded51 PASS, expected RED and actual GI zero-key
+PASS; native NOT_RUN. Actual KWin activation can be proved by positive event,
+not inferred from a popup caption or missing signals. Detailed pins/limits in
+owning architecture23:08:06 entry. No full matrix/authority/install change.
+
+2026-10-18T23:08:55Z: kbph completed two original Firefox iframe rows as FAIL,
+then ABORTED on window deactivation;20 actor events, no held keys. Actual KWin
+clientActivated plus panel Wayland keyboard.enter/leave now directly establish
+temporary IBus panel focus, without clock-base conversion. Which widget or
+request shows it remains unproven. Required exact-foreground rejection stays.
+Two-cell RESULT SHA e348805cc1ee122d6caa2e02be980ea40347e0a03d38c3d0038c61b76591abbe;
+independent CLOSED_ABORTED_EVIDENCE_ONLY and92-file hash-verified export are in
+cache kde-firefox-panel-causal-source-two/evidence. Original null fields retained.
+See owning architecture23:08:55 entry. No full matrix, route or install change.
+
+2026-10-18T23:25:03Z: kbpm prepares the same two original Firefox iframe cells with
+passive private-IBus panel-method logging only. Exact-sender GetId readiness,
+2 MiB cap and monitor exit checks; remote source53 PASS, expected RED and GI
+zero-key PASS. Separate zero-key private-bus observer probe passed and closed.
+Widget/auxiliary cause still a hypothesis; no runtime patch or native result
+yet. See owning architecture entry for pins and alternatives. No authority,
+route, installed runtime or complete-matrix change.
+
+2026-10-18T23:31:30Z: kbpm source-two native2 FAIL then ABORTED, independently closed,
+95-file export953a69a0d86abfb7968d77ac7054f05f042f77f10dceb349fae1429db0a3890e.
+Positive auxiliary show/clear calls correlate with a normal IBus toplevel
+activation about47ms after clear. Pending clear and pending show each have
+100ms upstream timers. Plan one isolated CandidatePanel null-clear lifecycle
+fix; preserve nonempty hints, native keys/verdicts and Lay authority. Legitimate
+hint nonactivation remains unproved. Detailed evidence/limits/alternatives in
+the matching owning architecture entry; complete matrices unchanged.
+
+2026-10-18T23:36:34Z: private upstream panel null-clear candidate built; only
+panel binary changes (e6c42ff073fe8017cffa866b1bf9be765efa4afcea95474ddb326a72dd18b013).
+Actual extracted GLib lifecycle controls: qualified stock RED/candidate GREEN,
+ordinary nonempty hint preserved in both. Review9/10, no P1/P2. Same two
+original iframe cells frozen as kbcl; source53 PASS, expected RED, actual GI
+zero-key PASS. Native NOT_RUN. See matching architecture entry for pins and
+scope; no Lay route/authority or installed runtime change.
+
+2026-10-18T23:46:02Z: kbct minimal upstream null-clear native: original Firefox
+iframe short PASS, roundtrip FAIL at strict clear metadata prerequisite.
+Both retain Firefox foreground; first attributes mapping empty, second valid.
+Do not regrade the first row or conflate zero-input kbcl/kbcn setup errors
+with native failures. Source53 PASS/expected RED/GI zero-key PASS; independent
+closure and97-file SHA-verified evidence in
+`kde-panel-clear-qualified-source-two/evidence`, archive
+8f4657903c50cf7ed582e9bb3b188db069d10f6f27ae46cc07194ae1ff28be5a.
+Two DS samples median129.321/p95147.563ms, diagnostic only. No installed Lay,
+route, authority or full-matrix change. Next: cold metadata readiness within
+the existing clear deadline and unchanged strict shape predicate.
+
+2026-10-18T23:55:33Z: strict rich-clear readiness source gate58 PASS, actual
+GI zero-key PASS; pinned preceding callsite yields1 expected assertion failure
+on the actual cold metadata control. One clear, unchanged predicate, original
+1.8s deadline/max8 captures, retained samples; hard guard/read/identity errors
+and late captures cannot pass. Decision2026-10-19-native-clear-readiness-deadline;
+matching owner entry and `kde-panel-readiness-stock-source-one` pin receipts.
+Native NOT_TESTED; compare both panels with the same observation contract
+before causal claims. Original failed rows, Lay authority/routes and complete
+matrices unchanged.
+
+2026-10-18T23:58:22Z: readiness source-one review7/10 identifies two P2:
+retry after explicit raw/root focus failure, lost received tree on postcheck
+error. Source-one rejected, no native input. Corrected source-three saves
+before postchecks/rethrows with error record and hard-fails focus loss.
+Remote59 PASS, expected old-callsite RED, actual GI zero-key PASS. New source
+pins in matching owner entry and `kde-panel-readiness-stock-source-three`.
+Native NOT_TESTED; unchanged original cases, strict predicate and matrix totals.
+
+2026-10-19T00:53:44Z: exact KWin nonfocus IBus-popup rule qualifies the shared
+presentation boundary: kbcy original Firefox12/Chrome12 rich controls all PASS,
+including short and both five-repeat plans. Seven mapped panels wantsInput=false,
+none active;84 DS samples median150.225/p95173.559/max177.705ms. Verified324-file
+export8f8c9a87d0b6c5989421f61c7e9c5ab2d0867a3bb9cbafa21b70cc1779c14dad and
+independent closure. Details/pins/limits in matching owner entry and decision
+2026-10-19-kde-ibus-panel-focus. Production installer integration has seven
+focused tests and shell syntax PASS; full Firefox160 helper-generated-rule
+qualification pending. No installed runtime/route/authority or total-matrix change.
+
+2026-10-19T01:10:37.484536+00:00 — Panel-focus fix complete Firefox160:123PASS36FAIL1BLOCKED (historical80/73/7);59mapped panels nonfocus,0activation. DS178samples median164.587ms p95178.964ms. Verified1680-file export SHA4570cf01cb37212d477b708cc8a106ca1cb31a6f561ab3c5d0b51e8b4710053d, independent CLOSED. Earlier kbcz64-row prefix ABORTED due passive2MiB log cap, retained separately;14MiB proportional retry leaves native targets/cadence/guards intact. Installer migration defect fixed from actual numeric KWin fixture,9remote tests zero skips PASS. Chrome160 next; full432 totals historical, TD159 IN_PROGRESS. No user install, IME route or edit-authority change. Owner: firefox-input-stability-2026-10-05.md, full Firefox component entry.
+
+### 2026-10-19T01:19:00.540675+00:00 — complete KDE browser components
+
+Firefox123PASS/36FAIL/1BLOCKED and Chrome130PASS/30FAIL/0BLOCKED,
+253/66/1 of320 original browser cells. Other112 KDE and GNOME cells are
+not regraded. Chrome independent closure, receipt/export hashes and timing
+are in the owning Firefox stability document. Next shared mechanism is the
+missing KDE group completion for owned preedit; three actual-callback source
+regressions are controlled RED before implementation. TD159 stays IN_PROGRESS;
+no user installation, publication, authority relaxation or delivery-route change.
+
+
+2026-10-19T01:47:30.372107+00:00 — TD159 remains IN_PROGRESS.
+852 correctness +3 isolated performance tests PASS; final graph-bound private
+IME10155e00 qualified on original20 prefix cells:Firefox10/0/0,Chrome8/2/0.
+No additive matrix claim: latest complete old-IME browser proof remains253/66/1
+of320. Two Chrome residuals are separately attributed (iframe layout mismatch;
+Search pre-gesture AT-SPI/IME disagreement). Native export independently CLOSED.
+Exact pins, timings, first failed transitions and next passive-observer complete
+320 proof are in the owning firefox-input-stability document, heading
+2026-10-19T01:47:30.372107+00:00. No user install, publication or route change.
+
+
+2026-10-19T02:04:16.607557+00:00 — Complete original320 new-IME browser proof:
+Firefox139PASS/21FAIL/0BLOCKED,Chrome136PASS/24FAIL/0BLOCKED;275/45/0
+combined (+22PASS vs preceding complete253/66/1). Independent closure and
+3290-file verified export SHA1dbac3eb00698e72bb162284c48daa88228bde767fa55f6edcf47b12ca5fa6e2.
+First failed mechanisms and timings are in owning firefox-input-stability doc,
+matching complete qualification heading. Passive bus and existing Wayland wire
+support a late old-RU modifier echo in Chrome after confirmed US; upstream
+publication hypothesis is not yet implemented. Forty authority refusals, one
+Search pre-gesture observation discrepancy and Firefox URL Space are distinct.
+Other112 KDE/GNOME not regraded. TD159 IN_PROGRESS; no user install, publication,
+route or admission relaxation. Export-only50MiB single-browser bound failure
+retained, proportional100MiB two-browser export completed without input rerun.
+
+2026-10-19T03:54:44.109339+00:00 — Fresh-focus manual-only source proposal: controlled semantic RED retained; first implementation3PASS/3FAIL, no native promotion. UnknownStart and existing exact executor remain mandatory. Full consequence analysis, alternatives, source receipts and rollback boundary in owning Firefox stability document, heading Fresh-focus explicit manual source. Last complete original KDE432360/68/4; TD159 IN_PROGRESS.
+
+
+2026-10-19T05:50:23Z — TD159 before runtime edit: exact f040 full432 regressed
+to342/86/4 (browser291/29/0). Retain failed seed observation cases. Next shared
+mechanism is reducer-revoked native acquisition whose fence makes successor
+Busy. Existing adapter retirement boundary proposed; no new owner/timer/route.
+ADR2026-10-19-revoked-native-acquisition-retirement and owning stability entry
+05:50:23Z bind hypothesis, three controlled P2P tests and required negatives.
+
+2026-10-19T06:31:38.067380+00:00 — TD159 exact9804 native112 completed86/22/4;
+matching browser320291/29/0 yields full432377/51/4. GTK/Qt composition observer
+qualification changes measurement; not35 runtime fixes. Retained cold-start
+RED and16GREEN, three aborted preparations, final76source controls plus two
+controlled REDs. Fully hash-verified kbea export51e7f945... and independent
+closuree184d0a1...; source/byte/receipt/latency details in owning stability doc.
+Next first failed transition: GTK preedit exists before focus-away, vanishes
+on return before gesture; inspect PREEDIT_CLEAR vs typed-only commit mode.
+Qt preserved-word manual refusal remains separate. No route, user install,
+publication or authority relaxation; TD159 remains IN_PROGRESS.
+
+### 2026-10-19 owned preedit blur — exact native112 milestone
+
+Exact private IME510c920197ccf59a9c2701a67feadb4a0879321b5ae38cd2f26ac5906e9fc06a:
+original11287PASS/21FAIL/4BLOCKED; only GTK TextView focus_return changes FAIL
+-> PASS from old11286/22/4. Entry preserves the word but reselects it on focus
+return; Qt preserves it but refuses manual authority. No status relaxation.
+Verified export d5fb312ad19eb9f5aa4df5e154dc508c52444d58388c2e07c8a8b77cbe54213f;
+independent close2026-10-19T06:57:38.766691+00:00. Owner contains per-app timing,
+full proof limits and retained exporter preparation failure. Browser320 phase
+kbec pending; no combined new-byte432 or installation/publication claim.
+Next investigate Qt same InputContext Reset followed by fresh exact text and
+context_authority refusal; never restore historical preedit or bypass verifier.
+
+
+Owned-blur original browser320 CLOSED_DIAGNOSTIC_ONLY at
+2026-10-19T07:06:04.516331+00:00 on the same exact private IME510c:
+Firefox150PASS/10FAIL/0BLOCKED, Chrome141PASS/19FAIL/0BLOCKED;
+total291PASS/29FAIL/0BLOCKED. Exact320 identities/actions remain unchanged.
+Two status changes from previous9804: Firefox field4 moved_boundary FAIL->PASS,
+Chrome field8 focus_return PASS->FAIL. The Firefox improvement was previously
+a late-ack refusal; one run does not establish a permanent timing repair.
+The Chrome regression is unresolved; do not accept or promote this candidate.
+Receipt `owned-preedit-blur-browser-source-one/RUN.json`; exact comparison
+`owned-preedit-blur-browser-source-one/COMPARISON.json`.
+
+Chrome8 focus_return preserves committed `привет`, caret6, no selection.
+Physical Double Shift is recognized; IME manual outcome status3 prepares the
+conversion, but the daemon cancels after layout handoff with "exact IME tail
+retention policy changed". No actual privacy-policy change is established:
+VisibleTailV4 also returns false for passive/unknown-context replies, and
+current bound_v4_reply compares retention before classifying readiness.
+The case's bounded trace snapshot has PREFIX_CHANGED, so no event absence
+claim may be made from its interval. Content hints64/purpose0 do not prove
+private mode. Capture exact private RPC replies before changing any guard.
+
+Verified browser export SHA256
+f9530b99a518765ef23656da03a7487f56724adf19ac706e823248eabc5816b0:
+29277590bytes,3292files,1280 raw snapshots/448392601bytes. Independent closure
+SHA2565843e004176e52ddec162470afee99af63a045a50bb0dbc4f89a5fb4e0ae3aa1
+verifies empty cgroup, pinned processes gone, no held keys, VT1, owned seat
+stopped, temporary policy absent and host libraries unchanged.
+Successful Double Shift Firefox n200 median30.172ms,p95176.092ms;
+Chrome n185 median30.314ms,p95175.178ms. Focus-return successful only:
+Firefox n10 median164.266ms,p95200.066ms; Chrome n8 median165.826ms,p95169.999ms.
+Space Firefox n50 median28.864ms,p9532.977ms; Chrome n50 median29.273ms,p9532.054ms.
+Failed operations remain FAIL, not latency samples.
+
+Both new-byte components are now independently closed. Exact matching432:
+378PASS/50FAIL/4BLOCKED. Derived proof with all six receipt hashes is
+`owned-preedit-blur-matching-432-source-one.json` under the development cache.
+The previous instruction to avoid combining old browser bytes is superseded
+only by this exact-byte closure, not by cross-build aggregation.
+TD159 remains IN_PROGRESS. No installed bytes, delivery routes or authority
+contracts changed. No GNOME acceptance or release qualification.
+
+Next diagnostic kbed: original20 browser focus_return identities only, same
+510c bytes/actions/cadence/deadlines. Add only a bounded passive session-bus
+monitor pinned to the exact private IME owner/PID; verify a zero-key probe
+before input. Source controls60PASS plus two expected RED controls passed at
+2026-10-19T07:15:35.596649+00:00. This subset cannot replace browser320 or
+matching432 evidence and does not authorize any permission relaxation.
+
+
+### TD159 — 2026-10-19 matching target observation revokes exact manual proof
+
+kbed diagnostic completed on private510c, with no runtime changes: Firefox
+focus10PASS0FAIL, Chrome focus8PASS2FAIL. This subset does not replace the
+complete browser320291PASS29FAIL0BLOCKED or matching432378PASS50FAIL4BLOCKED.
+Chrome7 fails after layout handoff; Chrome2 stops at seed-readback (`приве`,
+caret6), a separate measurement/seed problem. Chrome8 passes in this subset.
+
+Passive monitor pins the private IME unique bus owner and process and records
+77V4calls/77replies. At unix1792394175.367585, RU27 returns exact `привет`,
+epoch405, same InputContext16, retention=true. US28 FocusIn occurs at .411020;
+its actual SetSurroundingText `привет`,6,6 occurs at .412112. At .444513 V4
+returns passive:unknown-context with retention=false. The actual matching
+observation precedes the failed query by32ms; no changed privacy metadata
+or delayed missing observation explains this failure.
+
+First lost authority: observe_external_surrounding_text always calls
+advance_surrounding_observation_revision, which drops both the inherited
+target certificate and reducer exact_manual_snapshot. If observation arrives
+before installation, existing installer republishes its matching receipt;
+after installation it is irretrievably dropped. The former test explicitly
+required even identical later callbacks to revoke: this is the policy race.
+
+Decision2026-10-19-exact-manual-observation-refresh: retain only a current
+receipt across an actual fully matching prefix/tail/collapsed-end tuple, same
+owner/epoch, original expiry. Changed/selected/interior/absent/revoked/consumed/
+expired/sensitive proofs cannot revive. UnknownStart remains UnknownStart;
+no new owner, delivery path, output mutation or verifier relaxation.
+Ratings: existing-certificate refresh9/10; extra waiting2/10 (SSI already
+arrived); ignore SSI or accept unknown reply1/10 (unsafe authority bypass).
+Three new semantic tests added; runtime refresh not yet implemented/tested.
+
+Diagnostic RUN sha2569037c956839aa515844bea5c63b836fae3a2c49042f5c89c9407f466e10cd9eb.
+Export bf278500efe455c34c38a411f2e5cd4952518eb509d3a4bebb6c372b25d5ae1b,
+1500826bytes294files80raw18325175bytes. Closure at07:17:12.498445UTC:
+00f387e1a0faa768f6f0e1167469ca0546c1f76707d1131749afdd96801933ef,
+empty cgroup/pinned processes gone/no held keys/VT1/owned seat stopped/
+temporary policy absent/host IBus and KWin libraries unchanged.
+All receipts under development cache/owned-blur-focus-rpc-source-one.
+No installation/publication/GNOME acceptance. TD159 remains IN_PROGRESS.
+
+
+Exact-manual observation refresh controlled RED at2026-10-19T07:37:28.945514+00:00:2PASS1FAIL,
+expected failure on the first actual target observation after install;
+changed/revoked/no-gesture negatives pass. Runtime change uses existing
+reducer's current certificate getter and publisher, no new state or route.
+Capture precedes invalidation; refresh requires known full prefix equality,
+unchanged tail/epoch, collapsed end-of-field, current owner and live handoff.
+Original expiry is reused and revalidated by the reducer. Prior unconditional
+repeat-revocation test now proves changed-prefix revocation plus no revival.
+Focused GREEN at2026-10-19T07:38:47.040662+00:00:3PASS0FAIL.
+Receipts exact-manual-observation-red-source-one/RESULT.json and
+exact-manual-observation-green-source-one/RESULT.json under development cache.
+Native remains NOT_TESTED for these changed bytes; complete matrix unchanged.
+
+Formatted focused GREEN3PASS0FAIL at2026-10-19T07:40:34.855394+00:00.
+Getter invalidation has one production caller, the synchronous engine
+observation revision advance; callback/output consumption runs under the
+same engine mutation serialization. Concurrent reducer revocation/tail/
+lineage changes are revalidated at the existing publisher. No second mutable
+certificate store was added. Scoped source gates do not certify physical
+Chrome readiness. Official hermetic gate is now running remotely.
+
+First official hermetic gate at2026-10-19T07:42:51.245630UTC:
+877PASS1FAIL/878 correctness,881 discovered, performance NOT_RUN. Existing
+td159_fresh_focus_manual_source_cannot_revive_after_receipt_change_or_reset
+catches overbroad source-engine refresh. Do not weaken this source protection.
+Narrow to a receiver using existing sealed source handoff path, which transfer
+retains while active_path and reducer owner move to the target. Source path
+equal to current engine cannot refresh; current target still needs all
+certificate/owner/epoch/full-observation/original-expiry checks. No new state.
+The recorded failing whole-set gate is the RED evidence for this narrowing.
+
+Receiver-only focused GREEN3PASS0FAIL at2026-10-19T07:44:42.322630UTC.
+The sealed existing source path distinguishes the admitted receiver; original
+source callback protection remains in the unchanged old test. Second official
+hermetic/format gate now running. No native claim or installed changes.
+
+Receiver-only official hermetic GREEN at2026-10-19T07:47:07.618129UTC:
+878PASS0FAIL/878 correctness,881 discovered,343 isolated,535 bulk;
+all3 performance tests PASS. Remote formatting check passed. The unchanged
+source callback/reset protection is retained. Exact receipt is development
+cache/exact-manual-observation-hermetic-source-two/RESULT.json. These source
+results do not establish native acceptance or browser latency. Next is the
+remote architecture graph gate and a pinned private build, followed by the
+unchanged original browser320 and native112 protocols. Delivery routes,
+installed binaries and desktop applications remain unchanged.
+
+Remote architecture graph gate PASS at2026-10-19T07:48:48.667743UTC;
+existing scripts/update-architecture-graph.sh completed successfully and all
+six generated outputs were hash-verified on export. Receipt: development
+cache/exact-manual-observation-architecture-source-one/RESULT.json. Runtime
+change remains limited to receiver certificate refresh; no delivery change.
+Pinned private release build is next; native acceptance remains NOT_TESTED.
+
+Pinned private IME build completed at2026-10-19T07:52:50.314986+00:00:
+SHA256 fbd4fd2ed5da81857d6c70e77f93a3daf6331b79aa92217399761db484704af4, bytes8466368.
+Build receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-final-build-source-one/RESULT.json;
+receipt SHA256 8c6e34f8c96a33b6b5aab06055560c0a1e40ccc2bcd0f5f0296aed3d8de09588.
+All878 source correctness and3 performance checks are bound to identical
+Rust sources; generated architecture receipt-only delta has its own embedded
+receipt test PASS. No installation. Browser320 kbee uses this exact binary;
+native112 kbef must use the same bytes before a matching432 comparison.
+
+Receiver-only exact-manual refresh original browser320 completed; independent
+closure at2026-10-19T08:00:33.456117+00:00. Exact private IME
+fbd4fd2ed5da81857d6c70e77f93a3daf6331b79aa92217399761db484704af4.
+Firefox150PASS10FAIL0BLOCKED/160; Chrome142PASS18FAIL0BLOCKED/160;
+browser total292PASS28FAIL0BLOCKED/320. Exactly one changed identity versus
+510c: Chrome8 focus_return FAIL->PASS. Remaining319 statuses unchanged, all
+320 identities and input/observer protocol scripts equal after phase-only
+normalization. No native112 or GNOME acceptance from this browser component.
+Confirmed successful DS latency: Firefox n200 median29.955ms p95176.665ms;
+Chrome n185 median30.276ms p95172.633ms. Successful focus-return Firefox
+n10 median162.632ms p95180.031ms, Chrome n9 median160.834ms p95180.299ms.
+Space n50 each: Firefox median29.764ms p9533.471ms; Chrome median29.392ms
+p9532.349ms. Clock remains evdev-write-return to confirmed target; failed
+operations remain FAIL and are excluded from successful latency samples.
+Full raw export SHA25655ffa73af5fca4682d6b464d23adabd650871646cc27d45d1b6a471b963cb5c5,
+28586306bytes3292files1280raw448661347bytes. Closure SHA256
+93fc2f374fc74bdebd4ba5c9ee6dec89eeb943565d227f600f4b07698a27ff1c; empty owned cgroup,
+pinned processes gone, keys released, VT1 restored, seat stopped, temporary
+policy absent, host IBus and KWin libraries unchanged. Evidence and complete
+post-row comparison: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-browser-source-one/COMPARISON.json.
+Same-byte native112 kbef is prepared; no installation/publication.
+
+Receiver-only refresh original native112 independently closed at 2026-10-19T08:08:52.185671+00:00.
+GTK29PASS3FAIL0BLOCKED/32; Qt42PASS6FAIL0BLOCKED/48;
+KWrite13PASS2FAIL1BLOCKED/16; Konsole3PASS10FAIL3BLOCKED/16.
+All112 identities, statuses and phase-normalized input/observer protocol
+scripts are unchanged versus510c. Same fbd4 IME bytes as browser320.
+Combined432 at 2026-10-19T08:09:08.028376+00:00:379PASS49FAIL4BLOCKED,
+previous378PASS50FAIL4BLOCKED; exactly Chrome8 focus_return FAIL->PASS.
+Receipt: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/exact-manual-observation-matching-432-source-one.json
+Native raw export SHA256 99b8ff39de4d1969856c56e0300128d7d3fa6f655a86078926ead2aca9cad9a9, 8813867bytes 1225files,
+448 raw endpoint snapshots/126946779bytes; each member verified.
+Native closure SHA256 c319524738a7ce9e8b7695437139c853ec3008803f7f6e349a9ffb6bbac168e0;
+empty owned cgroup, pinned processes gone, keys released, VT1 restored,
+owned seat stopped, temporary policy absent, host IBus/KWin bytes unchanged.
+Export first deferred to an unrelated L3 heavy lease; no lease bypass or
+process interruption. Before export, corrected a stale template IME hash and
+required agreement with the separately pinned private override; no product
+code, native inputs or verdict changed by this evidence-script correction.
+Native successful DS latency: GTK n40 median28.241ms p95164.401ms;
+Qt n60 median28.588ms p95138.485ms; KWrite n20 median30.078ms p95140.823ms.
+Konsole has no successful DS latency sample. This is not an acceleration claim.
+Scope remains private KDE diagnostic: upstream KWin qualification failures
+and GNOME are not accepted, no installation/publication.
+Next shared failure: all three Qt focus_return plans retain committed привет
+with collapsed end caret after Double Shift. GTK Entry focus_return instead
+stops before gesture because the seed is selected; those mechanisms remain
+separate. Analyze the real Qt Reset/observation/gesture order before editing.
+
+
+### TD159 owned-preedit Reset current-field admission — design at 2026-10-19T08:23:19.659920+00:00
+
+Original native112 on the pinned fbd4fd2e IME confirms three Qt focus_return failures: RichTextEdit, PlainTextEdit and LineEdit retain actual `привет`, collapsed end caret and focus, but the recognized Double Shift is refused with context_authority. Actual Reset callbacks retire owned preedit; source inspection identifies a second broad revocation during its cleanup. This is distinct from GTK Entry selecting its seed before the gesture. Preserve existing cancellation: no old preedit or committed prefix may become a new field source. ADR `decisions/2026-10-19-owned-preedit-reset-manual-source.json` proposes only a new exact manual read after authenticated owned-preedit retirement, actual post-reset surrounding observation and explicit gesture. Two new semantic test functions are prepared; production code is unchanged and controlled RED is pending. Latest complete diagnostic stays379PASS/49FAIL/4BLOCKED; no source/native acceptance claimed for the proposal. Solo remote-only, no installation/publication or delivery-route change.
+
+Owned-preedit Reset first RED attempt at 2026-10-19T08:24:35.046747+00:00: the positive test reached and failed the intended missing-fresh-admission assertion; the negative test also stopped on a detached callback transport reply (serial9203 before9204). Overall source-one is FAIL and is not accepted controlled RED. The fixture now drains each real detached key callback reply before Reset; no product code or expected behavior changed. Source-two is the next independent frozen run.
+
+Owned-preedit Reset controlled RED at 2026-10-19T08:25:08.775874+00:00: source-two1PASS/1FAIL, exactly the required new-current-field manual-read assertion fails. Negative source safety test passes after fixture reply ordering correction. Minimal reducer/state/Reset-adapter implementation prepared at 2026-10-19T08:27:08.569439+00:00; no GREEN or physical acceptance claimed. Test source and output routes are unchanged after RED.
+
+Owned-preedit Reset first implementation at 2026-10-19T08:28:20.797486+00:00: frozen green-source-two remains1PASS/1FAIL on the same intended positive assertion, all new negative checks pass. This is not GREEN and no build/native promotion occurred. Added bounded assertion diagnostics (old/current token, live status, reducer fresh flag, actual snapshot) to identify the first failed guard before further eligibility changes. The new path explicitly excludes existing owned Space/managed-commit/replay observations and pending manual/replay state; those keep their existing contracts.
+
+Owned-preedit Reset fixture diagnosis at 2026-10-19T08:35:08.287755+00:00: green-source-three1PASS/1FAIL identifies hints2048 applied after typing, which correctly clears prior volatile preedit at the privacy boundary. Green-source-four1PASS/1FAIL stops before Reset because actual private input uses the committed route and emits CommitText; it cannot satisfy the owned-preedit-only prerequisite. These are recorded fixture failures, not runtime GREEN. Source-five keeps ordinary/repeated Reset positive cases, establishes private metadata before actual keys, asserts the real private commits/no-owned-preedit, and checks that this path cannot invent fresh owned-source admission. Privacy changes remain a separate negative guard; no privacy/delivery contract changed. Evidence: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-green-source-three/RESULT.json and /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-green-source-four/RESULT.json. Native remains NOT_TESTED for the proposal; latest complete432 stays379PASS49FAIL4BLOCKED.
+
+Owned-preedit Reset focused GREEN at2026-10-19T08:36:29.866135+00:00: formatted frozen source-six2PASS0FAIL; source-five also2PASS0FAIL before formatting. Positive scenarios one/two actual Reset callbacks, new Unicode-prefixed text, no old prefix/preedit, no automatic authority. Negative scenarios include unobserved Reset, selection, interior caret, sensitive field, revoked owner, privacy change and actual private committed input without owned preedit. Source-six log SHA25642b508a94c74febd2471b77016e2ad401b0a9536659061e6b75b9e0bce98175d. Remote six-file format PASS at2026-10-19T08:35:26.316860+00:00. Official880correctness+3performance gate started; physical result NOT_TESTED. Receipts: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-green-source-six/RESULT.json and /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-format-source-one/RESULT.json.
+
+Owned-preedit Reset complete source GREEN at 2026-10-19T08:39:14.269243+00:00:883 discovered,880 correctness/package executed PASS (345 isolated,535 bulk),3 performance PASS; no failures or selection change. Source-six frozen Rust and tooling closure unchanged; six-file remote rustfmt check PASS. Receipt: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-hermetic-source-one/RESULT.json; discovery SHA256138a02c2a8868db0dd09d0267d97d7b94b00397e4bc0bdc9d9beed6089967cde. Source authority delta is only eligibility for a new actual current-field manual observation after authenticated owned-preedit retirement; no old text authority, automatic authority or delivery-route change. Architecture refresh and immutable private build are next, native acceptance remains NOT_TESTED. Latest complete432 stays379PASS49FAIL4BLOCKED.
+
+
+Owned-preedit Reset architecture/build qualification recorded at 2026-10-19T08:50:12.424214+00:00: remote architecture gate PASS at2026-10-19T08:40:40.266332+00:00, receipt development cache/owned-preedit-reset-manual-architecture-source-one/RESULT.json. Pinned private build at2026-10-19T08:44:37.890917+00:00: SHA2561c1641d4e61e3c7409f93c5dd0ba0525d6cc0e4f66a613ae267b37a8bce467ba,8469312bytes; receipt development cache/owned-preedit-reset-manual-final-build-source-one/RESULT.json,880 correctness/package and3 performance source tests bound to frozen Rust/tooling, embedded architecture receipt PASS.
+Browser package source-one zero-key qualification failed59/60: prepare.py expected the ADR filename stem as its semantic id, whereas the pinned ADR id is TD159-owned-preedit-reset-current-manual-source. Binary, tests and source counts were correct. Preserve this failure; no keys were sent for source-one. Immutable source-two corrects only the expected semantic id; pinned binary/source/ADR checks remain. All60 controls PASS and both intentional negative controls fail as expected. All eight input/observer protocol scripts exactly equal previous browser320 after phase-only normalization. Original browser320 kbeg is now running on the new bytes; native112 kbeh follows. No physical result yet for this proposal; latest complete matching432 remains379PASS49FAIL4BLOCKED. No installation/publication or delivery-route change.
+
+
+Owned-preedit Reset original browser320 independently closed at 2026-10-19T08:56:29.418911+00:00: pinned IME1c1641d4e61e3c7409f93c5dd0ba0525d6cc0e4f66a613ae267b37a8bce467ba, Firefox149PASS11FAIL0BLOCKED/160, Chrome142PASS18FAIL0BLOCKED/160; total291PASS29FAIL0BLOCKED/320. Exact320 identity set and eight phase-normalized input/observer scripts equal fbd4 baseline. Exactly one changed identity: Firefox2 moved_boundary PASS->FAIL, actual `должн ыбыть ` remains instead of `должны быть `. Remaining319 statuses unchanged. Candidate is found and authorized; captured trace reaches active_pair_waiting_committed_snapshot and then a Reset. This is a first-failed-transition lead, not yet proof that the new owned-source path caused the failure; bounded producer completeness remains UNKNOWN. Do not accept the proposal with this browser regression or hide it by repeating until PASS.
+Full verified export SHA256a333c0c19c18394b17c0db618df05bf4af4e95325f03b88a27cc5e80fdaed40a,29140833bytes3292files1280raw448607617bytes; closure verifies empty cgroup, pinned processes gone, keys released, VT1 restored, owned seat stopped, temporary policy absent and unchanged host IBus/KWin bytes. Receipt: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-browser-source-two/COMPARISON.json. Successful DS: Firefox n200 median29.727ms p95174.631ms; Chrome n185 median30.217ms p95173.488ms, evdev-write-return to confirmed target; failed operations remain in counts and this is not an acceleration claim. Native112 kbeh now runs the same pinned bytes after76 protocol controls PASS and both controlled negatives. No matching432 claim yet; GNOME and upstream KDE qualification remain outside acceptance.
+
+
+2026-10-19T09:06:46.955350+00:00 TD159 owned-preedit Reset proposal REJECTED at complete physical432:378PASS50FAIL4BLOCKED vs379/49/4, all three Qt focus_return unchanged FAIL, Firefox2 moved_boundary PASS->FAIL. Source880+3 and architecture PASS do not establish physical acceptance. Matching receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-manual-matching-432-source-one.json. Actual Qt order is surrounding->Reset->surrounding->Reset->gesture with snapshot absent; source tests covered final-Reset->surrounding instead. Next causal test must reproduce actual ordering before considering one existing pending-manual fresh read. No delivery-route change, install or publication.
+
+
+TD159 same-gesture fresh-read experiment: controlled source RED2026-10-19T09:09:46.055655+00:00 2PASS1FAIL confirms Qt surrounding/Reset/surrounding/Reset/gesture has fresh admission but no snapshot. New read uses existing pending700ms continuation. First implementation2026-10-19T09:14:28.698446+00:00 3PASS1FAIL at privacy cancellation; second2026-10-19T09:17:09.813213+00:00 3PASS1FAIL at expiry cancellation. Repair spends existing fresh admission before cancelling pending read, adds nine cancellation gaps plus no-renewal polls. Receipts development cache/browser-final-fixes-20261018/owned-preedit-reset-read-{red-source-one,green-source-one,green-source-two}/RESULT.json. Owner docs/architecture/firefox-input-stability-2026-10-05.md; decision2026-10-19-fresh-manual-read-same-gesture.json. Native NOT_TESTED for this source; last complete432 remains378PASS50FAIL4BLOCKED, rejected. Runtime authority changed, delivery routes unchanged.
+
+
+TD159 fresh-read focused GREEN at2026-10-19T09:20:46.454849+00:00:4PASS0FAIL, exact four identities; nine cancellation gaps including callback expiry and RPC expiry plus later-poll no-renewal. Controlled RED remains2PASS1FAIL. Exactly one fresh actual read, different post-Reset word accepted only via same-gesture existing exact-tail handoff; no callback-local Delete/Commit. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-green-source-three/RESULT.json. Full hermetic source, graph, private build and physical clients pending; no installation/publication or delivery-route change.
+
+
+TD159 same-gesture fresh read full hermetic source gate at2026-10-19T09:23:15.969740+00:00:882PASS0FAIL correctness/package across885 discovered identities (535 bulk and347 process-isolated),3performancePASS. Official discovery and hermetic executor over frozen Rust/tooling closure; no ignored test substitution. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-hermetic-source-one/RESULT.json. All nine cancellation gaps and actual Qt callback/Reset ordering retained. Graph/private build/physical acceptance pending; this does not improve the latest complete432378PASS50FAIL4BLOCKED. Delivery routes unchanged; no installation/publication.
+
+
+TD159 same-gesture fresh-read architecture gate at2026-10-19T09:24:30.507765+00:00:PASS; graph refreshed remotely with existing AST-only gate, all owning/callsite/delivery checks retained. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-architecture-source-one/RESULT.json. Prior full source882+3PASS; next immutable private IME build and matching physical clients. No new input/output owner, timeout, fallback, client bypass, installation or publication. Firefox2 pair-space trace independently re-read under exact report and endpoint SHA pins: selected correction awaits committed snapshot then Reset9511 rejects rereceipt for missing predecessor/post-reset token. Endpoints PREFIX_CHANGED; producer/interval completeness UNKNOWN. This positive event sequence is a lead, not proof that the current manual-read change caused or fixes the pair regression.
+
+
+TD159 same-gesture fresh-read private build at2026-10-19T09:28:28.359252+00:00: IME SHA256a46dd831f94f29d244671f64096ebe1a0e04ae2663fca442f9137814fa547adc,8472256bytes; source882correctness/package+3performancePASS, graphPASS, embedded architecture receipt testPASS. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-final-build-source-one/RESULT.json. Frozen identical Rust/test tooling proof reused except refreshed generated architecture receipt JSON; all source hashes checked before/after. Scope: private diagnostic build only; native NOT_TESTED, latest complete432 unchanged378PASS50FAIL4BLOCKED. No installation, publication or delivery-route change. Next browser320 kbei then native112 kbej with original input scripts.
+
+TD159 same-gesture fresh-read complete physical milestone at2026-10-19T09:40:35.346737+00:00: matching a46dd831 IME browser320+native112 gives380PASS48FAIL4BLOCKED/432 versus fbd4 baseline379PASS49FAIL4BLOCKED. Two recovered identities: Qt5 LineEdit/PlainTextEdit focus_return. Qt5 RichTextEdit focus_return remains FAIL. New Chrome2 moved_boundary FAIL: original12 characters plus corrected12 remain in the client; actual surrounding24 does not satisfy exact expected final12 and verifier stays pending_stale_observation. This is a distinct physical outcome from the earlier Firefox2 Reset/unchanged-text failure; do not recycle that hypothesis as a cause of duplication. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/owned-preedit-reset-read-matching-432-source-one.json. Original identities/protocol scripts/cadences/deadlines retained; independent closures and export hashes verified. Verdict PARTIAL_NATIVE_IMPROVEMENT_NOT_ACCEPTED, no installation/publication or delivery-route change. Next: exact RichTextEdit positive trace and Chrome deletion-versus-insertion causal boundary. Do not undo the two observed Qt recoveries merely to make browser counts look better; require a minimal reproducer before the next runtime change.
+
+
+TD159 IBus Reset delivery-cache controlled RED at2026-10-19T09:47:26.776988+00:00:9PASS3FAIL; original eight upstream cases pass, failures exactly9/10/12 prove equal actual tuple suppressed after Reset, stale delivery cache survives repeated Reset, and invalidation is needed per engine. Actual macro-generated Reset body executes; no second reset implementation. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/ibus-reset-surrounding-red-source-one/RESULT.json. Qt RichTextEdit actual read queues then cancels after about711ms; proxy-cache source defect is proved, physical causality still a hypothesis. New explicit decision 2026-10-19-ibus-reset-surrounding-delivery-cache.json limits change to cache invalidation before existing Reset, with no cached replay or Lay source authority. Next final-control RED/lifetime then GREEN/private isolated dependency build, unchanged Lay a46dd831 bytes and original physical protocol. No installation/publication or delivery-route change.
+
+
+TD159 IBus Reset cache RED/GREEN and private dependency build at2026-10-19T09:50:28.580211+00:00: baseline final controls9PASS3FAIL(cases9/10/12) and actual GObject lifetime FAIL as expected; candidate12PASS0FAIL and actual GObject lifetime PASS under fatal GLib warnings. Extracted actual Reset body retires only this proxy's delivery-cache object, forwards the existing Reset, and never publishes cached text. Source SHA baseline2958803ac0d121c82be85487578569b713cf5d4d05aa4b4c28019861b8ae9c57 -> candidatec6a87f20baecc9e20a8e204ec444f47c4ff0d1d8df69629394eda150dcbecde4. New private ibus-daemon SHA0b907f7c969c6621c667a613ef0c5ad0b4cb0ecc74a7e62caeef775afab98af7,662528bytes; only prefix/bin/ibus-daemon changed, panel remains46a335becaa4ed35fc217adebd2fd206ea5dda4af8abd1a06f60136dac7e3a23. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/ibus-reset-surrounding-build-request-source-one/BUILD.json. Source PASS is not physical acceptance: Qt RichTextEdit causality remains a hypothesis, latest complete432 remains380PASS48FAIL4BLOCKED. Next unchanged Lay a46dd831 and native112 identities/cadences/deadlines with only this new private IBus dependency, then matching browser320. No installation/publication, cached snapshot authority, delivery-route change or host IBus restart.
+
+
+TD159 Reset-cache original native112 physically complete at2026-10-19T09:58:18.948843+00:00: unchanged a46dd831 IME plus private IBus0b907f7c gives90PASS18FAIL4BLOCKED/112 versus same-IME previous89/19/4. Only changed identity Qt5 RichTextEdit focus_return FAIL->PASS; actual committed native text changes привет->ghbdtn, final caret6/no selection/no preedit. All original112 identities and eight phase-normalized actor/observer protocol scripts match. Independent closure checks pinned processes/cgroup gone, no held keys, owned seat/policy removed, VT1 restored, host libraries unchanged; loaded private IBus build/hash explicitly bound. Export4de89305b8205baf95290c477e3108728af3d271df0127abb2004a900c7eba09,8500318bytes,1227files,448raw snapshots127403307bytes; archive and every member verified. Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/ibus-reset-surrounding-native-source-one/COMPARISON.json. Scope: one native112 pass, source-proved reset-cache defect and observed single-field recovery. Passing RichTextEdit IME endpoints remain unchanged with producer/interval completeness UNKNOWN; no inferred callback sequence or absence. Qt successful measured DS n60 p50=28.88ms/p95=137.89ms; focus-return n3 p50=141.06ms/p95=141.44ms, newly recovered RichTextEdit137.72ms; not all-case latency or acceleration proof. Browser320 with same dependency pending, so latest complete matched432 remains previous380/48/4 and must not be mixed with this native112. No installation/publication or delivery-route/source-authority change.
+
+
+TD159 IBus Reset-cache full matching physical432 completed and independently
+compared at2026-10-19T10:08:39.449724+00:00:382PASS46FAIL4BLOCKED/432 versus
+same-Lay previous380/48/4. Firefox150PASS10FAIL/160; Chrome142PASS18FAIL/160;
+browser292PASS28FAIL/320; native90PASS18FAIL4BLOCKED/112. Exactly two changed
+identities, both FAIL->PASS: Qt5 RichTextEdit focus_return and Chrome field2
+moved_boundary. Remaining430 statuses are unchanged. Chrome2 actual committed
+text is now "должны быть " caret12/no selection, replacing the prior duplicate
+"должн ыбыть должны быть " caret24. This observed recovery does not establish
+the old client's precise DeleteSurroundingText processing sequence.
+
+Only private IBus daemon0b907f7c969c6621c667a613ef0c5ad0b4cb0ecc74a7e62caeef775afab98af7
+changed; Lay IME remains a46dd831f94f29d244671f64096ebe1a0e04ae2663fca442f9137814fa547adc.
+The derived join verifies complete Lay/IBus/KWin/KWayland dependency bundles
+match between browser320 and native112, and between their previous baselines.
+All original432 identities and eight phase-normalized input/observer scripts
+are unchanged. Independent closures verify no held keys, stopped owned seat,
+empty cgroups, pinned processes gone, removed temporary policy and unchanged
+host libraries. Browser export SHA256
+37fceb052de575197fc2de14c11ff3c95fe3b7696b8ca8b0112611acb48e6a3a,
+28340016bytes3294files1280raw snapshots448631347bytes. Archive and every member
+are verified. Native export remains
+4de89305b8205baf95290c477e3108728af3d271df0127abb2004a900c7eba09.
+
+Successful native Double Shift samples: Firefox n200 p50=30.091ms/p95=176.217ms;
+Chrome n185 p50=30.075ms/p95=174.198ms. Successful Space n50 per browser:
+Firefox29.257/32.028ms and Chrome29.645/31.691ms p50/p95. Failed operations
+remain FAIL and are excluded from successful latency samples; no acceleration
+or all-case-latency claim. Qt successful DS n60 p50=28.877ms/p95=137.891ms.
+
+Exact join receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/ibus-reset-surrounding-matching-432-source-one.json; SHA256 32c67640fd0d27a9d80cc9d5a4c410729f48cbebc839c83cf39d18bd0287807d.
+Component comparisons are ibus-reset-surrounding-browser-source-one/COMPARISON.json
+and ibus-reset-surrounding-native-source-one/COMPARISON.json under the same
+development-cache root. Verdict PHYSICAL_IMPROVEMENT_NOT_ACCEPTED: remaining
+FAIL/BLOCKED and private KWin qualification gaps, GNOME NOT_TESTED. Passing Qt
+trace producer/interval completeness remains UNKNOWN; no inferred missing
+events, callback causality or focus theft. No installation, publication,
+host IBus restart, cached snapshot authority or IME delivery-route change.
+Next investigate the largest shared remaining class: selected-text conversion
+(26 explicit selection FAIL identities; GTK Entry focus-return additionally
+ends with a selected range). Preserve first-failed-transition evidence before
+editing and keep selection authority distinct from collapsed-word authority.
+
+
+Reset-cache remote AST-only architecture gate PASS at2026-10-19T10:11:15.933426+00:00; original scripts/update-architecture-graph.sh (including graphify update) returned0. All six generated outputs and export archive were hash-verified before copying back; runtime sources unchanged except generated graph receipt. Exact receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/ibus-reset-surrounding-architecture-source-one/RESULT.json; SHA256 983d275226f6fe084ab4cb0c594eb02a5a32761a5ba97fb734003ffc39c8fbca. This source/document gate does not expand physical acceptance or certify a new build. Latest matching432 remains382PASS46FAIL4BLOCKED. Next selected-range diagnostics show positive IME RPC context_authority refusal with manual_toggle_allowed=false/manual_refresh_allowed=false in Qt, Firefox and Chrome; first source admission condition remains to be identified. No installation or delivery-route change.
+
+
+TD159 Chrome Search four-cell passive text-reader diagnosis, independently
+closed at2026-10-19T10:35:56.651714+00:00. Firefox2 roundtrip/short PASS;
+Chrome2 roundtrip/short FAIL before Double Shift. Same a46dd831 Lay plus
+0b907f7c private IBus and the complete kbel dependency bundle; no runtime or
+input-route change. Remote60 canonical source controls and4 actual observer,
+error/bounds and entrypoint-wiring tests PASS. Canonical320 actor/controller
+and their guards are retained; adjacent four-cell diagnostic wraps state(),
+returns the original object unchanged and adds bounded sequential reads only.
+
+Chrome CharacterCount5/1 and caret6/2; count-bounded, count-plus-one and
+end-minus-one all return "приве"/"д". Firefox equivalents are full6/2.
+This falsifies the narrow hypothesis that merely extending the GetText read
+boundary repairs the observation. Positive Chrome Wayland client log entries
+contain complete preedit_string("привет",12,12) and ("да",4,4), so full
+composition text reaches that endpoint. DOM/rendered equality and precise
+Chrome accessibility/composition transition remain UNKNOWN. Next compare the
+actual DOM value and current composition without changing Lay delivery.
+
+The preceding kben partial320 attempt was stopped after observing that the
+probe had been added to a helper not executed by the actual actor. That run
+contains no useful probe samples and is not promoted or silently retried as a
+matrix. Independent aborted closure verifies empty cgroup, no held keys,
+owned seat/policy removed, VT1 and unchanged host libraries. Its export hash
+is a5bdc9fc98c8a11cc08a170bf87fce894d4128e0e80f609464fb850db3cecab8.
+
+Four-cell exact receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/search-text-reader-four-cells-source-one/DIAGNOSIS.json,
+SHA256 d9da90461c1a36c0accf374fdbf119d06f4c11883943bcc1749385b622b97a8c.
+Archive75f7cf84300a6f05ec0af8a179c6e0f7fe72103f71dc5feb9e18e8e72b5c0e62,
+345455bytes138files16raw snapshots1940780bytes, every member verified.
+Independent closure includes pinned processes gone, no held keys, stopped
+owned seat, VT1 restored and host libraries unchanged. Scope4cells/428NOT_TESTED;
+latest matching complete432 stays382PASS46FAIL4BLOCKED, browser292/28/0/320.
+No Lay build, installation, publication, host IBus restart or authority change.
+
+
+TD159 Search DOM/AX separation, closed2026-10-19T10:53:09.429600+00:00.
+Owner: docs/architecture/firefox-input-stability-2026-10-05.md, same heading.
+kbes adjacent four-cell Chrome diagnostic2PASS2FAIL/428NOT_TESTED. Search AX
+truncates final character and reports caret beyond length; post-verdict DOM
+contains full text and collapsed end caret. Ordinary input agrees and passes
+both Double Shift directions/probes. Sequential45-55ms observations do not
+prove an atomic AX/DOM mismatch or precise Chromium root cause. Search gesture
+NOT REACHED. Do not add Lay output, extend read boundary, rename old FAIL or
+promote DOM to runtime authority. Next qualify a separately versioned shared
+read-only observer and its negative controls; original native keys unchanged.
+Exact cache receipt search-dom-reader-four-cells-source-five/DIAGNOSIS.json,
+SHA25628c561c4508c8735721026f64d9ac18c8fe85beaa0f86ac0f37c3c68373ad44a;
+verified archive1a9a2f76e80ac8439a92570ee6a752de4cb830dd69c46a426dd9d08c25c4be41.
+Independent closure complete. Full432 remains382PASS46FAIL4BLOCKED. No Lay
+build, installation, host IBus restart, delivery-route or authority change.
+
+
+TD159 fixed client-text observer qualification, closed2026-10-19T11:15:36.909223+00:00.
+Owner: docs/architecture/firefox-input-stability-2026-10-05.md, same heading.
+Test-only preselected read-only DOM observer: 92 source checks PASS, four fixed
+Chrome ordinary/Search native cases PASS, eight Double Shift gestures with
+next-letter/Backspace checks. 428 NOT_TESTED; no old FAIL reclassification.
+Exact receipt client-text-observer-four-cells-source-two/DIAGNOSIS.json,
+SHA256 7a041a5935478d5834dfcea0c9a91a339f960513443460ea4103c21d67aca17c; archive 019341e72d268289a28d306bd1abbaaabc50ab8d3e48dcec3442129467181ed2.
+Initial source-wrapper miscount and kbet zero-key predecessor-status abort
+preserved; corrected actual closure guard has negative controls. kbeu independently
+closed, bytes unchanged. Full432 stays382PASS46FAIL4BLOCKED. DOM-observation
+latency includes reader overhead and is not comparable to prior native timings.
+Next separately versioned full affected scope; selection/terminal defects remain.
+No runtime authority, delivery route, installation, restart or publication change.
+
+
+TD159 full browser observer qualification, closed2026-10-19T11:29:26.292355+00:00.
+Owner: docs/architecture/firefox-input-stability-2026-10-05.md:10191.
+Same320 native identities: Firefox150/10/0, Chrome150/10/0; total300PASS20FAIL0BLOCKED.
+Eight Search reader failures resolved by new preselected observation; other312
+verdicts unchanged. All20 remaining failures have actual full selected ranges.
+96 source controls PASS. Runtime bytes/routes/authority unchanged, no install.
+Receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/native-client-observer-browser-source-one/DIAGNOSIS.json;
+SHA2560f9c19b93047012124b353e8380d354b145c02388db6db44f652b021d9fcbe8f. Verified archive2c29957ba2749fccf3c7e857c076f7cef0089f2223be2f657049234183d90e80;
+independent closure complete. Native112 not rerun; GNOME NOT_TESTED.
+Successful-only latency split by reader; DOM overhead is not runtime latency.
+Next KWrite post-gate adapter/pair-scope contract and selected-range authority;
+existing raw snapshots prove candidate eligible but final decision absent,
+not a missing Space or proven focus theft. No safety/verifier bypass.
+
+TD159 KWrite pair-source causal red:2026-10-19T11:44:13.139026+00:00;1PASS/3FAIL through actual client-observation ingress. See docs/architecture/firefox-input-stability-2026-10-05.md and decision2026-10-19-owned-space-pair-actual-rereceipt.json. Existing pair proof carry selected; green/native pending; output routes and verifier retained. Exact receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-repro-source-three/RESULT.json.
+
+TD159 KWrite full source and private build2026-10-19T11:55:15.439987+00:00: official IME886/886 and performance3/3 PASS; graph, embedded architecture receipt and format PASS; private IME ff544e707102459d6af7d43e26d3e57c6294b2e0134402d9877071bacebcf8dc; native NOT_TESTED. Owner docs/architecture/firefox-input-stability-2026-10-05.md; receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-final-build-source-one/RESULT.json. Delivery routes/install unchanged.
+
+TD159 KWrite physical native112 closed2026-10-19T12:00:09.731702+00:00:
+91PASS17FAIL4BLOCKED/112 on ff544e707102459d6af7d43e26d3e57c6294b2e0134402d9877071bacebcf8dc.
+Only KWrite/moved_boundary changes FAIL->PASS;111 other verdicts unchanged.
+KWrite14/1/1, actual target "должны быть ", Space30.692999ms one successful
+observer-inclusive sample. All1227 archive members hash-verified; closure
+ad64a52b68a394fb170ddbe3615a66d325b1f7724d26cc43a4e97d0085834147.
+Exact receipt /home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-native-comparison-source-one.json.
+Owner docs/architecture/firefox-input-stability-2026-10-05.md, same milestone.
+Same-candidate browser320 pending; historical300/20/0 is not new432 acceptance.
+Source-one fixture mismatch failed before input; source-two same76 controls
+PASS with correctly pinned frozen new-build metadata. No install/routes change.
+
+TD159 changed-pair browser320 closed2026-10-19T12:13:38.046328+00:00:
+Firefox149/11/0, Chrome150/10/0;299PASS21FAIL0BLOCKED/320. Only
+Firefox/6/moved_boundary changes PASS->FAIL. Same-pinned native112 gives
+matching432=390PASS38FAIL4BLOCKED. Candidate NOT_PROMOTED; KWrite one gain
+offset by Firefox one loss. Receipt
+/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kwrite-pair-prefix-browser-comparison-source-one.json.
+Owner docs/architecture/firefox-input-stability-2026-10-05.md, changed-pair
+closed432 entry. Actual client D-Bus SetSurroundingText already contains
+full12-scalar source with cursor11/anchor11; Lay preserves and refuses this
+tuple. Old successful event recovered in next trace snapshot shows12/12.
+Intermediate GTK observation ordering is a hypothesis; no cursor synthesis,
+contradiction-retention bypass, new runtime route or installation authorized.
+
+TD159 Gecko diagnostic closed2026-10-19T12:32:52.182390+00:00:
+Firefox6 original16=15PASS1FAIL, moved_boundary PASS, diagnostic only.
+Actual GTK module1.5.26-4/private libibus1.5.34 pinned separately.
+Gecko log positively measures cursor12/text11 immediately after empty
+composition end then noncomposing commit; existing selection retry supplies12/12.
+Failed full12/cursor11 Gecko notification order remains unknown. No regrade,
+authority/output-route/install change. Owner firefox-input-stability document,
+bounded Gecko diagnostic entry; cache firefox-gtk-ordering-diagnostic-source-one/evidence.
+
+TD159 next bounded hypothesis: finish existing visible active composition with
+CommitText before retiring presentation; record five production-entrypoint
+red/green controls including postcommit clear errors and unchanged atomic
+effects. Baseline private ff544e70 matching432390/38/4 NOT_PROMOTED.
+Decision2026-10-19-active-composition-commit-retirement-order.json records
+alternatives and consequences. Native/source proof pending; no cursor
+synthesis, pair-proof retention bypass, new owner/timer/query/route/install.
+
+
+### TD159 commit-order controlled red/green; remaining repair scope
+
+2026-10-19: active-composition output experiment detected original order in
+4/5 controls (1PASS4FAIL), then passed5/5 after a local same-route output-order
+change. Exact receipts `active-commit-order-{red,green}-source-one/RESULT.json`
+under `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/`.
+Commit failure retains original composition; postcommit clear failures retire
+the sent buffer and retry presentation only. Native benefit remains NOT_TESTED.
+User defers26 selected-text failures; keep them FAIL, repair remaining12
+(Firefox1, GTKfocus1, Konsole10); BLOCKED4 separate. No installation/promotion.
+
+
+### 2026-10-19 — accepted publication boundary for TD159
+
+Recorded at 2026-10-19T13:27:26.885956+00:00. Both final native components are independently
+closed with the same candidate:391PASS37FAIL4BLOCKED/432, no untested rows.
+Firefox field6/moved_boundary recovers after commit-before-presentation
+retirement; no other row changes. Original26 selected-text FAIL are retained
+and deferred; GTK focus-return1, Konsole10 and four BLOCKED remain limitations.
+The user accepted this result and requested publication as1.0.91, updating later
+through the menu. Repair and verification stop at that acceptance boundary.
+No additional code change, check, build, native input, installation or restart
+is authorized by publication. Current delta is version/release/evidence metadata.
+Private KDE dependencies remain a qualification limit; fresh GNOME NOT_TESTED.
+Exact receipts, closure hashes and successful-operation latency are in
+`tech_debt/evidence/td159-accepted-native-432-20261019.json` and the latest owning
+input-stability document entry. Existing historical red/green receipts remain.

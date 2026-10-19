@@ -1,0 +1,89 @@
+--- a/bus/engineproxy.c
++++ b/bus/engineproxy.c
+@@ -1518,6 +1518,8 @@
+     if (engine->has_focus && !g_strcmp0 (object_path, engine->object_path))
+         return;
+     engine->has_focus = TRUE;
++    /* An identical tuple from a new focused context is a fresh observation. */
++    g_clear_object (&engine->surrounding_text);
+     g_free (engine->object_path);
+     g_free (engine->client);
+     engine->object_path = g_strdup (object_path);
+--- a/client/wayland/ibuswaylandim.c
++++ b/client/wayland/ibuswaylandim.c
+@@ -132,6 +132,7 @@
+ #if ENABLE_SURROUNDING
+     IBusText *surrounding_text;
+     guint surrounding_cursor_pos;
++    guint surrounding_anchor_pos;
+ #endif
+ 
+     struct xkb_context *xkb_context;
+@@ -785,6 +786,34 @@
+ #endif
+ 
+ 
++#if ENABLE_SURROUNDING
++static void
++_context_require_surrounding_text_cb (IBusInputContext *context,
++                                      gpointer          data)
++{
++    IBusWaylandIMPrivate *priv =
++            ibus_wayland_im_get_instance_private (IBUS_WAYLAND_IM (data));
++    const gchar *text;
++
++    /* Only a callback from this activation can populate surrounding_text;
++     * input_method_deactivate clears it before another context is created.
++     */
++    if (context == NULL || context != priv->ibuscontext ||
++        priv->surrounding_text == NULL ||
++        !ibus_input_context_needs_surrounding_text (context))
++        return;
++
++    text = priv->surrounding_text->text;
++    /* The API consumes a floating text, including on duplicate delivery. */
++    ibus_input_context_set_surrounding_text (
++            context,
++            ibus_text_new_from_string (text),
++            g_utf8_pointer_to_offset (text, text + priv->surrounding_cursor_pos),
++            g_utf8_pointer_to_offset (text, text + priv->surrounding_anchor_pos));
++}
++#endif
++
++
+ static void
+ handle_surrounding_text (void                                  *data,
+                          struct zwp_input_method_context_union *context,
+@@ -806,6 +835,7 @@
+         g_object_unref (priv->surrounding_text);
+     priv->surrounding_text = g_object_ref_sink (ibustext);
+     priv->surrounding_cursor_pos = cursor;
++    priv->surrounding_anchor_pos = anchor;
+ 
+     if (priv->ibuscontext != NULL &&
+         ibus_input_context_needs_surrounding_text (priv->ibuscontext)) {
+@@ -1980,7 +2010,10 @@
+                           G_CALLBACK (_context_hide_preedit_text_cb),
+                           wlim);
+ 
+-#ifdef ENABLE_SURROUNDING
++#if ENABLE_SURROUNDING
++        g_signal_connect (priv->ibuscontext, "require-surrounding-text",
++                          G_CALLBACK (_context_require_surrounding_text_cb),
++                          wlim);
+         g_signal_connect (priv->ibuscontext, "delete-surrounding-text",
+                           G_CALLBACK (_context_delete_surrounding_text_cb),
+                           wlim);
+@@ -2113,7 +2146,11 @@
+                 priv->ibuscontext,
+                 G_CALLBACK (_context_hide_preedit_text_cb),
+                 wlim);
+-#ifdef ENABLE_SURROUNDING
++#if ENABLE_SURROUNDING
++        g_signal_handlers_disconnect_by_func (
++                priv->ibuscontext,
++                G_CALLBACK (_context_require_surrounding_text_cb),
++                wlim);
+         g_signal_handlers_disconnect_by_func (
+                 priv->ibuscontext,
+                 G_CALLBACK (_context_delete_surrounding_text_cb),

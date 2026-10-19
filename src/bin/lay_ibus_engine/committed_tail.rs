@@ -24,6 +24,54 @@ struct AdmittedSpaceAutocorrect {
     layout_transition: bool,
 }
 
+impl super::engine::PendingSpaceBoundaryCommit {
+    /// Full field equality except the two already owned physical Space slots.
+    /// A suffix-only observation or an unrelated NBSP is insufficient.
+    pub(super) fn observed_pair_commit(
+        &self,
+        actual: &super::engine::SurroundingTextSnapshot,
+    ) -> Option<String> {
+        if actual.cursor_pos != self.after_commit.cursor_pos
+            || actual.anchor_pos != self.after_commit.anchor_pos
+            || actual.has_selection()
+        {
+            return None;
+        }
+        let pair = &self.frame.space_boundary_pair.as_ref()?.text;
+        let (left, _, right) = lay::text_edit::split_observed_space_pair(pair)?;
+        let cursor = self.after_commit.cursor_pos as usize;
+        let internal = cursor.checked_sub(right.chars().count() + 2)?;
+        let final_space = cursor.checked_sub(1)?;
+        let expected: Vec<_> = self.after_commit.text.chars().collect();
+        let observed: Vec<_> = actual.text.chars().collect();
+        if expected.len() != observed.len()
+            || final_space >= expected.len()
+            || expected
+                .get(internal)
+                .is_none_or(|c| !matches!(c, ' ' | '\u{a0}'))
+            || expected[final_space] != ' '
+            || !expected
+                .iter()
+                .zip(&observed)
+                .enumerate()
+                .all(|(index, (old, new))| {
+                    if index == internal || index == final_space {
+                        matches!(new, ' ' | '\u{a0}')
+                    } else {
+                        old == new
+                    }
+                })
+        {
+            return None;
+        }
+        let original_len = left.chars().count() + right.chars().count() + 2;
+        let raw = actual.suffix_before_cursor(original_len)?;
+        let raw_pair = raw.trim_end_matches([' ', '\u{a0}']);
+        let (actual_left, _, actual_right) = lay::text_edit::split_observed_space_pair(raw_pair)?;
+        (actual_left == left && actual_right == right).then_some(raw)
+    }
+}
+
 impl LayIbusEngine {
     pub(super) fn schedule_space_autocorrect_prefetch(&self, identity: &InputFrameIdentity) {
         if !self.config.auto_replace || !self.content_allows_text_assistance() {
@@ -480,14 +528,16 @@ impl LayIbusEngine {
             }
             return Ok(false);
         }
-        if actual != Some(&pending.after_commit) {
+        let Some(observed_pair) = actual.and_then(|actual| pending.observed_pair_commit(actual))
+        else {
             if let super::engine::PendingSpaceBoundarySelection::Computing { identity, .. } =
                 &pending.selection
             {
                 space_autocorrect_prefetch::invalidate(identity);
             }
             return Ok(false);
-        }
+        };
+        let actual_commit = actual.expect("bounded actual pair checked above").clone();
         let forward = match pending.selection.clone() {
             super::engine::PendingSpaceBoundarySelection::Selected(action) => *action,
             super::engine::PendingSpaceBoundarySelection::Computing {
@@ -536,9 +586,19 @@ impl LayIbusEngine {
                 lease.decision.action
             }
         };
+        let Some(forward) = forward.with_observed_boundary_space(&observed_pair) else {
+            return Ok(false);
+        };
         let Some(action) = forward.clone().with_committed_boundary_space() else {
             return Ok(false);
         };
+        if !self.acknowledge_space_pair_client_presentation(
+            &pending,
+            &actual_commit,
+            &observed_pair,
+        ) {
+            return Ok(false);
+        }
         let original = action.from_text().to_string();
         let replacement = action.to_text().to_string();
         let expected = VisibleTailSnapshot::new(
@@ -576,7 +636,7 @@ impl LayIbusEngine {
                     undo.recorded_boundary_precondition =
                         Some(super::protocol::RecordedBoundaryPrecondition {
                             frame,
-                            snapshot: pending.after_commit,
+                            snapshot: actual_commit,
                         });
                 }
             }
@@ -1007,8 +1067,10 @@ impl LayIbusEngine {
         }
         if let Some(queued_at) = self.layout_gesture.pending_manual_refresh_at {
             if queued_at.elapsed() > Duration::from_millis(700)
-                || !self.context_reset_rereceipt_manual_wait_allowed()
+                || !(self.context_reset_rereceipt_manual_wait_allowed()
+                    || self.fresh_exact_manual_source_read_allowed())
             {
+                self.revoke_pending_fresh_manual_source();
                 self.layout_gesture.pending_manual_toggle = false;
                 self.layout_gesture.pending_manual_refresh_at = None;
                 trace::record(
@@ -1016,7 +1078,9 @@ impl LayIbusEngine {
                 );
                 return Ok(true);
             }
-            if !self.context_reset_rereceipt_exact_manual_handoff_allowed() {
+            if !(self.context_reset_rereceipt_exact_manual_handoff_allowed()
+                || self.fresh_exact_manual_refresh_ready())
+            {
                 // Firefox may first echo the retired display-only preedit.
                 // The reducer keeps only an owned, inert publication; wait
                 // for its exact receipt before touching client text.

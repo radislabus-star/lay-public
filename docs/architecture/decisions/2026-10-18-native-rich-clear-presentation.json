@@ -1,0 +1,41 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-18",
+  "status": "PROPOSED_TEST_ONLY_PARTIAL_NATIVE",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "reason": "Complete native rich-tree captures show that physical Ctrl+A/Backspace can leave a presentation LF at caret zero. The exact-empty actor then blocks before the operation being tested. Real Enter produces different caret or topology in the retained captures.",
+  "decision": "Introduce a pure, bounded empty-after-physical-clear predicate only in the native actor's clear prerequisite. Freeze the exact accessible endpoint before Ctrl+A/Backspace; verify the owned seat, application, focus and requested layout before and after observation. Leave all measured target checks unchanged.",
+  "invariants": ["C05", "C07", "C10"],
+  "protected_paths": [
+    "tests/manual/browser_ime_native_surfaces.py",
+    "scripts/tests/test_browser_ime_native_surfaces.py",
+    "tests/manual/browser_ime_standard.md"
+  ],
+  "consequences": {
+    "allowed_shapes": "An empty entry at caret zero with no children; or a single LF at caret zero with no children; or a single LF at caret zero with exactly one static leaf containing that LF, no selection and caret minus one. The root must have the observed editable div/textbox role, actual focused/editable/showing/visible states, no defunct state, no selection, stable raw readback and a complete bounded tree without read errors or hidden descendants.",
+    "scope": "These shapes qualify only the immediately preceding physical clear of the frozen, still-focused endpoint. They are not general empty-text equivalence and cannot prove that arbitrary LF input is empty. Endpoint equality may not be obtained by assigning expected identity from the tree being checked.",
+    "rejections": "Reject changed endpoints, missing or synthetic focus evidence, layout mismatch, unstable or incomplete trees, unexpected children, real-Enter topologies, nonempty descendants, suffix text and any U+FFFC representation. Do not flatten Hypertext or strip LF/NBSP generally.",
+    "authority": "Test setup only. No runtime mutation, SafetyGate, verifier, reducer, IME delivery route, owner or re-admission authority changes. No extra RPC or wait is added to measured Double Shift operations.",
+    "receipts": "Keep old clear failures and all original identities. New source and native attempts get separate hashes and receipts; passing presentation controls does not regrade a behavioral case.",
+    "rollback": "Remove this predicate and its clear-only call site together; preserve captured native trees and earlier results. No installation or data migration."
+  },
+  "verification": "Use the actual captured Firefox and Chrome trees as positive controls, with real Enter, nonempty descendants, wrong identity, focus, selection, cursor, layout and incomplete-tree negatives. Run source controls on the actual target APIs before focused native prerequisites and unchanged behavioral scenarios. A full retained matrix is still required to change complete matrix counts.",
+  "evidence": {
+    "firefox_result_sha256": "9564c726bb6de1d68e5e9810e6cbc1872e7e79a40cec16c1c67f8f3f3215f795",
+    "chrome_result_sha256": "3d082ae51a0711caed54fbb5ac507ed40d23cb34a4a7c4982f97a6a9d5835734",
+    "local_receipts": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kde-rich-raw-capture-api-next",
+    "observations": "42 complete/stable bounded trees, CAPTURED/UNQUALIFIED; no behavioral PASS or Double Shift latency claim.",
+    "focused_native": {
+      "local_receipts": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kde-rich-qualified-native-source-two",
+      "source_controls": "22 PASS per browser, zero skips; actual-host zero-key AT-SPI API PASS. Original actor and physical operations retained.",
+      "firefox_result_sha256": "e7e56bed081f6539ad4ad79c5d87dc2ff90e6a2ed174e681cb463703d75dba4d",
+      "chrome_result_sha256": "ba2545c41ce365a18f3a034fa19b1a08995df260d2902f2d577f8523f9d78395",
+      "behavior": "Firefox 5 PASS / 1 FAIL and Chrome 0 PASS / 6 FAIL in the original roundtrip and short cells for fields 7, 8, 10. This subset does not regrade the complete matrices.",
+      "clear_only": "Firefox 5 of 6 physical clears qualified; first field-10 clear rejected despite empty text because the required root attributes were absent. Chrome 6 of 6 clears qualified, followed by actual first-Double-Shift failures.",
+      "closure": "Independent closure at 2026-10-18T21:24:47.025321Z (Firefox) and 2026-10-18T21:27:27.819007Z (Chrome): empty cgroups, original pinned processes gone, no held keys, VT1, owned seat stopped and temporary policy absent.",
+      "not_tested": "Full retained matrices with this predicate; unspecified rich-tree shapes. No predicate promotion or general empty-text equivalence follows."
+    }
+  },
+  "runtime_authority_changed": false,
+  "production_delivery_changed": false
+}

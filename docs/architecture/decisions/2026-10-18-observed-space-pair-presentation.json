@@ -1,0 +1,61 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Bind an already verified final-pair BoundaryShift to the exact observed Space presentation through its existing pending client-commit receipt.",
+  "reason": "The rich native receipt exposes an ASCII-only pair scope. Firefox represents the first owned Space as NBSP and can change that internal boundary back to ASCII while presenting the second committed Space as NBSP. Core Apply is present, but no editable pair is admitted. A parser-only change cannot prove the subsequent raw edit or its inverse.",
+  "invariants": [
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/text_edit.rs",
+    "src/ime_correction.rs",
+    "src/text_edit/action.rs",
+    "src/text_edit/gate.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs",
+    "src/bin/lay_ibus_engine/space_autocorrect_prefetch/proof.rs",
+    "tests/td113_hybrid_source_contract.rs"
+  ],
+  "consequences": {
+    "authority": "Keep the same core winner, sealed transition, pending Space receipt, exact field snapshot, owner/focus/epoch/material identity, lifetime and one-shot executor. Only two already owned separator positions may have ASCII/NBSP presentation. Every letter, external prefix/suffix, cursor, anchor and all other positions must remain exact. No generic normalization or reconstruction from suffix equality.",
+    "safety": "Preserve the existing SafetyGate, surface-preserving BoundaryShift test and exact dry-run. Source and selected target use the same bounded ASCII/NBSP pair parser; the original core strings and receipt are verified without initial resealing. Only the actual client commit can rebind the two already owned separator positions, after whole-field and same-authority validation. Rebinding preserves both words and is rejected for any other character or scope change. No manually weighted lexical exception.",
+    "undo": "Record the rebound sealed physical forward action. Its inverse restores the actual full raw source, including the observed final separator. An equal later snapshot cannot resurrect a refused or expired continuation.",
+    "delivery": "Use the existing ordinary preedit Space commit, its client acknowledgement and the existing committed-tail replacement. No new route, owner, queue, fallback, RPC, timer or deadline. Atomic and native-observed transports retain their existing scope checks.",
+    "cost": "Two bounded pair parses and one bounded full-snapshot comparison at the existing continuation; no model, ranker, training or persistent-data changes. Timing remains a changed-byte native gate.",
+    "rollback": "Revert this bounded presentation change and its tests/decision together, preserving preceding auxiliary-hint fixes and immutable negative native receipts. No local installation or data migration."
+  },
+  "verification": "First run the new exact owned-NBSP regression against the preceding implementation and retain RED. Then cover the exact raw correction and inverse, ASCII compatibility, both worker/client event orders, unchanged external prefix/suffix, and rejection of stale owner/epoch/material, selection, interior caret, extra separators and unsupported whitespace. Run the affected source closure, graph/canon guards and changed-byte Firefox/Chrome native plans without promoting supplemental results into the old full matrix.",
+  "status": "IMPLEMENTED_FOCUSED_27_PASS_FIRST_FULL_PROTECTED_BINDING_REJECTED",
+  "not_tested": "The exact owned-NBSP source regression has controlled RED and GREEN. All 22 pair-owner and five sealed gate tests pass, including 14 mutation rejections. Full source closure and changed-byte native behavior remain pending. Original full browser354PASS45FAIL33BLOCKED remains authoritative.",
+  "runtime_authority_changed": false,
+  "source_head": "c8b244ef609ad9c5610b3e441311342abf17e9c5",
+  "protected_artifact_successor": {
+    "predecessor": {
+      "decision": "docs/architecture/decisions/2026-10-08-space-boundary-client-commit-order.json",
+      "decision_sha256": "374db00b4128dd3cbc74875aab6cc2e866965dd86a2ae84cd3042d66facfbd43",
+      "path": "src/text_edit/gate.rs",
+      "sha256": "547bc3797badb0b6b2e2dccc46ef8574a05aa760fe45363245283f4f75553d55",
+      "mode": "0664"
+    },
+    "successor": {
+      "path": "src/text_edit/gate.rs",
+      "sha256": "6ed5eda0f5ad0a25c61a2c81a9cf7b33711db127fc9e217edf56c934a2fc286f",
+      "mode": "0664"
+    },
+    "scope": "Only the already sealed final-pair physical Space presentation and its exact recorded inverse. Keep the complete TD-113/October7/October8 predecessor chain, exact path/mode/hash checks and all other protected artifacts.",
+    "source_review": {
+      "reviewer": "/root",
+      "independent_agent": false,
+      "verdict": "PASS_ROOT_STATIC_PREFLIGHT",
+      "evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/nbsp-space/green-cd6t3jlb/RESULT.json"
+    }
+  },
+  "protected_binding_replan": "Full run-mcm5gdsg/run-PNDFPe retained FAIL: the immutable October8 successor correctly rejected changed gate.rs bytes. Pin this explicit later decision and its exact successor bytes in the existing source-contract test. No old receipt, baseline, test identity, failure allowance or production authority is changed. This decision is immutable after its source-contract pin; all later validation is recorded in the owning architecture document."
+}

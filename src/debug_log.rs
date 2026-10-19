@@ -158,35 +158,26 @@ fn compact_to_max_bytes(path: &PathBuf) {
 }
 
 fn tail_with_max_bytes(text: &str, max_bytes: usize) -> &str {
-    if text.len() <= max_bytes {
-        return text;
-    }
     let keep_from = tail_line_boundary(text, max_bytes);
-    let compacted = &text[keep_from..];
-    if compacted.len() <= max_bytes {
-        return compacted;
-    }
-    let hard_start = compacted.len().saturating_sub(max_bytes);
-    let hard_start = compacted
-        .char_indices()
-        .find_map(|(idx, _)| (idx >= hard_start).then_some(idx))
-        .unwrap_or(hard_start);
-    &compacted[hard_start..]
+    &text[keep_from..]
 }
 
 fn tail_line_boundary(text: &str, max_bytes: usize) -> usize {
     if text.len() <= max_bytes {
         return 0;
     }
-    let start = text.len().saturating_sub(max_bytes);
-    let start = text
-        .char_indices()
-        .find_map(|(idx, _)| (idx >= start).then_some(idx))
-        .unwrap_or(start);
-    text[..start]
-        .rfind('\n')
-        .map(|idx| idx + 1)
-        .unwrap_or(start)
+    let start = text.len() - max_bytes;
+    let bytes = text.as_bytes();
+    if bytes[start - 1] == b'\n' {
+        return start;
+    }
+    // Keep the newest complete records that fit; never retain a partial JSON line.
+    // A newline boundary is also a UTF-8 boundary, even if the byte cut was not.
+    bytes[start..]
+        .iter()
+        .position(|byte| *byte == b'\n')
+        .map(|offset| start + offset + 1)
+        .unwrap_or(text.len())
 }
 
 #[cfg(test)]
@@ -197,7 +188,9 @@ mod tests {
     fn tail_boundary_keeps_complete_lines() {
         let text = "one\ntwo\nthree\nfour\n";
         let start = tail_line_boundary(text, 10);
-        assert_eq!(&text[start..], "three\nfour\n");
+        assert_eq!(&text[start..], "four\n");
+        let exact_fit = tail_line_boundary(text, "three\nfour\n".len());
+        assert_eq!(&text[exact_fit..], "three\nfour\n");
     }
 
     #[test]
@@ -205,5 +198,32 @@ mod tests {
         let text = "x".repeat(100);
         let compacted = tail_with_max_bytes(&text, 10);
         assert!(compacted.len() <= 10);
+        assert!(
+            compacted.is_empty(),
+            "an oversized record must be dropped whole"
+        );
+    }
+
+    #[test]
+    fn tail_compaction_preserves_json_records_at_every_byte_budget() {
+        let records = [
+            "{\"event\":\"before\",\"text\":\"тест\"}\n",
+            "{\"event\":\"key\",\"text\":\"я🙂\"}\n",
+            "{\"event\":\"after\",\"text\":\"привет\"}\n",
+        ];
+        let text = records.concat();
+        for budget in 0..=text.len() + 1 {
+            let compacted = tail_with_max_bytes(&text, budget);
+            assert!(compacted.len() <= budget, "budget={budget}");
+            for line in compacted.lines() {
+                serde_json::from_str::<serde_json::Value>(line)
+                    .unwrap_or_else(|error| panic!("budget={budget}: {error}: {line}"));
+            }
+            let expected = (0..=records.len())
+                .map(|start| records[start..].concat())
+                .find(|suffix| suffix.len() <= budget)
+                .unwrap();
+            assert_eq!(compacted, expected, "budget={budget}");
+        }
     }
 }

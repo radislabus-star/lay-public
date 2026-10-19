@@ -244,14 +244,52 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             let client_successor = &binding["successor"];
             assert_eq!(client_successor["path"], successor["path"]);
             assert_eq!(client_successor["mode"], successor["mode"]);
+            const OBSERVED_SPACE_DECISION: &str =
+                "docs/architecture/decisions/2026-10-18-observed-space-pair-presentation.json";
+            assert_eq!(
+                sha256(&Path::new(ROOT).join(OBSERVED_SPACE_DECISION)),
+                "f06460f84218877fa3991e81cc6e1cc772137340b87c099cc39a377418006da2"
+            );
+            let observed_space: serde_json::Value =
+                serde_json::from_str(&read(OBSERVED_SPACE_DECISION))
+                    .expect("observed Space presentation successor decision");
+            assert_eq!(observed_space["schema"], "lay.architecture-decision.v1");
+            assert_eq!(observed_space["runtime_authority_changed"], false);
+            let observed_binding = &observed_space["protected_artifact_successor"];
+            assert_eq!(
+                observed_binding["predecessor"]["decision"],
+                CLIENT_COMMIT_DECISION
+            );
+            assert_eq!(
+                observed_binding["predecessor"]["decision_sha256"].as_str(),
+                Some(sha256(&Path::new(ROOT).join(CLIENT_COMMIT_DECISION)).as_str())
+            );
+            for field in ["path", "sha256", "mode"] {
+                assert_eq!(
+                    observed_binding["predecessor"][field],
+                    client_successor[field]
+                );
+            }
+            assert_eq!(observed_binding["source_review"]["reviewer"], "/root");
+            assert_eq!(
+                observed_binding["source_review"]["independent_agent"],
+                false
+            );
+            assert_eq!(
+                observed_binding["source_review"]["verdict"],
+                "PASS_ROOT_STATIC_PREFLIGHT"
+            );
+            let observed_successor = &observed_binding["successor"];
+            assert_eq!(observed_successor["path"], client_successor["path"]);
+            assert_eq!(observed_successor["mode"], client_successor["mode"]);
             let successor_path = Path::new(ROOT).join("src/text_edit/gate.rs");
             assert_eq!(
-                client_successor["sha256"].as_str(),
+                observed_successor["sha256"].as_str(),
                 Some(sha256(&successor_path).as_str())
             );
             assert_eq!(
                 successor_path.metadata().unwrap().permissions().mode() & PROTECTED_MODE_BITS,
-                u32::from_str_radix(client_successor["mode"].as_str().unwrap(), 8).unwrap()
+                u32::from_str_radix(observed_successor["mode"].as_str().unwrap(), 8).unwrap()
                     & PROTECTED_MODE_BITS
             );
             continue;

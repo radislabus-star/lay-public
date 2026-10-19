@@ -625,6 +625,32 @@ pub(super) async fn expect_legacy_managed_space(
     expected_mode: bool,
     was_visible: bool,
 ) {
+    expect_legacy_managed_space_display(harness, engine, expected_mode, was_visible, false).await;
+}
+
+pub(super) async fn expect_legacy_auxiliary_managed_space(
+    harness: &mut Harness,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+    auxiliary_was_visible: bool,
+) {
+    expect_legacy_managed_space_display(
+        harness,
+        engine,
+        expected_mode,
+        false,
+        auxiliary_was_visible,
+    )
+    .await;
+}
+
+async fn expect_legacy_managed_space_display(
+    harness: &mut Harness,
+    engine: &LayIbusEngine,
+    expected_mode: bool,
+    preedit_was_visible: bool,
+    auxiliary_was_visible: bool,
+) {
     let effects = terminal_delivery::legacy_effects(harness).await;
     let first = if effects.first().is_some_and(|message| {
         message
@@ -642,11 +668,14 @@ pub(super) async fn expect_legacy_managed_space(
         .iter()
         .map(|effect| effect.header().member().unwrap().as_str().to_string())
         .collect();
-    let expected = if was_visible {
-        vec!["UpdatePreeditText", "HidePreeditText", "CommitText"]
-    } else {
-        vec!["CommitText"]
-    };
+    let mut expected = Vec::new();
+    if auxiliary_was_visible {
+        expected.push("UpdateAuxiliaryText");
+    }
+    if preedit_was_visible {
+        expected.extend(["UpdatePreeditText", "HidePreeditText"]);
+    }
+    expected.push("CommitText");
     assert_eq!(
         members, expected,
         "one closing Space, without any deletion or fallback"
@@ -659,8 +688,20 @@ pub(super) async fn expect_legacy_managed_space(
             ENGINE_INTERFACE
         );
     }
-    if was_visible {
+    if auxiliary_was_visible {
         let body = text_effects[0].body();
+        let (text, visible) = body
+            .deserialize::<(zbus::zvariant::Value<'_>, bool)>()
+            .unwrap();
+        assert_eq!(
+            crate::ibus_interface::ibus_text_value_to_string(&text),
+            Some(String::new())
+        );
+        assert!(!visible);
+    }
+    if preedit_was_visible {
+        let start = usize::from(auxiliary_was_visible);
+        let body = text_effects[start].body();
         let (text, cursor, visible, mode) = body
             .deserialize::<(zbus::zvariant::Value<'_>, u32, bool, u32)>()
             .unwrap();
@@ -669,7 +710,7 @@ pub(super) async fn expect_legacy_managed_space(
             Some(String::new())
         );
         assert_eq!((cursor, visible, mode), (0, false, 0));
-        assert!(text_effects[1].body().deserialize::<()>().is_ok());
+        assert!(text_effects[start + 1].body().deserialize::<()>().is_ok());
     }
     let body = text_effects.last().unwrap().body();
     let value = body.deserialize::<zbus::zvariant::Value<'_>>().unwrap();

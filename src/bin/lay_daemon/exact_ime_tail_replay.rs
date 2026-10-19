@@ -149,6 +149,7 @@ pub(super) fn execute_exact_ime_tail_replay(
     let layout_handoff = match activate_target_layout_once_for_exact_replay(
         lease.initial_layout_is_ru(),
         plan.target_layout_is_ru,
+        &focused_window,
     ) {
         Ok(handoff) => handoff,
         Err(error) => {

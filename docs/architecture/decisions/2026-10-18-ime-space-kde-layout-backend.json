@@ -1,0 +1,27 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Select the KDE keyboard backend inside the existing IME post-commit layout intent; preserve the sole worker, generation, context token and text delivery routes.",
+  "reason": "Native KDE GTK/Qt Space observations reach corrected text and decoder while the desktop group and IBus engine remain in the source language; layout_sync unconditionally invokes GNOME ActivateLayout.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/layout_sync.rs",
+    "src/bin/lay_ibus_engine/layout_sync/tests.rs",
+    "src/bin/lay_ibus_engine/layout_sync/kde.rs",
+    "src/bin/lay_ibus_engine/layout_sync/kde/tests.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "verification": "Ordered production-adapter and backend-selection regressions, controlled RED, full affected source gate, independent review, unchanged delivery route inspection, guarded private build, native Space with actual group/engine/mode/next letter and timing, complete separate KDE and GNOME matrices.",
+  "not_tested": "Source3260 PASS, focused849 PASS, controlled RED, final independent review9/10, private C build, supplemental actual-engine/next-letter4PASS. Full KDE432:175PASS233FAIL24BLOCKED0NOT_TESTED; one retained old-PASS regression with UNKNOWN cause, acceptance not passed. Same-byte GNOME432:354PASS46FAIL32BLOCKED0NOT_TESTED, all353 preceding PASS retained. Foreground lifecycle, terminal preedit pixels and visible menu remain unproved. No user installation or publication.",
+  "runtime_authority_changed": true,
+  "consequence_analysis": "See the TD156/159 Space backend preflight in docs/architecture/firefox-input-stability-2026-10-05.md. The backend completes existing post-commit intent only. One fresh session snapshot, typed unique-owner KDE mutation, unchanged mapping/index readbacks and existing context/generation validation; no fallback, cache, new worker, text mutation or lexical authority. KDE IPC has one180ms deadline, with existing bounded IBus CLI completion. Failure never retries text or restores into changed focus. GNOME and daemon replay contracts remain unchanged. Alternatives: selected local backend adapter9/10; cached ordinary helper4/10; shared cross-binary extraction now6/10 deferred."
+}

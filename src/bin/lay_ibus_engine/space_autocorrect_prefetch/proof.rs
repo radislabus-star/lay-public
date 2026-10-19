@@ -558,12 +558,11 @@ pub(crate) fn install_full_lease(identity: &InputFrameIdentity, config: &LayConf
         exact_certificate: None,
         enqueued_at: None,
     };
-    let (outcome, _) =
+    let (outcome, telemetry) =
         evaluate_full(&desired, Instant::now(), &|| true).expect("uncancelled proof computation");
-    assert!(
-        matches!(outcome, PreparedFullOutcome::Apply(_)),
-        "proof fixture requires an authorized full correction"
-    );
+    if let PreparedFullOutcome::NoApply { stage, .. } = &outcome {
+        panic!("proof fixture requires an authorized full correction: {stage:?}, {telemetry:?}");
+    }
     let (lock, wake) = &*worker.state;
     let mut state = lock.lock().expect("global proof slot");
     state.generation = generation;

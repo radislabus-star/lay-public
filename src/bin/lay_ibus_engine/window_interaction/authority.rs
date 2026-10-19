@@ -297,13 +297,15 @@ impl LayImeBridge {
         let bounded_unknown_suffix = engine.context_exact_manual_handoff_bounds_unknown_suffix();
         let observed_exact_suffix = engine.context_observed_suffix_exact_manual_handoff_allowed();
         let reset_rereceipt = engine.context_reset_rereceipt_exact_manual_handoff_allowed();
+        let exact_manual_snapshot = engine.exact_snapshot_manual_source_is_current();
         if !self.shared_active_path_matches(&path)
             || !self.bridge_token_is_live(&engine, token.as_ref())
             || engine.completed_native_replay_awaits_exact_receipt()
             || !(word_is_known
                 || bounded_unknown_suffix
                 || observed_exact_suffix
-                || reset_rereceipt)
+                || reset_rereceipt
+                || exact_manual_snapshot)
         {
             return Ok((
                 "passive:unknown-context".to_string(),
@@ -452,7 +454,9 @@ impl LayImeBridge {
         let bounded_unknown_suffix = engine.context_exact_manual_handoff_bounds_unknown_suffix();
         if !self.shared_active_path_matches(&path)
             || !self.bridge_token_is_live(&engine, token.as_ref())
-            || !(word_is_known || bounded_unknown_suffix)
+            || !(word_is_known
+                || bounded_unknown_suffix
+                || engine.exact_snapshot_manual_source_is_current())
         {
             return Ok(false);
         }
@@ -653,8 +657,10 @@ impl LayImeBridge {
         let mut engine = iface_ref.get_mut().await;
         if let Some(queued_at) = engine.layout_gesture.pending_manual_refresh_at {
             if queued_at.elapsed() > Duration::from_millis(700)
-                || !engine.context_reset_rereceipt_manual_wait_allowed()
+                || !(engine.context_reset_rereceipt_manual_wait_allowed()
+                    || engine.fresh_exact_manual_source_read_allowed())
             {
+                engine.revoke_pending_fresh_manual_source();
                 engine.layout_gesture.pending_manual_toggle = false;
                 engine.layout_gesture.pending_manual_refresh_at = None;
                 crate::trace::record(
@@ -662,7 +668,9 @@ impl LayImeBridge {
                 );
                 return Ok(ImeManualToggleOutcome::NotHandled);
             }
-            if !engine.context_reset_rereceipt_exact_manual_handoff_allowed() {
+            if !(engine.context_reset_rereceipt_exact_manual_handoff_allowed()
+                || engine.fresh_exact_manual_refresh_ready())
+            {
                 return Ok(ImeManualToggleOutcome::AwaitingExactSnapshot);
             }
             // The daemon is still servicing the same physical gesture. Its
@@ -684,6 +692,16 @@ impl LayImeBridge {
                 || engine.native_cursor_manual_source_is_current()
                 || reset_snapshot_pending);
         let bridge_token_live = self.bridge_token_is_live(&engine, token.as_ref());
+        let acquire_fresh_manual_source = bridge_token_live
+            && !manual_toggle_allowed
+            && engine.can_acquire_fresh_exact_manual_source();
+        manual_toggle_allowed |= acquire_fresh_manual_source;
+        let fresh_manual_read_allowed = bridge_token_live
+            && !manual_toggle_allowed
+            && !engine.layout_gesture.pending_manual_toggle
+            && engine.client_context.surrounding_text_snapshot.is_none()
+            && engine.fresh_exact_manual_source_read_allowed();
+        manual_toggle_allowed |= fresh_manual_read_allowed;
         let manual_refresh_allowed = bridge_token_live
             && !manual_toggle_allowed
             && engine.context_reset_rereceipt_manual_refresh_allowed();
@@ -723,6 +741,26 @@ impl LayImeBridge {
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
         let mut engine = engine.begin_context_bridge_output(token.as_ref());
+        if fresh_manual_read_allowed {
+            // No old text is a source here. The existing same-gesture lease
+            // owns one read; only a new exact callback can prepare a handoff.
+            engine.layout_gesture.pending_manual_toggle = true;
+            engine.layout_gesture.pending_manual_refresh_at = Some(Instant::now());
+            let mut output = EngineOutput::legacy(emitter);
+            if let Err(error) = output.require_surrounding_text().await {
+                engine.layout_gesture.pending_manual_toggle = false;
+                engine.layout_gesture.pending_manual_refresh_at = None;
+                return Err(error);
+            }
+            crate::trace::record(
+                r#"{"kind":"ibus_manual_toggle_refresh","stage":"queued_new_current_field_read"}"#,
+            );
+            engine.complete();
+            return Ok(ImeManualToggleOutcome::AwaitingExactSnapshot);
+        }
+        if acquire_fresh_manual_source && !engine.acquire_fresh_exact_manual_source() {
+            return Ok(ImeManualToggleOutcome::NotHandled);
+        }
         if engine.native_cursor_manual_source_is_current()
             && !engine.consume_native_cursor_manual_source()
         {

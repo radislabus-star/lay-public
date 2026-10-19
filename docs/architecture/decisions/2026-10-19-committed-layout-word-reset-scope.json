@@ -1,0 +1,50 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-committed-layout-word-reset-scope",
+  "status": "SOURCE_GREEN_NATIVE_KDE432_DIAGNOSTIC_CONFIRMED",
+  "invariants": [
+    "C01",
+    "C03",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/layout_sync.rs"
+  ],
+  "reason": "Private native Firefox Space traces reach the authorized committed replacement, enqueue its forward decoder/layout intent, then receive an authenticated word Reset in the same connection, owner and focus activation. Background layout revalidation applies the active-word revocation rule and cancels before KDE setLayout. Complete native actor277PASS/43FAIL/0BLOCKED includes two such Space failures; an earlier URL failure has the same first failed transition.",
+  "decision": "Use the existing reducer and its last_non_reset_revocation floor to validate only the existing Background layout request for already dispatched committed text across authenticated word Reset. Require the same verified connection, owner and focus activation, settled lifecycle, no intervening non-Reset revocation, and the existing latest-request generation. Keep strict revocation equality for Direct/open-preedit/manual transfer and all text admission. This grants no text acquisition, deletion, replay, feedback or client-acceptance authority.",
+  "alternatives": [
+    {
+      "solution": "Purpose-specific validation of the existing committed-text background request",
+      "rating": 9,
+      "risk": "Must prove that only authenticated word Reset preserves the existing floor; any lifecycle, input-purpose, connection or owner conflict must still cancel"
+    },
+    {
+      "solution": "Switch the global group before dispatching the text edit",
+      "rating": 4,
+      "risk": "Can change the next decoder for an edit that never executes and changes operation ordering"
+    },
+    {
+      "solution": "Block the Space callback on the complete layout stack",
+      "rating": 3,
+      "risk": "Does not identify Reset provenance and increases input-path latency"
+    },
+    {
+      "solution": "Retry a cancelled switch or wait for another key",
+      "rating": 1,
+      "risk": "Timing-dependent second execution and stale-context risk"
+    }
+  ],
+  "verification": "First reproduce semantic RED using real adapter Reset ingress after committed-word output and a controlled delayed existing worker request. GREEN must complete exactly one layout dispatch without restoring the old word token. Cover Reset before and during dispatch, repeated Reset, newer intent supersession, owner/focus/connection/non-Reset revocation, direct/open-preedit strict cancellation and absence of extra text effects. Run the affected hermetic source gate and architecture graph on the remote host, then the unchanged native browser cases with exact source/binary pins and independent closure. No local runtime installation.",
+  "source_evidence": "Controlled real-adapter semantic RED at2026-10-19T03:05:22.950980Z; hermetic source GREEN at2026-10-19T03:18:23.841675Z,855 functional/package checks and3 separate performance checks passed. Receipt development cache committed-layout-reset-hermetic-source-one/RESULT.json; frozen source request SHA256593e33a4830912dac2ed13950ec4d00ca24b3f20247daf288b2452c8d5b35ca1. Official discovery and hermetic execution classify858 tests, including322 process-isolated functional checks. Source closure is pinned explicitly because the archive has no Git HEAD; no claim that the checkout-dependent focused CLI passed.",
+  "not_tested": "No local or host runtime installation, publication, GNOME regrade or upstream KWin package qualification. Private KWin full-suite failures are retained. Remaining68FAIL/4BLOCKED are not acceptance.",
+  "runtime_authority_changed": true,
+  "runtime_authority_scope": "Existing committed-text background layout completion may outlive authenticated word Reset in the same activation; text authority and Direct/open-preedit validation are unchanged.",
+  "consequence_analysis": "The same layout owner completes its already issued forward input intent. Reset still retires old text/word authority and cancels any open-preedit transfer. A same-text surrounding snapshot cannot revive authority. No new owner, generation, timer, fallback route, client branch, target exception or retry is introduced. Forward layout intent remains distinct from observed client acceptance and learning. The KWin compatibility experiment and its failed upstream full-suite comparison remain separate, diagnostic-only evidence.",
+  "native_evidence": "Original unchanged supplemental KDE432:360PASS/68FAIL/4BLOCKED. Browser320:279PASS/41FAIL/0BLOCKED, preserving all277 preceding PASS and recovering2 Firefox Space cases. Private IME SHA25689d12c6beb61094ae6dea40ca02d735997f2bd2408ffd56f217c55cec612a437. Independent browser and four-app closure/export receipts are recorded in the owning document."
+}

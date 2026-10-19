@@ -1,0 +1,58 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-exact-manual-target-observation",
+  "status": "SOURCE_GREEN_PRIVATE_NATIVE_PENDING",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs"
+  ],
+  "reason": "After the private upstream observation repair, original Chrome focus-return10 receives the actual current surrounding snapshot and ManualToggleV3 delegates exact manual replay. During the authenticated same-field factory layout handoff the actual target snapshot arrives before activation publication. Installation drops the transferred exact source receipt because it previously handled only an absent target callback. UnknownStart correctly remains unknown, but the existing V4 lease becomes passive and refuses replay. Content hints stay public64; the daemon retention-policy message is a consequence of passive refusal, not evidence of changed privacy.",
+  "decision": "At installation of an already authenticated same-field Transfer grant, bind its unexpired exact manual source to an actual current target observation using the existing reducer publish_exact_manual_snapshot contract. Require the same owned tail and epoch, collapsed caret at text end, supported surrounding text, non-sensitive content, and exact equality of the complete observed external prefix. Preserve the source expiry. When no target callback exists retain the existing inherited receipt path. A later callback still invalidates either proof, even if identical. Keep UnknownStart/suffix0, source-free admission, field revocation, replay lease, verifier and output routes unchanged.",
+  "alternatives": [
+    {
+      "solution": "Rebind the transferred proof to the already received matching target observation in the existing activation/reducer owners",
+      "rating": 9,
+      "risk": "Must distinguish matching full-field evidence from same-tail text in a different prefix and preserve later revocation"
+    },
+    {
+      "solution": "Ignore the V4 retention or passive mismatch in the daemon",
+      "rating": 1,
+      "risk": "Skips a live authority check and can execute without a current field proof"
+    },
+    {
+      "solution": "Retain the inherited no-callback receipt despite a newer actual target callback",
+      "rating": 2,
+      "risk": "Authorizes a superseded observation and hides contradictions"
+    },
+    {
+      "solution": "Wait or retry until another target snapshot arrives",
+      "rating": 3,
+      "risk": "Adds latency and cannot restore the spent receipt; changes timing rather than the failed ownership transfer"
+    }
+  ],
+  "verification": "First obtain semantic RED from the actual factory/marker harness with target SSI both before and after FocusIn but before transfer installation. Require exact manual V4/suppression success for matching empty/nonempty/Unicode prefixes, while UnknownStart remains unchanged. Reject changed prefix, changed tail, selection, interior caret and actual callback with no snapshot. A later identical callback must still revoke the rebound proof. Then run official isolated IME lanes, separate performance lane, architecture guards and graph update remotely; build private bytes and repeat unchanged original native cases before a full original browser/native-app qualification.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "not_tested": "Focused corrected fixture3PASS and official isolated IME correctness/package864PASS, performance3PASS. Original valid late-callback RED proves matching actual target SSI loses manual source authority. First positive fixture incorrectly treated a pre-FocusIn tuple as current; retained as a fixture failure, with that order now a required negative. Unicode is tested in the external prefix with the actual US source layout. No new private binary or native client acceptance yet; last complete native counts retained.",
+  "evidence": {
+    "native20": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-surrounding-native-candidate-source-two/evidence",
+    "source_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-target-hermetic-source-one/RESULT.json",
+    "source_green_sha256": "03f20e2286e25cd1f44c669733cd209fd12527d976ff7fa772054c65f4f148b2",
+    "focused_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-target-contract-green-source-four/RESULT.json",
+    "valid_original_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-target-valid-contract-red-source-one/RESULT.json",
+    "valid_original_red_sha256": "1001d745e7772c3d8fb8dee69eac06e98ad155408158b5e6182f335e100dbeaa"
+  },
+  "consequence_analysis": "No extra owner, client-name condition, buffer, retry, grant of historical word completeness, autocorrection or learning. Actual target data confirms an existing bounded manual transfer only. Source tests cannot establish physical-client acceptance."
+}

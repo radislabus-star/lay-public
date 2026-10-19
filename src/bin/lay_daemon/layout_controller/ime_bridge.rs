@@ -222,6 +222,19 @@ fn visible_tail_v3() -> Result<VisibleTailV3Reply, String> {
     call_ime_noarg("VisibleTailV3")
 }
 
+pub(super) fn current_input_mode_is_ru() -> Result<bool, String> {
+    input_mode_from_v3_reply(visible_tail_v3()?)
+}
+
+fn input_mode_from_v3_reply(reply: VisibleTailV3Reply) -> Result<bool, String> {
+    // No focus/admission returns a sentinel false without an engine. A real
+    // private decoder still has its path even when its text/field is redacted.
+    if reply.4 == "/" || zbus::zvariant::ObjectPath::try_from(reply.4.as_str()).is_err() {
+        return Err("actual IME decoder observation is unavailable".to_string());
+    }
+    Ok(reply.2)
+}
+
 fn project_visible_tail_v4(reply: VisibleTailV4Reply) -> (VisibleTailV3Reply, bool) {
     (
         (reply.0, reply.1, reply.2, reply.3, reply.4, reply.5),
@@ -260,9 +273,13 @@ fn committed_tail_replay_from_readout(
     reply: VisibleTailV3Reply,
     permission: Option<bool>,
 ) -> Result<ImeCommittedTailReplay, String> {
+    let source = VisibleTailSource::from_bridge_state(&reply.0);
+    let engine_present = !reply.4.is_empty();
+    let field_receipt_present = !reply.5.is_empty();
     let mut replay = committed_tail_replay_from_v3_reply(reply).map_err(|error| {
+        log(&error.diagnostic(source, permission, engine_present, field_receipt_present));
         if permission == Some(true) {
-            error
+            error.detail
         } else {
             "exact IME tail capture rejected; payload retention disabled".to_string()
         }
@@ -304,25 +321,65 @@ fn committed_tail_is_settled(
         && reply.1.ends_with(expected_tail)
 }
 
+#[derive(Debug)]
+struct CommittedTailCaptureRejection {
+    reason: &'static str,
+    detail: String,
+}
+
+impl CommittedTailCaptureRejection {
+    fn diagnostic(
+        &self,
+        source: Option<VisibleTailSource>,
+        permission: Option<bool>,
+        engine_present: bool,
+        field_receipt_present: bool,
+    ) -> String {
+        let source_kind = source.map_or("unknown", VisibleTailSource::source_id);
+        let permission = match permission {
+            None => "unknown",
+            Some(false) => "denied",
+            Some(true) => "allowed",
+        };
+        format!(
+            "· exact IME tail capture rejection: reason={} source_kind={source_kind} permission={permission} engine_present={engine_present} field_receipt_present={field_receipt_present}",
+            self.reason
+        )
+    }
+}
+
 fn committed_tail_replay_from_v3_reply(
     reply: VisibleTailV3Reply,
-) -> Result<ImeCommittedTailReplay, String> {
-    let source = VisibleTailSource::from_bridge_state(&reply.0)
-        .ok_or_else(|| format!("unknown IME tail source: {}", reply.0))?;
+) -> Result<ImeCommittedTailReplay, CommittedTailCaptureRejection> {
+    let source = VisibleTailSource::from_bridge_state(&reply.0).ok_or_else(|| {
+        CommittedTailCaptureRejection {
+            reason: "source_unknown",
+            detail: format!("unknown IME tail source: {}", reply.0),
+        }
+    })?;
     if source != VisibleTailSource::ImeCommittedTail {
-        return Err(format!(
-            "exact committed-tail replay source changed to {}",
-            source.source_id()
-        ));
+        return Err(CommittedTailCaptureRejection {
+            reason: "source_changed",
+            detail: format!(
+                "exact committed-tail replay source changed to {}",
+                source.source_id()
+            ),
+        });
     }
     let plan = plan_manual_toggle(ManualToggleRequest {
         visible_tail: VisibleTail::ime_committed_tail(&reply.1),
         current_layout_is_ru: reply.2,
         preserve_trailing_whitespace: true,
     })
-    .ok_or_else(|| "exact committed-tail snapshot has no reversible token".to_string())?;
+    .ok_or_else(|| CommittedTailCaptureRejection {
+        reason: "no_reversible_token",
+        detail: "exact committed-tail snapshot has no reversible token".to_string(),
+    })?;
     if plan.route != ManualToggleRoute::ImeCommittedTail {
-        return Err("exact committed-tail planner selected the wrong route".to_string());
+        return Err(CommittedTailCaptureRejection {
+            reason: "wrong_route",
+            detail: "exact committed-tail planner selected the wrong route".to_string(),
+        });
     }
     let expected_suffix = tail_chars(&reply.1, plan.backspaces as usize);
     let lease = tail_lease_from_v3_reply(
@@ -330,7 +387,11 @@ fn committed_tail_replay_from_v3_reply(
         &expected_suffix,
         plan.backspaces,
         reply,
-    )?;
+    )
+    .map_err(|detail| CommittedTailCaptureRejection {
+        reason: "lease_validation",
+        detail,
+    })?;
     Ok(ImeCommittedTailReplay { plan, lease })
 }
 
@@ -654,6 +715,26 @@ mod delegated_tail_tests {
     use super::*;
 
     #[test]
+    fn mode_readback_rejects_unavailable_sentinels_and_accepts_real_private_decoders() {
+        for source in ["passive:no-focus", "passive:unknown-context"] {
+            for path in ["", "/", "invalid-path"] {
+                assert!(input_mode_from_v3_reply(reply_v3(source, "", 0, path, "")).is_err());
+            }
+            for mode in [false, true] {
+                let mut reply = reply_v3(
+                    source,
+                    "",
+                    7,
+                    "/io/github/radislabus_star/LayIme/engine/1",
+                    "",
+                );
+                reply.2 = mode;
+                assert_eq!(input_mode_from_v3_reply(reply), Ok(mode));
+            }
+        }
+    }
+
+    #[test]
     fn late_exact_receipt_stays_within_one_physical_gesture() {
         let mut calls = 0;
         let result = await_same_gesture_exact_receipt(|| {
@@ -713,6 +794,128 @@ mod delegated_tail_tests {
             false,
         )
         .is_ok());
+    }
+
+    #[test]
+    fn exact_committed_tail_capture_reports_first_validation_failure() {
+        for (reply, reason, detail, source_kind) in [
+            (
+                reply_v3("passive:unknown-context", "", 0, "", ""),
+                "source_unknown",
+                "unknown IME tail source: passive:unknown-context",
+                "unknown",
+            ),
+            (
+                reply_v3("passive:daemon-word-buffer", "", 0, "", ""),
+                "source_changed",
+                "exact committed-tail replay source changed to daemon_word_buffer",
+                "daemon_word_buffer",
+            ),
+            (
+                reply_v3("active:composition", "", 0, "", ""),
+                "source_changed",
+                "exact committed-tail replay source changed to ime_active_composition",
+                "ime_active_composition",
+            ),
+            (
+                reply_v3("passive:committed-tail", "", 7, "", ""),
+                "no_reversible_token",
+                "exact committed-tail snapshot has no reversible token",
+                "ime_committed_tail",
+            ),
+            (
+                reply_v3("passive:committed-tail", "ghbdtn", 7, "", "field-a"),
+                "lease_validation",
+                "exact committed tail has no engine path or field focus receipt",
+                "ime_committed_tail",
+            ),
+            (
+                reply_v3("passive:committed-tail", "ghbdtn", 7, "/engine/us", ""),
+                "lease_validation",
+                "exact committed tail has no engine path or field focus receipt",
+                "ime_committed_tail",
+            ),
+        ] {
+            let rejection = committed_tail_replay_from_v3_reply(reply.clone()).unwrap_err();
+            assert_eq!(rejection.reason, reason);
+            assert_eq!(rejection.detail, detail);
+            for (permission, permission_kind) in [
+                (None, "unknown"),
+                (Some(false), "denied"),
+                (Some(true), "allowed"),
+            ] {
+                let diagnostic = rejection.diagnostic(
+                    VisibleTailSource::from_bridge_state(&reply.0),
+                    permission,
+                    !reply.4.is_empty(),
+                    !reply.5.is_empty(),
+                );
+                assert!(diagnostic.contains(&format!("reason={reason} ")));
+                assert!(diagnostic.contains(&format!("source_kind={source_kind} ")));
+                assert!(diagnostic.contains(&format!("permission={permission_kind} ")));
+                let error =
+                    committed_tail_replay_from_readout(reply.clone(), permission).unwrap_err();
+                assert_eq!(
+                    error,
+                    if permission == Some(true) {
+                        detail
+                    } else {
+                        "exact IME tail capture rejected; payload retention disabled"
+                    }
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn exact_committed_tail_capture_rejection_redacts_untrusted_reply_fields() {
+        let reply = reply_v3(
+            "SOURCE_PRIVATE_SENTINEL",
+            "TAIL_PRIVATE_SENTINEL",
+            7,
+            "/ENGINE_PRIVATE_SENTINEL",
+            "FIELD_PRIVATE_SENTINEL",
+        );
+        let rejection = committed_tail_replay_from_v3_reply(reply.clone()).unwrap_err();
+        assert_eq!(rejection.reason, "source_unknown");
+        for (permission, permission_kind) in [
+            (None, "unknown"),
+            (Some(false), "denied"),
+            (Some(true), "allowed"),
+        ] {
+            let diagnostic = rejection.diagnostic(
+                VisibleTailSource::from_bridge_state(&reply.0),
+                permission,
+                !reply.4.is_empty(),
+                !reply.5.is_empty(),
+            );
+            assert_eq!(
+                diagnostic,
+                format!(
+                    "· exact IME tail capture rejection: reason=source_unknown source_kind=unknown permission={permission_kind} engine_present=true field_receipt_present=true"
+                )
+            );
+            let error = committed_tail_replay_from_readout(reply.clone(), permission).unwrap_err();
+            assert_eq!(
+                error,
+                if permission == Some(true) {
+                    "unknown IME tail source: SOURCE_PRIVATE_SENTINEL"
+                } else {
+                    "exact IME tail capture rejected; payload retention disabled"
+                }
+            );
+            for sentinel in [
+                "SOURCE_PRIVATE_SENTINEL",
+                "TAIL_PRIVATE_SENTINEL",
+                "ENGINE_PRIVATE_SENTINEL",
+                "FIELD_PRIVATE_SENTINEL",
+            ] {
+                assert!(!diagnostic.contains(sentinel));
+                if permission != Some(true) || sentinel != "SOURCE_PRIVATE_SENTINEL" {
+                    assert!(!error.contains(sentinel));
+                }
+            }
+        }
     }
 
     #[test]

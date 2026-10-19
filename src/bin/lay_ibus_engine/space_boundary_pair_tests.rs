@@ -149,6 +149,208 @@ fn install(engine: &LayIbusEngine) {
     install_full_lease(&frame, &engine.config);
 }
 
+fn assert_td159_space_pair_actual_unchanged_prefix(exact_refresh: bool) {
+    let (mut engine, mut output) = owned_pair(exact_refresh);
+    let before = engine
+        .capture_space_boundary_pair_scope()
+        .expect("the locally owned pair starts with current edit authority");
+    eprintln!(
+        "pair prefix before callback: exact_refresh={exact_refresh} revision={} witness_identity={:?} client_snapshot_present={}",
+        engine.client_context.surrounding_observation_revision,
+        engine.composition.legacy_preedit_start_boundary.as_ref().map(|w| w.identity),
+        engine.client_context.surrounding_text_snapshot.is_some(),
+    );
+    observe_client(
+        &mut engine,
+        &mut output,
+        SurroundingTextSnapshot::new("должн ".into(), 6, 6),
+    )
+    .unwrap();
+    assert_eq!(
+        engine
+            .capture_space_boundary_pair_scope()
+            .as_ref()
+            .map(|scope| &scope.text),
+        Some(&before.text),
+        "an actual unchanged prefix callback must retain the current owned pair scope"
+    );
+    for visible in ["должн ыбыть", "должн ", "должн ыбыть"] {
+        let cursor = visible.chars().count() as u32;
+        observe_client(
+            &mut engine,
+            &mut output,
+            SurroundingTextSnapshot::new(visible.into(), cursor, cursor),
+        )
+        .unwrap();
+        assert_eq!(
+            engine.capture_space_boundary_pair_scope().as_ref(),
+            Some(&before),
+            "actual prefix/preedit projections must retain the same bounded pair owner"
+        );
+    }
+    assert!(output.surrounding_deletes.is_empty());
+    assert!(output.committed_texts.is_empty());
+    install(&engine);
+    assert!(press(&mut engine, &mut output, KEY_SPACE).unwrap());
+    assert!(output.surrounding_deletes.is_empty());
+    assert_eq!(output.committed_texts, ["ыбыть "]);
+    observe_space_commit(&mut engine, &mut output).unwrap();
+    assert_eq!(output.surrounding_deletes, [(-12, 12)]);
+    assert_eq!(output.committed_texts, ["ыбыть ", "должны быть "]);
+    assert_eq!(engine.committed_tail.buffer, "должны быть ");
+}
+
+#[test]
+fn td159_space_pair_actual_unchanged_prefix_without_manual_refresh() {
+    if !isolated_case("space_boundary_pair_tests::td159_space_pair_actual_unchanged_prefix_without_manual_refresh") {
+        return;
+    }
+    assert_td159_space_pair_actual_unchanged_prefix(false);
+}
+
+#[test]
+fn td159_space_pair_actual_unchanged_prefix_with_manual_refresh() {
+    if !isolated_case(
+        "space_boundary_pair_tests::td159_space_pair_actual_unchanged_prefix_with_manual_refresh",
+    ) {
+        return;
+    }
+    assert_td159_space_pair_actual_unchanged_prefix(true);
+}
+
+#[test]
+fn td159_space_pair_actual_unchanged_prefix_matches_per_key_client_order() {
+    if !isolated_case("space_boundary_pair_tests::td159_space_pair_actual_unchanged_prefix_matches_per_key_client_order") {
+        return;
+    }
+    for exact in [false, true] {
+        let caps = IBUS_CAP_PREEDIT_TEXT
+            | IBUS_CAP_SURROUNDING_TEXT
+            | if exact {
+                IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH
+            } else {
+                0
+            };
+        let mut engine = engine(caps, "должн ");
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        let mut word = String::new();
+        for ch in "ыбыть".chars() {
+            assert!(press(&mut engine, &mut output, 0x0100_0000 | ch as u32).unwrap());
+            word.push(ch);
+            let before = engine
+                .capture_space_boundary_pair_scope()
+                .expect("owned key retains pair start");
+            for visible in ["должн ".to_string(), format!("должн {word}")] {
+                let cursor = visible.chars().count() as u32;
+                observe_client(
+                    &mut engine,
+                    &mut output,
+                    SurroundingTextSnapshot::new(visible, cursor, cursor),
+                )
+                .unwrap();
+                assert_eq!(
+                    engine.capture_space_boundary_pair_scope().as_ref(),
+                    Some(&before),
+                    "actual per-key prefix/preedit observations must retain the owned pair"
+                );
+            }
+        }
+        install(&engine);
+        assert!(press(&mut engine, &mut output, KEY_SPACE).unwrap());
+        assert!(output.surrounding_deletes.is_empty());
+        observe_space_commit(&mut engine, &mut output).unwrap();
+        assert_eq!(output.surrounding_deletes, [(-12, 12)]);
+        assert_eq!(output.committed_texts, ["ыбыть ", "должны быть "]);
+    }
+}
+
+#[test]
+fn td159_space_pair_actual_unchanged_prefix_rejects_interrupted_proof() {
+    if !isolated_case("space_boundary_pair_tests::td159_space_pair_actual_unchanged_prefix_rejects_interrupted_proof") {
+        return;
+    }
+    for exact in [false, true] {
+        for violation in [
+            "text",
+            "selection",
+            "caret",
+            "unknown",
+            "revision",
+            "owner",
+            "layout",
+            "focus",
+            "epoch",
+            "sealed",
+            "atomic",
+            "suffix",
+        ] {
+            let (mut engine, mut output) = owned_pair(exact);
+            assert!(engine.capture_space_boundary_pair_scope().is_some());
+            let snapshot = match violation {
+                "text" => Some(SurroundingTextSnapshot::new("должен ".into(), 7, 7)),
+                "selection" => Some(SurroundingTextSnapshot::new("должн ".into(), 6, 5)),
+                "caret" => Some(SurroundingTextSnapshot::new("должн ".into(), 5, 5)),
+                "unknown" => None,
+                "revision" => {
+                    engine.advance_surrounding_observation_revision();
+                    Some(SurroundingTextSnapshot::new("должн ".into(), 6, 6))
+                }
+                "owner" => {
+                    engine.client_context.runtime_owner_lease_identity += 1;
+                    Some(SurroundingTextSnapshot::new("должн ".into(), 6, 6))
+                }
+                "layout" => {
+                    engine.layout_gesture.layout_generation += 1;
+                    Some(SurroundingTextSnapshot::new("должн ".into(), 6, 6))
+                }
+                "focus" => {
+                    engine.client_context.focus_serial += 1;
+                    Some(SurroundingTextSnapshot::new("должн ".into(), 6, 6))
+                }
+                "epoch" => {
+                    engine.committed_tail.epoch += 1;
+                    Some(SurroundingTextSnapshot::new("должн ".into(), 6, 6))
+                }
+                "sealed" => {
+                    engine.context_handoff_sealed = true;
+                    Some(SurroundingTextSnapshot::new("должн ".into(), 6, 6))
+                }
+                "atomic" => {
+                    engine.atomic.active = true;
+                    Some(SurroundingTextSnapshot::new("должн ".into(), 6, 6))
+                }
+                "suffix" => Some(SurroundingTextSnapshot::new("должн  чужой".into(), 6, 6)),
+                _ => unreachable!(),
+            };
+            zbus::block_on(crate::window_interaction::WindowInteraction::observe_facts(
+                &mut engine,
+                crate::window_interaction::WindowFactEvent::SurroundingText(snapshot),
+                Some(&mut EngineOutput::test(&mut output)),
+            ))
+            .unwrap();
+            assert!(
+                engine.capture_space_boundary_pair_scope().is_none(),
+                "refuse {violation}"
+            );
+            observe_client(
+                &mut engine,
+                &mut output,
+                SurroundingTextSnapshot::new("должн ".into(), 6, 6),
+            )
+            .unwrap();
+            assert!(
+                engine.capture_space_boundary_pair_scope().is_none(),
+                "matching text cannot revive a revoked pair: {violation}"
+            );
+            assert!(output.surrounding_deletes.is_empty());
+            assert!(output.committed_texts.is_empty());
+        }
+    }
+}
+
 #[test]
 fn space_pair_pending_calculation_and_actual_commit_join_once_in_either_order() {
     if !isolated_case("space_boundary_pair_tests::space_pair_pending_calculation_and_actual_commit_join_once_in_either_order") { return; }
@@ -692,6 +894,172 @@ fn space_pair_both_spaces_preserve_left_then_apply_the_verified_pair() {
     assert_eq!(output.committed_texts, ["должн ", "ыбыть ", "должны быть "]);
     assert_eq!(output.surrounding_deletes, [(-12, 12)]);
     assert_eq!(engine.committed_tail.buffer, "должны быть ");
+}
+
+#[test]
+fn space_pair_owned_nbsp_commit_preserves_observed_surface_and_inverse() {
+    if !isolated_case("space_boundary_pair_tests::space_pair_owned_nbsp_commit_preserves_observed_surface_and_inverse") { return; }
+    let mut engine = engine(
+        IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT,
+        "должн\u{a0}",
+    );
+    engine.config.debug_action_log = true;
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    // Begin with the exact client-observed prefix; the first physical Space
+    // acknowledgement is covered by the reducer tests and native receipt.
+    assert_eq!(engine.committed_tail.buffer, "должн\u{a0}");
+    for ch in "ыбыть".chars() {
+        assert!(press(&mut engine, &mut output, 0x0100_0000 | ch as u32).unwrap());
+    }
+    let frame = engine
+        .capture_space_autocorrect_frame_identity()
+        .expect("current frame");
+    assert_eq!(
+        frame
+            .space_boundary_pair
+            .as_ref()
+            .expect("exact observed NBSP pair")
+            .text,
+        "должн\u{a0}ыбыть"
+    );
+    install_full_lease(&frame, &engine.config);
+    assert!(press(&mut engine, &mut output, KEY_SPACE).unwrap());
+    assert!(
+        output.surrounding_deletes.is_empty(),
+        "dispatch alone cannot grant the pair edit"
+    );
+    assert_eq!(output.committed_texts, ["ыбыть "]);
+    // Rich clients can move the physical Space presentation from the old
+    // internal boundary to the newly committed final boundary.
+    observe_client(
+        &mut engine,
+        &mut output,
+        SurroundingTextSnapshot::new("должн ыбыть\u{a0}".into(), 12, 12),
+    )
+    .unwrap();
+    assert_eq!(output.surrounding_deletes, [(-12, 12)]);
+    assert_eq!(output.committed_texts.last().unwrap(), "должны быть\u{a0}");
+    observe_client(
+        &mut engine,
+        &mut output,
+        SurroundingTextSnapshot::new("должны быть\u{a0}".into(), 12, 12),
+    )
+    .unwrap();
+    assert!(
+        zbus::block_on(engine.undo_last_ime_autocorrect(&mut EngineOutput::test(&mut output)))
+            .unwrap()
+            .is_some()
+    );
+    assert_eq!(output.surrounding_deletes, [(-12, 12), (-12, 12)]);
+    assert_eq!(output.committed_texts.last().unwrap(), "должн ыбыть\u{a0}");
+}
+
+#[test]
+fn space_pair_nbsp_commit_rejects_every_other_field_or_authority_change() {
+    if !isolated_case("space_boundary_pair_tests::space_pair_nbsp_commit_rejects_every_other_field_or_authority_change") { return; }
+    for violation in [
+        "prefix",
+        "letter",
+        "extra_space",
+        "tab",
+        "narrow_nbsp",
+        "newline",
+        "suffix",
+        "selection",
+        "caret",
+        "owner",
+        "focus",
+        "epoch",
+        "material",
+        "expired",
+    ] {
+        let mut engine = engine(
+            IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT,
+            "тест,\u{a0}должн\u{a0}",
+        );
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        for ch in "ыбыть".chars() {
+            assert!(press(&mut engine, &mut output, 0x0100_0000 | ch as u32).unwrap());
+        }
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("owned frame");
+        assert!(
+            frame.space_boundary_pair.is_some(),
+            "{violation}: bounded NBSP pair"
+        );
+        install_full_lease(&frame, &engine.config);
+        assert!(press(&mut engine, &mut output, KEY_SPACE).unwrap());
+        assert!(
+            engine
+                .committed_tail
+                .pending_visible_postcondition
+                .as_ref()
+                .is_some_and(|p| p.space_boundary_commit.is_some()),
+            "{violation}: actual continuation"
+        );
+        let exact = "тест,\u{a0}должн ыбыть\u{a0}";
+        let end = exact.chars().count() as u32;
+        let mut snapshot = SurroundingTextSnapshot::new(exact.into(), end, end);
+        match violation {
+            "prefix" => snapshot.text = "тест, должн ыбыть\u{a0}".into(),
+            "letter" => snapshot.text = "тест,\u{a0}должн ыбытх\u{a0}".into(),
+            "extra_space" => snapshot.text = "тест,\u{a0}должн  ыбыть\u{a0}".into(),
+            "tab" => snapshot.text = "тест,\u{a0}должн\tыбыть\u{a0}".into(),
+            "narrow_nbsp" => snapshot.text = "тест,\u{a0}должн\u{202f}ыбыть\u{a0}".into(),
+            "newline" => snapshot.text = "тест,\u{a0}должн\nыбыть\u{a0}".into(),
+            "suffix" => snapshot.text.push('z'),
+            "selection" => snapshot.anchor_pos -= 1,
+            "caret" => {
+                snapshot.cursor_pos -= 1;
+                snapshot.anchor_pos -= 1;
+            }
+            "owner" => engine.client_context.runtime_owner_lease_identity += 1,
+            "focus" => engine.client_context.focus_serial += 1,
+            "epoch" => engine.committed_tail.epoch += 1,
+            "material" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .space_boundary_commit
+                    .as_mut()
+                    .unwrap()
+                    .material_generation += 1
+            }
+            "expired" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .dispatched_at -= std::time::Duration::from_secs(2)
+            }
+            _ => unreachable!(),
+        }
+        observe_client(&mut engine, &mut output, snapshot).unwrap();
+        observe_client(
+            &mut engine,
+            &mut output,
+            SurroundingTextSnapshot::new(exact.into(), end, end),
+        )
+        .unwrap();
+        assert!(
+            output.surrounding_deletes.is_empty(),
+            "{violation}: no mutation or resurrection"
+        );
+        assert!(
+            engine.shared.lock().unwrap().pending_auto_undo.is_none(),
+            "{violation}: no undo authority"
+        );
+    }
 }
 
 #[test]

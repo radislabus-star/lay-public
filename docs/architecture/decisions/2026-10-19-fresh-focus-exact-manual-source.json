@@ -1,0 +1,64 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-fresh-focus-exact-manual-source",
+  "status": "SOURCE_GREEN_PRIVATE_NATIVE_SUBSET_FIREFOX_FOCUS_10_PASS_CHROME_FOCUS_PENDING",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/shift.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs"
+  ],
+  "reason": "The original remote KDE proof has25 focus-return refusals:20 browser fields and5 GTK/Qt fields. A new authenticated activation receives current surrounding text, but has UnknownStart and no locally observed suffix. ManualToggleV3 rejects before the existing exact-tail executor. This is distinct from selection cases whose reported surrounding cursor and anchor can disagree with native selection evidence.",
+  "decision": "Permit an explicit manual gesture to acquire a bounded exact source from the current authenticated, settled field after fresh focus, using the existing reducer-owned ExactManualSourceSnapshotReceipt and exact-tail handoff. Acquisition requires an untouched source-free activation, current surrounding callback, collapsed caret at text end, non-sensitive content, no composition, pending replay or quarantine. Any possible-mutation key or broader revocation spends fresh-focus eligibility; Shift observations do not. Keep UnknownStart and observed_suffix_chars zero. A successful gesture may authorize only the existing exact manual replay and its existing layout handoff, never autocorrection, learning, a historical word or a selection edit.",
+  "alternatives": [
+    {
+      "solution": "Fresh-focus manual-only acquisition in the existing reducer and exact-tail executor",
+      "rating": 9,
+      "risk": "Must bind current snapshot revision and revoke eligibility on all possible mutations; transferred proof must remain manual-only"
+    },
+    {
+      "solution": "Restore KnownStart from a matching surrounding snapshot",
+      "rating": 1,
+      "risk": "Revives automatic word authority after focus loss and confuses client observation with locally observed input"
+    },
+    {
+      "solution": "Allow daemon fallback whenever the focused IME refuses",
+      "rating": 2,
+      "risk": "Changes delivery authority and can replay a stale buffer or delete a hidden selection"
+    },
+    {
+      "solution": "Require another typed character before Double Shift",
+      "rating": 5,
+      "risk": "Retains the explicit focus-return failure and changes the expected user action"
+    }
+  ],
+  "verification": "First obtain semantic RED through the real bridge and adapter after authenticated source-free activation and current surrounding callback. GREEN must delegate exactly once without local CommitText/DeleteSurroundingText, preserve UnknownStart and zero observed suffix, expose only the exact leased tail, and bind existing replay suppression. Cover prefix preservation, bounded source, selection, interior caret, sensitive/atomic/composition states, pending replay, mutation before and after acquisition, Reset, focus/owner/connection/revision changes, expiry, and factory handoff. Follow with the hermetic source gate, architecture graph and unchanged affected native cases. Keep original selection failures separate; do not alter their actions to obtain PASS.",
+  "not_tested": "861 correctness/package source tests and 3 separate performance checks pass, architecture refresh and private build pass. Original native40 subset: Firefox focus10PASS, Firefox selection10FAIL, Chrome focus10FAIL, Chrome selection10FAIL; no BLOCKED. No complete matrix on these new bytes yet. Last complete native KDE432 is360PASS/68FAIL/4BLOCKED. No host install, GNOME regrade or delivery-route change.",
+  "runtime_authority_changed": true,
+  "runtime_authority_scope": "A fresh explicit manual gesture can acquire a current-field exact source for the existing executor; no automatic word authority or delivery route changes.",
+  "consequence_analysis": "The existing reducer remains the sole authority. Fresh-focus eligibility is an input phase of that owner, not a second word buffer, timer, backend or retry. Known selection and untracked-input revocation cannot be bypassed by another matching snapshot. Native source and client acceptance remain separate proof boundaries. No local installation or publication is implied.",
+  "evidence": {
+    "controlled_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-red-source-two/RESULT.json",
+    "first_fixture_failure": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-red-source-one/RESULT.json",
+    "initial_source_gate": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-contract-green-source-two/RESULT.json",
+    "valid_original_source_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-valid-red-source-one/RESULT.json",
+    "focused_six_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-contract-green-source-four/RESULT.json",
+    "hermetic_source": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-hermetic-source-one/RESULT.json",
+    "architecture": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-architecture-source-one/RESULT.json",
+    "private_build": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-final-build-source-one/RESULT.json",
+    "native40_firefox": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-native-candidate-focus-selection-source-one/evidence/native-windows-xtu7pve6/RESULT.json",
+    "native40_chrome": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-native-candidate-focus-selection-source-one/evidence/native-windows-mkkaj3gb/RESULT.json"
+  }
+}

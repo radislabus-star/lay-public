@@ -1,0 +1,58 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "status": "FULL_BROWSER_SCOPE_QUALIFIED_SELECTED_RANGE_FAILURES_REMAIN",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "reason": "Chrome Search fails before native Double Shift: AT-SPI reports text length 5/1 with caret 6/2, while a separately pinned post-verdict DOM read reports complete text and matching end caret. Ordinary input agrees across both readers. Sequential samples do not establish a precise Chromium defect.",
+  "decision": "Qualify a separately versioned read-only client-text observer. Select its transport before physical input, never as a fallback after a failed assertion. A DOM transport must pin browser PID/start/profile, loopback listener, WebSocket and exact fixture page before and after a read. The shared pure state contract validates exact URL, field, type, document focus, unmodified text and UTF-16 selection boundaries. Keep the original physical-input, window/field focus, layout, engine, decoder and Backspace checks. Retain raw AT-SPI observations as diagnostics. Do not let target() recover from a failed DOM result through a second reader.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "tests/manual/browser_ime_native_surfaces.py",
+    "scripts/tests/test_browser_ime_native_surfaces.py",
+    "tests/manual/browser_ime_standard.md"
+  ],
+  "rejected": [
+    "Append a character in Lay: the DOM already contains the full word.",
+    "Extend GetText boundaries: three bounded reads still return truncated Search text.",
+    "Increase waits without new evidence: the existing target loop already observes the mismatch for approximately two seconds.",
+    "Pick whichever reader matches the expected result: this could hide a real conversion failure."
+  ],
+  "verification": "Run pure malformed/identity/focus/selection/Unicode negative controls plus actual actor entrypoint and no-reader-fallback controls remotely. First execute a separate fixed ordinary/Search roundtrip/short diagnostic with real native input and unchanged runtime bytes. Preserve old FAILs and NOT_TESTED. A later full browser matrix requires the new observer SHA and separately recorded dependency identity; do not splice diagnostic PASS into the old 432.",
+  "not_tested": "Native112 not rerun in this observer version; GNOME; Firefox DOM transport; DOM field types other than Chrome text/Search; visual pixels; production installation. Earlier native112 receipt retained separately. Selected-range conversion remains failing.",
+  "baseline_evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/search-dom-reader-four-cells-source-five/DIAGNOSIS.json",
+  "baseline_evidence_sha256": "28c561c4508c8735721026f64d9ac18c8fe85beaa0f86ac0f37c3c68373ad44a",
+  "runtime_authority_changed": false,
+  "production_delivery_changed": false,
+  "rollback": "Remove the added test-only state adapter and use the previous immutable actor. Keep both versions and all original receipts.",
+  "qualification_evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/client-text-observer-four-cells-source-two/DIAGNOSIS.json",
+  "qualification_evidence_sha256": "7a041a5935478d5834dfcea0c9a91a339f960513443460ea4103c21d67aca17c",
+  "qualification_at": "2026-10-19T11:15:36.909223+00:00",
+  "measured_result": {
+    "source_checks_pass": 92,
+    "native_cases_pass": 4,
+    "native_cases_fail": 0,
+    "native_cases_blocked": 0,
+    "not_tested": 428,
+    "native_double_shift_gestures": 8,
+    "decoder_and_backspace_after_each": true
+  },
+  "full_scope_evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/native-client-observer-browser-source-one/DIAGNOSIS.json",
+  "full_scope_evidence_sha256": "0f9c19b93047012124b353e8380d354b145c02388db6db44f652b021d9fcbe8f",
+  "full_scope_at": "2026-10-19T11:29:26.292355+00:00",
+  "full_scope_measured_result": {
+    "source_checks_pass": 96,
+    "native_cases_pass": 300,
+    "native_cases_fail": 20,
+    "native_cases_blocked": 0,
+    "total": 320,
+    "remaining_failures": "20 selected-range plans with positively observed full ranges",
+    "previous_search_fail_to_pass": 8,
+    "other_verdicts_unchanged": 312
+  }
+}

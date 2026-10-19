@@ -1,0 +1,46 @@
+{
+  "status": "FOCUSED_GREEN_FULL_SOURCE_NATIVE_PENDING",
+  "date": "2026-10-19",
+  "problem": "Fresh actual surrounding text enables entirely owned preedit in Firefox rich fields. Its ordinary Space sends ASCII Space, but the actual field reports NBSP. The generic suffix receipt retains stale ASCII, so later exact manual and two-word correction frames no longer match. Six rich-field regressions appear in the aborted full native run.",
+  "first_failed_transition": "Successful ordinary active-composition CommitText -> actual full-field SetSurroundingText -> existing pending visible postcondition / same-epoch owned tail acknowledgement.",
+  "options": [
+    {
+      "option": "Normalize all whitespace or accept suffix-only equality",
+      "score": 1,
+      "reason": "Would equate older user text, changed prefixes and edits without a witnessed emission; rejected."
+    },
+    {
+      "option": "Disable active composition or force legacy managed commits",
+      "score": 2,
+      "reason": "Changes delivery behavior to conceal missing observation provenance; rejected."
+    },
+    {
+      "option": "Attach exact pre-dispatch owned-start snapshot to existing postcondition and acknowledge only its one newly emitted Space",
+      "score": 9,
+      "reason": "Uses existing witness, receipt deadline/epoch, tail owner and actual full-field observation. No parallel owner, delivery route, retry or verifier change; selected."
+    }
+  ],
+  "decision": "Before clearing unchanged entirely owned user-input preedit, capture its current observed full end-caret birth snapshot and exact word plus one Space. After successful existing CommitText, arm existing ImeActiveComposition visible postcondition with full expected snapshot. Within the same receipt epoch/deadline, actual equality of full old prefix plus word and one final NBSP may update only that newly emitted boundary through acknowledge_owned_space_tail. Preserve immutable dispatch identity. Exact ASCII observation remains accepted. No feedback is attached.",
+  "guards": [
+    "Current owned preedit witness, focus receipt/serial, runtime lease, layout generation and observation revision before dispatch.",
+    "Unchanged user-input word, end caret, empty right suffix, nonsensitive content, unsealed context, no atomic operation.",
+    "Existing receipt epoch/deadline, current path identity, exact unchanged owned tail and complete expected client snapshot.",
+    "Reject changed full prefix or word, selection, interior caret, stale epoch/deadline and foreign tail owner.",
+    "Verified correction/completion and receipts without actual owned-start proof do not gain this presentation rule. No generic whitespace normalization or source-free word-completeness promotion."
+  ],
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "evidence": {
+    "controlled_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-composition-space-receipt-red-source-one/RESULT.json",
+    "controlled_red_sha256": "a0d78bb0db5da2deb05586554d65ffad1dce83e6f1a9ccf069730f2e1ed52567",
+    "red_passed": 0,
+    "red_failed": 2,
+    "aborted_full_native_export": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-target-native-candidate-full-source-one/EVIDENCE.json",
+    "aborted_full_native_archive_sha256": "83b3dd19dff31a61a86569d4ea6ad4ece3ceacd626517a3757206613fb946d0f",
+    "focused_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/active-composition-space-receipt-green-source-two/RESULT.json",
+    "focused_green_sha256": "1ef34fe2d950f466f9cae6d883b11f5da538f3694b581b88452363966c9c52e0"
+  },
+  "not_tested": "Focused5PASS, including changed client state, exact ASCII, old NBSP preservation, expiry, new input epoch and foreign tail owner. Remote formatting PASS; official full source, graph, build and native pending. Last complete browser279/41/0 and KDE432360/68/4 retained.",
+  "id": "2026-10-19-owned-preedit-space-observation"
+}

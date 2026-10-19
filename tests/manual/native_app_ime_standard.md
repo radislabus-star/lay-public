@@ -21,3 +21,32 @@ For Telegram, use a new test profile and an authenticated test account. Keep tes
 Retain PASS/FAIL/BLOCKED/NOT_TESTED per stable app/case ID, full denominators, exact native input identities and actual visible/consumer receipts. Measure write-return to exact visible target latency with required/measured/missing coverage, median, p95 and maximum. Kernel release timing remains NOT_MEASURED unless directly captured. Screenshots without a clock do not prove latency.
 
 Keep previous Firefox/Chrome complete receipts separately. A result from other apps, a source test or a partial native run never replaces the mandatory ten-field browser matrix. Preserve all failures and stop an unchanged failed scenario rather than retrying until it happens to pass.
+
+Use the [same fast localization procedure](browser_ime_standard.md#быстрая-локализация-отказов): check actual target APIs/setup without keys, group by the first failed transition, and run one mechanism witness with necessary regression controls before the full fixed matrix. Save the failed condition and bounded payload from existing reads; add no diagnostic RPC to measured input. Keep setup, observer and product failures and their timing separate.
+
+## Plasma coverage
+
+Record Plasma/KWin, Wayland/X11, renderer, IBus daemon and actual client-library versions separately. A VKMS/QPainter Wayland run proves that declared native setup only. Freeze ordinary US/RU input and Space-commit baselines before attributing a transport/setup failure to Lay.
+
+Qualify device hotplug in the actual test isolation. On systemd249 an unprivileged
+bwrap user namespace maps the host udev sender to UID65534 and libudev discards
+post-startup keyboard notifications. A daemon emission log or kernel event
+alone cannot establish KWin opened the new keyboard. Preserve filesystem/data
+isolation while retaining the host user namespace; if mount setup needs a
+privileged helper, drop the private session to the ordinary test UID/GID with
+zero permitted/effective/inheritable/ambient capabilities before DBus, KWin or
+clients. Assert the actual identity/namespace and temporary directory/socket
+access. Temporary ancestor directories must be searchable and private `/tmp`
+must have standard1777 permissions; never chmod mounted user data. Qualify a
+same-device zero-key control and an original native roundtrip before expanding
+the matrix. The TD1592026-10-18 owning-document entry preserves this evidence.
+
+In a private direct-IBus test session, leave `IBUS_USE_PORTAL` absent: setting it to `0` still selects the portal in IBus. Do not alter the user's global environment or replace the host IBus to repair a test. Capture unexpected engine exits; distinguish them from deliberate shutdown after actors finish.
+
+Preserve a failed empty-field or caret prerequisite as its raw verdict and report that the intended operation was not exercised. Missing client accessibility/focus prevents functional coverage; a single setup BLOCKED does not fill a client grid. Record tray registration and visibly observed production-menu labels separately.
+
+The 2026-10-18 baseline found that the daemon's exact focused-window lease requires GNOME. Do not bypass that guard on KDE or use the test observer as runtime authority. In particular, a Wayland `windowId` of zero and an application PID cannot distinguish two windows. KDE Double Shift acceptance requires a production KWin identity provider under the existing focus contract, followed by new native evidence.
+
+Check the installed editor's supported launch arguments before opening a test window. A PID can belong to an exited zombie: verify a non-zombie state, UID, start tick, executable identity and owned cgroup before native input. On the tested KWrite 21.12.3, `--new` is unsupported. Select the unique SHOWING editor Text or Terminal accessibility node, never the first hidden editable node in the application tree. A focus request's return value alone is insufficient: require the actual FOCUSED and SHOWING states and the owned foreground window before keys. KWrite may already be focused while `grab_focus()` returns false.
+
+Keep the first failed setup receipt immutable. A later finite editor follow-up may fill its NOT_TESTED cells only in an explicitly cumulative report with verified matching candidate bytes and separate receipts. The 432-cell KDE functional grid does not include terminal visual preedit, X11, hardware rendering or successful production-menu interaction; record those limits separately. Diagnose IME context-authority refusals separately from the daemon's later GNOME-only exact-window lease.

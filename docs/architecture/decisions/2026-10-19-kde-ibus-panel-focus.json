@@ -1,0 +1,108 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "status": "PRIVATE_FIREFOX_AND_CHROME_160_COMPLETE",
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "reason": "The retained KDE Firefox iframe10 short-word case recognizes Double Shift, then loses exact-layout handoff because a visible IBus candidate panel becomes a normal active xdg_toplevel with keyboard focus. GTK3 Wayland accept_focus flags have no implementation. A null-timer cancellation alone did not fix a legitimate nonempty hint map.",
+  "decision": "Use KWin's existing acceptfocus window rule for the exact normal IBus popup class and default popup caption. First test the packaged rule only in the disposable native KDE session. Keep the direct GTK IBus client integration, panel visibility, original input actions and every foreground/owner guard. Never reactivate Firefox in response to a panel map or treat panel focus as application focus.",
+  "invariants": [
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "alternatives": [
+    {
+      "option": "Existing KWin acceptfocus policy for the observed IBus popup",
+      "score": 8,
+      "reason": "Smallest change at the proven presentation failure; no new transport, timer, controller or binary build. Requires exact match and native evidence that the visible panel cannot acquire keyboard focus."
+    },
+    {
+      "option": "Move Firefox from direct GTK IBus to compositor text-input",
+      "score": 5,
+      "reason": "Supported native Wayland integration, but changes the client input route and invalidates existing surrounding-text adapter acceptance. Separate migration rather than a focus-only repair."
+    },
+    {
+      "option": "Add a new nonfocus Wayland surface backend to upstream IBus",
+      "score": 4,
+      "reason": "Addresses panel presentation directly, but adds dependencies, packaging and positioning work; excessive for the current isolated failure."
+    },
+    {
+      "option": "Ignore panel focus or force application reactivation",
+      "score": 1,
+      "reason": "Would bypass foreground authority or introduce a focus race; rejected."
+    }
+  ],
+  "verification": {
+    "baseline": "kbcv/native-windows-0shk7au1/RESULT.json, short FAIL, retained ABORTED actor",
+    "first_scope": "Original Firefox iframe10 roundtrip and short identities; exact expected text, layout and following-letter controls unchanged; retain gesture latency and every native verdict.",
+    "positive_witness": "A mapped normal IBus panel with the exact class/caption has wantsInput=false and never becomes active; Firefox remains keyboard owner. A PASS without an exercised visible panel is insufficient to establish this causal fix.",
+    "measured": "kbcy completes all24 original identities in fields7,8,10 across Firefox and Chrome PASS, including both five-repeat plans and following letters. Seven mapped normal IBus panels have wantsInput=false and never become active.84 successful Double Shift observations: median150.225ms, p95173.559ms, max177.705ms; write-return to exact AT-SPI target. Independent cleanup verified.",
+    "receipt": "/home/e/projects/lay-development-runner/kbcw/native-windows-h7hpls_q/RESULT.json",
+    "receipt_sha256": "4536636f7dbbc6346de60110a42e280cfdeb32592ec2a873e2bea4e0a6ce75bc",
+    "export_sha256": "341fb0cafdaa6cc626028e08f82c064145c6ae313f9606c7369482027156fb02",
+    "expanded_receipts": [
+      {
+        "path": "/home/e/projects/lay-development-runner/kbcy/native-windows-d67jof3t/RESULT.json",
+        "sha256": "1578aceb74e6bf8ae03604383cfddbe8531fceeb92b849db87290c4f3b23b9ee",
+        "app": "firefox",
+        "pass": 12
+      },
+      {
+        "path": "/home/e/projects/lay-development-runner/kbcy/native-windows-htp_6aom/RESULT.json",
+        "sha256": "d493dce91f28d05293b6635c2475553b304e83c49cdec7d19f6f01b4926c0825",
+        "app": "chrome",
+        "pass": 12
+      }
+    ],
+    "expanded_export_sha256": "8f8c9a87d0b6c5989421f61c7e9c5ab2d0867a3bb9cbafa21b70cc1779c14dad",
+    "installer": "Nine remote tests PASS, zero skips, both shell syntax checks PASS. Follow exact rule identity after real KWin5 numeric-group rewrite; regression fixture taken from native configuration. Source-three receipt pins final helper/test bytes. Firefox used previous frozen helper, fresh rule output identical. No user profile change.",
+    "limits": "This is a compositor presentation policy, not proof of an upstream IBus branch value. Do not apply the rule to IBus settings, emoji windows or arbitrary applications. Full matrix counts remain unchanged until their original cells are rerun.",
+    "rollback": "Remove only the dedicated rule group and its General.rules entry from the private configuration; installed user configuration is not modified by this experiment.",
+    "firefox_full_component": {
+      "at": "2026-10-19T01:10:37.484536+00:00",
+      "pass": 123,
+      "fail": 36,
+      "blocked": 1,
+      "total": 160,
+      "receipt": "/home/e/projects/lay-development-runner/kbda/native-windows-qflw2qkp/RESULT.json",
+      "receipt_sha256": "d87d3680e5c961b9de7f93d25ab07a906300d892df397015dbced8d3b22b421e",
+      "export_sha256": "4570cf01cb37212d477b708cc8a106ca1cb31a6f561ab3c5d0b51e8b4710053d",
+      "mapped_normal_panels": 59,
+      "panel_activations": 0,
+      "all_panels_want_input": false,
+      "double_shift": {
+        "measured": 178,
+        "p50_ms": 164.58731454610825,
+        "p95_ms": 178.96370601654053,
+        "max_ms": 191.02636694908142,
+        "scope": "successful measured native operations only; missing/refused operations remain in rows"
+      },
+      "scope": "Complete Firefox160 component only, other272 identities not rerun"
+    },
+    "aborted_full_attempt": "kbcz stopped at passive2MiB log ceiling after64 terminal rows; evidence exported and independently CLOSED. kbda uses14MiB proportional passive budget; original native targets/cadence/guards unchanged.",
+    "chrome_full_component": {
+      "receipt": "/home/e/projects/lay-development-runner/kbdb/native-windows-we_cszj_/RESULT.json",
+      "sha256": "416f1166f1a09d2fc3f53b938d85f4a6045e63c40f634897e5d9417ebbd0c495",
+      "counts": {
+        "PASS": 130,
+        "FAIL": 30,
+        "BLOCKED": 0,
+        "TOTAL": 160
+      },
+      "export": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kde-chrome-policy-full-source-two/NATIVE-EVIDENCE.tar.gz",
+      "export_sha256": "13aca263c2452b03f54e1e5604218e51376a0687b444282e57e6b939f85d155f",
+      "independent_closed_at": "2026-10-19T01:19:00.540675+00:00",
+      "successful_double_shift_ms": {
+        "n": 180,
+        "median": 167.54645150899887,
+        "p95_nearest_rank": 178.06525099277496,
+        "max": 193.0151379108429
+      }
+    }
+  },
+  "runtime_authority_changed": false,
+  "production_delivery_changed": false,
+  "installed_runtime_changed": false
+}

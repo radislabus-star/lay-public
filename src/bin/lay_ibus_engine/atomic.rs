@@ -876,6 +876,39 @@ mod tests {
     }
 
     #[test]
+    fn legacy_auxiliary_display_cannot_block_first_atomic_native_backspace() {
+        for inherited_hint in [false, true] {
+            let mut live = engine();
+            live.committed_tail.buffer = "слово".into();
+            live.composition.auxiliary_visible = inherited_hint;
+            live.composition.preedit_suffix = "форма".into();
+            live.composition.preedit_candidates = vec!["форма".into()];
+            live.composition.preedit_replacement_targets = vec![None];
+            assert!(!live.atomic.active);
+            let proposal = zbus::block_on(live.process_atomic_key_event(
+                KEY_BACKSPACE,
+                14,
+                0,
+                (101, 2, 12, 41, 5, 13, vec![8; DIGEST_BYTES]),
+                capability(),
+                (RECEIPT_NONE, 0, Vec::new()),
+            ))
+            .expect("legacy display cannot require an unsupported atomic effect");
+            assert_eq!(proposal.0, PROPOSAL_NATIVE_UNHANDLED);
+            assert!(proposal.1.is_empty());
+            assert_eq!(live.committed_tail.buffer, "слов");
+            assert!(live.composition.preedit_candidates.is_empty());
+            assert!(live.selected_precognition_suffix().is_none());
+            assert_eq!(live.composition.auxiliary_visible, inherited_hint);
+            assert!(live.atomic.deferred_learning_actions.is_empty());
+            assert!(live.settle_atomic_pending(41, &(RECEIPT_NONE, 0, Vec::new())));
+            assert_eq!(live.committed_tail.buffer, "слов");
+            assert!(live.composition.preedit_candidates.is_empty());
+            assert_eq!(live.composition.auxiliary_visible, inherited_hint);
+        }
+    }
+
+    #[test]
     fn atomic_native_backspaces_retain_observed_autocorrection_learning() {
         use crate::engine::{PendingSystemOutcomeFeedback, SystemOutcomeKind};
         use lay::text_edit::VisibleTailSource;

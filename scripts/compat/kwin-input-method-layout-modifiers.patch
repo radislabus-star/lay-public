@@ -1,0 +1,21 @@
+--- a/src/keyboard_layout.cpp
++++ b/src/keyboard_layout.cpp
+@@ -9,6 +9,7 @@
+ #include "keyboard_layout.h"
+ #include "keyboard_layout_switching.h"
+ #include "keyboard_input.h"
++#include "inputmethod.h"
+ #include "input_event.h"
+ #include "main.h"
+ #include "platform.h"
+@@ -214,6 +215,10 @@
+     if ( !m_xkb->switchToLayout(index) ) {
+         return false;
+     }
++    // External changes have no physical key to flush pending grab modifiers.
++    if (auto *inputMethod = InputMethod::self()) {
++        inputMethod->forwardModifiers(InputMethod::NoForce);
++    }
+     m_keyboardLayout->checkLayoutChange(previousLayout);
+     return true;
+ }

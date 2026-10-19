@@ -1,0 +1,56 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-19",
+  "id": "2026-10-19-ibus-focus-surrounding-observation",
+  "status": "DEPENDENCY_SOURCE_GREEN_NATIVE20_COMPLETE_DOWNSTREAM_HANDOFF_REFUSAL",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "protected_paths": [],
+  "reason": "Original KDE Chrome focus-return10 still refuses because no current snapshot reaches the authenticated owner. Passive client and bus witnesses identify two independent upstream IBus1.5.34-rc2 losses: actual Wayland callbacks received before asynchronous context/Require readiness are never forwarded, and the engine proxy suppresses identical text/cursor/anchor across distinct focused context IDs.",
+  "decision": "Carry a small reproducible compatibility patch for the existing IBus Wayland client and engine proxy. Invalidate only the proxy's duplicate tuple on a real FocusIn change; never send a cached previous-field tuple. Forward the Wayland client's existing actual current-activation observation when its current InputContext emits RequireSurroundingText. Preserve its byte cursor AND byte anchor, converting both to character offsets at send time. Keep the existing deactivation cache clear and reject absent or different contexts. Connect and disconnect the handler with the existing context lifecycle. Leave Lay admission, revocation, replay and output routes unchanged. The Require handler supplies a fresh floating IBusText because the InputContext API consumes its argument even when suppressing a duplicate; never pass the borrowed client cache. Keep the immediate actual-callback forwarding path unchanged.",
+  "alternatives": [
+    {
+      "solution": "Repair the two lost-observation transitions in their existing upstream owners",
+      "rating": 9,
+      "risk": "Requires private dependency qualification and native causal comparison; not an upstream release qualification"
+    },
+    {
+      "solution": "Keep Lay's old focus receipt when text happens to match",
+      "rating": 1,
+      "risk": "Reuses a revoked field proof and can affect the wrong field"
+    },
+    {
+      "solution": "Another Require request without cache/lifecycle correction",
+      "rating": 3,
+      "risk": "The current client has no handler for the earlier callback and the proxy still suppresses the same tuple"
+    },
+    {
+      "solution": "Fallback to daemon text injection after IME refusal",
+      "rating": 1,
+      "risk": "Changes authority and delivery route without a current field proof"
+    }
+  ],
+  "verification": "Compile the actual upstream decision functions with a recording transport. Baseline must fail cross-focus duplicate and pre-readiness snapshot cases; proxy-only and Wayland-only changes must each leave the other two failures; combined must pass all8. Preserve Unicode selection anchor, same-context duplicate suppression, missing-current-snapshot refusal and foreign-context refusal. Then run unchanged original focus-return native cases, followed by full original browser and native-app sets. Keep measurements and client acceptance separate from source results. A separate regression executes the actual InputContext setter with real IBusText/GObject ownership, recording only the outgoing D-Bus call: repeated Require32, replacement callback, Unicode anchor and cleared cache. It must fail on the borrowed-object candidate and pass on the corrected candidate before native input.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "installation": false,
+  "not_tested": "Corrected private native20 completed Firefox10PASS/Chrome10FAIL with no panel crash; actual current Chrome SSI now reaches Lay and ManualToggleV3 delegates. A subsequent authenticated layout transfer loses exact manual authority when target SSI precedes activation installation; this is a separate Lay owner transition, not a privacy-hint change. No full regrade, host installation or upstream release qualification.",
+  "evidence": {
+    "native_passive_bus": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-native-focus-bus-diagnostic-source-one/evidence",
+    "native_metadata_trace": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-manual-native-client-trace-source-two/evidence",
+    "valid_baseline_red": "/home/e/projects/lay-development-runner/ibus-fresh-focus-regression-red-source-two/RESULT.json",
+    "private_build": "/home/e/projects/lay-development-runner/ibus-fresh-focus-candidate-build-source-three/BUILD.json",
+    "borrowed_object_red": "/home/e/projects/lay-development-runner/ibus-fresh-focus-lifetime-red-source-two/RESULT.json",
+    "real_object_lifetime_green": "/home/e/projects/lay-development-runner/ibus-fresh-focus-candidate-build-source-three/real-object-lifetime/RESULT.json",
+    "aborted_native_closure": "/home/e/projects/lay-development-runner/kbdq/INDEPENDENT-CLOSED-ABORTED-source-one.json",
+    "corrected_native20": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/fresh-focus-surrounding-native-candidate-source-two/evidence"
+  },
+  "consequence_analysis": "No new Lay owner, buffer, retry, backend or client-specific bypass. The new anchor is part of an already cached actual Wayland observation. A signal alone cannot fabricate or resurrect text after deactivation. Source extraction checks real decisions but stubs transport and does not replace native or upstream integration acceptance. Native protocol, case identities, targets and deadlines remain fixed. Private dependencies remain diagnostic until their retained broader upstream failures and packaging are resolved."
+}
