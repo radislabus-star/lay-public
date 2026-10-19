@@ -1,0 +1,11 @@
+[Unit]
+Description=Periodically check stable Lay updates
+
+[Timer]
+OnCalendar=*-*-* 09,15,21:00:00
+RandomizedDelaySec=15min
+Persistent=true
+Unit=lay-auto-update.service
+
+[Install]
+WantedBy=timers.target

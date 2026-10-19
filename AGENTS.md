@@ -157,6 +157,15 @@ Rules:
 
 ## Accepted-version publication
 
+- Before finishing every release or updater/menu change, verify the actual
+  installed menu updater entrypoint, its resolved source and the latest stable
+  public release. An unchanged developer upstream is not proof of no updates;
+  a network/API failure must be an error. Record source, installed and loaded
+  runtime evidence separately. Both GNOME and KDE expose the same Auto-update
+  switch with an off option; enabling it never authorizes global IBus restart
+  or input-route changes. See
+  `docs/architecture/stable-auto-update-2026-10-19.md`.
+
 - When the user confirms that an exact running version works or says it is OK,
   treat verification of that version as finished.
 - If the user then says to push or publish that version, perform only the

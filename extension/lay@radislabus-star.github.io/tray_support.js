@@ -4,13 +4,24 @@ import GLib from 'gi://GLib';
 export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.92';
+export const APP_VERSION = '1.0.93';
 export const APP_RELEASE_DATE = '2026-10-19';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
 export const MENU_WIDTH = 300;
 export const COMPACT_SUBTITLE_STYLE = 'font-weight:normal; font-size:76%; opacity:180;';
+
+export function importImeHintStyle(implementationUri) {
+    const target = Gio.File.new_for_uri(implementationUri).get_parent().get_child('ime_hint_style.js');
+    if (!target.query_exists(null)) {
+        const installed = Gio.File.new_for_path(GLib.get_home_dir()
+            + '/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/ime_hint_style.js');
+        installed.copy(target, Gio.FileCopyFlags.NONE, null, null);
+    }
+    // The per-enable implementation directory also gives this module a fresh URI.
+    return import(target.get_uri());
+}
 
 export const INPUT_MODE_OPTIONS = [
     ['uinput', 'Быстрый ввод'],
@@ -244,6 +255,26 @@ export function openUpdateCheck(onError) {
     } catch (error) {
         onError(error.message);
     }
+}
+
+export function autoUpdateControl(action, onDone, onError) {
+    const updater = GLib.get_home_dir() + '/.local/bin/lay-update';
+    try {
+        const child = Gio.Subprocess.new(
+            [updater, action],
+            Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+        child.communicate_utf8_async(null, null, (process, result) => {
+            try {
+                const [, stdout, stderr] = process.communicate_utf8_finish(result);
+                if (!process.get_successful())
+                    throw new Error(stderr.trim() || 'Не удалось изменить автообновление.');
+                const state = stdout.trim();
+                if (state !== 'enabled' && state !== 'disabled')
+                    throw new Error('Не удалось прочитать состояние автообновления.');
+                onDone(state === 'enabled');
+            } catch (error) { onError(error.message); }
+        });
+    } catch (error) { onError(error.message); }
 }
 
 export function openDiagnosticsLog() {

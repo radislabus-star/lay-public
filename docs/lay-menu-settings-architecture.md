@@ -30,7 +30,8 @@ defaults, config normalization, or runtime commands.
 | Input mode | `text_backend`, `nanda_precognition`, `lay-runtime-control channel` | Selects uinput or IME as one coherent route | KEEP |
 | Typing assistance | `typing_assist` | Enables live completion/correction assistance | KEEP |
 | Autocorrection | `auto_replace` | Enables admitted automatic replacements | KEEP |
-| Check updates | Installed `lay-update -> update.sh` | Opens a terminal; checks source upstream and asks before source build/install | KEEP |
+| Check updates | Installed `lay-update -> ~/.local/lib/lay/update.sh` | Opens a terminal; checks the public stable release and asks before source build/install | KEEP |
+| Auto-update | Same installed updater, systemd user timer | Enables/disables periodic stable updates; never changes input config or restarts input when toggled | KEEP |
 | Settings | `settings.js -> settings_view.js` | Opens the single settings surface | KEEP |
 | Runtime status | `systemctl --user is-active` | Read-only service observation | MOVE TO DIAGNOSTICS |
 | Recent actions | `recent_actions.jsonl` | Read-only recent edit receipt view | MOVE TO DIAGNOSTICS |

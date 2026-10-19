@@ -59,7 +59,7 @@ export default class LayExtension extends Extension {
 
         // Удаляем временные файлы.
         if (this._tmpDir) {
-            for (const name of ['lay-impl.js', 'tray_support.js', 'dbus_service.js', 'recent_actions_menu.js']) {
+            for (const name of ['lay-impl.js', 'tray_support.js', 'dbus_service.js', 'recent_actions_menu.js', 'ime_hint_style.js']) {
                 try { Gio.File.new_for_path(`${this._tmpDir}/${name}`).delete(null); } catch(e) {}
             }
             try { Gio.File.new_for_path(this._tmpDir).delete(null); } catch(e) {}

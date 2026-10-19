@@ -1,226 +1,137 @@
 #!/usr/bin/env bash
-# update.sh — проверить обновления lay, скачать их и переустановить при необходимости.
+# Stable release discovery, apply and scheduling controls have one owner.
 set -euo pipefail
-
-SOURCE_ONLY=0
-INTERACTIVE=0
-CHECK_ONLY=0
-if [ "$#" -gt 1 ]; then
-    echo "Использование: lay-update [--menu|--check|--source-only]" >&2
-    exit 2
-elif [ "${1:-}" = "--source-only" ]; then
-    SOURCE_ONLY=1
-elif [ "${1:-}" = "--check" ]; then
-    CHECK_ONLY=1
-elif [ "${1:-}" = "--interactive" ]; then
-    INTERACTIVE=1
-elif [ "${1:-}" = "--menu" ]; then
-    : # Handled below, after resolving the installed symlink.
-elif [ "$#" -gt 0 ]; then
-    echo "Использование: lay-update [--menu|--check|--source-only]" >&2
-    exit 2
-fi
-
 SCRIPT="$(readlink -f -- "${BASH_SOURCE[0]}")"
-DIR="$(dirname "$SCRIPT")"
-if [ "${1:-}" = "--menu" ]; then
-    command='bash "$1" --interactive; result=$?; if [ "$result" != 0 ]; then printf "\nОшибка обновления (код %s).\n" "$result"; fi; printf "\nНажми Enter, чтобы закрыть окно..."; read -r; exit "$result"'
-    terminals=(gnome-terminal kgx konsole wezterm kitty xterm)
-    if [[ "${XDG_CURRENT_DESKTOP:-}" =~ [Kk][Dd][Ee]|[Pp]lasma ]]; then
-        terminals=(konsole gnome-terminal kgx wezterm kitty xterm)
-    fi
-    for terminal in "${terminals[@]}"; do
-        if ! command -v "$terminal" >/dev/null 2>&1; then continue; fi
-        case "$terminal" in
-            gnome-terminal) exec "$terminal" --wait -- bash -c "$command" lay-update "$SCRIPT" ;;
-            kgx) exec "$terminal" -- bash -c "$command" lay-update "$SCRIPT" ;;
-            wezterm) exec "$terminal" start -- bash -c "$command" lay-update "$SCRIPT" ;;
-            *) exec "$terminal" -e bash -c "$command" lay-update "$SCRIPT" ;;
-        esac
-    done
-    echo "Не найден терминал для обновления Lay. Запусти lay-update в своём терминале." >&2
-    exit 1
-fi
-cd "$DIR"
-
-if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    echo "update.sh работает только из git-копии lay." >&2
-    exit 1
-fi
-
+MODE="${1:---interactive}"
+(( $# <= 1 )) || { echo "Ожидается один режим lay-update." >&2; exit 2; }
+case "$MODE" in
+    --menu)
+        terminal_command='bash "$1" --interactive; result=$?; printf "\nНажми Enter, чтобы закрыть окно..."; read -r; exit "$result"'
+        terminals=(gnome-terminal kgx konsole wezterm kitty xterm)
+        if [[ "${XDG_CURRENT_DESKTOP:-}" =~ [Kk][Dd][Ee]|[Pp]lasma ]]; then
+            terminals=(konsole gnome-terminal kgx wezterm kitty xterm)
+        fi
+        for terminal in "${terminals[@]}"; do
+            command -v "$terminal" >/dev/null || continue
+            case "$terminal" in
+                gnome-terminal) exec "$terminal" --wait -- bash -c "$terminal_command" lay-update-menu "$SCRIPT" ;;
+                konsole) exec "$terminal" --separate -e bash -c "$terminal_command" lay-update-menu "$SCRIPT" ;;
+                kgx) exec "$terminal" -- bash -c "$terminal_command" lay-update-menu "$SCRIPT" ;;
+                wezterm) exec "$terminal" start -- bash -c "$terminal_command" lay-update-menu "$SCRIPT" ;;
+                *) exec "$terminal" -e bash -c "$terminal_command" lay-update-menu "$SCRIPT" ;;
+            esac
+        done
+        echo "Не найден терминал для обновления Lay. Запусти lay-update в своём терминале." >&2
+        exit 1 ;;
+    --auto-status)
+        state="$(systemctl --user show lay-auto-update.timer --property=UnitFileState --value)"
+        case "$state" in enabled|enabled-runtime) echo enabled ;; *) echo disabled ;; esac
+        exit 0 ;;
+    --auto-enable)
+        systemctl --user enable --now lay-auto-update.timer
+        echo enabled; exit 0 ;;
+    --auto-disable)
+        # Do not cancel an installation already replacing files.
+        systemctl --user disable --now lay-auto-update.timer
+        echo disabled; exit 0 ;;
+    --check|--interactive|--automatic|--source-only) ;;
+    *) echo "Неизвестный режим: $MODE" >&2; exit 2 ;;
+esac
 state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/lay"
 mkdir -p "$state_dir"
 exec 9>"$state_dir/update.lock"
-if ! flock -n 9; then
-    echo "Обновление Lay уже выполняется в другом окне." >&2
-    exit 75
-fi
+flock -n 9 || { echo "Другое обновление Lay уже выполняется." >&2; exit 75; }
 
-confirm_install() {
-    if [ "$INTERACTIVE" != 1 ]; then return; fi
-    echo "Для обновления потребуется сборка и установка Lay; возможен запрос sudo."
-    printf 'Обновить сейчас? [y/N]: '
-    read -r answer || answer=''
-    case "$answer" in y|Y|д|Д|да|Да) ;; *) echo 'Обновление отменено.'; exit 0 ;; esac
-}
-
-preserve_local_changes() {
-    if [ -z "$(git status --porcelain --untracked-files=normal)" ]; then
-        return
-    fi
-    backup_name="lay-auto-update-$(date +%Y%m%d-%H%M%S)"
-    echo "Локальные изменения найдены; сохраняю их в git stash: $backup_name"
-    git stash push --include-untracked -m "$backup_name" >/dev/null
-    echo "✓ локальные изменения сохранены: $(git stash list -1 --format='%gd %s')"
-    echo "  вернуть позже: git stash pop"
-}
-
-current_version() {
-    if command -v "$HOME/.local/bin/lay" >/dev/null 2>&1; then
-        "$HOME/.local/bin/lay" --version 2>/dev/null || true
-    elif [ -x target/release/lay ]; then
-        target/release/lay --version 2>/dev/null || true
-    fi
-}
-
-source_version() {
-    sed -n 's/^version = "\([^"]*\)"/\1/p' Cargo.toml | head -1
-}
-
-installed_version() {
-    current_version | sed -n 's/^lay //p' | head -1
-}
-
-live_extension_version() {
-    gdbus call --session \
-        --dest org.gnome.Shell \
-        --object-path /io/github/radislabus_star/LayDaemon \
-        --method io.github.radislabus_star.LayDaemon.Version 2>/dev/null \
-        | sed -n "s/.*'\([^']*\)'.*/\1/p" \
-        || true
-}
-
-refresh_runtime() {
-    desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
-    if [[ "$desktop_hint" =~ [Gg][Nn][Oo][Mm][Ee]|[Uu]nity ]]; then
-        if [ -x ./dev-reload.sh ]; then
-            bash ./dev-reload.sh
-        else
-            ./scripts/check-gnome-extension-runtime.sh --fix --reload
-            systemctl --user restart lay-daemon
-        fi
-    else
-        systemctl --user restart lay-daemon
-    fi
-    if [[ "$desktop_hint" =~ [Kk][Dd][Ee]|[Pp]lasma ]] && [ -x "$HOME/.local/bin/lay-kde-tray" ]; then
-        pkill -f "$HOME/.local/bin/lay-kde-tray" 2>/dev/null || true
-        lay_state_dir="${XDG_STATE_HOME:-$HOME/.local/state}/lay"
-        mkdir -p "$lay_state_dir"
-        # A long-lived tray must not inherit the updater lock.
-        nohup "$HOME/.local/bin/lay-kde-tray" 9>&- >"$lay_state_dir/kde-tray.log" 2>&1 &
-    fi
-}
-
-echo "=== проверка обновлений ==="
-echo "локально: $(current_version)"
-
-upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}' 2>/dev/null || true)"
-if [ -z "$upstream" ]; then
-    if git remote get-url public >/dev/null 2>&1; then
-        upstream="public/main"
-    else
-        upstream="origin/main"
-    fi
-fi
-
-remote="${upstream%%/*}"
-if [ "$remote" = "$upstream" ]; then
-    remote="origin"
-fi
-
-git fetch --quiet "$remote"
-
-if ! git rev-parse --verify "$upstream" >/dev/null 2>&1; then
-    echo "Не могу проверить upstream: $upstream" >&2
-    exit 1
-fi
-
-behind="$(git rev-list --count "HEAD..$upstream")"
-ahead="$(git rev-list --count "$upstream..HEAD")"
-echo "upstream: $upstream"
-echo "новых коммитов: $behind"
-if [ "$ahead" != "0" ]; then
-    echo "локальных неопубликованных коммитов: $ahead"
-fi
-
-if [ "$CHECK_ONLY" = 1 ]; then
-    echo "source: $(source_version)"
-    echo "Проверка завершена; установка и перезапуск не выполнялись."
+if [[ "$MODE" == --source-only ]]; then
+    # Explicit developer operation, never called by menus or the timer.
+    cd "$(dirname "$SCRIPT")"
+    git rev-parse --is-inside-work-tree >/dev/null
+    upstream="$(git rev-parse --abbrev-ref --symbolic-full-name '@{u}')"
+    git fetch --quiet "${upstream%%/*}"
+    git merge --ff-only "$upstream"
     exit 0
 fi
-if [ "$behind" != 0 ] && [ "$ahead" != 0 ]; then
-    echo "Ветки разошлись. Обновление остановлено; локальные изменения сохранены на месте." >&2
-    exit 1
+installed="$("$HOME/.local/bin/lay" --version)"
+installed="${installed#lay }"
+api="${LAY_UPDATE_RELEASE_API:-https://api.github.com/repos/radislabus-star/lay-public/releases/latest}"
+repository="${LAY_UPDATE_REPOSITORY_URL:-https://github.com/radislabus-star/lay-public.git}"
+source_dir="${XDG_DATA_HOME:-$HOME/.local/share}/lay/update-source"
+release="$(python3 - "$api" "$installed" <<'PY'
+import json, re, sys, urllib.request
+try:
+    request = urllib.request.Request(sys.argv[1], headers={
+        "Accept": "application/vnd.github+json", "User-Agent": "Lay-updater"})
+    with urllib.request.urlopen(request, timeout=20) as response:
+        data = json.load(response)
+    tag = data.get("tag_name", "")
+    if data.get("draft") is not False or data.get("prerelease") is not False:
+        raise ValueError("ответ не является стабильным опубликованным релизом")
+    if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", tag):
+        raise ValueError("некорректный тег стабильного релиза")
+    if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", sys.argv[2]):
+        raise ValueError("не удалось определить установленную версию")
+    latest = tuple(map(int, tag[1:].split(".")))
+    current = tuple(map(int, sys.argv[2].split(".")))
+    print(tag, tag[1:], "new" if latest > current else "current" if latest == current else "newer")
+except Exception as error:
+    print(f"Ошибка проверки стабильного релиза: {error}", file=sys.stderr)
+    sys.exit(1)
+PY
+)"
+read -r tag version relation <<<"$release"
+printf '=== проверка обновлений ===\nустановлено: %s\nстабильный релиз: %s\nисточник: %s\n' "$installed" "$version" "$api"
+if [[ "$relation" == current ]]; then
+    echo "✓ обновлений нет, установлена актуальная стабильная версия"; exit 0
+elif [[ "$relation" == newer ]]; then
+    echo "Установленная версия новее стабильной; понижение не выполняется."; exit 0
 fi
-
-if [ "$behind" = "0" ]; then
-    if [ "$SOURCE_ONLY" = 1 ]; then
-        echo "✓ исходники актуальны; установка пропущена (--source-only)"
-        exit 0
-    fi
-    src_ver="$(source_version)"
-    installed_ver="$(installed_version)"
-    live_ver="$(live_extension_version)"
-    echo "source: ${src_ver:-unknown}"
-    echo "установлено: ${installed_ver:-unknown}"
-    echo "трей/DBus: ${live_ver:-unknown}"
-
-    if [ -n "$src_ver" ] && [ "$installed_ver" != "$src_ver" ]; then
-        echo ""
-        echo "⚠ установленная версия отстала от рабочей копии, переустанавливаю..."
-        confirm_install
-        LAY_KEEP_OLLAMA=1 bash install.sh
-        refresh_runtime
-        echo "✓ runtime обновлён до $(current_version)"
-        exit 0
-    fi
-
-    if [ -n "$src_ver" ] && [ -n "$live_ver" ] && [ "$live_ver" != "$src_ver" ]; then
-        echo ""
-        echo "⚠ трей/DBus держит старую версию, перезагружаю runtime..."
-        confirm_install
-        refresh_runtime
-        echo "✓ трей/DBus: $(live_extension_version)"
-        exit 0
-    fi
-
-    echo ""
-    echo "✓ обновлений нет, текущая версия актуальна"
-    exit 0
+echo "Доступно обновление: $installed → $version"
+[[ "$MODE" != --check ]] || exit 0
+if [[ "$MODE" == --interactive ]]; then
+    read -r -p "Собрать и установить стабильный релиз? [y/N] " answer || answer=""
+    case "$answer" in y|Y|yes|YES|д|Д|да|Да) ;; *) echo "Обновление отменено."; exit 0 ;; esac
 fi
-
-echo ""
-if [ "$SOURCE_ONLY" != 1 ]; then confirm_install; fi
-preserve_local_changes
-echo "=== git pull ==="
-git merge --ff-only "$upstream"
-
-if [ "$SOURCE_ONLY" = "1" ]; then
-    echo "✓ исходники обновлены; установка пропущена (--source-only)"
-    exit 0
+if [[ -e "$source_dir" ]]; then
+    [[ -f "$source_dir/.lay-updater-owner" ]] &&
+    [[ "$(cat "$source_dir/.lay-updater-owner")" == lay-stable-updater-v1 ]] || {
+        echo "Отказ: каталог не принадлежит updater: $source_dir" >&2; exit 1;
+    }
+    [[ "$(git -C "$source_dir" remote get-url origin)" == "$repository" ]] || {
+        echo "Отказ: изменён источник стабильных обновлений." >&2; exit 1;
+    }
+    git -C "$source_dir" diff --quiet && git -C "$source_dir" diff --cached --quiet || {
+        echo "Отказ: исходники updater изменены; изменения сохранены." >&2; exit 1;
+    }
+else
+    mkdir -p "$source_dir"
+    git -C "$source_dir" init --quiet
+    git -C "$source_dir" remote add origin "$repository"
+    printf 'lay-stable-updater-v1\n' > "$source_dir/.lay-updater-owner"
 fi
-
-echo ""
-echo "=== install ==="
-LAY_KEEP_OLLAMA=1 bash install.sh
-
-echo ""
-echo "=== reload runtime ==="
-refresh_runtime
-if systemctl --user is-enabled --quiet lay-host-vm-guard.service 2>/dev/null; then
-    systemctl --user restart lay-host-vm-guard.service || true
+export GIT_TERMINAL_PROMPT=0
+timeout 180 git -C "$source_dir" fetch --quiet --depth=1 origin "refs/tags/$tag"
+commit="$(git -C "$source_dir" rev-parse --verify 'FETCH_HEAD^{commit}')"
+git -C "$source_dir" checkout --quiet --detach "$commit"
+source_version="$(sed -n 's/^version = "\([^"]*\)"/\1/p' "$source_dir/Cargo.toml" | head -1)"
+[[ "$source_version" == "$version" ]] || {
+    echo "Версия исходников не совпадает со стабильным релизом." >&2; exit 1;
+}
+(
+    cd "$source_dir"
+    LAY_KEEP_OLLAMA=1 bash ./install.sh --update
+)
+actual="$("$HOME/.local/bin/lay" --version)"
+[[ "$actual" == "lay $version" ]] || {
+    echo "Установленная версия не совпадает с релизом: $actual" >&2; exit 1;
+}
+printf '%s %s\n' "$tag" "$commit" > "$state_dir/installed-release"
+# Respect a stop performed while a long build was running.
+systemctl --user try-restart lay-daemon
+if [[ "${XDG_CURRENT_DESKTOP:-}" == *GNOME* ]]; then
+    bash "$source_dir/scripts/check-gnome-extension-runtime.sh" --reload
+elif [[ "${XDG_CURRENT_DESKTOP:-}" == *KDE* ]]; then
+    pkill -f "$HOME/.local/bin/lay-kde-tray" 2>/dev/null || true
+    nohup "$HOME/.local/bin/lay-kde-tray" 9>&- >"$state_dir/kde-tray.log" 2>&1 &
 fi
-
-echo ""
-echo "✓ lay обновлён"
-echo "Если это первая установка или поменялась группа input — выйди из сессии и зайди снова."
+echo "✓ установлен стабильный Lay $version"
+echo "Активный IME продолжит текущую сессию ввода; глобальный IBus не перезапускался."

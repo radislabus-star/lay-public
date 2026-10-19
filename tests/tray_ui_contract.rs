@@ -92,7 +92,14 @@ fn both_trays_use_the_installed_updater_and_daily_group_order() {
     }
     assert!(read_extension("tray_support.js").contains("/.local/bin/lay-update"));
     assert!(kde.contains(".local/bin/lay-update"));
-    assert!(read("install.sh").contains("ln -sf \"$DIR/update.sh\" ~/.local/bin/lay-update"));
+    assert!(read("install.sh")
+        .contains("ln -sfn \"$HOME/.local/lib/lay/update.sh\" \"$HOME/.local/bin/lay-update\""));
+    assert!(tray.contains("Автообновление"));
+    assert!(tray.contains("autoUpdateControl(action,"));
+    assert!(kde.contains("Автообновление"));
+    assert!(
+        kde.contains("auto_update_control(\"--auto-enable\" if enabled else \"--auto-disable\")")
+    );
     assert!(read("uninstall.sh").contains("/.local/bin/lay-update"));
 }
 

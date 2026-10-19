@@ -1,0 +1,152 @@
+{
+  "schema": "lay.stable-auto-update-install.v1",
+  "at": "2026-10-19T15:17:01.942582+00:00",
+  "version": "1.0.93",
+  "updater_entrypoint": "/home/ubu/.local/bin/lay-update",
+  "updater_resolved": "/home/ubu/.local/lib/lay/update.sh",
+  "updater_sha256": "f21ba886dcf488c6ccfb85ed627f419ddbbee79b717be5b17e7992e4b47ba703",
+  "binaries": {
+    "lay": {
+      "sha256": "d41b94407347f870304f8a75911f869bf4725eaa99a77f08c0526cc70f51fa9c",
+      "bytes": 7032616,
+      "version": "lay 1.0.93",
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay"
+    },
+    "lay-daemon": {
+      "sha256": "f414db6396d31b59130e2d2ee9bce6ea4b5381b8fa89e23b6c798fcebb6d6afd",
+      "bytes": 9655552,
+      "version": "lay-daemon 1.0.93",
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-daemon"
+    },
+    "lay-nanda-wave-eval": {
+      "sha256": "692355b24089a5d7d8239f92bbf1c4d0f9f2625e35f2e5474a5b23d7674a840c",
+      "bytes": 7523688,
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-eval"
+    },
+    "lay-nanda-wave-train": {
+      "sha256": "788615016e839b97b202e45d215f80e43c124c7610f8b052cd937099cd752058",
+      "bytes": 12117880,
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-nanda-wave-train"
+    },
+    "lay-test-input": {
+      "sha256": "aed8f6a0ecff209c013e2986aa223849cc1a9107467553ff8aedeec090bc2eca",
+      "bytes": 1900408,
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-test-input"
+    },
+    "lay-ngram-corpus": {
+      "sha256": "dced91f99f891772c8fb5e37922968fe6007d2d71f4b96e013ac7954788ef95a",
+      "bytes": 787696,
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-ngram-corpus"
+    },
+    "lay-ibus-engine": {
+      "sha256": "a543e4075a9992780f1cc3449ef20759d0b658ab1ee977f2804ef86ebba1eb9c",
+      "bytes": 8478400,
+      "version": "lay-ibus-engine 1.0.93",
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-ibus-engine"
+    },
+    "lay-memory-report": {
+      "sha256": "b9eefe71b6521c2d8e573cb744f8166714547086aba9c40937c663d4ce0a0ebe",
+      "bytes": 643240,
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-memory-report"
+    },
+    "lay-l11-restore": {
+      "sha256": "4a77832dcebcd40a0b64a7224f4b4dbfb0f9bc72b57f1f42dbd4297347ef49ae",
+      "bytes": 1958328,
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-restore"
+    },
+    "lay-l11-serve": {
+      "sha256": "ff69f4e05bd3bcf597349fbc0be6a39084d60418a74acfb38906bae6f87425c0",
+      "bytes": 2170336,
+      "installed_path": "/home/ubu/.local/lib/lay/bin/lay-l1.1-serve"
+    }
+  },
+  "graph_build_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/stable-auto-update-build-three/RESULT.json",
+  "checks": [
+    {
+      "argv": [
+        "/home/ubu/.local/bin/lay-update",
+        "--check"
+      ],
+      "returncode": 0,
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.93\nстабильный релиз: 1.0.92\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nУстановленная версия новее стабильной; понижение не выполняется.",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/ubu/.local/bin/lay-update",
+        "--auto-disable"
+      ],
+      "returncode": 0,
+      "stdout": "disabled",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "/home/ubu/.local/bin/lay-update",
+        "--auto-enable"
+      ],
+      "returncode": 0,
+      "stdout": "enabled",
+      "stderr": "Created symlink '/home/ubu/.config/systemd/user/timers.target.wants/lay-auto-update.timer' → '/home/ubu/.config/systemd/user/lay-auto-update.timer'."
+    },
+    {
+      "argv": [
+        "/home/ubu/.local/bin/lay-update",
+        "--auto-status"
+      ],
+      "returncode": 0,
+      "stdout": "enabled",
+      "stderr": ""
+    }
+  ],
+  "timer": {
+    "argv": [
+      "systemctl",
+      "--user",
+      "show",
+      "lay-auto-update.timer",
+      "--property=ActiveState",
+      "--property=UnitFileState",
+      "--property=NextElapseUSecRealtime"
+    ],
+    "returncode": 0,
+    "stdout": "ActiveState=active\nUnitFileState=enabled\nNextElapseUSecRealtime=Mon 2026-10-19 21:02:46 EEST",
+    "stderr": ""
+  },
+  "gnome_loaded": {
+    "argv": [
+      "gdbus",
+      "call",
+      "--session",
+      "--dest",
+      "org.gnome.Shell",
+      "--object-path",
+      "/io/github/radislabus_star/LayDaemon",
+      "--method",
+      "io.github.radislabus_star.LayDaemon.Version"
+    ],
+    "returncode": 0,
+    "stdout": "('1.0.93',)",
+    "stderr": ""
+  },
+  "gnome_files_match_source": true,
+  "kde_entrypoint": "/home/ubu/projects/lay-browser-final-fixes-20261018/scripts/lay-kde-tray.py",
+  "global_ime_pid": "1166531",
+  "daemon": {
+    "argv": [
+      "systemctl",
+      "--user",
+      "show",
+      "lay-daemon",
+      "--property=ActiveState",
+      "--property=MainPID"
+    ],
+    "returncode": 0,
+    "stdout": "ActiveState=active\nMainPID=3947375",
+    "stderr": ""
+  },
+  "release_publication": "PENDING; prepublication stable is 1.0.92; installed newer version correctly retained",
+  "fresh_native_input": "NOT_TESTED",
+  "delivery_routes_changed": false,
+  "global_ibus_restarted": false
+}

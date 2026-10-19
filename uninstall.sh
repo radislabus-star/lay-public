@@ -37,7 +37,7 @@ run_runtime_cleanup() {
     if [ "$TEST_MODE" = "1" ]; then
         return
     fi
-    for unit in lay-daemon.service lay-l3-online.service lay-kde-tray.service lay-host-vm-guard.service lay-ibus-engine.service; do
+    for unit in lay-auto-update.timer lay-auto-update.service lay-daemon.service lay-l3-online.service lay-kde-tray.service lay-host-vm-guard.service lay-ibus-engine.service; do
         systemctl --user disable --now "$unit" >/dev/null 2>&1 || true
     done
     pkill -x lay-daemon >/dev/null 2>&1 || true
@@ -148,6 +148,7 @@ rm -f \
     "$HOME/.local/bin/lay-l1.1-serve" \
     "$HOME/.local/bin/lay-runtime-control" \
     "$HOME/.local/bin/lay-update" \
+    "$HOME/.local/lib/lay/update.sh" \
     "$HOME/.local/bin/lay-kde-tray" \
     "$HOME/.local/bin/lay-host-vm-guard" \
     "$HOME/.local/bin/lay-nanda-train" \
@@ -156,6 +157,8 @@ rm -f \
 remove_managed_runtime
 rm -f \
     "$HOME/.config/systemd/user/lay-daemon.service" \
+    "$HOME/.config/systemd/user/lay-auto-update.timer" \
+    "$HOME/.config/systemd/user/lay-auto-update.service" \
     "$HOME/.config/systemd/user/lay-l3-online.service" \
     "$HOME/.config/systemd/user/lay-kde-tray.service" \
     "$HOME/.config/systemd/user/lay-host-vm-guard.service" \

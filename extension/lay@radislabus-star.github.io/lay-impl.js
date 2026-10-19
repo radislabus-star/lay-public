@@ -13,7 +13,6 @@ import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js';
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {getIBusManager} from 'resource:///org/gnome/shell/misc/ibusManager.js';
 import {getInputSourceManager} from 'resource:///org/gnome/shell/ui/status/keyboard.js';
-import {ImeHintStyle} from './ime_hint_style.js';
 
 import {
     LayDaemonService,
@@ -37,6 +36,8 @@ import {
     MENU_WIDTH,
     PANEL_ICON_SIZE,
     actionKindLabel,
+    autoUpdateControl,
+    importImeHintStyle,
     loadConfig,
     normalizeConfig,
     openPreferences,
@@ -48,6 +49,9 @@ import {
     startDaemon,
     stopDaemon,
 } from './tray_support.js';
+
+// An already-loaded pre-1.0.92 entrypoint stages only the original four modules.
+const {ImeHintStyle} = await importImeHintStyle(import.meta.url);
 
 function persistentSwitchItem(label, active, params = {}) {
     const item = new PopupMenu.PopupSwitchMenuItem(label, active, params);
@@ -97,6 +101,7 @@ class LayIndicator extends PanelMenu.Button {
                 this._refreshSelections();
                 this._refreshStatus();
                 this._refreshRecentActions();
+                this._refreshAutoUpdate();
             }
         });
 
@@ -127,6 +132,7 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._preferencesItem());
         this.menu.addMenuItem(this._updateItem());
+        this.menu.addMenuItem(this._autoUpdateItem());
         this.menu.addMenuItem(this._diagnosticsMenu());
 
         this._refreshSelections();
@@ -293,6 +299,43 @@ class LayIndicator extends PanelMenu.Button {
         return item;
     }
 
+    _autoUpdateItem() {
+        const item = persistentSwitchItem('Автообновление', false);
+        this._autoUpdateSwitch = item;
+        item.connect('toggled', (_item, enabled) => {
+            if (this._updatingAutoUpdate || this._autoUpdatePending)
+                return;
+            this._refreshAutoUpdate(enabled ? '--auto-enable' : '--auto-disable');
+        });
+        this._refreshAutoUpdate();
+        return item;
+    }
+
+    _refreshAutoUpdate(action = '--auto-status') {
+        if (this._autoUpdatePending || this._destroyed)
+            return;
+        this._autoUpdatePending = true;
+        this._autoUpdateSwitch.setSensitive(false);
+        const finish = enabled => {
+            if (this._destroyed)
+                return;
+            this._autoUpdatePending = false;
+            this._updatingAutoUpdate = true;
+            this._autoUpdateSwitch.setToggleState(enabled);
+            this._updatingAutoUpdate = false;
+            this._autoUpdateSwitch.setSensitive(true);
+        };
+        const previous = this._autoUpdateEnabled ?? false;
+        autoUpdateControl(action, enabled => {
+            this._autoUpdateEnabled = enabled;
+            finish(enabled);
+        }, message => {
+            finish(previous);
+            if (!this._destroyed)
+                this._notify('Автообновление Lay', message, true);
+        });
+    }
+
     _refreshSelections() {
         this._cfg = normalizeConfig(this._cfg);
         if (this._inputModeItem?.label)
@@ -411,6 +454,7 @@ class LayIndicator extends PanelMenu.Button {
     }
 
     destroy() {
+        this._destroyed = true;
         this._clearStatusRefreshes();
         if (this._srcId) { this._mgr.disconnect(this._srcId); this._srcId = 0; }
         super.destroy();

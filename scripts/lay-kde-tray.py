@@ -52,6 +52,20 @@ def acquire_single_instance_lock() -> Any | None:
     return lock_file
 
 
+def auto_update_control(action: str) -> tuple[bool | None, str]:
+    try:
+        result = subprocess.run(
+            [str(Path.home() / ".local/bin/lay-update"), action],
+            text=True, capture_output=True, timeout=5, check=False,
+        )
+        state = result.stdout.strip()
+        if result.returncode == 0 and state in ("enabled", "disabled"):
+            return state == "enabled", ""
+        return None, result.stderr.strip() or "Не удалось прочитать состояние автообновления."
+    except (OSError, subprocess.TimeoutExpired):
+        return None, "Не удалось запустить lay-update."
+
+
 def load_config() -> dict[str, Any]:
     cfg = dict(DEFAULTS)
     try:
@@ -293,6 +307,15 @@ def main() -> int:
             updates.triggered.connect(self._open_updates)
             self.menu.addAction(updates)
 
+            auto_update = QAction("Автообновление", self.menu)
+            auto_update.setCheckable(True)
+            state, error = auto_update_control("--auto-status")
+            auto_update.setChecked(state is True)
+            auto_update.setEnabled(state is not None)
+            auto_update.setToolTip(error or "Стабильные релизы; отключение не прерывает уже начатую установку")
+            auto_update.triggered.connect(self._set_auto_update)
+            self.menu.addAction(auto_update)
+
             diagnostics = self.menu.addMenu("Диагностика")
             diagnostic_status = QAction("Службы: работают" if daemon_active() else "Службы: остановлены", diagnostics)
             diagnostic_status.setEnabled(False)
@@ -350,6 +373,12 @@ def main() -> int:
         def _open_settings(self) -> None:
             if not open_settings():
                 QMessageBox.warning(None, "Lay", "Не удалось открыть настройки")
+
+        def _set_auto_update(self, enabled: bool) -> None:
+            state, error = auto_update_control("--auto-enable" if enabled else "--auto-disable")
+            if state is None:
+                QMessageBox.warning(None, "Автообновление Lay", error)
+            self._build_menu()
 
         def _open_updates(self) -> None:
             if self.update_process is not None and self.update_process.poll() is None:

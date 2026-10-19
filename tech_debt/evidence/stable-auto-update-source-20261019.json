@@ -1,0 +1,217 @@
+{
+  "status": "SOURCE_CHECKS_PASS",
+  "source_head": "b72c50aac6454ec1cc3d30c9bb8f69e0e3332885",
+  "commands": [
+    {
+      "name": "syntax-update",
+      "argv": [
+        "bash",
+        "-n",
+        "update.sh"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.001,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "syntax-install",
+      "argv": [
+        "bash",
+        "-n",
+        "install.sh"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.002,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "syntax-uninstall",
+      "argv": [
+        "bash",
+        "-n",
+        "uninstall.sh"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.002,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "syntax-extension-check",
+      "argv": [
+        "bash",
+        "-n",
+        "scripts/check-gnome-extension-runtime.sh"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.001,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "hint-lifecycle",
+      "argv": [
+        "node",
+        "--test",
+        "scripts/tests/test_ime_hint_style.mjs"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.089,
+      "log_sha256": "efb04bc49d2711c5d80f08415ab31c7228081813548469f384d1c70f75cdf069"
+    },
+    {
+      "name": "python",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "tests.test_update_menu",
+        "tests.test_auto_update",
+        "tests.test_input_access"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 6.405,
+      "log_sha256": "bf04f12da494c3660683126224dcd59f6ce041631198a622dc96cc111bab9874"
+    },
+    {
+      "name": "canon-controls",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "tests",
+        "-p",
+        "test_architecture_canon.py"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.079,
+      "log_sha256": "e49c07ae220356172b77eeac911ac6504c334a270ad1245e7651b8b5baa2cb95"
+    },
+    {
+      "name": "extension-zip",
+      "argv": [
+        "scripts/package-extension.sh"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.066,
+      "log_sha256": "094884a40382427b35da994e06f4e2e61b428d3b006102847595ffe4dcc3868a"
+    },
+    {
+      "name": "units",
+      "argv": [
+        "systemd-analyze",
+        "--user",
+        "verify",
+        "/home/e/projects/lay-development-runner/stable-auto-update-checks-four/units/lay-auto-update.service",
+        "/home/e/projects/lay-development-runner/stable-auto-update-checks-four/units/lay-auto-update.timer"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 0.061,
+      "log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "installation": false,
+  "runtime_authority_changed": false,
+  "native_input": "NOT_TESTED",
+  "request_sha256": "a879b19d20e04b268a9ec9c743d789333836d009cdbd56e9d4a11b490c24ac16",
+  "canon": {
+    "status": "PASS",
+    "base": "b72c50aac6454ec1cc3d30c9bb8f69e0e3332885",
+    "log_sha256": "0d8fe3d67d8bd0b30e966c035aaf1a30e74b3f12a1cc19e429067ce906eb20d3"
+  },
+  "unit_validation_scope": "All directives; ExecStart resolved to source in isolation. Installed %h resolution pending installation.",
+  "extension_zip": {
+    "version": "1.0.93",
+    "sha256": "8630e7bd06bd144cb7308e0682046e3aa507e65906858732a818ababcb3a96b5",
+    "members": [
+      "dbus_service.js",
+      "extension.js",
+      "ime_hint_style.js",
+      "lay-impl.js",
+      "metadata.json",
+      "prefs.js",
+      "recent_actions_menu.js",
+      "settings.js",
+      "settings_view.js",
+      "tray_support.js"
+    ]
+  },
+  "at": "2026-10-19T15:13:38.424782+00:00",
+  "tray_contract": {
+    "archive_sha256": "78249be09f31595c44c63a04b5eb415ed40e7d6456acfdaee5b946a2f7c57b40",
+    "commands": [
+      {
+        "argv": [
+          "scripts/cargo-guard.sh",
+          "fmt",
+          "--all",
+          "--check"
+        ],
+        "elapsed_seconds": 3.108216566964984,
+        "returncode": 0
+      },
+      {
+        "argv": [
+          "scripts/check-lay-tests.sh",
+          "focused",
+          "--target",
+          "test:tray_ui_contract",
+          "--target-dir",
+          "/home/e/projects/lay-td119-gate-v1/target",
+          "--results-dir",
+          "/home/e/projects/lay-development-runner/run-YpYPCl/tests"
+        ],
+        "elapsed_seconds": 23.230389190954156,
+        "returncode": 0
+      }
+    ],
+    "elapsed_seconds": 26.470968974987045,
+    "plan": {
+      "base": null,
+      "changed": [
+        "AGENTS.md",
+        "docs/architecture/decisions/2026-10-19-stable-auto-update.json",
+        "docs/architecture/decisions/2026-10-19-stable-auto-update.md",
+        "docs/architecture/stable-auto-update-2026-10-19.md",
+        "extension/lay@radislabus-star.github.io/lay-impl.js",
+        "extension/lay@radislabus-star.github.io/tray_support.js",
+        "install.sh",
+        "scripts/lay-kde-tray.py",
+        "systemd/lay-auto-update.service",
+        "systemd/lay-auto-update.timer",
+        "tests/test_auto_update.py",
+        "tests/test_update_menu.py",
+        "tests/tray_ui_contract.rs",
+        "update.sh"
+      ],
+      "mode": "focused",
+      "reason": "explicit user-selected scope; not full affected-closure coverage",
+      "runtime_authority_changed": false,
+      "scope": "development_only_not_release",
+      "source_head": "b72c50aac6454ec1cc3d30c9bb8f69e0e3332885",
+      "targets": [
+        "test:tray_ui_contract"
+      ]
+    },
+    "returncode": 0,
+    "runtime_authority_changed": false,
+    "scope": "development_only_not_release",
+    "source_head": "b72c50aac6454ec1cc3d30c9bb8f69e0e3332885",
+    "test_failures": [],
+    "tests": {
+      "executed": 18,
+      "failed": 0,
+      "passed": 18,
+      "selected": 18
+    },
+    "verdict": "PASS"
+  },
+  "test_counts": {
+    "update_install_input_access": 36,
+    "architecture_controls": 15,
+    "hint_lifecycle": 6,
+    "tray_contract": 18
+  },
+  "installed_runtime": "Recorded separately in stable-auto-update-install-20261019.json"
+}

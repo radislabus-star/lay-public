@@ -4,6 +4,7 @@ set -euo pipefail
 
 DIR="$(cd "$(dirname "$0")" && pwd)"
 cd "$DIR"
+UPDATE_EXISTING=0
 
 is_kde_session() {
     desktop_hint="${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}"
@@ -157,8 +158,10 @@ if [ "${1:-}" = "--check-platform" ]; then
     echo "base_packages=$(base_packages_for_pm "$pm")"
     echo "kde_packages=$(kde_packages_for_pm "$pm")"
     exit 0
+elif [ "$#" = 1 ] && [ "$1" = "--update" ]; then
+    UPDATE_EXISTING=1
 elif [ "$#" -gt 0 ]; then
-    echo "Использование: bash install.sh [--check-platform]" >&2
+    echo "Использование: bash install.sh [--check-platform|--update]" >&2
     exit 2
 fi
 
@@ -175,6 +178,7 @@ if ! command -v cargo >/dev/null; then
 fi
 echo "✓ $(rustc --version)"
 
+if [ "$UPDATE_EXISTING" = 0 ]; then
 echo ""
 echo "=== доступ к устройствам ввода (udev/logind) ==="
 bash "$DIR/scripts/setup-input-access.sh"
@@ -218,6 +222,7 @@ if [ ${#need_install[@]} -gt 0 ]; then
 else
     echo "✓ все пакеты уже стоят"
 fi
+fi
 
 echo ""
 echo "=== canonical L2 model ==="
@@ -235,16 +240,16 @@ scripts/install-l2-transition-phase.sh
 scripts/install-l2-lexical-phase.sh
 scripts/install-l3-context-phase.sh
 
-echo ""
-echo "=== legacy phrase memory (diagnostics only) ==="
-target/release/lay-nanda-wave-eval --llmwave-pack-live
-
-echo ""
-echo "=== n-gram cache ==="
 LAY_STATE_DIR="$HOME/.local/state/lay"
 mkdir -p "$LAY_STATE_DIR"
 LAY_NGRAM_INSTALL_LOG="$LAY_STATE_DIR/ngram-cache-install.log"
 LAY_KDE_TRAY_LOG="$LAY_STATE_DIR/kde-tray.log"
+if [ "$UPDATE_EXISTING" = 0 ]; then
+echo ""
+echo "=== legacy phrase memory (diagnostics only) ==="
+target/release/lay-nanda-wave-eval --llmwave-pack-live
+echo ""
+echo "=== n-gram cache ==="
 target/release/lay-ngram-corpus cache >"$LAY_NGRAM_INSTALL_LOG" 2>&1 || {
     cat "$LAY_NGRAM_INSTALL_LOG"
     echo "⚠ n-gram cache не собран; daemon соберёт fallback при первом вызове"
@@ -252,12 +257,16 @@ target/release/lay-ngram-corpus cache >"$LAY_NGRAM_INSTALL_LOG" 2>&1 || {
 if [ -f "$HOME/.cache/lay/ngram_ru_v1.json" ]; then
     echo "✓ $(ls -lh "$HOME/.cache/lay/ngram_ru_v1.json" | awk '{print $9 ": " $5}')"
 fi
+fi
 
 echo ""
 echo "=== установка release в ~/.local/lib/lay/bin/ ==="
 scripts/install-release-binaries.sh
 ln -sf "$DIR/scripts/lay-runtime-control.sh" ~/.local/bin/lay-runtime-control
-ln -sf "$DIR/update.sh" ~/.local/bin/lay-update
+mkdir -p "$HOME/.local/lib/lay"
+install -m 0755 "$DIR/update.sh" "$HOME/.local/lib/lay/.update.sh.tmp.$$"
+mv -f "$HOME/.local/lib/lay/.update.sh.tmp.$$" "$HOME/.local/lib/lay/update.sh"
+ln -sfn "$HOME/.local/lib/lay/update.sh" "$HOME/.local/bin/lay-update"
 ln -sf "$DIR/scripts/lay-kde-tray.py" ~/.local/bin/lay-kde-tray
 ln -sf "$DIR/scripts/lay-host-vm-guard.sh" ~/.local/bin/lay-host-vm-guard
 rm -f ~/.local/bin/lay-nanda-train ~/.local/bin/lay-nanda-eval ~/.local/bin/lay-nanda-loop
@@ -280,6 +289,13 @@ sed "s|/home/ubu|$HOME|g" "$DIR/extension/lay-settings.desktop" \
 update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
 echo "✓ settings launcher: ~/.local/share/applications/io.github.radislabus_star.LaySettings.desktop"
 
+mkdir -p "$HOME/.config/systemd/user"
+cp "$DIR/systemd/lay-auto-update.service" "$HOME/.config/systemd/user/"
+cp "$DIR/systemd/lay-auto-update.timer" "$HOME/.config/systemd/user/"
+systemctl --user daemon-reload
+# Preserve the user's choice. Only the menu's explicit action enables the timer.
+
+if [ "$UPDATE_EXISTING" = 0 ]; then
 echo ""
 echo "=== optional IBus bridge ==="
 mkdir -p "$HOME/.local/share/ibus/component"
@@ -340,6 +356,7 @@ else
     echo "  для тестов VM: systemctl --user enable --now lay-host-vm-guard.service"
 fi
 
+fi
 echo ""
 echo "=== GNOME Shell extension ==="
 UUID="lay@radislabus-star.github.io"
@@ -355,9 +372,15 @@ for js in "$DIR/extension/$UUID/"*.js; do
         cp "$js" "$LAY_GJS_CACHE/$name"
     fi
 done
-gnome-extensions enable "$UUID" 2>/dev/null || true
+if [ "$UPDATE_EXISTING" = 0 ]; then
+    gnome-extensions enable "$UUID" 2>/dev/null || true
+fi
 echo "✓ extension установлен: $DST"
 
+if [ "$UPDATE_EXISTING" = 1 ]; then
+    echo "✓ файлы Lay обновлены; настройка устройств и IBus сохранена"
+    exit 0
+fi
 echo ""
 echo "=== быстрый тест CLI ==="
 ~/.local/bin/lay "Ye djn ghbvth"

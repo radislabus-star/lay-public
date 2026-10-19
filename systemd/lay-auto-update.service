@@ -1,0 +1,18 @@
+[Unit]
+Description=Update Lay from the latest stable public release
+ConditionFileIsExecutable=%h/.local/bin/lay-update
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/bin/lay-update --automatic
+TimeoutStartSec=90min
+Nice=15
+IOSchedulingClass=idle
+CPUQuota=100%
+MemoryHigh=3G
+MemoryMax=4G
+MemorySwapMax=256M
+Environment=CARGO_BUILD_JOBS=1
+Environment=RAYON_NUM_THREADS=1
+StandardOutput=journal
+StandardError=journal

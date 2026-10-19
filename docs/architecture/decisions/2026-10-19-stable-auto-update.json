@@ -1,0 +1,17 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Use public stable releases as the update authority and expose one systemd-user auto-update switch in GNOME and KDE through the installed update.sh owner.",
+  "reason": "The installed updater falsely reported current from an old development upstream. The user explicitly requested an enabled auto-update menu switch and mandatory installed updater verification before finishing releases. Actual installation also exposed the already-cached pre-1.0.92 GNOME loader omitting the new hint module; stage that missing dependency into its per-enable directory without restarting the desktop.",
+  "verification": "Executable isolated updater, update-mode installer and frontend adapter tests; actual installed entrypoint, stable public release and enabled timer verification recorded in docs/architecture/stable-auto-update-2026-10-19.md.",
+  "not_tested": "Historical native input receipts do not certify new input behavior. No input core, delivery route, learning algorithm or model authority is changed.",
+  "invariants": ["C01", "C06", "C09", "C10"],
+  "protected_paths": [
+    "AGENTS.md",
+    "extension/lay@radislabus-star.github.io/extension.js",
+    "extension/lay@radislabus-star.github.io/lay-impl.js",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

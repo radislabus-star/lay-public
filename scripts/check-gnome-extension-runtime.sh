@@ -84,7 +84,18 @@ fi
 
 src_ver="$(source_version)"
 loaded_ver="$(loaded_version)"
-if [[ -n "$loaded_ver" && "$loaded_ver" != "$src_ver" ]]; then
+if [[ "$RELOAD" == "1" ]]; then
+  # Extension imports finish asynchronously after gnome-extensions returns.
+  for ((attempt=0; attempt<25; attempt++)); do
+    [[ "$loaded_ver" == "$src_ver" ]] && break
+    sleep 0.2
+    loaded_ver="$(loaded_version)"
+  done
+fi
+if [[ -z "$loaded_ver" ]]; then
+  echo "loaded extension unavailable: Lay DBus endpoint did not respond" >&2
+  drift=1
+elif [[ "$loaded_ver" != "$src_ver" ]]; then
   echo "loaded extension version drift: loaded=$loaded_ver source=$src_ver" >&2
   drift=1
 fi
