@@ -1,4 +1,4 @@
-# Muted IME hints in KDE and GNOME
+# IME hint presentation in every application and system
 
 Requested behavior: a suggested, unaccepted suffix uses muted gray `#888888` or,
 where the system controls its color, a translucent presentation. The user
@@ -6,7 +6,112 @@ explicitly accepted translucency during implementation. User-entered and
 committed text retain their normal styling. This is presentation under C06;
 it adds no text, visibility, acceptance, input-source or mutation authority.
 
-## Source and first failed transition
+## Universal acceptance requirement — 2026-10-20
+
+The user clarified that this applies everywhere, in every system, including
+Chrome and terminals: entered characters remain ordinary text. Only the
+unaccepted suggestion may use muted gray or translucent hint styling. Coloring,
+selecting, reversing or underlining the whole typed word is a presentation FAIL,
+even if completion, correction and Double Shift pass. Functional native counts
+must not be used as visual acceptance. Inspect both the owned typed prefix and
+the proposed suffix in real clients, on light and dark backgrounds where relevant.
+
+Initial native evidence reproduces whole-prefix reverse video in Kitty 0.21.2
+and Konsole 21.12.3. Their input-method renderers ignore per-span IBus styling;
+see the primary source links and receipts in
+[remote input evidence](../development/remote-x11-input-2026-10-20.md).
+Chrome's composition converter also ignores foreground and maps underline NONE
+to a default solid composition underline. This is a confirmed compatibility gap,
+not accepted behavior and not an exemption from the user's requirement.
+
+Current changed-byte Kitty observation (2026-10-20): engine
+`c33f9f506a3805598f5838f67c6341c121e78ea038d3c0465e2444eb663775af`,
+`terminal-final-benchmark-v1/hint.png`, independently inspected. Ordinary
+desktop launch shows entered `пров` as normal terminal text and only auxiliary
+`ерка` as a muted suggestion. Raw PTY already contains the prefix before Tab.
+Kitty visual verdict: PASS for this owned KDE/X11 window. Functional benchmark
+is 20 PASS / 3 FAIL, including rapid-five and following control failures; visual
+success does not reclassify them. Other clients and systems remain OPEN under
+TD-160. Exact receipts and final native matrix belong to the remote-input log.
+
+No test may claim that a payload attribute alone fixes a renderer that discards
+it. A universal presentation solution, if it changes composition ownership or
+commit timing, needs an explicit canon decision and native regression proof;
+client name or screenshot alone grants no edit capability. Runtime authority and
+delivery routes remain unchanged in this investigation.
+
+Fresh Chrome native observation (2026-10-20, remote KDE):
+`universal-hint-prefix-v1/result.json` is functional PASS for one Tab case and
+its following manual-conversion controls. `hint-text.png`, captured before Tab,
+visibly underlines the whole typed prefix. Visual verdict: FAIL. It does not
+establish any other field or platform. The minimal solution options, ownership
+pitfalls and required native proof are recorded in
+[TD-160](../../tech_debt/160-universal-ime-prefix-presentation.md). The common
+browser protocol now requires a separate visual verdict and screenshot.
+
+## KWin qualification correction — 2026-10-20 12:16 UTC
+
+Authenticated KWin observation has an empty Kitty desktopFileName and exact
+resourceClass kitty. The metadata classifier correction passes four tests but
+its native result remains 1 PASS / 2 FAIL and prefix visual FAIL. Diagnostic
+candidate `02e015ee` shows the probe is not called: admitted engines have no
+legacy focus_receipt, as intended by the current ownership contract.
+
+A bounded candidate uses the existing live AdmissionToken field-receipt
+projection for the existing probe and revalidates it at use and completion.
+Legacy engines retain their real focus receipt; admitted engines never fall
+back to one. A cached classification cannot outlive the live admitted token.
+No word completeness, client acknowledgement or deletion authority is added.
+Semantic RED and 5/5 targeted GREEN are recorded in
+`kwin-context-receipt-{red,green}-v1.log`. The context-receipt build still probes
+after the first letter. Reusing the same probe before the first printable mode
+selection passes 5/5 focused checks (`kwin-first-key-green-v2.log`) and the
+ordinary-launch native hint case (`terminal-kwin-first-key-v1`): typed `пров`
+is already ordinary PTY text; screenshot `terminal/hint.png` shows only gray
+auxiliary `ерка`; Tab produces `проверка ` in 7.44 ms. Installed engine is
+8b7fefb3ba2359e453aa0ea059c63a31afa9aa69eb7c4cd26bd634a2915997e9.
+The probe costs 4.996 ms in that run. This is Kitty visual acceptance only.
+
+The native control run `terminal-kwin-first-key-controls-v1` has 2 PASS / 1 FAIL:
+hint/Tab and moved boundary pass, but the second manual conversion delegates
+to the daemon after RU/EN engine activation. Fresh trace shows new cursor
+geometry before Ready and no later printable callback to qualify the new
+field. This is native RED for the same qualification order. The next bounded
+change invokes the existing one-shot helper inside the existing bridge output
+guard before manual-owner admission. It adds no owner, probe policy, timer,
+fallback route, text acknowledgement or deletion proof.
+
+The changed-byte native control receipt `terminal-kwin-manual-controls-v1`
+passes all three rows on engine
+e6d1ea292fe6be9f2353cda70675abccb9575e87187089dfcabf1e1effdb650f:
+Double Shift both ways 14.20 / 15.65 ms, Tab 1.62 ms and moved-boundary pair.
+Before Tab, raw PTY contains `пров`; independently inspected `terminal/hint.png`
+shows that prefix in ordinary terminal text and only auxiliary `ерка` muted.
+Two Double Shift samples and one Tab sample are diagnostic measurements, not
+population median/p95 or the complete rapid-gesture protocol. Final source
+and wider native gates remain pending. GNOME/Wayland and non-Kitty appearance
+are not certified by this receipt.
+Canon decision: `decisions/2026-10-20-kde-ime-terminal-focus.json`.
+
+## Ordinary terminal launch evidence — 2026-10-20 09:45 UTC
+
+The preserved user's remote Kitty had no `GLFW_IM_MODULE`. Earlier fixtures
+explicitly selected its IBus client and therefore did not certify ordinary
+launch. The same installed v3 engine now has normal desktop-command RED/GREEN:
+before setup, `пров` followed by Tab yields `пров\t`; after reversible client
+setup it yields `проверка ` in 2.04 ms. `desktop-launch.json` proves the test did
+not inject GLFW_IM_MODULE and resolved the installed desktop entry. Receipts:
+`kitty-menu-before-setup-v1` and `kitty-menu-after-setup-v1` under the remote
+evidence root. The existing user process was not restarted. New menu launches
+use the client's documented IBus option; future login gets an unset-variable
+default. Explicit other input methods and user edits are preserved. This
+changes client setup, not the output executor or text ownership contract.
+
+This is one functional Tab result. The screenshot still reverses the whole
+typed prefix, so universal presentation remains FAIL. It proves neither the
+old user process, another terminal, Wayland, nor the full browser matrix.
+
+## Source baseline
 
 Baseline: public v1.0.91, commit
 `513fb674d6b820adb9532c1c4c1ae91193009801`, checkout

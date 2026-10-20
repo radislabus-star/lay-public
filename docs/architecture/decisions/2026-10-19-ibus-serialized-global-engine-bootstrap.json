@@ -1,0 +1,44 @@
+{
+  "id": "ibus-serialized-global-engine-bootstrap-2026-10-19",
+  "status": "IMPLEMENTED_PENDING_VERIFICATION",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "problem": "In the user's KDE session, Properties.Get(GlobalEngine) returns the actual IBus serialized descriptor: IBusEngineDesc, a{sv} attachments, engine name, trailing fields. Admission bootstrap read field zero as the name and classified IBusEngineDesc as Foreign. The controlled peer used a non-protocol descriptor with the engine name in field zero and concealed the defect.",
+  "decision": "Reuse the existing strict observed_ibus_engine descriptor decoder for admission bootstrap, unwrap Properties.Get variant wrappers in that decoder, remove the duplicate incorrect decoder, and make the controlled peer emit the actual serialized IBus descriptor prefix.",
+  "safety": "Keep the IBus type tag, a{sv} attachments and nonempty name checks. Retain foreign-engine classification, global-mode verification, context admission, SafetyGate, engine names and delivery routes. No client-specific bypass or new authority owner.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "verification": "Source and bounded native evidence recorded in verification_evidence and the owning document; it does not certify an untested browser matrix.",
+  "evidence_root": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018",
+  "remote_evidence_root": "/home/e/.cache/lay/kde-live-20261019",
+  "manifest_refresh": {
+    "reason": "Broad verification refused an outdated canonical discovery list, including 45 preexisting source tests and the new property-wrapper control.",
+    "added_tests": 46,
+    "removed_tests": 0,
+    "changed_existing_rows": 0,
+    "correctness": 3270,
+    "package": 36,
+    "performance": 11,
+    "ignored": 15,
+    "policy": "Register discovered tests and rebind the empty known-failure ledger hash. No failure allowlist, assertions, lane classifications or guard weakened.",
+    "receipt": "/home/e/.cache/lay/kde-live-20261019/installer-runtime-manifest-refresh.json"
+  },
+  "schema": "lay.architecture-decision.v1",
+  "reason": "In the user's KDE session, Properties.Get(GlobalEngine) returns the actual IBus serialized descriptor: IBusEngineDesc, a{sv} attachments, engine name, trailing fields. Admission bootstrap read field zero as the name and classified IBusEngineDesc as Foreign. The controlled peer used a non-protocol descriptor with the engine name in field zero and concealed the defect.",
+  "verification_evidence": {
+    "regression": "Existing controlled_p2p_bootstrap_and_compatibility_get_marker_are_real_zbus with the corrected actual wire fixture must fail before the decoder fix and pass afterwards.",
+    "required": "Affected IME source tests, strict descriptor invalid/foreign controls, graph/architecture gates, remote installed candidate identity and actual owned Qt/GTK input observations.",
+    "not_claimed": "Native evdev Double Shift acceptance over VNC, a new complete browser matrix, GNOME client acceptance or release readiness."
+  },
+  "not_tested": "Full updated native Firefox/Chrome matrix, physical hardware input and GNOME runtime acceptance for these changed bytes.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/observed_ibus_engine.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ]
+}

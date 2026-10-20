@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::VirtualDevice;
 use lay::action_log::RecentActionGateTrace;
 use std::time::Instant;
 

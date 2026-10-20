@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, KeyCode};
+use crate::native_input::VirtualDevice;
+use evdev::KeyCode;
 use lay::action_log::RecentActionGateTrace;
 use lay::config::TypingAssistRuleConfig;
 use lay::decoder::{decode_enter_autocorrect_tail, DecoderEditPlan};

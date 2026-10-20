@@ -167,6 +167,25 @@ if command not in ('modprobe','udevadm'):
         self.assertNotIn("legacy Ollama cleanup", result.stdout)
         self.assertIn(["udevadm", "control", "--reload-rules"], self.commands())
 
+    def test_fresh_install_preserves_unrelated_ollama_without_environment_flag(self):
+        sentinel = Path(self.env["HOME"]) / ".ollama/models/keep.bin"
+        sentinel.parent.mkdir(parents=True)
+        sentinel.write_bytes(b"unrelated user data\n")
+        self.env.pop("LAY_KEEP_OLLAMA", None)
+        self.env["LAY_PACKAGE_MANAGER_OVERRIDE"] = "apt"
+        # Stop at the package-manager boundary after successful access setup.
+        # The fake sudo records and refuses apt-get; no host install occurs.
+        dpkg = self.fake / "dpkg"
+        dpkg.write_text("#!/bin/sh\nexit 1\n")
+        dpkg.chmod(0o755)
+        result = subprocess.run(["bash", str(ROOT / "install.sh")], env=self.env,
+                                text=True, capture_output=True, timeout=10)
+        self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertIn(["apt-get", "update"], self.commands())
+        self.assertEqual(sentinel.read_bytes(), b"unrelated user data\n")
+        self.assertFalse(any("ollama" in arg for row in self.commands() for arg in row),
+                         self.commands())
+
     def test_unsafe_filesystem_override_is_rejected_before_any_command(self):
         for root in ["/", "relative", str(self.work / "missing")]:
             with self.subTest(root=root):

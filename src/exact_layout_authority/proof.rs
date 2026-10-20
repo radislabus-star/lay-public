@@ -208,10 +208,11 @@ fn settled_process_memory() -> ProcessMemorySample {
 }
 
 fn process_memory_sample() -> ProcessMemorySample {
-    let status = fs::read_to_string("/proc/self/status").expect("read process status");
     let rollup = fs::read_to_string("/proc/self/smaps_rollup").expect("read process smaps rollup");
     ProcessMemorySample {
-        rss_kib: proc_kib(&status, "VmRSS").expect("VmRSS in process status"),
+        // VmRSS uses asynchronous counters. Read RSS and PSS from the same
+        // page-table snapshot so a small fixed budget has a precise denominator.
+        rss_kib: proc_kib(&rollup, "Rss").expect("Rss in process smaps rollup"),
         pss_kib: proc_kib(&rollup, "Pss").expect("Pss in process smaps rollup"),
         pss_anon_kib: proc_kib(&rollup, "Pss_Anon").expect("Pss_Anon in process smaps rollup"),
     }

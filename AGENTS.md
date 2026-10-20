@@ -283,3 +283,19 @@ Rules:
 - Do not weaken `SafetyGate`, edit-plan validation, or verifier authority to compensate for a candidate-generation, target-retention, ranking, or authority-transfer defect.
 - Semantic tests must assert surfaces, verdicts, proofs, and safety effects. Do not make runtime ownership migrations fail only because an old producer `source_id` changed.
 - If a change improves selected examples but the aggregate fixed proof or any required error class regresses, reject the change as a systemic failure.
+
+## Universal IME hint presentation
+
+- Terminal acceptance must include the installed ordinary launcher without
+  test-only IME environment overrides. Record its entrypoint and actual client
+  environment. A prepared `GLFW_IM_MODULE=ibus kitty` window does not certify
+  the user's ordinary menu launch or an already running terminal process.
+
+- Entered text must retain ordinary styling in every application and system.
+  Only the unaccepted suggestion may be muted gray or translucent. Whole-word
+  selection, reverse video or underline is a presentation FAIL, even when
+  correction, Tab and Double Shift pass.
+- Keep visual acceptance separate from functional counts. Inspect the real
+  typed-prefix and hint rendering; emitted IBus attributes are source evidence
+  only. The owning document is
+  `docs/architecture/ime-hint-presentation-2026-10-19.md`.

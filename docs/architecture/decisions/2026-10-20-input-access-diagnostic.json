@@ -1,0 +1,16 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Expose the existing shared input-access diagnostic from GNOME and KDE menus and startup recovery. Distinguish device permission denial, missing devices and verified native X11 session availability; request administrator repair only for an actual permission/uinput repairable condition.",
+  "reason": "The previous missing-keyboard warning suggested permissions on a VNC-only machine without a physical keyboard. Menus lacked a discoverable shared diagnostic and KDE daemon control.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C10"
+  ],
+  "protected_paths": [
+    "extension/lay@radislabus-star.github.io/lay-impl.js"
+  ],
+  "runtime_authority_changed": false,
+  "verification": "Isolated diagnostic, Qt/GTK UI, installer and tray contract receipts are recorded in docs/development/input-access-recovery-2026-10-20.md and kde-install-control-2026-10-20.md. Native X11 readiness uses a bounded read-only daemon probe; that probe is not client acceptance.",
+  "not_tested": "No permission or privileged repair is certified without an actual affected device. VNC client behavior is owned by the separate remote-X11 evidence document."
+}

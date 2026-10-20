@@ -1,0 +1,47 @@
+{
+  "id": "stock-client-surrounding-ready-request-2026-10-19",
+  "status": "EXPERIMENT_BOUNDED_QT_GTK_VERIFIED",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "problem": "New stock Qt/GTK clients can attach to an already-enabled IBus engine without another Enable. Lay's current Ready publication updates InputMode but never requests the new client's actual surrounding text, leaving UnknownStart suffix readout without its client receipt.",
+  "decision": "After the existing current-owner Ready property publication succeeds, request surrounding text once for a capable, nonsensitive legacy client with a still-live admission token. Reuse that publication's latch and output interface; do not add polling, owner state or edit authority.",
+  "alternatives": [
+    {
+      "option": "Request only on initial Enable",
+      "score": 3,
+      "reason": "Does not cover a new client attached to the same enabled engine."
+    },
+    {
+      "option": "Periodic requests or synchronous per-key Get",
+      "score": 2,
+      "reason": "Adds traffic, timing dependencies and a second acquisition mechanism."
+    },
+    {
+      "option": "One request from the existing current Ready publication",
+      "score": 9,
+      "reason": "Uses the authenticated owner and existing output/latch; actual client receipts still determine readout and edit eligibility."
+    }
+  ],
+  "safety": "No synthetic empty snapshot, KnownStart promotion or text transfer. Existing owner/path/shared-generation checks and post-publication token revalidation remain. Unsupported/sensitive clients emit no new request. A failed request does not create a retry or change edit authority. Stale owner guards must reject both metadata effects.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "verification": "Source and bounded native evidence recorded in verification_evidence and the owning document; it does not certify an untested browser matrix.",
+  "evidence_root": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018",
+  "candidate_sha256": "ed48bcf70cda5b0c3059263562578957bf295457b2863c8b40189ddf09e54743",
+  "schema": "lay.architecture-decision.v1",
+  "reason": "New stock Qt/GTK clients can attach to an already-enabled IBus engine without another Enable. Lay's current Ready publication updates InputMode but never requests the new client's actual surrounding text, leaving UnknownStart suffix readout without its client receipt.",
+  "verification_evidence": {
+    "red": "stock-surrounding-ready-red-source-two/RESULT.json: one real-zbus regression fails on the missing RequireSurroundingText after the current Ready property. The first fixture compile error is retained separately.",
+    "source": "stock-surrounding-ready-green-source-two/RESULT.json: four focused controls pass; 902/902 selected isolated IME checks pass, 905 discovered, three performance checks explicitly excluded. Release bytes are reused from green-source-one only after exact pins prove that the only changes are two cfg(test) fixture files.",
+    "native": "stock-ready-v6-screen-acceptance-20261019.json: one actual owned Qt field and one GTK field in private stock KDE :71 both visibly show the muted-gray auxiliary hint вет beside при; Tab produces привет with one trailing space. Tab-to-client samples: Qt 4.5 ms, GTK 2.5 ms. Preserve preedit-only reader verdicts and both screenshots; the reader cannot observe auxiliary display. Physical Double Shift and full stock browser matrix remain NOT_TESTED. Intermittent cold-start self-SIGABRT remains OPEN, independent of this bounded display/Tab PASS.",
+    "review": "Independent bounded source review: 9/10, no production blocker. Second pass found a wrong expected test effect; it was corrected to exact [register-input-mode] and the final source gate passed. No third review or native claim."
+  },
+  "not_tested": "Full updated native Firefox/Chrome matrix, physical hardware input and GNOME runtime acceptance for these changed bytes.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ]
+}

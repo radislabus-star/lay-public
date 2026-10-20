@@ -100,7 +100,33 @@ impl LayIbusEngine {
                     && self.client_context.cursor_cell_width >= 5
                     && self.client_context.kitty_terminal_focus_receipt.is_some()
                     && self.client_context.kitty_terminal_focus_receipt
-                        == self.client_context.focus_receipt))
+                        == self.terminal_input_focus_receipt()))
+    }
+
+    pub(super) fn terminal_input_focus_receipt(&self) -> Option<String> {
+        if self.context_admission_required {
+            self.live_context_token()
+                .map(|token| token.exact_field_receipt())
+        } else {
+            self.client_context.focus_receipt.clone()
+        }
+    }
+
+    pub(super) fn finish_kitty_focus_probe(
+        &mut self,
+        expected_focus_receipt: Option<&str>,
+        is_kitty: bool,
+    ) -> bool {
+        let Some(expected_focus_receipt) = expected_focus_receipt else {
+            return false;
+        };
+        if self.terminal_input_focus_receipt().as_deref() != Some(expected_focus_receipt) {
+            return false;
+        }
+        self.client_context.kitty_focus_probe_serial = Some(self.client_context.focus_serial);
+        self.client_context.kitty_terminal_focus_receipt =
+            is_kitty.then(|| expected_focus_receipt.to_string());
+        is_kitty
     }
 
     pub(super) fn preedit_waits_for_cursor_ack(&self) -> bool {

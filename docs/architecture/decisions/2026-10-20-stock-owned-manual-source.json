@@ -1,0 +1,40 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-20",
+  "status": "IMPLEMENTED_PENDING_VERIFICATION",
+  "reason": "On the installed remote KDE Chrome client, Tab commits the owned word and a physical Double Shift reaches ManualToggleV3 outcome 3 with KnownStart. VisibleTailV4 then rejects that same current handoff solely because the stock client never supplies surrounding text. A real-zbus regression reproduces the first failed transition: passive:unknown-context instead of passive:committed-tail.",
+  "decision": "For an explicit live manual handoff, accept the existing locally tracked KnownStart word when the current authenticated stock field has never supplied a surrounding observation and has no exact-refresh contract. Revalidate the existing context token, shared owner, handoff epoch, tail and expiry. Do not synthesize a surrounding snapshot, confirm client delivery or learning, authorize unknown prefixes, change automatic correction eligibility or add a delivery route. A pending per-character managed CommitText floor remains excluded. Capture the initial handoff binding before validation can retire it, so an expired or changed handoff cannot become an unbound read in the same call. The exact suppression lease must use the same current stock-owned source predicate as readout, while retaining its existing exact suffix, epoch, target layout, path and live shared-handoff checks. After exact native replay callbacks close that same locally owned stock word, keep it available for subsequent explicit manual commands. The existing exact-surrounding receipt requirement remains for clients that have supplied observations or advertise an exact refresh contract. This local callback settlement does not synthesize a native reset ACK, client observation or learning receipt.",
+  "alternatives": [
+    {
+      "option": "Wait longer for a surrounding snapshot",
+      "score": 2,
+      "reason": "The client has no implemented surrounding response."
+    },
+    {
+      "option": "Ignore all surrounding and context checks",
+      "score": 1,
+      "reason": "Would expose stale or unrelated field text and erase contradictory client evidence."
+    },
+    {
+      "option": "Current locally tracked word for the existing explicit manual handoff",
+      "score": 8,
+      "reason": "Reuses the live word scope and existing output path; actual client acceptance remains a separate native proof."
+    }
+  ],
+  "invariants": [
+    "C01",
+    "C04",
+    "C05",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs"
+  ],
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "verification": "Readout 3/3 and full IME 920/920 PASS. Suppression semantic RED v3 and GREEN v3 3/3 PASS. Completion semantic RED stock-owned-completion-red-v1/result.json and GREEN stock-owned-completion-green-v1/result.json 3/3 PASS; stock-owned-completion-full-v1/SUMMARY.json 920/920 PASS, 3 performance cases separate. Installed deployment-stock-owned-v4/deployment.json engine 4ec866ff4dafceff7add2013078d915a7a9dd561e2e06f753d22405f09fc82da. Native Chrome hint/Tab/manual 1/1 PASS on the earlier readout/suppression bytes. Rapid v7/v8 closes retention refusal, then fails at KDE layout readout: getLayoutsList 890.10 and 619.50 ms against 250 ms. Evidence rapid-v8-bus-profile.log. Full changed-byte native matrix pending.",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "not_tested": "Complete native Firefox/Chrome and GTK/Qt on the completion candidate; remote Wayland and physical GNOME remain NOT_TESTED."
+}

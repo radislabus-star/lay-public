@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 
-CONFIG_PATH = Path.home() / ".config" / "lay" / "config.json"
+CONFIG_PATH = Path(os.environ.get("LAY_CONFIG_PATH") or Path.home() / ".config" / "lay" / "config.json")
 RECENT_ACTIONS_PATH = Path.home() / ".local" / "share" / "lay" / "recent_actions.jsonl"
 STATE_DIR = Path.home() / ".local" / "state" / "lay"
 TRAY_LOCK_PATH = STATE_DIR / "kde-tray.lock"
@@ -99,6 +99,11 @@ def runtime_control(action: str, value: str | None = None) -> bool:
     command = [str(Path.home() / ".local" / "bin" / "lay-runtime-control"), action]
     if value:
         command.append(value)
+    if action in ("daemon-start", "daemon-stop", "daemon-restart"):
+        result = subprocess.run(command, text=True, capture_output=True, timeout=5, check=False)
+        if result.returncode:
+            raise RuntimeError(result.stderr.strip() or f"Контроллер завершился с кодом {result.returncode}.")
+        return True
     return run_cmd(command).returncode == 0
 
 
@@ -222,9 +227,14 @@ def main() -> int:
         from PyQt6.QtCore import QTimer, Qt
         from PyQt6.QtGui import QAction, QActionGroup, QColor, QCursor, QIcon, QPainter, QPixmap
         from PyQt6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
-    except Exception as exc:
-        print(f"lay-kde-tray: PyQt6 is not available: {exc}", file=sys.stderr)
-        return 1
+    except ImportError:
+        try:
+            from PyQt5.QtCore import QTimer, Qt
+            from PyQt5.QtGui import QColor, QCursor, QIcon, QPainter, QPixmap
+            from PyQt5.QtWidgets import QAction, QActionGroup, QApplication, QMenu, QMessageBox, QSystemTrayIcon
+        except ImportError as exc:
+            print(f"lay-kde-tray: install PyQt6 or PyQt5: {exc}", file=sys.stderr)
+            return 1
 
     class LayTray:
         def __init__(self) -> None:
@@ -234,6 +244,7 @@ def main() -> int:
             # The updater restarts this tray after installation. Its terminal
             # must survive tray destruction, including with kitty and xterm.
             self.update_process: subprocess.Popen[bytes] | None = None
+            self.input_access_process: subprocess.Popen[bytes] | None = None
             self.menu = QMenu()
             self.tray = QSystemTrayIcon(self._icon(daemon_active()), self.app)
             self.tray.activated.connect(self._activated)
@@ -273,10 +284,20 @@ def main() -> int:
             self.menu.addSeparator()
 
             enabled = QAction("Lay включён", self.menu)
+            self.enabled_action = enabled
             enabled.setCheckable(True)
             enabled.setChecked(daemon_active())
             enabled.triggered.connect(self._set_enabled)
             self.menu.addAction(enabled)
+            daemon_menu = self.menu.addMenu("Демон Lay")
+            self.daemon_actions = {}
+            for operation, label in (("start", "Запустить демон"),
+                                     ("stop", "Остановить демон"),
+                                     ("restart", "Перезапустить демон")):
+                action = QAction(label, daemon_menu)
+                action.triggered.connect(lambda _checked, selected=operation: self._control_daemon(selected))
+                daemon_menu.addAction(action)
+                self.daemon_actions[operation] = action
             self.menu.addSeparator()
 
             layout = QAction("Переключить раскладку RU / EN", self.menu)
@@ -321,6 +342,12 @@ def main() -> int:
             diagnostic_status.setEnabled(False)
             diagnostics.addAction(diagnostic_status)
             self.status_action = diagnostic_status
+            access = QAction("Доступ к клавиатуре…", diagnostics)
+            access.triggered.connect(self._open_input_access)
+            diagnostics.addAction(access)
+            ime_setup = QAction("Настроить подсказки…", diagnostics)
+            ime_setup.triggered.connect(self._open_ime_setup)
+            diagnostics.addAction(ime_setup)
             logs = QAction("Открыть журнал", diagnostics)
             logs.triggered.connect(self._open_logs)
             diagnostics.addAction(logs)
@@ -357,6 +384,20 @@ def main() -> int:
         def _set_enabled(self, enabled: bool) -> None:
             runtime_control("start" if enabled else "stop")
             self._build_menu()
+
+        def _control_daemon(self, operation: str) -> None:
+            detail = "Контроллер вернул ошибку."
+            try:
+                succeeded = runtime_control(f"daemon-{operation}")
+            except subprocess.TimeoutExpired:
+                succeeded = False
+                detail = "Команда не ответила за 5 с. Состояние демона будет проверено повторно."
+            except (OSError, RuntimeError) as error:
+                succeeded = False
+                detail = str(error) or detail
+            if not succeeded:
+                QMessageBox.warning(None, "Lay", f"Не удалось выполнить команду демона.\n{detail}")
+            self._refresh_status()
 
         def _switch_layout(self) -> None:
             if not switch_kde_layout():
@@ -397,11 +438,40 @@ def main() -> int:
                 return
             self.app.quit()
 
+        def _input_access_running(self) -> bool:
+            if self.input_access_process is None:
+                return False
+            code = self.input_access_process.poll()
+            if code is None:
+                return True
+            self.input_access_process = None
+            if code:
+                QMessageBox.warning(None, "Lay", "Окно диагностики недоступно. Повтори установку Lay или запусти lay-input-access --json.")
+            return False
+
+        def _open_input_access(self) -> None:
+            if self._input_access_running():
+                QMessageBox.information(None, "Lay", "Диагностика уже открыта или настройка ещё выполняется. Заверши или отмени запрос прав администратора.")
+                return
+            try:
+                self.input_access_process = subprocess.Popen(
+                    [str(Path.home() / ".local/bin/lay-input-access")], start_new_session=True)
+            except OSError:
+                QMessageBox.warning(None, "Lay", "Не удалось открыть диагностику доступа. Повтори установку Lay.")
+
         def _open_logs(self) -> None:
             if not open_logs():
                 QMessageBox.warning(None, "Lay", "Не найден терминал для журнала")
 
+        def _open_ime_setup(self) -> None:
+            try:
+                subprocess.Popen([str(Path.home() / ".local/bin/lay-ime-setup"), "--gui"],
+                                 start_new_session=True)
+            except OSError:
+                QMessageBox.warning(None, "Lay", "Не удалось открыть настройку подсказок. Повтори установку Lay.")
+
         def _refresh_status(self) -> None:
+            self._input_access_running()
             if self.update_process is not None:
                 code = self.update_process.poll()
                 if code is not None:
@@ -409,9 +479,12 @@ def main() -> int:
                     if code:
                         QMessageBox.warning(None, "Обновление Lay", "Не удалось выполнить обновление или открыть терминал. Запусти lay-update в терминале.")
             active = daemon_active()
+            self.enabled_action.setChecked(active)
             self.tray.setIcon(self._icon(active))
             self.tray.setToolTip(f"Lay\nСлужбы: {'работают' if active else 'остановлены'}")
             self.status_action.setText(f"Службы: {'работают' if active else 'остановлены'}")
+            for operation, action in self.daemon_actions.items():
+                action.setEnabled(not active if operation == "start" else active)
 
         def _activated(self, reason: QSystemTrayIcon.ActivationReason) -> None:
             if reason in (QSystemTrayIcon.ActivationReason.Trigger, QSystemTrayIcon.ActivationReason.Context):

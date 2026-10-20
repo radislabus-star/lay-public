@@ -1,0 +1,239 @@
+{
+  "schema": "lay.native-summary.v1",
+  "recorded_at": "2026-10-20T13:52:39.201190+00:00",
+  "scope": "KDE_X11_REMOTE_RFB_ONLY",
+  "runtime": {
+    "lay-daemon": {
+      "pid": "3771991",
+      "sha256": "1802bb5e816ebb5e8eac3d8de7baa26ed6702f00b4dec7145b7f2ac47ba5b6dd"
+    },
+    "lay-ibus-engine": {
+      "pid": "3772090",
+      "sha256": "c33f9f506a3805598f5838f67c6341c121e78ea038d3c0465e2444eb663775af"
+    }
+  },
+  "runtime_unchanged": true,
+  "native_matrix": {
+    "finished": "2026-10-20T13:47:28.027013+00:00",
+    "clients": [
+      {
+        "client": "firefox",
+        "counts": {
+          "PASS": 85,
+          "FAIL": 75,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 160,
+        "elapsed_seconds": 598.036,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/firefox/result.json"
+      },
+      {
+        "client": "chrome",
+        "counts": {
+          "PASS": 9,
+          "FAIL": 7,
+          "BLOCKED": 0,
+          "NOT_TESTED": 144
+        },
+        "expected": 160,
+        "elapsed_seconds": 39.103,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/chrome/result.json",
+        "abort": "focus preparation: next field not focused; raw error retained in original receipt"
+      },
+      {
+        "client": "gtk-entry",
+        "counts": {
+          "PASS": 5,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 5,
+        "elapsed_seconds": 13.107,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/gtk-entry/result.json"
+      },
+      {
+        "client": "gtk-text",
+        "counts": {
+          "PASS": 5,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 5,
+        "elapsed_seconds": 13.044,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/gtk-text/result.json"
+      },
+      {
+        "client": "qt-line",
+        "counts": {
+          "PASS": 4,
+          "FAIL": 1,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 5,
+        "elapsed_seconds": 14.558,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/qt-line/result.json"
+      },
+      {
+        "client": "qt-plain",
+        "counts": {
+          "PASS": 4,
+          "FAIL": 1,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 5,
+        "elapsed_seconds": 14.552,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/qt-plain/result.json"
+      },
+      {
+        "client": "qt-rich",
+        "counts": {
+          "PASS": 5,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 5,
+        "elapsed_seconds": 13.146,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/qt-rich/result.json"
+      },
+      {
+        "client": "kitty",
+        "counts": {
+          "PASS": 3,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 3,
+        "elapsed_seconds": 4.073,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/kitty/result.json"
+      },
+      {
+        "client": "konsole",
+        "counts": {
+          "PASS": 1,
+          "FAIL": 2,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "expected": 3,
+        "elapsed_seconds": 11.644,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/all-native-modes-final-v2/konsole/result.json"
+      }
+    ],
+    "totals": {
+      "PASS": 121,
+      "FAIL": 86,
+      "BLOCKED": 0,
+      "NOT_TESTED": 144
+    }
+  },
+  "not_tested": [
+    "GNOME",
+    "Wayland",
+    "physical evdev keyboard",
+    "WezTerm",
+    "existing user Kitty without restart",
+    "live tray setup action click"
+  ],
+  "firefox_by_case": {
+    "roundtrip:active": {
+      "PASS": 30
+    },
+    "rapid-five:active": {
+      "PASS": 11,
+      "FAIL": 19
+    },
+    "roundtrip:space": {
+      "FAIL": 18,
+      "PASS": 12
+    },
+    "rapid-five:space": {
+      "PASS": 10,
+      "FAIL": 20
+    },
+    "space-en-ru:functional": {
+      "PASS": 9,
+      "FAIL": 1
+    },
+    "typo-undo:functional": {
+      "FAIL": 10
+    },
+    "moved-boundary:functional": {
+      "PASS": 9,
+      "FAIL": 1
+    },
+    "tab:functional": {
+      "PASS": 4,
+      "FAIL": 6
+    }
+  },
+  "kitty_benchmark": {
+    "counts": {
+      "PASS": 20,
+      "FAIL": 3,
+      "BLOCKED": 0
+    },
+    "planned_rows": 23,
+    "speed": {
+      "double_shift": {
+        "expected_samples": 20,
+        "observed_samples": 20,
+        "median_ms": 16.260935517493635,
+        "p95_ms": 20.61346103437245,
+        "max_ms": 21.271664067171514
+      },
+      "tab": {
+        "expected_samples": 10,
+        "observed_samples": 10,
+        "median_ms": 2.4921090225689113,
+        "p95_ms": 12.477901065722108,
+        "max_ms": 12.477901065722108
+      },
+      "five_rapid": {
+        "expected_samples": 10,
+        "observed_samples": 0,
+        "median_ms": null,
+        "p95_ms": null,
+        "max_ms": null
+      }
+    },
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/terminal-final-benchmark-v1/result.json",
+    "visual": {
+      "verdict": "PASS",
+      "scope": "independently inspected ordinary prefix and muted auxiliary suffix in owned desktop-launch Kitty",
+      "screenshot": "/home/e/projects/lay-development-runner/kde-install-control-20261020/terminal-final-benchmark-v1/hint.png"
+    },
+    "failed_rows": [
+      "five-rapid-active-word",
+      "five-rapid-after-space",
+      "moved-boundary"
+    ]
+  },
+  "rapid_diagnostic": {
+    "status": "FAIL",
+    "debug_restored": true,
+    "manual_rpcs": 5,
+    "completed": 1,
+    "context_authority_refusals": 4,
+    "trace_segment_note": "Parsed records 1970-2154; prior buffered fixture records also present, so whole-file counts are not this case.",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/terminal-rapid-diagnostic-v1/result.json",
+    "trace": "/home/e/projects/lay-development-runner/kde-install-control-20261020/terminal-rapid-diagnostic-v1/engine-trace.jsonl"
+  },
+  "setup_gui": {
+    "status": "PASS",
+    "scope": "installed helper window; QAction wiring separately tested",
+    "pid": 3777580,
+    "xid": 65011715,
+    "title": "Подсказки Lay",
+    "at": "2026-10-20T13:35:13.988841+00:00",
+    "live_menu_click": "NOT_TESTED",
+    "text_input_injected": false,
+    "exit_status": 0
+  }
+}

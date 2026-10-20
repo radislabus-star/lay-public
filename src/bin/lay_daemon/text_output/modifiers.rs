@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, EventType, InputEvent, KeyCode};
+use crate::native_input::VirtualDevice;
+use evdev::{EventType, InputEvent, KeyCode};
 use std::time::Duration;
 
 const MODIFIER_RELEASE_ROUNDS: usize = 2;

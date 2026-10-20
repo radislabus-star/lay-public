@@ -52,6 +52,7 @@ impl Io for Mock {
 fn state(index: u32) -> Snapshot {
     Snapshot {
         owner: ":1.42".to_string(),
+        foreground_owner: ":1.7".to_string(),
         layouts: vec![
             ("ru".into(), "ru".into(), "Russian".into()),
             ("us".into(), "en".into(), "English".into()),
@@ -114,7 +115,9 @@ fn service_remap_or_independent_group_change_before_mutation_refuses() {
     owner.owner = ":1.43".into();
     let mut mapping = state(1);
     mapping.layouts.reverse();
-    for changed in [owner, mapping, state(0)] {
+    let mut foreground = state(1);
+    foreground.foreground_owner = ":1.8".into();
+    for changed in [owner, foreground, mapping, state(0)] {
         let io = Mock::new([state(1), changed]);
         assert!(async_io::block_on(complete(&io, true, || true, || io.finish())).is_err());
         assert!(io.mutations().is_empty());
@@ -131,7 +134,9 @@ fn false_set_or_wrong_readback_never_completes_engine() {
     owner.owner = ":1.43".into();
     let mut mapping = state(0);
     mapping.layouts.reverse();
-    for readback in [state(1), owner, mapping] {
+    let mut foreground = state(0);
+    foreground.foreground_owner = ":1.8".into();
+    for readback in [state(1), owner, foreground, mapping] {
         let io = Mock::new([state(1), state(1), readback]);
         assert!(async_io::block_on(complete(&io, true, || true, || io.finish())).is_err());
         assert_eq!(io.mutations(), ["set::1.42:0"]);

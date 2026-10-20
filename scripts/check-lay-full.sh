@@ -51,6 +51,10 @@ bash -n install.sh update.sh dev-reload.sh scripts/*.sh
 echo "== Firefox compatibility adapter regressions =="
 python3 -m unittest tests.test_firefox_compat_adapter tests.test_firefox_double_shift_probe
 
+echo "== KDE IME startup regressions =="
+python3 -m unittest tests.test_kde_ime_startup
+python3 -m unittest tests.test_ime_client_setup
+
 echo "== CLI explain smoke =="
 LAY_CONFIG_PATH="$ROOT/scripts/proof/autocorrect-proof-config.json" \
   cargo run --quiet --bin lay -- --explain-correct 'кторое ' | grep -F 'confidence:' >/dev/null

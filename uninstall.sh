@@ -135,6 +135,10 @@ if [ -f "$SOURCE_DIR/scripts/compat/lay-kde-panel-focus.py" ]; then
 fi
 
 echo "=== удаление пользовательского runtime ==="
+python3 "$SCRIPT_DIR/scripts/lay-ime-client-setup.py" --remove
+if command -v kbuildsycoca5 >/dev/null 2>&1; then
+    kbuildsycoca5 --noincremental >/dev/null 2>&1 || true
+fi
 rm -f \
     "$HOME/.local/bin/lay" \
     "$HOME/.local/bin/lay-daemon" \
@@ -147,6 +151,7 @@ rm -f \
     "$HOME/.local/bin/lay-l1.1-restore" \
     "$HOME/.local/bin/lay-l1.1-serve" \
     "$HOME/.local/bin/lay-runtime-control" \
+    "$HOME/.local/bin/lay-ime-setup" \
     "$HOME/.local/bin/lay-update" \
     "$HOME/.local/lib/lay/update.sh" \
     "$HOME/.local/bin/lay-kde-tray" \

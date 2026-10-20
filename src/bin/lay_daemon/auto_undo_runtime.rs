@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::VirtualDevice;
 use lay::text_edit::replacement_plan_matches;
 use lay::word_buffer::{PendingAutoUndo, UserLearningCorrection, WordBuffer};
 use std::time::Instant;

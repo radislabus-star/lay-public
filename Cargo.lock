@@ -1095,7 +1095,7 @@ dependencies = [
 
 [[package]]
 name = "lay"
-version = "1.0.93"
+version = "1.0.94"
 dependencies = [
  "arboard",
  "async-io",
@@ -1115,6 +1115,7 @@ dependencies = [
  "ureq",
  "x11rb",
  "zbus",
+ "zbus_names",
  "zstd",
 ]
 
@@ -2631,8 +2632,6 @@ dependencies = [
 [[package]]
 name = "zbus_names"
 version = "4.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7074f3e50b894eac91750142016d30d0a89be8e67dbfd9704fb875825760e52d"
 dependencies = [
  "serde",
  "winnow",

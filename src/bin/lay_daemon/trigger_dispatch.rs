@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, Device, KeyCode};
+use crate::native_input::{Device, VirtualDevice};
+use evdev::KeyCode;
 use lay::manual_toggle::ImeManualToggleOutcome;
 use lay::word_buffer::WordBuffer;
 use std::sync::{Arc, Mutex};
@@ -42,15 +43,16 @@ pub(super) fn run_configured_manual_correction(
     text_observation: DaemonTextObservation<'_>,
     dispatch_plan: ManualCorrectionDispatchPlan,
 ) -> Option<bool> {
-    let mut physical_grab = if dispatch_plan.input_isolation.requires_physical_grab() {
+    let isolation_required = dispatch_plan.requires_input_isolation(device);
+    let mut physical_grab = if isolation_required {
         PhysicalInputGrab::new(Some(device))
     } else {
-        // IME-owned output does not need daemon-side key replay. Keep
-        // subsequent physical input in the ordinary event stream.
+        // Shared evdev output keeps subsequent physical input in the ordinary
+        // event stream. Session X11 output always needs its existing isolation.
         PhysicalInputGrab::new(None)
     };
     let input_isolated = physical_grab.is_active();
-    if dispatch_plan.input_isolation.requires_physical_grab() && !input_isolated {
+    if isolation_required && !input_isolated {
         super::log("⚠ manual replay blocked: required physical input isolation is unavailable");
         return None;
     }
@@ -79,6 +81,8 @@ pub(super) fn run_exact_ime_tail_replay(
     let mut keyboard = lock_virtual_keyboard(virtual_kbd);
     let mut physical_grab = PhysicalInputGrab::new(Some(device));
     let input_isolated = physical_grab.is_active();
+    let (_, settlement_lease) = replay.clone().into_parts();
+    let settlement_focus = super::capture_exact_focused_window_identity().ok()?;
     let mut result =
         execute_exact_ime_tail_replay(buffer, keyboard.as_mut(), executing, input_isolated, replay);
     if let (Some(layout_is_ru), Some(virtual_keyboard)) = (result, keyboard.as_mut()) {
@@ -96,9 +100,13 @@ pub(super) fn run_exact_ime_tail_replay(
                     super::log("warning: queued Double Shift has no settled daemon tail");
                     return None;
                 };
-                if let Err(error) =
-                    wait_for_ime_committed_tail_settlement(&expected_tail, current_layout_is_ru)
-                {
+                if let Err(error) = wait_for_ime_committed_tail_settlement(
+                    &expected_tail,
+                    current_layout_is_ru,
+                    &settlement_lease,
+                    None,
+                    || super::verify_exact_focused_window_identity(&settlement_focus),
+                ) {
                     super::log(&format!(
                         "warning: queued Double Shift settlement failed: {error}"
                     ));
@@ -166,13 +174,14 @@ pub(super) fn run_scoped_manual_correction(
     reason: &str,
     dispatch_plan: ManualCorrectionDispatchPlan,
 ) -> Option<bool> {
-    let mut physical_grab = if dispatch_plan.input_isolation.requires_physical_grab() {
+    let isolation_required = dispatch_plan.requires_input_isolation(ctx.device);
+    let mut physical_grab = if isolation_required {
         PhysicalInputGrab::new(Some(ctx.device))
     } else {
         PhysicalInputGrab::new(None)
     };
     let input_isolated = physical_grab.is_active();
-    if dispatch_plan.input_isolation.requires_physical_grab() && !input_isolated {
+    if isolation_required && !input_isolated {
         super::log(
             "⚠ scoped manual replay blocked: required physical input isolation is unavailable",
         );

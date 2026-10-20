@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::VirtualDevice;
 use lay::action_log::RecentActionGateTrace;
 use lay::decoder::DecoderAction;
 use lay::keyboard::preferred_layout_for_text;

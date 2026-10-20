@@ -38,16 +38,15 @@ separate opt-in controls. Normal use needs no cloud model, API key or subscripti
 ### 1. Install Lay
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh |
-  LAY_KEEP_OLLAMA=1 bash
+curl -fsSL https://raw.githubusercontent.com/radislabus-star/lay-public/main/scripts/install-remote.sh | bash
 ```
 
 This **builds from source** and needs internet access, `sudo` privileges and build time.
 The [installer](scripts/install-remote.sh) installs system dependencies, installs Rust
 if missing and downloads Lay's language data. An existing Rust toolchain must be **1.88 or newer**.
 
-`LAY_KEEP_OLLAMA=1` preserves your Ollama installation and models. Without this flag,
-the installer runs its legacy Ollama cleanup.
+On KDE, the installer adds the dependencies for Lay's system tray icon.
+Ubuntu 22.04 uses Qt5; Qt6 is preferred when available in the package repository.
 
 <details>
 <summary>Other distributions and the first desktop session</summary>
@@ -143,6 +142,12 @@ promised. See [releases](https://github.com/radislabus-star/lay-public/releases)
 The daemon reads keyboard events to recognize the gesture and the last word.
 Settings are stored in `~/.config/lay/config.json`.
 
+In a supported X11 remote session, Lay can receive keyboard events through
+XInput2 without a keyboard connected to the host. Check readiness with
+`lay-daemon --input-status`. The **Keyboard access** menu action explains
+unavailable input and offers the applicable recovery action.
+See [Lay 1.0.94](docs/release-1.0.94.md) for the tested scope.
+
 ## Update or uninstall
 
 <details>
@@ -154,9 +159,11 @@ Select the update action in Lay's panel menu, or run:
 lay-update --menu
 ```
 
-The updater opens a terminal and asks before building and installing. It uses the
-original checkout, keeps user settings, preserves source edits in a named `git stash`
-and stops if local and remote history have diverged.
+The updater opens a terminal and asks before building and installing. It fetches
+the latest stable public release into `~/.local/share/lay/update-source` and
+preserves user settings. A developer branch does not determine update availability.
+GNOME and KDE menus include an **Auto-update** switch. Network failures are
+reported as check errors.
 
 </details>
 

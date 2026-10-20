@@ -11,6 +11,46 @@ use crate::protocol::{AutocorrectSuppression, Shared, KEY_LEFT_SHIFT, KEY_SPACE}
 
 const RECEIPT_NONE: (u8, u64, Vec<u8>) = (0, 0, Vec::new());
 
+#[test]
+fn legacy_replay_suppression_survives_only_the_live_controlled_layout_handoff() {
+    zbus::block_on(async {
+        for transition in ["controlled", "expired", "other_field", "unprepared"] {
+            let shared = Arc::new(Mutex::new(Default::default()));
+            let isolated = isolated_p2p_bridge(shared.clone()).await;
+            let source_path = "/io/github/lay/replay_source";
+            let mut source = engine(source_path, shared.clone(), true);
+            source.bind_focus_receipt("/input/original".into(), "ibus".into());
+            source.push_tail_char('a');
+            if transition != "unprepared" {
+                source.prepare_exact_manual_toggle_layout_handoff();
+            }
+            register_engine(&isolated.bridge, source_path, source).await;
+            assert!(isolated
+                .bridge
+                .suppress_next_autocorrect_inner()
+                .await
+                .unwrap());
+            if transition == "expired" {
+                shared.lock().unwrap().preserve_active_path_until =
+                    Some(std::time::Instant::now() - std::time::Duration::from_secs(1));
+            }
+            // IBus can activate the selected engine only after the daemon's
+            // suppression RPC returns. No sleeps or synthetic widget receipts.
+            let mut target = engine("/io/github/lay/replay_target", shared.clone(), false);
+            if transition == "other_field" {
+                assert!(target.bind_focus_receipt("/input/other".into(), "ibus".into()));
+            }
+            assert_eq!(
+                target.take_manual_toggle_autocorrect_suppression(),
+                transition == "controlled",
+                "transition={transition}"
+            );
+            assert!(!target.take_manual_toggle_autocorrect_suppression());
+            assert!(shared.lock().unwrap().autocorrect_suppression.is_none());
+        }
+    });
+}
+
 struct IsolatedBridge {
     bridge: LayImeBridge,
     _peer: zbus::Connection,

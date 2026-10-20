@@ -293,6 +293,11 @@ impl LayImeBridge {
         if self.context_admission_required {
             engine.try_install_pending_context_activation();
         }
+        // Validation below may retire an expired handoff. Remember that this
+        // read began under it so retirement cannot turn a refusal into a fresh
+        // unbound read of the same stale source.
+        let exact_handoff_was_bound =
+            engine.exact_manual_toggle_handoff_is_bound_to_current_owner();
         let word_is_known = engine.context_word_is_known();
         let bounded_unknown_suffix = engine.context_exact_manual_handoff_bounds_unknown_suffix();
         let observed_exact_suffix = engine.context_observed_suffix_exact_manual_handoff_allowed();
@@ -320,10 +325,11 @@ impl LayImeBridge {
         engine.refresh_empty_tail_from_handoff();
         let source = tail_source_for_authority(engine.manual_toggle_authority());
         if source == VisibleTailSource::ImeCommittedTail
-            && engine.exact_manual_toggle_handoff_is_bound_to_current_owner()
+            && exact_handoff_was_bound
             && (!engine.exact_manual_toggle_handoff_is_live()
                 || !(engine.current_external_snapshot_agrees_with_owned_tail()
-                    || engine.inherited_exact_manual_snapshot_agrees_with_owned_tail()))
+                    || engine.inherited_exact_manual_snapshot_agrees_with_owned_tail()
+                    || engine.context_stock_owned_manual_source_is_current()))
         {
             engine.clear_identity_bound_exact_manual_toggle_authority();
             return Ok((
@@ -418,7 +424,10 @@ impl LayImeBridge {
         if !self.bridge_token_is_live(&engine, token.as_ref()) || !engine.context_word_is_known() {
             return Ok(false);
         }
-        engine.consume_exact_manual_toggle_handoff();
+        // The selected IBus engine may not have activated yet. Consuming the
+        // existing bounded handoff here makes that activation clear the shared
+        // replay suppression before the queued replay reaches Space. Preserve
+        // its original deadline; unrelated/expired focus still clears it.
         if !engine.arm_legacy_replay_autocorrect_suppression() {
             return Ok(false);
         }
@@ -767,6 +776,9 @@ impl LayImeBridge {
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
         engine.refresh_empty_tail_from_handoff();
+        // A layout handoff can deliver cursor geometry before admission Ready.
+        // Qualify the current field before selecting the existing manual owner.
+        engine.refresh_terminal_focus_if_ready().await;
         let target_authority = WindowInteraction::admit_manual_toggle(&engine);
         if matches!(
             target_authority,

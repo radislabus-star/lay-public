@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::VirtualDevice;
 use lay::keyboard::{map_events_to_layout, text_to_key_events, KeyEvent};
 use lay::manual_toggle::{ManualTogglePlan, ManualToggleRoute};
 use lay::text_edit::{
@@ -272,6 +272,25 @@ pub(super) fn execute_exact_ime_tail_replay(
             may_retain,
         );
         return None;
+    }
+    // The remote replay master must remain visible until the client has
+    // processed its frames. Reuse the exact-tail observation already used for
+    // queued gestures; a failure is indeterminate and never retries the edit.
+    if virtual_keyboard.requires_client_settlement() {
+        if let Err(error) = super::wait_for_ime_committed_tail_settlement(
+            &prepared.visible_after,
+            plan.target_layout_is_ru,
+            &lease,
+            Some(&target_path),
+            || verify_exact_focused_window_identity(&focused_window),
+        ) {
+            log_replay_error(
+                "warning: remote exact replay did not settle before retirement",
+                &error,
+                may_retain,
+            );
+            return None;
+        }
     }
     handoff_cleanup.disarm();
     if !buffer.remember_visible_text_for_correction(&prepared.visible_after) {

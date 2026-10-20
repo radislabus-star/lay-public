@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::VirtualDevice;
 use lay::decoder::DecoderEditPlan;
 use lay::keyboard::KeyEvent;
 use lay::word_buffer::WordBuffer;

@@ -9,6 +9,7 @@ type Layouts = Vec<(String, String, String)>;
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Snapshot {
     owner: String,
+    foreground_owner: String,
     layouts: Layouts,
     index: u32,
 }
@@ -42,6 +43,7 @@ impl Snapshot {
 
     fn verify(&self, observed: &Self, index: u32) -> Result<(), String> {
         if self.owner != observed.owner
+            || self.foreground_owner != observed.foreground_owner
             || self.layouts != observed.layouts
             || observed.index != index
         {
@@ -141,12 +143,11 @@ impl Session {
         Ok(owner)
     }
 
-    async fn keyboard_owner(&self) -> Result<String, String> {
-        let owner = self.owner("org.kde.keyboard").await?;
-        if owner != self.owner("org.kde.KWin").await? {
-            return Err("KDE keyboard and KWin service owners differ".to_string());
-        }
-        Ok(owner)
+    async fn service_owners(&self) -> Result<(String, String), String> {
+        Ok((
+            self.owner("org.kde.keyboard").await?,
+            self.owner("org.kde.KWin").await?,
+        ))
     }
 
     async fn call<B: serde::ser::Serialize + zbus::zvariant::DynamicType>(
@@ -171,7 +172,7 @@ impl Session {
 #[cfg(not(test))]
 impl Io for Session {
     async fn snapshot(&self) -> Result<Snapshot, String> {
-        let owner = self.keyboard_owner().await?;
+        let (owner, foreground_owner) = self.service_owners().await?;
         let layouts: Layouts = self
             .call(&owner, "getLayoutsList", &())
             .await?
@@ -184,11 +185,12 @@ impl Io for Session {
             .body()
             .deserialize()
             .map_err(|e| e.to_string())?;
-        if owner != self.keyboard_owner().await? {
+        if (owner.clone(), foreground_owner.clone()) != self.service_owners().await? {
             return Err("KDE keyboard service restarted during observation".to_string());
         }
         Ok(Snapshot {
             owner,
+            foreground_owner,
             layouts,
             index,
         })

@@ -1,0 +1,11 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Require ordinary entered text and muted unaccepted hints in every application and system, with visual acceptance reported separately from functional behavior.",
+  "reason": "The user's explicit universal requirement and native Chrome/terminal screenshots contradict counting a functioning Tab or a styled suffix payload as complete presentation acceptance.",
+  "invariants": ["C01", "C06", "C10"],
+  "protected_paths": ["AGENTS.md", "tests/manual/browser_ime_standard.md", "docs/architecture/ime-hint-presentation-2026-10-19.md"],
+  "verification": "Fresh remote Chrome Tab/control functional case passes; its pre-Tab screenshot shows the whole prefix underlined, visual FAIL. Kitty and Konsole have retained reverse-highlight FAIL evidence. TD-160 records root, ranked options and minimal ownership-proof boundary.",
+  "not_tested": "A universal runtime presentation repair and other clients/platforms are not established. Documentation and payload tests must not be promoted as physical acceptance.",
+  "runtime_authority_changed": false,
+  "consequences": "Strengthen acceptance reporting only. No IME route, commit timing, text ownership, decision, verifier, output executor or atomic protocol change. Any later ownership migration requires its own explicit decision and native proof."
+}

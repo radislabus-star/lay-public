@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Grab the original X11 master synchronously on a temporary InputOnly child of the concrete focused client window. Never set or restore the original client's focus. Retire the replay device before thaw, and destroy the child only after successful thaw.",
+  "reason": "An owned Qt diagnostic proves that a same-window XI grab emits a core Nonlinear FocusOut at ungrab. KWin ignores the paired Ungrab FocusIn but deactivates the window for this FocusOut. Device removal alone preserves focus. A mapped child grab instead emits Inferior bookkeeping within the existing client subtree and preserves both actual keyboard focus and the active application. The child is clipped outside its parent to avoid intercepting pointer input.",
+  "invariants": [
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/native_input/x11.rs",
+    "src/bin/lay_daemon/native_input/x11_tests.rs"
+  ],
+  "runtime_authority_changed": false,
+  "verification": "Retain the root-grab negative control and actual focused-window equality. Permit only Grab/Inferior XI focus bookkeeping during acquisition; reject Nonlinear and NonlinearVirtual core FocusOut during retirement. Verify no owned child survives ungrab, no idle master survives, originals remain server-frozen and output reaches the existing endpoint. Run all owned Xvfb regressions and renewed installed Qt/GTK/browser native tests. A bookkeeping event within the same subtree is not evidence of a new client owner; real focus changes still revoke the existing lease.",
+  "not_tested": "Physical evdev, Wayland and other remote servers are outside this new evidence. No recognizer, IME delivery route, verifier or semantic owner changes. Native acceptance is pending at decision creation.",
+  "status": "REJECTED_NATIVE_QT",
+  "result": "The installed subtree variant preserves KWin active UUID but emits original-master XI FocusOut/Grab/Inferior. Qt revokes its IME owner, so the first conversion is rejected. Receipt subtree-debug-qt-v4/field and focus-v3-qt-*; no subtree variant remains in source."
+}

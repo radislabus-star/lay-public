@@ -690,3 +690,78 @@ fn td125_disabling_live_composition_clears_client_preedit_before_state_reset() {
     assert!(engine.committed_tail.buffer.is_empty());
     assert!(shared_tail(&engine).is_empty());
 }
+
+#[test]
+fn td125_level_modifier_wire_order_preserves_owned_word_and_space_lease() {
+    use crate::protocol::{KEY_ISO_LEVEL3_SHIFT, RELEASE_MASK};
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("warm exact-layout authority");
+    let mut engine = legacy_engine(
+        "/td125/legacy-preedit/level-modifier",
+        IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+    );
+    engine.config.nanda_precognition = false;
+    engine.committed_tail.buffer = "дом ".into();
+    engine.client_context.surrounding_text_snapshot =
+        Some(SurroundingTextSnapshot::new("дом ".into(), 4, 4));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    for ch in "ghbdt".chars() {
+        assert!(press(&mut engine, &mut output, ch as u32));
+    }
+    let before = engine
+        .capture_space_autocorrect_frame_identity()
+        .expect("owned word frame");
+    assert!(!zbus::block_on(engine.process_key_event_with_output(
+        &mut EngineOutput::test(&mut output),
+        KEY_ISO_LEVEL3_SHIFT,
+        84,
+        0,
+    ))
+    .unwrap());
+    assert_eq!(
+        engine.capture_space_autocorrect_frame_identity().as_ref(),
+        Some(&before),
+        "a pure level modifier must not discard the owned start"
+    );
+    assert!(zbus::block_on(engine.process_key_event_with_output(
+        &mut EngineOutput::test(&mut output),
+        'n' as u32,
+        49,
+        1 << 7,
+    ))
+    .unwrap());
+    let frame = engine
+        .capture_space_autocorrect_frame_identity()
+        .expect("new exact word frame");
+    install_exact_lease(&frame, &engine.config);
+    assert!(!zbus::block_on(engine.process_key_event_with_output(
+        &mut EngineOutput::test(&mut output),
+        KEY_ISO_LEVEL3_SHIFT,
+        84,
+        RELEASE_MASK | 1 << 7,
+    ))
+    .unwrap());
+    assert_eq!(
+        engine.capture_space_autocorrect_frame_identity().as_ref(),
+        Some(&frame)
+    );
+    assert!(matches!(
+        crate::space_autocorrect_prefetch::take_with_budget(&frame, std::time::Duration::ZERO)
+            .lookup,
+        crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::Ready(_)
+    ));
+    install_exact_lease(&frame, &engine.config);
+    assert!(zbus::block_on(engine.process_key_event_with_output(
+        &mut EngineOutput::test(&mut output),
+        'n' as u32,
+        49,
+        RELEASE_MASK,
+    ))
+    .unwrap());
+    assert!(press(&mut engine, &mut output, KEY_SPACE));
+    assert_eq!(output.committed_texts, ["привет "]);
+    assert!(output.surrounding_deletes.is_empty());
+}

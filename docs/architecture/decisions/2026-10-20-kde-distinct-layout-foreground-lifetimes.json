@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Capture and pin the unique D-Bus owners of org.kde.keyboard and org.kde.KWin independently in the existing KDE layout transaction. Require both owners and the complete mapping to remain unchanged across observation, mutation, readback and restoration. Send setLayout only to the captured keyboard owner.",
+  "reason": "The real GTK/RFB v11 reaches exact layout handoff but refuses before deletion because the implementation requires the two service owners to be equal. Remote KDE X11 independently reports org.kde.keyboard owned by kded5 (:1.34, PID3701072) and org.kde.KWin owned by kwin_x11 (:1.7, PID3700656). Equal-process ownership was an unsupported assumption. Both role lifetimes must instead be preserved, including the already-supported same-process case.",
+  "invariants": ["C01", "C04", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": ["src/bin/lay_daemon/layout_controller/kde_exact.rs", "src/bin/lay_ibus_engine/layout_sync/kde.rs", "docs/double-shift-physical-layout-contract.md"],
+  "runtime_authority_changed": false,
+  "verification": "Exercise both directions with distinct service owners, owner loss/change for either role before/after layout mutation and during restoration, existing group/mapping/engine/mode/focus refusal cases, production builds, and actual installed KDE VNC acceptance. The native v11 refusal is the retained pre-fix receipt; do not call fake-Io transactions physical acceptance.",
+  "not_tested": "No new service, controller, fallback route, gesture recognizer, edit permission, retry or foreground substitute is introduced. Missing/restarted services still refuse. Unavailable client confirmation remains unknown. New bytes require installed client receipts; historical KDE/browser PASS does not certify them."
+}

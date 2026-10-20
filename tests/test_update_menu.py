@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -49,7 +50,7 @@ class UpdateMenuTests(unittest.TestCase):
         (seed / 'Cargo.toml').write_text('[package]\nname = "lay"\nversion = "0.0.2"\n')
         (seed / 'install.sh').write_text(
             'test "$1" = --update || exit 66\n'
-            'printf "%s %s" "$LAY_KEEP_OLLAMA" "$1" > "$HOME/installed"\n'
+            'printf "%s" "$1" > "$HOME/installed"\n'
             'printf \'#!/bin/bash\\necho "lay 0.0.2"\\n\' > "$HOME/.local/bin/lay"\n'
             'chmod +x "$HOME/.local/bin/lay"\n')
         self.git('add', '.', cwd=seed)
@@ -129,7 +130,7 @@ class UpdateMenuTests(unittest.TestCase):
     def test_automatic_fetches_exact_tag_and_calls_restricted_installer(self):
         head = self.git('rev-parse', 'HEAD')
         self.update('--automatic', input='')
-        self.assertEqual('1 --update', (self.home / 'installed').read_text())
+        self.assertEqual('--update', (self.home / 'installed').read_text())
         self.assertEqual(head, self.git('rev-parse', 'HEAD'))
         self.assertEqual(self.git('rev-parse', 'v0.0.2^{}', cwd=self.origin),
                          self.git('rev-parse', 'HEAD', cwd=self.cache))
@@ -231,6 +232,44 @@ class UpdateMenuTests(unittest.TestCase):
         with (state / 'update.lock').open('w') as lock:
             fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
             self.assertIn('уже выполняется', self.update('--check', expected=75).stderr)
+
+
+class KdeTrayConfigTests(unittest.TestCase):
+    def test_tray_reads_and_writes_the_config_selected_by_runtime(self):
+        with tempfile.TemporaryDirectory(prefix='lay-kde-config-') as directory:
+            home = Path(directory)
+            default = home / '.config/lay/config.json'
+            default.parent.mkdir(parents=True)
+            default.write_text('{"typing_assist": false, "preserve": "default"}\n')
+            selected = home / 'session/config.json'
+            selected.parent.mkdir()
+            selected.write_text('{"typing_assist": false, "preserve": "session"}\n')
+            for override in [False, True]:
+                with self.subTest(override=override):
+                    env = dict(os.environ, HOME=str(home))
+                    env.pop('LAY_CONFIG_PATH', None)
+                    if override:
+                        env['LAY_CONFIG_PATH'] = str(selected)
+                    other = default if override else selected
+                    other_contents = other.read_bytes()
+                    code = '''
+import runpy, sys
+tray = runpy.run_path(sys.argv[1])
+cfg = tray['load_config']()
+cfg['typing_assist'] = True
+tray['save_config'](cfg)
+print(tray['CONFIG_PATH'])
+'''
+                    result = subprocess.run(
+                        [sys.executable, '-c', code, str(ROOT / 'scripts/lay-kde-tray.py')],
+                        env=env, text=True, capture_output=True, timeout=10)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    target = selected if override else default
+                    self.assertEqual(result.stdout.strip(), str(target))
+                    saved = json.loads(target.read_text())
+                    self.assertTrue(saved['typing_assist'])
+                    self.assertEqual(saved['preserve'], 'session' if override else 'default')
+                    self.assertEqual(other.read_bytes(), other_contents)
 
 
 if __name__ == '__main__':

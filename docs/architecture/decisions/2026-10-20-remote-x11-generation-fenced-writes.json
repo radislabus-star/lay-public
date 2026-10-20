@@ -1,0 +1,42 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-20",
+  "status": "IMPLEMENTED_PENDING_NATIVE",
+  "reason": "Harness2 review identified an unlocked validation-to-write interval for reusable XInput device IDs, an incompletely bound IME settlement predicate, and an unbounded output event drain. These are reproducible protocol defects, not evidence that foreign-device damage occurred in a user session.",
+  "decision": "Reuse the existing replay generation claim. Validate identity and execute each finite X11 write under a short server fence on the same connection. Copy the XKB map through bounded native protocol requests, without an external compiler under the fence. Keep event drainage, IME waits, and operations on the original input connection outside that fence. Bind settlement to the original field receipt, the replay engine path, a newer epoch, and the focused window. Bound output event drainage to 4096 events and retain original-input thaw on refusal.",
+  "alternatives": [
+    {
+      "option": "Unlocked ownership preflight",
+      "score": 2,
+      "reason": "Another client can replace a master after validation and before a numeric-ID write."
+    },
+    {
+      "option": "Server fence around an external compiler or IME wait",
+      "score": 1,
+      "reason": "A child connection or IBus can need the same server and deadlock."
+    },
+    {
+      "option": "Same-connection identity validation and finite wire writes",
+      "score": 9,
+      "reason": "Closes the reuse interval while retaining the existing input, output, and settlement owners."
+    }
+  ],
+  "invariants": [
+    "C01",
+    "C04",
+    "C05"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/native_input/x11.rs",
+    "src/bin/lay_daemon/native_input/replay_master.rs",
+    "src/bin/lay_daemon/native_input/mapping.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs",
+    "src/bin/lay_daemon/trigger_dispatch.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "verification": "25/25 owned Xvfb adapter cases pass in review-fixes-owned-v3.log. Controlled violations make the ID-reuse, event-budget, and exact-settlement regressions fail; the settlement run uses the hermetic D-Bus harness. Initial combined SetMap encoding and overbroad RESIZE_TYPES flags were rejected after BadLength failures. Latest release bytes and native matrix remain pending. Compact-map experiment combines naturally aligned components, preserving separate byte-sized parts and all map admission checks; compact-map-owned-v2.log passes 25/25. v1 lacked the required owned-server marker and is not semantic RED. Native latency effect pending.",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "not_tested": "Latest native browser/GTK/Qt matrix and GNOME until separately recorded."
+}

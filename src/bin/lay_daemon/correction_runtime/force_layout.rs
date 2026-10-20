@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::VirtualDevice;
 use lay::word_buffer::WordBuffer;
 use std::time::Instant;
 

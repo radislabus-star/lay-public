@@ -22,8 +22,8 @@ pub(super) fn preedit(chars: u32, suggestion_start: u32) -> Vec<Value<'static>> 
     let suggestion_start = suggestion_start.min(chars);
     let mut attrs = Vec::with_capacity(3);
     if suggestion_start > 0 {
-        // The owned prefix is real input. Explicit NONE also prevents clients
-        // from adding their default composition underline to this span.
+        // The owned prefix is real input. Request no underline for this span;
+        // some clients override IBus attributes when rendering composition.
         attrs.push(ibus_attribute(1, 0, 0, suggestion_start));
     }
     if suggestion_start < chars {

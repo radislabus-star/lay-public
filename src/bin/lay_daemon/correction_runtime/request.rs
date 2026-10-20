@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::{Device, VirtualDevice};
 use lay::word_buffer::WordBuffer;
 
 use super::super::physical_input_grab::PhysicalInputGrab;
@@ -36,6 +36,14 @@ impl ManualCorrectionInputIsolation {
 pub(crate) struct ManualCorrectionDispatchPlan {
     pub(crate) output_route: ManualCorrectionOutputRoute,
     pub(crate) input_isolation: ManualCorrectionInputIsolation,
+}
+
+impl ManualCorrectionDispatchPlan {
+    pub(crate) fn requires_input_isolation(self, device: &Device) -> bool {
+        // Shared evdev output remains valid. Session X11 replay activates its
+        // owned master only within this existing grab, even after IME delegation.
+        self.input_isolation.requires_physical_grab() || device.requires_isolated_replay()
+    }
 }
 
 pub(crate) struct ManualCorrectionRequest<'a, 'grab> {

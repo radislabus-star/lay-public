@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Make ordinary Kitty menu launches enable its existing IBus client, and retain the setting for subsequent desktop logins.",
+  "reason": "Remote KDE Kitty 0.21.2 launched by the user has no GLFW_IM_MODULE. The native fixture explicitly supplied ibus, so its Tab PASS did not certify the ordinary launcher. Upstream Kitty requires GLFW_IM_MODULE=ibus for X11 IME.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "install.sh",
+    "uninstall.sh",
+    "scripts/lay-ime-client-setup.py",
+    "tests/test_ime_client_setup.py"
+  ],
+  "verification": "4 disposable-profile checks PASS. Remote KDE native normal desktop-command launch without injected GLFW: before setup FAIL (literal tab), after setup PASS (пров -> проверка , 2.04 ms), same installed v3 bytes. Receipts kitty-menu-before-setup-v1 and kitty-menu-after-setup-v1; desktop-launch.json pins resolved installed entry. Visual prefix remains FAIL. KDE menu cache refresh succeeds; installer and uninstall refresh it when available.",
+  "not_tested": "No claim for the existing user process, Wayland clients, universal prefix styling, correction or complete browser/terminal matrices.",
+  "runtime_authority_changed": false,
+  "source_head": "fd3c19fa11da8618b4ed4f684f5e0c6252014bcc",
+  "consequences": {
+    "owner": "Existing installer and the application IBus client; no replacement text executor, owner, input transport or IME route.",
+    "scope": "A user desktop-entry override preserves original arguments and actions. environment.d and Plasma env scripts supply only an unset GLFW_IM_MODULE default on subsequent login. Explicit other IME/custom managed-path files cause an error before modification. Uninstall removes only owned defaults and its exact launcher prefix. No live environment import into another display, user window restart or IBus restart.",
+    "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+    "upstream": "https://sw.kovidgoyal.net/kitty/glossary/#envvar-GLFW_IM_MODULE",
+    "rollback": "Run the owned helper with --remove; preserve user edits and unrelated settings."
+  }
+}

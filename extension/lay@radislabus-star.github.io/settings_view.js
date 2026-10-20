@@ -71,32 +71,33 @@ export class LaySettingsView {
             restartDaemon();
     }
 
-    _switchRow(title, subtitle, key, options = {}) {
-        const row = new Adw.SwitchRow({
-            title,
-            subtitle,
+    _switchRow(title, subtitle, key, options = {}, onChanged = null) {
+        const row = new Adw.ActionRow({title, subtitle});
+        const toggle = new Gtk.Switch({
             active: !!this.cfg[key],
+            valign: Gtk.Align.CENTER,
         });
-        row.connect('notify::active', () => {
-            this.cfg[key] = row.active;
+        row.add_suffix(toggle);
+        row.activatable_widget = toggle;
+        toggle.connect('notify::active', () => {
+            this.cfg[key] = toggle.active;
+            onChanged?.(toggle.active);
             this._save(options);
         });
         return row;
     }
 
     _debugLogRow() {
-        const row = new Adw.SwitchRow({
-            title: 'Подробный журнал действий',
-            subtitle: 'Записывать решения, backend и NANDA trace',
-            active: !!this.cfg.debug_action_log,
-        });
-        row.connect('notify::active', () => {
-            this.cfg.debug_action_log = row.active;
-            this.cfg.nanda_trace = row.active;
-            this.cfg.nanda_trace_text = row.active;
-            this._save();
-        });
-        return row;
+        return this._switchRow(
+            'Подробный журнал действий',
+            'Записывать решения, backend и NANDA trace',
+            'debug_action_log',
+            {},
+            active => {
+                this.cfg.nanda_trace = active;
+                this.cfg.nanda_trace_text = active;
+            }
+        );
     }
 
     _comboRow(title, subtitle, key, options, saveOptions = {}) {
@@ -117,12 +118,15 @@ export class LaySettingsView {
     }
 
     _timingRow(title, subtitle, key, minimum, maximum, step) {
-        const row = Adw.SpinRow.new_with_range(minimum, maximum, step);
-        row.title = title;
-        row.subtitle = subtitle;
-        row.value = this.cfg[key];
-        row.connect('notify::value', () => {
-            const value = Math.round(row.value);
+        const row = new Adw.ActionRow({title, subtitle});
+        const spin = Gtk.SpinButton.new_with_range(minimum, maximum, step);
+        spin.valign = Gtk.Align.CENTER;
+        spin.numeric = true;
+        spin.value = this.cfg[key];
+        row.add_suffix(spin);
+        row.activatable_widget = spin;
+        spin.connect('value-changed', () => {
+            const value = Math.round(spin.value);
             if (value === this.cfg[key])
                 return;
             this.cfg[key] = value;
@@ -215,19 +219,19 @@ export class LaySettingsView {
             1000,
             25
         ));
+        const ruKey = this._comboRow('Русский', '', 'force_ru_key', FORCE_KEY_OPTIONS, {restart: true});
+        const enKey = this._comboRow('Английский', '', 'force_en_key', FORCE_KEY_OPTIONS, {restart: true});
+        const syncSensitivity = () => {
+            ruKey.sensitive = !!this.cfg.force_layout_hotkeys;
+            enKey.sensitive = !!this.cfg.force_layout_hotkeys;
+        };
         const forceSwitch = this._switchRow(
             'Отдельные клавиши RU / EN',
             'Включить прямое переключение на русский и английский',
             'force_layout_hotkeys',
-            {restart: true}
+            {restart: true},
+            syncSensitivity
         );
-        const ruKey = this._comboRow('Русский', '', 'force_ru_key', FORCE_KEY_OPTIONS, {restart: true});
-        const enKey = this._comboRow('Английский', '', 'force_en_key', FORCE_KEY_OPTIONS, {restart: true});
-        const syncSensitivity = () => {
-            ruKey.sensitive = forceSwitch.active;
-            enKey.sensitive = forceSwitch.active;
-        };
-        forceSwitch.connect('notify::active', syncSensitivity);
         syncSensitivity();
         group.add(forceSwitch);
         group.add(ruKey);

@@ -195,6 +195,8 @@ async fn send_manually_dispatched_callback(
 
 fn global_engine_value(name: &str) -> OwnedValue {
     let descriptor = StructureBuilder::new()
+        .add_field("IBusEngineDesc")
+        .add_field(std::collections::HashMap::<String, OwnedValue>::new())
         .add_field(name)
         .add_field("Lay US")
         .add_field("controlled descriptor")
@@ -420,6 +422,296 @@ fn no_global_engine_bootstrap_keeps_observer_for_later_verified_lay_profile() {
         drop(reducer);
         assert!(adapter.current_token().is_none());
         assert_eq!(identity.mode, GlobalEngineMode::Verified);
+    });
+}
+
+#[test]
+fn unset_global_engine_is_confirmed_in_current_compatibility_activation_without_signal() {
+    zbus::block_on(async {
+        let (mut harness, focus_position) = unset_global_engine_factory_harness().await;
+        let begin = harness
+            .adapter
+            .begin_compatibility_activation(engine_path(SOURCE_PATH), focus_position);
+        let serve = async {
+            let call = next_peer_message(&mut harness.peer).await;
+            assert_eq!(
+                call.body().deserialize::<(String, String)>().unwrap(),
+                (IBUS_INTERFACE.to_owned(), "CurrentInputContext".to_owned())
+            );
+            harness
+                .peer
+                .connection
+                .reply(
+                    &call.header(),
+                    &OwnedValue::from(ObjectPath::try_from(CONTEXT_PATH).unwrap()),
+                )
+                .await
+                .unwrap();
+            let call = next_peer_message(&mut harness.peer).await;
+            assert_eq!(
+                call.header().member().map(|member| member.as_str()),
+                Some("Get"),
+                "unset bootstrap must read actual GlobalEngine before its marker"
+            );
+            assert_eq!(
+                call.body().deserialize::<(String, String)>().unwrap(),
+                (IBUS_INTERFACE.to_owned(), "GlobalEngine".to_owned())
+            );
+            harness
+                .peer
+                .connection
+                .reply(&call.header(), &global_engine_value("lay-us"))
+                .await
+                .unwrap();
+            forward_marker(&mut harness.peer).await;
+        };
+        let (fence, ()) = future::zip(begin, serve).await;
+        let fence = fence.expect("same-name cold activation must not need a change signal");
+        assert!(harness.observer.process_next().await.unwrap());
+        let ActivationOutcome::SourceFree(grant) =
+            harness.adapter.finish_activation(fence).unwrap()
+        else {
+            panic!("cold activation cannot transfer previous text")
+        };
+        assert_eq!(grant.lineage.completeness, WordCompleteness::UnknownStart);
+        assert_eq!(grant.receipt_origin, ReceiptOrigin::CompatibilityProperty);
+        assert_eq!(grant.target_activation.context, context(CONTEXT_PATH));
+        assert_eq!(
+            harness.adapter.shared.reducer.lock().unwrap().profile,
+            GlobalProfile::Lay(profile("lay-us"))
+        );
+    });
+}
+
+async fn unset_global_engine_factory_harness() -> (Harness, Sequence) {
+    let (connection, mut peer) = controlled_pair();
+    complete_absent_manual_dispatch(&mut peer).await;
+    let config = AdapterConfig::new(
+        ConnectionGeneration(60),
+        vec![profile("lay-us"), profile("lay-ru")],
+    )
+    .unwrap()
+    .with_acquisition_budget(Duration::from_millis(250));
+    let pending = PendingContextAdapter::subscribe(connection.clone(), config)
+        .await
+        .unwrap();
+    let (result, ()) = future::zip(
+        pending.bootstrap(),
+        serve_bootstrap_with_mode(&mut peer, None, true),
+    )
+    .await;
+    let (adapter, mut observer, identity) = result.unwrap();
+    assert_eq!(identity.profile, GlobalProfile::Unset);
+    let factory = Message::method_call("/org/freedesktop/IBus/Factory", "CreateEngine")
+        .unwrap()
+        .interface(FACTORY_INTERFACE)
+        .unwrap()
+        .sender(DISPATCH_SENDER)
+        .unwrap()
+        .serial(NonZeroU32::new(6_100).unwrap())
+        .with_flags(zbus::message::Flags::NoReplyExpected)
+        .unwrap()
+        .build(&"lay-us")
+        .unwrap();
+    send_manually_dispatched_callback(
+        &mut peer,
+        &factory,
+        "/org/freedesktop/IBus/Factory",
+        FACTORY_INTERFACE,
+    )
+    .await;
+    assert!(observer.process_next().await.unwrap());
+    let callback = adapter
+        .begin_factory_callback(&factory.header(), Instant::now(), profile("lay-us"))
+        .await
+        .unwrap();
+    assert!(adapter.bind_factory_target(&callback, engine_path(SOURCE_PATH)));
+    let focus = method_message(
+        DISPATCH_SENDER,
+        6_101,
+        SOURCE_PATH,
+        ENGINE_INTERFACE,
+        "FocusIn",
+    );
+    send_manually_dispatched_callback(&mut peer, &focus, SOURCE_PATH, ENGINE_INTERFACE).await;
+    assert!(observer.process_next().await.unwrap());
+    let position = adapter
+        .observe_callback(&focus.header(), Instant::now())
+        .await
+        .unwrap()
+        .position;
+    (
+        Harness {
+            connection,
+            peer,
+            adapter,
+            observer,
+            identity,
+        },
+        position,
+    )
+}
+
+async fn next_global_engine_confirmation(peer: &mut ControlledPeer) -> Message {
+    let call = next_peer_message(peer).await;
+    assert_eq!(
+        call.header().interface().map(|name| name.as_str()),
+        Some(PROPERTIES_INTERFACE)
+    );
+    assert_eq!(
+        call.header().member().map(|name| name.as_str()),
+        Some("Get")
+    );
+    assert_eq!(
+        call.body().deserialize::<(String, String)>().unwrap(),
+        (IBUS_INTERFACE.to_owned(), "GlobalEngine".to_owned())
+    );
+    call
+}
+
+#[test]
+fn unset_global_engine_native_confirmation_keeps_exact_context_without_context_get() {
+    zbus::block_on(async {
+        let (mut harness, position) = unset_global_engine_factory_harness().await;
+        let begin = harness.adapter.begin_native_activation(
+            engine_path(SOURCE_PATH),
+            context(CONTEXT_PATH),
+            position,
+        );
+        let serve = async {
+            let call = next_global_engine_confirmation(&mut harness.peer).await;
+            harness
+                .peer
+                .connection
+                .reply(&call.header(), &global_engine_value("lay-us"))
+                .await
+                .unwrap();
+            forward_marker(&mut harness.peer).await;
+        };
+        let (fence, ()) = future::zip(begin, serve).await;
+        let fence = fence.unwrap();
+        assert!(harness.observer.process_next().await.unwrap());
+        let ActivationOutcome::SourceFree(grant) =
+            harness.adapter.finish_activation(fence).unwrap()
+        else {
+            panic!("fresh confirmation cannot carry old text")
+        };
+        assert_eq!(grant.target_activation.context, context(CONTEXT_PATH));
+        assert_eq!(grant.lineage.completeness, WordCompleteness::UnknownStart);
+        assert_eq!(grant.receipt_origin, ReceiptOrigin::Native);
+    });
+}
+
+#[test]
+fn unset_global_engine_confirmation_rejects_foreign_other_lay_and_invalid_descriptor() {
+    zbus::block_on(async {
+        for value in [
+            global_engine_value("xkb:us::eng"),
+            global_engine_value("lay-ru"),
+            OwnedValue::from(zbus::zvariant::Str::from("lay-us")),
+        ] {
+            let (mut harness, position) = unset_global_engine_factory_harness().await;
+            let begin = harness.adapter.begin_native_activation(
+                engine_path(SOURCE_PATH),
+                context(CONTEXT_PATH),
+                position,
+            );
+            let serve = async {
+                let call = next_global_engine_confirmation(&mut harness.peer).await;
+                harness
+                    .peer
+                    .connection
+                    .reply(&call.header(), &value)
+                    .await
+                    .unwrap();
+            };
+            let (result, ()) = future::zip(begin, serve).await;
+            assert!(result.is_err());
+            assert!(harness.adapter.current_token().is_none());
+            assert!(harness
+                .adapter
+                .shared
+                .reducer
+                .lock()
+                .unwrap()
+                .request
+                .is_none());
+        }
+    });
+}
+
+#[test]
+fn unset_global_engine_confirmation_cannot_revive_revoked_acquisition() {
+    zbus::block_on(async {
+        let (mut harness, position) = unset_global_engine_factory_harness().await;
+        let begin = harness.adapter.begin_native_activation(
+            engine_path(SOURCE_PATH),
+            context(CONTEXT_PATH),
+            position,
+        );
+        let serve = async {
+            let call = next_global_engine_confirmation(&mut harness.peer).await;
+            let changed = Message::signal(IBUS_PATH, IBUS_INTERFACE, "GlobalEngineChanged")
+                .unwrap()
+                .sender(IBUS_SENDER)
+                .unwrap()
+                .build(&"xkb:us::eng")
+                .unwrap();
+            harness.peer.connection.send(&changed).await.unwrap();
+            assert!(harness.observer.process_next().await.unwrap());
+            // A valid late reply must not reverse the observed owner loss.
+            harness
+                .peer
+                .connection
+                .reply(&call.header(), &global_engine_value("lay-us"))
+                .await
+                .unwrap();
+        };
+        let (result, ()) = future::zip(begin, serve).await;
+        assert!(result.is_err());
+        assert!(harness.adapter.current_token().is_none());
+        assert_eq!(
+            harness.adapter.shared.reducer.lock().unwrap().profile,
+            GlobalProfile::Foreign(profile("xkb:us::eng"))
+        );
+    });
+}
+
+#[test]
+fn unset_global_engine_confirmation_uses_original_deadline_and_cancellation() {
+    zbus::block_on(async {
+        for cancel in [false, true] {
+            let (mut harness, position) = unset_global_engine_factory_harness().await;
+            let adapter = harness.adapter.clone();
+            let begin = harness.adapter.begin_native_activation(
+                engine_path(SOURCE_PATH),
+                context(CONTEXT_PATH),
+                position,
+            );
+            let serve = async {
+                let _unanswered = next_global_engine_confirmation(&mut harness.peer).await;
+                if cancel {
+                    adapter.cancel_observer();
+                }
+            };
+            let started = Instant::now();
+            let (result, ()) = future::zip(begin, serve).await;
+            if cancel {
+                assert!(matches!(result, Err(AdapterError::Denied)));
+            } else {
+                assert!(matches!(result, Err(AdapterError::Timeout)));
+            }
+            assert!(started.elapsed() < Duration::from_secs(2));
+            assert!(harness.adapter.current_token().is_none());
+            assert!(harness
+                .adapter
+                .shared
+                .reducer
+                .lock()
+                .unwrap()
+                .request
+                .is_none());
+        }
     });
 }
 

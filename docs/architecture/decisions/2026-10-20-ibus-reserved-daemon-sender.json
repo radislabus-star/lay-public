@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Enable a minimal vendored zbus_names 4.3.2 compatibility feature admitting exactly the reserved org.freedesktop.IBus bus-daemon sender. Preserve the original sender and existing authenticated bootstrap-bound lifecycle, callback and marker roles. Do not change the input, gesture, edit, or transport routes.",
+  "reason": "The real installed KDE/RFB first Double Shift aborts the IME. The parent-preserving diagnostic and independent wire capture prove zbus 5.15.0 panics reconstructing GlobalEngineChanged from stock IBus's org.freedesktop.IBus Sender. The unpatched wire regression reproduces exactly that panic. Upstream zbus_names 4.3.5 still rejects this sender, so an unverified upgrade or removal of lifecycle observation does not repair the demonstrated contract.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "Cargo.toml",
+    "vendor/zbus_names/src/unique_name.rs",
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "docs/development/remote-x11-input-2026-10-20.md",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "verification": "Keep raw signal sender/path/interface/member/profile intact through header reconstruction; preserve normal DBus and unique client identities; reject arbitrary/near-match well-known names. Retain all existing sender-role and stale-observation refusal tests, complete IME checks, source-package inclusion and installed GTK/Qt/browser native acceptance with speed receipts. The initial wire test is 1 PASS / 2 FAIL on the unpatched dependency.",
+  "not_tested": "A parser regression is not physical client acceptance. No generic malformed-message recovery, new observer, edit owner, timer, fallback or sender normalization is introduced. Remove the fork only after upstream support satisfies the same fixed wire/admission/native proof. Historical browser results do not certify new bytes."
+}

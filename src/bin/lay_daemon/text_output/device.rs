@@ -1,6 +1,7 @@
-use evdev::{uinput::VirtualDevice, AttributeSet, KeyCode};
+use crate::native_input::VirtualDevice;
+use evdev::{AttributeSet, KeyCode};
 
-pub(super) const VIRTUAL_KEYBOARD_KEYS: &[KeyCode] = &[
+pub(crate) const VIRTUAL_KEYBOARD_KEYS: &[KeyCode] = &[
     KeyCode::KEY_A,
     KeyCode::KEY_B,
     KeyCode::KEY_C,
@@ -82,8 +83,9 @@ pub(crate) fn make_virtual_keyboard() -> std::io::Result<VirtualDevice> {
     for k in VIRTUAL_KEYBOARD_KEYS {
         keys.insert(*k);
     }
-    VirtualDevice::builder()?
+    evdev::uinput::VirtualDevice::builder()?
         .name("lay-virtual-keyboard")
         .with_keys(&keys)?
         .build()
+        .map(VirtualDevice::Evdev)
 }

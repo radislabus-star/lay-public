@@ -72,6 +72,16 @@ if has_file_matching '(^scripts/compat/|^tests/test_firefox_(compat_adapter|doub
   python3 -m unittest tests.test_firefox_compat_adapter tests.test_firefox_double_shift_probe
 fi
 
+if has_file_matching '(^scripts/lay-runtime-control\.sh$|^tests/test_kde_ime_startup\.py$)'; then
+  echo "== KDE IME startup regressions =="
+  python3 -m unittest tests.test_kde_ime_startup
+fi
+
+if has_file_matching '(^scripts/lay-ime-client-setup\.py$|^tests/test_ime_client_setup\.py$|^install\.sh$|^uninstall\.sh$)'; then
+  echo "== ordinary terminal IME startup regressions =="
+  python3 -m unittest tests.test_ime_client_setup
+fi
+
 if has_file_matching '(^scripts/install-live-release-[0-9.]+\.sh$|^scripts/lay-release-l11-guard\.py$|^tests/test_release_(live_install_controller|l11_process_guard)\.py$)'; then
   echo "== live release controller regressions =="
   python3 -m unittest \

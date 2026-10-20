@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "remote-x11-shared-manual-isolation-2026-10-20",
+  "status": "candidate",
+  "date": "2026-10-20",
+  "invariants": [
+    "C09",
+    "C10"
+  ],
+  "owner": "daemon manual dispatch and native input adapter",
+  "first_failed_transition": "DelegateDaemon Shared dispatch does not activate the X11 isolated replay required by the existing output executor",
+  "reason": "The X11 output executor correctly refuses unisolated replay, but configured shared dispatch fails to obtain the existing input grab before entering that executor.",
+  "decision": "Require the existing PhysicalInputGrab for session X11 manual dispatch, independently of selected output route. Evdev isolation and all IME delivery routes stay unchanged.",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "evidence": [
+    "terminal-daemon-kitty-v1/daemon.log epoch 1792484032",
+    "terminal-daemon-kitty-v1-engine/terminal/result.json"
+  ],
+  "verification": "shared-dispatch-red-v2.log is semantic RED and shared-dispatch-green-v3.log passes 26 owned Xvfb checks. Initial red-v1 is only a fixture compile failure. Installed native terminal suite still has 2 PASS / 7 FAIL: this fixes the first refused dispatch only. The following failure is a proven KDE/IME decoder mismatch, tracked separately; final browser and terminal acceptance are pending.",
+  "not_tested": "The following KDE decoder and suppression transitions and final-byte native matrices require separate proof; this dispatch repair alone is not terminal acceptance.",
+  "protected_paths": ["src/bin/lay_daemon/trigger_dispatch.rs", "src/bin/lay_daemon/text_output/device.rs"],
+  "runtime_authority_changed": false
+}

@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, KeyCode};
+use crate::native_input::VirtualDevice;
+use evdev::KeyCode;
 use lay::keyboard::{preferred_layout_for_text, text_to_uinput_runs, TextInputRun};
 use lay::text_edit::{AuthorizedEdit, TextEditBackend, TextReplacement};
 use std::time::Instant;

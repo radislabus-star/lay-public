@@ -126,3 +126,55 @@ remain explicit, no all-client acceptance claim. GlobalIBus/L1.1/L3, models,
 settings/sources/mode unchanged; no localfunctionalkeys. Rollback/procSHA evidence:
 /home/ubu/.cache/lay/development/td153-install88-20261016/INSTALL.json.
 All old negative receipts and each card's narrower source/ACL/ARM scopes remain.
+
+## Startup diagnostic extension — 2026-10-20
+
+The existing `startup_runtime::maintain_input_devices` retry loop remains the
+only device recovery owner. Its first keyboard/uinput failure starts the sibling
+`lay-input-access --show-if-needed` once per daemon invocation, asynchronously;
+detect-only mode does not start it. The loop reaps the child without waiting for
+the window. The obsolete input-group error advice is replaced with the shared
+diagnostic entrypoint. No input listener, routing fallback or retry timer is added.
+
+`scripts/lay-input-access.py` reads sysfs capabilities and opens/closes devices
+without consuming events. It distinguishes permission failure, missing supported
+keyboard, unreadable discovery metadata and unavailable uinput. The three existing
+feedback-device exclusions match the daemon. READY means device-open preflight,
+not a physical gesture, IME completion or client-edit acceptance.
+
+Only a deliberate **Настроить доступ…** button invokes the existing TD-146
+provisioner via normal Polkit authorization. The helper and its three resources,
+including the exact legacy-rule comparison file, are shipped inside managed
+libexec and removed by existing managed-runtime uninstall. The actual privileged
+operation receives TERM after 30 seconds and KILL after a further five-second
+grace period after authorization. Closing its window hides
+it while it supervises/reaps the child and retains its singleton lock. Authorization
+itself remains under the user's normal confirmation/cancellation. Every completed
+attempt probes again; exit zero does not imply access. No groups/device modes,
+IME routes, services or global desktop environment are changed by the diagnostic.
+
+Remote source proof: 320/320 daemon checks; 29 diagnostic/existing access checks;
+27 release/menu checks; packaging and public install/update/uninstall fixtures;
+7/7 isolated real GTK/Qt tests, including both close paths during a pending child
+and a real Qt menu re-open before the existing status timer. Child failures are
+reported before re-launch as well as by the timer. Device disappearance and I/O
+failure do not become permission diagnoses. These fixture operations never
+acquire privileges.
+
+Read-only real-device preflight reports NO_KEYBOARD, zero supported keyboards;
+an isolated GTK window shows that result and disables provisioning. The remote
+VNC desktop only exposes excluded feedback typing devices, so changing permission
+cannot repair this topology. Actual seat ACL activation, automatic startup popup
+in a user's session, physical Double Shift, IME Tab and fresh native browser
+acceptance remain NOT_TESTED here. Runtime authority remains unchanged.
+
+Evidence root:
+`/home/ubu/.cache/lay/development/browser-final-fixes-20261018/input-access-recovery-20261020/`;
+daemon result: `/home/ubu/.cache/lay/development/run-0nlc0wf1/RESULT.json`;
+remaining checks: `revision3/checks.json`, `revision3/regression-proof.json`,
+`revision2/qt-entrypoint.json`,
+`revision2/gtk-real-preflight.json` and `revision2-preflight.json` under that root.
+Review and graph-refresh closure are recorded in
+`docs/development/input-access-recovery-2026-10-20.md`. No installation/publication
+is established by these receipts. Rollback removes the added startup/menu hooks
+and managed diagnostic payload; it does not undo administrator rules automatically.

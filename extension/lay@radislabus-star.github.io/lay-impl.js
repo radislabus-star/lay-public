@@ -43,6 +43,7 @@ import {
     openPreferences,
     openUpdateCheck,
     openDiagnosticsLog,
+    openInputAccess,
     applyInputChannel,
     restartDaemon,
     saveConfig,
@@ -276,6 +277,12 @@ class LayIndicator extends PanelMenu.Button {
         const item = new PopupMenu.PopupSubMenuMenuItem('Диагностика', false);
         this._diagnosticsStatusItem = this._mutedTextRow('проверка служб...');
         item.menu.addMenuItem(this._diagnosticsStatusItem);
+        const access = new PopupMenu.PopupImageMenuItem('Доступ к клавиатуре…', 'input-keyboard-symbolic');
+        access.connect('activate', () => openInputAccess(message => this._notify('Доступ к клавиатуре', message, true)));
+        item.menu.addMenuItem(access);
+        const imeSetup = new PopupMenu.PopupImageMenuItem('Настроить подсказки…', 'input-keyboard-symbolic');
+        imeSetup.connect('activate', () => openInputAccess(message => this._notify('Подсказки Lay', message, true), true));
+        item.menu.addMenuItem(imeSetup);
         const logs = new PopupMenu.PopupImageMenuItem('Открыть журнал', 'utilities-terminal-symbolic');
         logs.connect('activate', () => {
             if (!openDiagnosticsLog())

@@ -12,7 +12,7 @@
 //! сейчас оптимизированы и протестированы именно для RU/EN.
 
 use clap::Parser;
-use evdev::Device;
+use native_input::Device;
 use std::sync::atomic::{AtomicBool, Ordering};
 
 const GNOME_NATIVE_REPLACE_EXPERIMENTAL: bool = false;
@@ -57,6 +57,9 @@ use nanda_precognition_runtime::*;
     about = "Caramba-style daemon for Linux Wayland"
 )]
 struct Args {
+    /// Read-only native X11 input capability; does not start listeners or emit keys.
+    #[arg(long)]
+    input_status: bool,
     /// Не вызывать DBus extension и не эмулировать — только лог.
     #[arg(long)]
     detect_only: bool,
@@ -174,10 +177,17 @@ mod startup_sanitize;
 fn main() -> std::io::Result<()> {
     lay::hot_field::constrain_runtime_allocator();
     let args = Args::parse();
+    if args.input_status {
+        println!("{}", native_input::x11::status());
+        return Ok(());
+    }
     set_log_enabled(args.debug_log || args.verbose || args.detect_only);
     install_shutdown_handlers()?;
     run_daemon(args.detect_only, args.device, args.verbose)
 }
+
+#[path = "lay_daemon/native_input.rs"]
+mod native_input;
 
 // ─── Focus guard / event wait timing ─────────────────────
 

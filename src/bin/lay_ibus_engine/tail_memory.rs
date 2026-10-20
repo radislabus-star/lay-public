@@ -1301,6 +1301,7 @@ impl LayIbusEngine {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn consume_exact_manual_toggle_handoff(&self) {
         let Ok(mut state) = self.shared.lock() else {
             return;
@@ -1342,7 +1343,8 @@ impl LayIbusEngine {
         }
         let current_snapshot_is_exact = self.current_external_snapshot_agrees_with_owned_tail();
         if !(current_snapshot_is_exact
-            || self.inherited_exact_manual_snapshot_agrees_with_owned_tail())
+            || self.inherited_exact_manual_snapshot_agrees_with_owned_tail()
+            || self.context_stock_owned_manual_source_is_current())
         {
             self.clear_identity_bound_exact_manual_toggle_authority();
             return false;

@@ -1,0 +1,20 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Add a capability-gated XI2 acquisition facade to the existing daemon loop/FSM. Freeze the original master synchronously without XIAllowEvents; the server retains original input on success or rejection. Replay frames use a separately owned master/XTEST pair with exact identity, focus and XKB map/group verification. Other topologies and explicit devices retain evdev.",
+  "reason": "VNC-only Xvfb has no evdev keyboard. Async slave capture lost input on rejection; an existing output slave freezes with its master. The isolated master-freeze proof justifies the separate replay resource, selection claim and orphan cleanup. No second edit/gesture authority or IME route change.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05",
+    "C06",
+    "C10"
+  ],
+  "protected_paths": [
+    "docs/double-shift-physical-layout-contract.md",
+    "src/bin/lay_daemon/startup_runtime.rs",
+    "src/bin/lay_daemon/native_input.rs"
+  ],
+  "runtime_authority_changed": false,
+  "verification": "Remote guarded source checks, isolated X server device/grab proof, independent review and owned real VNC client receipts are required. See docs/development/remote-x11-input-2026-10-20.md for exact evidence and current status.",
+  "not_tested": "No physical evdev acceptance without a connected keyboard. Unsupported multi-device X11 topologies, Wayland remote input and other VNC servers are not certified by this change. A readiness probe is not client acceptance."
+}

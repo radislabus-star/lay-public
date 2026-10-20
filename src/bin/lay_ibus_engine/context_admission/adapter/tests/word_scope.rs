@@ -1,6 +1,10 @@
 use super::*;
+#[path = "activation_preedit.rs"]
+mod activation_preedit;
 #[path = "residuals.rs"]
 pub(crate) mod residuals;
+#[path = "stock_surrounding.rs"]
+mod stock_surrounding;
 #[path = "terminal_delivery.rs"]
 mod terminal_delivery;
 use crate::output::{
@@ -532,6 +536,18 @@ pub(super) async fn expect_activation_input_mode_update(
 ) {
     let update = bounded(next_peer_message(&mut harness.peer)).await;
     assert_input_mode_update(&update, engine, expected_mode);
+    expect_activation_surrounding_request(&mut harness.peer, engine).await;
+}
+
+async fn expect_activation_surrounding_request(peer: &mut ControlledPeer, engine: &LayIbusEngine) {
+    if engine.client_context.surrounding_text_supported && !engine.content_is_sensitive() {
+        let request = bounded(next_peer_message(peer)).await;
+        assert_eq!(
+            request.header().member().map(|member| member.as_str()),
+            Some("RequireSurroundingText"),
+            "exactly one current Ready request must follow its property"
+        );
+    }
 }
 
 pub(super) async fn next_legacy_text_effect(
@@ -546,9 +562,9 @@ pub(super) async fn next_legacy_text_effect(
         .is_some_and(|member| member.as_str() == "UpdateProperty")
     {
         assert_input_mode_update(&first, engine, expected_mode);
-        // Exactly one admitted metadata frame may precede the text effect.
-        // A second property or any other signal is returned to the unchanged
-        // CommitText assertion and fails there; no arbitrary skip loop.
+        expect_activation_surrounding_request(peer, engine).await;
+        // Consume exactly the declared Ready metadata sequence. A duplicate
+        // property/request or any other signal still fails the text assertion.
         bounded(next_peer_message(peer)).await
     } else {
         first

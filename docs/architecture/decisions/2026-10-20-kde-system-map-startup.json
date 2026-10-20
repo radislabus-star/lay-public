@@ -1,0 +1,20 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Keep KDE system keyboard mapping during explicit Lay IME enable and select the existing IBus profile matching the current named KDE layout. No KDE group setter or additional runtime owner.",
+  "reason": "Measured IBus profile activation replaces the KDE dual map by default; preserving it does not itself align the current group and profile. Private fixture setup must not masquerade as shipped startup behavior.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/lay-runtime-control.sh",
+    "scripts/check-lay-changed.sh",
+    "scripts/check-lay-full.sh",
+    "docs/development/remote-x11-input-2026-10-20.md"
+  ],
+  "runtime_authority_changed": false,
+  "verification": "Real shell isolation tests, current-name readback before/after ordinary IBus activation, GNOME and daemon-only control preservation. Include these startup regressions in changed and full source gates; no checks are removed or relaxed. A bounded list/index/list read retries only changing or out-of-range snapshots during device startup; malformed and unsupported snapshots still refuse before mutation. Native RFB client checks remain separate.",
+  "not_tested": "Other KDE/IBus versions and Wayland remote-input capability are not established by startup source tests."
+}

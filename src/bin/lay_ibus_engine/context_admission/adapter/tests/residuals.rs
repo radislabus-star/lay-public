@@ -13,6 +13,10 @@ mod late_native_replay_refresh;
 mod owned_preedit_focus;
 #[path = "owned_preedit_reset_source.rs"]
 mod owned_preedit_reset_source;
+#[path = "replay_suppression.rs"]
+mod replay_suppression;
+#[path = "stock_owned_source.rs"]
+mod stock_owned_source;
 use crate::bridge::LayImeBridge;
 use crate::protocol::{
     AutocorrectSuppression, KEY_ENTER, KEY_ISO_LEVEL3_SHIFT, KEY_KP_ENTER, KEY_LEFT_ALT,
@@ -12381,7 +12385,10 @@ async fn cycle09_factory_handoff_with_capabilities(
             .try_finish_activation_for(&engine_path(target_path))
             .unwrap()
             .expect("actual factory handoff must become ready");
-        assert!(matches!(&outcome, ActivationOutcome::Transfer(_)));
+        assert!(
+            matches!(&outcome, ActivationOutcome::Transfer(_)),
+            "target={target_path}, outcome={outcome:?}"
+        );
         assert!(target.install_context_activation(outcome));
     }
     target.config.auto_replace = false;
@@ -16938,7 +16945,7 @@ fn c09_post_install_mode_refuses_revoked_or_mismatched_owner() {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut engine).await;
-            engine.set_client_capabilities(9);
+            engine.set_client_capabilities(41);
             engine.config.nanda_precognition = false;
             // Receive the actual release callback and install its authenticated
             // owner before the production publisher can consume pending mode.
@@ -16978,9 +16985,12 @@ fn c09_post_install_mode_refuses_revoked_or_mismatched_owner() {
             let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
             assert!(
                 !effects.iter().any(|message| {
-                    message.header().member().unwrap().as_str() == "UpdateProperty"
+                    matches!(
+                        message.header().member().unwrap().as_str(),
+                        "UpdateProperty" | "RequireSurroundingText"
+                    )
                 }),
-                "must not publish stale mode: {loss}"
+                "must not publish stale mode or request a stale snapshot: {loss}"
             );
             assert_eq!(engine.layout_gesture.layout_is_ru, before_mode);
         }

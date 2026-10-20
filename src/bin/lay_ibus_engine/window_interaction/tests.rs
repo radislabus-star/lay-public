@@ -98,6 +98,61 @@ fn kitty_focus_probe_requires_exact_window_identity() {
 }
 
 #[test]
+fn kde_kitty_focus_probe_uses_canonical_window_and_exact_app_class() {
+    use super::observation::exact_kde_kitty_window;
+    let observation = crate::kde_focus::Observation {
+        identity: "kde-window:bus:owner:1:12345678-1234-1234-1234-123456789abc".into(),
+        info: r#"{"appId":"kitty","wmClass":"kitty"}"#.into(),
+    };
+    assert!(exact_kde_kitty_window(&observation));
+    for (identity, info) in [
+        ("", observation.info.as_str()),
+        (
+            observation.identity.as_str(),
+            r#"{"appId":"kitty","wmClass":"other"}"#,
+        ),
+        (
+            observation.identity.as_str(),
+            r#"{"appId":"kitty-helper","wmClass":"kitty"}"#,
+        ),
+        (observation.identity.as_str(), "invalid json"),
+    ] {
+        assert!(!exact_kde_kitty_window(&crate::kde_focus::Observation {
+            identity: identity.into(),
+            info: info.into(),
+        }));
+    }
+}
+
+#[test]
+fn kde_kitty_focus_probe_accepts_kwin_empty_desktop_file_with_exact_class() {
+    use super::observation::exact_kde_kitty_window;
+    // KWin reports an empty desktopFileName for an ordinary Kitty launch.
+    // Its authenticated window UUID and resourceClass still identify the window.
+    let identity = "kde-window:bus:owner:1:12345678-1234-1234-1234-123456789abc";
+    for (window_identity, info, expected) in [
+        (identity, r#"{"appId":"","wmClass":"kitty"}"#, true),
+        (identity, r#"{"appId":"","wmClass":"other"}"#, false),
+        (
+            identity,
+            r#"{"appId":"other.desktop","wmClass":"kitty"}"#,
+            false,
+        ),
+        (identity, r#"{"wmClass":"kitty"}"#, false),
+        ("", r#"{"appId":"","wmClass":"kitty"}"#, false),
+    ] {
+        assert_eq!(
+            exact_kde_kitty_window(&crate::kde_focus::Observation {
+                identity: window_identity.into(),
+                info: info.into(),
+            }),
+            expected,
+            "{info}"
+        );
+    }
+}
+
+#[test]
 fn kitty_focus_probe_survives_activation_serial_but_not_focus_transfer() {
     let mut engine = engine();
     engine.set_client_capabilities(9);
@@ -106,9 +161,7 @@ fn kitty_focus_probe_survives_activation_serial_but_not_focus_transfer() {
     let before = engine.client_context.focus_serial;
     engine.client_context.kitty_focus_probe_serial = Some(before);
     engine.client_context.focus_serial = crate::engine::next_input_identity();
-    assert!(engine
-        .client_context
-        .finish_kitty_focus_probe(Some("kitty-context"), true));
+    assert!(engine.finish_kitty_focus_probe(Some("kitty-context"), true));
     assert_eq!(
         engine
             .client_context
@@ -121,9 +174,7 @@ fn kitty_focus_probe_survives_activation_serial_but_not_focus_transfer() {
 
     engine.client_context.focus_receipt = Some("other-context".to_string());
     assert!(!engine.has_proven_terminal_input());
-    assert!(!engine
-        .client_context
-        .finish_kitty_focus_probe(Some("kitty-context"), true));
+    assert!(!engine.finish_kitty_focus_probe(Some("kitty-context"), true));
     assert!(!engine.has_proven_terminal_input());
 }
 
@@ -174,6 +225,29 @@ fn admitted_engine() -> AdmittedEngine {
         adapter,
         _peer: peer,
     }
+}
+
+#[test]
+fn admitted_kitty_focus_probe_uses_live_field_without_legacy_focus_fallback() {
+    let mut fixture = admitted_engine();
+    let engine = &mut fixture.engine;
+    engine.set_client_capabilities(9);
+    engine.client_context.cursor_cell_width = 9;
+    assert!(engine.client_context.focus_receipt.is_none());
+    let receipt = engine.live_context_token().unwrap().exact_field_receipt();
+    engine.client_context.kitty_terminal_focus_receipt = Some(receipt.clone());
+    assert!(engine.has_proven_terminal_input());
+    engine.client_context.kitty_terminal_focus_receipt = None;
+    assert!(engine.finish_kitty_focus_probe(Some(&receipt), true));
+    assert!(engine.has_proven_terminal_input());
+    assert!(engine.client_context.focus_receipt.is_none());
+
+    // A cached window classification cannot outlive admitted field authority,
+    // nor fall back to a legacy receipt when that authority is unavailable.
+    engine.context_token = None;
+    engine.client_context.focus_receipt = Some("legacy-receipt".into());
+    assert!(!engine.has_proven_terminal_input());
+    assert!(!engine.finish_kitty_focus_probe(Some(&receipt), true));
 }
 
 fn exact_request(engine: &LayIbusEngine, before: &str, after: &str) -> CommittedTailReplaceRequest {

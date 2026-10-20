@@ -337,3 +337,37 @@ pub(super) fn focused_window_haystack(json: &str) -> String {
     }
     parts.join(" ").to_ascii_lowercase()
 }
+
+#[cfg(test)]
+mod kde_consumer_tests {
+    use super::*;
+
+    fn observed(uuid: &str, app: &str, title: &str) -> super::super::kde_focus::Observation {
+        super::super::kde_focus::Observation {
+            identity: format!("kde-window:bus1::1.5:1:{uuid}"),
+            info: serde_json::json!({"appId": app, "wmClass": "konsole", "title": title})
+                .to_string(),
+        }
+    }
+
+    #[test]
+    fn kde_consumer_uses_uuid_and_preserves_existing_tab_narrowing() {
+        let a = "12345678-1234-4234-8234-123456789abc";
+        let b = "12345678-1234-4234-8234-123456789abd";
+        let terminal = |uuid, title| kde_window_state(observed(uuid, "org.kde.konsole", title));
+        let first = terminal(a, "shell");
+        assert!(!first.ignored);
+        assert_eq!(first.identity, terminal(a, "vim").identity);
+        assert_ne!(first.identity, terminal(b, "shell").identity);
+        let first = kde_window_state(observed(a, "org.mozilla.firefox", "tab one"));
+        let second = kde_window_state(observed(a, "org.mozilla.firefox", "tab two"));
+        assert_ne!(first.identity, second.identity);
+    }
+
+    #[test]
+    fn kde_provider_error_invalidates_and_pauses_instead_of_retaining_old_focus() {
+        let state = unavailable_kde_focus();
+        assert!(state.ignored);
+        assert!(state.identity.is_none());
+    }
+}

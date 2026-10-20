@@ -476,6 +476,10 @@ impl LayIbusEngine {
             return Ok(true);
         }
         if self.composition.buffer.is_empty() {
+            // Cursor geometry can arrive before authenticated Ready. Finish
+            // the existing one-shot qualification before the first letter
+            // fixes the word's input mode; never migrate an owned composition.
+            self.refresh_terminal_focus_if_ready().await;
             let initial_mode = self.initial_word_input_mode();
             let mode = *self.composition.word_input_mode.get_or_insert(initial_mode);
             if mode == WordInputMode::TerminalPassthrough {
@@ -590,10 +594,21 @@ impl LayIbusEngine {
                                 .nth(cursor)
                                 .is_some_and(crate::preedit::is_observed_word_boundary))
                 });
+        // Stock IBus clients may advertise SurroundingText even when their
+        // widget never supplies it. After authenticated Ready, only newly
+        // consumed letters may enter the existing literal preedit. This does
+        // not establish a boundary or authorize editing client-owned text.
+        let ready_stock_without_snapshot = self.config.nanda_precognition
+            && !self.uses_native_terminal_input()
+            && self.live_context_token().is_some()
+            && !self.client_context.exact_surrounding_refresh_available
+            && self.client_context.surrounding_text_snapshot.is_none();
         emitter.is_legacy()
             && mode == WordInputMode::ManagedCommit
             && self.client_context.preedit_text_supported
-            && (!self.client_context.surrounding_text_supported || observed_preedit_boundary)
+            && (!self.client_context.surrounding_text_supported
+                || observed_preedit_boundary
+                || ready_stock_without_snapshot)
             && self.content_allows_text_assistance()
             && ch.is_alphabetic()
             && self

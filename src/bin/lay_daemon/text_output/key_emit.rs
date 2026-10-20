@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, EventType, InputEvent, KeyCode};
+use crate::native_input::VirtualDevice;
+use evdev::{EventType, InputEvent, KeyCode};
 use lay::keyboard::KeyEvent;
 use std::time::Duration;
 

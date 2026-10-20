@@ -291,14 +291,31 @@ fn committed_tail_replay_from_readout(
 pub(super) fn wait_for_committed_tail_settlement(
     expected_tail: &str,
     expected_layout_is_ru: bool,
+    lease: &ImeDelegatedTailLease,
+    target_path: Option<&str>,
+    mut verify_focus: impl FnMut() -> Result<(), String>,
 ) -> Result<(), String> {
     if expected_tail.is_empty() {
         return Err("queued manual toggle has no expected visible tail".to_string());
     }
     let deadline = Instant::now() + QUEUED_MANUAL_TOGGLE_SETTLEMENT_MAX;
+    let mut target_path = target_path.map(str::to_owned);
     loop {
-        let (reply, _) = visible_tail_for_manual_replay()?;
-        if committed_tail_is_settled(&reply, expected_tail, expected_layout_is_ru) {
+        verify_focus()?;
+        let reply = lease.current_v3_reply()?;
+        // The controlled layout handoff may select a different engine path.
+        // Once observed, that path and the original exact field stay bound
+        // through settlement. A matching suffix in another field is no receipt.
+        let path = target_path.get_or_insert_with(|| reply.4.clone());
+        if reply.4.is_empty()
+            || reply.4 != *path
+            || lease.exact_focus_receipt.as_deref() != Some(reply.5.as_str())
+            || reply.3 < lease.expected_epoch()
+        {
+            return Err("exact IME tail settlement identity changed".to_string());
+        }
+        if committed_tail_is_settled(&reply, expected_tail, expected_layout_is_ru, lease, path) {
+            verify_focus()?;
             return Ok(());
         }
         if Instant::now() >= deadline {
@@ -315,8 +332,14 @@ fn committed_tail_is_settled(
     reply: &VisibleTailV3Reply,
     expected_tail: &str,
     expected_layout_is_ru: bool,
+    lease: &ImeDelegatedTailLease,
+    target_path: &str,
 ) -> bool {
     VisibleTailSource::from_bridge_state(&reply.0) == Some(VisibleTailSource::ImeCommittedTail)
+        && !target_path.is_empty()
+        && reply.4 == target_path
+        && lease.exact_focus_receipt.as_deref() == Some(reply.5.as_str())
+        && reply.3 > lease.expected_epoch()
         && reply.2 == expected_layout_is_ru
         && reply.1.ends_with(expected_tail)
 }
@@ -1158,10 +1181,25 @@ mod delegated_tail_tests {
 
     #[test]
     fn queued_manual_toggle_waits_for_the_complete_previous_replay() {
+        let lease = tail_lease_from_v3_reply(
+            VisibleTailSource::ImeCommittedTail,
+            "ghbdtn",
+            6,
+            reply_v3(
+                "passive:committed-tail",
+                "ghbdtn",
+                7,
+                "/engine/en",
+                "field-a",
+            ),
+        )
+        .unwrap();
         assert!(!committed_tail_is_settled(
             &reply_v3("passive:committed-tail", "при", 7, "/engine/ru", "field-a"),
             "привет",
             false,
+            &lease,
+            "/engine/ru",
         ));
         assert!(committed_tail_is_settled(
             &reply_v3(
@@ -1173,7 +1211,27 @@ mod delegated_tail_tests {
             ),
             "привет",
             false,
+            &lease,
+            "/engine/ru",
         ));
+        for (epoch, path, field) in [
+            (6, "/engine/ru", "field-a"),
+            (7, "/engine/ru", "field-a"),
+            (10, "/engine/en", "field-a"),
+            (10, "/engine/ru", "field-b"),
+            (10, "/engine/ru", ""),
+        ] {
+            assert!(
+                !committed_tail_is_settled(
+                    &reply_v3("passive:committed-tail", "привет", epoch, path, field),
+                    "привет",
+                    false,
+                    &lease,
+                    "/engine/ru",
+                ),
+                "stale or foreign settlement admitted: {epoch} {path} {field}"
+            );
+        }
     }
 }
 

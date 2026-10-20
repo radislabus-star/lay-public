@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Measure the existing exact-authority resource gate RSS and PSS from one precise smaps_rollup snapshot.",
+  "reason": "The release gate failed at 15420 KiB against the unchanged 15360 KiB RSS limit. Three bounded isolated reproductions without source changes measured 15096, 15288 and 15096 KiB with identical 7928 KiB Pss_Anon deltas. Linux documents VmRSS as asynchronous and smaps as the precise page-table snapshot. This does not establish that the original excess was spurious; the corrected measurement must still pass the original limits.",
+  "invariants": [
+    "C01",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/exact_layout_authority/proof.rs"
+  ],
+  "verification": "PASS: isolated accurate-RSS proof and all 11 serialized performance checks. Exact-authority sample: RSS 15356 KiB, PSS 15356 KiB, Pss_Anon 7932 KiB, repeat Pss_Anon 0 KiB; original limits unchanged. RSS headroom is only 4 KiB: this is a passing sample, not a robust memory-reduction claim. The original failed gate remains in release-gate-attempt-4 and release-final-full-gate.log; diagnostic samples remain in resource-budget-diagnostic-v1/result.json. Corrected proof, canon, graph and remaining checks are recorded in precise-resource-canon.log and release-final-full-gate.log under /home/e/projects/lay-development-runner/kde-install-control-20261020. The release evidence is a documented composite continuation, not one uninterrupted green run.",
+  "not_tested": "No native client, production memory reduction or runtime improvement follows from this test-only measurement correction.",
+  "runtime_authority_changed": false,
+  "source_head": "fd3c19fa11da8618b4ed4f684f5e0c6252014bcc",
+  "consequences": {
+    "owner": "Existing test-only exact_layout_authority resource proof.",
+    "limits": "RSS/Pss_Anon 15360 KiB, aggregate PSS 16384 KiB, repeat Pss_Anon 256 KiB; all unchanged. No warmup, allocation, fixture, runtime or assertion changes.",
+    "reference": "https://www.kernel.org/doc/html/latest/filesystems/proc.html",
+    "rollback": "Revert this test-only sampling correction; do not loosen resource limits."
+  }
+}

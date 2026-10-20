@@ -1,0 +1,30 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Retain the one-shot legacy replay suppression through the existing authenticated same-field reducer Transfer, independently of exact-V2 snapshot handoff metadata.",
+  "reason": "Native KDE decoder-v1 trace shows Latin replay followed by Space autocorrection restoring Russian. Removing premature handoff consumption passed the helper regression, but native replay-suppression-v2 still failed: install_context_activation(Transfer) independently discarded LegacyReplayV1. A real factory/bridge/FocusOut/Disable/FocusIn/marker regression reproduces that second loss. Native activation-transfer-v3 still failed because the real opaque terminal delegates DaemonWordBuffer (status 2) and never prepares exact-V2 snapshot metadata. The revised regression exercises both actual bridge dispositions with capabilities 9 and 41; requiring the exact-V2 guard reproduces the capability-9 loss.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/td120_bridge_atomic_tests.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/replay_suppression.rs"
+  ],
+  "verification": "RED replay-daemon-transfer-red-v1.log: actual capability-9 bridge/factory transfer loses suppression. GREEN replay-daemon-transfer-green-v1.log: 2/2. Full process-isolated replay-daemon-isolated-v4/SUMMARY.json: 922/922 PASS, 106.892 seconds. Native installed-v3 remains 1 PASS / 2 FAIL; revised v4 native pending. Earlier prepared/expired marker schedules are not an authority contract for LegacyReplayV1: reducer Transfer has its own authenticated bounded lifetime; the helper bind_focus_path expiry regression remains unchanged.",
+  "not_tested": "Changed-byte native terminal behavior, final browser matrix, visual prefix styling and final release gates are not established by the source regression.",
+  "runtime_authority_changed": false,
+  "source_head": "fd3c19fa11da8618b4ed4f684f5e0c6252014bcc",
+  "consequences": {
+    "owner": "Existing LayIbusEngine, Shared handoff and suppression state; retain the existing bridge admission and deadline. No new handoff, timer, queue, client exception or output route.",
+    "scope": "Preserve LegacyReplayV1 only inside an existing authenticated Transfer whose source owner/path and source tail epoch match shared state. Do not require exact-V2 snapshot handoff fields for the V1 daemon-buffer replay. SourceFree/ResetUnknown, mismatched source/epoch and field changes retain existing fail-closed retirement; one-shot consumption remains unchanged. Exact-V2 handoff preservation and deadline rules are unchanged.",
+    "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+    "native_before": "terminal-kde-decoder-v1-engine/engine-trace.jsonl",
+    "rollback": "Revert this isolated change and its regression while preserving decoder, X11 isolation and transport repairs. No data migration or local runtime replacement."
+  }
+}

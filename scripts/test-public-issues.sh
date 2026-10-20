@@ -26,6 +26,9 @@ grep -q '^package_manager=rpm-ostree$' <<<"$remote_platform"
 echo "== public release build and clean-install dependencies =="
 python3 "$ROOT/tests/test_public_release_build.py"
 python3 "$ROOT/tests/test_input_access.py"
+python3 "$ROOT/tests/test_input_access_diagnostic.py"
+python3 "$ROOT/tests/test_input_access_ui.py"
+python3 "$ROOT/tests/test_settings_ui.py"
 echo "== research-tool promotion admission =="
 grep -Fq \
     'run --quiet --features research-tools --bin "$bin"' \
@@ -43,14 +46,15 @@ git -C "$TMP/seed" push -qu origin main
 git --git-dir="$TMP/origin.git" symbolic-ref HEAD refs/heads/main
 git clone -q "$TMP/origin.git" "$TMP/client"
 printf '\n# local user change\n' >> "$TMP/client/Cargo.toml"
+cp "$TMP/client/Cargo.toml" "$TMP/expected-dirty.toml"
 printf 'new upstream\n' > "$TMP/seed/release.txt"
 git -C "$TMP/seed" add release.txt
 git -C "$TMP/seed" -c user.name=lay-test -c user.email=lay@example.invalid commit -qm update
 git -C "$TMP/seed" push -qu origin main
 HOME="$TMP/home-update" bash "$TMP/client/update.sh" --source-only >/dev/null
 test -f "$TMP/client/release.txt"
-git -C "$TMP/client" stash list | grep -q 'lay-auto-update-'
-git -C "$TMP/client" stash show -p | grep -q 'local user change'
+cmp "$TMP/expected-dirty.toml" "$TMP/client/Cargo.toml"
+test ! -e "$TMP/home-update/.local/bin/lay"
 
 echo "== issue 41 managed runtime ownership =="
 FAKE_BIN="$TMP/fake-bin"

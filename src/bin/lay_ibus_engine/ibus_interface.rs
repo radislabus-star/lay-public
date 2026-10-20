@@ -938,7 +938,9 @@ impl LayIbusEngine {
                     self.revoke_managed_word_start_before_client_key();
                     return Ok(false);
                 }
-                self.revoke_managed_word_start_before_client_key();
+                // A pure Alt/level-modifier edge has not edited client text.
+                // The following non-modifier key retains its normal admission
+                // and shortcut checks; VNC may wrap every letter in AltGr.
                 return Ok(false);
             }
             if self.layout_gesture.alt_completion_active
@@ -952,9 +954,13 @@ impl LayIbusEngine {
                 }
                 return Ok(handled);
             }
+            let paired_modifier = self.layout_gesture.alt_completion_active
+                && self.layout_gesture.alt_used_as_modifier;
             self.layout_gesture.alt_completion_active = false;
             self.layout_gesture.alt_used_as_modifier = false;
-            self.revoke_managed_word_start_before_client_key();
+            if !paired_modifier {
+                self.revoke_managed_word_start_before_client_key();
+            }
             return Ok(false);
         }
         if !is_key_press(state) {

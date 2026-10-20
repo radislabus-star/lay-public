@@ -6,6 +6,7 @@ use std::rc::Rc;
 enum Change {
     Focus,
     Owner,
+    ForegroundOwner,
     Mapping,
     OtherGroup,
     OtherEngine,
@@ -37,6 +38,7 @@ fn backend(is_ru: bool) -> Fake {
     Rc::new(RefCell::new(World {
         snapshot: Snapshot {
             owner: ":1.7".into(),
+            foreground_owner: ":1.8".into(),
             layouts: vec![
                 ("us".into(), "".into(), "English".into()),
                 ("ru".into(), "".into(), "Russian".into()),
@@ -57,6 +59,7 @@ fn change(world: &mut World, event: Change) {
     match event {
         Change::Focus => world.window = "another-exact-window".into(),
         Change::Owner => world.snapshot.owner = ":1.9".into(),
+        Change::ForegroundOwner => world.snapshot.foreground_owner = ":1.10".into(),
         Change::Mapping => world.snapshot.layouts.swap(0, 1),
         Change::OtherGroup => world.snapshot.index = 2,
         Change::OtherEngine => world.engine = "xkb:de::ger".into(),
@@ -126,6 +129,39 @@ impl Io for Fake {
 fn begin(io: &Fake, is_ru: bool) -> Result<Handoff<Fake>, String> {
     let window = io.borrow().window.clone();
     activate_on(io.clone(), is_ru, !is_ru, &window)
+}
+
+#[test]
+fn configured_replay_with_ready_stack_verifies_decoder_without_layout_mutation() {
+    for target in [false, true] {
+        let io = backend(target);
+        let window = io.borrow().window.clone();
+        let handoff = prepare_on(io.clone(), target, target, &window).unwrap();
+        assert!(io.borrow().mutations.is_empty());
+        assert!(io.borrow().observations.contains(&"mode"));
+        assert!(io.borrow().observations.contains(&"window"));
+        handoff.restore_once().unwrap();
+        assert!(io.borrow().mutations.is_empty());
+        // Exact-tail layout inversion retains its stricter contract.
+        assert!(activate_on(io.clone(), target, target, &window).is_err());
+    }
+}
+
+#[test]
+fn configured_replay_with_divergent_ready_group_refuses_before_mutation() {
+    for target in [false, true] {
+        for wrong_mode in [false, true] {
+            let io = backend(target);
+            if wrong_mode {
+                io.borrow_mut().mode = !target;
+            } else {
+                io.borrow_mut().engine = ime_target_engine(!target).into();
+            }
+            let window = io.borrow().window.clone();
+            assert!(prepare_on(io.clone(), target, target, &window).is_err());
+            assert!(io.borrow().mutations.is_empty());
+        }
+    }
 }
 
 #[test]
@@ -234,6 +270,7 @@ fn changed_focus_owner_mapping_or_unrelated_state_blocks_forward_and_restore() {
     for event in [
         Change::Focus,
         Change::Owner,
+        Change::ForegroundOwner,
         Change::Mapping,
         Change::OtherGroup,
         Change::OtherEngine,
@@ -251,6 +288,7 @@ fn restoration_does_not_redirect_to_changed_focus_owner_mapping_engine_or_group(
     for event in [
         Change::Focus,
         Change::Owner,
+        Change::ForegroundOwner,
         Change::Mapping,
         Change::OtherGroup,
         Change::OtherEngine,

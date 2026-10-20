@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Freeze the original master at its concrete focused window, refuse unknown or changed focus, and keep all original events queued at the server. Serialize owned-device validation and disposal. Admit replay only after full interpreted XKB map equivalence and normalize/read back owned lock and latch state before each frame.",
+  "reason": "The real VNC GTK trace retains the Russian word but loses context admission during a root-window grab. A controlled root versus focused-window probe proves the focus/context loss is caused by that grab. Frozen-source Harness2 review also identifies stale XI ID disposal, incomplete modifier/action equivalence, and inherited lock/latch state. These belong to the existing transport resource/map owner, not the IME decision or delivery path.",
+  "invariants": ["C01", "C04", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": ["src/bin/lay_daemon/native_input.rs", "src/bin/lay_daemon/startup_runtime.rs", "docs/double-shift-physical-layout-contract.md"],
+  "runtime_authority_changed": false,
+  "verification": "Require a root-grab XI2 FocusOut negative control and focus-preserving original-input freeze/output/thaw regression, map modifier-action disagreement rejection, lock/latch normalization with planned Shift preserved, and stale-owner teardown refusal. Then require installed real GTK/Qt/browser VNC receipts and latency. Exact receipts and limitations are recorded by the development owner.",
+  "not_tested": "Core MPX NotifyGrab bookkeeping is not identical to toolkit logical focus; the test observes XI2 focus and the actual GTK proof observes widget focus and IME context. Isolated native tests do not establish client acceptance, evdev, Wayland or untested VNC-server compatibility. No safety, field admission, verifier or delivery contract is weakened."
+}

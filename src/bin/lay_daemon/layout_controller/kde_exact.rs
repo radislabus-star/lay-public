@@ -10,6 +10,7 @@ type Layouts = Vec<(String, String, String)>;
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub(crate) struct Snapshot {
     owner: String,
+    foreground_owner: String,
     layouts: Layouts,
     index: u32,
 }
@@ -33,7 +34,10 @@ impl Snapshot {
     }
 
     fn same_mapping(&self, other: &Self) -> Result<(), String> {
-        if self.owner != other.owner || self.layouts != other.layouts {
+        if self.owner != other.owner
+            || self.foreground_owner != other.foreground_owner
+            || self.layouts != other.layouts
+        {
             return Err("KDE layout service or mapping changed".to_string());
         }
         Ok(())
@@ -78,6 +82,14 @@ pub(super) fn activate(
     )
 }
 
+pub(super) fn prepare(target_is_ru: bool, window: &str) -> Result<Handoff, String> {
+    let io = Session {
+        connection: dbus_connection()?,
+    };
+    let initial_is_ru = io.mode()?;
+    prepare_on(io, initial_is_ru, target_is_ru, window)
+}
+
 fn activate_on<I: Io>(
     io: I,
     initial_is_ru: bool,
@@ -87,6 +99,15 @@ fn activate_on<I: Io>(
     if initial_is_ru == target_is_ru {
         return Err("KDE exact replay must invert the observed mode".to_string());
     }
+    prepare_on(io, initial_is_ru, target_is_ru, window)
+}
+
+fn prepare_on<I: Io>(
+    io: I,
+    initial_is_ru: bool,
+    target_is_ru: bool,
+    window: &str,
+) -> Result<Handoff<I>, String> {
     let initial = io.snapshot()?;
     let initial_index = initial.index_for(initial_is_ru)?;
     let target_index = initial.index_for(target_is_ru)?;
@@ -104,6 +125,9 @@ fn activate_on<I: Io>(
     // A fixed-source decoder/engine divergence cannot be restored by one alias
     // request. Refuse it before mutation; do not infer mode from the engine name.
     handoff.verify_stack(initial_index, initial_is_ru)?;
+    if initial_index == target_index {
+        return Ok(handoff);
+    }
     let result = (|| {
         handoff.set_group(target_index)?;
         handoff.verify_group(target_index)?;
@@ -210,12 +234,10 @@ impl Session {
         Ok(owner)
     }
 
-    fn keyboard_owner(&self) -> Result<String, String> {
-        let owner = self.owner("org.kde.keyboard")?;
-        if owner != self.owner("org.kde.KWin")? {
-            return Err("KDE keyboard and foreground service owners differ".to_string());
-        }
-        Ok(owner)
+    fn service_owners(&self) -> Result<(String, String), String> {
+        // Plasma X11 hosts keyboard layouts in kded; KWin owns foreground.
+        // Pin each lifetime rather than requiring both roles in one process.
+        Ok((self.owner("org.kde.keyboard")?, self.owner("org.kde.KWin")?))
     }
 
     fn keyboard_call<B: serde::ser::Serialize + zbus::zvariant::DynamicType>(
@@ -242,7 +264,7 @@ impl Io for Session {
     }
 
     fn snapshot(&self) -> Result<Snapshot, String> {
-        let owner = self.keyboard_owner()?;
+        let (owner, foreground_owner) = self.service_owners()?;
         let layouts: Layouts = self
             .keyboard_call(&owner, "getLayoutsList", &())?
             .body()
@@ -263,11 +285,14 @@ impl Io for Session {
             .body()
             .deserialize()
             .map_err(|e| e.to_string())?;
-        if index as usize >= layouts.len() || owner != self.keyboard_owner()? {
+        if index as usize >= layouts.len()
+            || (owner.clone(), foreground_owner.clone()) != self.service_owners()?
+        {
             return Err("KDE layout index or service lifetime changed".to_string());
         }
         Ok(Snapshot {
             owner,
+            foreground_owner,
             layouts,
             index,
         })

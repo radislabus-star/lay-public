@@ -48,7 +48,12 @@ pub(crate) fn test_read_in_flight() -> bool {
     IN_FLIGHT.load(Ordering::Acquire)
 }
 
-fn decode(value: &Value<'_>) -> fdo::Result<String> {
+pub(crate) fn decode(mut value: &Value<'_>) -> fdo::Result<String> {
+    // Properties.Get wraps the serialized IBusEngineDesc in a variant; direct
+    // GetGlobalEngine replies use the same descriptor without that wrapper.
+    while let Value::Value(inner) = value {
+        value = inner;
+    }
     let Value::Structure(desc) = value else {
         return Err(fdo::Error::Failed(
             "IBus engine descriptor is not a structure".into(),
@@ -97,6 +102,17 @@ mod tests {
             "extra",
         )));
         assert_eq!(decode(&extended).unwrap(), "xkb:us::eng");
+    }
+
+    #[test]
+    fn descriptor_accepts_property_variant_wrappers_without_changing_identity() {
+        for name in ["lay-ime-ru", "lay-ime-us", "xkb:us::eng", "foreign-ime"] {
+            let wrapped = Value::Value(Box::new(Value::Value(Box::new(descriptor(
+                "IBusEngineDesc",
+                name,
+            )))));
+            assert_eq!(decode(&wrapped).unwrap(), name);
+        }
     }
 
     #[test]

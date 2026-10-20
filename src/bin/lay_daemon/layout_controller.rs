@@ -36,6 +36,13 @@ pub(super) enum ExactReplayLayoutHandoff {
     Kde(kde_exact::Handoff),
 }
 
+pub(super) fn prepare_kde_layout_once_for_manual_replay(
+    target_is_ru: bool,
+    window: &str,
+) -> Result<ExactReplayLayoutHandoff, String> {
+    kde_exact::prepare(target_is_ru, window).map(ExactReplayLayoutHandoff::Kde)
+}
+
 impl ExactReplayLayoutHandoff {
     pub(super) fn restore_initial_best_effort(&self, label: &str) {
         let result = match self {
@@ -66,8 +73,17 @@ pub(super) fn capture_ime_committed_tail_replay() -> Result<ImeCommittedTailRepl
 pub(super) fn wait_for_ime_committed_tail_settlement(
     expected_tail: &str,
     expected_layout_is_ru: bool,
+    lease: &ImeDelegatedTailLease,
+    target_path: Option<&str>,
+    verify_focus: impl FnMut() -> Result<(), String>,
 ) -> Result<(), String> {
-    ime_bridge::wait_for_committed_tail_settlement(expected_tail, expected_layout_is_ru)
+    ime_bridge::wait_for_committed_tail_settlement(
+        expected_tail,
+        expected_layout_is_ru,
+        lease,
+        target_path,
+        verify_focus,
+    )
 }
 
 pub(super) fn read_current_layout_is_ru() -> Result<bool, String> {

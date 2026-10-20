@@ -85,51 +85,12 @@ install_packages() {
     esac
 }
 
-cleanup_legacy_ollama() {
-    if [ "${LAY_KEEP_OLLAMA:-0}" = "1" ]; then
-        echo "ℹ LAY_KEEP_OLLAMA=1 — legacy Ollama cleanup пропущен"
-        return
-    fi
-
-    found=0
-    if command -v ollama >/dev/null 2>&1; then
-        found=1
-    fi
-    if systemctl list-unit-files 'ollama.service' --no-pager 2>/dev/null | grep -q '^ollama.service'; then
-        found=1
-    fi
-    if [ -d /usr/share/ollama ] || [ -d "$HOME/.ollama" ]; then
-        found=1
-    fi
-    if [ "$found" = "0" ]; then
-        echo "✓ legacy Ollama не найдена"
-        return
-    fi
-
-    echo "→ удаляю legacy Ollama из старых lay-установок..."
-    systemctl --user stop ollama.service >/dev/null 2>&1 || true
-    systemctl --user disable ollama.service >/dev/null 2>&1 || true
-    sudo systemctl stop ollama.service >/dev/null 2>&1 || true
-    sudo systemctl disable ollama.service >/dev/null 2>&1 || true
-
-    if [ -f /etc/systemd/system/ollama.service ]; then
-        sudo rm -f /etc/systemd/system/ollama.service
-    fi
-    sudo rm -f /etc/systemd/system/default.target.wants/ollama.service
-    sudo systemctl daemon-reload >/dev/null 2>&1 || true
-
-    sudo rm -f /usr/local/bin/ollama /usr/bin/ollama
-    sudo rm -rf /usr/share/ollama /var/lib/ollama
-    rm -rf "$HOME/.ollama"
-    echo "✓ legacy Ollama удалена; lay теперь работает через deterministic/NANDA pipeline"
-}
-
 base_packages_for_pm() {
     pm="$1"
     case "$pm" in
-        apt) echo "curl ca-certificates jq libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi" ;;
-        pacman) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python-gobject" ;;
-        rpm-ostree|dnf|yum) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python3-gobject" ;;
+        apt) echo "curl ca-certificates jq libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi gir1.2-gtk-3.0 policykit-1 x11-xkb-utils" ;;
+        pacman) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python-gobject gtk3 polkit xorg-xkbcomp" ;;
+        rpm-ostree|dnf|yum) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python3-gobject gtk3 polkit xkbcomp" ;;
         *) echo "" ;;
     esac
 }
@@ -138,12 +99,16 @@ kde_packages_for_pm() {
     pm="$1"
     case "$pm" in
         apt)
+            kde_python_qt_package=python3-pyqt5
+            if apt-cache show python3-pyqt6 >/dev/null 2>&1; then
+                kde_python_qt_package=python3-pyqt6
+            fi
             if apt-cache show qdbus-qt6 >/dev/null 2>&1; then
-                echo "qdbus-qt6 python3-pyqt6 libxcb-cursor0"
+                echo "qdbus-qt6 $kde_python_qt_package libxcb-cursor0"
             elif apt-cache show qdbus6 >/dev/null 2>&1; then
-                echo "qdbus6 python3-pyqt6 libxcb-cursor0"
+                echo "qdbus6 $kde_python_qt_package libxcb-cursor0"
             else
-                echo "qdbus python3-pyqt6 libxcb-cursor0"
+                echo "qdbus $kde_python_qt_package libxcb-cursor0"
             fi
             ;;
         pacman) echo "qt6-tools python-pyqt6 xcb-util-cursor" ;;
@@ -182,10 +147,6 @@ if [ "$UPDATE_EXISTING" = 0 ]; then
 echo ""
 echo "=== доступ к устройствам ввода (udev/logind) ==="
 bash "$DIR/scripts/setup-input-access.sh"
-
-echo ""
-echo "=== legacy Ollama cleanup ==="
-cleanup_legacy_ollama
 
 echo ""
 echo "=== системные зависимости ==="
@@ -263,6 +224,7 @@ echo ""
 echo "=== установка release в ~/.local/lib/lay/bin/ ==="
 scripts/install-release-binaries.sh
 ln -sf "$DIR/scripts/lay-runtime-control.sh" ~/.local/bin/lay-runtime-control
+ln -sf "$DIR/scripts/lay-ime-client-setup.py" ~/.local/bin/lay-ime-setup
 mkdir -p "$HOME/.local/lib/lay"
 install -m 0755 "$DIR/update.sh" "$HOME/.local/lib/lay/.update.sh.tmp.$$"
 mv -f "$HOME/.local/lib/lay/.update.sh.tmp.$$" "$HOME/.local/lib/lay/update.sh"
@@ -297,7 +259,7 @@ systemctl --user daemon-reload
 
 if [ "$UPDATE_EXISTING" = 0 ]; then
 echo ""
-echo "=== optional IBus bridge ==="
+echo "=== подсказки Lay через IBus ==="
 mkdir -p "$HOME/.local/share/ibus/component"
 IBUS_COMPONENT_XML="$HOME/.local/share/ibus/component/lay-ime.xml"
 "$HOME/.local/bin/lay-ibus-engine" --xml > "$IBUS_COMPONENT_XML"
@@ -310,7 +272,7 @@ fi
 ibus write-cache 2>/dev/null || true
 echo "✓ IBus component установлен: ~/.local/share/ibus/component/lay-ime.xml"
 echo "✓ старый IBus component lay.xml удалён"
-echo "  Экспериментальный режим: выбрать Lay IME RU/Lay IME US в IBus и поставить text_backend=ime"
+echo "  Для подсказок и Tab используется IBus. Другие методы ввода Lay не заменяет."
 
 echo ""
 echo "=== systemd unit для lay-daemon ==="
@@ -376,6 +338,18 @@ if [ "$UPDATE_EXISTING" = 0 ]; then
     gnome-extensions enable "$UUID" 2>/dev/null || true
 fi
 echo "✓ extension установлен: $DST"
+
+echo ""
+echo "=== подключение терминала к IME ==="
+if ! python3 "$DIR/scripts/lay-ime-client-setup.py"; then
+    echo "Подключение приложений требует настройки: Lay → Диагностика → Настроить подсказки…"
+fi
+if command -v update-desktop-database >/dev/null 2>&1; then
+    update-desktop-database "${XDG_DATA_HOME:-$HOME/.local/share}/applications" >/dev/null 2>&1 || true
+fi
+if command -v kbuildsycoca5 >/dev/null 2>&1; then
+    kbuildsycoca5 --noincremental >/dev/null 2>&1 || true
+fi
 
 if [ "$UPDATE_EXISTING" = 1 ]; then
     echo "✓ файлы Lay обновлены; настройка устройств и IBus сохранена"

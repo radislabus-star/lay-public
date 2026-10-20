@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-20",
+  "status": "IMPLEMENTED_PENDING_NATIVE",
+  "reason": "A fresh Chrome native trace advertises surrounding-text capability but supplies no snapshot. IBus 1.5.26 retains that capability after the widget refuses RetrieveSurrounding. Requiring a snapshot to begin literal composition therefore suppresses hints and Tab indefinitely.",
+  "decision": "When precognition is enabled, after the existing authenticated Ready, a nonterminal stock legacy client without an exact-refresh contract or a surrounding snapshot may begin the existing literal owned preedit for newly consumed letters. Preserve UnknownStart and all client-text deletion, selection, sensitive-content, output and admission guards. Disabled assistance and native terminal input retain their existing contracts.",
+  "alternatives": [
+    {"option": "Wait longer for surrounding text", "score": 3, "reason": "The client does not implement the response; a longer delay does not establish a receipt."},
+    {"option": "Browser-name or capability overrides", "score": 2, "reason": "Duplicates transport policy and does not establish text ownership."},
+    {"option": "Existing literal preedit after current authenticated Ready", "score": 8, "reason": "Owns only newly consumed letters and reuses the current composition/output contracts without inventing a boundary."}
+  ],
+  "invariants": ["C01", "C04", "C05"],
+  "protected_paths": ["src/bin/lay_ibus_engine/managed.rs"],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "verification": "The new real-zbus regression fails before the change at the absence of owned preedit. A broader prototype was rejected after 45/918 per-character contract regressions. The scoped implementation passes 918/918 correctness cases, with three separately classified performance cases excluded. Receipts: remote stock-no-snapshot-full-ime/SUMMARY.json and stock-hints-full-ime/SUMMARY.json. Updated native client evidence is still required before acceptance.",
+  "evidence_root": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/remote-x11-input-20261020",
+  "not_tested": "Updated native browser matrix and GNOME until separately recorded."
+}

@@ -1,4 +1,4 @@
-use evdev::uinput::VirtualDevice;
+use crate::native_input::VirtualDevice;
 
 use super::super::super::{
     log, release_possible_modifiers, release_possible_modifiers_fast,

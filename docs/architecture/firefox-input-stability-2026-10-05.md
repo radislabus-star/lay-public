@@ -1,5 +1,78 @@
 # Firefox input stability — 2026-10-05
 
+## Current checkpoint — 2026-10-20 09:00 UTC
+
+See the current remote input checkpoint for decoder repair and the reproduced
+legacy suppression/engine-activation race. Its semantic regression is RED;
+GREEN and native candidate proof remain pending. Authority and routes unchanged.
+Universal prefix/hint presentation is a separate acceptance dimension: fresh
+Chrome Tab/control case is functionally PASS but visually FAIL (whole typed
+prefix underline). Terminals retain reverse-highlight FAIL. TD-160 records the
+root and the ownership proof needed before a systemic ordinary-prefix change.
+Payload styling and functional counts do not prove the user's visual contract.
+
+## Current checkpoint — configured replay decoder mismatch (2026-10-20 08:43 UTC)
+
+The complete `terminal-daemon-shared-dispatch-kitty-v1-engine/engine-trace.jsonl`
+proves replay delivery, with Latin keyvals decoded back into the original Russian
+word. KDE's configured replay preflight changes and verifies the desktop group
+only; unlike the existing exact-tail layout transaction, it never switches and
+checks the focused IBus decoder. This is the next first failed C09 transition.
+The candidate reuses that existing pinned KDE layout transaction before any
+Backspace, retaining the configured output executor, mutation preflight, optional
+tail lease, focus/lifetime checks and one-shot restoration on preflight failure.
+No client branch, new output route or authority migration is introduced.
+
+The 150-ms lifetime probe is rejected: native Double Shift and pair correction
+still fail, Tab passes; `terminal-lifetime-delay-probe-v2/restoration.json` proves
+restoration. The decoder candidate's source and native gates are pending.
+
+
+## Current checkpoint — terminal delivery and client styling (2026-10-20 08:36 UTC)
+
+The existing Shared/X11 dispatch now acquires its required isolation (26/26 owned
+checks), but terminal physical acceptance still fails: native PTY is unchanged
+despite a daemon `done` message. Do not promote transport success to client PASS.
+Exact installed hashes, full terminal 2 PASS / 7 FAIL, per-span rendering limits
+in Kitty/Konsole and the bounded diagnostic retirement probe are recorded once
+in [the current remote-input checkpoint](../development/remote-x11-input-2026-10-20.md).
+No IME route, verifier, SafetyGate or runtime semantic authority was changed.
+
+## Current checkpoint — single-map latency and terminal isolation (2026-10-20 08:22 UTC)
+
+Installed receipt `deployment-single-map-v1/deployment.json` binds IME
+`4ec866ff4dafceff7add2013078d915a7a9dd561e2e06f753d22405f09fc82da`
+and daemon `6e9b37a6dcb6c144d07597c16a776aa0a9d4da5241e24f28da2e2576819b9110`.
+The single padded XKB SetMap keeps the generation fence and map verification;
+25 owned Xvfb cases pass. The native Chrome rapid-five-after-Space case now passes
+with transformation times 126.95/117.87/147.57/119.93/111.86 ms
+(`single-map-v1-chrome-rapid/result.json`). This supersedes the earlier multi-map
+FAIL experiments; it is one diagnostic row, not the full browser matrix.
+
+Terminal native evidence uses owned windows and a raw PTY child, never a shell.
+Kitty 0.21.2 requires its documented `GLFW_IM_MODULE=ibus`; with that environment,
+Kitty and WezTerm accept Tab completion but still fail Double Shift and the moved
+boundary pair. Konsole launch is BLOCKED by the fixture, not a product FAIL.
+The exact daemon trace in `terminal-daemon-kitty-v1/daemon.log` at epoch
+1792484032 shows DelegateDaemon -> ConfiguredBackend/Shared -> X11 output refused
+because no isolated replay is active. The candidate requires the existing grab
+for X11 manual dispatch, preserving the selected output route and evdev policy.
+The new owned-Xvfb regression is pending RED/GREEN; red-v1 is a fixture compile
+failure and must not be reported as semantic RED.
+
+Chrome's whole-word underline is independently explained by its GTK preedit
+consumer: it turns PANGO_UNDERLINE_NONE into a solid composition span and defaults
+to whole-composition underline without spans. IBus GTK forwards NONE correctly;
+Qt handles it correctly. No client-specific route bypass or premature prefix
+commit is authorized. Actual selection and composition styling must be reported
+separately. Remaining terminal presentation and pair-edit safety need native proof.
+
+Evidence root: `/home/e/projects/lay-development-runner/kde-install-control-20261020`.
+Final full gates, generated graph, final native browser/GTK/Qt/terminal runs,
+installed updater readback and publication remain pending. Local user runtime
+must not be installed or restarted. Runtime decision/output authority is unchanged.
+
+
 ## 2026-10-18 — TD-156 presentation root and source proof
 
 Follow-up: final code review 8/10 after two passes. Exact replay/capability
@@ -10606,3 +10679,526 @@ client-contract work separate from the accepted publication scope.
 See [release1.0.91](../release-1.0.91.md) for the complete table and limitations,
 and [portable evidence](../../tech_debt/evidence/td159-accepted-native-432-20261019.json)
 for counts, exact pins, original receipt/closure hashes and latency samples.
+
+### Stock KDE bootstrap failure — 2026-10-19
+
+The user's live KDE session is **not** the patched dependency bundle qualified
+by the historical browser receipts above. Its stock IBus 1.5.26 returns
+`GlobalEngine` as a serialized `IBusEngineDesc`: type tag, `a{sv}` attachments,
+actual engine name, remaining fields. Admission bootstrap incorrectly read the
+type tag as the name and classified the selected Lay engine as Foreign. The
+controlled adapter peer used a non-protocol name-first structure, masking this
+failure in source tests. This is the first failed transition; subsequent focus
+and key refusals do not justify weakening context admission.
+
+The existing observational engine decoder now also handles property variant
+wrappers and supplies bootstrap's engine name. Its tag, attachment signature,
+nonempty name and foreign-engine checks remain intact. The incorrect duplicate
+decoder is removed; controlled peers now use the actual wire prefix.
+[Decision](decisions/2026-10-19-ibus-serialized-global-engine-bootstrap.json).
+No delivery route, engine name, word owner, timeout or verifier changed.
+
+Measured red proof: exactly one existing real-zbus bootstrap/compatibility test
+fails against the original parser with the corrected protocol fixture:
+`Foreign(EngineProfile("IBusEngineDesc"))` versus expected Lay. The earlier
+fixture compilation failure is retained separately and is not regression proof.
+Remote evidence: `~/.cache/lay/kde-live-20261019/global-engine-descriptor-red-actual.{json,log}`.
+Green source: the guarded development check selected 3,306 correctness/package
+tests with no semantic or infrastructure failures (IME 893; daemon 320).
+Exact result: `/home/e/projects/lay-development-runner/run-nNHSln/RESULT.json`;
+source archive SHA256
+`eada2df0cd1c05ba8796a7cfa4f6d6748b6e8221bf24be6e211cdfb21680a834`.
+The release candidate IME SHA256 is
+`40e405c201cb1d7153bfeb3ff90b84897b924157f7a70ba81211576c63644637`.
+Normal IBus component activation preserved IBus PID 3700659, engine identity
+and the private KDE session. The first manual SSH-parent launch exited under
+the existing parent-death contract and is not client evidence.
+
+Owned Qt/GTK observations remain **FAIL**: focus was retained, but `при` showed
+no preedit and Tab did not complete it. Receipt:
+`/home/e/.cache/lay/kde-live-20261019/owned-probes-descriptor-fix-native-ibus-20261019.json`.
+A cold-start trace confirms `GlobalEngine` was initially unset, a factory and
+FocusIn began request 1, and Get(CurrentInputContext) plus marker emission
+succeeded; no GlobalEngineChanged reached the admission handler. The request
+was subsequently revoked and all later key admissions were refused. This is
+the next unresolved transition, not proof that descriptor parsing alone fixes
+stock KDE. Exact cold trace:
+`/home/e/.cache/lay/kde-live-20261019/owned-probes-descriptor-fix-cold-trace-20261019.jsonl`.
+VNC/XTEST does not establish daemon-owned evdev Double Shift acceptance; the
+current daemon has no real keyboard input fds. No new browser matrix, local
+GNOME installation, published release or completed KDE input acceptance is
+claimed.
+
+
+### Stock IBus same-name cold activation — 2026-10-19
+
+The correctly running independent gdbus monitor in
+`/home/e/.cache/lay/kde-live-20261019/owned-probes-descriptor-fix-cold-wire-v2-20261019-dbus-monitor.log`
+observed actual input-context traffic and zero GlobalEngineChanged signals.
+A subsequent actual GlobalEngine property was lay-ime-ru. Stock IBus 1.5.26
+`_context_engine_changed_cb` returns when the name is unchanged; restarting
+Lay alone therefore cannot rely on a change signal after bootstrap's temporary
+No global engine response. The earlier cold-wire monitor lacked --dest and is
+not independent bus proof; its failure remains preserved.
+
+[Decision](decisions/2026-10-19-ibus-unset-bootstrap-profile-confirmation.json):
+resolve only Unset during the exact current acquisition with one strict
+GlobalEngine read, charged to the existing deadline and ordered before the
+existing marker. Both compatibility and native activation use the same reducer
+confirmation. No route, source identity, timeout, gesture owner or verifier
+changes. No name-only factory authorization or periodic profile polling.
+
+Real-zbus controlled RED: one regression fails before the repair at the missing
+property read; receipt `unset-global-engine-red-source-one/RESULT.json` under
+the local evidence root. The five focused new source tests pass in
+`unset-global-engine-green-source-two/FOCUSED.log`: cold compatibility/native
+activation, foreign/wrong-Lay/malformed replies, revocation before reply,
+timeout and cancellation. That worker incorrectly expected six results; its
+original reporting FAIL is retained and does not invalidate the five measured
+passes. Full affected source verification and actual Qt/GTK window proof are
+pending. Historical browser matrix counts are not promoted to this session.
+
+### Stock KDE client follow-up and missing Plasma QML module — 2026-10-19
+
+The same-name bootstrap source gate subsequently closed with 898/898 selected
+IME checks passing (901 discovered, three performance checks explicitly
+excluded), and candidate SHA-256
+`16378c6e19ea33d7f12996df3816ff12738c89ececa31eef4b8fe96da9decbe1`.
+Exact receipt under the local evidence root:
+`unset-global-engine-green-source-three/RESULT.json`. This establishes source
+verification and a private candidate build, not stock KDE acceptance.
+`owned-probes-unset-profile-fix-cold-wire-20261019.json` still observes no
+suggestion and no Tab completion in the actual owned Qt/GTK fields.
+
+The subsequent `initial-surrounding-ab-20261019.json` retains four owned-field
+observations. Its external direct Engine.Enable intervention was INVALID:
+the authenticated metadata observer correctly failed closed on a foreign
+callback sender. The engine trace explicitly contains observer stopped /
+context admission denied; subsequent literal input is not an admitted Ready
+client test. Do not interpret this intervention as evidence that a legitimate
+post-Ready RequireSurroundingText cannot work. The baseline observations and
+the invalid intervention remain separate. The original offset capture was
+empty because the bounded trace compacts its current file; recovered actual
+events are in `initial-surrounding-ab-20261019-compacted-tail.jsonl`.
+Recovery must replace only this identified private candidate, using the same
+checked bytes and normal IBus activation; preserve global IBus and user apps.
+
+The user's separate Plasma keyboard-layout error is a confirmed missing
+system dependency: Qt5 `qml-module-qt-labs-platform` was absent and is now
+installed at 5.15.3+dfsg-1 on 192.168.3.94. A real QQmlEngine import of
+Qt.labs.platform 1.1 and component creation passed: Ready, zero errors,
+instance created. Receipt `qt-labs-platform-import-check-green.log`, remote
+package log `qt-labs-platform-install.log`. The initial missing Python QML
+binding and qtchooser-only qmlscene probe failures are retained; the small
+python3-pyqt5.qtquick probe dependency was installed separately. Plasma/IBus
+were not restarted. This repairs module availability, not Lay hint/Tab or
+the already-failed applet's reload. Fresh stock KDE browser matrices and
+physical Double Shift remain NOT_TESTED. No edit authority or delivery route
+was added by these experiments.
+
+
+### Existing Ready publisher requests the stock client's snapshot — 2026-10-19
+
+The bounded experiment in decision
+`decisions/2026-10-19-stock-client-surrounding-ready-request.json` adds one
+RequireSurroundingText only after the existing authenticated Ready publication
+succeeds. It reuses the publication latch. The capable, nonsensitive client
+must still have a live admission token after the awaited property output.
+There is no new owner, retry, synthetic snapshot, KnownStart promotion or edit
+route. Failure to send the request creates no new edit authority.
+
+Source evidence under the local evidence root:
+
+- `stock-surrounding-ready-red-source-two/RESULT.json`: controlled semantic
+  RED against the actual legacy zbus publisher, missing the expected request.
+  The earlier fixture compile error is retained separately.
+- `stock-surrounding-ready-green-source-one/RESULT.json`: initial three
+  controls PASS, 901/901 selected IME checks PASS, release candidate built.
+- `stock-surrounding-ready-green-source-two/RESULT.json`: final four controls
+  PASS and 902/902 selected IME checks PASS (905 discovered; exactly three
+  performance checks excluded). Guards include unsupported/sensitive clients,
+  duplicate publication, stale owner/path/shared generation, and deterministic
+  owner revocation during the awaited publication. State and snapshot remain
+  unchanged by the request. No manifest or assertion was weakened.
+- The second receipt reuses exact candidate bytes from the first build only
+  after comparing every frozen file and proving that the two differences are
+  cfg(test) fixtures. SHA-256:
+  `ed48bcf70cda5b0c3059263562578957bf295457b2863c8b40189ddf09e54743`.
+- Independent review: initial 9/10 with no production blocker; the second
+  pass found a test's wrong expected output list. Corrected it to the exact
+  property-only effect and verified the final four controls/full IME lane.
+  This is a source review, not client acceptance.
+
+The bounded client experiment now has a positive physical-screen observation:
+`stock-ready-v6-screen-acceptance-20261019.json` under the same evidence root.
+It certifies one newly created owned Qt field and one owned GTK field in the
+private stock-KDE X11 session `:71`. Both screenshots visibly show client text
+`при` and a separate muted-gray IBus auxiliary popup `вет`. Tab produces
+exactly `привет ` in both widgets; the ordinary `привет ` Space control passes.
+The existing `publish_auxiliary_hint` owns legacy suggestions: empty widget
+preedit does not prove missing panel display. The raw v6 controller stays
+BLOCKED for auxiliary display; independent screen inspection supplies that
+evidence rather than rewriting it as a machine-asserted display PASS.
+
+Preserved diagnostic corrections:
+
+- `stock-ready-owned-kde-v2-20261019.json`: the all-empty run was blocked by
+  a real IBus popup keyboard grab. XGrabKeyboard returned AlreadyGrabbed and
+  a separate raw X11 field received no keys. After verified popup dismissal,
+  the IME-disabled Qt control received `ghb` and three key presses.
+- `stock-ready-owned-kde-v4-20261019.json`: the GTK guard wrongly rejected
+  its own X11 focus child; the Qt after-Tab snapshot preceded its asynchronous
+  IBus commit. These are diagnostic defects, not product refusals. The v5
+  helpers check actual X11 ancestry, use precise Qt timers and observe the
+  settled Tab result. Both clients receive the exact expected text.
+- `stock-ready-owned-kde-v5-20261019.json`: its preedit-only hint FAIL is
+  superseded for this diagnostic by actual auxiliary-popup screen evidence.
+  Do not infer absence of the panel from this reader. Raw receipts remain.
+- `stock-ready-owned-kde-v6-20261019.json`, both v6 widget receipts, and
+  `qt-stock-ready-v6-prefix-20261019.png` /
+  `gtk-stock-ready-v6-prefix-20261019.png` retain field and screen evidence.
+  The acceptance receipt binds both image hashes to the exact candidate and
+  records independent visual inspection.
+- Tab-to-observed-client-commit samples in v6: Qt **4.5 ms**, GTK **2.5 ms**,
+  one sample each. These are not a p95 estimate or physical Double Shift
+  timing. Hint appearance latency is NOT_MEASURED: screenshots were taken
+  after the settled prefix and the widget reader cannot timestamp the popup.
+
+Private replacement used ordinary IBus factory activation, without restarting
+stock IBus PID 3700659 or Plasma PID 3700657. Surviving normal child PID 407179
+has the exact candidate SHA above, remains outside the disposable test scope,
+and survives source restoration and cleanup. The private debug config flag
+and selected Lay source were restored; no local GNOME installation occurred.
+
+An independent cold-start problem remains **OPEN**:
+`stock-factory-lifetime-20261019.json` and strace show child PID 405181 calling
+tgkill on itself with SIGABRT. The later stderr/write trace did not reproduce
+the abort; same-byte normal child PID 407179 survives. Resource cleanup did
+not kill IBus and is not established as its cause. Do not erase the failure,
+infer a cause, or accept the whole stock-KDE runtime from these two fields.
+
+Fresh complete stock-KDE browsers, physical daemon Double Shift, and reload
+of the already-failed Plasma applet remain NOT_TESTED. Historical browser
+300/20/0 belongs to the modified IBus/KWin stand, not this candidate. Runtime
+authority and delivery routes unchanged.
+
+### 2026-10-20 local date — Kitty pending literal preedit at Ready
+
+Measured on private stock KDE `:71`, unchanged IBus PID 3700659 and candidate
+`ed48bcf70cda5b0c3059263562578957bf295457b2863c8b40189ddf09e54743`:
+
+- Kitty 0.21.2 without `GLFW_IM_MODULE=ibus` delivers literal `при\t`, with
+  no Lay key trace. Its versioned `glfw/ibus_glfw.c` requires that flag;
+  the existing Plasma and user Kitty lack it. No user client was restarted.
+- A newly owned Kitty with the flag connects to the existing IBus. Its
+  physical XTEST prefix `при` becomes `ри`; Tab commits `ритм `. The screen
+  visibly shows `ри` plus gray auxiliary `тм`. This is **FAIL**, not a
+  dictionary or candidate-ranking failure. Tab delivery sample 1.469275 ms
+  is one wrong-result sample, not accepted latency or a p95.
+- First failed transition: a SourceFree acquisition is Pending; the legacy
+  handler consumes `п` into owned literal preedit. A later authenticated
+  source-free Ready unconditionally clears that preedit. Next letters build
+  a new prefix. The Ready marker and context admission are otherwise valid.
+
+Evidence root: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018`;
+`kitty-native-diagnostic-v4-20261020.json`, corresponding prefix PNG/client
+log and `kitty-native-diagnostic-v4-20261020-trace-delta.json`. Earlier
+no-IBus/blocking diagnostics remain separate; the user's Kitty text is intact.
+
+The bounded proposed fix retains the existing SourceFree/UnknownStart
+authority. A pending literal receipt carries existing request, nonce,
+revocation, target and native context identities, plus the local focus serial.
+Ready may preserve the literal buffer only for that exact still-current
+native acquisition and a visible whole preedit. Reset, replacement request,
+replacement field, sensitive input and unproven matching text cannot restore
+it. No acquisition await is added under the engine interface write guard;
+the existing delivery/Tab paths remain the only output owners.
+
+Controlled old-code RED detects the lost first letter:
+`activation-preedit-red-source-one/RESULT.json`. All eight new semantic
+controls PASS in `activation-preedit-green-source-three/FOCUSED.log` as of
+2026-10-19T21:24:36Z. Full isolated IME tests/build, independent review and
+native testing of the new bytes are pending. No installed-runtime or browser
+acceptance follows from these eight tests. Canon and guards are unchanged.
+
+
+### 2026-10-20 local date — pending literal preedit, controlled Ready race
+
+Measured native baseline: owned stock-KDE Kitty v4 consumed physical `при`
+then committed `ритм ` after Tab. Candidate was
+`ed48bcf70cda5b0c3059263562578957bf295457b2863c8b40189ddf09e54743`.
+The first letter existed in visible legacy preedit before SourceFree Ready;
+installation reset it. One 1.469275 ms Tab-to-child sample is for the wrong
+result and is not accepted performance evidence.
+
+The intermediate patch passed eight focused and 910 selected isolated IME
+checks (`activation-preedit-green-source-three/RESULT.json`) but remained
+unaccepted: independent review found a receive-order race. Two real adapter
+rendezvous tests then failed on that patch with controlled ordering, without
+sleeps (`activation-preedit-red-source-race-one/RESULT.json`). The correction
+captures immutable Native acquisition identity in typed PendingLiteral ingress
+and publishes it under the existing reducer->stamps lock order. Only that
+exact non-authoritative stamp can survive owner replacement within the same
+live connection; key and lifecycle epoch checks are unchanged. Literal
+completion never calls settle(None) to revoke a successor. SourceFree scope
+remains UnknownStart; no new edit/input authority or delivery executor exists.
+See decision `decisions/2026-10-20-native-pending-literal-preedit.json`.
+
+Ten focused controls PASS in the final candidate's FOCUSED.log; its official
+isolated IME gate/build is RUNNING in
+`activation-preedit-green-source-race-two`. Native verification of those bytes
+is NOT_TESTED. Preserve both earlier fixture failures as fixture evidence.
+Evidence root: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018`.
+A separate old-Kitty launch prerequisite (`GLFW_IM_MODULE=ibus`) was added only
+to the owned diagnostic child; the user's existing Kitty and text remain
+untouched. The independent cold-start SIGABRT and full stock browser matrix
+remain open/NOT_TESTED respectively.
+
+Harness2 task `20261019T210733Z-1565f93b`, lay2/gpt-6.1-sol/xhigh, completed
+with status/core_status ok, eight calls and no failures/fallbacks. All 12 frozen
+input pins and output/report hashes are independently checked in
+`harness2-lay2-kitty-review-20261020/acceptance.json`. Its diagnosis is bounded
+static evidence; the input predates this patch, and no speed/token benefit or
+experience-library growth is demonstrated.
+
+
+### 2026-10-20 local date — warm ordinary FocusIn before context reply
+
+The earlier ten-case source gate is complete: 10 focused and 912 selected
+isolated IME checks passed, release SHA-256
+`6687b7f4ff486f21a364f68cb87c0170994362557d855b63206400109f7542cb`.
+However, owned Kitty v5 on those exact bytes still LOST the initial `п`
+from physical `при`, showed `ри` with auxiliary `тм`, and Tab committed
+`ритм `. Retain this native FAIL and wrong-result timing; it is not a green
+client receipt. See `kitty-native-v5-screen-acceptance-20261020.json` and
+`kitty-native-diagnostic-v5-20261020-trace-delta.json` under the evidence root.
+
+The omitted transition is a warm FocusOut/FocusIn on the same engine path.
+The reducer retains the sealed source owner while its tentative Transfer
+awaits the target identity. Ordinary FocusIn uses CompatibilityProperty;
+when the CurrentInputContext reply names a different context, the canonical
+reducer converts that exact request/nonce to SourceFree and advances the
+lifecycle once. The earlier receipt checked only ownerless Native SourceFree,
+so the first target letter was stamped as an old-owner key and then cleared.
+
+The pending-target receipt now precedes the retained-owner branch for legacy
+possible-mutation callbacks. It binds the exact request, nonce, target, origin
+and optional context hint. For a tentative Transfer it expects the single
+canonical lifecycle increment, and preservation STILL requires a current
+SourceFree grant for the identical Ready request. Other revocations remove
+or replace that identity. Transfer grants, reset, sensitive/unsupported input,
+focus replacement and unproved preedit do not qualify. Shift retains its
+existing path. Output owners, delivery routes and edit authority are unchanged.
+
+`activation-preedit-red-source-race-three/FOCUSED.log` contains ONE valid warm
+CompatibilityProperty lost-letter RED plus ONE fixture error: the new Native
+FocusInId fixture expected a Get although that route already has its context
+and emits a Barrier. Do not describe both failures as lost-letter proof.
+`activation-preedit-green-source-race-three/RESULT.json` passed 12/13 and
+retained that same fixture error. The fixture now holds the actual Native
+marker; ordinary FocusIn continues to hold its real property reply. The new
+13-case gate and official isolated IME/build are complete in
+`activation-preedit-green-source-race-four/RESULT.json`: 13 focused PASS,
+915/915 selected IME PASS; 918 discovered, three performance exclusions.
+Release SHA-256 is
+`955fdd5070bb83a1eec30ccf6d875bfff2e5c4b7faa6abe7dd1cfad09e8bd134`.
+
+Normal private IBus factory activation runs those bytes as child 746568 of
+3700659. A backup of its predecessor was verified; no global IBus/Plasma
+restart, local-desktop installation, delivery-route or authority change occurred.
+Owned Kitty v6 now shows all of `при` and gray auxiliary `вет`; physical Tab
+produces exactly one `привет ` commit. The trace places PendingLiteral ingress
+before SourceFree Ready. Independent source/screen/client acceptance is in
+`kitty-native-v6-screen-acceptance-20261020.json`, with the raw v6 diagnostic
+and PNG retained. Observed Tab-to-commit time: 1.200848 ms, one sample only.
+
+Owned Qt and GTK on the identical bytes show `при` and gray auxiliary `вет`;
+Tab and the separate clean Space control produce actual `привет ` in both
+fields. `stock-ready-preedit-v1-screen-acceptance-20261020.json` checks both
+screenshots and actual field events. Qt Tab time is 4.9 ms, GTK 3.1 ms,
+one sample each. No median, p95 or hint-latency claim follows. The raw reader
+only checks preedit, so it retains BLOCKED for auxiliary hints; the independent
+screen receipt supplies the missing observation without rewriting raw evidence.
+Source/debug settings and prior focus were restored. User Kitty/text remain
+unchanged; GLFW_IM_MODULE=ibus was set only for the owned Kitty child.
+Full stock browser matrix and physical Double Shift are NOT_TESTED for these
+bytes; the separate historical cold-start self-SIGABRT remains OPEN.
+
+At the user's explicit request, an additional real Harness2 review completed:
+`20261019T215217Z-9876d10b`, project lay2, gpt-6.1-sol/xhigh. Status and core
+status are ok; all eight calls succeeded, with zero failed calls or fallback
+stages. The eight frozen input pins (94,528 bytes) remained intact. Selected
+c1 review is 7/10: no demonstrated blocker, with significant integration
+evidence missing from its excerpts. Independent acceptance is recorded in
+`harness2-lay2-warm-preedit-review-20261020/acceptance.json`, binding report,
+review and owner checks. The owner checked the omitted outer publication guard,
+reducer lock, Ready replace_owner and actual observer-driven rendezvous tests;
+the source gate and physical-client receipts supply their own separate proof.
+The snapshot predates the Native fixture correction and incorrectly calls both
+old failures semantic RED; acceptance explicitly corrects that premise. Inputs
+were not rewritten. Library entries remain zero; acceleration and token savings
+are unproven. Full stock browser/physical manual-transfer coverage and mixed
+CompatibilityProperty-to-Native enrichment after early literal input were not
+exercised by this bounded repair. No additional runtime change follows from
+an excerpt omission or review score.
+
+Guarded source-graph refresh PASS at 2026-10-19T22:06:15Z:
+`activation-preedit-architecture-source-one/RESULT.json`. All six installed
+graph artifacts match the receipt; 730 non-generated source pins still match
+the source gate. This later evidence-only note changes no executable source
+and establishes no additional runtime or native acceptance.
+
+### Remote KDE installed diagnostic and VNC input boundary — 2026-10-20
+
+Installed the previously source-verified access diagnostic/daemon and reviewed
+explicit daemon-only KDE controls; exact files, protected process identities,
+source/UI tests, Harness² scope and graph receipt are recorded in
+[the installation evidence](../development/kde-install-control-2026-10-20.md).
+Final installed daemon SHA-256 is
+`1de1a316968f5ea5b1d1872d306e0341a2bc2b2a43ddf4217df7b4a6754ac8b2`;
+the surviving IME/IBus, Plasma/KWin, user Kitty and VNC were preserved.
+The user confirms input only through VNC. Xvfb :71 receives XTest keys without
+an evdev source, so the daemon cannot recognize the managed Double Shift.
+NO_KEYBOARD is truthful and a permission grant does not repair this boundary.
+
+Owned isolated x11vnc 0.9.16 direct-file/nouinput mapping: six control/Latin
+down/up mappings observed, both legacy/Unicode Cyrillic я mappings absent;
+no kernel injection or input inventory change. Reject stock UINPUT as a full
+Russian-input solution. An owned existing-KDE GTK Entry separately showed
+`пров` → `проверка ` on Tab, cursor 9, via XTest. Candidate visual publication
+was not proved; no full completion/native/browser PASS is inferred. Its wait-
+inclusive diagnostic interval is not a latency result. Full current browser,
+Qt Tab, visible hint and Double Shift acceptance remain NOT_TESTED.
+
+Receipts under
+`/home/ubu/.cache/lay/development/browser-final-fixes-20261018/kde-install-control-20261020`:
+`x11vnc-direct-mapping/result.json`, `kde-owned-gtk-ime/result.json`,
+`runtime-final.json`, `graph-source-final-v2/RESULT.json`, `acceptance.json`.
+At that diagnostic revision, VNC compatibility remained unfixed. No IME delivery route, gesture owner or
+architecture rule changed. Historical modified-stand browser totals remain
+300 PASS / 20 FAIL / 0 BLOCKED / 320; they do not certify this VNC session.
+
+### Remote X11 candidate and review disposition — 2026-10-20 06:20 UTC
+
+Current implementation and superseded experiments are recorded in
+[remote X11 evidence](../development/remote-x11-input-2026-10-20.md).
+The installed focus-v4 candidate passes 25/25 native GTK/Qt rows, including
+Double Shift, rapid five successive targets, hint/Tab and moved boundaries.
+Its daemon SHA256 is `f0b35ad98aea686fb9bae3682bb19e77429a364a1f976006d6d5545de18c2e4e`;
+engine SHA256 is `4d7d1d6eb2849c051b6a90a5fdd99cd064056c0c3e9decdc0502f9e8117ee529`.
+This receipt does not cover the newer source below or browser acceptance.
+
+A fresh Chrome trace shows surrounding capability 41 but no snapshot and
+per-character commit instead of owned composition. IBus 1.5.26 retains that
+capability even when the GTK widget refuses RetrieveSurrounding. The scoped
+repair permits existing literal preedit only after authenticated Ready, with
+precognition enabled and a nonterminal client. It owns only newly consumed
+letters and preserves UnknownStart and all deletion/admission guards. A broad
+prototype was rejected after 45/918 contract failures; the scoped source passes
+918/918 IME correctness cases (three performance cases classified separately).
+Receipts: `stock-no-snapshot-full-ime/SUMMARY.json` and
+`stock-hints-full-ime/SUMMARY.json` under the remote evidence root below.
+Decision: `2026-10-20-stock-ready-literal-preedit.json`.
+
+Harness2 task `20261020T051543Z-451b2973` completed eight calls, status/core ok,
+score 6/10 REQUEST_CHANGES; all 13 frozen source hashes independently match.
+Three findings are addressed in source: reusable device IDs are validated and
+written under one short same-connection server fence; IME settlement requires
+the exact field/path, a newer epoch and stable focused window; event drainage
+is capped at 4096. XKB map copying uses finite native wire requests outside
+external-process dependencies. The fence excludes event drainage, IBus waits
+and operations on the original input connection. No semantic owner or IME
+delivery route changes. Decision:
+`2026-10-20-remote-x11-generation-fenced-writes.json`.
+
+Owned Xvfb regressions: 25/25 PASS in `review-fixes-owned-v3.log`.
+Controlled violations reproduce ID-reuse and event-budget assertion failures;
+hermetic settlement RED is recorded in `review-settlement-red.json` with
+byte-exact source restoration. The initial combined SetMap payload and an
+overbroad RESIZE_TYPES flag were rejected after BadLength failures; the final
+copy sends independently padded components with flags specific to each part.
+Remote evidence root:
+`/home/e/projects/lay-development-runner/kde-install-control-20261020`.
+Newest release build, installed-byte proof, complete native browsers/GTK/Qt and
+latency remain pending. GNOME is NOT_TESTED for these changes. These source
+results do not replace the historical 300/20/0 browser matrix.
+
+## 2026-10-20 07:21 UTC — stock manual source and replay completion
+
+Remote installed v1.0.94 engine is
+`86635ee6aa486cbea15769a10e10282ba8820472b85bf6300ee417baf44f1c7e`,
+daemon `e1d8478b0020be4edcb566368842c3222d1e81c004b8d50c55ae7d277dedaf1f`
+(`deployment-stock-owned-v3/deployment.json`). Native Chrome hint/Tab/manual
+roundtrip now passes 1/1 (`chrome-ime-stock-owned-v4/browser/result.json`).
+Suppression semantic RED v3 and GREEN v3 establish the repaired second gate.
+Readout-only full IME is 920/920; it does not cover subsequent completion edits.
+
+Rapid Chrome five remains FAIL: all five gestures are recognized, while the
+completed replay's KnownStart boundary is hidden pending SSI that the stock
+client cannot supply. The failure cancels suppression, delays subsequent work
+and can make the next isolation attempt busy. Fresh trace/daemon evidence:
+`chrome-ime-stock-rapid-v6/engine-trace.jsonl`,
+`stock-owned-rapid-diagnostic-v6/daemon.log`. Earlier v5 daemon log is empty;
+unit journal collected with `-n` contains the actual events.
+
+The scoped source change preserves only the existing locally tracked stock
+manual source after complete native callbacks. Exact/observed clients still
+require their existing receipt; no native reset ACK or learning proof is made.
+Completion focused GREEN v1 is 3/3; controlled RED and the complete engine set
+are running in `stock-owned-completion-proof-v1.log`. New completion bytes are
+not installed yet. Final native matrices, graph, full gates, installed updater
+and publication remain pending. Do not install/restart the local user runtime.
+
+
+## Current checkpoint — KDE rapid replay latency (2026-10-20 07:44 UTC)
+
+Completion source proof is now GREEN: `stock-owned-completion-red-v1/result.json`
+records the controlled semantic RED; `stock-owned-completion-green-v1/result.json`
+passes 3/3 real-zbus cases; `stock-owned-completion-full-v1/SUMMARY.json` passes
+920/920 IME correctness cases (3 performance cases are separate). Installed
+`deployment-stock-owned-v4/deployment.json` binds engine
+`4ec866ff4dafceff7add2013078d915a7a9dd561e2e06f753d22405f09fc82da`
+and daemon `e1d8478b0020be4edcb566368842c3222d1e81c004b8d50c55ae7d277dedaf1f`.
+
+Native rapid Chrome is still FAIL. The earlier retention-policy refusal is gone:
+`chrome-ime-stock-rapid-v7/engine-trace.jsonl` and v8 show completed exact replays.
+The next first failed transition is the KDE layout readout: D-Bus profile
+`rapid-v8-bus-profile.log` measures getLayoutsList at 890.10 ms and 619.50 ms
+against a 250 ms method timeout. KDED was waiting about 1030 ms for KGlobalAccel.
+This establishes the delayed service boundary, not yet the cause of that delay.
+The v9 syscall-only trace does not record text payloads and independently retains
+the rapid failure. All temporary debug flags were restored.
+
+Candidate experiment groups naturally aligned XKB map components, retaining
+separate requests for byte-sized components with known generated-code padding
+constraints. It keeps the same ownership/generation fence, original-input thaw,
+map equality checks, layout owner and IME delivery route. Owned Xvfb v1 is an
+invalid harness invocation (missing LAY_OWNED_X11_TEST), not a semantic RED.
+Corrected `compact-map-owned-v2.log` is 25/25 PASS. Native effect remains pending.
+
+Final native matrices, full release gates, installed updater and publication
+remain pending. Do not install or restart the local user's runtime.
+
+## KDE ordinary terminal and replay settlement — 2026-10-20 09:57 UTC
+
+The changed-byte native Kitty receipt `terminal-menu-replay-v4/result.json`
+passes Double Shift after Space in both directions (164.76/163.32 ms) and Tab
+(2.70 ms), but declines the pair edit. Engine is
+`e139bfa90ab341ea82b15cfaf74d480b4a90d2b9dea8c40685b04fc4a2d76ef1`;
+source regression is cap-9 actual factory transfer RED/GREEN with existing
+bounded LegacyReplayV1 suppression, 922/922 isolated source PASS. Trace
+`terminal-pair-menu-v4-trace` shows pair eligibility then verifier refusal.
+No verdict for other fields or the universal typed-prefix appearance follows.
+
+Normal-launch client configuration is separately proved on unchanged v3 bytes:
+`kitty-menu-before-setup-v1` FAIL/literal Tab, `kitty-menu-after-setup-v1`
+PASS/2.04 ms. The resolved installed desktop command supplies IBus; the fixture
+supplies no GLFW override. The already-running user Kitty remains untouched.
+
+The next qualification candidate reuses canonical KWin observations for the
+existing exact Kitty probe, preserving the current IBus field receipt and all
+word/edit gates. Its decision is `2026-10-20-kde-ime-terminal-focus.json`;
+`kde-ime-terminal-focus-red-v2.log` and `kde-ime-terminal-focus-green-v1.log`
+are semantic RED/GREEN. Source/native full result pending; runtime authority
+has not changed. Universal styling remains FAIL, not a waived acceptance rule.
+Evidence root: `/home/e/projects/lay-development-runner/kde-install-control-20261020`.

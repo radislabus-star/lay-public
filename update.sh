@@ -118,7 +118,7 @@ source_version="$(sed -n 's/^version = "\([^"]*\)"/\1/p' "$source_dir/Cargo.toml
 }
 (
     cd "$source_dir"
-    LAY_KEEP_OLLAMA=1 bash ./install.sh --update
+    bash ./install.sh --update
 )
 actual="$("$HOME/.local/bin/lay" --version)"
 [[ "$actual" == "lay $version" ]] || {

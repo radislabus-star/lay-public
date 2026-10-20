@@ -1,0 +1,59 @@
+{
+  "id": "native-pending-literal-preedit-2026-10-20",
+  "status": "EXPERIMENT_BOUNDED_SOURCE_NATIVE_VALIDATED",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "invariants": [
+    "C01",
+    "C03",
+    "C06",
+    "C08"
+  ],
+  "problem": "A target awaiting admission can consume a first legacy preedit letter before Ready. Installation clears it. Warm ordinary FocusIn retains the source owner during tentative Transfer; its different-context reply converts the exact request to SourceFree. The old Native/ownerless-only receipt missed this path.",
+  "decision": "Capture immutable request, nonce, target, origin, optional native context hint and expected lifecycle in a typed PendingLiteral stamp under the existing reducer lock, before the retained-owner branch. SourceFree expects the current lifecycle; tentative Transfer expects the single canonical different-context fallback increment while retaining its exact request/nonce. Publish once in reducer-to-stamps order. Existing bounded rendezvous may recover only this exact-header non-authoritative stamp across owner replacement on the same live connection. Ordinary key/lifecycle epoch checks and Shift handling remain strict; no new wait, owner, queue, timer or delivery executor.",
+  "installation": "Preserve only visible, active, nonsensitive legacy preedit with valid cursor, identical local tail, unchanged local focus serial and exact current SourceFree Ready request/nonce/revision/origin/target; require context equality whenever a hint was already supplied. CompatibilityProperty may acquire context through its authenticated reply. No Transfer or ResetUnknown grant may preserve this literal receipt. Retain UnknownStart; discard unproven, reset, replaced-request, sensitive or focus-replaced text.",
+  "callback_completion": "A PendingLiteral callback grants no KeyCallback and cannot settle an edit. Recognize it with or without an already-installed owner and perform ordinary literal delivery. Do not pass it to settle(None), which would revoke a successor. An installed owner does not acquire a pending preservation receipt. Revocation still removes observed stamps; a disconnected or terminated observer cannot recover one.",
+  "alternatives": [
+    {
+      "option": "Retain every nonempty preedit",
+      "score": 2,
+      "reason": "Text equality does not prove acquisition identity and can restore outgoing or revoked text."
+    },
+    {
+      "option": "Defer printable delivery until Ready",
+      "score": 6,
+      "reason": "Requires a larger callback-scheduling change around the engine interface lock; feasibility and exactly-once delivery are not established by the supplied trace."
+    },
+    {
+      "option": "Retain only authenticated pending-target literal preedit",
+      "score": 8,
+      "reason": "Repairs the demonstrated shared installation reset using the current bounded stamp store and reducer identity, with no new input authority."
+    }
+  ],
+  "verification": "Source and bounded native evidence recorded in verification_evidence and the owning document; it does not certify an untested browser matrix.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "evidence_root": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018",
+  "updated_at": "2026-10-19T22:11:49+00:00",
+  "schema": "lay.architecture-decision.v1",
+  "reason": "A target awaiting admission can consume a first legacy preedit letter before Ready. Installation clears it. Warm ordinary FocusIn retains the source owner during tentative Transfer; its different-context reply converts the exact request to SourceFree. The old Native/ownerless-only receipt missed this path.",
+  "verification_evidence": {
+    "native_red": "kitty-native-diagnostic-v4-20261020.json and its trace delta: physical при became ритм after Tab; old candidate ed48bcf70cda5b0c3059263562578957bf295457b2863c8b40189ddf09e54743.",
+    "source_red": "activation-preedit-red-source-one/RESULT.json: one lost-first-letter failure. activation-preedit-red-source-race-one/RESULT.json: both controlled Ready-during-rendezvous orders fail on the intermediate patch.",
+    "intermediate_source": "activation-preedit-green-source-three/RESULT.json: eight focused and 910 selected isolated checks passed, but review found an uncovered race. Its build is not accepted.",
+    "final_source": "PASS: activation-preedit-green-source-race-four/RESULT.json; 13 focused and 915 selected isolated IME checks. 918 discovered, three performance exclusions. Release SHA-256 955fdd5070bb83a1eec30ccf6d875bfff2e5c4b7faa6abe7dd1cfad09e8bd134.",
+    "native_green": "PASS_BOUNDED: kitty-native-v6-screen-acceptance-20261020.json and stock-ready-preedit-v1-screen-acceptance-20261020.json bind identical bytes to real owned Kitty, Qt and GTK screens/field commits. All show при plus gray auxiliary вет; Tab commits привет space. One Tab sample each: Kitty 1.200848 ms, Qt 4.9 ms, GTK 3.1 ms. Full stock browsers and physical Double Shift NOT_TESTED. User Kitty unchanged; GLFW flag is probe-child-only. Kitty v5 FAIL remains retained.",
+    "graph": "PASS: activation-preedit-architecture-source-one/RESULT.json at 2026-10-19T22:06:15Z. All six generated hashes and 730 non-generated source pins verified; subsequent evidence notes change no executable source.",
+    "review": "USED: Harness2 task 20261019T215217Z-9876d10b, lay2/gpt-6.1-sol/xhigh, status/core ok, eight successful calls, zero failures/fallbacks. Selected review 7/10, no demonstrated blocker and missing integration excerpts. Independent source checks, corrected frozen-RED premise, all eight input pins and native receipt hashes are bound in harness2-lay2-warm-preedit-review-20261020/acceptance.json. No native authority or savings claim comes from the review score.",
+    "source_candidate_two": "10 focused and 912 selected isolated IME checks passed in activation-preedit-green-source-race-two/RESULT.json, but owned Kitty v5 on its 6687b7f4 bytes still failed.",
+    "warm_red": "activation-preedit-red-source-race-three/FOCUSED.log: one valid warm compatibility lost-letter failure; the other failure was a Native test fixture expecting Get instead of Barrier, not semantic RED.",
+    "fixture_correction": "activation-preedit-green-source-race-three/RESULT.json: 12/13 pass, one same fixture error. Native fixture now holds its real marker."
+  },
+  "not_tested": "Full updated native Firefox/Chrome matrix, physical hardware input and GNOME runtime acceptance for these changed bytes.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/context_admission/rendezvous.rs",
+    "src/bin/lay_ibus_engine/engine/state_groups.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ]
+}

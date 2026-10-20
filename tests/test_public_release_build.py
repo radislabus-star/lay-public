@@ -247,6 +247,50 @@ install_system_packages
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertIn("jq", calls.read_text().split())
 
+    def test_kde_apt_dependencies_match_available_qt_in_both_installers(self):
+        apt_cache = self.fake / "apt-cache"
+        apt_cache.write_text(
+            '#!/bin/sh\n'
+            'test "$1" = show || exit 99\n'
+            'for package in $LAY_TEST_APT_PACKAGES; do\n'
+            '    test "$2" != "$package" || exit 0\n'
+            'done\n'
+            'exit 100\n'
+        )
+        apt_cache.chmod(0o755)
+        source = (ROOT / "scripts/install-remote.sh").read_text()
+        self.assertTrue(source.endswith('main "$@"\n'))
+        script = source.removesuffix('main "$@"\n') + '''
+sudo() { printf '%s\n' "$*" >> "$LAY_TEST_PACKAGE_CALLS"; }
+kde_available() { return 0; }
+install_system_packages
+'''
+        for qdbus, binding, available in [
+            ("qdbus-qt6", "python3-pyqt6", "qdbus-qt6 python3-pyqt6 python3-pyqt5"),
+            ("qdbus6", "python3-pyqt6", "qdbus6 python3-pyqt6"),
+            ("qdbus", "python3-pyqt5", "qdbus python3-pyqt5"),
+        ]:
+            with self.subTest(qdbus=qdbus, binding=binding):
+                calls = self.work / ("kde-packages-" + qdbus)
+                env = {**self.env, "LAY_PACKAGE_MANAGER_OVERRIDE": "apt",
+                       "LAY_TEST_APT_PACKAGES": available,
+                       "LAY_TEST_PACKAGE_CALLS": str(calls)}
+                result = subprocess.run(
+                    ["bash", str(ROOT / "install.sh"), "--check-platform"],
+                    env=env, text=True, capture_output=True, timeout=10,
+                )
+                self.assertEqual(result.returncode, 0, result.stderr)
+                packages = next(line.partition("=")[2].split()
+                                for line in result.stdout.splitlines()
+                                if line.startswith("kde_packages="))
+                self.assertEqual(packages, [qdbus, binding, "libxcb-cursor0"])
+                result = subprocess.run(["bash", "-c", script], env=env, text=True,
+                                        capture_output=True, timeout=10)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                install_args = calls.read_text().splitlines()[-1].split()
+                self.assertEqual(install_args[:3], ["apt-get", "install", "-y"])
+                self.assertEqual(install_args[-3:], packages)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

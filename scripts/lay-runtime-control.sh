@@ -84,6 +84,68 @@ sync_ibus_engine() {
     return 1
 }
 
+kde_session() {
+    case "${XDG_CURRENT_DESKTOP:-}:${XDG_SESSION_DESKTOP:-}:${DESKTOP_SESSION:-}" in
+        *KDE*|*kde*|*Plasma*|*plasma*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+current_kde_ime() {
+    local layouts index confirmed profile attempt status
+    # Device creation can briefly expose an old list with a new group index.
+    # Read a coherent snapshot before choosing any input source.
+    for attempt in 1 2 3 4 5 6 7 8; do
+        layouts="$(timeout 1s gdbus call --session --dest org.kde.keyboard \
+        --object-path /Layouts --method org.kde.KeyboardLayouts.getLayoutsList)" || return 1
+        index="$(timeout 1s gdbus call --session --dest org.kde.keyboard \
+        --object-path /Layouts --method org.kde.KeyboardLayouts.getLayout)" || return 1
+        confirmed="$(timeout 1s gdbus call --session --dest org.kde.keyboard \
+        --object-path /Layouts --method org.kde.KeyboardLayouts.getLayoutsList)" || return 1
+        if profile="$(python3 - "$layouts" "$index" "$confirmed" <<'PY'
+import ast
+import re
+import sys
+try:
+    layouts, = ast.literal_eval(sys.argv[1])
+    match = re.fullmatch(r"\((?:uint32 )?(\d+),\)", sys.argv[2])
+    if not match or not isinstance(layouts, list) or not 1 <= len(layouts) <= 32:
+        raise ValueError("invalid KDE layout snapshot")
+    if any(not isinstance(row, tuple) or len(row) != 3
+           or any(not isinstance(value, str) for value in row) for row in layouts):
+        raise ValueError("invalid KDE layout description")
+    if sum(len(value) for row in layouts for value in row) > 8192:
+        raise ValueError("KDE layout description exceeds bound")
+    if ast.literal_eval(sys.argv[3]) != (layouts,) or int(match[1]) >= len(layouts):
+        sys.exit(75)
+    name = layouts[int(match[1])][0]
+    if name not in ("us", "ru") or sum(row[0] == name for row in layouts) != 1:
+        raise ValueError("current KDE layout is unsupported or ambiguous")
+    print("lay-ime-" + name)
+except (ValueError, SyntaxError, TypeError, IndexError) as error:
+    print(str(error), file=sys.stderr)
+    sys.exit(1)
+PY
+        )"; then
+            printf '%s\n' "$profile"
+            return 0
+        else
+            status=$?
+        fi
+        [ "$status" -eq 75 ] || return "$status"
+        if [ "$attempt" -lt 8 ]; then sleep 0.15; fi
+    done
+    echo "KDE keyboard layout snapshot did not settle" >&2
+    return 1
+}
+
+prepare_kde_ime() {
+    # KDE owns its map. IBus must not replace it when selecting an engine.
+    timeout 1s gsettings set org.freedesktop.ibus.general use-system-keyboard-layout true \
+        || return 1
+    [ "$(timeout 1s gsettings get org.freedesktop.ibus.general use-system-keyboard-layout)" = true ]
+}
+
 stop_lay_ibus_engine() {
     local pid exe
 
@@ -125,6 +187,12 @@ xkb_fallback_for_lay_ime() {
 select_lay_ime() {
     local layout="${1:?layout required}"
     local attempt current engine
+    if kde_session; then
+        [ "$(current_kde_ime)" = "$layout" ] || return 1
+        sync_ibus_engine "$layout" || return 1
+        [ "$(current_kde_ime)" = "$layout" ]
+        return
+    fi
     if activate_gnome_layout "$layout"; then
         # ActivateLayout already owns the global-engine transition. Do not race
         # it with a second setter; wait for GNOME and IBus to converge first.
@@ -142,6 +210,10 @@ select_lay_ime() {
 
 preferred_lay_ime() {
     local current engine
+    if kde_session; then
+        current_kde_ime
+        return
+    fi
     current="$(current_gnome_layout || true)"
     case "$current" in
         lay-ime-us|xkb:us*)
@@ -164,7 +236,13 @@ preferred_lay_ime() {
 start_ime() {
     local preferred fallback safe_xkb current_source source_already_lay
     current_source="$(current_gnome_layout || true)"
-    preferred="$(preferred_lay_ime)"
+    preferred="$(preferred_lay_ime)" || return 1
+    if kde_session; then
+        prepare_kde_ime || {
+            echo "Не удалось сохранить карту клавиатуры KDE в IBus" >&2
+            return 1
+        }
+    fi
     if [ "$preferred" = lay-ime-us ]; then
         fallback=lay-ime-ru
     else
@@ -208,14 +286,16 @@ stop_ime() {
 
 apply_channel() {
     case "${1:-$(text_backend)}" in
-        ime)
-            start_ime
+        ime|auto)
+            local start_status=0
+            start_ime || start_status=$?
+            if [ -x "$HOME/.local/bin/lay-ime-setup" ]; then
+                "$HOME/.local/bin/lay-ime-setup" --show-if-needed >/dev/null 2>&1 &
+            fi
+            return "$start_status"
             ;;
         uinput)
             stop_ime
-            ;;
-        auto)
-            start_ime
             ;;
         *)
             stop_ime
@@ -240,6 +320,10 @@ case "${1:-status}" in
             stop_ime
         fi
         ;;
+    daemon-start|daemon-stop|daemon-restart)
+        # Explicit daemon controls must not cycle IBus or change input sources.
+        systemctl --user "${1#daemon-}" lay-daemon.service
+        ;;
     channel)
         if systemctl --user is-active --quiet lay-daemon.service; then
             apply_channel "${2:-$(text_backend)}"
@@ -258,7 +342,7 @@ case "${1:-status}" in
         timeout 1s ibus engine || true
         ;;
     *)
-        echo "usage: lay-runtime-control {start|stop|restart|channel [ime|uinput|auto]|status}" >&2
+        echo "usage: lay-runtime-control {daemon-start|daemon-stop|daemon-restart|start|stop|restart|channel [ime|uinput|auto]|status}" >&2
         exit 2
         ;;
 esac

@@ -17,7 +17,12 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.92`
+- `1.0.94`
+
+1.0.94 adds keyboardless VNC/X11 input through the existing daemon gesture
+pipeline, repairs KDE startup and controls, and restores owned hint/Tab input
+for stock clients without surrounding snapshots. Release evidence and supported
+scope are recorded in [release notes](docs/release-1.0.94.md).
 
 1.0.92 makes unaccepted IME hints muted gray in IBus-aware renderers and
 translucent in GNOME's system-colored auxiliary panel. It also aligns the

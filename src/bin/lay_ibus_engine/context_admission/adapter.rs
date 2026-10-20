@@ -81,6 +81,7 @@ fn context_admission_trace_disposition(
     match disposition {
         IngressDisposition::Passive => ("passive", None),
         IngressDisposition::PassiveShift => ("passive_shift", None),
+        IngressDisposition::PendingLiteral(_) => ("pending_literal", None),
         IngressDisposition::Key { owner, .. } => ("key", Some(owner.generation.0)),
         IngressDisposition::Factory { .. } => ("factory", None),
         IngressDisposition::FocusOut { owner, .. } => ("focus_out", Some(owner.generation.0)),
@@ -303,10 +304,10 @@ impl PendingContextAdapter {
                 let value = reply.body().deserialize::<OwnedValue>().map_err(|_| {
                     AdapterError::InvalidBootstrap("GlobalEngine was not a variant")
                 })?;
-                let name = engine_name_from_global_value(&value).ok_or(
-                    AdapterError::InvalidBootstrap("GlobalEngine descriptor had no name"),
-                )?;
-                classify_profile(&self.config.lay_profiles, name)?
+                let name = crate::observed_ibus_engine::decode(&value).map_err(|_| {
+                    AdapterError::InvalidBootstrap("GlobalEngine descriptor was invalid")
+                })?;
+                classify_profile(&self.config.lay_profiles, &name)?
             }
             Err(zbus::Error::MethodError(name, Some(detail), _))
                 if name.as_str() == "org.freedesktop.DBus.Error.Failed"
@@ -470,9 +471,22 @@ pub(crate) struct KeyCallback {
     owner: EngineOwner,
 }
 
+/// Provenance for literal preedit consumed by a target awaiting admission.
+/// It grants no word or edit authority and is valid only for that acquisition.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct PendingLiteralInputReceipt {
+    request: RequestGeneration,
+    nonce: BarrierNonce,
+    revocation: u64,
+    target_path: EnginePath,
+    context: Option<ContextKey>,
+    origin: ReceiptOrigin,
+}
+
 pub(crate) enum KeyCallbackObservation {
     Owned(Box<KeyCallback>),
     PassiveShift,
+    PendingLiteral(PendingLiteralInputReceipt),
     Refused,
 }
 
@@ -480,7 +494,7 @@ impl KeyCallbackObservation {
     pub(crate) fn into_key(self) -> Option<KeyCallback> {
         match self {
             Self::Owned(callback) => Some(*callback),
-            Self::PassiveShift | Self::Refused => None,
+            Self::PassiveShift | Self::PendingLiteral(_) | Self::Refused => None,
         }
     }
 }
@@ -981,6 +995,49 @@ impl ContextAdmissionAdapter {
         }
     }
 
+    pub(crate) fn pending_literal_input_receipt(
+        &self,
+        path: &str,
+        observed: &ObservedCallback,
+    ) -> Option<PendingLiteralInputReceipt> {
+        if self.shared.cancelled.load(Ordering::Acquire)
+            || observed.header.member != "ProcessKeyEvent"
+            || observed.header.path.as_str() != path
+        {
+            return None;
+        }
+        let IngressDisposition::PendingLiteral(receipt) = &observed.disposition else {
+            return None;
+        };
+        (receipt.target_path.as_str() == path).then(|| receipt.clone())
+    }
+
+    pub(crate) fn activation_preserves_literal_input(
+        &self,
+        receipt: &PendingLiteralInputReceipt,
+        outcome: &ActivationOutcome,
+    ) -> bool {
+        let ActivationOutcome::SourceFree(grant) = outcome else {
+            return false;
+        };
+        let Ok(ready) = self.shared.ready_activation.lock() else {
+            return false;
+        };
+        ready.as_ref().is_some_and(|ready| {
+            ready.request == receipt.request
+                && ready.fence.nonce == receipt.nonce
+                && ready.target_path == receipt.target_path
+                && &ready.outcome == outcome
+                && grant.revocation == receipt.revocation
+                && grant.receipt_origin == receipt.origin
+                && receipt
+                    .context
+                    .as_ref()
+                    .is_none_or(|context| &grant.target_activation.context == context)
+                && self.activation_outcome_is_current(outcome)
+        })
+    }
+
     pub(crate) async fn begin_factory_callback(
         &self,
         header: &zbus::message::Header<'_>,
@@ -1127,6 +1184,7 @@ impl ContextAdmissionAdapter {
             IngressDisposition::UnchangedContentType { token, .. } => &token.owner != owner,
             IngressDisposition::Passive
             | IngressDisposition::PassiveShift
+            | IngressDisposition::PendingLiteral(_)
             | IngressDisposition::Factory { .. } => false,
         }
     }
@@ -1299,6 +1357,8 @@ impl ContextAdmissionAdapter {
                 nonce.0,
                 Some(deadline),
             );
+            self.confirm_unset_global_profile(request, nonce, deadline)
+                .await?;
             self.arm_and_emit_marker(target_path, request, nonce, deadline)
                 .await
         }
@@ -1420,6 +1480,8 @@ impl ContextAdmissionAdapter {
             if !accepted {
                 return Err(AdapterError::Denied);
             }
+            self.confirm_unset_global_profile(request, nonce, deadline)
+                .await?;
             self.arm_and_emit_marker(target_path, request, nonce, deadline)
                 .await
         }
@@ -1430,6 +1492,78 @@ impl ContextAdmissionAdapter {
             }
         }
         result
+    }
+
+    async fn confirm_unset_global_profile(
+        &self,
+        request: RequestGeneration,
+        nonce: BarrierNonce,
+        deadline: Instant,
+    ) -> Result<(), AdapterError> {
+        let needed = {
+            let reducer = self
+                .shared
+                .reducer
+                .lock()
+                .map_err(|_| AdapterError::Denied)?;
+            if !reducer
+                .request
+                .as_ref()
+                .is_some_and(|current| current.generation == request && current.nonce == nonce)
+            {
+                return Err(AdapterError::Denied);
+            }
+            reducer.profile == GlobalProfile::Unset
+        };
+        if !needed {
+            return Ok(());
+        }
+        // One observation on the existing connection, within the original
+        // acquisition budget. The marker orders it with lifecycle ingress.
+        let property = (IBUS_INTERFACE, "GlobalEngine");
+        let mut operation = Box::pin(before_deadline(
+            self.shared.connection.call_method(
+                Some(IBUS_NAME),
+                IBUS_PATH,
+                Some(PROPERTIES_INTERFACE),
+                "Get",
+                &property,
+            ),
+            deadline,
+        ));
+        let mut changed = Box::pin(self.shared.changed.listen());
+        let reply = poll_fn(|task| {
+            if self.shared.cancelled.load(Ordering::Acquire)
+                || !self.shared.reducer.lock().is_ok_and(|reducer| {
+                    reducer.request.as_ref().is_some_and(|current| {
+                        current.generation == request && current.nonce == nonce
+                    })
+                })
+            {
+                return Poll::Ready(Err(AdapterError::Denied));
+            }
+            if let Poll::Ready(result) = operation.as_mut().poll(task) {
+                return Poll::Ready(result);
+            }
+            if changed.as_mut().poll(task).is_ready() {
+                changed = Box::pin(self.shared.changed.listen());
+                task.waker().wake_by_ref();
+            }
+            Poll::Pending
+        })
+        .await?;
+        let value = reply
+            .body()
+            .deserialize::<OwnedValue>()
+            .map_err(|_| AdapterError::Denied)?;
+        let name = crate::observed_ibus_engine::decode(&value).map_err(|_| AdapterError::Denied)?;
+        let profile = classify_profile(&self.shared.lay_profiles, &name)?;
+        if !self.shared.reducer.lock().is_ok_and(|mut reducer| {
+            reducer.confirm_unset_global_profile(request, nonce, profile, reply.recv_position())
+        }) {
+            return Err(AdapterError::Denied);
+        }
+        Ok(())
     }
 
     async fn deliver_completed_activation(
@@ -2863,7 +2997,11 @@ impl ContextAdmissionObserver {
                 );
             }
             self.refresh_acquisition_fence_ready();
-            if !self.shared.stamps.publish(stamp) {
+            // Native pending-literal stamps were already published while the
+            // reducer lock prevented Ready from overtaking their provenance.
+            if !matches!(stamp.disposition, IngressDisposition::PendingLiteral(_))
+                && !self.shared.stamps.publish(stamp)
+            {
                 self.fail_closed();
                 return Err(AdapterError::Denied);
             }
@@ -3123,6 +3261,74 @@ impl ContextAdmissionObserver {
                 } else {
                     KeyWordEffect::PossibleMutation
                 };
+                let target = EnginePath::new(path).ok_or(AdapterError::Denied)?;
+                if legacy_key.is_some() && word_effect == KeyWordEffect::PossibleMutation {
+                    let receipt = reducer.request.as_ref().and_then(|request| {
+                        if request.lifecycle_revision != reducer.revocation_generation()
+                            || (request.origin == ReceiptOrigin::Native
+                                && request.native_context_hint.is_none())
+                        {
+                            return None;
+                        }
+                        let revocation = match request.target {
+                            RequestTarget::SourceFree => {
+                                let source = reducer.source_free.as_ref()?;
+                                if source.target_path != target
+                                    || source.status != TicketStatus::Pending
+                                    || stamp.position <= source.focus_position
+                                {
+                                    return None;
+                                }
+                                request.lifecycle_revision
+                            }
+                            RequestTarget::Transfer(ticket_id) => {
+                                let ticket = reducer.ticket.as_ref()?;
+                                if ticket.id != ticket_id
+                                    || ticket.status != TicketStatus::Pending
+                                    || ticket.target_path.as_ref() != Some(&target)
+                                    || ticket
+                                        .target_focus_position
+                                        .as_ref()
+                                        .is_none_or(|focus| stamp.position <= *focus)
+                                {
+                                    return None;
+                                }
+                                // A different-context reply is the only canonical
+                                // transition retaining this request/nonce while
+                                // advancing its lifecycle. Accept only that exact
+                                // future SourceFree grant, never a transfer grant.
+                                next_generation(request.lifecycle_revision)
+                            }
+                        };
+                        Some(PendingLiteralInputReceipt {
+                            request: request.generation,
+                            nonce: request.nonce,
+                            revocation,
+                            target_path: target.clone(),
+                            context: request.native_context_hint.clone(),
+                            origin: request.origin,
+                        })
+                    });
+                    if let Some(receipt) = receipt {
+                        if word_effect == KeyWordEffect::PossibleMutation
+                            && reducer.request.as_ref().is_some_and(|request| {
+                                matches!(request.target, RequestTarget::Transfer(_))
+                            })
+                        {
+                            let _ = reducer.target_input_before_admission(&target);
+                        }
+                        let disposition = IngressDisposition::PendingLiteral(receipt);
+                        let mut literal_stamp = stamp.clone();
+                        literal_stamp.disposition = disposition.clone();
+                        // Target focus wins over a retained source owner even
+                        // when IBus reuses the same engine path for both fields.
+                        // Same reducer->stamps lock order as Ready publication.
+                        if !self.shared.stamps.publish(literal_stamp) {
+                            return Err(AdapterError::Denied);
+                        }
+                        return Ok(disposition);
+                    }
+                }
                 if let Some(owner) = path_owner {
                     if reducer.observe_key_start(&owner, stamp.header.clone(), word_effect) {
                         Ok(IngressDisposition::Key {
@@ -3133,7 +3339,6 @@ impl ContextAdmissionObserver {
                         Err(AdapterError::Denied)
                     }
                 } else {
-                    let target = EnginePath::new(path).ok_or(AdapterError::Denied)?;
                     let pending_target = reducer.ticket.as_ref().is_some_and(|ticket| {
                         matches!(ticket.status, TicketStatus::Pending | TicketStatus::Ready)
                             && ticket.target_path.as_ref() == Some(&target)
@@ -3537,23 +3742,6 @@ fn classify_profile(
         Ok(GlobalProfile::Lay(profile))
     } else {
         Ok(GlobalProfile::Foreign(profile))
-    }
-}
-
-fn engine_name_from_global_value(value: &OwnedValue) -> Option<&str> {
-    fn peel<'a, 'v>(mut value: &'a Value<'v>) -> &'a Value<'v> {
-        while let Value::Value(inner) = value {
-            value = inner;
-        }
-        value
-    }
-
-    let Value::Structure(structure) = peel(value) else {
-        return None;
-    };
-    match structure.fields().first().map(peel) {
-        Some(Value::Str(name)) => Some(name.as_str()),
-        _ => None,
     }
 }
 

@@ -1,0 +1,26 @@
+{
+  "id": "kde-explicit-daemon-controls-2026-10-20",
+  "status": "ACCEPTED_USER_REQUEST",
+  "owner": "docs/lay-menu-settings-architecture.md",
+  "problem": "The KDE tray has a Lay enabled checkbox but no explicit daemon restart. The user requests direct enable/disable/restart controls and immediate installation on remote KDE.",
+  "decision": "Expose a top-level Daemon Lay submenu with start/stop/restart. All three dispatch through the existing lay-runtime-control shell owner and target only lay-daemon.service. Preserve the original full-runtime Lay enabled checkbox and its input-channel semantics.",
+  "guard_change": "The old source test banned a restart label anywhere in the KDE file. Scope that prohibition to its actual diagnostic submenu while retaining global bans in the unchanged GNOME tray/settings. Assert the daemon submenu is outside diagnostics. Actual shell/Qt tests enforce the resulting behavior and error reporting; the old implementation must fail them.",
+  "safety": "No new process/input owner, physical listener, IME delivery path, source selection, automatic privilege grant, IBus/Plasma restart or browser acceptance. A requested daemon-only restart must preserve IBus and user fields.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "evidence": "docs/development/kde-install-control-2026-10-20.md",
+  "schema": "lay.architecture-decision.v1",
+  "reason": "The KDE tray has a Lay enabled checkbox but no explicit daemon restart. The user requests direct enable/disable/restart controls and immediate installation on remote KDE.",
+  "verification_evidence": null,
+  "verification": "Source and bounded native evidence recorded in verification_evidence and the owning document; it does not certify an untested browser matrix.",
+  "not_tested": "Full updated native Firefox/Chrome matrix, physical hardware input and GNOME runtime acceptance for these changed bytes.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05"
+  ],
+  "protected_paths": [
+    "scripts/lay-kde-tray.py",
+    "scripts/lay-runtime-control.sh"
+  ]
+}

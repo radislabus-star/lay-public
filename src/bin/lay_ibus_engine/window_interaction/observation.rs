@@ -37,7 +37,46 @@ pub(super) fn exact_kitty_window(json: &str) -> bool {
             .is_some_and(|value| !value.is_empty())
 }
 
-async fn focused_window_is_kitty() -> bool {
+pub(super) fn exact_kde_kitty_window(observation: &crate::kde_focus::Observation) -> bool {
+    // The canonical provider already authenticates KWin's owner, nonce,
+    // lifetime and UUID. Its identity is not a title or a client hint.
+    if observation.identity.is_empty() {
+        return false;
+    }
+    let Ok(window) = serde_json::from_str::<serde_json::Value>(&observation.info) else {
+        return false;
+    };
+    matches!(
+        window.get("appId").and_then(|v| v.as_str()),
+        // KWin can leave desktopFileName empty for ordinary Kitty launches.
+        // Keep the exact resourceClass and reject a conflicting application ID.
+        Some("" | "kitty" | "kitty.desktop")
+    ) && window.get("wmClass").and_then(|v| v.as_str()) == Some("kitty")
+}
+
+async fn focused_window_is_kitty(backend: lay::desktop::LayoutBackend) -> bool {
+    if backend == lay::desktop::LayoutBackend::Kde {
+        return match crate::kde_focus::read() {
+            Ok(observation) => {
+                let matches = exact_kde_kitty_window(&observation);
+                trace::record(format!(
+                    r#"{{"kind":"ibus_terminal_focus_probe","source":"kwin","matches":{matches}}}"#,
+                ));
+                matches
+            }
+            Err(error) => {
+                trace::record(
+                    serde_json::json!({
+                        "kind": "ibus_terminal_focus_probe",
+                        "source": "kwin",
+                        "error": error.to_string(),
+                    })
+                    .to_string(),
+                );
+                false
+            }
+        };
+    }
     let mut request = Box::pin(async {
         let connection = zbus::Connection::session().await.ok()?;
         let reply = connection
@@ -645,6 +684,23 @@ impl LayIbusEngine {
                     token.matches_word_scope(scope) && admission.revalidate(token)
                 })
         })
+    }
+
+    /// A stock client without surrounding observations can expose only the
+    /// locally tracked word of this live field to an explicit manual replay.
+    /// This is source ownership, not a client delivery acknowledgement.
+    pub(crate) fn context_stock_owned_manual_source_is_current(&self) -> bool {
+        self.context_admission_required
+            && !self.context_handoff_sealed
+            && !self.atomic.active
+            && !self.content_is_sensitive()
+            && !self.client_context.exact_surrounding_refresh_available
+            && !self.client_context.surrounding_text_callback_observed
+            && self.client_context.surrounding_text_snapshot.is_none()
+            && self.client_context.managed_commit_snapshot_floor.is_none()
+            && self.composition.buffer.is_empty()
+            && !self.committed_tail.buffer.is_empty()
+            && self.context_word_is_known()
     }
 
     /// A client can accept an append-only completion while the whole
@@ -1830,6 +1886,25 @@ impl LayIbusEngine {
             self.discard_context_activation();
             return false;
         }
+        let preserve_literal_preedit = self
+            .composition
+            .pending_activation_preedit
+            .take()
+            .is_some_and(|(receipt, focus_serial)| {
+                self.context_owner.is_none()
+                    && !self.atomic.active
+                    && !self.content_is_sensitive()
+                    && self.client_context.preedit_text_supported
+                    && self.client_context.focus_serial == focus_serial
+                    && self.composition.legacy_word_preedit_active
+                    && self.composition.preedit_visible
+                    && !self.composition.buffer.is_empty()
+                    && self.composition.cursor <= self.composition.buffer.chars().count()
+                    && self.committed_tail.buffer == self.composition.buffer
+                    && self.context_admission.as_ref().is_some_and(|admission| {
+                        admission.activation_preserves_literal_input(&receipt, &outcome)
+                    })
+            });
         let installed_outcome = outcome.clone();
         let transferred_exact_snapshot = match &outcome {
             ActivationOutcome::Transfer(grant) => grant.exact_manual_snapshot.as_deref().cloned(),
@@ -1875,6 +1950,14 @@ impl LayIbusEngine {
                                     shared.suppression_revision =
                                         shared.suppression_revision.wrapping_add(1);
                                     Some(rebound)
+                                }
+                                Some(AutocorrectSuppression::LegacyReplayV1) => {
+                                    // Transfer already authenticates the live
+                                    // source owner, field and tail epoch. V1
+                                    // daemon replay has no exact-V2 snapshot
+                                    // handoff; requiring one drops its guard
+                                    // before the replay's trailing Space.
+                                    Some(AutocorrectSuppression::LegacyReplayV1)
                                 }
                                 _ => {
                                     if shared.autocorrect_suppression.take().is_some() {
@@ -1990,9 +2073,11 @@ impl LayIbusEngine {
         self.context_reset_rereceipt = None;
         self.client_context.focus_serial = next_input_identity();
         self.client_context.runtime_owner_lease_identity = next_owner_lease_identity;
-        self.composition.buffer.clear();
-        self.composition.cursor = 0;
-        self.composition.legacy_word_preedit_active = false;
+        if !preserve_literal_preedit {
+            self.composition.buffer.clear();
+            self.composition.cursor = 0;
+            self.composition.legacy_word_preedit_active = false;
+        }
         self.clear_preedit_completion_state();
         self.composition.pending_passthrough_preedit_clear = false;
         if let Some((tail, epoch, suppression)) = transferred {
@@ -2000,7 +2085,14 @@ impl LayIbusEngine {
             self.committed_tail.epoch = epoch;
             self.committed_tail.autocorrect_suppression = suppression;
         } else {
-            self.committed_tail.buffer.clear();
+            // Source-free activation never imports old client text. Only the
+            // exact acquisition's already-consumed, uncommitted preedit may
+            // seed this local mirror; its word remains UnknownStart.
+            self.committed_tail.buffer = if preserve_literal_preedit {
+                self.composition.buffer.clone()
+            } else {
+                String::new()
+            };
             self.committed_tail.epoch =
                 source_free_tail_epoch.expect("source-free activation owns an empty tail epoch");
             self.committed_tail.autocorrect_suppression = None;
@@ -2165,6 +2257,16 @@ impl LayIbusEngine {
             .is_ok();
         if published {
             self.client_context.input_mode_property_refresh_pending = false;
+            // Enable is not repeated when stock IBus attaches another client
+            // to this engine. Ask that client for its actual snapshot only
+            // after the existing Ready owner is installed. The request grants
+            // no word-boundary authority and needs no retry or separate latch.
+            if self.client_context.surrounding_text_supported
+                && !self.content_is_sensitive()
+                && self.live_context_token().is_some()
+            {
+                let _ = output.require_surrounding_text().await;
+            }
         }
         if trace::enabled() {
             trace::record(format!(
@@ -2190,6 +2292,13 @@ impl LayIbusEngine {
             // transfer to UnknownStart before this key runs literally; it does
             // not wait for the compatibility property or marker fence.
             if let Ok(observed) = admission.observe_callback(header, callback_entered).await {
+                if !atomic {
+                    if let Some(receipt) =
+                        admission.pending_literal_input_receipt(&self.path, &observed)
+                    {
+                        return KeyCallbackObservation::PendingLiteral(receipt);
+                    }
+                }
                 self.try_install_pending_context_activation();
                 if !atomic && admission.passive_shift_observation_for(&self.path, &observed) {
                     return KeyCallbackObservation::PassiveShift;
@@ -2207,6 +2316,13 @@ impl LayIbusEngine {
         };
         let callback = match admission.observe_callback(header, callback_entered).await {
             Ok(observed) => {
+                if !atomic {
+                    if let Some(receipt) =
+                        admission.pending_literal_input_receipt(&self.path, &observed)
+                    {
+                        return KeyCallbackObservation::PendingLiteral(receipt);
+                    }
+                }
                 if !atomic && admission.passive_shift_observation_for(&self.path, &observed) {
                     return KeyCallbackObservation::PassiveShift;
                 }
@@ -3958,8 +4074,12 @@ impl LayIbusEngine {
     }
 
     /// Native callbacks settle the projected tail before the client necessarily
-    /// reports it. A closed KnownStart boundary alone cannot confirm delivery.
+    /// reports it. Stock fields can retain their locally tracked manual source;
+    /// this does not acknowledge client delivery or authorize learning.
     pub(crate) fn completed_native_replay_awaits_exact_receipt(&self) -> bool {
+        if self.context_stock_owned_manual_source_is_current() {
+            return false;
+        }
         if self.context_word_scope.as_ref().is_none_or(|scope| {
             scope.lineage().completeness != WordCompleteness::KnownStart
                 || scope.lineage().observed_suffix_chars != 0
@@ -4410,6 +4530,37 @@ fn observed_tail_append_effect(before: &str, after: &str) -> Option<(u32, u32, O
 mod tests;
 
 impl LayIbusEngine {
+    pub(crate) async fn refresh_terminal_focus_if_ready(&mut self) {
+        let focus_serial = self.client_context.focus_serial;
+        let focus_receipt = self.terminal_input_focus_receipt();
+        if !(5..=32).contains(&self.client_context.cursor_cell_width)
+            || !self.client_context.preedit_text_supported
+            || self.client_context.surrounding_text_supported
+            || self.client_context.content_purpose != 0
+            || focus_receipt.is_none()
+            || self.client_context.kitty_terminal_focus_receipt.as_deref()
+                == focus_receipt.as_deref()
+            || self.client_context.kitty_focus_probe_serial == Some(focus_serial)
+        {
+            return;
+        }
+        self.client_context.kitty_focus_probe_serial = Some(focus_serial);
+        let backend = self.config.active_layout_backend();
+        let started = std::time::Instant::now();
+        let is_kitty = focused_window_is_kitty(backend).await;
+        if self.finish_kitty_focus_probe(focus_receipt.as_deref(), is_kitty) {
+            let source = if backend == lay::desktop::LayoutBackend::Kde {
+                "canonical_kwin_kitty_window"
+            } else {
+                "gnome_exact_kitty_window"
+            };
+            trace::record(format!(
+                r#"{{"kind":"ibus_terminal_focus","source":"{source}","elapsed_us":{}}}"#,
+                started.elapsed().as_micros(),
+            ));
+        }
+    }
+
     pub(crate) fn set_client_capabilities(&mut self, caps: u32) {
         let surrounding_text_was_supported = self.client_context.surrounding_text_supported;
         let preedit_text_was_supported = self.client_context.preedit_text_supported;
@@ -4776,22 +4927,6 @@ impl ClientContextState {
             managed_input,
         }
     }
-
-    pub(super) fn finish_kitty_focus_probe(
-        &mut self,
-        expected_focus_receipt: Option<&str>,
-        is_kitty: bool,
-    ) -> bool {
-        let Some(expected_focus_receipt) = expected_focus_receipt else {
-            return false;
-        };
-        if self.focus_receipt.as_deref() != Some(expected_focus_receipt) {
-            return false;
-        }
-        self.kitty_focus_probe_serial = Some(self.focus_serial);
-        self.kitty_terminal_focus_receipt = is_kitty.then(|| expected_focus_receipt.to_string());
-        is_kitty
-    }
 }
 
 pub(crate) struct WindowInteraction;
@@ -4974,11 +5109,20 @@ impl WindowInteraction {
         let observation = engine
             .begin_context_key_callback(header, callback_entered, false)
             .await;
-        let (callback, passive_shift) = match observation {
-            KeyCallbackObservation::Owned(callback) => (Some(*callback), false),
-            KeyCallbackObservation::PassiveShift => (None, true),
-            KeyCallbackObservation::Refused => (None, false),
+        let (callback, passive_shift, pending_literal) = match observation {
+            KeyCallbackObservation::Owned(callback) => (Some(*callback), false, None),
+            KeyCallbackObservation::PassiveShift => (None, true, None),
+            KeyCallbackObservation::PendingLiteral(receipt) => (None, false, Some(receipt)),
+            KeyCallbackObservation::Refused => (None, false, None),
         };
+        let pending_literal_observed = pending_literal.is_some();
+        let pending_preedit_start = pending_literal
+            .filter(|_| {
+                engine.context_owner.is_none()
+                    && is_key_press(state)
+                    && engine.composition.buffer.is_empty()
+            })
+            .map(|receipt| (receipt, engine.client_context.focus_serial));
         if passive_shift && !is_shift_key(keyval) {
             engine.revoke_context_word();
             return Ok(false);
@@ -5091,11 +5235,20 @@ impl WindowInteraction {
             .await;
         if result.is_ok() {
             let handled = result.as_ref().is_ok_and(|handled| *handled);
+            if handled
+                && engine.composition.legacy_word_preedit_active
+                && !engine.composition.buffer.is_empty()
+                && engine.composition.buffer == engine.committed_tail.buffer
+            {
+                if let Some(receipt) = pending_preedit_start {
+                    engine.composition.pending_activation_preedit = Some(receipt);
+                }
+            }
             if passive_shift {
                 if handled || engine.committed_tail.buffer != tail_before {
                     engine.revoke_context_word();
                 }
-            } else {
+            } else if !pending_literal_observed {
                 engine.settle_context_key_callback(
                     callback.as_ref(),
                     keyval,
@@ -5548,31 +5701,7 @@ impl WindowInteraction {
             } => {
                 engine.client_context.cursor_cell_width = width;
                 trace::record_cursor_location(x, y, width, height);
-                let focus_serial = engine.client_context.focus_serial;
-                let focus_receipt = engine.client_context.focus_receipt.clone();
-                if (5..=32).contains(&width)
-                    && engine.client_context.preedit_text_supported
-                    && !engine.client_context.surrounding_text_supported
-                    && engine.client_context.content_purpose == 0
-                    && focus_receipt.is_some()
-                    && engine
-                        .client_context
-                        .kitty_terminal_focus_receipt
-                        .as_deref()
-                        != focus_receipt.as_deref()
-                    && engine.client_context.kitty_focus_probe_serial != Some(focus_serial)
-                {
-                    engine.client_context.kitty_focus_probe_serial = Some(focus_serial);
-                    let is_kitty = focused_window_is_kitty().await;
-                    if engine
-                        .client_context
-                        .finish_kitty_focus_probe(focus_receipt.as_deref(), is_kitty)
-                    {
-                        trace::record(
-                            r#"{"kind":"ibus_terminal_focus","source":"gnome_exact_kitty_window"}"#,
-                        );
-                    }
-                }
+                engine.refresh_terminal_focus_if_ready().await;
                 if !engine.atomic.active {
                     let output = output.as_deref_mut().ok_or_else(|| {
                         fdo::Error::Failed("cursor observation requires output".into())

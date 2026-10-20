@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, Device, EventType, InputEvent, KeyCode};
+use crate::native_input::VirtualDevice;
+use evdev::{Device, EventType, InputEvent, KeyCode};
 use lay::keyboard::is_typing_key;
 use std::sync::{Arc, Mutex, MutexGuard};
 
@@ -44,7 +45,7 @@ pub(super) fn find_all_keyboards() -> std::io::Result<Vec<std::path::PathBuf>> {
     if found.is_empty() {
         return Err(std::io::Error::new(
             std::io::ErrorKind::NotFound,
-            "клавиатура не найдена. Возможно нет группы input — проверь `id`",
+            "no accessible keyboard; open Lay → Diagnostics → Keyboard access (lay-input-access)",
         ));
     }
     Ok(found)

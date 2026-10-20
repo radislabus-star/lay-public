@@ -11,7 +11,9 @@ mod observable_state;
 #[path = "text_output/replacement.rs"]
 mod replacement;
 
-pub(super) use device::{make_virtual_keyboard, virtual_keyboard_supports_key};
+pub(super) use device::{
+    make_virtual_keyboard, virtual_keyboard_supports_key, VIRTUAL_KEYBOARD_KEYS,
+};
 pub(super) use key_emit::{
     emit_backspaces, emit_closed_key_chord, emit_key_taps_fast, emit_left_shift_pair_fast,
     release_all_virtual_keys, replay_keycodes,

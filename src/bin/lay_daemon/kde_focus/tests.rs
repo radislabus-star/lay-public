@@ -14,6 +14,13 @@ fn reply(uuid: &str, title: &str) -> RawWindow {
 }
 
 #[test]
+fn occupied_provider_refuses_instead_of_waiting_or_starting_ipc() {
+    with_occupied_provider_for_test(|| {
+        assert!(matches!(read(), Err(ReadError::Busy)));
+    });
+}
+
+#[test]
 fn only_current_authenticated_request_can_supply_foreground() {
     let mailbox = Mailbox::default();
     let deadline = Instant::now() + Duration::from_secs(1);
@@ -134,45 +141,6 @@ fn script_is_request_bound_and_contains_no_text_or_layout_mutation() {
     assert!(!source.contains("QTimer"));
     assert!(!source.contains("setLayout"));
     assert!(!source.contains("activateClient"));
-}
-
-#[test]
-fn kde_consumer_uses_uuid_and_preserves_existing_tab_narrowing() {
-    let terminal = |uuid, title| {
-        super::super::focus_guard::kde_window_state(observation(
-            "bus1",
-            ":1.5",
-            1,
-            reply(uuid, title).validate().unwrap(),
-        ))
-    };
-    let first = terminal(WINDOW_A, "shell");
-    assert!(!first.ignored);
-    assert_eq!(first.identity, terminal(WINDOW_A, "vim").identity);
-    assert_ne!(first.identity, terminal(WINDOW_B, "shell").identity);
-    let mut browser = reply(WINDOW_A, "tab one");
-    browser.app = "org.mozilla.firefox".into();
-    let a = super::super::focus_guard::kde_window_state(observation(
-        "bus1",
-        ":1.5",
-        1,
-        browser.clone().validate().unwrap(),
-    ));
-    browser.title = "tab two".into();
-    let b = super::super::focus_guard::kde_window_state(observation(
-        "bus1",
-        ":1.5",
-        1,
-        browser.validate().unwrap(),
-    ));
-    assert_ne!(a.identity, b.identity);
-}
-
-#[test]
-fn kde_provider_error_invalidates_and_pauses_instead_of_retaining_old_focus() {
-    let state = super::super::focus_guard::unavailable_kde_focus();
-    assert!(state.ignored);
-    assert!(state.identity.is_none());
 }
 
 #[derive(Default)]

@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "kde-configured-replay-decoder-2026-10-20",
+  "status": "candidate",
+  "date": "2026-10-20",
+  "invariants": [
+    "C09",
+    "C10"
+  ],
+  "owner": "existing KDE layout-controller transaction",
+  "first_failed_transition": "configured replay verifies the KDE group but leaves the focused Lay decoder in the source mode",
+  "reason": "The native trace shows complete replay delivered to an IME decoder still in the source mode. Group selection alone does not verify decoder readiness.",
+  "decision": "Reuse the existing pinned KDE layout transaction before configured replay deletion. Retain output route, focus/lifetime checks, mutation authority and one-shot restoration; no new transport or client exception.",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "evidence": [
+    "terminal-daemon-shared-dispatch-kitty-v1-engine/engine-trace.jsonl",
+    "terminal-lifetime-delay-probe-v2/restoration.json"
+  ],
+  "verification": "Pinned KDE transaction tests pass 8/8; the same-mode refinement adds two controls, proof pending. Installed decoder-v1 native trace decodes Latin replay correctly but following Space autocorrection undoes it; suppression settlement is a separate recorded defect. The rejected lifetime delay is restored.",
+  "not_tested": "Final same-mode refinement and final-byte native matrices are pending. Decoder repair alone does not establish functional terminal acceptance or visual styling.",
+  "protected_paths": ["src/bin/lay_daemon/correction_runtime/output/replay/preflight.rs", "src/bin/lay_daemon/layout_controller.rs", "src/bin/lay_daemon/layout_controller/kde_exact.rs", "src/bin/lay_daemon/layout_controller/kde_exact/tests.rs"],
+  "runtime_authority_changed": false
+}

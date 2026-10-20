@@ -282,10 +282,23 @@ where
         if state.terminated {
             return Lookup::Failed(RendezvousFailure::ObserverTerminated);
         }
-        if state.connection != guard.connection
-            || state.owner != guard.owner
-            || state.revocation != guard.revocation
-        {
+        if state.connection != guard.connection {
+            return Lookup::Failed(RendezvousFailure::Revoked);
+        }
+        if state.owner != guard.owner || state.revocation != guard.revocation {
+            // Ready may replace the owner after authenticated literal ingress.
+            // Only this exact, already-published non-authoritative stamp may
+            // survive. Key/lifecycle stamps retain their strict epoch guard.
+            if let Some(CallbackRecord::Observed(stamp)) =
+                state.stamps.iter().find(|record| record.header() == key)
+            {
+                if matches!(
+                    stamp.disposition,
+                    super::IngressDisposition::PendingLiteral(_)
+                ) {
+                    return Lookup::Stamp(stamp.clone());
+                }
+            }
             return Lookup::Failed(RendezvousFailure::Revoked);
         }
         if let Some(record) = state.stamps.iter().find(|record| record.header() == key) {

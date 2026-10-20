@@ -47,6 +47,10 @@ pub(crate) struct CompositionState {
     /// The unfinished word is owned as legacy IBus preedit, so its boundary
     /// may commit a verified replacement without editing application text.
     pub(crate) legacy_word_preedit_active: bool,
+    /// Already-consumed literal input, bound to its still-pending acquisition
+    /// and local focus serial. This is preservation evidence, not edit authority.
+    pub(crate) pending_activation_preedit:
+        Option<(crate::context_admission::PendingLiteralInputReceipt, u64)>,
     /// Exact observed start transferred before this uncommitted word's first
     /// key clears the surrounding snapshot. It grants append-only acceptance
     /// only in the same current owner and uninterrupted local input chain.

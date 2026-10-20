@@ -56,6 +56,20 @@ cmp -s "$FIXTURE" "$HOME_OK/cache/$PACKAGE_NAME"
 grep -q 'verified exact V13 sidecar fixture' "$HOME_OK/models/$SIDECAR_NAME"
 test -x "$HOME_OK/libexec/lay"
 test -L "$HOME_OK/bin/lay"
+test -x "$HOME_OK/bin/lay-input-access"
+for resource in scripts/setup-input-access.sh udev/70-lay-input.rules \
+    udev/99-lay-uinput.legacy.rules systemd/lay-uinput.conf; do
+    cmp -s "$ROOT/$resource" "$HOME_OK/libexec/input-access/$resource"
+done
+# Installed resource lookup must work without the source checkout.
+/usr/bin/python3 - "$HOME_OK/bin/lay-input-access" "$HOME_OK/libexec" <<'PY'
+import importlib.machinery, importlib.util, pathlib, sys
+loader = importlib.machinery.SourceFileLoader('installed_access', sys.argv[1])
+spec = importlib.util.spec_from_loader(loader.name, loader)
+module = importlib.util.module_from_spec(spec)
+loader.exec_module(module)
+assert module.setup_helper() == pathlib.Path(sys.argv[2]) / 'input-access/scripts/setup-input-access.sh'
+PY
 
 echo "== offline update reuses the verified installed package =="
 rm -rf "$HOME_OK/cache"

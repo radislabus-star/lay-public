@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, KeyCode};
+use crate::native_input::VirtualDevice;
+use evdev::KeyCode;
 use lay::config::LayConfig;
 use lay::word_buffer::WordBuffer;
 use std::sync::{Arc, Mutex};

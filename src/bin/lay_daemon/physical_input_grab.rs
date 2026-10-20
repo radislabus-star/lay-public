@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, Device, EventType, KeyCode};
+use crate::native_input::{Device, VirtualDevice};
+use evdev::{EventType, KeyCode};
 use lay::keyboard::{is_typing_key, KeyEvent};
 use lay::word_buffer::WordBuffer;
 use std::os::fd::{AsRawFd, RawFd};

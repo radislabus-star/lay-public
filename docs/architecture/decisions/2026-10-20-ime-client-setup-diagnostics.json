@@ -1,0 +1,34 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Expose reversible application IME setup and read-only session diagnostics through the existing GNOME/KDE menus and after IME startup failure.",
+  "reason": "A connected fixture did not certify an ordinary Kitty launch. Missing application IME configuration and startup errors were invisible to the user. Setup must explain the actual session gap without replacing an explicit input framework or restarting user applications.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C06",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/lay-ime-client-setup.py",
+    "scripts/lay-runtime-control.sh",
+    "scripts/lay-kde-tray.py",
+    "extension/lay@radislabus-star.github.io/lay-impl.js",
+    "extension/lay@radislabus-star.github.io/tray_support.js",
+    "install.sh",
+    "uninstall.sh",
+    "tests/test_ime_client_setup.py",
+    "tests/test_kde_ime_startup.py",
+    "tests/test_kde_daemon_control.py"
+  ],
+  "verification": "Disposable-home setup/startup and actual offscreen Qt menu actions: 27 PASS (remote setup-validation-v1.log). Additional platform scoping check pending. Menu action executes lay-ime-setup --gui; helper launch preserves the actual IME startup failure status. Existing daemon-only controls do not launch setup. These are not native client acceptance.",
+  "not_tested": "New GUI and generic session defaults are not installed or physically accepted. Does not certify a reconnect of already-running applications, Fcitx support, Wayland or a fresh full desktop login.",
+  "runtime_authority_changed": false,
+  "source_head": "fd3c19fa11da8618b4ed4f684f5e0c6252014bcc",
+  "consequences": {
+    "owner": "Existing installer and menu/runtime controller; helper only configures application clients and reports session state.",
+    "scope": "Unset-only GTK/Qt/XMODIFIERS/GLFW session defaults and a reversible Kitty desktop command; preserve custom files and other explicit IME selections. Automatic missing-environment explanation is scoped to KDE X11: missing variables alone do not prove a GNOME/Wayland application is disconnected. Show diagnostics on actual IBus absence, non-Lay engine or explicit conflicting input method.",
+    "failure": "Keep IME startup exit status even if setup is launched. Show setup launch errors visibly. A successful bus query or configuration write never claims Tab/client acceptance.",
+    "rollback": "Remove only exact owned current/previous setup files and strip owned Kitty launch prefix while preserving subsequent user edits. Do not restart IBus, the desktop or working client windows."
+  }
+}

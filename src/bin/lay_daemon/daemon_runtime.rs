@@ -1,4 +1,5 @@
-use evdev::{uinput::VirtualDevice, Device, EventType, InputEvent, KeyCode};
+use crate::native_input::{Device, VirtualDevice};
+use evdev::{EventType, InputEvent, KeyCode};
 use lay::config::LayConfig;
 use lay::keyboard::is_typing_key;
 use std::os::fd::AsRawFd;
@@ -170,6 +171,7 @@ pub(super) fn listen_keyboard(
         }
 
         for (event_idx, event) in events.iter().enumerate() {
+            device.set_batch_pending(event_idx + 1 < events.len());
             if event.event_type() != EventType::KEY {
                 continue;
             }

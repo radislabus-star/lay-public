@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Keep the session selection claim, but create the owned replay master only inside the existing original-master freeze. For a completed frame, retain its same-client focus until original-input thaw, then retire it immediately. Reuse the existing exact IME tail settlement before thaw.",
+  "reason": "Native differential receipts plain-input-chrome-on/off show ordinary Chrome input fails only with the persistent extra master. Chromium TouchFactory selects the last master keyboard and filters other keyboard device IDs. Firefox is unaffected. A fresh active Sync slave probe without XIAllowEvents also loses original events on ungrab, so that alternative remains rejected. An ephemeral device alone is insufficient for a slow client: it must remain present until the existing IME committed-tail observation settles. No application-specific branch or new semantic owner is introduced.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/native_input.rs",
+    "src/bin/lay_daemon/native_input/x11.rs",
+    "src/bin/lay_daemon/native_input/replay_master.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs"
+  ],
+  "runtime_authority_changed": false,
+  "verification": "Require an idle-master regression RED on the old adapter, original input freeze/output/thaw and cleanup proofs, generation-safe teardown and map/focus/pointer negative controls, a client selecting one master across repeated acquisition/retirement, then installed native GTK/Qt and complete Firefox/Chrome receipts and timings. Do not substitute historical browser counts. A settlement failure is indeterminate and must not retry an edit. AddMaster also overwrites the root _XKB_RULES_NAMES with server defaults: preserve its exact value or absence in a short server-locked resource transaction, never across compilation, output or IBus. No other client can change layout metadata between this snapshot and restoration. The bounded snapshot rejects oversized metadata. Require a RED/GREEN regression for active/retired resources with both present and absent metadata, and renewed native KDE acceptance. Focus-thaw correction: a fresh owned Qt probe proves that thaw-before-remove preserves core and XI2 client focus; remove-before-thaw emits a false core Nonlinear FocusOut which KWin treats as deactivation. No focus assignment to the original master and no child-grab workaround are allowed. Renew all FIFO, rapid input, idle-device and native client proofs; held failed output is still released before original input is thawed.",
+  "not_tested": "Implementation and new client acceptance pending at this decision. Physical evdev, Wayland and other remote servers remain outside the new native evidence. No global IBus restart, IME delivery route, gesture recognizer, verifier or SafetyGate is changed."
+}

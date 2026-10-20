@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "level-modifier-word-lease-2026-10-20",
+  "status": "SOURCE_REGRESSION_REPRODUCED_NATIVE_PENDING",
+  "owner": "docs/development/remote-x11-input-2026-10-20.md",
+  "invariants": ["C01", "C03", "C04", "C06", "C08"],
+  "problem": "Real VNC input wraps Cyrillic letters in ISO_Level3_Shift press/release. Alt completion preparation and the paired used-as-modifier release invalidate the owned word's Space worker despite no client text edit. The retained input-frame value alone does not detect that its worker lease was destroyed.",
+  "reason": "A pure modifier edge does not edit the word; retiring its existing worker lease loses an admitted correction before the following Space.",
+  "decision": "Keep an admitted word across pure Alt/level-modifier preparation and its paired used-as-modifier release. Preserve existing Shift+Alt, unhandled client-key, standalone failed completion, unpaired release, focus, layout and admission revocation. No candidate, rank, output executor, timer, privacy exception or gesture owner changes.",
+  "alternatives": [
+    {"option": "Preserve the exact lease across zero-text modifier edges", "score": 9},
+    {"option": "Remove AltGr completion", "score": 5},
+    {"option": "Add a VNC-specific retry or wait", "score": 2}
+  ],
+  "verification": "Wire capture plus a regression asserting the worker lease, exact correction surface and absence of surrounding deletion. Existing standalone failed-Alt and confirmed-reset completion controls remain mandatory. Actual native acceptance must use installed bytes separately.",
+  "not_tested": "Other remote transports and future client bytes are not established by the retained source and native receipts.",
+  "protected_paths": ["src/bin/lay_ibus_engine/ibus_interface.rs"],
+  "runtime_authority_changed": false
+}

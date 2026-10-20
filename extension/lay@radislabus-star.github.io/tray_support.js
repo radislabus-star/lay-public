@@ -1,11 +1,12 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 
-export const CONFIG_PATH = GLib.get_home_dir() + '/.config/lay/config.json';
+export const CONFIG_PATH = GLib.getenv('LAY_CONFIG_PATH')
+    || GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.93';
-export const APP_RELEASE_DATE = '2026-10-19';
+export const APP_VERSION = '1.0.94';
+export const APP_RELEASE_DATE = '2026-10-20';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
@@ -255,6 +256,17 @@ export function openUpdateCheck(onError) {
     } catch (error) {
         onError(error.message);
     }
+}
+
+export function openInputAccess(onError, imeSetup = false) {
+    const command = `${GLib.get_home_dir()}/.local/bin/${imeSetup ? 'lay-ime-setup' : 'lay-input-access'}`;
+    try {
+        const child = Gio.Subprocess.new(imeSetup ? [command, '--gui'] : [command], Gio.SubprocessFlags.NONE);
+        child.wait_check_async(null, (process, result) => {
+            try { process.wait_check_finish(result); }
+            catch (error) { onError('Не удалось открыть диагностику Lay. Повтори установку Lay.'); }
+        });
+    } catch (error) { onError(error.message); }
 }
 
 export function autoUpdateControl(action, onDone, onError) {

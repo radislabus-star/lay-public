@@ -1,0 +1,46 @@
+{
+  "id": "ibus-unset-bootstrap-profile-confirmation-2026-10-19",
+  "status": "IMPLEMENTED_PENDING_CLIENT_VERIFICATION",
+  "owner": "docs/architecture/firefox-input-stability-2026-10-05.md",
+  "problem": "Stock IBus 1.5.26 can answer No global engine during Lay bootstrap, then construct the same selected Lay name without emitting GlobalEngineChanged. Factory and context acquisition proceed, but the profile remains Unset and admission never becomes Ready.",
+  "decision": "Only for an Unset profile in the current acquisition, read GlobalEngine once on the existing IBus connection after accepting the context observation and before the existing ordered marker. Strictly decode the actual descriptor and confirm the exact reserved profile in ContextAdmissionReducer.",
+  "alternatives": [
+    {
+      "option": "Require an input-source switch on every cold restart",
+      "score": 2,
+      "reason": "User workaround leaves installer/startup broken."
+    },
+    {
+      "option": "Trust CreateEngine name alone",
+      "score": 1,
+      "reason": "Requested profile does not establish actual global selection."
+    },
+    {
+      "option": "Bounded current-acquisition property confirmation",
+      "score": 9,
+      "reason": "Observes actual selection, reuses the existing owner, request and deadline; adds no steady-state key query."
+    }
+  ],
+  "safety": "Same connection, request generation, nonce, revision and original deadline. Exact SourceFree target, context observation before profile observation, strict Lay identity, existing marker before consumption. Foreign, malformed, wrong-Lay, timeout, cancellation and revoked requests cannot gain authority. No old text transfer.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "verification": "Source and bounded native evidence recorded in verification_evidence and the owning document; it does not certify an untested browser matrix.",
+  "evidence_root": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018",
+  "schema": "lay.architecture-decision.v1",
+  "reason": "Stock IBus 1.5.26 can answer No global engine during Lay bootstrap, then construct the same selected Lay name without emitting GlobalEngineChanged. Factory and context acquisition proceed, but the profile remains Unset and admission never becomes Ready.",
+  "verification_evidence": {
+    "red": "unset-global-engine-red-source-one/RESULT.json: one real-zbus compatibility regression fails before the repair.",
+    "source": "Five regression checks passed in unset-global-engine-green-source-two/FOCUSED.log; its worker incorrectly expected six and retained FAIL for report cardinality, not a test failure. Full affected source gate and client observation pending.",
+    "native": "NOT_TESTED"
+  },
+  "not_tested": "Full updated native Firefox/Chrome matrix, physical hardware input and GNOME runtime acceptance for these changed bytes.",
+  "invariants": [
+    "C01",
+    "C04",
+    "C05"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs"
+  ]
+}

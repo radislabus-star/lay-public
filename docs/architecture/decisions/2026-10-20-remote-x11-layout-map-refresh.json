@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Keep physical XKB key-name identity immutable while admitting ordinary symbol-map replacement. Before output, validate source/master agreement and reconcile only owned replay maps, with no synthetic key held. Refuse changed physical names, topology, incoherent maps, a map change during preparation or a map change while output is held.",
+  "reason": "Real focused GTK/RFB receipts v6/v7 show IBus RU followed by KDE US/RU map replacement, unchanged physical names, and daemon termination before Double Shift. The previous blanket invalidation confused normal layout control with device loss and discarded the sole daemon FSM state. The existing map baseline and output preparation are the owning mechanism; no second gesture or edit owner is added.",
+  "invariants": ["C01", "C04", "C05", "C09", "C10"],
+  "protected_paths": ["src/bin/lay_daemon/native_input.rs", "src/bin/lay_daemon/startup_runtime.rs", "docs/double-shift-physical-layout-contract.md"],
+  "runtime_authority_changed": false,
+  "verification": "Require RED on the previous implementation for the idle RU/multigroup transition, GREEN for it and held-output/names/topology negative controls, then installed real VNC GTK/Qt/browser acceptance. Exact receipts belong to docs/development/remote-x11-input-2026-10-20.md.",
+  "not_tested": "A passing map reconciliation test is not client edit, hint, Tab, latency, physical evdev or Wayland acceptance. No source/master map is modified by the adapter."
+}

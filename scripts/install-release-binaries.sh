@@ -58,6 +58,16 @@ done
 install_binary lay-l11-restore lay-l1.1-restore
 install_binary lay-l11-serve lay-l1.1-serve
 
+# Keep the diagnostic and its existing provisioning payload with managed runtime
+# files, so updates replace them and normal uninstall removes them together.
+install -m 0755 "$ROOT/scripts/lay-input-access.py" "$INSTALL_DIR/.lay-input-access.tmp.$$"
+mv -f "$INSTALL_DIR/.lay-input-access.tmp.$$" "$INSTALL_DIR/lay-input-access"
+ln -sfn "$INSTALL_DIR/lay-input-access" "$LINK_DIR/lay-input-access"
+for resource in scripts/setup-input-access.sh udev/70-lay-input.rules \
+    udev/99-lay-uinput.legacy.rules systemd/lay-uinput.conf; do
+  install -D -m 0644 "$ROOT/$resource" "$INSTALL_DIR/input-access/$resource"
+done
+
 mkdir -p "$L2_PACKAGE_DIR"
 L2_PACKAGE_DESTINATION="$L2_PACKAGE_DIR/$L2_PACKAGE_NAME"
 L2_PACKAGE_TEMPORARY="$L2_PACKAGE_DIR/.${L2_PACKAGE_NAME}.tmp.$$"

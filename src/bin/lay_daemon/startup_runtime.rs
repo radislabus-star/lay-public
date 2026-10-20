@@ -1,8 +1,10 @@
-use evdev::{uinput::VirtualDevice, Device};
+use crate::native_input::VirtualDevice;
+use evdev::Device;
 use lay::config::{CorrectionEngine, LayConfig};
 use lay::desktop::LayoutBackend;
 use std::collections::HashSet;
 use std::path::PathBuf;
+use std::process::{Child, Command, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
@@ -43,6 +45,39 @@ pub(super) fn run_daemon(
     startup_sanitize::sanitize_user_replacements();
     warm_runtime_if_needed(detect_only, &startup_cfg);
     probe_backends(detect_only, startup_backend, &startup_cfg);
+
+    if explicit_device.is_none() && super::native_input::x11::session_supported() {
+        let epoch = Arc::new(AtomicU64::new(0));
+        match super::native_input::x11::open(Arc::clone(&epoch)) {
+            Ok((input, output)) => {
+                eprintln!("lay: X11 session keyboard ready (remote input, native replay)");
+                let virtual_kbd = Arc::new(Mutex::new(if detect_only {
+                    None
+                } else {
+                    Some(VirtualDevice::X11(Box::new(output)))
+                }));
+                let _lifetime = ListenerEpoch::enter(Arc::clone(&epoch));
+                // One acquisition backend for the session, the same loop/FSM/dispatch.
+                return listen_keyboard(
+                    PathBuf::from("x11-session"),
+                    super::native_input::Device::X11(Box::new(input)),
+                    virtual_kbd,
+                    epoch,
+                    verbose,
+                    startup_cfg,
+                );
+            }
+            Err(error) => {
+                // A supported remote session can change its map while KDE
+                // reacts to the new owned master. Let the existing supervisor
+                // reopen it; evdev cannot recover a keyboard-less session.
+                if super::native_input::x11::status()["ready"] == true {
+                    return Err(error);
+                }
+                eprintln!("lay: native X11 input unavailable ({error}); using evdev");
+            }
+        }
+    }
 
     maintain_input_devices(explicit_device, detect_only, verbose)
 }
@@ -155,6 +190,8 @@ fn maintain_input_devices(
     let mut listeners = Listeners::new();
     let mut listener_warnings = HashSet::new();
     let (mut output_warning, mut keyboard_warning, mut pointer_warning) = (false, false, false);
+    let mut access_prompted = false;
+    let mut access_window: Option<Child> = None;
 
     while !SHUTDOWN_REQUESTED.load(Ordering::Acquire) {
         match recover_output(
@@ -179,6 +216,38 @@ fn maintain_input_devices(
         );
         report_device_access("keyboards", keyboards.as_ref().err(), &mut keyboard_warning);
         report_device_access("pointers", pointers.as_ref().err(), &mut pointer_warning);
+        if let Some(child) = access_window.as_mut() {
+            match child.try_wait() {
+                Ok(None) => {}
+                Ok(Some(status)) => {
+                    if !status.success() {
+                        eprintln!("lay: input-access window failed ({status}); run lay-input-access --json");
+                    }
+                    access_window = None;
+                }
+                Err(error) => {
+                    eprintln!("lay: input-access window status unavailable: {error}");
+                    access_window = None;
+                }
+            }
+        }
+        if !detect_only && !access_prompted && (keyboard_warning || output_warning) {
+            access_prompted = true;
+            // A one-shot explanation, never another input listener or retry owner.
+            let spawned = std::env::current_exe().and_then(|exe| {
+                Command::new(exe.with_file_name("lay-input-access"))
+                    .arg("--show-if-needed")
+                    .stdin(Stdio::null())
+                    .stdout(Stdio::null())
+                    .spawn()
+            });
+            match spawned {
+                Ok(child) => access_window = Some(child),
+                Err(error) => eprintln!(
+                    "lay: cannot open input-access window ({error}); run lay-input-access --json"
+                ),
+            }
+        }
         let desired: Vec<_> = keyboards
             .unwrap_or_default()
             .into_iter()
@@ -217,7 +286,7 @@ fn maintain_input_devices(
                     let result = match kind {
                         DeviceKind::Keyboard => listen_keyboard(
                             path,
-                            device,
+                            super::native_input::Device::Evdev(Box::new(device)),
                             virtual_kbd,
                             field_context_epoch,
                             verbose,

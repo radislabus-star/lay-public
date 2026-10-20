@@ -22,6 +22,8 @@ mod engine;
 mod factory;
 #[path = "lay_ibus_engine/ibus_interface.rs"]
 mod ibus_interface;
+#[path = "lay_daemon/kde_focus.rs"]
+mod kde_focus;
 #[path = "lay_ibus_engine/key_decode.rs"]
 mod key_decode;
 #[path = "lay_ibus_engine/key_trace.rs"]

@@ -18,7 +18,7 @@ use std::time::{Duration, Instant};
 pub(crate) use adapter::tests::word_scope::residuals::assert_window_interaction_reset_rereceipt_contract;
 pub(crate) use adapter::{
     ActivationOutcome, AdapterConfig, AdapterError, ContextAdmissionAdapter, KeyCallback,
-    KeyCallbackObservation, PendingContextAdapter, PendingFence,
+    KeyCallbackObservation, PendingContextAdapter, PendingFence, PendingLiteralInputReceipt,
 };
 pub(crate) use ordered_merge::{join_ordered_streams, next_ordered_message};
 pub(crate) use rendezvous::{
@@ -341,6 +341,8 @@ pub(crate) enum IngressDisposition {
     // A parsed legacy Shift at the exact pending factory target. It carries
     // no key queue entry, word owner or mutation authority.
     PassiveShift,
+    // Immutable native input provenance, without key or edit authority.
+    PendingLiteral(PendingLiteralInputReceipt),
     Key {
         owner: EngineOwner,
         revocation: u64,
@@ -1861,6 +1863,48 @@ where
         request.marker_position = Some(position);
         self.try_ready();
         self.status() == AdmissionStatus::Ready
+    }
+
+    /// Resolve a cold bootstrap that preceded IBus installing its engine.
+    /// A same-name activation need not emit GlobalEngineChanged. The property
+    /// observation still belongs to this exact acquisition and cannot revive it.
+    pub(crate) fn confirm_unset_global_profile(
+        &mut self,
+        generation: RequestGeneration,
+        nonce: BarrierNonce,
+        profile: GlobalProfile,
+        position: P,
+    ) -> bool {
+        let Some(request) = self.request.as_ref() else {
+            return false;
+        };
+        if request.generation != generation {
+            return false;
+        }
+        let valid_request = request.nonce == nonce
+            && request.lifecycle_revision == self.revocation
+            && request.target == RequestTarget::SourceFree
+            && request.marker_position.is_none()
+            && request
+                .reply
+                .as_ref()
+                .is_some_and(|(_, reply)| position > *reply)
+            && self.mode == GlobalEngineMode::Verified;
+        let expected = self
+            .source_free
+            .as_ref()
+            .filter(|activation| activation.status == TicketStatus::Pending)
+            .map(|activation| &activation.expected_target_profile);
+        let matches_profile = expected.is_some_and(|expected| {
+            matches!(&profile, GlobalProfile::Lay(actual) if actual == expected)
+                && (self.profile == GlobalProfile::Unset || self.profile == profile)
+        });
+        if !valid_request || !matches_profile {
+            self.revoke();
+            return false;
+        }
+        self.global_engine_changed(profile);
+        true
     }
 
     pub(crate) fn global_engine_changed(&mut self, profile: GlobalProfile) {

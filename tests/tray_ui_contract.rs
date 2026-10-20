@@ -221,10 +221,25 @@ fn diagnostics_are_observational_and_enablement_has_one_explicit_owner() {
     let kde = read("scripts/lay-kde-tray.py");
     for source in [&tray, &settings, &kde] {
         assert!(source.contains("Открыть журнал") || source.contains("Журнал Lay"));
-        assert!(!source.contains("Перезапустить демон"));
         assert!(!source.contains("Перезапустить службы"));
         assert!(!source.contains("Демон включён"));
     }
+    for source in [&tray, &settings] {
+        assert!(!source.contains("Перезапустить демон"));
+    }
+    // Explicit KDE daemon controls live outside observational diagnostics.
+    // Decision: 2026-10-20-kde-explicit-daemon-controls.json.
+    let diagnostic_start = kde.find("diagnostics = self.menu.addMenu").unwrap();
+    let diagnostic_end = kde[diagnostic_start..]
+        .find("self._refresh_status()")
+        .unwrap();
+    let diagnostics = &kde[diagnostic_start..diagnostic_start + diagnostic_end];
+    for mutation in ["Перезапустить демон", "runtime_control(", "_control_daemon"]
+    {
+        assert!(!diagnostics.contains(mutation));
+    }
+    assert!(kde.find("self.menu.addMenu(\"Демон Lay\")").unwrap() < diagnostic_start);
+    assert!(kde.contains("runtime_control(f\"daemon-{operation}\")"));
     assert_eq!(
         tray.lines()
             .filter(|line| line.trim() == "startDaemon();")
