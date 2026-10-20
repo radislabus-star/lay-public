@@ -1,0 +1,63 @@
+{
+  "version": "1.0.94",
+  "status": "PUBLISHED_UPDATE_DISCOVERY_PASS",
+  "recorded_at": "2026-10-20T14:03:38.575337+00:00",
+  "release": {
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.94",
+    "tag": "v1.0.94",
+    "tag_object": "db4b03919eabcd330eca09da83c7cf4280b4f2be",
+    "source_commit": "5b3c6c5d92ca8d27ac59d2422b64b3e3d04950ae",
+    "published_at": "2026-10-20T14:01:24Z",
+    "latest_stable_verified": true,
+    "draft": false,
+    "prerelease": false
+  },
+  "publication": {
+    "private_branch": "codex/ime-muted-hint-20261019",
+    "private_branch_pushed": true,
+    "private_tag_pushed": true,
+    "public_main_at_release_verification": "5b3c6c5d92ca8d27ac59d2422b64b3e3d04950ae",
+    "public_tag_commit": "5b3c6c5d92ca8d27ac59d2422b64b3e3d04950ae",
+    "force_push_used": false
+  },
+  "installed_menu": {
+    "platform": "local GNOME",
+    "source": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js:245",
+    "entrypoint": "/home/ubu/.local/bin/lay-update",
+    "arguments": [
+      "--menu"
+    ],
+    "live_tray_click": "NOT_TESTED"
+  },
+  "installed_updater_check": {
+    "started_at": "2026-10-20T14:01:52.277295+00:00",
+    "finished_at": "2026-10-20T14:01:52.926232+00:00",
+    "entrypoint": "/home/ubu/.local/bin/lay-update",
+    "resolved_script": "/home/ubu/.local/lib/lay/update.sh",
+    "script_sha256": "f21ba886dcf488c6ccfb85ed627f419ddbbee79b717be5b17e7992e4b47ba703",
+    "command": [
+      "/home/ubu/.local/bin/lay-update",
+      "--check"
+    ],
+    "exit_code": 0,
+    "output": "=== проверка обновлений ===\nустановлено: 1.0.93\nстабильный релиз: 1.0.94\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.93 → 1.0.94\n",
+    "installation_requested": false
+  },
+  "runtime": {
+    "local_manual_install_performed": false,
+    "local_restart_performed": false,
+    "remote_installed_version": "1.0.94",
+    "remote_engine_sha256": "c33f9f506a3805598f5838f67c6341c121e78ea038d3c0465e2444eb663775af",
+    "remote_daemon_sha256": "1802bb5e816ebb5e8eac3d8de7baa26ed6702f00b4dec7145b7f2ac47ba5b6dd"
+  },
+  "evidence": {
+    "native_summary": "docs/development/release-1.0.94-native-summary.json",
+    "owner": "docs/development/remote-x11-input-2026-10-20.md",
+    "new_functional_checks_for_publication": false,
+    "local_completed_upgrade": "NOT_TESTED",
+    "remaining_open": [
+      "TD-160 universal hint presentation",
+      "TD-161 repeat manual suffix authority"
+    ]
+  }
+}

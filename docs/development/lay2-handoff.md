@@ -1,6 +1,26 @@
 # lay2 — current working handoff
 
-## Current checkpoint — final native packet, 2026-10-20
+## Current checkpoint — release published, 2026-10-20 14:01 UTC
+
+Stable public release **v1.0.94** was published at 14:01:24 UTC from commit
+`5b3c6c5d92ca8d27ac59d2422b64b3e3d04950ae`. The private working branch,
+public main and annotated release tag were pushed without force. Release:
+https://github.com/radislabus-star/lay-public/releases/tag/v1.0.94.
+
+The installed local menu updater entrypoint resolves to
+`/home/ubu/.local/lib/lay/update.sh`. Its actual `lay-update --check` finished
+at 14:01:52 UTC, exit 0: installed 1.0.93, stable 1.0.94, update available.
+The installed GNOME menu calls that entrypoint with `--menu`. No local install
+or runtime restart was requested or performed. Remote 1.0.94 installation and
+the native evidence below remain unchanged. Publication/updater receipt:
+`docs/development/release-1.0.94-publication.json`.
+
+This release packet is finished; TD-160 and TD-161 remain OPEN. No additional
+functional checks were run for the publication or bookkeeping-only changes.
+Next engineering work must retain the native failures and establish the exact
+authority-transfer defect before changing the existing owner contracts.
+
+## Release evidence checkpoint — final native packet, 2026-10-20
 
 Full changed-byte native run is complete: 121 PASS / 86 FAIL / 0 BLOCKED /
 144 NOT_TESTED out of 351. Firefox 85/75/0/0; Chrome 9/7/0/144 (focus
@@ -19,10 +39,10 @@ debounce. The exact defective propagation statement is not yet established.
 Prepared minimal follow-up TD-161; do not remove the guard. Kitty appearance
 remains visually PASS; universal appearance TD-160 remains OPEN.
 
-Final source gates and remote installation are complete. Remaining work in
-this accepted release packet: refresh documentation graph, commit/push/tag
-1.0.94 with explicit native limitations, then verify the installed menu updater
-against the new stable public release. Do not install the local runtime.
+At this evidence checkpoint, source gates and remote installation were
+complete; documentation refresh, publication and updater verification were
+pending. Their completion is recorded in the current checkpoint above.
+Do not install the local runtime manually.
 Do not start another source gate, native matrix or Harness review cycle for
 documentation/generated-only changes. Actual setup GUI receipt is
 `final-menu-setup-v1/gui-window.json`; live tray click remains NOT_TESTED.

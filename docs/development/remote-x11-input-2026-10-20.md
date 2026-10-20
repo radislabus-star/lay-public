@@ -1,5 +1,20 @@
 # Remote X11 keyboard input — 2026-10-20
 
+## Publication and installed updater — 2026-10-20 14:01 UTC
+
+Stable [v1.0.94](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.94)
+was published at 14:01:24 UTC from
+`5b3c6c5d92ca8d27ac59d2422b64b3e3d04950ae`. The public main branch and
+annotated tag resolved to that commit when checked after publication.
+The installed local `lay-update --check` returned exit 0 at 14:01:52 UTC:
+installed 1.0.93, stable 1.0.94, update available. Its resolved script is
+`/home/ubu/.local/lib/lay/update.sh`; the installed GNOME menu invokes
+`~/.local/bin/lay-update --menu`. No local installation or runtime restart
+was performed. The remote installed runtime and all native verdicts below
+are unchanged. This is release-discovery proof, not a completed local upgrade
+or a live tray-click test. No functional checks were repeated for publication.
+Structured receipt: [release-1.0.94-publication.json](release-1.0.94-publication.json).
+
 ## Final 1.0.94 evidence — 2026-10-20
 
 Source and installed runtime are different proof scopes. The source composite
