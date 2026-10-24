@@ -8,6 +8,36 @@ and recalled memory. Architecture, source checks, release/resource guards and
 native client acceptance remain required. Accepted GNOME runtime is preserved;
 the active task remains GNOME/KDE isolation, then Chrome only on KDE.
 
+## Current publication — 2026-10-24: public stable1.0.95
+
+The user explicitly requested publication after narrowing the visible KDE
+symptom to the unresponsive tray; this supersedes older private-only holds.
+Public tagv1.0.95 points to036f25e52999ce3543ae0c0937e7f27777945c98,
+published2026-10-24T11:21:53Z:
+https://github.com/radislabus-star/lay-public/releases/tag/v1.0.95.
+Version/package/menu metadata is1.0.95. All801Rust files still match retained
+run-8ddt9w31; the later tray export line and version metadata are separate.
+Updated graph binds761src Rust files; remote guarded architecture check PASS.
+
+Actual installed updater entrypoints on local GNOME and remote KDE resolve to
+~/.local/lib/lay/update.sh. Both `lay-update --check` returned0 after publication
+and reported installed1.0.94 -> stable1.0.95. Nothing was manually installed,
+restarted or typed for publication. Loaded IME evidence at11:24:34Z:
+GNOME PID2711382 SHAfa5e8950cc4c8c39e108464c9d06da0c00a32d26782f6dc2c030007f70e49a44;
+KDE PID3349193 SHA2100cb595447fc2c7e034ed10fc6d6f8580b34a6191a9ba9c55eeba15703126a.
+The GNOME PID differs from older handoff entries; accepted bytes are the same.
+
+GitHub checks are NOT GREEN. CI40089564155: installer regressions and MSRV
+jobs PASS; main correctness lane compiled but stopped on test-manifest drift.
+Security40089564154: Audit locked dependencies FAIL (RustSec advisories).
+Do not suppress advisories, remove tests or silently retag this published tag.
+See docs/development/release-1.0.95-publication.md and release notes for limits.
+Open PRs checked during publication:64,65,66,67,68; none merged or upgraded.
+The real KDE tray click remains unresolved despite correct menu DBus export.
+The user's latest clarification was tray-only, with Lay functionality possibly
+working; do not replace that clarification with a blanket whole-KDE failure.
+No new full browser/terminal/GNOME acceptance was performed for publication.
+
 ## Live desktop follow-up — 2026-10-24T10:49:46Z: Firefox frame now reaches Remmina
 
 The user reported that Remmina still showed Chrome after Firefox was opened.
