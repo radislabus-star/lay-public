@@ -33,6 +33,20 @@ files. The public release/updater/reporter finish steps are next. #69/#63 can
 close for their proven fixes; #47's intermittent native GNOME Space residual
 stays OPEN. See tech_debt/kde-native-receipts-followup-2026-10-24.md.
 
+## Stable96 published — 2026-10-24
+
+v1.0.96 tag50fbc3b2, published17:35:01UTC; GitHub latest96, stable/non-draft.
+Private/public pushes and actual installed updater discovery both verified.
+Local GNOME95 ->96 AVAILABLE (no manual install/restart); remote KDE96CURRENT,
+core loaded byte identities retained, real menu96 and auto-update enabled.
+#69 and#63 closed with verified replies; #47 OPEN after a factual12/12 flag/
+startup update, waiting exact current GNOME Space reproduction. Do not report
+all three resolved or complete KDE compatibility. P1 native follow-up and
+immutable case results are linked above. Source26d5ca24 CI/Security GREEN;
+subsequent commits touch only documentation/evidence and explicitly skip CI.
+The private tray service PATH drop-in persists; its systemctl wrapper is used
+by both daemon/tray and must not be deleted as cache junk.
+
 ## Current workflow override — 2026-10-23: Harness2 removed
 
 The user explicitly removed Harness2 from Lay. Continue directly in the current

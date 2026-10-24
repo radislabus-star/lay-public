@@ -299,5 +299,37 @@
     },
     "later_documentation_only_commits": "same production source; explicit skip-ci, no repeated build required"
   },
-  "release_updater_checks": "PENDING_POST_PUBLICATION"
+  "release_updater_checks": {
+    "local_gnome": {
+      "exit_code": 0,
+      "installed": "1.0.95",
+      "stable": "1.0.96",
+      "relation": "AVAILABLE",
+      "updater": "/home/ubu/.local/lib/lay/update.sh",
+      "manual_install_or_restart": false
+    },
+    "remote_kde": {
+      "exit_code": 0,
+      "installed": "1.0.96",
+      "stable": "1.0.96",
+      "relation": "CURRENT",
+      "live_tray_environment": true,
+      "auto_update_enabled": true
+    },
+    "api": "https://api.github.com/repos/radislabus-star/lay-public/releases/latest"
+  },
+  "publication": {
+    "tag": "v1.0.96",
+    "commit": "50fbc3b2cb906adc43c38e963c87539d2356880e",
+    "published_at": "2026-10-24T17:35:01Z",
+    "draft": false,
+    "prerelease": false,
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.96",
+    "both_remotes_pushed": true
+  },
+  "issues": {
+    "69": "CLOSED_FIXED",
+    "63": "CLOSED_FIXED",
+    "47": "OPEN_INTERMITTENT_GNOME_SPACE_RESIDUAL_NOT_VERIFIED"
+  }
 }

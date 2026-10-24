@@ -35,17 +35,17 @@ publishing the next version, and replying to reporters without further questions
 6. **PATCHED, TESTED — issue #63, GNOME 51 extension backend.** Check the existing
    backend adapter and supported GNOME versions, add regression coverage for
    old and new APIs, and correct compatibility without a new delivery route.
-7. **CAUSE LINKED TO #69 — issue #47, Double Shift and settings.** Read all comments and
+7. **PARTIAL, RESIDUAL OPEN — issue #47, Double Shift and settings.** Read all comments and
    the attached configuration. Trace the real settings/startup/input path,
    reproduce the first failed transition, and fix its shared cause. Old
    reporter output alone is not current-version proof.
-8. **SOURCE PASS, NATIVE PENDING — final gates.** Run full Rust correctness/package lanes, Python
+8. **DONE, NATIVE FAILURES RETAINED — final gates.** Run full Rust correctness/package lanes, Python
    and extension checks, strict audit and MSRV checks. Actually build all ten
    installed release binaries with the installer's feature/lockfile profile.
    Check affected native clients and updater success/error/cancellation.
    Record latency and PASS/FAIL/BLOCKED/NOT_TESTED honestly. A platform not
    available for native testing remains explicitly untested.
-9. **TODO — publish and communicate.** Prepare 1.0.96 after the gates,
+9. **DONE — publish and communicate.** Prepare 1.0.96 after the gates,
    commit/push, create a new tag/release without changing 1.0.95, verify actual
    GitHub CI/Security and stable-update discovery from GNOME and KDE. Reply
    to each reporter with concrete changes and evidence; close only the issue
@@ -199,3 +199,31 @@ would exceed the evidence. No current supported native GNOME/OrangePi target
 or exact current-version reporter reproduction is available. The remaining
 KDE mechanisms and no-loop constraints are mapped in
 tech_debt/kde-native-receipts-followup-2026-10-24.md.
+
+## Publication finish — 2026-10-24
+
+Stablev1.0.96 published2026-10-24T17:35:01Z, tag commit
+50fbc3b2cb906adc43c38e963c87539d2356880e. Source CI/Security commit26d5ca24
+is identical for all production inputs; the tag's six-file delta is evidence/
+documentation only. Oldv1.0.95 tag was not moved. Both private origin and public
+main/tag are pushed. GitHub latest API returns96,draft=false,prerelease=false.
+
+Actual installed updater checks both exit0, using the default public API:
+local GNOME installed95 -> stable96 AVAILABLE; remote KDE installed96 ->
+stable96 CURRENT. Local installed updater resolves to .local/lib/lay/update.sh;
+no manual local installation/restart. Remote check uses the actual live tray
+environment. Remote auto-update timer is enabled. The private tray PATH fix
+also has a persistent owned service drop-in; the existing systemctl wrapper in
+.cache/lay/kde-live-20261019/bin is an active runtime dependency, not junk.
+Cargo cache after all builds3941822464bytes, below12884901888 budget.
+
+Public verified replies:
+- #69 CLOSED: https://github.com/radislabus-star/lay-public/issues/69#issuecomment-6387397577
+- #63 CLOSED: https://github.com/radislabus-star/lay-public/issues/63#issuecomment-6387398163
+- #47 OPEN: https://github.com/radislabus-star/lay-public/issues/47#issuecomment-6387398641
+
+The remaining GNOME Space residual is not claimed fixed. Its current-version
+exact reproduction/native supported-GNOME observation is missing; the reporter
+was asked in that issue for an example and app/field, without asking this user
+to return from the weekend. No further source/input change was made merely to
+obtain a green native grid. Remaining KDE mechanisms have a concrete P1 map.
