@@ -246,7 +246,7 @@
     "denied_unsound": 0
   },
   "native": {
-    "status": "BROWSERS_COMPLETE_OTHER_APPS_PENDING",
+    "status": "COMPLETE_WITH_EXPLICIT_FAILURES",
     "chrome": {
       "PASS": 168,
       "FAIL": 10,
@@ -262,8 +262,42 @@
     "firefox_preparation": "process-local GNOME_ACCESSIBILITY=1 only; default attempt separately BLOCKED before input",
     "full_kde_compatibility": "NOT_ACCEPTED",
     "physical_evdev": "NOT_TESTED",
-    "gnome51_and_orangepi_native": "NOT_TESTED"
+    "gnome51_and_orangepi_native": "NOT_TESTED",
+    "gtk_qt_smoke": {
+      "PASS": 25,
+      "FAIL": 0
+    },
+    "terminal_smoke": {
+      "PASS": 20,
+      "FAIL": 2,
+      "same_punctuation_failure_without_lay_engine": true
+    },
+    "real_menu": {
+      "version": "1.0.96",
+      "enabled_checked": true,
+      "auto_update_enabled_checked": true,
+      "private_tray_path_alignment": "existing real systemctl wrapper reused; product source unchanged"
+    }
   },
   "installed_remote_version": "1.0.96",
-  "local_gnome_installation_changed": false
+  "local_gnome_installation_changed": false,
+  "issue47_core": {
+    "PASS": 12,
+    "FAIL": 0,
+    "BLOCKED": 0
+  },
+  "ci": {
+    "source_commit": "26d5ca24e2534baea04f05c215f0f858229480b9",
+    "CI": {
+      "status": "PASS",
+      "run": 40113293456,
+      "release_bins_build": "PASS_7m16s"
+    },
+    "Security": {
+      "status": "PASS",
+      "run": 40113293422
+    },
+    "later_documentation_only_commits": "same production source; explicit skip-ci, no repeated build required"
+  },
+  "release_updater_checks": "PENDING_POST_PUBLICATION"
 }

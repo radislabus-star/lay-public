@@ -162,3 +162,40 @@ claimed repaired by source PASS. Do not repeat the recorded rejected key-time
 Space experiment or weaken authorization. GTK/Qt/terminals and issue47's
 isolated twelve configuration controls now run using existing scripts.
 Public source CI precedes the stable tag; no release96 is published yet.
+
+## Final gate and remaining issue scope — 2026-10-24
+
+Source commit26d5ca24e2534baea04f05c215f0f858229480b9 is pushed to private
+origin and public main. CI40113293456 and Security40113293422 both SUCCESS.
+The CI log includes the full optimized all-bin build (7m16s), not just a check.
+Later publication/evidence changes are documentation only and explicitly skip
+CI; the production source matches this verified commit. Real compiled ten-bin
+installation, runtime identities and all native results are retained.
+
+GTK/Qt25/25. Kitty/Konsole20PASS/2FAIL; both RU punctuation failures reproduce
+without Lay using ordinary xkb engines. Raw FAIL stays immutable. Terminal
+screenshots were reviewed: typed prefix plain; only proposed suffix white.
+Issue47's attached settings:12/12 independent flag/core controls PASS.
+No learning cleanup or model installation was performed.
+
+Actual tray menu96 and enabled Lay were visually verified. Its disabled auto
+control came from mismatched private-session PATH: the daemon used the existing
+real systemctl wrapper (unset private desktop bus, exec /usr/bin/systemctl),
+the tray did not. The owned transient tray unit now inherits that same PATH.
+Real timer status and a second actual menu click show enabled/actionable auto
+update. No product code, daemon/IME, desktop bus or global environment changed.
+Remote receipts: release96-tray-manager-env and release96-final-ui-manager-env.
+
+Speed is recorded per method in evidence/release-1.0.96-native.json: successful
+single Double Shift, Chrome204 samples median58.03/p9564.49ms; Firefox138
+samples148.82/190.27ms. Chrome five-gesture DOM events260samples44.62/55.01ms,
+max clock mapping uncertainty2.928ms. Failed rows excluded explicitly; these
+are not a before/after speedup comparison.
+
+Publication must close #69 and #63 after the release and actual installed
+updater checks. #47 receives the verified startup/flag result and stays OPEN
+for the unverified intermittent GNOME Space residual. Closing that residual
+would exceed the evidence. No current supported native GNOME/OrangePi target
+or exact current-version reporter reproduction is available. The remaining
+KDE mechanisms and no-loop constraints are mapped in
+tech_debt/kde-native-receipts-followup-2026-10-24.md.

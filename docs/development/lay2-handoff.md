@@ -19,6 +19,20 @@ The weekend task supersedes the older Chrome-only testing hold below. No
 manual local GNOME installation/restart, Harness2, stale-authority bypass or
 repetition of the rejected key-time Space experiment is authorized here.
 
+## Release96 gate ready — 2026-10-24
+
+Source26d5ca24 has actual CI40113293456/Security40113293422 SUCCESS, including
+CI's full optimized all-bin build. Remote CLI/daemon/IME96 hashes match retained
+artifacts. GTK/Qt25PASS, terminal20PASS/2rawFAIL (same punctuation input fails
+with ordinary xkb and no Lay engine); browser counts above remain red.
+Real tray menu96, enabled Lay and enabled/actionable auto-update verified by
+native clicks and images. Only the owned private tray PATH was aligned with
+the daemon's existing real-systemctl wrapper; product code/IME/daemon/bus
+unchanged. Source and per-case evidence are under tech_debt/evidence/release96
+files. The public release/updater/reporter finish steps are next. #69/#63 can
+close for their proven fixes; #47's intermittent native GNOME Space residual
+stays OPEN. See tech_debt/kde-native-receipts-followup-2026-10-24.md.
+
 ## Current workflow override — 2026-10-23: Harness2 removed
 
 The user explicitly removed Harness2 from Lay. Continue directly in the current
