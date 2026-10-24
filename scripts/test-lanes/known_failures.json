@@ -1,8 +1,8 @@
 {
   "failure_count": 0,
   "failures": [],
-  "manifest_sha256": "a8832c3595ceb18ff5b014ba7cddb6cbd909e0e4fb3ab263721d429b9a9ff7d6",
-  "observation_path": "tech_debt/evidence/v28-ru-en-zero-failure-observation-v1.json",
-  "observation_sha256": "0bcddcfabdb78fd2bbbaa8d37222eb076eed490a9b805e73dc4a73ccc99ecf3c",
+  "manifest_sha256": "9a70f797dcc154b6b656b54d5145aa577d01d665188da534aa08fd624b598129",
+  "observation_path": "tech_debt/evidence/release-1.0.96-test-observation.json",
+  "observation_sha256": "88bf41df1439225d08b225dcb9e1d762230799a551b6a8003acd509fddcef1d7",
   "schema": "lay.test-known-failures.v1"
 }

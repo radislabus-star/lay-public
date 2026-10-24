@@ -154,6 +154,10 @@ struct Ingress(Mailbox);
 
 #[zbus::interface(name = "io.github.radislabus_star.LayDaemon.KWinFocus")]
 impl Ingress {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "flat D-Bus signature must match the installed KWin sender"
+    )]
     fn observe(
         &self,
         request: String,
@@ -205,13 +209,8 @@ pub(super) fn read() -> Result<Observation, ReadError> {
     read_with_deadline(Instant::now() + READ_BUDGET, true)
 }
 
-/// Same canonical provider with a caller's stricter I/O deadline. Failed
-/// cleanup remains the existing obligation; it never extends a key callback.
-pub(super) fn read_until(deadline: Instant) -> Result<Observation, ReadError> {
-    read_with_deadline(deadline, false)
-}
-
-fn read_with_deadline(
+/// Canonical provider with the caller's I/O deadline and cleanup policy.
+pub(super) fn read_with_deadline(
     deadline: Instant,
     extra_cleanup_budget: bool,
 ) -> Result<Observation, ReadError> {

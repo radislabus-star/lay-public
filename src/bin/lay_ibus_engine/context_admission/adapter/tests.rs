@@ -1405,9 +1405,10 @@ fn bridge_fence_activation_timeout_keeps_the_activation_fence() {
         };
         let (result, ()) = future::zip(harness.adapter.begin_bridge_fence(), respond).await;
         assert!(matches!(result, Err(AdapterError::Timeout)), "{result:?}");
-        let pending = harness.adapter.shared.pending.lock().unwrap();
-        assert_eq!(pending.as_ref().unwrap().nonce.0, activation_nonce);
-        drop(pending);
+        {
+            let pending = harness.adapter.shared.pending.lock().unwrap();
+            assert_eq!(pending.as_ref().unwrap().nonce.0, activation_nonce);
+        }
         let forwarded = Message::signal(MARKER_PATH, MARKER_INTERFACE, MARKER_MEMBER)
             .unwrap()
             .sender(ADAPTER_SENDER)

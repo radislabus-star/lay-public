@@ -1,6 +1,7 @@
 [Unit]
 Description=lay — Caramba/Punto-style layout switcher daemon
 After=graphical-session.target
+PartOf=graphical-session.target
 
 [Service]
 Type=simple
@@ -11,4 +12,4 @@ Restart=on-failure
 RestartSec=3
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target

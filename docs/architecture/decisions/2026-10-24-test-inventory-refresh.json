@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Refresh the canonical test inventory from real locked Cargo discovery and bind the zero-known-failure ledger to a new full passing observation.",
+  "reason": "Release 1.0.95 CI stopped at inventory drift before executing tests. Newly discovered tests must run and failures must be fixed rather than ignored.",
+  "invariants": ["C10"],
+  "protected_paths": ["scripts/test-lanes/manifest.json", "scripts/test-lanes/known_failures.json"],
+  "verification": "Full hermetic correctness/package lanes, preserved zero expected failures, fresh source and artifact identities in the successful observation.",
+  "not_tested": "Source tests and inventory discovery do not certify installed runtime or physical clients.",
+  "runtime_authority_changed": false
+}

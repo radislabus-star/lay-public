@@ -186,6 +186,14 @@ Rules:
 
 ## Accepted-version publication
 
+- User requirement, 2026-10-24: before publishing a new functional version,
+  actually build the complete installed binary set through
+  `scripts/build-release-binaries.sh` with its locked dependencies and feature
+  profile, and retain the successful build receipt. Passing source tests or
+  compilation of only test targets is insufficient. Verify CI, security and
+  stable updater discovery as part of release completion. This does not
+  authorize replacing the user's running installation during publication.
+
 - Before finishing every release or updater/menu change, verify the actual
   installed menu updater entrypoint, its resolved source and the latest stable
   public release. An unchanged developer upstream is not proof of no updates;

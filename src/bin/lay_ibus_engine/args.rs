@@ -1,7 +1,7 @@
 use clap::Parser;
 
-// Local development revision; this labels the IME, not a published release.
-pub(crate) const DISPLAY_VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), ".1");
+// CLI, component XML and tray share the package release version.
+pub(crate) const DISPLAY_VERSION: &str = env!("CARGO_PKG_VERSION");
 
 #[derive(Parser, Debug)]
 #[command(

@@ -1,6 +1,9 @@
 //! Ordinary Space must acknowledge only the boundary emitted by this owner.
 use super::*;
 
+#[path = "../../../../../../tests/common/composition_authorization.rs"]
+mod composition_authorization;
+
 async fn compose_owned_word(prefix: &str) -> (Harness, LayIbusEngine) {
     compose_owned_word_with_initial_snapshot(Some(prefix), 1_073_741_865).await
 }
@@ -321,13 +324,7 @@ fn td159_stock_completion_expectation_requires_current_exact_owned_edit() {
             } else {
                 "abcdef "
             };
-            let action = lay::text_edit::plan_ime_candidate_accept_edit("fixture", 900, from, to);
-            let edit = lay::text_edit::authorize_backend_edit(
-                lay::text_edit::TextEditBackend::Ime,
-                action,
-            )
-            .into_authorized()
-            .unwrap();
+            let edit = composition_authorization::accepted_edit(from, to);
             match invalid {
                 "exact_refresh" => engine.client_context.exact_surrounding_refresh_available = true,
                 "mode" => {
@@ -429,14 +426,7 @@ fn td159_completion_expectation_never_downgrades_known_or_partial_start() {
                 "revision_stale" => engine.client_context.surrounding_observation_revision += 1,
                 _ => unreachable!(),
             }
-            let action =
-                lay::text_edit::plan_ime_candidate_accept_edit("fixture", 900, "abc", "abcdef ");
-            let edit = lay::text_edit::authorize_backend_edit(
-                lay::text_edit::TextEditBackend::Ime,
-                action,
-            )
-            .into_authorized()
-            .unwrap();
+            let edit = composition_authorization::accepted_edit("abc", "abcdef ");
             assert!(
                 engine
                     .owned_preedit_space_commit_expectation("abcdef ", Some(&edit))
@@ -541,14 +531,7 @@ fn td159_accepted_completion_space_receipt_requires_exact_authorized_edit() {
             ("abc", "abcdef", "abcdef"),
             ("abc", "abcdef  ", "abcdef  "),
         ] {
-            let action =
-                lay::text_edit::plan_ime_candidate_accept_edit("fixture", 900, from, authorized_to);
-            let edit = lay::text_edit::authorize_backend_edit(
-                lay::text_edit::TextEditBackend::Ime,
-                action,
-            )
-            .into_authorized()
-            .unwrap();
+            let edit = composition_authorization::accepted_edit(from, authorized_to);
             assert!(
                 engine
                     .owned_preedit_space_commit_expectation(outgoing, Some(&edit))

@@ -16,8 +16,6 @@ use crate::tail_memory::{
     record_causal_outcome, surrounding_snapshot_match, SurroundingSnapshotMatch,
 };
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
-use std::future::Future;
-use std::task::Poll;
 use zbus::fdo;
 
 include!("native_cursor_observation.rs");
@@ -4852,14 +4850,26 @@ impl LayIbusEngine {
         snapshot: Option<SurroundingTextSnapshot>,
     ) {
         self.client_context.native_document_binding = None;
+        // The inherited receiver receipt is current until this callback. Save
+        // it before publishing the callback fact that retires its inheritance.
+        let manual_snapshot = self.current_exact_manual_source_snapshot();
         self.client_context.surrounding_text_callback_observed = true;
         self.client_context.surrounding_text_supported = true;
-        self.observe_document_snapshot(snapshot);
+        self.observe_document_snapshot_with_receipt(snapshot, manual_snapshot);
     }
 
     /// Applies actual document data from an explicitly identified transport.
     /// Native callers do not set either IBus capability/callback flag.
     pub(crate) fn observe_document_snapshot(&mut self, snapshot: Option<SurroundingTextSnapshot>) {
+        let manual_snapshot = self.current_exact_manual_source_snapshot();
+        self.observe_document_snapshot_with_receipt(snapshot, manual_snapshot);
+    }
+
+    fn observe_document_snapshot_with_receipt(
+        &mut self,
+        snapshot: Option<SurroundingTextSnapshot>,
+        manual_snapshot: Option<super::super::context_admission::ExactManualSourceSnapshotReceipt>,
+    ) {
         // Capture the separate Space proof before advancing its revision. An
         // actual prefix/preedit projection can retain this current inert start
         // without requiring the unrelated marked manual-toggle producer.
@@ -4868,7 +4878,6 @@ impl LayIbusEngine {
             && self.capture_space_boundary_pair_scope().is_some();
         let owned_prefix_was_current = self.client_context.exact_surrounding_refresh_available
             && self.context_owns_active_preedit_manual_toggle();
-        let manual_snapshot = self.current_exact_manual_source_snapshot();
         let previous_revision = self.client_context.surrounding_observation_revision;
         self.advance_surrounding_observation_revision();
         let current_snapshot = if self.content_is_sensitive() {

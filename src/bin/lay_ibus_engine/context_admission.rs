@@ -1217,6 +1217,10 @@ where
         self.admission_token()
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "one canonical observation keeps its token, text, revision and expiry explicit"
+    )]
     pub(crate) fn publish_exact_manual_snapshot(
         &mut self,
         token: &AdmissionToken,

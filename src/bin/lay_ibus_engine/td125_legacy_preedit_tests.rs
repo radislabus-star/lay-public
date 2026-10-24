@@ -14,6 +14,50 @@ use crate::window_interaction::{
 
 const IBUS_CAP_FOCUS: u32 = 1 << 3;
 
+#[test]
+fn observed_literal_prefix_keeps_desktop_presentation_isolated() {
+    for backend in ["gnome", "kde", "x11", "niri"] {
+        let mut engine = legacy_engine(
+            "/td125/desktop-prefix",
+            IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+        );
+        engine.config.layout_backend = backend.into();
+        engine.config.nanda_precognition = false;
+        engine.committed_tail.buffer = "дом ".into();
+        engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            "дом ".into(),
+            4,
+            4,
+        )));
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        assert!(press(&mut engine, &mut output, 'a' as u32));
+        if backend == "kde" {
+            assert_eq!(output.committed_texts, ["a"]);
+            assert!(engine.composition.buffer.is_empty());
+        } else {
+            assert!(output.committed_texts.is_empty(), "{backend}");
+            assert_eq!(engine.composition.buffer, "a", "{backend}");
+            // A matching projection must not prematurely finish other desktops'
+            // owned preedit through KDE's stock-client presentation helper.
+            zbus::block_on(WindowInteraction::observe_facts(
+                &mut engine,
+                WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new(
+                    "дом a".into(),
+                    5,
+                    5,
+                ))),
+                Some(&mut EngineOutput::test(&mut output)),
+            ))
+            .unwrap();
+            assert_eq!(engine.composition.buffer, "a", "{backend}");
+            assert!(output.committed_texts.is_empty(), "{backend}");
+        }
+    }
+}
+
 fn legacy_engine(path: &str, caps: u32) -> LayIbusEngine {
     let mut engine = LayIbusEngine::new(
         path.to_string(),
@@ -141,6 +185,7 @@ fn stock_observed_boundary_types_plain_text_without_granting_edit_authority() {
             "/td125/legacy-preedit/observed-stock-boundary",
             IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
         );
+        engine.config.layout_backend = "kde".into();
         engine.committed_tail.buffer = prefix.to_string();
         let cursor = prefix.chars().count() as u32;
         engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
@@ -181,6 +226,7 @@ fn stock_delayed_surrounding_projection_finishes_only_literal_preedit() {
             "/td125/legacy-preedit/delayed-stock-source",
             IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
         );
+        engine.config.layout_backend = "kde".into();
         engine.config.nanda_precognition = true;
         engine.committed_tail.buffer = prefix.to_string();
         let mut output = TestEngineOutput {
@@ -242,6 +288,7 @@ fn stock_delayed_projection_transfer_retains_source_and_mode_refusals() {
                 caps
             },
         );
+        engine.config.layout_backend = "kde".into();
         engine.config.nanda_precognition = true;
         let mut output = TestEngineOutput {
             legacy_transport: true,
@@ -286,6 +333,7 @@ fn stock_delayed_literal_transfer_preserves_commit_and_clear_failure_semantics()
             "/td125/legacy-preedit/delayed-stock-output-failure",
             IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
         );
+        engine.config.layout_backend = "kde".into();
         engine.config.nanda_precognition = true;
         let mut output = TestEngineOutput {
             legacy_transport: true,
@@ -326,6 +374,7 @@ fn stock_observed_client_does_not_reenter_preedit_while_snapshot_is_absent() {
         "/td125/legacy-preedit/observed-missing-snapshot",
         IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
     );
+    engine.config.layout_backend = "kde".into();
     engine.config.nanda_precognition = true;
     engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
         String::new(),

@@ -111,6 +111,16 @@ raise SystemExit(int(os.environ['ACTION_EXIT']))
                     ["systemctl", "--user", "is-active", "--quiet", "lay-daemon.service"],
                 ])
 
+    def test_channel_and_restart_never_start_a_stopped_daemon(self):
+        for operation in ('channel', 'restart'):
+            with self.subTest(operation=operation):
+                result, commands = self.dispatch(operation, exit_code=3)
+                self.assertEqual(result.returncode, 0, result.stderr)
+                self.assertIn(['systemctl', '--user', 'is-active', '--quiet', 'lay-daemon.service'], commands)
+                mutations = [command for command in commands if command[0] == 'systemctl'
+                             and 'lay-daemon.service' in command and 'is-active' not in command]
+                self.assertEqual(mutations, [], commands)
+
 
 @unittest.skipUnless(os.environ.get("DISPLAY") or os.environ.get("QT_QPA_PLATFORM") in ("offscreen", "minimal"),
                      "requires isolated graphical session")

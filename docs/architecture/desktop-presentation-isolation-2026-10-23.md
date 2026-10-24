@@ -1,5 +1,29 @@
 # Desktop presentation isolation — 2026-10-23
 
+## Release gate repair — 2026-10-24
+
+The final performance gate also exposed an independent exact-English-bank
+startup-memory failure. Its unchanged budget, measured baseline and byte-parity
+plan are recorded in [the memory owning document](exact-english-guard-memory-2026-10-24.md).
+
+The source release gate found a shared presentation leak: stock observed-prefix
+commits and delayed literal-preedit retirement introduced for KDE were applied
+to every desktop in `managed.rs`. The existing fifteen pair/modifier regressions
+expose it. Preserve those assertions and the original pair fixture. Dispatch
+this policy using the existing resolved LayoutBackend: KDE retains its literal
+commits; GNOME/X11/Niri retain previous observation-based preedit and Ready
+requirements. New four-desktop key/SSI effect coverage supplements the existing
+KDE stock controls. Owning decision: `2026-10-24-literal-prefix-desktop-scope.json`.
+
+Separately, first receiver SSI captured a manual receipt after the callback flag
+already invalidated inheritance. Capture the existing receipt before that flag,
+then keep the existing text/owner/revision/expiry checks for refresh. Existing
+matching and revocation tests prove the source behavior; no new receipt owner or
+delivery route. Stack overflow in the deep test fixture is repaired by boxing
+nested fixture futures, retaining default stack and deadlines. Exact receipts:
+weekend-ime-focused-v1/v2 under the remote KDE install-control root. Final gates
+and changed-byte client verification are pending, runtime authority unchanged.
+
 ## Current Chrome Double Shift evidence and trial sequence
 
 ### Active work — 2026-10-24: resolve the remaining36 FAIL
@@ -937,3 +961,34 @@ rect:null,2hintFAIL andTabBLOCKED;all owned-window/config/keys/focus restore
 checks pass. Receipt:chrome-941-keytime-space-omnibox-20261024. This remains
 a separate positioning failure,not in220. Common release hooks proposed,
 not authorized or implemented. No GNOME/common source changes/publication.
+
+## 2026-10-24 — release96 source gate and explicit native limits
+
+The only new runtime input change in this repair is the documented desktop
+scope restoration and first matching receiver-receipt ordering. Existing
+reducer, authority, verifier and output owners remain. All3511 selected source
+tests pass (including1085IME/328daemon); all11 resource/performance checks pass.
+The fresh zero-failure observation and build/metadata bridge are in
+`tech_debt/evidence/release-1.0.96-{test-observation,verification}.json`.
+Both MSRV profiles, strict lints, architecture graph/canon/audit50 and strict
+RustSec pass. All10 installer binaries were actually compiled and retained.
+The old hardcoded IME `.1` display suffix was removed as version metadata only;
+the original aggregate source identity is reproduced with exactly args.rs and
+the generated receipt restored in memory. This is not a second full test run.
+Local and worker source contents/executable bits match;29 group-write mode bits
+vary after safe archive transfer. Both real closure hashes and those paths are
+recorded explicitly instead of claiming identical permission metadata.
+
+Final private KDE96 daemon/IME are loaded from the retained compiler artifacts.
+No local GNOME code was installed/restarted; no model, global IBus or desktop
+was replaced. Frozenr18 Chrome220:168P/10F/42B. Native Double Shift rows have
+154PASS/26BLOCKED and zero FAIL; all10FAIL are Space actions (3ENRU,7pair).
+Two inspected witnesses retain stale_lease and exact refusal, rather than an
+unauthorized edit. The rejected key-time experiment above is NOT repeated.
+Firefox with documented per-process GNOME_ACCESSIBILITY=1 keeps
+XDG_CURRENT_DESKTOP=KDE and normal IM modules:81P/103F/36B of220. Its default
+observer attempt was BLOCKED before input and remains separate. Global a11y
+properties stay false; this preparation does not certify ordinary Firefox
+startup. These red results are evidence of remaining KDE client failures,
+not full compatibility acceptance. GNOME51/OrangePi physical tests remain
+NOT_TESTED. The issue fixes are scoped to startup/flags and Shell API changes.

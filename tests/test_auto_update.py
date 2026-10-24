@@ -41,6 +41,7 @@ class UpdateInstallTests(unittest.TestCase):
             "install-l2-lexical-phase.sh": 'echo lexical >> "$HOME/calls"',
             "install-l3-context-phase.sh": 'echo context >> "$HOME/calls"',
             "install-release-binaries.sh": 'echo binaries >> "$HOME/calls"',
+            "install-session-services.sh": 'test "$1" = --update; echo session-services >> "$HOME/calls"',
         }
         for name, body in scripts.items():
             self.shell(self.source / "scripts" / name, body)
@@ -72,7 +73,7 @@ class UpdateInstallTests(unittest.TestCase):
     def test_update_reuses_install_owners_without_initial_setup_or_learning_cleanup(self):
         result = self.install()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertEqual(["resolve", "build", "transition", "lexical", "context", "binaries", "reload"],
+        self.assertEqual(["resolve", "build", "transition", "lexical", "context", "binaries", "reload", "session-services"],
                          (self.home / "calls").read_text().splitlines())
         self.assertFalse((self.home / "forbidden").exists())
         self.assertFalse((self.home / ".local/share/ibus").exists())

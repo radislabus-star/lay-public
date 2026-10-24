@@ -1082,9 +1082,9 @@ impl ContextAdmissionAdapter {
         let ready = self.shared.ready_activation.lock().ok()?;
         let reducer = self.shared.reducer.lock().ok()?;
         if let Some(ready) = ready.as_ref() {
-            return (&ready.target_path == &target_path
+            return (ready.target_path == target_path
                 && reducer.revalidate(&ready.outcome.token()))
-            .then(|| PendingHintActivation {
+            .then_some(PendingHintActivation {
                 request: ready.request,
                 nonce: ready.fence.nonce,
                 target_path,
@@ -1105,7 +1105,7 @@ impl ContextAdmissionAdapter {
                     && matches!(target.status, TicketStatus::Pending | TicketStatus::Ready)
             }),
         };
-        matches.then(|| PendingHintActivation {
+        matches.then_some(PendingHintActivation {
             request: request.generation,
             nonce: request.nonce,
             target_path,
@@ -2007,6 +2007,10 @@ impl ContextAdmissionAdapter {
             .is_ok_and(|mut reducer| reducer.settle_bridge_output(token, settled))
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "forward one existing observation explicitly to its sole reducer publisher"
+    )]
     pub(crate) fn publish_exact_manual_snapshot(
         &self,
         token: &AdmissionToken,

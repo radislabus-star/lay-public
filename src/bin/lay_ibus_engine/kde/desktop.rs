@@ -14,7 +14,8 @@ pub(in crate::window_interaction) fn observe_focused_window_until(
     deadline: std::time::Instant,
 ) -> Result<super::FocusedWindow, &'static str> {
     let started = std::time::Instant::now();
-    let observation = match crate::kde_focus::read_until(deadline) {
+    // IME cleanup stays inside its key callback deadline, as before.
+    let observation = match crate::kde_focus::read_with_deadline(deadline, false) {
         Ok(observation) => observation,
         Err(error) => {
             trace::record(

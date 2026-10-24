@@ -49,9 +49,12 @@ class PublicReleaseBuildTests(unittest.TestCase):
             "#!/usr/bin/env python3\n"
             "import json, os, pathlib, signal, subprocess, sys\n"
             "pathlib.Path(os.environ['LAY_TEST_BUILD_RECORD']).write_text(\n"
-            "    json.dumps({'args': sys.argv[1:], 'cwd': os.getcwd()}))\n"
+            "    json.dumps({'args': sys.argv[1:], 'cwd': os.getcwd(),\n"
+            "                'color': os.environ.get('CARGO_TERM_COLOR')}))\n"
             "print('Compiling public build fixture', file=sys.stderr, flush=True)\n"
             "print('warning: preserved diagnostic', file=sys.stderr, flush=True)\n"
+            "print('  --> fixture.rs:1:1', file=sys.stderr, flush=True)\n"
+            "print('  | warning source context', file=sys.stderr, flush=True)\n"
             "if os.environ.get('LAY_TEST_BUILD_WAIT'):\n"
             "    child = subprocess.Popen(['sleep', '30'])\n"
             "    record = pathlib.Path(os.environ['LAY_TEST_BUILD_WAIT'])\n"
@@ -80,6 +83,18 @@ class PublicReleaseBuildTests(unittest.TestCase):
         self.assertEqual(len(logs), 1)
         return logs[0], logs[0].read_text()
 
+    def test_success_reports_warning_count_without_dumping_diagnostics(self):
+        self.env['CARGO_TERM_COLOR'] = 'always'
+        result = self.build()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        _, content = self.transcript()
+        self.assertIn('warning: preserved diagnostic', content)
+        self.assertIn('warning source context', content)
+        self.assertNotIn('preserved diagnostic', result.stdout + result.stderr)
+        self.assertNotIn('warning source context', result.stdout + result.stderr)
+        self.assertIn('Предупреждений компилятора: 1', result.stdout)
+        self.assertEqual(json.loads((self.work / 'cargo.json').read_text())['color'], 'never')
+
     def test_only_the_complete_installed_binary_set_is_built_with_progress(self):
         result = self.build()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
@@ -107,6 +122,8 @@ class PublicReleaseBuildTests(unittest.TestCase):
         self.assertEqual(result.returncode, 101, result.stdout + result.stderr)
         log, content = self.transcript()
         self.assertIn("error: compiler fixture", content)
+        self.assertIn("error: compiler fixture", result.stderr)
+        self.assertIn("warning source context", result.stderr)
         self.assertIn("101", result.stderr)
         self.assertIn(str(log), result.stderr)
         self.assertFalse((self.work / "next-install-stage").exists())

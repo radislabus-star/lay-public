@@ -2,6 +2,7 @@
 Description=Lay L3 bounded online phase-field learner
 After=graphical-session.target lay-daemon.service
 Wants=lay-daemon.service
+PartOf=graphical-session.target
 
 [Service]
 Type=simple
@@ -16,4 +17,4 @@ CPUWeight=20
 IOWeight=20
 
 [Install]
-WantedBy=default.target
+WantedBy=graphical-session.target

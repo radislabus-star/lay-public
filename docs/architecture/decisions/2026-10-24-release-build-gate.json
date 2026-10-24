@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Require an actual successful build of the complete installed binary set before publishing a new functional release, plus CI, security and updater discovery verification.",
+  "reason": "The user explicitly required always checking builds after the 1.0.95 installer exposed compiler warnings and incomplete CI gates.",
+  "invariants": ["C10"],
+  "protected_paths": ["AGENTS.md", "scripts/lint_inventory.py"],
+  "verification": "The public build-entrypoint tests cover all ten installed binaries, compiler failure, cancellation and transcript errors. The lint parser must expose compiler reasons while rejecting a failed Cargo stream. A real locked release build is an additional publication gate.",
+  "not_tested": "This rule alone provides no installed or physical-client acceptance.",
+  "runtime_authority_changed": false
+}

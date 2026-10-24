@@ -14965,6 +14965,9 @@ fn stock_ordinary_document_insert_cannot_reuse_preceding_client_receipt() {
             let mut harness = cycle09_harness().await;
             let (mut target, _, mut serial) =
                 td121_inherited_first_closed_word(&mut harness, "", " ", "").await;
+            // FocusIn reloads the sandbox configuration. This regression owns
+            // KDE's stock-prefix policy, rather than the host's auto backend.
+            target.config.layout_backend = "kde".into();
             td121_deliver_inherited_closed_replay(&mut harness, &mut target, &mut serial).await;
             if reset {
                 firefox_replay_reset(&mut harness, &mut target, &mut serial).await;
@@ -15224,9 +15227,15 @@ fn td121_native_replay_progress_never_authorizes_pre_final_manual_effects() {
 fn td121_repeated_closed_source_retains_scope_across_delayed_erasure_receipts() {
     zbus::block_on(bounded(async {
         let mut harness = cycle09_harness().await;
+        // Heap-bound the nested fixture frames, not the test thread's budget.
         let (mut source, _path, mut serial) =
-            td121_inherited_first_closed_word(&mut harness, "", " ", "").await;
-        td121_finish_inherited_closed_replay(&mut harness, &mut source, &mut serial).await;
+            Box::pin(td121_inherited_first_closed_word(&mut harness, "", " ", "")).await;
+        Box::pin(td121_finish_inherited_closed_replay(
+            &mut harness,
+            &mut source,
+            &mut serial,
+        ))
+        .await;
         cycle09_surrounding_receipt(&mut harness, &mut source, "фис ", 4, 4).await;
         assert!(source.context_reset_rereceipt_exact_manual_handoff_allowed());
         assert!(
@@ -15245,8 +15254,15 @@ fn td121_repeated_closed_source_retains_scope_across_delayed_erasure_receipts() 
         ));
         serial += 100;
         let path = format!("{TARGET_PATH}_repeated_closed_erasure");
-        let mut target =
-            cycle09_factory_handoff(&mut harness, source, serial, &path, None, "lay-ime-us").await;
+        let mut target = Box::pin(cycle09_factory_handoff(
+            &mut harness,
+            source,
+            serial,
+            &path,
+            None,
+            "lay-ime-us",
+        ))
+        .await;
         target.config.text_backend = "ime".into();
         target.config.typing_assist = false;
         target.config.nanda_precognition = false;

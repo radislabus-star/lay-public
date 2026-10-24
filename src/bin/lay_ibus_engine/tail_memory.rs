@@ -2166,12 +2166,10 @@ impl LayIbusEngine {
             && (self.context_owner.is_none()
                 || (scope.source_token.is_none() && scope.observed_external_prefix.is_none()))
             && self.exact_replay_delivery_is_current(&scope);
-        if local.as_ref() != Some(&scope) || shared.as_ref() != Some(&scope) {
-            if !delivery_only {
-                self.trace_exact_replay_rejection(&scope, "scope_pair");
-                self.revoke_exact_replay_scope(&scope);
-                return ExactReplayPress::Rejected;
-            }
+        if (local.as_ref() != Some(&scope) || shared.as_ref() != Some(&scope)) && !delivery_only {
+            self.trace_exact_replay_rejection(&scope, "scope_pair");
+            self.revoke_exact_replay_scope(&scope);
+            return ExactReplayPress::Rejected;
         }
 
         let delete_chars = scope.original_suffix.chars().count();

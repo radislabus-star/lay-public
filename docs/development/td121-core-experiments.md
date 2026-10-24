@@ -1,3 +1,39 @@
+### 2026-10-24 — gate follow-up: common KDE presentation leak found
+
+Receiver-order fix passes its existing positive and revocation tests. Heap-bound
+fixture futures pass the previously overflowing test on its original stack.
+Focused v1: 1084 checks, 15 FAIL; v2: 1084 checks, 14 FAIL. Attempts to adapt
+owned-pair fixtures to stock commits/capability downgrade are rejected: they
+changed the intended protocol and capability revocation correctly removed proof.
+The original pair fixture/assertions have been restored byte-for-byte.
+
+Source comparison with 5b3c6c5d identifies the actual shared regression: KDE
+literal-prefix acquisition/retirement runs for all desktops. Restore previous
+non-KDE behavior through the existing resolved presentation boundary, keep KDE
+behavior, and add one actual key/observation contract across four desktops.
+Existing KDE stock tests select KDE explicitly. Decision:
+`2026-10-24-literal-prefix-desktop-scope.json`. New verification pending; no
+native acceptance or installation is claimed by these source results.
+
+### 2026-10-24 — full release gate: first receiver observation loses a live receipt
+
+Baseline a8fbda3c plus the three security lockfile patches. Full hermetic run
+`/home/e/.cache/lay/development/weekend-full-tests-20261024.log` reaches the
+previously hidden failures after inventory regeneration. First proven defect:
+`td159_exact_manual_observation_order_preserves_current_lease`, late SSI case,
+fails on its first matching observation. `observe_external_surrounding_text`
+sets callback_observed before capturing the current inherited manual receipt;
+that capture consequently rejects the still-current receipt. Hypothesis:
+capture before publishing callback facts, then use the existing matching-text,
+owner, revision and unchanged-expiry refresh path. Do not relax receipt guards.
+
+The repeated closed-source test also aborts from stack overflow. Bound nested
+fixture futures on the heap, retaining the default stack, timeout, production
+calls and all assertions. Pair tests additionally need an explicit GNOME inline
+fixture instead of relying on the host desktop. Tests writing config under a
+masked cache result directory will be rerun outside live-data masks, not given
+write permission to live data. Runtime remains untouched. Verification pending.
+
 ### 2026-10-24 — KDE unavailable observation: retain only admitted literal input
 
 CORRECTED first failure after selected44(36P/6F/2B,110.789s):all45transient

@@ -824,15 +824,16 @@ fn stock_native_replay_never_injects_hybrid_final_literal() {
                 target.committed_tail.autocorrect_suppression = None;
                 target.context_owner = None;
             }
-            let mut shared = target.shared.lock().unwrap();
-            if invalidation == "pair-mismatch" {
-                scope.target_layout_is_ru = !scope.target_layout_is_ru;
+            {
+                let mut shared = target.shared.lock().unwrap();
+                if invalidation == "pair-mismatch" {
+                    scope.target_layout_is_ru = !scope.target_layout_is_ru;
+                }
+                if invalidation == "shared-path" {
+                    shared.active_path = None;
+                }
+                shared.autocorrect_suppression = Some(AutocorrectSuppression::ExactReplay(scope));
             }
-            if invalidation == "shared-path" {
-                shared.active_path = None;
-            }
-            shared.autocorrect_suppression = Some(AutocorrectSuppression::ExactReplay(scope));
-            drop(shared);
             for state in [0, RELEASE_MASK] {
                 let handled = firefox_observed_key_callback(
                     &mut harness,

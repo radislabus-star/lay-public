@@ -257,6 +257,13 @@ cp "$DIR/systemd/lay-auto-update.timer" "$HOME/.config/systemd/user/"
 systemctl --user daemon-reload
 # Preserve the user's choice. Only the menu's explicit action enables the timer.
 
+echo "=== службы графической сессии Lay ==="
+if [ "$UPDATE_EXISTING" = 1 ]; then
+    bash "$DIR/scripts/install-session-services.sh" --update
+else
+    bash "$DIR/scripts/install-session-services.sh" --fresh
+fi
+
 if [ "$UPDATE_EXISTING" = 0 ]; then
 echo ""
 echo "=== подсказки Lay через IBus ==="
@@ -277,14 +284,10 @@ echo "  Для подсказок и Tab используется IBus. Друг
 echo ""
 echo "=== systemd unit для lay-daemon ==="
 mkdir -p ~/.config/systemd/user
-cp "$DIR/systemd/lay-daemon.service" ~/.config/systemd/user/lay-daemon.service
-cp "$DIR/systemd/lay-l3-online.service" ~/.config/systemd/user/lay-l3-online.service
 cp "$DIR/systemd/lay-kde-tray.service" ~/.config/systemd/user/lay-kde-tray.service
 cp "$DIR/systemd/lay-host-vm-guard.service" ~/.config/systemd/user/lay-host-vm-guard.service
 systemctl --user daemon-reload
 systemctl --user disable --now lay-ibus-engine.service >/dev/null 2>&1 || true
-systemctl --user enable lay-daemon
-systemctl --user enable lay-l3-online
 echo "✓ lay-daemon.service установлен и включён"
 echo "✓ lay-l3-online.service установлен и включён"
 echo "✓ старый lay-ibus-engine.service отключён; IME запускает IBus"

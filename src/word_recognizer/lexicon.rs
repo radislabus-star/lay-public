@@ -103,14 +103,11 @@ fn is_known_russian_core(word: &str) -> bool {
 fn english_words() -> &'static [Box<str>] {
     ENGLISH_WORDS
         .get_or_init(|| {
-            let mut words = load_hunspell_words(EN_HUNSPELL, 2, WordScript::Ascii);
-            words.extend(load_plain_words(EN_WORDS, 2, WordScript::Ascii));
+            let hunspell = std::fs::read_to_string(EN_HUNSPELL).unwrap_or_default();
+            let plain = std::fs::read_to_string(EN_WORDS).unwrap_or_default();
             let mut protected = HashSet::new();
             extend_user_protected_ascii_words(&mut protected, 1);
-            words.extend(protected.into_iter().map(String::into_boxed_str));
-            words.sort_unstable();
-            words.dedup();
-            words.into_boxed_slice()
+            compile_english_words(hunspell, plain, &protected)
         })
         .as_ref()
 }
@@ -132,32 +129,90 @@ fn fingerprint_words(words: &[Box<str>]) -> u64 {
     digest
 }
 
-fn load_hunspell_words(path: &str, min_chars: usize, script: WordScript) -> Vec<Box<str>> {
-    let Ok(data) = std::fs::read_to_string(path) else {
-        return Vec::new();
-    };
-    collect_known_words(
-        data_lines(&data).filter_map(|line| line.split('/').next()),
-        min_chars,
-        script,
-    )
-}
-
-fn load_plain_words(path: &str, min_chars: usize, script: WordScript) -> Vec<Box<str>> {
-    let Ok(data) = std::fs::read_to_string(path) else {
-        return Vec::new();
-    };
-    collect_known_words(data_lines(&data), min_chars, script)
-}
-
-fn collect_known_words<'a>(
+fn known_words<'a>(
     words: impl Iterator<Item = &'a str>,
     min_chars: usize,
     script: WordScript,
-) -> Vec<Box<str>> {
+) -> impl Iterator<Item = &'a str> {
     words
-        .filter(|word| word.chars().count() >= min_chars)
-        .filter(|word| detect_script(word) == script)
+        .filter(move |word| word.chars().count() >= min_chars)
+        .filter(move |word| detect_script(word) == script)
+}
+
+fn compile_english_words(
+    mut hunspell: String,
+    mut plain: String,
+    protected: &HashSet<String>,
+) -> Box<[Box<str>]> {
+    // Both dictionaries overlap heavily. Deduplicate borrowed ASCII tokens
+    // before allocating the immutable bank, avoiding retained allocator pages
+    // from thousands of duplicate owned strings during startup.
+    // Normalize the owned input buffers once, keeping sorting bytewise rather
+    // than repeating case folding for every comparison. Only ASCII dictionary
+    // tokens pass the existing script filter; protected tokens stay unchanged.
+    hunspell.make_ascii_lowercase();
+    plain.make_ascii_lowercase();
+    let mut words = known_words(
+        data_lines(&hunspell).filter_map(|line| line.split('/').next()),
+        2,
+        WordScript::Ascii,
+    )
+    .chain(known_words(data_lines(&plain), 2, WordScript::Ascii))
+    .chain(protected.iter().map(String::as_str))
+    .collect::<Vec<_>>();
+    words.sort_unstable();
+    words.dedup();
+    words
+        .into_iter()
+        .map(Box::<str>::from)
+        .collect::<Vec<_>>()
+        .into_boxed_slice()
+}
+
+#[cfg(test)]
+mod bank_tests {
+    use super::*;
+
+    fn previous_bank(hunspell: &str, plain: &str, protected: &HashSet<String>) -> Box<[Box<str>]> {
+        let mut words = known_words(
+            data_lines(hunspell).filter_map(|line| line.split('/').next()),
+            2,
+            WordScript::Ascii,
+        )
+        .chain(known_words(data_lines(plain), 2, WordScript::Ascii))
         .map(|word| word.to_lowercase().into_boxed_str())
-        .collect()
+        .collect::<Vec<_>>();
+        words.extend(protected.iter().cloned().map(String::into_boxed_str));
+        words.sort_unstable();
+        words.dedup();
+        words.into_boxed_slice()
+    }
+
+    #[test]
+    fn borrowed_bank_preserves_case_punctuation_and_protected_tokens() {
+        let protected = HashSet::from([
+            "a".into(),
+            "rust".into(),
+            "local-term".into(),
+            "UPPER".into(),
+        ]);
+        let hunspell = "7\nRust/AB\nhello/S\nHELLO\na\nutfé\nдва\nfoo-bar\n";
+        let plain = "hello\nHELLO\nRust\nworld\nfoo-bar\n";
+        assert_eq!(
+            compile_english_words(hunspell.into(), plain.into(), &protected),
+            previous_bank(hunspell, plain, &protected)
+        );
+    }
+
+    #[test]
+    fn borrowed_bank_matches_every_installed_dictionary_token_and_fingerprint() {
+        let hunspell = std::fs::read_to_string(EN_HUNSPELL).unwrap_or_default();
+        let plain = std::fs::read_to_string(EN_WORDS).unwrap_or_default();
+        let mut protected = HashSet::new();
+        extend_user_protected_ascii_words(&mut protected, 1);
+        let expected = previous_bank(&hunspell, &plain, &protected);
+        let actual = compile_english_words(hunspell, plain, &protected);
+        assert_eq!(actual, expected);
+        assert_eq!(fingerprint_words(&actual), fingerprint_words(&expected));
+    }
 }

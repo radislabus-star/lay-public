@@ -48,9 +48,14 @@ trap 'cancel_build 130' INT
 trap 'cancel_build 143' TERM
 trap 'cancel_build 129' HUP
 
-exec {build_fd}> >(tee "$build_log")
+# Keep every diagnostic on disk. The install window only needs Cargo progress;
+# failed builds replay the complete log below, including multiline errors.
+exec {build_fd}> >(tee "$build_log" | awk '
+  /^[[:space:]]*(Compiling|Checking|Finished|Blocking)([[:space:]]|$)/ {
+    print; fflush()
+  }')
 logger_pid=$!
-"$ROOT/scripts/cargo-guard.sh" "${build_args[@]}" >&"$build_fd" 2>&1 &
+CARGO_TERM_COLOR=never "$ROOT/scripts/cargo-guard.sh" "${build_args[@]}" >&"$build_fd" 2>&1 &
 build_pid=$!
 set +e
 wait "$build_pid"
@@ -64,6 +69,7 @@ logger_pid=""
 set -e
 trap - INT TERM HUP
 if (( build_status != 0 )); then
+  cat "$build_log" >&2 || true
   printf 'Сборка не завершена (код %s). Журнал: %s\n' \
     "$build_status" "$build_log" >&2
   exit "$build_status"
@@ -72,4 +78,9 @@ if (( logger_status != 0 )); then
   printf 'Не удалось сохранить журнал сборки: %s\n' "$build_log" >&2
   exit "$logger_status"
 fi
+warning_count="$(awk '
+  /^warning(:|\[)/ && !/^warning: .* generated [0-9]+ warnings?/ { count++ }
+  END { print count + 0 }
+' "$build_log")"
+printf 'Предупреждений компилятора: %s. Подробности в журнале.\n' "$warning_count"
 printf '✓ release-сборка завершена. Журнал: %s\n' "$build_log"

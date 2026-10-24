@@ -354,7 +354,7 @@ fn runtime_restart_preserves_visible_layout_and_global_ibus() {
         .find("sync_ibus_engine \"$safe_xkb\" || return 1")
         .expect("same-language XKB fallback");
     let stop = start
-        .find("systemctl --user stop lay-ibus-engine.service")
+        .find("user_systemctl stop lay-ibus-engine.service")
         .expect("engine service stop");
     let wait = start
         .find("wait_lay_ibus_engine_stopped || return 1")
@@ -381,14 +381,16 @@ fn runtime_restart_preserves_visible_layout_and_global_ibus() {
 #[test]
 fn changing_input_mode_cannot_reenable_a_disabled_runtime() {
     let runtime = read("scripts/lay-runtime-control.sh");
+    let manager = nearby(&runtime, "user_systemctl() {", 450);
+    assert!(manager.contains("DBUS_SESSION_BUS_ADDRESS=\"$manager_bus\" systemctl --user \"$@\""));
     let channel = nearby(&runtime, "channel)", 330);
-    assert!(channel.contains("systemctl --user is-active --quiet lay-daemon.service"));
+    assert!(channel.contains("user_systemctl is-active --quiet lay-daemon.service"));
     assert!(channel.contains("apply_channel"));
     assert!(channel.contains("stop_ime"));
 
     let restart = nearby(&runtime, "restart)", 330);
-    assert!(restart.contains("systemctl --user is-active --quiet lay-daemon.service"));
-    assert!(restart.contains("systemctl --user restart lay-daemon.service"));
+    assert!(restart.contains("user_systemctl is-active --quiet lay-daemon.service"));
+    assert!(restart.contains("user_systemctl restart lay-daemon.service"));
     assert!(restart.contains("stop_ime"));
 }
 

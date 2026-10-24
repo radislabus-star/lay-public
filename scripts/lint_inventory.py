@@ -146,6 +146,9 @@ def read_diagnostics(path: pathlib.Path) -> tuple[list[dict[str, Any]], list[dic
             raise ValueError(f"{path}:{line_number}: invalid Cargo JSON: {error}") from error
         if message.get("reason") == "build-finished":
             if message.get("success") is not True:
+                # Keep the strict failed-build rejection, but do not discard
+                # the compiler's reasons when the caller removes its temp log.
+                print_violations(violations)
                 raise ValueError(f"{path}: Cargo build-finished reported failure")
             build_finished = True
             continue
@@ -422,6 +425,23 @@ def self_test() -> None:
         path.write_text(stream(message("unused_imports", "unused import: `Old`")))
         _, violations = read_diagnostics(path)
         assert len(violations) == 1 and violations[0]["code"] == "unused_imports"
+
+        failed_message = json.loads(message("E0001", "fixture compiler failure"))
+        failed_message["message"]["level"] = "error"
+        path.write_text(json.dumps(failed_message) + "\n" + json.dumps(
+            {"reason": "build-finished", "success": False}) + "\n")
+        import contextlib
+        import io
+        diagnostic_output = io.StringIO()
+        with contextlib.redirect_stderr(diagnostic_output):
+            try:
+                read_diagnostics(path)
+            except ValueError as error:
+                assert "reported failure" in str(error)
+            else:
+                raise AssertionError("failed Cargo build was accepted")
+        assert "fixture compiler failure" in diagnostic_output.getvalue()
+        assert "src/lib.rs:1" in diagnostic_output.getvalue()
 
         for incomplete in ("", message("dead_code", "function `old` is never used")):
             path.write_text(incomplete)

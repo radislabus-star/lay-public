@@ -580,7 +580,8 @@ impl LayIbusEngine {
                             .is_some_and(|admission| admission.revalidate(token))
                 })
             });
-        if !emitter.is_legacy()
+        if !crate::display::commits_observed_literal_prefix(self.config.active_layout_backend())
+            || !emitter.is_legacy()
             || self.atomic.active
             || self.context_handoff_sealed
             || self.content_is_sensitive()
@@ -618,12 +619,13 @@ impl LayIbusEngine {
         mode: WordInputMode,
         ch: char,
     ) -> bool {
-        // Exact-refresh clients retain their explicit owned-preedit contract.
-        // A stock client that supplied a real boundary snapshot uses ordinary
-        // ManagedCommit instead: its typed prefix must remain document text.
-        // Each commit still needs a newer client receipt before any edit.
+        // KDE stock clients keep typed prefixes as document text. Other
+        // desktops retain the pre-existing observed-boundary preedit contract.
         let observed_preedit_boundary = self.client_context.surrounding_text_supported
-            && self.client_context.exact_surrounding_refresh_available
+            && (self.client_context.exact_surrounding_refresh_available
+                || !crate::display::commits_observed_literal_prefix(
+                    self.config.active_layout_backend(),
+                ))
             && self
                 .client_context
                 .surrounding_text_snapshot
@@ -653,8 +655,14 @@ impl LayIbusEngine {
         let stock_without_snapshot = self.config.nanda_precognition
             && !self.uses_native_terminal_input()
             && !self.client_context.exact_surrounding_refresh_available
-            && !self.client_context.surrounding_text_callback_observed
-            && self.client_context.native_document_binding.is_none()
+            && if crate::display::commits_observed_literal_prefix(
+                self.config.active_layout_backend(),
+            ) {
+                !self.client_context.surrounding_text_callback_observed
+                    && self.client_context.native_document_binding.is_none()
+            } else {
+                self.live_context_token().is_some()
+            }
             && self.client_context.surrounding_text_snapshot.is_none();
         emitter.is_legacy()
             && mode == WordInputMode::ManagedCommit

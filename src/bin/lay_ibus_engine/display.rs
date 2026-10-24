@@ -28,6 +28,12 @@ pub(crate) fn completion_presentation(backend: LayoutBackend) -> CompletionPrese
     }
 }
 
+/// KDE keeps an observed typed prefix out of the displayed composition.
+/// Other backends retain their established literal-preedit presentation.
+pub(crate) fn commits_observed_literal_prefix(backend: LayoutBackend) -> bool {
+    backend == LayoutBackend::Kde
+}
+
 fn hint_style(backend: LayoutBackend) -> HintStyle {
     match backend {
         LayoutBackend::Kde => crate::kde::display::HINT_STYLE,

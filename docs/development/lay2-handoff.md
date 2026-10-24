@@ -1,3 +1,24 @@
+## Active repair plan — 2026-10-24
+
+Continue [the ordered repair and release plan](weekend-repair-plan-2026-10-24.md).
+The user authorized completing build/CI/security fixes, all three open public
+issues (#69, #63, #47), testing, publication and reporter replies without further
+questions. No agents or Harness2. Do not interrupt the user's local update.
+
+2026-10-24: source correctness/package 3511/3511, performance11/11,
+MSRV1.88 both configurations, strict lints, audit and real ten-binary release
+build PASS. Remote KDE runs exact1.0.96 for CLI/daemon/IME; all loaded hashes
+match the final compiler artifacts. Source/full-observation and the metadata-only
+removal of the old `.1` IME label are retained under
+`tech_debt/evidence/release-1.0.96-{test-observation,verification}.json`.
+KDE Chrome frozenr18:168P/10F/42B of220; Firefox with owned-process accessibility
+activation:81P/103F/36B of220. The default Firefox observer attempt remains a
+separate immutable BLOCKED receipt. These red native results do not certify
+complete KDE compatibility. GTK/Qt/terminal and issue47 flag controls are next.
+The weekend task supersedes the older Chrome-only testing hold below. No
+manual local GNOME installation/restart, Harness2, stale-authority bypass or
+repetition of the rejected key-time Space experiment is authorized here.
+
 ## Current workflow override — 2026-10-23: Harness2 removed
 
 The user explicitly removed Harness2 from Lay. Continue directly in the current
