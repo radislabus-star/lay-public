@@ -1,0 +1,15 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "BOUNDED_RELOCATION_SOURCE_VERIFIED_RUNTIME_UNCHANGED",
+  "decision": "Keep KDE and GNOME integration behind one explicit dispatch using existing active_layout_backend; preserve common correction, admission, verifier and typed execution ownership. Verify relocation and behavioral repair separately, including ordinary held Shift independently of Double Shift.",
+  "reason": "The user explicitly requested consistent platform modules so KDE and GNOME integration cannot interfere, and then reported inability to type uppercase with ordinary Shift. The input regression takes priority over relocation.",
+  "invariants": ["C01", "C03", "C04", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": ["AGENTS.md"],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "Existing native-terminal probes now reside in an explicit dispatcher and focused KDE/GNOME modules. Mechanical comparison preserves predicate and platform probe bodies, diagnostics and test assertions. Seven existing boundary/held-Shift controls pass before and after through canonical isolated execution. Remote rustfmt passes. Ordinary Shift was independently repaired in the remote VNC transport, with 8/8 native RU/US left/right controls in owned normal-launch Kitty/Konsole and unchanged Lay bytes. Exact receipts and limits are in the owning preflight. This is not a Konsole Double Shift repair.",
+  "not_tested": "The relocated source has not been installed. The last full source gate remains FAIL on the independently recorded native-transfer stack overflow and was not rerun. GNOME, Wayland, other remote transports and complete browser acceptance are outside the new scope. Pre-existing RU punctuation failures remain open.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "consequences": "Reuse current backend selection and owners. No new detector, cache, timer, fallback or delivery route. Platform code remains split by responsibility rather than collected into a god-component. Mechanical movement must keep all consumers, includes, tests and diagnostics consistent. Rollback boundaries for movement and behavior remain independent. This strengthens organization and evidence requirements without weakening the existing architecture."
+}

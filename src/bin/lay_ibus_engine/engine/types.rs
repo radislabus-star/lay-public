@@ -433,6 +433,8 @@ pub(crate) struct PendingVisiblePostcondition {
     /// Full client snapshot expected by a staged surrounding-text replacement.
     /// Legacy routes without an exact pre-dispatch snapshot keep suffix matching.
     pub(crate) expected_external_snapshot: Option<SurroundingTextSnapshot>,
+    /// Native results retain their authenticated field and admission.
+    pub(crate) native_document: Option<crate::window_interaction::NativeDocumentBinding>,
     /// Immutable identity of the field state that dispatched this transition.
     /// A later observation can confirm this receipt, but cannot teach L4 if it
     /// belongs to a different focus, epoch, or visible tail.

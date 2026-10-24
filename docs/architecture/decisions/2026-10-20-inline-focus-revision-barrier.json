@@ -1,0 +1,24 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-20",
+  "status": "BOUNDED_SOURCE_REVIEW_ACCEPTED_FULL_FOCUS_P1_OPEN",
+  "decision": "Use the existing read-only InlineHintSnapshotV1 as a revision barrier after GNOME frontend focus/session invalidation. Suppress painting until the current barrier completes, consume its revision without painting it, and accept only later stream revisions. Coalesce focus changes behind one in-flight request.",
+  "reason": "Prior review identified a queued positive live signal that repaints after the frontend hides the view but before the engine clear arrives. The former startup-snapshot guard did not fence live signals.",
+  "invariants": [
+    "C01",
+    "C06",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "extension/lay@radislabus-star.github.io/ime_hint_style.js",
+    "scripts/tests/test_ime_hint_style.mjs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "Remote controlled RED 9 PASS / 3 FAIL; GREEN 12/12 PASS. Harness2 task 20261020T162925Z-d839cac8, all eight calls completed, independent review 8/10. Root separately verified frozen input hashes and GREEN logs. Acceptance: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/inline-focus-repair-review-20261020T162918Z/acceptance.json. Native GNOME and broader producer-lag guarantee remain OPEN.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "consequences": "One coalesced read-only snapshot on frontend focus invalidation uses the existing 1000ms display-call timeout, outside keyboard processing. No timers, polling, input callback, edit grant, text executor or source migration. Failure stays hidden with no automatic retry; a later focus or service owner can request again. This fences already-published queued signals. It is not an acknowledgement of the document or proof that an old producer cannot generate a new frame while its IBus FocusOut is delayed. That broader cross-frontend/producer focus guarantee remains OPEN and must not be promoted from these tests.",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "not_tested": "Native changed-byte GNOME, remote Wayland, producer-lag cross-window frame identity and full browser matrices."
+}

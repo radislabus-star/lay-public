@@ -1,4 +1,351 @@
+### 2026-10-24 — KDE unavailable observation: retain only admitted literal input
+
+CORRECTED first failure after selected44(36P/6F/2B,110.789s):all45transient
+retention gates are TRUE. The next admitted key's successful read is rejected
+by native install because desktop receipt identity differs while every AT-SPI
+field component matches. Do not weaken the transient predicate. KWin provider
+renews a local lifetime embedded in identity after errors;raw-ID components
+not yet observed,so only a tightly constrained forward same-window recovery
+is proposed. New owning decision2026-10-24-kde-native-field-transport-continuity.json
+requires fresh current canonical/native proof,PID/bus/KWin-owner/window UUID/
+AT-SPI identity equality and nondecreasing existing provider lifetime. Strict
+provider and notification identities remain unchanged. RED tests added for
+the actual fresh-install guard and following production key router;no runtime
+change yet. All code remains in the KDE folder;common hooks still unapproved.
+
+LATEST native verdict:ad5e full220153P/25F/42B,not accepted.13F->P but16P->F
+versus6e45. All14manual failures still show5tracked versus6actual letters.
+The claim that two short-run adjacent error/commit records proved the same
+callback is withdrawn.49native+1desktop source PASS is a flat helper contract,
+not a reproduction of the actual failed legacy key callback. Source now adds
+opt-in transient_input_gate metadata for the exact refusal clause,without
+changing predicate order/calls or authority. Diagnose token/scope/handoff/
+notification ownership first;do not drop guards or repeat the helper-only claim.
+
+Measured KWin5.24.7 UnknownObject /1 three times in short20 diagnostic14P/4F/2B
+on installed42ab,48.377s. Busy not observed;script-ID lifecycle collision is
+upstream-supported but not independently captured. Do not repeat a Busy-only
+fix or increase timeouts. Earlier full row2 proves an accepted key is delegated
+without a managed receipt after flattened native_no_desktop;later manual refusal
+is correct. New decision2026-10-24-kde-native-observation-input-isolation.json
+keeps existing canonical input ownership,clears native edit/display proof on
+unavailable KWin observation,and retains ordinary managed key history only for
+the same live owner. Known field/window/owner/selection changes still revoke.
+No common dispatcher,correction,verifier or executor changes.
+
+RED run-J6gkKn/localrun-1b6lydbo:623P/17F,two exact failures at the old refusal.
+GREEN run-aEBiNt/localrun-1k5v07l1:626P/15oldF,49native+1desktop PASS,same
+TD121 coverage error. Semantic control commits one literal key,no delete/forward,
+checks stale versus fresh native snapshots,UnknownStart unchanged,11owner guards.
+800Rust-file comparison proves only3KDE files changed since42ab. Build running;
+native functional proof NOT_TESTED,installed42ab remains diagnostic. Full220
+latest6e45 is157P/22F/41B,not overwritten by short diagnostics. Upper omnibox
+geometry FAIL remains separate;common-release proposal still pending approval.
+
+### 2026-10-24 — KDE Chrome Space refinement: native aggregate not accepted
+
+Installed6e45 private1.0.94.1 frozen full220 is157P/22F/41B, compared with
+previousDFA163P/19F/38B. Retain15PASS->FAIL,12FAIL->PASS,3PASS->BLOCKED;do not
+present this as a stable improvement. Source canonical-word preparation has
+47native controls PASS,unchanged15baseline failures/TD121 coverage error.
+Owning evidence:desktop-presentation-isolation-2026-10-23.md and remote
+chrome-941-space-word-proof-full-20261024. In exact manual row2 the first loss
+is accepted press242/native_no_desktop2460us while typing в;release243 is
+refused_timeout. Native actual word6chars versus managed5 explains the later
+context_authority refusal. Do not weaken that refusal or assume why KWin read
+failed. KDE desktop adapter drops the error;metadata-only opt-in trace added
+there preserves the same result. Diagnostic not yet built/installed. No replay,
+ownership,revision,timeout or delivery rule changed. Upper omnibox geometry
+FAIL remains separate;two common release hooks still require the pending scope
+decision. No Harness2/agents/GNOME changes or publication.
+
+### 2026-10-22T03:41:23.274890+00:00 — v61 source463/463PASS; final scoped Harness2 review running
+
+Remote fixed proof `stock-replay-v61-reset-affected/result.json`:463PASS/0FAIL, execution97.597s. Complete gate `stock-replay-v61-reset-source-gate/result.json`:PASS, architecture receipt PASS, diff check PASS, wall163.822s, ended2026-10-22T03:39:48.060203UTC. The same fixed denominator includes all4 unchanged regressions exposed by the two rejected variants.11focused controls PASS. Restoring the existing computation branch fixes ordinary Reset without allowing unproved completed replay; no request/edit route or authentication owner added.
+
+Harness2 projectlay2 task `20261022T034019Z-2e25183e`, gpt-6.1-sol/xhigh, per-run480s; frozen13complete functions incl2full tests,36421inputbytes, `stock-replay-v61-refresh-final-review-r2/`. RUNNING, not accepted yet. Report expected at `/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T034019Z-2e25183e/report.json`. Install only after independent report/input/current-source verification. Then remote engine-only build/install and6 short native Writer rows. Runtime still v60b, native v61 NOT_TESTED; Chrome prefix underline FAIL remains open, accepted Kitty preserved. Release/updater/GNOME/full browser matrix not revalidated.
+
+Regular read-only upstream check2026-10-22T03:38:58.441348UTC:5open PRs, #68zbus5/5CI, #67rayon4/5, #66sha2 3/5, #65serde_json5/5, #64arboard3/5. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/upstream-pr-review-20261022T033858Z.json`. No merge/close/message/dependency change.
+
+### 2026-10-22T03:36:13.639936+00:00 — v61 bounded replay guard: preserve the pre-existing computation branch
+
+Measured source result: `stock-replay-v61-bounded-affected/result.json` is461PASS/2FAIL of463 (96.09s execution). The previous two replay-refusal controls now pass, but `firefox_bridge_publication_survives_shift_received_after_reset_suffix_binding` and `td121_current_metadata_unproved_release_only_retires_the_handled_press` fail at the first manual RPC (NotHandled instead of the prior pending read). Both unchanged fixtures have ordinary context-reset computation authority and no completed replay. The new missing-SSI condition unintentionally applied the stock completed-replay restriction to both branches of `context_reset_rereceipt_manual_wait_allowed`.
+
+Chosen minimal correction: explicitly preserve `context_reset_rereceipt_computation_allowed()` inside that condition. Its existing exact-replay quarantine excludes completed replay; completed replay still needs exact-refresh capability or an already queued authenticated read. Alternative reverting the whole condition is rejected: it reintroduces the proven premature replay handoff. A new branch-specific queue/owner is unnecessary. No test assertions, receipt validation, token/lease/epoch/deadline or delivery route changes. Expected effect is only restoring the two established reset paths, not granting edits from missing SSI. No allocations, timers, cache/package, candidate/ranking or learning changes; one existing pure predicate is reused. Verify11 focused controls (all9 prior plus these2), then the same463 fixed proof. Failure rejects this correction. Runtime remains v60b PID1994712, SHA82d751b1ea32e0736a115392bb13948bd46aa364bd76b94868caa96494f2c245; source PASS is not physical-client PASS. Native/install/release/updater remain NOT_TESTED for v61.
+
+Receipt root: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z`; runtime authority unchanged. Rollback boundary is only the added ordinary-computation alternative, preserving source-prefix A and all established refusals.
+
+### 2026-10-22T03:28:51.078049+00:00 — v61 unrestricted refresh rejected; bounded refresh9/9GREEN
+
+Fixed affected gate463:461PASS/2FAIL, receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v61-affected/result.json`. Both original assertions remain unchanged: `td121_inherited_full_prefix_refuses_contradictory_final_receipt` and `td121_native_replay_progress_never_authorizes_pre_final_manual_effects`. The unrestricted capability extension permitted a partial SSI request and an immediate manual handoff from missing SSI; never installed, archived `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/rejected-unrestricted-stock-refresh-v61/`.
+
+Causal ablation restores only exact-refresh eligibility while retaining real-source-prefix fix:8/8PASS (`/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v61-ablation/result.json`). Source-prefix fix preserved. Bounded replacement requires a prior whole source surface or whole replacement word without its boundary for ordinary-client reads. Missing/partial SSI cannot start a manual gesture; existing queued wait retains its700ms deadline. Exact-refresh sentinel behavior unchanged. Focused9/9PASS, including both previously failed unchanged controls; compilation12.89s/execution2.19s. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v61-refresh-bounded/result.json`.
+
+Next: rerun the same463proof after architecture refresh, then final bounded Harness2 review; no candidate installation before these gates. Live remains v60b. Upstream read-only rechecked2026-10-22T03:20:54.931121UTC:5open PRs68/67/66/65/64; CI5/5,4/5,3/5,5/5,3/5. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/upstream-pr-review-20261022T032054Z.json`; no merges/upgrades/messages.
+
+### 2026-10-22T03:19:27.878934+00:00 — v61 focused GREEN7/7
+
+Existing pending-manual refresh extension now passes all7selected checks after causal RED6/7. Tests cover original delayed and final-letter-without-Space actual receipts, empty/Unicode external prefix, ordinary/exact-refresh capabilities, Space/NBSP and incomplete/contradictory/expired/atomic/sealed/no-surrounding refusals. Source compilation12.94s, execution1.73s. Remote receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v61-refresh-green/result.json`. No runtime changed. Next fixed affected scope463checks plus architecture refresh, final bounded review, engine-only build/native qualification.
+
+### 2026-10-22T03:18:04.121006+00:00 — v61 source context retained; release hook rejected; existing refresh under test
+
+- Live remote engine remains v60b, PID1994712, SHA256 `82d751b1ea32e0736a115392bb13948bd46aa364bd76b94868caa96494f2c245`; no v61 installation or client claim.
+- Source-prefix change: causal RED then5/5 GREEN, including empty/Unicode real external prefix and no invented target SSI/revision/ACK. Preserve this fix.
+- Harness2 USED task `20261022T024721Z-67fc0e30`, report `/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T024721Z-67fc0e30/report.json`: statusok,8calls,0failed, no fallback; bounded review8/10. Independently checked frozen inputs and8source excerpts; review is not native acceptance. Earlier240s-timeout task rejected.
+- Rejected final-release request prototype:7th attempt still5PASS/1FAIL because observer-before-callback ordering rejects the shortcut. Never installed; archived `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/rejected-final-release-read-v61/`. Authentication guards retained; prototype metadata/hook removed without removing source-prefix fix.
+- Replacement hypothesis: reuse existing pending-manual700ms wait for completed, paired, current replay and prior actual SSI. Extend request eligibility to ordinary surrounding-text capability; final exact SSI remains mandatory for edit. Existing sentinel branch retains exact-refresh capability. Causal RED:6PASS/1FAIL at ordinary-client outcome0 vs expected4, receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v61-refresh-red/result.json`. GREEN running remotely; no verdict yet.
+- Native known v60b scope: LibreOffice5PASS/1FAIL, reverse closed-word gesture fails; Kitty accepted; Chrome TabPASS, typed-prefix underlineFAIL. No full browser/GNOME/release/updater result for v61.
+- Upstream checked2026-10-22T02:54:36.527396UTC: open PRs68,67,66,65,64; CI5/5,4/5,3/5,5/5,3/5 respectively. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/upstream-pr-review-20261022T025436Z.json`. Regular read-only review rule is AGENTS.md; no PR state/dependency changes.
+- Next: stock/managed refresh-positive and refusal controls, full affected scope, final bounded Harness2 review, engine-only candidate and short native checks if source gates pass. Keep daemon/globalIBus/tray/desktop/config untouched.
+
+## 2026-10-22T02:39:26.091289+00:00 — causal RED: observed source prefix is lost on engine handoff
+
+Remote `stock-replay-source-v61-red/result.json`: four existing tests PASS; new `stock_observed_boundary_handoff_preserves_real_prefix_without_target_receipt` FAILS at actual replay source prefix `None` vs `Some("")`. Fixture uses real SSI, successful local Space with no invented final SSI, authenticated manual RPC, actual factory/activation handoff and suppression RPC. Target still has no SSI/ACK; the failure is retained source provenance, not target acknowledgement. Unicode-prefix case remains behind the first RED assertion and is not yet claimed tested.
+
+Harness2 USED task `20261022T023435Z-586d6f4c`, lay2/gpt-6.1-sol/xhigh, bounded frozen plan review RUNNING; no verdict yet. Inputs matched remote origins before launch. Proposed correction carries explicit actual-snapshot versus observed-word/local-boundary provenance through the existing reducer receipt; a separate real result-read request may be needed after final native key release. No new owner, fake SSI/ACK, relaxed verifier, client-name bypass or delivery route. Live v60b unchanged, LibreOffice reverse/Chrome styling still FAIL. Next: source fix and strict negative checks, independent Harness2 review, then short remote native proof before acceptance.
+
+## 2026-10-22T02:22:58.218994+00:00 — v60b installed; LibreOffice reverse closed toggle remains FAIL
+
+Remote engine-only install at2026-10-22T02:10:03.342822UTC: PID1994712/SHA25682d751b1ea32e0736a115392bb13948bd46aa364bd76b94868caa96494f2c245. Candidate/source closure matches the462/462 remote source/architecture/build proof (1258files/7db8e45bc327d05d3bbb814ab079803d3e500c5f8042b4bbe4b7f668172e5cd2). Deployment `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-local-boundary-v60b-deployment/result.json` preserves8protected processes/config/tray; no daemon/global IBus/desktop restart. No local installation or publication.
+
+Harness2 USED task20261022T014733Z-2b7280e4, lay2/gpt-6.1-sol/xhigh: reportdegraded, coreok,8calls/1timeout/c1fallback; bounded8/10/no demonstrated source blocker. Thirteen frozen hashes/eleven full-origin excerpts/seven remote full source files independently match. Acceptance `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-local-boundary-v60b-review-acceptance.json` is SOURCE_ONLY, not client proof. Full report `/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T014733Z-2b7280e4/report.json`.
+
+Native LibreOffice v60b default profile5PASS/1FAIL: first/second hint+Tab, active Double Shift roundtrip, physical Shift+A, Space auto-flip PASS. Closed target becomes `Ghbdtn `; independent ordinary input with actualxkb:us::eng and no Lay also yields `Ghbdtn `, proving Writer sentence capitalization. Controlled NEW owned profile with only sentence capitalization disabled retains the six strict assertions:5PASS/1FAIL; first closed toggle gives exact`ghbdtn ` in180.165ms, reverse gives no change. Active toggles198.12/181.522ms. No user profile/config change. All7restorations true. Receipts `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/libreoffice-v60b/`, `libreoffice-default-capitalization-v60c/`, `libreoffice-no-capitalization-v60c/`. Actual screenshots show ordinary prefix without IME underline; application spellcheck/header marks are distinct.
+
+Short native regression `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-local-boundary-v60b-native-controls/summary.json`: ordinary-launch Kitty hint/Tab/closed roundtrip/next decoder PASS; closed samples15.324/16.833ms. Chrome textTab1/1PASS, visual prefix underline remains separate FAIL;6restorations true. No physical-evdev/full browser/GNOME acceptance claimed. Historical browser100PASS/76FAIL/0BLOCKED/144NOT_TESTED of320 unchanged.
+
+Next: causal source fixture for stock-client native replay followed by second closed gesture. Actual replacement letters have real SSI, final forwarded Space has none; readout becomes unknown-context (epochs287/288). Preserve replay receipt/quarantine guards; never promote forwarded key delivery to client ACK. v60b remains live. Chrome attribute-only proposal already rejected; no repeated attribute tweaks.
+
+Fresh read-only PR check2026-10-22T02:21:23.575226UTC:5open; #68/#65CI5/5,#67CI4/5,#66/#64CI3/5. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/upstream-pr-review-20261022T022123Z.json`. AGENTS.md330–339 mandates regular checks; no merges/messages.
+
+## 2026-10-22T02:01:44.190595+00:00 — Chrome prefix-only wire rejects another attribute-only proposal
+
+No production/runtime change. Re-inspected actual v59 native Chrome wire: nonempty compositions contain only owned `п`, `пр`, `про`, `пров`, plus decoder controls `z`/`я`; no combined `проверка` preedit. The continuation is the existing readonly view. Removing explicit prefix UNDERLINE_NONE therefore triggers Chromium's whole-composition default rather than leaving a separately styled suffix span. Reject the proposed attribute omission before coding. Earlier parser assertion that expected combined `проверка` is a diagnostic assumption failure, not a new client test failure. Exact retained evidence: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-prefix-attributes-v61-proposal.json`; wire SHA-256 bebaae7f360e8a8b7596ac2012a6c604eea27d848747d8dda9054732007d4b60. Chrome native presentation remains FAIL. This confirms the existing no-attribute-only-remedy finding; do not repeat it against the same prefix-only output. v60b review/native sequence remains the one active change.
+
+## 2026-10-22T01:52:21.977835+00:00 — v60b related source proof and frozen review
+
+v60b remote graph/build gate PASS: 462/462 selected checks, architecture PASS; engine candidate SHA-256 `82d751b1ea32e0736a115392bb13948bd46aa364bd76b94868caa96494f2c245`. Source closure1258files/7db8e45bc327d05d3bbb814ab079803d3e500c5f8042b4bbe4b7f668172e5cd2. Receipts: `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-local-boundary-v60b-postgraph/result.json` and `stock-local-boundary-v60b-build/result.json`. Existing stale-observed-client refusal retained unchanged. Installed engine remains v59/b1ae6be2; candidate native behavior NOT_TESTED.
+
+Harness2 USED, projectlay2/modelgpt-6.1-sol/xhigh, task `20261022T014733Z-2b7280e4`, still running. Thirteen frozen inputs, eleven excerpts independently verified, seven full origin files match both workspaces. Report pending: `/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T014733Z-2b7280e4/report.json`. Next only after review: engine-only install and six-row LibreOffice probe, ordinary-launch Kitty and Chrome controls. No daemon/IBus/tray/desktop restart, local installation or publication.
+
+Fresh read-only PR check2026-10-22T01:42:22.155387UTC:5open; #68/#65 CI5/5, #67 CI4/5, #66/#64 CI3/5. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/upstream-pr-review-20261022T014222Z.json`. No merges/messages. Chrome typed-prefix underline remains separate FAIL; historical full browser100PASS/76FAIL/0BLOCKED/144NOT_TESTED of320 unchanged.
+
+## 2026-10-22T01:41:22.048889+00:00 — v60b source lifecycle clarified
+
+Focused r2 proves first pre-Space word has UnknownStart despite an exact real client snapshot. Capture is inert and now requires a live matching token; post-Space manual readout still requires KnownStart. Focused r4 proves the record exists after Space, but the existing authenticated manual handoff republishes identical text at the next tail epoch. v60b carries only its already-current source across that one successful handoff; unrelated epoch changes still refuse it. No exact snapshot or delivery ACK is published. Failed compile in r3 was a missing test-only import, corrected explicitly; all receipts retained. Broader source, review and native verdicts pending.
+
+## 2026-10-22T01:35:23.453310+00:00 — v60a rejected by the existing observed-client guard; v60b narrowed candidate
+
+v60a related gate **460 PASS / 1 FAIL** (`stock_owned_manual_source_rejects_stale_unknown_and_observed_contexts`, observed-client case). A historical callback plus any local commit cannot prove the current word. Existing refusal/assertions are retained unchanged. Receipt: `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-local-boundary-v60-postgraph/result.json`; build stopped before release compilation. Running engine remains v59/b1ae6be2.
+
+v60b hypothesis: preserve exact real pre-Space word observation only across one successful local ASCII Space. Capture in existing managed CommitText path; bind exact tail, existing tail epoch, focus serial, owner lease and actual observation revision. Clear at new input, observation, revocation or field close; revalidate existing KnownStart/current token and all manual handoff/refusal gates. This inert source record creates no owner, generation, timer, queue, executor, synthetic snapshot or delivery ACK. Epoch/owner/revision/text mismatch and native replay quarantine refuse it. Causal test and existing observed-client refusal must both pass; broader proof, Harness2 review and native client acceptance pending.
+
+## 2026-10-22T01:22:13.441048+00:00 — v59 accepted source/native scope; v60 local-boundary source candidate
+
+v59 source459/459, Harness2task20261022T004203Z-1eaf86cb8/10 and engine-only deployment SHA b1ae6be27b67b539e349819a76f51b72464eddfa5ee1cb22bb34bafeb63ef2b0: LibreOffice second-word hint/Tab repaired; latest native5/6 keeps closed Double Shift FAIL. Ordinary Kitty controls PASS, Chrome prefix underline FAIL. Owning preflight contains exact receipts.
+
+v60 hypothesis: known current stock-client word remains a bounded explicit manual source after this engine commits Space, despite earlier letter callbacks and no post-boundary SSI. Causal baselineRED stock-local-boundary-v60-red-r4; r0-r3 invalid fixture setup is not product evidence. Candidate only changes existing stock-owned predicate: successful local commit+trailing boundary+KnownStart+no SSI/floor+no ExactReplay/quarantine, existing field/content/owner guards unchanged. No fabricated SSI/ACK or new delivery route. Decision2026-10-22-stock-local-boundary-manual-source.json.
+
+First green source run1/2PASS: positive causal source fixed, negative replay setup tried suppression before the decoder reached the requested target. Corrected fixture now follows the existing daemon handoff/readout/target-decoder sequence; no production guard was relaxed. All broader source/review/native gates remain pending; runtime stillv59. Preserve prior native replay receipt requirements and rejected unconditional ordinary-commit mechanism.
+
+## 2026-10-21T19:02:21.754237+00:00 — v23 startup repair accepted within scope; native replay lifecycle failure retained
+
+No Rust/core experiment in this milestone. Existing client setup owns ordinary Kitty startup; reversible command fixes the causal direct-vs-desktop difference. Latest19/19remote sourcePASS, exact installed helpera2859159/wrapper984a84c7. Same-wrapper ordinary native hint/Tab,10/10targets andShift4/4PASS; punctuation/old geometry FAIL retained. New user-review window561418 has IBus; no protected app restart. Harness2USED20261021T183803Z-de6d1dd7:8callsOK,8/10review, sole PATH false-success finding independentlyRED/fixed/GREEN after review. Earlier timeout is not review success.
+
+New Chrome omnibox after-Space nativeFAIL has a causal bus/engine trace: first deletion native, then Reset/FocusOut/In cycles, second FocusOut revokes owner, local/shared replay state mismatch consumes Backspace. Do not repeat frame/settle experiments: output keys arrived. No unsafe broad pass-through or retained focus authority patch. Detailed receipts, invalid-fixture distinctions and next source RED requirement are in latest [preflight](../architecture/ime-inline-hint-preflight-2026-10-20.md). Historical browser100/76/0/144 of320 unchanged. Native source pin6d488123/enginecf76bc is not replaced by the Python/doc closure; remote graph/architecture checks PASS with six-artifact receipt `shift-hint-20261021T1242Z/docgraph-v23-independent-acceptance.json`.
+
+## 2026-10-21T18:12:18.096679+00:00 — short native v21 verification, open failures retained
+
+GTK/Qt25/25functionalPASS; active bursts only, separate after-Space roundtrips. Five desktop hint captures reviewed independently. Browser seven-case3PASS/4FAIL remains; one-case latency profile observes a79.78mslayout-list reply and83freshKWin script loads, without proving a safe optimization. Kitty missingrectFAIL persists despite a valid diagnostic capture. Harness2 task20261021T174153Z-6dce90b1:8/8OK,7/10incomplete static review, no demonstrated defect; truncation/omitted-wrapper gaps retained. Current enginecf76bc/source6d488 and8protected processes independently pinned. No production patch at this verification milestone. Exact receipts, visual limits, restored state, untested denominator and review audit: [owning preflight](../architecture/ime-inline-hint-preflight-2026-10-20.md), newest entry; local `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/native-short-checks-v21-local-review.json`. Rejected frame/settle experiments stay rejected.
+
+## 2026-10-21T17:54:00.062569+00:00 — ordinary Space repair passes native controls; open failures retained
+
+Scoped development engine326051/SHA`cf76bc925c96a738e2b4a9a4a37619713e0efb3d544b54d4d9b75f56337604b0` installed17:43:55UTC. Causal real-Space RED1/1, affected isolatedGREEN266/266, graph/architecture PASS. Independently recomputed local/remote1257-file source+mode identity `6d488123b563c16a7972862a88a79cad1cd4257428db6592c067f567eea922cd`. Only engine replaced; daemon1802bb5e, globalIBus, tray, config and protected8 preserved. No new delivery/edit/learning authority.
+
+Native normal-profile browser receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-browser-native-v21/summary.json`: Firefox iframe ordinarySpace roundtrip+decoder PASS; Firefox iframe and Chrome text Tab roundtrip+decoder2/2PASS. Four after-Space rapid-five cases remainFAIL: all20/20 intermediate targets appeared (v20:13/20), but15/16 intergesture deadlines missed. Twenty release-to-DOM samples median167.92ms,p95234.95ms,max243.08ms; retained clock uncertainty, no relaxed cadence or latePASS.
+
+Native terminal receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-terminals-v21/summary.json`: Kitty/Konsole Tab+roundtrip+decoder2/2PASS; active/Space five-toggle4/4cases and20/20targetsPASS; heldShift RU/US left/right8/8PASS. RU punctuation2FAIL (`!,Ж()_` instead of `!?:()_`), Lay causality not proved. **Independent screenshot inspection: Konsole ordinary prefix+complete opaque suffix PASS for this capture; Kitty hint absent FAIL**, despite functionalTabPASS. Kitty snapshot has suffix`ерка` but`rect=null`; do not merge functional and presentation verdicts. Chrome prefix underline and Firefox iframe prefix overlap remainFAIL. Restoration checks alltrue.
+
+Harness2 frozen v21 review task20261021T174153Z-6dce90b1 stillrunning; no review acceptance claimed. Local evidence manifest `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/v21-receipts-manifest.json` retains39explicitJSON/PNG files, no browser profiles. Historical full browser100PASS/76FAIL/144NOT_TESTED of320 unchanged. No fullmatrix, GNOME, release, push, local install or global restart. Next: explain first lost Kitty hint geometry and existing browser latency, without repeating rejected frame/settle experiments.
+
+### v21 causal verdict — source only
+
+Old implementation: 1/1 expected causal RED at exact ASCII/NBSP tail equality,
+actual Space dispatch (no fixture setup failure). Corrected source: **266/266**
+affected isolated checks PASS, including the previous262 and four ordinary-Space
+identities. Receipts: `stock-user-space-v21-red/result.json` and
+`stock-user-space-v21-green/result.json` under the existing remote audit root.
+Current runtime has not yet been changed by this experiment; native pending.
+No edit/delivery/learning authority changed. Appearance and historical browser
+matrix are still FAIL/partial as recorded above.
+
+## 2026-10-21 — ordinary stock-client Space first receipt: preflight
+
+Native `browser-space-burst-current-v20` on engine882385ae: Firefox iframe after
+ordinary Space retains `привет NBSP` through all five gestures (zero targets).
+Tab completion passes separately. First unresolved mechanism: no-snapshot owned
+Space expectation explicitly excludes UserInput. This is a hypothesis pending
+an actual Space-key causal RED, not yet a client fix.
+
+Decision and full consequence analysis:
+`docs/architecture/decisions/2026-10-21-stock-user-space-first-receipt.json`.
+Reuse conditional whole-field acknowledgement only; output, detector, verifier,
+learning and delivery authority unchanged. Preserve prior Tab/terminal controls.
+Full browser table and appearance failures remain unchanged. New focused source
+and native receipts will be appended at each verdict; no release acceptance.
+
+## 2026-10-21T17:29:19.515707+00:00 — exact new runtime checked; stock completion failure repaired in bounded native cases
+
+Installed scoped KDE development engine249471/SHA882385aeec5233cb721998a22e22fb3f8177bf21b021061a17cce14c999d2f45 at17:20:24UTC. Guarded build and architecture PASS; local/remote canonical1257-file bytes+modes match SHA75470100e8aef679d1c7b7f6d2e897f637de881b3ac45d8f324f6ff39b1011c8. Reused262/262 isolated sourceGREEN; no redundant rerun. Daemon49153/1802bb5e, globalIBus, eight protected processes and config preserved. Delivery and mutation authority unchanged.
+
+Actual owned normal-profile Firefox iframe-rich and Chrome text each PASS: native `пров`, hint screenshot, real Tab to `проверка `, DoubleShift both directions, next-letter decoder. Firefox raw NBSP retained. Receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-completion-space-browser-native-v17/summary.json`; repeat read-only geometry diagnostic `browser-hint-geometry-v19` also2/2functionalPASS. Source fixture setup failures v17/v17b are excluded from valid causalRED v17c.
+
+Short current-byte terminal receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-completion-terminals-v18/`: Kitty/Konsole hintTab-to-DoubleShift-to-nextletter2/2PASS; active/Space five-bursts4/4cases with20/20 intermediate transitionsPASS; left/right ordinaryShift RU/US8/8PASS. Twenty burst transitions median19.88ms,max21.55ms from secondShift press to PTY exact target (not full-gesture/end-to-end browser latency). RU punctuation2FAIL retained; Lay causality not proved. Independently viewed current Kitty/Konsole captures: typedprefix ordinary and entire suffix black on opaquewhite. This visual result covers those two captures only; old Kitty missinghint capture remains historicalFAIL. All restoration checks true.
+
+Current browser captures stillFAIL appearance: Chrome typedprefix underlined; Firefox iframe suffix covers/hides prefix. Prior rapid after-Space browser failures remain open. Historical fullbrowser100PASS/76FAIL/144NOT_TESTED of320 unchanged; no fullmatrix/GNOME/private/fullscreen/release gate. Harness2 new review20261021T171945Z-cece8c8c running; v16 degraded7/8 review independently audited, static scope only. No push/release/local install/global restart.
+
+## 2026-10-21T17:17:45.055918+00:00 — stock first-receipt candidate source GREEN; native pending
+
+`stock-completion-space-v17c-green/result.json`:262/262 exact affected identities PASS in isolated bwrap sandboxes, default stack;12.45s compile plus10.07s execution. Test artifact4041b945407ab517cc0a984fe62844fd5608dab27722dfb072fc1219b2574dd0. Source-only; currently installed174016/aecf29d3 still has the retained native Firefox failure. Conditional whole-field expectation keeps KnownStart/UserInput/output routes unchanged. New negative cases cover old field prefix, wrong word/boundary count, trailing field text, selection/caret, expiry/epoch/foreign owner, current token/mode/owned composition/exact edit and incomplete/stale observed starts.
+
+Harness2 v16 review task20261021T165016Z-bbdbb45b completed degraded:7/8callsOK, dom1 timed out240s, no fallback; selected bounded static review9/10, no findings, explicit missing implementation proof gaps. This does not cover the new v17 delta and does not override nativeFAIL. Build and physical acceptance remain pending. Historical full browser100PASS/76FAIL/144NOT_TESTED of320 unchanged.
+
+## 2026-10-21T17:09:17.464644+00:00 — actual Firefox fails; initial observation absent
+
+Installed engine174016/aecf29d3 retains the v16 source257/257 PASS but Firefox iframe Tab-to-DoubleShift FAIL. Chrome text control PASS. Trace `firefox-iframe-completion-trace-v17` proves stock caps41, exact refresh unavailable, and no surrounding snapshot until AFTER Tab. The v16 regression supplied a prior snapshot, so its qualified receipt cannot run in the actual failure. This native failure is retained and is not reclassified by source success.
+
+Short native receipt `completion-space-short-native-v16`: GTK/Qt25/25PASS; terminal20/20 individual DoubleShift transitions and ordinaryShift8/8PASS; RU punctuation2FAIL baseline. Viewed screenshots: Chrome typed-prefix underlineFAIL; Firefox iframe prefix hiddenFAIL; Kitty hint absent at capture (functionalTabPASS only); Konsole black-on-white complete suffix bounded visualPASS. All protected runtime/config/layout restorations true. Full historical browser100PASS/76FAIL/144NOT_TESTED of320 unchanged. No release/push.
+
+Next causal regression uses stock caps41 and NO initial surrounding callback. A candidate must acknowledge only a subsequently observed exact whole-field owned word plus one boundary, without inventing a prior prefix, downgrading a known stale witness, or changing edit/learning authority. Receipt paths are under `/home/e/projects/lay-development-runner/kde-install-control-20261020/`; local copies under `shift-hint-20261021T1242Z/remote/v16/`.
+
+## 2026-10-21T16:54:11.126138+00:00 — completion receipt source257/257; native proof pending
+
+First failed transition proved in remote Firefox iframe: Tab commits ASCII Space, client reports NBSP, next ManualToggle delegates but V4 sees unknown-context. One real-key source regression RED; existing exact owned-Space receipt reused for matching authorized completion, with all field/owner/prefix/selection/expiry guards. Affected isolated257/257 GREEN, no runtime/delivery authority change. Decision `2026-10-21-completion-owned-space-receipt.json`; owner entry has exact receipts and limits. Harness2 task20261021T165016Z-bbdbb45b running. Current engine4076822/5934db2f and original daemon49153/1802bb5e unchanged; next scoped development engine build/deployment and native Firefox/Chrome/Kitty/Konsole controls. Presentation and browser fast-Space burst failures remain open; full historical table unchanged. Rejected frame-batching review finished8/10, independently audited, candidate still removed. No release/push/global restart.
+
+## 2026-10-21T16:18:36Z — finite-frame fence rejected after native comparison
+
+Candidate0941177b source52PASS including26owned-Xvfb controls, native GTKQt25PASS and terminal controls retained. Browser normal bursts remain10PASS/10FAIL per browser; Chrome45 measured Space targets median183.0→183.6ms and p95283.6→301.0ms. No useful benefit; source and daemon restored to exact prior bytes. Decision2026-10-21-x11-closed-frame-fence.json forbids silently repeating or retaining this failed experiment. Detailed owner entry records snapshots, fixture/setup failures, deployment/rollback identities, Harness2 timeout and pending narrowed review.
+
+Fresh restored-daemon Firefox diagnostic: five DelegateExactImeTail replies1.22–2.35ms, five exact target observations163–173ms, fast deadlineFAIL. This reproduces latency after admission without production logging. Earlier missing targets and Chrome prefix underline remain open; safety/focus/settlement bounds unchanged. Full matrix remains historical, no new release acceptance.
+
+## 2026-10-21T15:56:03.767890+00:00 — finite X11 frame experiment, not installed
+
+Metadata-only native profile `bridge-v7b-space-dbus-profile-v10` retains five Chrome targets but misses fast deadlines. Bounded profile: 85 fresh KWin reads across the run; one getLayoutsList call80.17ms; output also performs serial same-connection fenced writes. Do not infer that frame batching fixes the whole latency. Candidate decision `2026-10-21-x11-closed-frame-fence.json` keeps pacing and all safety/settlement contracts; remote owned-Xvfb proof, source build, bounded Harness2 review and native comparison pending. Current daemon1802bb5e and engine5934db2f unchanged. Full browser table unchanged; Chrome prefix underline and Firefox iframe presentation/Tab remain unaccepted.
+
+## 2026-10-21T15:44:34.075357+00:00 — fresh browser burst split and bounded review complete
+
+Current engine remains PID4076822/SHA5934db2f64e5fee37e376b85eb955b6e1bdc3b2aaa7de7c681156dc846b39b01. `bridge-v7b-browser-double-shift-v9`: Firefox10PASS/10FAIL and Chrome10PASS/10FAIL of20 each, zero BLOCKED/NOT_TESTED. All ten active-word five-toggle bursts pass in each browser; all ten after-Space bursts fail. These are normal-mode diagnostics only and do not replace historical full-matrix100PASS/76FAIL/144NOT_TESTED of320. The original old-geometry and old-timing receipts are retained.
+
+The browser fixture now scales native RFB clicks by measured DPR (Chrome1.0625), records actual gesture starts, and conservatively bounds the DOM/native clock mapping. Five exact alternating targets plus the next-letter decoder probe remain mandatory. Chrome after-Space targets generally arrive but overlap the next gesture; Firefox also loses intermediate targets. Examples: Chrome text137.62/157.31/281.75/218.88/164.62ms; Firefox URL192.07/181.60/288.85/227.38/175.06ms. These failures are not excused by a final matching string. After-Space uses existing delegated daemon replay; first expensive or lost transition still under diagnosis. No performance/runtime bypass has been added.
+
+Harness2 USED task20261021T151518Z-2319fcc6, report/coreOK,8/8calls, zero failures/fallbacks, frozen source unchanged. Selected bounded static adapter review9/10, approve with proof gaps, no concrete findings. Independent evidence: two valid old-code RED identities,242 affected GREEN identities, native Qt former failure now PASS; dedicated cancellation/elapsed-ceiling and full-source gates are not covered by the three new regressions. Review does not accept browser or presentation failures. Report: `/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261021T151518Z-2319fcc6/report.json`.
+
+Remote receipts: `/home/e/projects/lay-development-runner/kde-install-control-20261020/bridge-v7b-browser-double-shift-v9/{summary.json,restoration.json,firefox/result.json,chrome/result.json}`. Local copies: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/remote/browser-v9/`. All restoration checks true. Chrome typed-prefix underline remainsFAIL; Firefox iframe presentation/Tab unaccepted.25GTKQt/20terminal transition proofs retain their bounded scope. GNOME, private/fullscreen and release gates not rerun. No push/release, daemon/globalIBus restart or authority/delivery-route change.
+
+## 2026-10-21T15:33:20.095711+00:00 — activation fence source GREEN, native Qt PASS
+
+Current remote engine PID4076822 SHA5934db2f64e5fee37e376b85eb955b6e1bdc3b2aaa7de7c681156dc846b39b01. Candidatev7b:242/242 Rust+14JS+2PythonPASS; all25GTKQt and20terminalDoubleShift transitionsPASS. Same four TD121 stack-crashing fixture cases pass after one-await-loop shaping, with default stack/assertions/deadline unchanged. Full source gate remains NOT_TESTED. Firefox retains five exact burst targets but old onset timingFAIL; Chrome focusBLOCKED due measured DPR1.0625 CSS/RFB coordinate error. Diagnostic-fixture corrections pending native acceptance. Full browser table unchanged. Owning result and receipt paths: `docs/architecture/ime-inline-hint-preflight-2026-10-20.md` latest entry. Harness task20261021T151518Z-2319fcc6 still running. No release/push or global restart.
+
 # TD-121: журнал изменений ядра и запрет повторения отвергнутых подходов
+
+## 2026-10-21 15:11 UTC — exact-replay activation Busy, bounded causal RED
+
+First failed transition: selected-engine change -> VisibleTailV3 mode read
+before activation marker publication -> Busy -> exact replay restored without
+text mutation. Repeated Qt plain native failure and DBus/engine traces:
+terminal-v6-qt-plain-bus-trace. Source RED bridge-fence-red-v7b: two Busy failures
+on unchanged production code, concurrent-Bridge refusal PASS. Earlier v7 is
+invalid interrupted fixture evidence. Existing-event/20ms wait is proposed
+under decision2026-10-21-bridge-waits-for-existing-activation.json; GREEN and
+native proof pending. No new owner or executor. Full-stack overflow remains
+OPEN. See owning ime-inline-hint-preflight entry for current c542167e terminal
+20-flip acceptance, browser gaps and complete receipt scope.
+
+
+## 2026-10-21 14:34 UTC — current-terminal qualification before manual admission
+
+Candidate059f8334: affected source200/200, hint JS14/14 and Python2/2,
+architecture PASS. Development-only deployment-v4 pins PID3863797 and both
+actual activation/installed executables; daemon/tray/config and eight protected
+processes unchanged. Native `terminal-candidate-v4-{konsole,kitty}-five`:
+after-Space five consecutive Double Shift PASS in each (14.36–22.10 ms visible
+latency, ten samples); active-word first PASS, second FAIL in both. The table
+of complete browser runs is unchanged. Do not claim terminal acceptance.
+
+Trace `terminal-candidate-v4-konsole-active-trace/engine-trace.jsonl` shows
+cursor geometry arriving before activation Ready; the second active-word RPC
+returns context_authority with a live bridge token and no current terminal
+qualification. The existing refresh runs only after eligibility, so UnknownStart
+never reaches it. Move the same current-field probe before eligibility and
+compute bridge liveness after the await. Preserve all owner/field/epoch/token,
+sensitive, atomic, exact-refresh and contradictory-source guards. No new owner,
+backend fallback, selection relaxation or delivery executor. Native five-toggle
+control is the exact regression: both spaced and active words, then one next
+letter checking the decoder. Existing affected source guards also rerun; no
+source-order assertion or artificial desktop success is used as acceptance.
+Decision: `2026-10-21-terminal-manual-admission-probe-order.json`.
+Implementation/proof of the ordering repair PENDING. Chrome typed-prefix
+underline, RU punctuation, full-source stack overflow and full GNOME/native
+browser matrices remain open.
+
+Remote evidence root:
+`/home/e/projects/lay-development-runner/kde-install-control-20261020/`.
+
+## 2026-10-21 14:02 UTC — qualified terminal display-line metadata
+
+First failing transition: after a successful native terminal replacement and
+engine handoff, Konsole's unchanged display line arrives with cursor7/anchor0.
+The shared verifier rejects the return toggle as a selection despite equal
+tail text. RED `shift-hint-selection-red-v2` reproduces it through production
+manual execution; red-v1 had an invalid missing-output fixture and is retained
+only as a failed test attempt. Do not remove the verifier's selection check or
+drop contradictory text. Reuse the selected qualified executor to distinguish
+terminal display-line metadata from editable-document selection. Exact-refresh,
+revoked-field/probe/cell, atomic, sensitive and contradictory-tail controls are
+required. Owning evidence/decision: inline-hint preflight entry14:02 and
+`2026-10-21-terminal-display-line-selection.json`. Implementation proof pending.
+
+## 2026-10-21 — ordinary Shift failure is upstream of Lay; module relocation
+
+At09:14:43.250377Z, readback confirms live VNC modtweak=0/xkb=1 and the sole
+persisted `-nomodtweak` launch flag; all ten protected process identities and
+engine/daemon/config bytes remain unchanged. Baseline RU held-Shift failure
+reproduced with IME disabled, with a synthetic Shift release before KeyPress.
+Reject a Lay uppercase override: it would mask the transport failure and alter
+genuine lowercase input. Reinitializing the original VNC mode did not repair it;
+disabling XKB introduced a US punctuation regression and was rolled back.
+Selected nomodtweak restores8/8 ordinary Shift controls in Kitty/Konsole. The
+pre-existing RU punctuation control still fails in each six-row suite; retain
+5P/1F per terminal rather than claiming universal PASS.
+
+Separate mechanical source relocation: existing terminal focus probes moved to
+small KDE/GNOME modules behind the existing backend dispatch. Predicate/probe
+body parity and unchanged test assertions verified; canonical isolated source
+controls7/7 before and after, rustfmt PASS. No core word ownership, replay,
+learning, deletion executor, verifier or delivery route changed. No relocated
+runtime installed. The last full-source stack-overflow failure remains open.
+Owner and exact receipts: preflight2026-10-20, section2026-10-21; remote
+`ordinary-shift-*/`, `desktop-focus-module-{before,after}-v1/` and local
+`ordinary-shift-20261021T0838Z/module-mechanical-parity.json`.
+Narrow Harness2 task20261021T085025Z-03eb4287: 8/8 calls OK, no failures or
+fallbacks, selected transport review A8/10; inputs/report independently checked.
+Post-review native Double Shift round trip remains Kitty PASS / Konsole FAIL,
+so the ordinary-Shift transport repair does not close the Konsole Space defect.
+
+## 2026-10-20 — native Konsole suffix readout regression
+
+Current result: source controls27/27 GREEN; verified installed engine d4215880,
+native Konsole hint/Tab/blur2/2 PASS, full Kitty4/4 PASS, full Konsole2/4 PASS.
+Whole-word authority is unchanged; failed Double Shift/moved boundary remain
+OPEN. Five GTK/Qt kinds22/25 functional PASS but GTK Entry presentation FAIL
+(full field-height incorrectly scales the suffix font). The frontend-only
+geometry repair and solid-gray user revision are pending native confirmation.
+Full canonical source gate FAIL: unchanged deep native-transfer test stack
+overflow in `suffix-readout-canonical-source-v2`; do not raise stack limits or
+reuse the old943/943 gate. Exact receipt paths and current runtime identity are
+recorded in `docs/architecture/ime-inline-hint-preflight-2026-10-20.md`.
+
+Native Konsole candidate `02fb706d1dcca49066c2e21ee95acc7251ce4b2de634ae261726060765a59038` fails the owned raw-PTY run (0/4); prefix remains ordinary but hint/Tab and Double Shift fail. The bounded cause trace establishes current KWin terminal qualification, caps41 without SurroundingText, native key callbacks and UnknownStart. The first failed display transition is the native observer asking only for KnownStart plus an erase-dependent suffix predicate. `suffix-readout-red-v1` reproduces both missing readout and rejected append-only Tab: 25/27 source checks PASS, 2 intended FAIL, compilation/discovery12.836s and execution0.572s. No rollback to owned document preedit, no fake snapshot or KnownStart, and no deletion-route change is proposed. Reuse the existing display suffix identity and isolate append/readout from the stronger existing whole-word predicate. Owning decision `2026-10-20-native-terminal-suffix-readout.json`; native promotion remains OPEN. All receipts are under `/home/e/projects/lay-development-runner/kde-install-control-20261020/`.
 
 ## 2026-10-18 — active two-environment residual reduction after frozen C
 
@@ -3225,3 +3572,571 @@ Guarded source-graph refresh PASS at 2026-10-19T22:06:15Z:
 graph artifacts match the receipt; 730 non-generated source pins still match
 the source gate. This later evidence-only note changes no executable source
 and establishes no additional runtime or native acceptance.
+
+### 2026-10-20 — short Konsole presentation iteration
+
+User accepts Kitty and takes over manual client testing. Hypothesis: canonical terminal qualification currently excludes stock Konsole caps41, forcing owned preedit which Konsole inverts. Reuse terminal delivery with exact current field and canonical KWin app/class; no fabricated SSI, word boundary or edit ACK. Separately retain only the existing pending acquisition geometry across exact Ready installation. Baseline runtime 9e751d3c remains installed until short source checks pass. Two valid geometry REDs are in run-3b4t73j7; third failed fixture is corrected to adapter revoke_current_owner.
+
+Short verdict: `konsole-fast-v2` executes the exact 24 manifest-discovered
+correctness identities and passes 24/24 in 0.369884953 s (execution only).
+First v1 is retained at 23/24: its new terminal fixture did not install the
+pending activation before requiring a live receipt. v2 fixes only that fixture.
+Candidate release build passes in 193.955756 s; engine SHA-256
+`709c6d8845298642e9f87bd3cd05eff1820952a4c0d6ae93c9e8a2231493f196`.
+All 1254 source pins are unchanged and match the owning checkout. Receipts:
+`/home/e/projects/lay-development-runner/kde-install-control-20261020/konsole-fast-v2/`.
+The owning presentation document records effects, guards and untested scope;
+manual Konsole acceptance and changed-byte browser coverage remain NOT_TESTED.
+No full matrix or universal PASS is claimed.
+
+Follow-up within the same bounded iteration: Harness2 base1 review
+`20261020T172003Z-f3051d4a` identifies the late SurroundingText override.
+`konsole-fast-v3-red` proves it with 25/26 controls passing and exactly the
+new native-mode assertion failing. Retain native mode on that transition only
+while the existing `uses_native_terminal_input()` is still true. No existing
+edit/snapshot exclusion changes. `konsole-fast-v4` passes all 26 discovered
+controls in 0.496244297 s execution; late exact-contract fallback also passes.
+Final build pins and generated graph metadata are recorded independently in
+`konsole-final-build-v1/result.json`; startup-only installation, when done, is
+`konsole-engine-deployment-v1/result.json`. The 24-test candidate was never
+installed. Browser totals and physical-client verdicts do not change.
+
+### 2026-10-21 19:43 UTC — replay-orphan-v26
+
+First failed transition is an inert native-replay veto surviving revocation
+of its word owner. Chrome Reset/FO/FI is expanded by stock IBus1.5.26 into two
+engine focus cycles without X11 window focus loss. The first SSI-backed fixture
+was noncausal; the corrected no-surrounding stock-client fixture is RED at the
+first remaining Backspace. Retire only the identical path/engine-lease marker;
+do not retain or restore the old word owner. Causal GREEN plus 13/13 isolated
+guards pass. Foreign path/lease markers stay intact, and old tokens stay revoked.
+Native replacement and rendering with changed bytes are still NOT_TESTED.
+See owning preflight section `replay-orphan-v26` and its retained v24/v25/v26
+receipts. No delivery route, verifier or runtime authority changed. No installed
+candidate or client acceptance is implied at this checkpoint.
+
+## 2026-10-21T20:05:39.601697+00:00 — v26 native partial; v29 causal pending-literal repair
+
+Remote development engine709815/SHA2dd9972b23ec0f555cc9965f9bb18320e76fa4940fcd7b61c11cb888283cd349 was installed19:48UTC; daemon49153, IBus, tray, configuration and user windows preserved. V26 native Chrome omnibox: heldShift4/4, hintTab, seven ordinaryBackspaces, active-word roundtrip and active-five PASS. After-Space first replacement now PASS; inverse and Space-five FAIL. This is seven bounded rows, not the full browser matrix. Chrome prefix underline remains visualFAIL.
+
+V27/v28 independently paired private-marker wire/observer traces: observer processing follows wire receipt within approximately0.1ms; delay precedes wire delivery. V27 has approximately100ms marker delay beyond the unchanged50ms acquisition deadline. V28 last acquisition finishes within its deadline, but its first g/h arrive with authenticated pending_literal stamps, are committed rather than kept in preedit, and are then lost from the local mirror at Ready. Native text is whole; the next manual request owns only its suffix. Delayed versus incomplete acquisition are separate remaining mechanisms.
+
+V29 causal source RED holds the real marker after a real context reply, sets caps41 with no SSI and enabled IME. The first letter is wrongly committed (composition empty vs p). Minimal repair removes only the live-token condition from literal-preedit eligibility; the existing request/nonce/revocation/focus receipt still governs preservation at Ready. No boundary, client-text authority, delivery route or timeout is changed. Initial isolated affected gate17/17PASS; added explicit no-CommitText/no-delete assertions are being checked before build. New-byte v29 native NOT_TESTED. Harness2 task20261021T200308Z-22f7cc91 is running; no approval inferred.
+
+V26 Harness2 task20261021T193939Z-13826323 completed8/8calls, no failure/fallback, bounded review9/10. Independently inspected marker identity cleanup and13source checks. Frozen review covered the positive fixture; later foreign-path/lease controls were independently tested outside that snapshot. Native v26 is partial, not full acceptance. Receipts: replay-orphan-build-v26/result.json, replay-orphan-deployment-v26/result.json, replay-orphan-native-v26/chrome/result.json and replay-orphan-native-v28/chrome-wire-trace/{result.json,engine-trace.jsonl,ibus-engine.log} under the remote kde-install-control-20261020 directory. Local causal logs pending-stock-literal-{red,green}-v29.log under shift-hint-20261021T1242Z. Full historical browser100PASS/76FAIL/144NOT_TESTED of320 remains unchanged. No release, push, local install or global restart.
+
+## 2026-10-21T20:22:19.503452+00:00 — pending literal v29 native result
+
+Remote development engine789121/SHA1477678ecceff657b788c18cad1158b7d4b183578e6da7dde3d3401ca9a04e6f installed at2026-10-21T20:12:20.184737Z. Daemon49153, stock IBus, tray, configuration and user windows preserved. Source gate17/17PASS, compiler artifact resolved from Cargo JSON; source closure1258files/SHA c921a2880b257dedc776f139016686d7b86f7202a551e991c77232db0d17593c. Remote receipts pending-stock-literal-build-v29b/result.json and pending-stock-literal-deployment-v29/result.json. No release/push/local install.
+
+Native Chrome v29 seven-row probe:5PASS/2FAIL. Held Shift RU/US left/right4/4, hint/Tab, seven ordinary Backspaces, active-word Double Shift roundtrip and active-five PASS. After-Space roundtrip and after-Space-five FAIL. Active observed target timings12.275–12.669ms; a successful Space target251.699ms. This small probe establishes neither an overall latency percentile nor full browser acceptance. Receipt pending-stock-literal-native-v29/chrome/result.json.
+
+V30 independent private-bus trace identifies the next first failure: acquisition131/nonce168 Get starts1792613610246622us, marker emitted0248318 and received0288342 (~40.024ms, inside the unchanged50ms deadline). All six replacement letters remain in local preedit after v29, then Space commits the whole word before Ready. Ready clears the committed local mirror; the inverse manual request sees tail0. No X11 focus change to an IBus window occurs. Receipt pending-stock-literal-native-v30/chrome-wire-trace/{result.json,engine-trace.jsonl,ibus-engine.log,x11-focus.log}. Debug configuration restored; engine bytes unchanged. A separate earlier acquisition exceeded50ms; increasing the deadline alone cannot repair this within-budget loss.
+
+Harness2USED task20261021T200308Z-22f7cc91, gpt-6.1-sol/xhigh,8/8callsOK, no failure/fallback,9/10 bounded static review. Independently inspected report, selected artifact and current receipt fences; later no-CommitText/no-delete assertions separately passed17/17 outside frozen snapshot. Independent acceptance under local shift-hint-20261021T1242Z/pending-stock-literal-review-v29/independent-acceptance.json. Native remains partial FAIL despite static approval.
+
+Next unresolved mechanism: preserve only new literal input consumed within the exact pending acquisition across a closing Space; do not resurrect revoked owner/client text, add a delivery route, fake a boundary, or increase timeout as a substitute. Production patch not yet selected. Chrome prefix underline visualFAIL and Firefox iframe overlap visualFAIL remain. Full historical browser100PASS/76FAIL/144NOT_TESTED of320 unchanged; no new GNOME or full matrix acceptance.
+
+
+## 2026-10-21T20:42:40.139736+00:00 — pending literal Space v31
+
+Context-admission source gate461/461PASS; remote engine878924 SHA716232d39e3b419982e0497c1e0702d670c691485ff3ac428e70815827fa2cda. Original native Chrome5PASS/2FAIL, still after-Space manual failures; no overall acceptance. Debug-enabled v32 single Space roundtrip PASS is timing-altered evidence only. Next: passive no-debug v33 wire failure, then affected native Firefox/ordinary Kitty/Konsole. Protected10 processes/config unchanged. Harness2 task20261021T203236Z-62aa6552 running. Owning record: docs/architecture/ime-inline-hint-preflight-2026-10-20.md CURRENT; receipts pending-literal-space-build-v31, pending-literal-space-deployment-v31, pending-literal-space-native-v31. No release/push/local install; retain prior fixes and active sessions.
+
+## 2026-10-21T21:22:21.234437+00:00 — v35 current continuation
+
+Remote enginePID1015535/SHA1ab291b; 468/468 source PASS. Native Chrome omnibox5PASS/2FAIL after Space; short Firefox21/28 and Chrome21/28 PASS. Kitty/Konsole hint/Tab and active/Space five-toggle PASS. Ordinary uppercase Shift PASS in all four; RU punctuation oracle unverified. Browser visual FAIL. No daemon/IBus restart. Next: full passive IBus wire around failed inverse; preserve exact owner/reducer/WordScope contracts. See owning preflight entry and v35 receipts. H2v34 completed degraded, selected6/10; eviction defect fixed in v35, final follow-up pending. Historical full matrix unchanged100PASS/76FAIL/144NOT_TESTED.
+
+
+## 2026-10-21T22:22:46.914117+00:00 — v39 native delivery preserved; inverse and pixels still FAIL
+
+Installed remote engine PID1208224 SHA f36012e4874026f390f814dac563de2802a3a1226c9651be1530f281a3c68bce. Guarded source gate450/450PASS. No daemon/IBus/tray restart;10 protected processes/config unchanged. Existing descriptor delivery ordinal + explicit delivery lease retain native replacement across real Reset/refocus; old word token remains revoked. Omnibox first after-Space target now complete,233.512ms; inverse stillFAIL. Short suites: omnibox5PASS/2FAIL; Firefox21/7; Chrome20/8. Owned ordinary Kitty/Konsole hint,Tab,5xactive,5xSpace and four Shift uppercase casesPASS; Russian punctuation oracle needs real no-IME control. Old user Kitty without GLFW_IM_MODULE preserved,not certified. ScreenshotsFAIL: Chrome typed prefix underline; Firefox iframe prefix missing visually. Full320 matrixNOT_RERUN. Harness2USED20261021T214419Z-cb269f86,8calls0failed/fallback; accepted frozen pre-v39 design only,not patch/native. Owning record: docs/architecture/ime-inline-hint-preflight-2026-10-20.md CURRENT; receipts remote pending-literal-space-{build,deployment,native}-v39; local native-replay-reset-design-v38/independent-acceptance.json. Next: true no-IME punctuation control, fresh exact manual source/settlement failure, and coherent typed-prefix presentation. No push/release/local install.
+
+## 2026-10-21T22:46:10.614072+00:00 — plain-prefix scope and Shift oracle
+
+User accepts Kitty only; Chrome typed-prefix underline and LibreOffice presentation remain open. v39 engine f36012e4 remains unchanged. v41 physical-keycode Shift tests6/6 in each of new Kitty/Konsole windows; old RU punctuation mismatch also occurs in detached no-IME Kitty control, so old RFB oracle is invalid for attributing it. v42 existing-profile run BLOCKED with zero input because old Chrome/Kitty processes are gone. Do not retry stale PIDs. LibreOffice1285267 is GTK3 VCL. Matching Chrome155 primary source shows NONE/default native composition underlines and missing surrounding retrieval; neither removing attrs alone nor reintroducing unaccepted hints into preedit is a safe fix. Native actual-source probe v43 is in progress; Harness2 design task20261021T224439Z-58fdfa4b running (not accepted yet). Decision2026-10-21-plain-prefix-observation-probe.json permits diagnosis only. Do not implement a new owner or fabricate SSI. Owning document: docs/architecture/ime-inline-hint-preflight-2026-10-20.md.
+
+## 2026-10-21T23:04:20.091127+00:00 — LibreOffice actual-surrounding prefix candidate
+
+v39 f36012e4 remains installed; native LO v49 Tab PASS but prefix underline FAIL, with10 actual surrounding callbacks and7 restorations. Chrome v43–v46 accessibility source qualification BLOCKED before text input; no provider adopted. Source regression stock-observed-v50-red confirms actual stock boundary unnecessarily starts owned preedit. Minimal candidate uses existing ordinary ManagedCommit for that observed stock branch, keeps explicit exact-refresh/opaque paths and all freshness/verifier guards. Source/native checks pending. Kitty acceptance retained. See owning preflight CURRENT and decision2026-10-21-stock-observed-ordinary-prefix.json.
+
+## 2026-10-21T23:17:43.884723+00:00: observed stock prefix fixture alignment
+
+Hypothesis: stock clients with actual SSI can use existing ManagedCommit without native prefix decoration. Installed v39 unchanged. Causal RED v50 retained; affected source 430 PASS/21 FAIL/451. First shared failure is old owned-word fixture setup, not output guards. Preserve stock owned-mode proof via word-before-first-SSI order, keep exact-refresh owned mutation controls, add ordinary mutation stale-receipt rejection. No verifier or freshness weakening. Chrome v51 actual AT-SPI source PASS is diagnostic only; zero IBus SSI, no provider or executor adopted. Owning decision: `2026-10-21-stock-observed-ordinary-prefix.json`; candidate native acceptance pending.
+
+## 2026-10-21T23:29:11.969895+00:00 — stock observed ordinary prefix v55 source gate
+
+Baseline: v39 installed, real LO v49 typed-prefix underline FAIL with ten actual
+SSI callbacks; Chrome v51 actual AT-SPI source qualified but zero IBus SSI.
+Hypothesis: reuse existing ManagedCommit for observed stock boundary, retaining
+opaque and explicit exact-refresh ownership. First failed transition was
+`should_start_legacy_word_preedit` taking observed stock boundary as owned.
+Single conjunct candidate now causal 26/26 and complete affected 452/452 PASS
+(remote stock-observed-v55-causal/green result.json); v50 old-policy RED kept.
+New ordinary insertion test preserves real Reset/no-Reset provenance and proves
+no stale receipt reuse or document edit. Owned tests establish actual delayed
+SSI or exact-refresh mode, with all original effect/refusal assertions retained.
+Runtime v39 unchanged. Guarded build and Harness2 frozen review
+20261021T232546Z-71dfa570 running; no client acceptance promotion.
+
+## 2026-10-21T23:40:13.096653+00:00 — native v55 rejects the boundary-before-key hypothesis
+
+Installed v55 b2b109b1; LO functional5PASS/1FAIL (closed Double Shift) and prefix presentationFAIL in both positions. First Engine SSI follows the first key; empty InputContext SSI is not forwarded. v55 predicate cannot affect the already owned first word; absence after a boundary also restarts owned mode. New hypothesis uses the existing literal commit at a matching real preedit projection, then lifetime callback capability prevents mistaken re-entry. No receipt/authority fabricated; all old source/native failures retained. Exact preflight includes alternatives, consequences and new causal proof plan. See owning CURRENT entry and remote libreoffice-presentation-probe-v55/result.json.
+
+## Checkpoint — 2026-10-21T23:58:21.804873+00:00: v56 affected source457/457 PASS; remote build/native pending
+
+Remote stock-observed-v56-verified/result.json:457 PASS,0 FAIL; discovery12.991s, execution93.537s. Earlier stock-observed-v56-full/result.json remains456 PASS/1 FAIL: the Reset freshness fixture required persistent owned preedit while declaring stock-client mode. It now explicitly establishes exact-refresh capability before real initial input. All Reset, fresh-read, duplicate and edit-refusal assertions remain; separate actual stock callback and revoked-owner tests prove literal transfer. The next discovery failure was a missing explicit capability-constant import; it is fixed, with no guard weakened. Exact source closure is pinned by the passing receipt.
+
+Harness2 task20261021T235242Z-f11aa21c is running; completed base1 stage8/10 finds no demonstrated blocker in the frozen bounded design. Independently checked plain commit, live WordScope/token matching, generation cancellation, snapshot clearing and freshness floors. Clarification: the helper requests no layout switch; ActiveCompositionCommit::plain retains the existing executor's profile/layout reconciliation when required. Do not claim it performs no possible layout operation. Review is source-only; no native acceptance presumed.
+
+Installed v55 engine1460682/b2b109b1 unchanged. Next: guarded remote graph/build, source-pinned engine-only deployment, then actual LibreOffice first/second-word screenshots, hint/Tab, Shift, active/closed Double Shift and Space; short ordinary Kitty and Chrome controls. Preserve user apps, daemon/tray/global IBus/desktop, existing delivery/authority contracts and historical browser counts100PASS/76FAIL/144NOT_TESTED of320. Chrome ordinary-prefix issue remains open.
+
+## 2026-10-22T00:16:59.030581+00:00 — v56 installed, actual native proof remains partial
+
+Installed remote engine PID1592735 SHA256 `6d51bef57c15490dc300cbfa8f374d0fe20b02cf7a8ee31d37c3e65bcd4f3b08` at2026-10-22T00:06:21.817892UTC, engine-only. Remote `stock-observed-v56-postgraph/result.json` pins457/457 source PASS after the generated graph receipt changed; initial failed metadata reconstruction is retained, not excluded. `stock-observed-v56-build-r2/result.json` identifies the compiler artifact (81.48s); `stock-observed-v56-deployment/result.json` verifies eight protected processes, config and tray unchanged. No daemon/global IBus/desktop restart, publication or local installation.
+
+Harness2 USED: projectlay2, gpt-6.1-sol/xhigh, task20261021T235242Z-f11aa21c, complete statusok,8 calls/0 failed/0 fallback, selectedc1 bounded8/10. All10 frozen input hashes verified unchanged; existing plain-commit, ownership, cancellation and freshness implementations independently inspected. Local receipt `shift-hint-20261021T1242Z/stock-observed-v56-review/independent-acceptance.json`. Source review is not client acceptance.
+
+Initial v56 native outputs (six blank LO rows, failed controls, zero Engine.ProcessKeyEvent) are setup-blocked, not six proved product defects. A screenshot contained the Lay popup, but its later X11 state was IsUnMapped; a keyboard grab was not established. The qualified `libreoffice-presentation-probe-v57/result.json` adds a native click inside its owned editable paragraph and requires ordinary `a` before running cases. On the same v56 bytes:4 PASS (first hint/Tab, active Double Shift roundtrip, physical Shift+A, Space auto-flip),2 FAIL (second-word hint absent, after-Space Double Shift unchanged). Passive wire now shows352 ProcessKeyEvent,106 SetSurroundingText; all seven restoration checks true. First-word screenshot shows the literal prefix outside the IME underline; general visual acceptance remains partial, including brief initial preedit and editor spellchecking. The click also exposed Writer's header guide; do not confuse it with IME styling.
+
+Qualified controls `stock-observed-v57-native-controls/summary.json`: ordinary desktop-launch Kitty hint/Tab and closed Double Shift roundtrip PASS, Chrome text-field Tab1/1 PASS; six restoration checks true. Chrome ordinary-prefix underline remains OPEN: functional Tab PASS does not certify styling. Two measured active LO toggles160.747/175.966ms, no p95 claim from two samples. No full browser matrix or GNOME rerun; historical100PASS/76FAIL/144NOT_TESTED of320 unchanged. Next: identify the first shared fresh-source/word-boundary loss behind LO's two remaining failures and finish Chrome prefix styling without adding ownership or weakening the verifier.
+
+
+## 2026-10-22T09:34:30.248627+00:00 — v65 native readback hypothesis failed
+
+- Source affected gate466/466 PASS; exact build SHA256 `092198d7d7705e572ba7b259b35d57888e24ed2caabecba2a870e8070b884528`. Harness2 `20261022T090301Z-6e694fc2`: ok,8calls,0failed,no fallback; independent source review9/10, native not certified. Canonical-format-only testfile equivalence is explicitly retained in the independent review packet.
+- Installed only the remote engine PID3353802; daemon/tray/global IBus/desktop unchanged. Deployment receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v65-deployment/result.json`. No publication/local installation.
+- Actual owned Writer6rows:5PASS/1FAIL. Closed-word first toggle149.216ms PASS, inverse FAIL. Active toggles133.397/136.580ms. Short controls: Kitty hint/Tab PASS, Konsole hint/Tab PASS, Chrome Tab PASS, Firefox Space roundtrip FAIL. Visual acceptance remains separate; no full browser matrix rerun.
+- Writer bus trace proves v65 branch ran: final Space CommitText at relative592.813ms, client delivery593.638ms, followed by actual SSI `ghbdtn` caret6 at595.127ms. No final matching `ghbdtn ` SSI or ACK. The proposal that this commit representation forces final fresh SSI is rejected natively. Source PASS cannot override this result.
+- Native receipts `/home/e/projects/lay-development-runner/kde-install-control-20261020/libreoffice-no-capitalization-v65/result.json` and `stock-replay-v65-native-controls/summary.json` beside it. All recorded restoration checks true.
+- Next: one read-only GTK surrounding trace in a newly owned Writer window to distinguish Writer getter data from IBus caching. No extra retries, timer, fabricated SSI, owner or client-specific permission. v65 remains installed pending that observation. Chrome typed-prefix underline remains visual FAIL; no Chrome production change adopted.
+- Read-only upstream review at2026-10-22T09:17:25.177798+00:00:5open PRs #64,#65,#66,#67,#68; no merge/comment/closure.
+
+
+## 2026-10-22T09:38:13.025113+00:00 — v65 rejected for native ordering; bounded rollback
+
+One owned Writer GTK trace reproduced `ghbdt n` instead of `ghbdtn ` on the first closed-word toggle. The last native letter was still pending when v65 CommitText Space reached the client; final-key hybrid delivery is not ordered with earlier GTK native fallthrough. This is a native rejection of v65 despite466 source PASS and9/10 static review. Receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/libreoffice-no-capitalization-v66-gtk-trace/result.json`, actual GTK source log beside it;94 getter observations, no fake SSI. Probe was read-only and loaded only in its own Writer process; all7 restoration checks true. Rejected mechanism: do not retry final-key CommitText, extend timers or loosen ACK. Restore exact saved v64 engine SHA256 `9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0`, engine-only, preserve desktop/daemon/tray. Then same one-row read-only probe on v64 to locate original missing boundary. This is an explicit causal rejection, not an undocumented revert.
+
+
+## 2026-10-22T10:06:07.869874+00:00 — Writer source clipping established; rejected replay removed
+
+Exact v64 engine restored at 09:38:15.076429 UTC, PID3402648, SHA256 `9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0`. Nine protected processes and user config unchanged; engine-only rollback receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v65-rollback-native-ordering/result.json`. The rejected22production lines are removed locally; test cleanup preserves the original native final-key order.
+
+Read-only owned Writer v67 on v64: first closed-word toggle PASS145.359ms; inverse FAIL. All7 restoration checks true. Native document contains `ghbdtn ` at caret7, but98 actual `gtk_im_context_set_surrounding` calls return only `ghbdtn` at caret6 through the inverse gesture. Installed-matching LibreOffice7.3.7.2 source locates the cause: Writer `GetSurroundingText` uses sentence boundaries (edtwin.cxx6428–6459), cursor is separately calculated (6461–6499), VCL clamps it to string length (winproc.cxx2257–2300), GTK forwards it unchanged (gtkframe.cxx5699–5718). This is stronger than a timing-only hypothesis. Receipts `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/libreoffice-no-capitalization-v67-v64-gtk-trace/`; primary source copies `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/lo-7.3.7.2-sw_source_uibase_docvw_edtwin.cxx` and `lo-7.3.7.2-vcl_source_window_winproc.cxx`. No fabricated SSI/ACK, producer bypass or new authority.
+
+Restore source gate v69:465PASS/1FAIL in newly added regression expectation for expired replay. Its final key may be consumed with no engine output; source policy unchanged. Native-order regression requires pass-through for current provenance and zero CommitText/DeleteSurroundingText/ForwardKeyEvent for every tested invalidation, no ACK and no invalid final provenance. Existing negative receipt tests retained. Full affected466proof pending after correction.
+
+Harness2 task `20261022T094446Z-6a30e4b1`: base-failed, one240.115s timeout, no deliverable, not an accepted review. Narrower17043byte frozen packet rerun as `20261022T100101Z-fca5bf95`, lay2/gpt-6.1-sol/xhigh, per-run config600s, shared settings unchanged. Review is RUNNING, no result claimed. Next decision: whether a bounded actual full-field source can bind focused native field to current IBus owner without inventing acknowledgement. Chrome typed-prefix underline remains visual FAIL; Kitty accepted behavior preserved. Full browser matrix unchanged and not rerun. No push, release or local installation.
+
+
+## 2026-10-22T10:51:05.807040+00:00 — restored source green; actual-word ordering candidate under review
+
+Restored-source v73:466/466PASS, architecturePASS; receipt `shift-hint-20261021T1242Z/stock-replay-v73-source-result.json`. This closes the source regression expectation, not native Writer inverse FAIL. v70 Harness2 task20261022T100101Z-fca5bf95 accepted diagnosis-only, full-field adapter blocked. New hypothesis: the existing paired replay holds its final synthetic Space until actual whole-word SSI; no ACK/learning or second owner. GTK primary source requests surrounding after a native character commit; existing v67 getter first sees wholeword12.467ms after final engine Space. Native held-Space behavior and asynchronous reducer settlement unproved. v74 H2 task20261022T103628Z-e7cc3589 RUNNING. Exactv64/current4source hashes,9protected processes and config verified unchanged10:50:24UTC. Full findings and receipt paths: owning `docs/architecture/ime-inline-hint-preflight-2026-10-20.md`, same timestamp.
+
+
+### 2026-10-22T11:34:49.287336+00:00 — held replay boundary v74–v78
+
+
+- Harness2 USED task `20261022T103628Z-e7cc3589`, lay2 / gpt-6.1-sol / xhigh: ok, 8 calls, 0 failed, no fallback, score8/10. Independently matched frozen/current inputs. Verdict was conditional source-contract eligibility and REJECT_AS_NATIVE_FIX_ON_CURRENT_EVIDENCE; it did not review a completed implementation. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-causal-boundary-v74-review/acceptance.json`.
+- v75 client instrumentation did not apply. v76 observed an owned-client-held Space and actual whole word; raw assertion rejected normal outer/inner GTK contexts. Independent audit accepted only that client prerequisite, not engine hold or an IME fix. Receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/libreoffice-no-capitalization-v76-client-space-hold/independent-audit.json`.
+- v77 unadopted engine diagnostic consumed only the exact plan's final Space and requested surrounding once. Actual Writer document/getter returned `ghbdtn`, caret6; whole-word getter followed last native letter dispatch by2.118311ms. Engine observation retained current paired scope and lexical token. No Space/source settlement, inverse toggle, result ACK or learning was implemented. Scope: ENGINE_HELD_BOUNDARY_ACTUAL_WORD_PREREQUISITE_OBSERVED only. Receipts `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v77/independent-audit.json` and `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v77-native/result.json`.
+- Diagnostic candidate SHA256 `a1ffb364a37a43fe883b335a2654ea5a99a2a534a796f973bee2c12efde18b9b`; all6 temporary source files restored after compile. At2026-10-22T11:21:35.794823+00:00 engine-only rollback restored installed v64 SHA256 `9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0`, PID3719097. All9 protected processes, config, activation/stable bytes, engine selection, layout and focus restored/unchanged. No local install, daemon/global IBus/tray/desktop restart or publication.
+- v78 two real callback-path tests compile and are RED at final-Space consumption:0PASS/2FAIL expected. They require actual whole-word source before exactly one local Space, no duplicate output, no ACK/visible-result/learning, and cancellation before late matching SSI. Remote receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/writer-held-boundary-v78-red/result.json`. Last green source baseline remains v73 466/466.
+- Next: explicit existing-reducer observed-boundary transition, current paired replay scope and lexical successor token; keep ordinary settle_bridge_output lineage guard unchanged. New whole-word source is not a result receipt. Implement and rerun narrow tests before bounded native acceptance and Harness2 code review.
+- Accepted-runtime client verdict remains Writer5PASS/1FAIL (inverse after Space); Kitty controls PASS; Chrome Tab functional PASS, typed-prefix underline visual FAIL. Browser matrix unchanged/not rerun: Firefox92PASS/68FAIL/0BLOCKED/0NOT_TESTED of160; Chrome8PASS/8FAIL/0BLOCKED/144NOT_TESTED of160. Runtime authority unchanged by prerequisite evidence.
+
+
+## 2026-10-22T12:18:05.261283+00:00 — Writer held boundary current checkpoint
+
+v64 runtime unchanged PID3719097/SHA9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0. v85 token and v87 field-identity TDD fixes implemented; current source provenance restricts held Space to ObservedWordAndLocalSpace, exactly one trailing boundary. Existing full-snapshot native delivery restored; v88b20/22 with only two expected locally sourced test migrations. v91 migrated cancellation/identity test PASS. Affected470 gate v92 RUNNING. H2 review20261022T115225Z-f7d6b553 RUNNING on earlier v83 packet; final refinements require independent review. Next graph/source linkage, compiler-artifact build and short Writer7-row native test. Full evidence/limits in owning preflight document at the same timestamp. No new installed/client PASS, push or local installation.
+
+
+### 2026-10-22T12:20:01.188559+00:00 — affected source gate green
+
+Writer held-boundary v92:470/470 affected source checks PASS,82.963s; source receipt remote `/home/e/projects/lay-development-runner/kde-install-control-20261020/writer-held-boundary-v92-affected/result.json`. All16 full-snapshot native cases remain unchanged. Final actual-word callback now emits only one retained Space, no result ACK, including paired/provenance/token/field/cancellation controls. Native Writer remains NOT_TESTED for these bytes. Next generated graph/architecture refresh records all source-file hashes and may change only `src/generated/architecture_graph_receipt.json`; build must link this receipt explicitly to the passed proof, not claim identical source hashes.
+
+
+### 2026-10-22T12:30:17.946391+00:00 — Writer v92: bounded native acceptance, review follow-up open
+
+- Remote diagnostic engine `457c02b4f9707a85415138ac550574720d49a424dae9e6b0707727198946100b`, linked to source closure `75d6d4071f38be83503072d54059396ba6c76723c764aa7f17bfbefc16a4dab0`: affected source 470/470 PASS. Graph link changes only the generated architecture receipt.
+- Actual owned remote KDE Writer, isolated no-capitalization profile: 7/7 PASS (first/second-word hint+Tab, active/closed Double Shift roundtrip, five consecutive closed flips, ordinary held Shift, Space autoflip). All nine conversions assert exact document text, caret at end, no selection and owned focus. Median 144.966 ms, maximum 257.007 ms, n=9, from second Shift release to observed target. This is not a full Writer visual/client-profile proof.
+- Native receipt: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v92-native/result.json`; detailed client: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/libreoffice-no-capitalization-v92-held-boundary/result.json`. Both client 7/7 and runner 9/9 restoration checks true. Previous v64 bytes restored at 2026-10-22T12:25:48.867505+00:00, engine PID3926674; daemon/tray/IBus/desktop/Kitty preserved. Runtime authority and installed release unchanged; no publication.
+- Harness2 implementation review task `20261022T115225Z-f7d6b553` still running on frozen v83. Earlier token/field findings already addressed before v92. New review hypothesis: a complete-word SSI with a caret one character behind may survive generic inert-prefix tolerance while a Space is actionable. Next: reproduce this exact cancellation case in a source test before a minimal fix; do not weaken generic replay guards. Current v92 native proof remains scoped to its exact tested bytes.
+- Browser table remains Firefox92/68/0/0 of160; Chrome8/8/0/144 of160. Chrome prefix underline still FAIL; no browser rerun or inferred PASS.
+
+
+### 2026-10-22T12:42:06.405147+00:00 — actionable replay boundary: caret contradiction RED→GREEN
+
+- Harness2 task `20261022T115225Z-f7d6b553` finished `ok`: eight gpt-6.1-sol/xhigh calls, zero failed calls/fallbacks, source files unchanged. Its frozen v83 review scores 6/10 REQUEST_CHANGES; current-token and pending field/privacy findings were already fixed in v85/v87. This is not a review score for current source. Final report: `/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T115225Z-f7d6b553/report.json`.
+- Independently reproduced the additional caret cancellation finding: the generic inert historical-prefix predicate accepts a one-character caret lag, which must not retain an actionable held Space. Actual RED `writer-held-boundary-v93b-caret-red/result.json` (0/1) fails at non-end caret. The earlier v93 invocation selected an incorrect test path and ran no tests; it is a harness-selection error, not product RED.
+- Minimal current fix: while a final Space is held, selection or any non-end caret cancels before historical-prefix tolerance. Generic inert native-replay tolerance and delivery remain unchanged. Regression covers partial, complete and foreign snapshots under empty/Unicode prefixes; late exact SSI cannot revive output, source authority, ACK or learning.
+- v94 held boundary 5/5 PASS; full affected set 471/471 PASS in 83.721 s. Source closure b10a7f05ece5788c0efa5f9d481d2c3f85519630ac80764b20be0574b0fb1075. Remote evidence: `/home/e/projects/lay-development-runner/kde-install-control-20261020/writer-held-boundary-v94-affected/result.json`. Current bytes are not release-built or native-tested yet. Previous v92 native 7/7 remains valid only for its exact SHA457c02b4f9707a85415138ac550574720d49a424dae9e6b0707727198946100b.
+- Next: graph/source linkage → compiler-artifact build → same seven owned Writer rows → independent wire/restoration audit → bounded final Harness2 follow-up. Engine-only diagnostics remain temporary; installed v64 PID3926674, config, daemon/tray/IBus/desktop/Kitty unchanged. No release/local install/push. Chrome typed-prefix underline remains FAIL. Browser matrix unchanged: Firefox92/68/0/0 of160; Chrome8/8/0/144 of160.
+
+
+### 2026-10-22T12:53:20.557606+00:00 — v94 native 6/7: whole-word refresh absent
+
+Source471/471 and compiled artifact5061dc0c000f15a15c123a7b1c102df00b440f74f02f5e760c85d70d76a7e1b0 were independently linked. Native Writer6/7 PASS; the fourth flip of the five-consecutive row loses final Space. Last actual SSI is “приве” caret5, followed by held Space/RequireSurroundingText; the whole word “привет” arrives only with a later test key, after cancellation. There is no non-end caret in this failure, so do not blame or revert the caret guard without evidence. Primary libibus RequireSurroundingText sets needs_surrounding_text only; current hold has an observation-progress gap. Previous v92 seven-row PASS remains bounded and is not repeat reliability proof. Exact receipts: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v94-native/result.json` and `liveness-audit.json`. All client7/7 and runner9/9 restorations true; v64 restored PID3998187. No installed release, local install, daemon/IBus/tray/desktop restart or browser statistics change. Next bounded Harness2 review evaluates queue-preserving final-Space delivery and independent source authority; do not add delays, fake receipts or unrelated routes.
+
+
+### 2026-10-22T13:13:39.118326+00:00 — v95b causal RED; ordered final-Space candidate pending checks
+
+The original v95 test attempt hit a test peer-draining error, not the product defect; preserve it as harness error. Corrected v95b RED reproduces missing dispatch with actual partial SSI, zero forwarded keys versus the authorized Space press/release pair. Receipt: /home/e/projects/lay-development-runner/kde-install-control-20261020/writer-forward-boundary-v95b-red/result.json.
+
+Existing v94 native remains6PASS/1FAIL; v64 restoredPID3998187. Harness2 liveness task20261022T125330Z-dca62ad9 first completed base review: current liveness6/10, native return7/10, conditional forward experiment8/10. Full aggregation still running; this does not review the new implementation.
+
+Candidate moves only that retained Space pair to existing EngineOutput forward at the original callback; paired release is consumed, preceding native keys unchanged, no CommitText/retry. RAII covers request and both output awaits. Dispatch itself supplies no source, result ACK or learning; source-only completion additionally retains the genuine whole-word and all existing token/field/pair/caret/epoch/privacy checks. Source and actual native ordering remain unaccepted pending deterministic checks and short own Writer run. Decision: docs/architecture/decisions/2026-10-22-ordered-replay-boundary-forwarding.json. No permanent runtime adoption, release or local install. Browser totals unchanged; Chrome prefix underline remainsFAIL.
+
+
+### 2026-10-22T13:24:39.060087+00:00 — ordered final boundary: delivery lease separated from source proof
+
+v96's six held-boundary cases failed before output because the dispatch callback was incorrectly checked with the settled-source predicate. v97 keeps the existing reducer `revalidate(token)` delivery check while the current callback is outstanding; the stronger `exact_replay_source_token(token, epoch)` check still gates source settlement after actual complete-word SSI. No source guard was weakened. v97 focused6/6PASS; affected470/472PASS with two old delivery assertions rejecting the newly explicit ordered-key experiment. v98 migrates those two tests to require exactly one Space press/release only in the live paired branch, no text commit/deletion, no forwarded output in invalidated or release branches, no output from duplicate actual snapshots, and unchanged source/ACK/privacy checks. The old CommitText-on-SSI expectation is replaced by a strict no-text-output assertion. v98 affected gate is running; neither source nor native acceptance is claimed yet. Native helper now maps the existing read-only GTK surrounding/key-filter observer only into the owned Writer child, with original typing/gesture cadence unchanged. Remote accepted engine remains v64/PID3998187; no daemon/tray/IBus/desktop restart or local install/publication.
+
+Receipts remote under `/home/e/projects/lay-development-runner/kde-install-control-20261020/`: `writer-forward-boundary-v96-held-green/result.json` (FAIL0/6), `writer-forward-boundary-v97-held-green/result.json` (PASS6/6), `writer-forward-boundary-v97-affected/result.json` (470PASS2FAIL), and pending `writer-forward-boundary-v98-affected/result.json`. Test migration preimage: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-test-migration-preimages/`. Harness2 task20261022T125330Z-dca62ad9 remains in progress on the prior v94 design packet, not current implementation certification.
+
+
+### 2026-10-22T13:27:42.728814+00:00 — ordered boundary candidate v98 source closure green
+
+472/472 affected source checks PASS; discovery13.638s, isolated execution82.883s. Source before graph `b481bbc4a9669c22abd63c3cac5a64226103e2d6ca7681f2605c614d30b5fe81`. Remote graphify/architecture update PASS, only source change `src/generated/architecture_graph_receipt.json`; compiler input closure `e43c68cca5e7ffd6c572af621dd9cbb552b05f5ad8d822ae9d824db11dea95b6`. Six generated graph/binding files synced back with preimages at `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-graph-sync/`. Candidate build is running through remote guard; no native PASS or runtime adoption. Next exactly seven own Writer checks with unchanged key timing and read-only GTK order observer.
+
+
+### 2026-10-22T13:37:33.728509+00:00 — v98 Writer source/native closure, final implementation review pending
+
+Source472/472PASS, graph/architecturePASS, compiler input SHA e43c68cca5e7ffd6c572af621dd9cbb552b05f5ad8d822ae9d824db11dea95b6. Compiled engine SHA 56e7ac524b4228cfbc7a8f789655215ca8b79beee8935fa81004d90535ed44c4; build 70.596s, artifact resolved from compiler output. Own Writer7/7PASS: prefix/second-word hint+Tab, active and closed two flips, five closed flips, ordinary held Shift+A, Space auto-flip. Nine exact conversions with end-caret/no selection, median148.489ms/max219.919ms; this is a bounded client run, not a general speed or reliability claim.
+
+Independent read-only GTK audit confirms all five closed conversions: actual whole-word/end-caret retrieval follows the last native letter and precedes delivery of the forwarded planned Space. Each client receives exactly one Space press/release pair. This is one observed schedule, not a universal FIFO or result-ACK proof. Dispatch still supplies no source, acknowledgement or learning; existing whole-word/token/field/pair/caret/epoch/privacy settlement guards remain mandatory.
+
+Receipts: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-build/result.json; /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-native/result.json; /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-native/ordering-audit.json. All native restoration9/9 and client restoration7/7 checks true. v64 SHA9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0 restored PID4140889 at 2026-10-22T13:28:21.088403+00:00; candidate not adopted.
+
+Harness2 task20261022T125330Z-dca62ad9 completed ok: eight calls, zero failed, no fallback, frozen inputs/source unchanged. Selected review scores the prior v94 liveness design6/10 and denies its publication. Its request-await/drop concern is covered by current deterministic tests; this design packet does not certify v98 bytes. Acceptance: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-boundary-liveness-v94-review/acceptance.json. Next bounded review covers final v98 implementation, followed by Chrome typed-prefix underline investigation.
+
+Chrome typed-prefix underline remains visualFAIL; no Kitty regression claim from Writer-only evidence. Browser matrix unchanged/not rerun: Firefox92PASS/68FAIL/0BLOCKED/0NOT_TESTED of160; Chrome8PASS/8FAIL/0BLOCKED/144NOT_TESTED of160. No release, push, local installation or daemon/IBus/tray/desktop restart.
+
+### 2026-10-22T14:22:03.524764+00:00 — v98 final review and native Chrome identity/query diagnostic
+
+Writer final review task20261022T134131Z-5580fa6d ok8/8, score8/10, zero blocking findings. Independent frozen7/source-origin9 hash checks and source472/native7/order5 evidence linkage PASS; exact baseline/candidate/config remote hashes rechecked at14:20:17UTC. Receipt: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-final-review/acceptance.json`. Bounded evidence accepted, candidate not adopted/published. Unmeasured successor-cleanup/failure-release schedules retained as limits; no speculative runtime fix.
+
+Chrome v99 and v100b diagnostics PASS: real native nodes distinguish equal text/caret under one IBus context; accessibility-bus peer credentials match X11 PID71108. Focused+editable Collection identifies the intended native node6/6, median1.126709ms/max1.936602ms for the query, not conversion latency. v100 FAIL was an invalid diagnostic MATCH_EMPTY filter, corrected to MATCH_ALL in unused match dimensions. Own windows closed, all seven restoration predicates and nine protected process identities preserved. Exact receipts under the same evidence root: `chrome-two-field-binding-v99-probe/result.json` and `chrome-focused-collection-v100b-probe/result.json`.
+
+Corrected interpretation: IBus capabilities41 includes SurroundingText32. Actual log has ten requests but zero SetSurroundingText callbacks. Existing cached Chromium GTK implementation omits retrieve/delete signal handlers; exact installed version/backend and usable deletion must be established before production changes. Accessible preedit projection is not a committed-source/result ACK. No code or runtime authority change in this diagnostic; Chrome visual underline FAIL and browser matrix unchanged.
+
+
+### 2026-10-22T15:03:16.931162+00:00 — Chrome v102b: native ABA fact, no runtime fix
+
+Hypothesis: matching IBus path/text/caret does not prove uninterrupted native-field ownership. One own Chrome with a single RU activation produced A→B→A, equal returned snapshot and distinct intermediate native node. Eight/eight focused Collection observations matched the intended node; actual Focus/Reset callbacks were also received by IBus. v102 FAIL was the test assuming Tab return preserved selection; v102b uses native End and records both states. All restoration seven/seven true, protected nine processes preserved. Existing authenticated Reset revokes canonical source tokens; inspect existing ingress/fence instead of adding a second owner or generation. Exact installed Chromium source also excludes usable GTK delete/retrieve and ATK EditableText; NONE/zero-length Pango styles cannot remove the prefix underline.
+
+Receipt: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-native-aba-v102b-probe/identity-audit.json. Chrome visual defect remains FAIL; no runtime provider, executor, new engine name or matrix promotion. Writer v98 accepted only as bounded source/native candidate, not installed. Pending Harness2 task20261022T143718Z-b6db8805. Details and primary-source hashes belong to the IME inline-hint preflight document.
+
+
+### Chrome native range/commit primitive v103b — 2026-10-22T15:26:31Z
+
+One owned Chrome field: exact native selection [0,4] + actual existing engine/InputContext CommitText("1") produced `1 `, caret 1/no selection; other field unchanged. Selection dispatch 0.163 ms, observed commit 37.996 ms, n=1. Seven restoration guards and nine protected processes preserved. This is a native primitive only; Chrome presentation remains FAIL, browser matrix unchanged. v103 diagnostic physical-glyph assumption failure is retained.
+
+Authority/alternatives/consequences and the next in-callback native-query discriminator are recorded once in [the owning preflight](../architecture/ime-inline-hint-preflight-2026-10-20.md). Receipt: `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-native-selection-v103b-probe/acceptance.json`. No production code or installed bytes changed.
+
+
+## 2026-10-22T15:40:30.803525+00:00 — Chrome callback diagnostic
+
+v104 one in-callback native read PASS (743us,n=1); exact v64 restored PID297899,9+7 restoration checks true. Chrome underline remains FAIL. v105 exact-selection diagnostic preflight recorded in `docs/architecture/ime-inline-hint-preflight-2026-10-20.md`; receipt `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-native-callback-v104-probe/acceptance.json`. No production fix/adoption or matrix change.
+
+
+## 2026-10-22T15:47:10.284494+00:00 — Chrome native selection refuses without ACK
+
+v105 diagnostic FAIL `selection_not_observed`1165us; no literal commit; v64 restored PID327512,9+7 restoration checks true. New causal v107 event-driven discriminator preflight in owning IME document. No production implementation/adoption or matrix change.
+
+
+## 2026-10-22T15:54:33.284419+00:00 — Chrome native event-selection primitive
+
+v107 bounded primitive PASS2443us,n1: actual event confirms exact selection before standard CommitText; result1+Space, second field unchanged. v64 restored PID345082,9+7 checks true. See owning IME document and `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-native-selection-event-v107-probe/acceptance.json`. Chrome visual FAIL unchanged. Harness2 task20261022T154252Z-2489f752 tool-ok8/8 but deliverable blocked/unread, rejected; one corrected read-only second pass pending. No source authority/runtime adoption/matrix change.
+
+
+## 2026-10-22T17:09:34+00:00 — KDE-only module boundary v109
+
+User scope: separate KDE folder, GNOME frozen, then Chrome only; reuse existing mechanisms and do not repeat rejected experiments. Final remote compile and exact29/29 existing module tests PASS14.254s; canonical remote graph/architecture PASS51.226s with verified resource limits. Existing files retain logic/module identities, and the common KWin read body is relocated exactly into the KDE adapter; four local GNOME/five protected common files unchanged. Harness2 USED task20261022T170428Z-3a440f56,8/8 successful calls/no fallback, frozen static review9/10/no actionable defects. The final small helper extraction is independently checked outside that frozen review. Acceptance and limitations in acceptance.json; current runtimePID345082/hash/config/protected processes unchanged. Owning analysis and evidence: [IME preflight](../architecture/ime-inline-hint-preflight-2026-10-20.md), evidence root `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/kde-module-boundary-v109/`.
+
+Retain v108 native-range478-test abort (stack overflow in pending_transfer_focus_in_then_focus_in_id_enriches_one_prearm_request after32 tests); no full-path PASS/native adoption. Chrome rendering still FAIL; no runtime/client/release change, full browser100PASS/76FAIL/0BLOCKED/144NOT_TESTED of320 unchanged.
+
+
+## 2026-10-22T23:01:57Z — Chrome native observation wire discriminator
+
+Fresh owned Chrome, actual RFB input, installed1.0.94.1: prefix remains composing; native reads expire at20ms. Passive wire capture proves KWin sends signed int32 PID while Ingress expects uint32; the private peer fixture lacks PID. Repair the measured wire boundary and fixture, without changing budgets, authority, GNOME or delivery routes. Native underline/gap remain FAIL pending repair and live verification. Details and exact receipts belong to the owning IME preflight document, section Chrome-only live root cause: signed KWin PID.
+
+### 2026-10-22T23:21:39.426237+00:00 — Chrome-only signed-PID fix and KWin orphan hypothesis
+
+v115 source493PASS/2retainedknownFAIL, architecturePASS; runtime1.0.94.2installed from exact artifact. Physical Chrome underline remainsFAIL. Passive v116 replies identify ID reuse/UnknownObject, and inventory finds three abandoned Lay scripts with no live bus owners and non-contiguous IDs. Before cleanup, recorded a bounded exact-name-only experiment in the owning preflight document. No GNOME, daemon, other-client route or timeout change. Harness2 task20261022T225149Z-98974412 completed8/8/no fallback; prior frozen candidate readiness3/10, not acceptance of the new patch.
+
+### 2026-10-22T23:26:04.071437+00:00 — Chrome-only v118 native session failure diagnostic
+
+After exact abandoned-script cleanup, desktop observation reaches native AT-SPI; one `native_ambiguous_field` followed by `native_session_bus` is measured, not a display fix. Hypothesis: inspect the underlying zbus bootstrap error rather than broadening the timeout or granting text authority. Add only opt-in connection-error evidence before a bounded Chrome probe. Owner: `docs/architecture/ime-inline-hint-preflight-2026-10-20.md`. Runtime authority unchanged.
+
+### 2026-10-22T23:34:34.712287+00:00 — Chrome-only v119 post-managed-release document freshness
+
+Measured v118: prefix plain, hint absent; actual document read exists only before the following key, while the early managed-release path only flushes a stale display frame. Repair only the KDE Chrome native adapter and its existing release dispatch: fresh native read after authenticated consumed release, then existing suffix display refresh. No synthetic SSI, ACK, new owner or edit route. Physical v118 receipt remains FAIL for missing hint. Owner: `docs/architecture/ime-inline-hint-preflight-2026-10-20.md`.
+
+
+### 2026-10-22T23:45:18.798014+00:00 — Chrome-only actual cursor-triggered observation (v120)
+
+Measured v119: focused source 47 PASS / 0 FAIL, graph PASS; source receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-release-observation-v119-source/result.json`. Installed engine SHA `21119e09ed5571c31db9d039e2a3343e6a2b3c1507f1ed31ac6fd4f3cf79354e`. Physical owned Chrome result `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-release-observation-v119-stderr-native-r2/result.json`: prefix plain, composing=false, hint empty; FAIL. Config/daemon unchanged. First probe lost its engine PID before receipt; stderr unavailable, no crash cause established. Same bytes under scoped stderr capture stayed alive; not a stability acceptance.
+
+Exact physical bus ordering: Chrome queued letter press/release before previous CommitText was applied; accessibility GetText still returned `п` after managed append to `пр`. The v119 early-release hook also missed normally admitted releases. Rejected release-triggered-only design rather than adding a second unreliable wake.
+
+Minimal v120 change: existing CursorGeometry callback wakes the same bounded native document adapter, which authenticates actual KWin Chrome PID, focused field and current admission. Cursor geometry is a wake only and never document/commit evidence. Skip if actual native snapshot is already current. Common observed-suffix prediction runs only after a new current actual read. Removed v119 release hook. GNOME callbacks and delivery/reducer/verifier/executor contracts unchanged. Source/installed/physical results pending. No full matrix claimed.
+
+### 2026-10-22T23:55:37.879348+00:00 — Chrome v120 measured result and bounded runtime diagnosis (v121)
+
+Source: v120 focused 47 PASS / 0 FAIL, canonical graph PASS; receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-cursor-observation-v120-source/result.json`. Runtime SHA `ca03d094ebea436c29bb6755c8e88d4b35f851f06ca627ef4179e1d48ba6331e`, display 1.0.94.2. First owned Chrome physical result: ordinary committed prefix from the first character (`пров`, composing=false), but no hint; overall FAIL. Actual native reads alternate success and `native_bus_connect`. Receipt: `chrome-only-cursor-observation-v120-native/result.json` under the same remote root.
+
+A bounded second owned Chrome probe with syscall-only strace captured actual `clone3 = -1 EAGAIN` when a new connection thread was requested, followed by IME SIGABRT. Receipt `chrome-only-cursor-v120-connect-diagnostic/result.json`; syscall files `chrome-only-cursor-v120-connect-syscalls.*`. No document payload was traced. Parent KDE development service has TasksMax=512; measured 503 tasks after the probe, pids.events max=1310. This proves resource denial for this probe, not the cause of every earlier presentation failure. Auto-activated replacement PID1773204 uses the same bytes.
+
+Next bounded diagnostic reuses these exact IME bytes in a separate CPU100%/MemoryMax768MiB/TasksMax32 service with stderr capture. KDE/IBus/daemon/other windows and their limits remain unchanged. No new source mechanism, delivery path, proof authority, or GNOME behavior adopted. Chrome visual hint, Tab, and geometry remain NOT ACCEPTED pending the isolated physical result. Full browser table unchanged.
+
+### 2026-10-23T00:01:08.139064+00:00 — Chrome-only completed-readout observation (v122)
+
+Measured v121: same v120 bytes in bounded `lay-chrome-ime-observation-v121-r2.service`, PID1785151, protected 19 processes/config unchanged. First unit launch missed the dedicated XDG cache/IBus address and exited before activation; exact-environment correction and selecting the existing Lay engine restored it without restarting global IBus. Source was not changed for this diagnostic. Receipt `chrome-only-v121-isolated-runtime-r2/result.json`. Physical receipt `chrome-only-v121-isolated-native-r2/result.json`: 7 successful actual reads in 8.506–15.236ms; no native_bus_connect and no IME exit, but hint still absent (FAIL). Chrome DOM is `пров`, composing=false. Passive AT-SPI calls prove final pre-Space reads still have only 3 characters; 4-character document is read only at later Space. Resource denial is isolated; cursor callbacks alone do not settle Chrome's accessibility cache.
+
+Candidate v122 reuses the existing readout-completion callback, with existing generation, freshness and input-frame authority checks before any refresh, then retains the original full candidate identity check afterward. KDE-only helper requires an existing native binding and checks actual observed-suffix readout readiness instead of treating a current binding as sufficient text proof. Refresh still authenticates the actual Chrome window/peer/field and reads its real document; no timer, second queue, new ACK or delivery path. A changed actual read schedules current material and old results retain their normal discard path. GNOME branches and other client adapters are unchanged. Results pending; no display acceptance or new full matrix.
+
+### 2026-10-23T00:14:38.487059+00:00 — Chrome actual text notifications (v123 development trial)
+
+- v122: remote source 50/50 PASS, canonical graph PASS; installed SHA `648ccfae61384c494334719967d4ce650b8651175b4c743449a16b4604450281`, PID 1818636. Physical fresh Chrome prefix `пров` is ordinary non-composing document text, but InlineHintSnapshot is empty: client **FAIL**. Receipt: `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-readout-observation-v122-native/result.json`. One later native read reached its 20 ms deadline. No client PASS inferred from source checks.
+- First failed transition remains the actual post-insertion document observation: key, cursor, and calculation callbacks can precede Chrome's accessible-text update. The v122 worker wake is removed; the common precognition worker regains its prior behavior.
+- v123 hypothesis: retain the authenticated native connection and register this adapter's own bounded TextChanged subscription, using the existing native exact-selection subscription pattern. The event payload is discarded. A callback only wakes a fresh canonical desktop / peer / single focused field / current admission / actual document read. No polling, retry timer, new authority owner, synthetic SSI, commit ACK or edit bypass is introduced.
+- The subscription is a transport resource in NativeDocumentBinding, canceled when its last owning binding drops. Field identity, focus serial, lease and layout must match; per-key tail changes require a new actual read, never carry an edit grant. Reuse of the already authenticated connection still revalidates bus GUID, peer PID, single focused field, editable/nonprivate state, selection, scalar counts and text. The 20 ms I/O budget is unchanged.
+- GNOME and non-Chrome runtime eligibility are unchanged. New regression tests distinguish a permitted read wake after a key from stale focus/lease/layout/field and GNOME refusal. Source, runtime, client and visual geometry gates remain separately pending. No full browser matrix or release claim.
+- Harness2 task `20261023T000604Z-52f12b34` (gpt-6.1-sol/xhigh) failed at its single base-call 240 s timeout, with no output and no review score; this is not a review acceptance. A smaller follow-up review will inspect the native callback lifecycle.
+
+- 2026-10-23T00:16:20.876137+00:00: v123 first compile correctly rejected the recursive observer/adaptor future without an explicit Send contract; no runtime installation. The registration boundary is now explicitly boxed + Send, retaining bounded native read/drop contracts. Source rerun uses a separate v123-r2 receipt.
+
+
+### 2026-10-23T00:34:50.687953+00:00 — v123 failed notification, v124 compatible registration
+
+Source v123-r2: 51/51 focused tests and architecture graph PASS; candidate and
+installed SHA-256 `17afed0d29d034456300812fbb16370990031c2e163957196703ef9ab52eae55`,
+engine PID 1872068. Three owned normal Chrome field-1 probes retain ordinary
+typed `пров` but no suffix: native FAIL, not acceptance. Read latency from the
+first probe was 7.387–17.389 ms for six successful reads; hint latency absent.
+Receipts: `/home/e/projects/lay-development-runner/kde-install-control-20261020/`
+`chrome-only-readout-observation-v123-r2-source/result.json`,
+`chrome-only-readout-observation-v123-deployment/result.json`, and
+`chrome-only-{bound-text,text-signal,signal-lifecycle}-v123-native/result.json`.
+
+The first failed transition is registration, not Chrome's text payload: the
+installed AT-SPI registry 2.44 rejects the three-argument `sass` RegisterEvent
+request while returning an empty reply. Remote journal confirms three
+`got RegisterEvent with invalid signature 'sass'` warnings. Official tag
+AT_SPI2_CORE_2_44_0 registry.c accepts only `s` or `sas`. Passive all-signal
+monitor showed no EventListenerRegistered or TextChanged for that request.
+The v124 trial uses the backward-compatible two-argument `sas` ABI only for
+the native text observer. Its exact sender/path match and canonical field,
+focus, lease, layout, fresh-read and edit checks remain unchanged. Existing
+selection delivery is outside this trial and is not modified. GNOME code is
+unchanged. Source, installed and physical v124 gates pending. Full matrix
+remains 100 PASS / 76 FAIL / 144 NOT_TESTED of 320.
+
+2026-10-23T00:37:54.035328+00:00: first v124 source run: 51 PASS / 1 FAIL, no install.
+The new protocol test compared zvariant structural display `(sas)` to D-Bus
+wire display `sas`. Use the documented `to_string_no_parens()` for the
+wire assertion; registration code and compatibility contract are unchanged.
+Receipt `chrome-only-registry-abi-v124-source/result.json`; r2 pending.
+
+
+### 2026-10-23T00:51:08.780821+00:00 — Chrome registry ABI root cause and v124 physical result
+
+- Installed AT-SPI registry 2.44 rejects RegisterEvent signature `sass` but returns an empty reply; its journal confirms `got RegisterEvent with invalid signature 'sass'`. Exact upstream 2.44 registry.c supports `sas`/`s`. v124 uses the compatible two-argument `sas` body; exact sender/path signal filtering is unchanged.
+- Source: remote `chrome-only-registry-abi-v124-r2-source/result.json`, 52/52 exact checks and canonical architecture graph PASS; source closure ba42ab9c35668fda468058148dbba4d1938971961187eef57b919ae99f860ac9. Earlier first-attempt test failed because zvariant Display wraps top-level types; actual wire signature assertion uses to_string_no_parens. Failed receipt retained.
+- Installed engine SHA-256 86a3f9a058610c6f4f7ba01ef7224e4174e1b566bc8d63f0fae62e62a1b41b47; PID 1935224, unit lay-chrome-ime-candidate-v124.service, version 1.0.94.2. Both activation paths and running bytes verified; daemon/tray/config/protected apps unchanged. Deployment receipt: remote chrome-only-registry-abi-v124-deployment/result.json.
+- Native ordinary input: actual DOM `пров`, composing=false, selection [4,4], separate hint `ерка`; screenshot has no underline, selection or gap. Tab produced `проверка `; actual native TextChanged signals were observed on the bound Chrome field. Receipt chrome-only-registry-abi-v124-native/result.json. The old 7.86ms metric starts after a key gap and is not end-to-end latency.
+- Native contenteditable: actual hint appears in 51.73ms upper-bound observed time from final keydown; Tab produced `проверка` plus U+00A0 (Chrome rich-text trailing-space representation). The diagnostic's literal U+0020 wait falsely times out at 1218.86ms; that number is not product latency. Correct diagnostic accepts exactly one U+0020 or U+00A0 and retains raw DOM. Receipt chrome-only-registry-abi-v124-rich-native/result.json.
+- Harness2 USED: lay2 task 20261023T001629Z-628ade67, gpt-6.1-sol/xhigh, status ok, eight calls. Frozen v123 review identifies retained completed observer, missing uniqueness on connection reuse, and no post-read field focus validation. v125 will address all three locally in the KDE native-document adapter, within the existing 20ms deadline. No GNOME/delivery/admission/reducer/verifier/ACK contract changes.
+- Independent effect-boundary inspection: observe_document_snapshot installs actual native text; observe_visible_postcondition only verifies an existing pending operation against matching field/token/epoch and actual expected text. commit_observed_literal_preedit retains all existing exact-owned-preedit/admission/privacy/scope/actual-tail gates before the existing composition commit. The notification itself supplies no proof, ACK, SSI capability, edit permission or document payload.
+- Scope: two short Chrome fields only. Remaining Chrome fields/modes and focus-switch lifecycle remain NOT_TESTED for these bytes; full matrix unchanged (Firefox 92/68/0/0 of160; Chrome8/8/0/144 of160). No release, updater or global desktop claim.
+- Evidence root: /home/e/projects/lay-development-runner/kde-install-control-20261020/. Local screenshot: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-only-registry-abi-v124-native/prefix.png.
+
+
+### 2026-10-23T01:00:28.683556+00:00 — v125 source/installed and 14-cell native failure classification
+
+- Source 54/54 PASS including real completed-task liveness and cancellation regressions; architecture graph PASS. Engine 42d4220e63dcc01aacf47c975a6e9f51f05e6b11a694f8216941c84ab8ae3982 installed as PID1981828, lay-chrome-ime-candidate-v125.service, 1.0.94.2. Protected20 processes/config/tray unchanged. Receipts chrome-only-observer-review-v125-source/result.json and chrome-only-observer-review-v125-deployment/result.json.
+- Physical 14-case Chrome check: 4 PASS /10 FAIL, retained at chrome-only-ten-field-v125-native-summary/result.json. Normal text/URL/textarea and private rich passed. Search/tel/rich/plain/iframe-rich can retain composing=true; email/iframe-input/fullscreen rich can lack suffix. These are failures, not acceptance. All per-case restoration checks pass.
+- Successful-case upper-bound observed hint median52.18ms/p95 52.38ms (n4), Tab median29.44ms/p95 34.17ms (n4). Failed-case 1.2s deadline waits are not product latency measurements. The small successful subset cannot characterize all fields.
+- First shared mechanism: discovery/read deadlines are intermittently exceeded; later calls can observe GetText/count from the previous composition update while CaretOffset already includes the next character (search trace: text `п`, count1, caret2; later `пр`, count2, caret3). checked_snapshot correctly rejects these inconsistent observations.
+- v126 hypothesis/minimal implementation: batch independent metadata, caret/selection/count recheck, and final focus/privacy metadata queries on the existing native connection. All checks still required, actual text still read only after initial privacy/focus checks, same20ms deadline/no polling/retry/cache/capability/ACK changes. Connection-reuse uniqueness and post-read field revalidation from Harness review remain. Run same54 source checks and same14 physical cases.
+- Canonical/source verification is remote and guarded. No GNOME or other client changes; full320 browser matrix remains100PASS/76FAIL/144NOT_TESTED.
+
+
+### 2026-10-23T01:08:31Z — v126 build-only correction, no client verdict
+
+The first v126 release compile rejected futures_lite references: this existing
+crate was dev-only, so the 54 passing test builds did not prove the production
+binary could compile. Retain the failed receipt at
+chrome-only-batched-native-v126-source/result.json. Move the same version-2
+dependency into normal dependencies (no new package/version/lock change).
+The independent RPC batching remains confined to the KDE native Chrome reader;
+all original privacy/focus/uniqueness/scalar/deadline guards remain. The guarded
+remote repeat uses chrome-only-batched-native-v126-r2-source/result.json.
+No install/client claim is made while that build runs.
+
+
+### 2026-10-23T01:16:47Z — v126 physical evidence, v127 observation-gap regression
+
+- v126-r2: remote 54/54 source and architecture PASS; installed SHA b8b0a6e0701b3ca27d23b709e3258406350607024b5486114b74da021fba62c6, PID2045328. Remote compiler source closure06dbd45ff6d500f8291698ecac6a4696cba59d8c2edad5210a8ebafab6a43e53. Source and deployment receipts chrome-only-batched-native-v126-r2-source/result.json and chrome-only-batched-native-v126-deployment/result.json.
+- Same14 native Chrome scenarios:7PASS/7FAIL. Successful subset hint median51.99ms/p9553.66ms (n7), Tab median34.07ms/p9534.88ms (n7). Timeouts in failed cases are not latency samples. Receipt chrome-only-ten-field-v126-native-summary/result.json. No full browser matrix improvement inferred.
+- After a transient deadline/incoherent document read, the adapter currently destroys its own notification subscription and revokes the word as though an input key were missing. That conflates absent text evidence with an input gap; later actual text cannot wake the removed observer.
+- Reproduced the contract failure before the fix: exact remote regression fails0PASS/1FAIL at the continuation assertion; chrome-only-observation-gap-v127-tdd/result.json is EXPECTED_REGRESSION, not product acceptance.
+- v127 preserves only the same admitted field transport on deadline/document-change/incoherence. observe_document_snapshot(None) advances revision and invalidates document-derived edit evidence. Normal literal input retains the existing canonical key path; no old snapshot is used for edits. Identity/privacy/admission/selection loss still fully revokes. Add selection-specific error so a real selection cannot be mistaken for an incoherent read. A subsequent full actual read must restore evidence, not the notification payload.
+- Local/remote source manifests show formatting-only differences outside KDE. Keep local GNOME bytes untouched; exact remote compiler inputs and differing files are archived under chrome-v126-remote-source in the local development evidence root. Tested source is the pinned remote workspace, not a false claim of local byte identity.
+- v127 source/install/client pending. GNOME and other clients remain unchanged; full320 matrix100PASS/76FAIL/144NOT_TESTED.
+
+
+### 2026-10-23T01:28:10.931350+00:00 — v127 physical result and v128 install-refusal diagnosis
+
+- v127 source: 56/56 selected checks and architecture graph PASS; source closure 0aa5cf529c3b68d65d938d59e589d3562ee43e29ebc681ea452197326a2521d5. Installed PID2089461, SHA9207858f7ea7898ba12aab6390a6b52f252e08393100e68cdb6d6837e9b3a74d; both entrypoints verified, protected20 apps/config/tray unchanged. Receipts chrome-only-observation-gap-v127-source/result.json and chrome-only-observation-gap-v127-deployment/result.json.
+- Native bounded14-case result: 10 PASS /4 FAIL, chrome-only-ten-field-v127-native-summary/result.json. Search and iframe-rich retained composing=true; ordinary rich lacked suffix. Email accepted the word but lacked trailing whitespace in DOM; distinguish HTML email value sanitization from a product failure before correcting that assertion. All restoration checks passed. Full320 matrix unchanged.
+- Successful subset only: hint median52.373ms/p95 77.449ms, Tab median25.107ms/p95 35.250ms, n10. Failed waits excluded from product latency. No release or all-client acceptance.
+- First remaining unresolved transition: a successful actual read can be followed by a refused install/key, with no existing reason trace. v128 adds metadata-only refusal tracing inside KDE native_document::install_native_document, preserving all guards and behavior. It is a diagnostic build, not a claimed fix. Native source/installed/physical gates pending. No GNOME or other-client source changes.
+
+
+### 2026-10-23T01:44:31.610531+00:00 — v128 diagnostic result and v129 literal-transfer gate trace
+
+- v128 is metadata-only over v127. Remote56/56 checks and graph PASS, compiler closure09e58a38f940b78d7a50964c8fa992d9718a668ea65ab96115008cd65f625440; installed PID2131179 SHA31ef785e93b701f0da796a1e27e5eeb119475da568c24872c1499fc7844221ad. Receipts chrome-only-install-trace-v128-{source,deployment}/result.json. Protected20 apps/config/tray/daemon/IBus unchanged.
+- Native14-case result9PASS/5FAIL; chrome-only-ten-field-v128-native-summary/result.json. No improvement inferred from a diagnostic build. Successful n9 hint median52.600ms/p9583.315ms; Tab median24.630ms/p9534.731ms. Failed waits excluded. Full320 matrix remains100PASS/76FAIL/144NOT_TESTED.
+- Email install refusal is now measured: desktop identity changed, while accessibility bus/owner/application/field still match. Canonical KWin local connection lifetime changes after failed observations; this is not proof of physical focus theft. Keep all identity refusal guards.
+- Email oracle corrected narrowly: HTML email sanitizes ASCII whitespace (WHATWG input email-state). A missing DOM separator may count only with a fresh post-Tab native input event carrying exactly the delivered suffix+separator. Old receipts remain unchanged.
+- Same-window focus-cycle v128 physically reproduces prefix composition despite multiple successful actual snapshots with matching scalar counts. Receipt chrome-only-focus-cycle-v128-native/result.json, transition_pass=false, restoration all true. Therefore deadline alone is insufficient as a root. v129 logs existing literal-transfer gates and focused candidate cardinality only; no authority, timeout, GNOME or other-client behavior change. Build/install/native pending.
+- Harness2 task20261023T013040Z-a5285e30 produced a frozen7/10 review; final report pending. Findings distinguish actual read from installation, subscription liveness and late known-start scheduling. Review is static evidence only, not a physical result.
+
+
+### 2026-10-23T01:55:09.898476+00:00 — Chrome v129 diagnosis and v130 transport-mode repair
+
+Scope remains remote KDE Chrome only; GNOME is a read-only reference. v129 source/architecture passed 56/56 and installed SHA-256 `95da37ffa56747588f4c6266e33b85b36eedf16b40714a087fe423127ce0dd39` (PID 2196193). The same-window text/rich/iframe-rich/textarea/text-return probe passed the first field only; four subsequent fields retained the typed prefix in composition. Every failing literal-transfer observation had current admission/scope/native binding, exact owned tail, visible clean preedit and end caret, but `managed=false`.
+
+First failed transition: `install_context_activation` preserves literal preedit acquired before Ready, then clears `word_input_mode`. The existing literal-commit helper correctly refuses that unset mode. v130 settles only an unset mode in the KDE native Chrome adapter after fresh actual data matches the complete owned literal tail, using the existing input-mode selector. An existing terminal mode is never migrated. The common commit helper, admission/reducer/verifier/executor and GNOME source remain unchanged. A regression first failed with `None` instead of `ManagedCommit` (expected red receipt); the completed test also requires exactly one literal CommitText, no deletion, unchanged token and no document-edit proof after commit. Negative cases cover missing/stale/mismatching/selected/unowned input, established terminal mode and GNOME.
+
+Evidence: `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-focus-cycle-v129-native/result.json`; red TDD `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-preserved-mode-v130-tdd/result.json`. v130 source/build/install/physical acceptance are pending. Native selection, ACK and capability flags are unchanged. Full browser matrix remains Firefox 92 PASS/68 FAIL, Chrome 8 PASS/8 FAIL/144 NOT_TESTED of 320 overall.
+
+
+### 2026-10-23T02:17:53.797168+00:00 — v130 result and v131 late-known display recovery
+
+- v130 remote source/architecture: 58/58 PASS; source closure a1f6ff8d840ef67f16fb6619b2c3c31c12fc3ccc344527ecd7b434fc39b4e42e. Installed PID2229434, SHA5481a1be18c8a2cbd9e4c34d77c412b6c877a6c82f4d4db5466076877670ebd9. Protected20 apps/config/tray/daemon/IBus unchanged. Receipts chrome-only-preserved-mode-v130-source/result.json and chrome-only-preserved-mode-v130-deployment/result.json.
+- Physical same-window five-field cycle: first run all five prefixes left composition, but rich/iframe-rich/text-return lacked hints. Second diagnostic cycle still retained composition in iframe-rich and textarea. Neither cycle passed. First-cycle successful hint/Tab checks cover text and textarea only; no final visual acceptance is claimed. Both probes restored state. Receipts chrome-only-focus-cycle-v130-native/result.json and chrome-only-focus-cycle-v130-complete-trace-native/result.json.
+- Probe trace extraction was incomplete: set subtraction discarded repeated lines; byte-offset replacement also failed when the existing 500KiB log compacted. New helper uses an ordered initial-tail anchor, preserves duplicate events, and marks a missing/nonunique anchor incomplete. Product logger unchanged; DOM/screenshot evidence remains separate.
+- Next first failed display transition is source-supported: a late known-word actual snapshot can yield a valid canonical input frame with no composition and pending=false after literal transfer cancelled the previous task. Common refresh_observed_suffix_precognition does not seed that state. v131 confines the repair to KDE native Chrome: require current admission/native actual unselected word matching the owned tail, obtain the unchanged canonical frame, and call the existing visible-input scheduler. The binding coalesces the exact last requested display frame only; token/owner changes do not reuse it. No synthetic pending/SSI/ACK/capability or edit grant. Existing unknown-start branch and all common/GNOME code are unchanged.
+- The first v131 source attempt failed59/60: the new fixture left the default text backend uinput, so no hint worker was enabled. Correct the fixture to actual IME configuration, do not alter product eligibility. The corrected narrow red run disables only the new scheduler bridge and fails at0 instead of1 scheduled worker, as required: chrome-only-late-known-v131-r2-tdd/result.json. The guarded v131-r2 build and physical acceptance are pending.
+- Harness2 USED: lay2 task20261023T013040Z-a5285e30, gpt-6.1-sol/xhigh, statusok,8 calls,0 failed calls/fallbacks. Report /home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261023T013040Z-a5285e30/report.json. Frozen adapter review7/10 distinguishes read/install, subscription liveness and the conditional late-known scheduling gap. It does not review v130/v131, run tests, or certify live Chrome; independently verify those changes.
+- Scope: remote KDE Chrome only. No release/push or other-client acceptance. Full320 matrix unchanged: Firefox92PASS/68FAIL; Chrome8PASS/8FAIL/144NOT_TESTED.
+
+### 2026-10-23T02:38:46Z — v131/v132 installed evidence; Chrome remains unaccepted
+
+- v131 corrected source and architecture checks passed60/60. Installed SHA880b5af4 (full digest in chrome-only-late-known-v131-r2-deployment/result.json). The focus-cycle still failed. Later canonical KnownStart frames were mainly after Space, so the late-known scheduling repair alone does not explain or fix missing active-word hints. No physical acceptance is claimed.
+- v132 removes the KDE native display callback's requirement for a pre-existing native binding. An actual cursor callback can now establish the first binding through the unchanged authenticated, bounded native read. Previously a missed initial read left no binding, no subscribed wake and a callback that refused to try. No timer, extra authority, timeout, GNOME or other-client change.
+- v132 remote source/architecture60/60 PASS, source closure2e476f051760bd52fe085f7a7c511378f0b1a8e8ad04e20ef46bd453ce5613e8. Installed2026-10-23T02:32:18.349178+00:00, PID2343180, unitlay-chrome-ime-candidate-v132.service, version1.0.94.2, SHA4d2963d2141f944a27506e602d45972d47d08935dc2995ae90f4c31937db00d3. Protected20 processes, configuration, tray, daemon and global IBus unchanged. Receipts chrome-only-cursor-bootstrap-v132-source/result.json and chrome-only-cursor-bootstrap-v132-deployment/result.json.
+- Physical same-window text/rich/iframe-rich/textarea/text-return cycle: all5 actual prefixes composing=false; hint plus exact Tab acceptance3/5 (text, rich, textarea). iframe-rich and text-return had no hint. Successful observed hint upper bounds279.086/44.518/50.861ms and Tab34.489/34.516/25.372ms. Failed1.2s waits are not product latency. Receipt chrome-only-focus-cycle-v132-native/result.json; ordered trace extraction and restoration complete.
+- Visual evidence is still FAIL: prefix DOM is `пров` and hint is `ерка`, but the overlay can begin one character early and cover the final typed letter. Local inspected screenshots chrome-v131-prefix-0.png and chrome-v132-prefix-0.png under /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/. Underline removal alone is insufficient. Do not count DOM or source success as visual acceptance.
+- Next bounded investigation: confirm whether actual current native text fails the UnknownStart display-only readout predicate; inspect stale caret geometry separately. Preserve UnknownStart lineage/count/token and all whole-word edit gates. No runtime authority migration or full-matrix claim. Full320 evidence unchanged: Firefox92PASS/68FAIL; Chrome8PASS/8FAIL/144NOT_TESTED.
+
+
+### 2026-10-23T02:53:12Z — v133 bounded readout and post-commit geometry trial
+
+The v132 one-field settle probe confirms the hint rectangle remains after the third character for at least350ms while actual DOM has four ordinary characters. It is not only an immediate-screenshot race. Receipt chrome-only-geometry-settle-v132-native/result.json. Existing native terminal hint presentation already asks the client for fresh geometry with an empty HidePreedit lifecycle; reuse that exact output for an independently current native managed Chrome word. No computed character-width adjustment or suffix composition.
+
+The retained acquisition prefix exceeds this UnknownStart lineage's observed-key count. New regression uses an actual CommitText for the next character plus a fresh actual native snapshot, and fails the previous readout gate despite exact managed text. The KDE predicate now requires BOTH the current admitted native word and existing exact post-CommitText managed proof. The common retained-count guard consults this display/append witness; all other snapshot/boundary/privacy/token checks and exact whole-word count checks remain. No lineage count/completeness or edit authority changes. Common presentation helper is renamed consistently; GNOME files and behavior remain unchanged. Decision updated in docs/architecture/decisions/2026-10-23-kde-chrome-native-text-notification.json.
+
+Red evidence: initial diagnostic selected0 tests and was explicitly rejected as UNEXPECTED_RESULT (no PASS). Corrected discovered module route executes exactly both new positive regressions; both fail at their intended readout/geometry assertions, installed bytes unchanged: chrome-only-readout-v133-r2-tdd/result.json. v133 selected71 source tests and canonical graph PASS,11.55s test execution. Negative cases require fresh actual text/revision, no selection, unchanged focus/lease/layout/privacy and KDE. Release build, installation and physical acceptance pending. Full320 matrix unchanged100PASS/76FAIL/144NOT_TESTED.
+
+
+### 2026-10-23T03:13:13.837553+00:00 — v133 physical rejection; bounded native character geometry v134
+
+v133 selected71 source/architecture checks passed, but installed PID2412141 SHA f722cba67cec9d32e7aca0db2549f76c87b790dc411e0b101a3244b3d11e7657 fails the physical five-field Chrome cycle: all ready=false, four rect=None and a stale fifth suffix. Receipt chrome-only-focus-cycle-v133-native/result.json. The common terminal HidePreedit lifecycle does not cause Chrome to report post-commit geometry; reject this Chrome trial and restore the terminal-only helper. Keep the independently guarded UnknownStart readout repair. No client acceptance is claimed.
+
+A read-only focused-field diagnostic returns actual text/caret but initial zero-sized character bounds. After the first character-extents query, measurements at60ms,200ms,500ms give final character [67,285,11,21], endpoint78; empty-range and at-caret queries remain zero. Receipts chrome-only-native-caret-v133-{native,settle-native,offset-native}/result.json. Component [28,278,545,35], focused editable field is VISIBLE and SHOWING. This supports querying actual last-character geometry, not a guessed width or a zero-range API. Chromium primary reference: https://raw.githubusercontent.com/chromium/chromium/main/ui/accessibility/platform/ax_platform_node_auralinux.cc (GetCharacterExtents enables inline text boxes). These diagnostics alone do not establish product latency or acceptance.
+
+v134 trial adds one optional character-bounds query to the existing bounded KDE Chrome actual snapshot, retains geometry with that exact snapshot/field/token/lease/layout/tail, and discards it when a result reuses transport. Native geometry suppresses the stale IBus rectangle; missing/zero/invalid bounds hide the projection. It does not change actual document validity, edit admission, reducer/verifier/executor, capability/ACK/SSI, text delivery, GNOME or other-client policy. Existing ordinary native notifications provide updates; no added timer/retry/service. Source/build/install/physical gates pending. Full320 evidence unchanged100PASS/76FAIL/144NOT_TESTED.
+
+
+### 2026-10-23T03:37:03.613127+00:00 — v134-r2 installed Chrome evidence and v135 review corrections
+
+v134 initial compilation failed comparing the NativeSnapshot wrapper to a text snapshot; no installation occurred. v134-r2 repaired the comparison and selected72/72 source tests plus canonical architecture PASS. Receipt chrome-only-native-geometry-v134-r2-source/result.json; source closure82eba0235bfcedc74870b436bc0671f6396531a1c10fdab741b9d7b8a992f649. Installed only the owned development IME PID2503399, SHA94970cce6c2cea64bb1cbb6824d04a35c5320bdecc50db4d00e8e5adec02d542, display1.0.94.2. Activation/duplicate bytes match;20 protected processes, config, tray, daemon and global IBus unchanged. Receipt chrome-only-native-geometry-v134-r2-deployment/result.json.
+
+Physical KDE Chrome only: the five-field focus/return cycle passes5/5, with actual prefix out of composition, fresh suffix/coordinates, exact Tab result and a single separator. Ten normal-window field types pass10/10; incognito text/rich/iframe-rich pass3/3. Hint observations: five-cycle50.909–79.064ms, ten-types45.450–107.771ms, incognito52.001–54.364ms; Tab24.172–45.281ms across these runs. These include probe/transport observation overhead, not isolated renderer latency. Screenshots prefix-0 and prefix-2 from the five-cycle were independently viewed: plain un-underlined prefix, joined visible completion. Receipts chrome-only-focus-cycle-v134-r2-native/result.json, chrome-only-ten-types-v134-r2-native/result.json, chrome-only-private-v134-r2-native/result.json. Ordered trace anchors are complete; config/engine/daemon restoration passes.
+
+Fullscreen passes2/3 and FAILS iframe-rich: actual DOMпров/composing=false but stale suffixосто with rect=None. Three20ms read deadlines precede a later install_refused/field_identity_changed; application,bus,owner,field all match but canonical desktop lifetime differs. This is an observed timeout/lifetime rejection, not evidence of physical focus theft. Receipt chrome-only-fullscreen-v134-r2-native/result.json. Do not ignore desktop lifetime or weaken admission/identity to hide it. v134 is not final Chrome acceptance. Full320 matrix remains100PASS/76FAIL/144NOT_TESTED.
+
+Harness2 task20261023T032145Z-c4544391 is still running (gpt-6.1-sol/xhigh). Its frozen base review gives6/10 with three independently verified source findings: the outer selection preflight still requests geometry, real cursor callbacks can skip missing geometry once readout is current, and geometry can finish after the last field/privacy checks. This preliminary review is not the task's final report and does not cover v135.
+
+v135 corrections are confined to KDE native_document: propagate the geometry flag through the entire selection preflight (false); complete geometry and revalidate actual text/caret/selection before the final focused-field/privacy checks; allow an existing real cursor callback to read missing native bounds despite current readout. Same20ms bound, no timer/retry/extra observer, synthetic callbacks or authority widening. New private p2p AT-SPI test peers hold geometry while changing field/privacy/text/caret/selection, prove zero geometry calls for edit snapshots, and exercise bounded required-text/geometry failures. Existing managed fixture covers missing/ready/stale geometry callback eligibility. Source/build/installation/physical gates for v135 are pending.
+
+
+### 2026-10-23T03:48:57.656314+00:00 — v135-r2 source, installation and fullscreen failure; v136 bounded observation trial
+
+v135-r2:75/75 focused source tests and canonical architecture PASS; closure54b2385212ae01a829d8802d19ceb95b7fc4eaf2a0ac0094b12e10eb2ef5a19b. Privacy is checked before every text read, including post-geometry revalidation; held-geometry privacy race test asserts zero private text reads. Installed only the owned development engine PID2578781, SHA72d8856d177dba70ea0974e6881db49b3022150d3b40abc3fabd9205ff3d3037, display1.0.94.2.20 protected processes/config/tray/daemon/global IBus unchanged. Receipts chrome-only-geometry-order-v135-r2-source/result.json and chrome-only-geometry-order-v135-r2-deployment/result.json.
+
+Physical fullscreen Chrome: text/rich pass with fresh suffix/native bounds/plain DOM prefix and exact Tab; iframe-rich FAILS with native_deadline then canonical desktop identity lifetime rejection. Complete trace and restoration; receipt chrome-only-fullscreen-v135-r2-native/result.json. Independently viewed prefix-0 screenshot: typed prefix ordinary and joined suffix, no underline. The full320 matrix remains100PASS/76FAIL/144NOT_TESTED. v135-r2 is not final Chrome acceptance.
+
+Passive native bus timing identifies GetNSelections13.118ms and GetState/GetRole~7.2ms responses inside the same20ms total bound as two canonical KWin observations. v136 trial separates actual-document observation40ms from unchanged edit/subscription20ms. No identity bypass, retries, new wakeup, admission timeout or authority change. Decision2026-10-23-kde-chrome-observation-budget.json records the latency tradeoff and physical gate. Source/build/client verification pending. GNOME and all other clients untouched.
+
+
+### 2026-10-23T04:26:27.550003+00:00 — v136 measured admission expiry; v137 Chrome-only timing trial
+
+v136 source75/75 and canonical architecture PASS. Installed development PID2609412, SHA564b5c072b9b72f51fa4e20b16aa29bfda9a2ba6d6b5b300365b990230214dc9, source closurec8726c6e445dc20cdeb8b62c10e2db4f214ea7893595ffed179c939854e0775b. Protected20 processes/config/tray/daemon/global IBus unchanged. Receipts chrome-only-observation-budget-v136-source/result.json and chrome-only-observation-budget-v136-deployment/result.json under /home/e/projects/lay-development-runner/kde-install-control-20261020.
+
+Physical Chrome: first fullscreen3/3, normal10/10, private3/3 and focus-cycle5/5 PASS; cold fullscreen repeat2/3 with iframe-rich FAIL. Total23/24, not complete acceptance. Its actual prefix remains composing/underlined; fresh inline frame is empty. The exact marker delay is61.488ms against50ms, not a geometry or identity rejection. Failure retained in chrome-only-fullscreen-cold-repeat-v136-native/result.json and prefix-2.png. Additional passive-wire fullscreen run3/3 PASS, chrome-only-marker-wire-v136-native/result.json; wire arrival and observer ingress agree within100us for the observed markers, but the expired marker was not recaptured, so internal IBus cause remains unknown. Never replace the prior failed receipt with this pass. Full320 matrix remains100PASS/76FAIL/144NOT_TESTED.
+
+Harness2 USED task20261023T032145Z-c4544391 finished ok/ok,8 calls/no failures/no fallback, source unchanged, frozen-v134 review6/10. Report at /home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261023T032145Z-c4544391/report.json. Independent source verification confirms the three requested fixes in v135/r2: no geometry through selection preflight; real callbacks may refresh missing geometry; final field/privacy/text/caret/selection validation follows geometry, with private-text race tests. That frozen review does not certify v136/v137 and experience-library entries stayed empty.
+
+v137 pending: reuse the same adapter acquisition with an explicit finite deadline selected only after a fresh canonical KDE observation identifies the actual Chrome executable. Chrome100ms; defaults/native-ID/GNOME remain50ms. The classification uses existing20ms native I/O bound; no retry/wake/queue/cache or new edit authority. Other KDE compatibility clients retain their deadline but may incur the additional bounded focus observation; their physical latency is outside this Chrome-only scope. Decision2026-10-23-kde-chrome-activation-budget.json records this tradeoff and supersedes only the earlier no-admission-budget-change statement. Source, installed-runtime and physical proof for v137 remain PENDING.
+
+
+### Chrome activation request ordering trial — 2026-10-23T04:37:12.137353+00:00
+
+v137 source: 157/157 selected checks and canonical architecture PASS; installed compiler artifact SHA-256 `52b5377dc6468e8a0cee968905b8835f9181593ce5f0b26daf1e88fa3e603e1c`, PID 2724331, version 1.0.94.2. Receipt: `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-activation-budget-v137-source/result.json` and `chrome-only-activation-budget-v137-deployment/result.json`. Config, tray and protected process identities preserved; only owned development IME replaced.
+
+Physical fullscreen Chrome: 2 PASS / 1 FAIL, receipt `chrome-only-fullscreen-v137-native/result.json`. Text and rich field passed hint/Tab; iframe produced `ров` instead of `пров`. No activation expiry. Actual trace: first letter serial106 ingress Passive before FocusIn102 completed its timing classification; request10 was created afterward. Ready had no exact pending-literal receipt for that earlier letter, so installation discarded it. This is a new request-ordering regression, not a successful client acceptance. Historical browser matrix unchanged.
+
+v138 trial moves the bounded KDE timing classification into the existing acquisition worker AFTER synchronous begin_request. The same request/reducer/Get/nonce/marker/expiry and literal receipt checks retain authority; no receipt is fabricated or relaxed. A delayed-selector regression must prove the first letter belongs to that acquisition and survives Ready. GNOME keeps the original no-probe path. Physical scope remains Chrome only; other clients untested. Source/build/installation/native verdicts for v138 remain PENDING. Decision: `docs/architecture/decisions/2026-10-23-kde-chrome-activation-budget.json`.
+
+
+### Chrome queued compatibility focus trial — 2026-10-23T04:59:04.498150+00:00
+
+v138-r2 source 158/158 PASS and installed SHA422e08ba7e8be8dfbfea9e7e4458ba123e4723dd252cb6efd89342a31c5d8ea8 are not client acceptance. Fullscreen 3/3 PASS, normal 9/10 PASS: iframe-input retains the full literal `пров` in composition but shows no suffix. Native trace requests36–39 are revoked during queued FocusIn/FocusOut processing, without expiry or accepted marker. First failed transition: a delayed obsolete FocusIn creates a request after a newer FocusOut ingress; final FocusIn revokes the duplicate pending request. Private/focus-return/cold-repeat were stopped and remain NOT_TESTED for v138-r2.
+
+The real p2p regression reproduces the old defect (EXPECTED_RED, 2026-10-23T04:59:04.498150+00:00; exact receipt `/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-queued-focus-v139-red/result.json`). Trial: retain one reducer/stamp authority, publish focus metadata while holding its existing reducer lock, refuse superseded KDE platform-timing compatibility callbacks atomically before request mutation; keep the GNOME/default/native-ID API semantics and all marker/expiry rules. No new cache/queue/owner. Source, installed and physical verdicts for this trial remain PENDING. Historical failures are retained.
+
+Harness2 task `20261023T042842Z-9b5aeab8` is USED, completed status ok, 8 calls / 0 failed / no fallback. Frozen v137 review HOLD6/10 found request-before-classification ordering and scope-cost concerns; it does not certify v138/v139 or client behavior.
+
+
+### Chrome full lifecycle refusal trial — 2026-10-23T05:26:32Z
+
+v139-r2 source160/160 and architecture PASS; installed development PID2860528, SHA926f63989037f718e6cbeb7842fe871ac3fe6f75ad41ddce64c40c4b2754b73d, source closurec37caef853d6021a7a2b95353d794aeca77fd9a61f0117e223892869a9417808. Chrome-only native24/24 PASS (normal10, private3, fullscreen3, focus-cycle5, cold fullscreen3), complete trace/restoration. Hint median51.23ms/p95 106.62ms; Tab34.73/44.84ms, including observation overhead. Initial iframe-input screenshot masks the last typed letter; follow-up screenshots at150ms/600ms show the full ordinary prefix and adjacent suffix. Preserve the anomalous frame; its cause is NOT established. Receipts: chrome-only-activation-budget-v139-r2-source/result.json, chrome-only-activation-budget-v139-r2-deployment/result.json, chrome-only-{normal,private,fullscreen,focus-cycle,fullscreen-cold-repeat}-v139-r2-native/result.json, chrome-only-v139-r2-iframe-pixels-native/result.json. The full browser matrix remains100PASS/76FAIL/144NOT_TESTED of320. No full-matrix or other-client acceptance.
+
+Harness2 USED20261023T050346Z-c702884a failed its240s base call without a verdict. Task-local600s limit is used by still-running USED20261023T051104Z-f89a405c; its frozen base review HOLD6/10 flags stale full-callback cleanup. Independently verified actual caller: SupersededFocus still reaches finish_focus_in; missing metadata calls fail_context_activation against the currently installed owner. New real p2p full-lifecycle regressions FAIL3/3 on unchanged v139 engine source at2026-10-23T05:26:12.218939Z (chrome-only-queued-lifecycle-v140-red/result.json), proving successor-work cancellation.
+
+v140 trial propagates a distinct ignored observation through the existing KDE compatibility FocusIn callback. Missing/evicted metadata and superseded ingress cannot revoke the current owner or run finish_focus_in cleanup. Existing bool/native-ID/default API and reducer/Get/marker/expiry authority remain; no new cache, observer, owner or delivery route. Three regression tests cover retained/revoked/evicted metadata with successor Pending, Ready and Installed, checking request/fence/ready/token and local work/snapshot preservation. Source/build/install/native gates remain PENDING. This trial changes shared lifecycle glue only for the KDE compatibility refusal; it does not prove other-client runtime behavior.
+
+Errata preserved separately: prior prose red timestamp04:59:04 was the recording time; the actual v139 red receipt is04:57:17.535568Z. v138 deployment reused a review-field count157; its actual source count is158. First v139 compilation failed before installation; v139-r2 corrected the existing5-argument API wrapper and compiled160 tests. Historical receipts are not rewritten.
+
+
+### Chrome v140-r2 focused development verification — 2026-10-23T05:40:52.712505+00:00
+
+Chrome-only KDE development artifact1.0.94.2, PID2957531, SHA`b8249005a395273c44a35ba1b3c194e6060d8d37489d7f93eefae36c2c1ccd3a` installed. Source163/163 and canonical architecture PASS; native Chrome24/24 PASS across ten field types/private/fullscreen/focus-return/cold repeat. Ten first-ready screenshots show ordinary prefix and adjacent unadorned suffix. Hint median52.40ms/p95 82.99ms; Tab34.58/35.52ms. Full matrix remains100PASS/76FAIL/144NOT_TESTED of320; no other-client or release acceptance.
+
+Full evidence and retained cached-test erratum: [owning display document](../architecture/ime-inline-hint-preflight-2026-10-20.md), section “Chrome v140-r2 focused development verification”; aggregate `/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-only-v140-r2-acceptance.json`. Harness2 USED`20261023T051104Z-f89a405c` finished8/8 calls/no fallback, frozen-v139 HOLD6/10. Both caller-cleanup concerns were independently reproduced and repaired in v140; no repeat review score claimed. GNOME-specific files unchanged, no global restart or push. Leave installed candidate for the user's Chrome check; do not revive other-client work without instruction.
+
+### 2026-10-24 — field continuity full native verdict
+
+Reviewed2100 installed;frozenfull220=172P/9F/39B,manual0FAIL.18oldF->P,
+2oldP->F,1oldP->B retained. Nine current functional failures require causal
+Space lease/verifier diagnosis;do not weaken safety or reapply disproved
+transient-gate hypotheses. Frozenr19 two-word rich diagnostic1PASS.
+Receipts:chrome-941-review-20261024/field-continuity-{summary,two-word-client}.json.
+Upper real omnibox remains separateFAIL;two common hooks still unapproved.
+No overall acceptance,no source green claim(old15FAIL+TD121error retained).
+
+### 2026-10-24 — do not repeat rejected key-time Space producer placement
+
+Exact RED run-pgO3io fails old slot after production native install;GREEN
+run-fvKmhu52native passes. Yet frozenfull8a66=169P/10F/41B vs2100=172/9/39,
+pair6F->8F,ENRU3F->2F;reject per aggregate AND class contract. Restored
+compiled2100/PID3349193 and only two own Rust files;all801match old tested
+source. New source/test preserved in packet/rejected-keytime-source.
+Do not reapply it or increase waits based solely on its unit GREEN.
+Current full proof172/9/39;post-rollback two-word1PASS separate.
+Upper own suffix exists but rect:null at both positions;two common release
+hooks remain unapproved. No duplicated scope question,agents or Harness.

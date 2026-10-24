@@ -16,6 +16,6 @@ pub(crate) use modifiers::{
 };
 pub(crate) use state::{
     AutocorrectSuppression, CurrentWordSuppression, ExactManualToggleSuppression,
-    PendingImeAutoUndo, PendingImeAutoUndoRetry, RecordedBoundaryPrecondition, Shared, SharedState,
-    ShiftGestureHandoff,
+    ExactReplayBoundaryHold, PendingImeAutoUndo, PendingImeAutoUndoRetry,
+    RecordedBoundaryPrecondition, Shared, SharedState, ShiftGestureHandoff,
 };

@@ -17,7 +17,11 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.94`
+- `1.0.95`
+
+1.0.95 publishes the current desktop isolation, KDE native-field continuity and
+tray menu export work. Native evidence is partial and the reported ordinary
+profile/tray failures remain open. See [release notes](docs/release-1.0.95.md).
 
 1.0.94 adds keyboardless VNC/X11 input through the existing daemon gesture
 pipeline, repairs KDE startup and controls, and restores owned hint/Tab input

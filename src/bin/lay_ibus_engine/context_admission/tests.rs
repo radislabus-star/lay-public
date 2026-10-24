@@ -240,6 +240,7 @@ fn stale_foreign_snapshot_publish_cannot_clear_the_current_owner_receipt() {
         None,
         3,
         Instant::now() + Duration::from_secs(1),
+        ExactManualSourceProvenance::ClientSnapshot,
     ));
     let mut stale_foreign = token.clone();
     stale_foreign.owner.path = engine_path("/engine/stale-foreign");
@@ -250,6 +251,7 @@ fn stale_foreign_snapshot_publish_cannot_clear_the_current_owner_receipt() {
         None,
         4,
         Instant::now() + Duration::from_secs(1),
+        ExactManualSourceProvenance::ClientSnapshot,
     ));
     assert_eq!(
         reducer
@@ -1275,6 +1277,7 @@ fn td159_fresh_focus_manual_reducer_receipt_pins_source_and_cannot_rearm_phase()
         Some("prefix ".to_string()),
         4,
         Instant::now() + std::time::Duration::from_secs(1),
+        ExactManualSourceProvenance::ClientSnapshot,
     ));
     assert!(!reducer.fresh_exact_manual_source_allowed(&token));
     assert!(reducer.exact_manual_snapshot_is_current(&token, 0, "привет", 4));

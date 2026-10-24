@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-20",
+  "status": "IMPLEMENTATION_IN_PROGRESS_NATIVE_NOT_ACCEPTED",
+  "decision": "Reuse the observed-suffix display identity for current-field qualified native terminal keys with UnknownStart, including advertised SurroundingText without a snapshot. Permit only readout and explicit append-only completion through this weaker predicate. Preserve the existing stricter predicate for whole-word edit and Space authority.",
+  "reason": "Native Konsole receipts show caps41, no text snapshot, ordinary key passthrough and no hint. The observer requests KnownStart only; the suffix fallback incorrectly depends on selection of a terminal erase executor. Readout and append need the existing current key lineage, not permission to delete text.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C08", "C10"],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "Pending causal RED/GREEN and native Konsole plus Kitty regression. Baseline: live-regression-20261020/konsole-native-v1 and konsole-cause-v1/engine-trace-recovered.jsonl in the remote kde-install-control-20261020 receipt root.",
+  "not_tested": "Changed-byte native acceptance, browser matrix and GNOME.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "consequences": "The shared reducer and output verifier remain authoritative. Current native terminal qualification and matching observed key lineage are mandatory. Revocation, sensitive content, owned composition, selection and conflicting snapshots still reject readout. No prefix document preedit, implicit suffix acceptance, replacement candidate or terminal deletion authority is introduced. Double Shift and moved-pair failures require their own proof and are not claimed repaired by this change."
+}

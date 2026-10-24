@@ -7,10 +7,25 @@ const WINDOW_B: &str = "12345678-1234-4234-8234-123456789abd";
 fn reply(uuid: &str, title: &str) -> RawWindow {
     RawWindow {
         uuid: uuid.into(),
+        pid: 12345,
         app: "org.kde.konsole".into(),
         class: "konsole".into(),
         title: title.into(),
     }
+}
+
+#[test]
+fn process_id_is_canonical_metadata_not_a_window_identity_or_authority() {
+    let a = reply(WINDOW_A, "same");
+    let mut b = a.clone();
+    b.pid += 1;
+    let first = observation("bus1", ":1.5", 1, a);
+    let second = observation("bus1", ":1.5", 1, b);
+    assert_eq!(first.identity, second.identity);
+    let first_info: serde_json::Value = serde_json::from_str(&first.info).unwrap();
+    let second_info: serde_json::Value = serde_json::from_str(&second.info).unwrap();
+    assert_eq!(first_info["pid"], 12345);
+    assert_eq!(second_info["pid"], 12346);
 }
 
 #[test]
@@ -150,6 +165,7 @@ struct PeerState {
     bad_request: bool,
     unload_error: bool,
     wrong_sender: Option<zbus::Connection>,
+    pid: Option<i32>,
 }
 
 struct PeerScripting(Arc<Mutex<PeerState>>);
@@ -189,7 +205,7 @@ struct PeerScript(Arc<Mutex<PeerState>>);
 impl PeerScript {
     #[zbus(name = "run")]
     async fn run(&self, #[zbus(connection)] conn: &zbus::Connection) -> zbus::fdo::Result<()> {
-        let (config, request, wrong_sender) = {
+        let (config, request, wrong_sender, pid) = {
             let mut state = self.0.lock().unwrap();
             state.calls.push("run".into());
             let request = if state.bad_request {
@@ -197,7 +213,12 @@ impl PeerScript {
             } else {
                 state.config["request"].as_str().unwrap().to_string()
             };
-            (state.config.clone(), request, state.wrong_sender.clone())
+            (
+                state.config.clone(),
+                request,
+                state.wrong_sender.clone(),
+                state.pid.unwrap_or(12345),
+            )
         };
         wrong_sender
             .as_ref()
@@ -210,6 +231,7 @@ impl PeerScript {
                 &(
                     request,
                     WINDOW_A,
+                    pid,
                     "org.kde.konsole",
                     "konsole",
                     "native peer window",
@@ -362,6 +384,10 @@ fn actual_ipc_query_loads_calls_authenticated_ingress_and_unloads() {
         serde_json::from_str::<serde_json::Value>(&result.info).unwrap()["wmClass"],
         "konsole"
     );
+    assert_eq!(
+        serde_json::from_str::<serde_json::Value>(&result.info).unwrap()["pid"],
+        12345
+    );
     assert_eq!(state.lock().unwrap().calls, ["load", "run", "unload"]);
     assert!(client.cleanup.is_none());
     client.mailbox.clear();
@@ -371,6 +397,26 @@ fn actual_ipc_query_loads_calls_authenticated_ingress_and_unloads() {
     assert_eq!(again.identity, result.identity);
     assert_eq!(state.lock().unwrap().calls.len(), 6);
     assert_eq!(std::fs::read_dir(&runtime.0).unwrap().count(), 0);
+}
+
+#[test]
+fn actual_ipc_signed_process_identity_rejects_negative_before_recovery() {
+    let (mut client, _server, state) = peer();
+    let runtime = PrivateRuntime::new();
+    state.lock().unwrap().pid = Some(-1);
+    assert!(client
+        .read_in(Instant::now() + Duration::from_millis(30), &runtime.0)
+        .is_err());
+    client.mailbox.clear();
+    state.lock().unwrap().pid = Some(i32::MAX);
+    let recovered = client
+        .read_in(Instant::now() + READ_BUDGET, &runtime.0)
+        .unwrap();
+    assert_eq!(
+        serde_json::from_str::<serde_json::Value>(&recovered.info).unwrap()["pid"],
+        i32::MAX
+    );
+    assert!(client.cleanup.is_none());
 }
 
 #[test]

@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "SOURCE_FOCUSED_PASS_NATIVE_VISUAL_FAIL",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "delivery_routes_changed": false,
+  "decision": "Render every unaccepted hint character black on one opaque white background with no underline. Apply these ranges only to the suggestion, never the typed prefix, consistently in IBus attributes and KDE/GNOME suffix views.",
+  "reason": "The latest user request explicitly supersedes muted gray and rejected translucency: a terminal cursor made only the first gray hint character white-backed.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/text/attrs.rs",
+    "scripts/lay-kde-tray.py",
+    "extension/lay@radislabus-star.github.io/ime_hint_style.js"
+  ],
+  "verification": "Five meaningful Rust projection tests reproduce old behavior RED and pass with the production change; included in scoped source197 PASS, plus JavaScript14/Python2 PASS. Actual installed candidate c5dd29ec6254fa5434294da32a04d06bbb0233ecfdccfeb3a396e9be8fdfaca6 passes Tab in Konsole/Kitty/Chrome but terminal screenshot inspection FAILS: native rendering ignores the requested white background and the black hint is unreadable. Receipts shift-hint-after-v1-{konsole,kitty,chrome}; the presentation is not accepted.",
+  "not_tested": "GNOME live rendering and complete browser matrix not rerun. Chrome native composition may still underline the already-typed prefix; suffix colors are not a fix for that independent limitation.",
+  "runtime_authority_changed": false,
+  "consequences": "No opacity mutation, acceptance, input, document text, geometry, focus, stream/revision ownership or transport changes. Existing noninteractive read-only views remain nonfocusing and input-transparent. Preserve other owners styles/opacity on teardown."
+}

@@ -1,0 +1,57 @@
+{
+  "status": "IMPLEMENTATION_PENDING_SOURCE_AND_NATIVE_PROOF_NOT_ADOPTED",
+  "affected_invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "owner": "Existing ContextAdmissionReducer, WindowInteraction and IME local AuthorizedEdit executor",
+  "first_failed_transition": "A GTK client can advertise SurroundingText without returning an actual document snapshot. Keeping the literal word in preedit preserves editability but Chromium's Pango conversion underlines it even for NONE or an empty attribute list.",
+  "decision": "Extend the existing document observation and local IME execution contracts with explicitly authenticated NativeDocument provenance and exact native range selection followed by the existing CommitText. Do not manufacture an IBus observation, delete capability, delivery ACK or learning result. Keep the existing desktop dispatch and reducer as the only environment and authority owners.",
+  "alternatives": [
+    {
+      "name": "D: native document and exact range inside existing IME executor",
+      "score_1_to_10": 8,
+      "scope": "Conditional on current authenticated native field, one authorized action, observed exact selection and actual result. v107 establishes callback liveness only."
+    },
+    {
+      "name": "B: native document and automatic extension of daemon replay",
+      "score_1_to_10": 7,
+      "scope": "Requires extending the current manual opposite-layout replay protocol and both consumers. It relocates the source/result obligations and changes more code."
+    },
+    {
+      "name": "A: unconditional ordinary literal commits",
+      "score_1_to_10": 1,
+      "scope": "Rejected: earlier source proof had45/918 regressions; loses correction authority."
+    }
+  ],
+  "implementation_bounds": [
+    "A native document observation has a real bus peer/process, field path and canonical desktop-window identity and is bound to the existing live admission token. Text and coordinates are actual document data, never a projection of preedit or prediction.",
+    "Read the current desktop through active_layout_backend and the existing KDE/GNOME adapters. Extend the existing canonical window observation with PID rather than introduce another desktop detector.",
+    "Start ordinary managed input only from a freshly observed empty or word-boundary document before publishing literal preedit. Native text cannot mark the IBus SurroundingText callback as observed.",
+    "The shared verifier produces one non-cloneable AuthorizedEdit. Native selection is a step within the existing local executor, never a second decision owner or a daemon fallback.",
+    "Before selection revalidate the current field/token/privacy/layout/epoch, exact original text, caret and absent external selection. Mark existing CursorOrPreedit progress before sending selection, including errors/timeouts.",
+    "Observe the exact selection before CommitText. A rejected, stale, cancelled or indeterminate selection cannot retry, fall back, clean up a successor selection or learn.",
+    "Actual complete result text, caret, zero selection and the same current field must reach the existing pending postcondition before result feedback/learning. CommitText dispatch is not that observation.",
+    "Bound native reads and allocations. Connection/subscription resources do not cache authority. Preserve daemon-owned physical Double Shift, ordinary held Shift, readonly hint, Tab append, atomic clients, real SurroundingText and qualified terminal routes. No client names or literal example conditions."
+  ],
+  "required_checks": [
+    "Source: wrong peer/PID/path/token, same-text A-B-A Reset, privacy, projection refusal, caret/selection, Unicode, stale document, exact selection mismatch and no CommitText",
+    "Source: request rejection/timeout/error/drop are unknown partial effects and cannot fall back/retry/learn; actual-result mismatch cannot confirm",
+    "Retain all affected existing ownership, replay, atomic and terminal contract tests",
+    "Native: owned Chrome typed prefix and hint, Tab, Space correction and clean preservation, active/closed/five Double Shift, ordinary Shift and next-letter decoder, two fields and focus return; preserve exact restoration",
+    "Then run affected fixed Firefox/Chrome client scope with timing and unchanged denominators; no diagnostic PASS promotion"
+  ],
+  "rollback": "Do not adopt until focused source/native controls pass. Restore the exact v64 runtime and configuration after each temporary native run. Revert only the named native-document experiment if its proof regresses; preserve earlier Writer and other dirty work.",
+  "diagnostic_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-native-selection-event-v107-probe/acceptance.json",
+  "harness2_review_task": "20261022T155433Z-fa121efd",
+  "harness2_review_state": "ACCEPT_BOUNDED_CONDITIONAL_7_OF_10_DEGRADED_ONE_TIMEOUT",
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false,
+  "harness2_review_acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/chrome-native-range-contract-v106-review/acceptance-pass2.json"
+}

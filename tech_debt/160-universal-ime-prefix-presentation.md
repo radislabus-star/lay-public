@@ -1,4 +1,4 @@
-# TD-160 — Ordinary typed text and a muted suggestion in every client
+# TD-160 — Ordinary typed text and an inline suggestion in every client
 
 Status: OPEN — native presentation FAIL. Priority: P1; user requirement applies
 to every application and supported system, including Chrome, terminals, GNOME
@@ -15,13 +15,30 @@ requirements below remain open.
 
 ## Required behavior
 
+Latest bounded result, 2026-10-20: engine `9e751d3c`, 943/943 IME source PASS,
+ordinary native KDE-menu Kitty inline appearance visually PASS and raw PTY
+Tab/blur 2/2 PASS. This supersedes only the old Kitty placement observation;
+it does not close this universal task. The original user Kitty lacked the
+module environment, while the newly opened native menu window has ibus.
+Evidence: current `docs/development/lay2-handoff.md` and
+`user-kitty-native-v2` / `inline-kitty-geometry-v5` remote receipts. Chrome's
+typed-prefix underline and GNOME queued-frame finding remain open. No word
+ownership/ordinary-input commit timing was changed to obtain this result.
+
 Already entered characters use the application's ordinary text appearance.
-Only the unaccepted continuation is a muted gray or translucent hint. The
+The latest user requirement is an opaque black continuation on white, with no
+gray or translucency. Earlier gray-hint results below remain historical. The
 typed prefix must not become selected, inverted or underlined as a whole by
 Lay's composition presentation. The hint never becomes document text on blur,
 Reset, Escape or an unrelated key. Explicit Tab accepts the current suggestion
 exactly once; editing, cancellation, correction and manual conversion retain
 their current contracts. Password and sensitive fields retain their protection.
+
+2026-10-20 user clarification: the continuation must appear in the input line
+as in the user's still-running GNOME 1.0.90. A separate auxiliary field is
+explicitly rejected, even if its color is correct. The Kitty color-only result
+above does not satisfy this placement criterion. Current bounded implementation
+preflight: `docs/architecture/ime-inline-hint-preflight-2026-10-20.md`.
 
 ## Established root and evidence
 

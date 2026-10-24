@@ -7,7 +7,8 @@ use crate::output::{AtomicEffectBuilder, EngineOutput, TestEngineOutput, PROPOSA
 use crate::protocol::{KEY_BACKSPACE, KEY_ENTER, KEY_LEFT, KEY_SPACE, KEY_TAB};
 use crate::space_autocorrect_prefetch::proof::install_exact_lease;
 use crate::window_interaction::{
-    IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH, IBUS_CAP_PREEDIT_TEXT, IBUS_CAP_SURROUNDING_TEXT,
+    WindowFactEvent, WindowInteraction, IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
+    IBUS_CAP_PREEDIT_TEXT, IBUS_CAP_SURROUNDING_TEXT, IBUS_INPUT_PURPOSE_PASSWORD,
     IBUS_INPUT_PURPOSE_TERMINAL,
 };
 
@@ -134,12 +135,236 @@ fn td125_legacy_preedit_word_commits_ready_space_correction_without_delete() {
 }
 
 #[test]
-fn td125_known_boundary_without_exact_refresh_keeps_next_word_in_owned_preedit() {
+fn stock_observed_boundary_types_plain_text_without_granting_edit_authority() {
+    for prefix in ["", "дом "] {
+        let mut engine = legacy_engine(
+            "/td125/legacy-preedit/observed-stock-boundary",
+            IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+        );
+        engine.committed_tail.buffer = prefix.to_string();
+        let cursor = prefix.chars().count() as u32;
+        engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+            prefix.to_string(),
+            cursor,
+            cursor,
+        )));
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+
+        for ch in "пров".chars() {
+            assert!(press(&mut engine, &mut output, ch as u32));
+            assert!(engine.composition.buffer.is_empty());
+            assert!(!engine.composition.legacy_word_preedit_active);
+            // A successful local commit is not a new client receipt.
+            let floor = engine
+                .client_context
+                .managed_commit_snapshot_floor
+                .expect("ordinary character records its observation floor");
+            assert_eq!(
+                floor.observation_revision,
+                engine.client_context.surrounding_observation_revision
+            );
+            assert!(!engine.exact_managed_surrounding_word_is_current());
+        }
+        assert_eq!(output.committed_texts, ["п", "р", "о", "в"]);
+        assert!(output.surrounding_deletes.is_empty());
+        assert!(!output.effects.contains(&"forward-key"));
+    }
+}
+
+#[test]
+fn stock_delayed_surrounding_projection_finishes_only_literal_preedit() {
+    for prefix in ["", "дом "] {
+        let mut engine = legacy_engine(
+            "/td125/legacy-preedit/delayed-stock-source",
+            IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+        );
+        engine.config.nanda_precognition = true;
+        engine.committed_tail.buffer = prefix.to_string();
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        // Real LibreOffice order: no engine-side empty SSI, then the first
+        // key, then a client snapshot containing the preedit projection.
+        assert!(press(&mut engine, &mut output, 'п' as u32));
+        assert!(engine.composition.legacy_word_preedit_active);
+        assert!(output.committed_texts.is_empty());
+        // Even a currently visible, unaccepted hint must not be included in
+        // the literal transfer (a controlled display-payload variation).
+        engine.composition.preedit_suffix = "одсказка".into();
+        let text = format!("{prefix}п");
+        let cursor = text.chars().count() as u32;
+        zbus::block_on(WindowInteraction::observe_facts(
+            &mut engine,
+            WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new(
+                text, cursor, cursor,
+            ))),
+            Some(&mut EngineOutput::test(&mut output)),
+        ))
+        .unwrap();
+
+        assert_eq!(output.committed_texts, ["п"]);
+        assert!(output.surrounding_deletes.is_empty());
+        assert!(!output.effects.contains(&"forward-key"));
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.composition.legacy_word_preedit_active);
+        assert_eq!(engine.committed_tail.buffer, format!("{prefix}п"));
+        assert!(engine.client_context.surrounding_text_snapshot.is_none());
+        assert!(!engine.exact_managed_surrounding_word_is_current());
+
+        // The projection preceded CommitText. Neither it nor temporary
+        // absence of another snapshot may create edit authority or an owner.
+        assert!(press(&mut engine, &mut output, 'р' as u32));
+        assert_eq!(output.committed_texts, ["п", "р"]);
+        assert!(engine.composition.buffer.is_empty());
+        assert!(!engine.exact_managed_surrounding_word_is_current());
+    }
+}
+
+#[test]
+fn stock_delayed_projection_transfer_retains_source_and_mode_refusals() {
+    for refusal in [
+        "mismatch",
+        "selection",
+        "exact-refresh",
+        "caret",
+        "sensitive",
+    ] {
+        let caps = IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS;
+        let mut engine = legacy_engine(
+            "/td125/legacy-preedit/delayed-stock-refusal",
+            if refusal == "exact-refresh" {
+                caps | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH
+            } else {
+                caps
+            },
+        );
+        engine.config.nanda_precognition = true;
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        // Explicit exact-refresh already has its owned-word start contract.
+        if refusal == "exact-refresh" {
+            engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+                String::new(),
+                0,
+                0,
+            )));
+        }
+        assert!(press(&mut engine, &mut output, 'п' as u32));
+        if refusal == "caret" {
+            assert!(press(&mut engine, &mut output, KEY_LEFT));
+        }
+        if refusal == "sensitive" {
+            engine.client_context.content_purpose = IBUS_INPUT_PURPOSE_PASSWORD;
+        }
+        let before = output.committed_texts.len();
+        let snapshot = match refusal {
+            "mismatch" => SurroundingTextSnapshot::new("я".into(), 1, 1),
+            "selection" => SurroundingTextSnapshot::new("п".into(), 1, 0),
+            _ => SurroundingTextSnapshot::new("п".into(), 1, 1),
+        };
+        zbus::block_on(WindowInteraction::observe_facts(
+            &mut engine,
+            WindowFactEvent::SurroundingText(Some(snapshot)),
+            Some(&mut EngineOutput::test(&mut output)),
+        ))
+        .unwrap();
+        assert_eq!(output.committed_texts.len(), before, "{refusal}");
+        assert!(output.surrounding_deletes.is_empty(), "{refusal}");
+    }
+}
+
+#[test]
+fn stock_delayed_literal_transfer_preserves_commit_and_clear_failure_semantics() {
+    for fail_commit in [true, false] {
+        let mut engine = legacy_engine(
+            "/td125/legacy-preedit/delayed-stock-output-failure",
+            IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+        );
+        engine.config.nanda_precognition = true;
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        assert!(press(&mut engine, &mut output, 'п' as u32));
+        output.fail_commit = fail_commit;
+        output.fail_preedit_publication = !fail_commit;
+        let result = zbus::block_on(WindowInteraction::observe_facts(
+            &mut engine,
+            WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new("п".into(), 1, 1))),
+            Some(&mut EngineOutput::test(&mut output)),
+        ));
+        assert!(result.is_err());
+        // TestEngineOutput records attempts, including the rejected commit.
+        assert_eq!(output.committed_texts, ["п"]);
+        assert!(output.surrounding_deletes.is_empty());
+        assert!(!engine.exact_managed_surrounding_word_is_current());
+        if fail_commit {
+            assert_eq!(engine.composition.buffer, "п");
+            assert!(engine.composition.legacy_word_preedit_active);
+        } else {
+            assert!(engine.composition.buffer.is_empty());
+            assert!(!engine.composition.legacy_word_preedit_active);
+            assert!(engine.client_context.surrounding_text_snapshot.is_none());
+            assert!(!zbus::block_on(
+                engine.commit_observed_literal_preedit(&mut EngineOutput::test(&mut output),)
+            )
+            .unwrap());
+            assert_eq!(output.committed_texts, ["п"]);
+        }
+    }
+}
+
+#[test]
+fn stock_observed_client_does_not_reenter_preedit_while_snapshot_is_absent() {
+    let mut engine = legacy_engine(
+        "/td125/legacy-preedit/observed-missing-snapshot",
+        IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+    );
+    engine.config.nanda_precognition = true;
+    engine.observe_external_surrounding_text(Some(SurroundingTextSnapshot::new(
+        String::new(),
+        0,
+        0,
+    )));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    assert!(press(&mut engine, &mut output, 'п' as u32));
+    // An actual client-owned shortcut clears the current receipt. It does not
+    // erase the fact that this client has an observation source.
+    assert!(!zbus::block_on(engine.process_pressed_key(
+        &mut EngineOutput::test(&mut output),
+        'a' as u32,
+        30,
+        4,
+    ))
+    .unwrap());
+    assert!(engine.client_context.surrounding_text_snapshot.is_none());
+    assert!(press(&mut engine, &mut output, 'п' as u32));
+    assert_eq!(output.committed_texts, ["п", "п"]);
+    assert!(engine.composition.buffer.is_empty());
+    assert!(!engine.composition.legacy_word_preedit_active);
+    assert!(!engine.exact_managed_surrounding_word_is_current());
+    assert!(output.surrounding_deletes.is_empty());
+}
+
+#[test]
+fn td125_exact_refresh_after_observed_separator_keeps_next_word_in_owned_preedit() {
     lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
         .expect("warm exact-layout authority");
     let mut engine = legacy_engine(
         "/td125/legacy-preedit/known-boundary",
-        IBUS_CAP_PREEDIT_TEXT | IBUS_CAP_SURROUNDING_TEXT | IBUS_CAP_FOCUS,
+        IBUS_CAP_PREEDIT_TEXT
+            | IBUS_CAP_SURROUNDING_TEXT
+            | IBUS_CAP_FOCUS
+            | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH,
     );
     engine.committed_tail.buffer = "дом ".to_string();
     engine.client_context.surrounding_text_snapshot =

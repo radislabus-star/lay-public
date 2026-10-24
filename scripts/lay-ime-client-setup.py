@@ -5,13 +5,16 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import shutil
 import subprocess
 import tempfile
 
 MARKER = "# Managed by Lay: GLFW IBus client\n"
 DESKTOP_MARKER = "X-Lay-IBus-Launcher=true\n"
+EXEC_MARKER = "# Managed by Lay: GLFW IBus Exec\n"
 EXEC_PREFIX = "/usr/bin/env GLFW_IM_MODULE=ibus "
+COMMAND_MARKER = "# Managed by Lay: Kitty IBus command"
 MODULES = {"GTK_IM_MODULE": "ibus", "QT_IM_MODULE": "ibus",
            "XMODIFIERS": "@im=ibus", "GLFW_IM_MODULE": "ibus"}
 
@@ -36,16 +39,76 @@ def previous_session_files(config):
     }
 
 
-def write(path, text):
+def write(path, text, mode=0o644):
     path.parent.mkdir(parents=True, exist_ok=True)
     with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as f:
         try:
             f.write(text)
             f.close()
-            os.chmod(f.name, 0o644)
+            os.chmod(f.name, mode)
             os.replace(f.name, path)
         finally:
             Path(f.name).unlink(missing_ok=True)
+
+
+def kitty_command_text(record):
+    return ("#!/bin/sh\n" + COMMAND_MARKER + "\n# " + json.dumps(record) + "\n"
+            'if [ -z "${GLFW_IM_MODULE:-}" ]; then\n'
+            '    export GLFW_IM_MODULE=ibus\nfi\n'
+            "exec " + shlex.quote(record["target"]) + ' "$@"\n')
+
+
+def owned_kitty_command(path):
+    if path.is_symlink() or not path.is_file():
+        return None
+    try:
+        text = path.read_text()
+        lines = text.splitlines()
+        if len(lines) < 3 or lines[1] != COMMAND_MARKER or not lines[2].startswith("# "):
+            return None
+        record = json.loads(lines[2][2:])
+        if (not isinstance(record, dict) or set(record) != {"target", "previous_link"}
+                or not isinstance(record["target"], str)
+                or not Path(record["target"]).is_absolute()
+                or record["previous_link"] is not None and not isinstance(record["previous_link"], str)):
+            return None
+        return record if text == kitty_command_text(record) else None
+    except (ValueError, UnicodeError):
+        return None
+
+
+def kitty_command_plan(home):
+    path = home / ".local/bin/kitty"
+    if path.is_symlink():
+        record = dict(target=str(path.resolve(strict=True)), previous_link=os.readlink(path))
+    elif path.exists():
+        record = owned_kitty_command(path)
+        if record is None:
+            raise RuntimeError(f"preserving existing custom Kitty command: {path}")
+    else:
+        found = shutil.which("kitty")
+        if not found:
+            return None
+        record = dict(target=str(Path(found).resolve(strict=True)), previous_link=None)
+    target = Path(record["target"])
+    if (target.resolve(strict=True) == path.parent.resolve() / path.name
+            or not target.is_file() or not os.access(target, os.X_OK)):
+        raise RuntimeError("Kitty command target is unavailable or recursive")
+    return path, kitty_command_text(record)
+
+
+def remove_kitty_command(home):
+    path = home / ".local/bin/kitty"
+    record = owned_kitty_command(path)
+    if record is None:
+        return
+    if record["previous_link"] is None:
+        path.unlink()
+    else:
+        with tempfile.TemporaryDirectory(dir=path.parent) as directory:
+            original = Path(directory) / "kitty"
+            original.symlink_to(record["previous_link"])
+            os.replace(original, path)
 
 
 def configure(remove=False):
@@ -61,12 +124,23 @@ def configure(remove=False):
     envs = session_files(config)
     previous = previous_session_files(config)
     if remove:
+        remove_kitty_command(home)
         for path, content in envs.items():
             if path.is_file() and path.read_text() in (content, previous[path]):
                 path.unlink()
         if desktop.is_file() and DESKTOP_MARKER in desktop.read_text():
-            text = desktop.read_text().replace(DESKTOP_MARKER, "")
-            text = text.replace("Exec=" + EXEC_PREFIX, "Exec=")
+            original = desktop.read_text().splitlines(keepends=True)
+            lines = []
+            for index, line in enumerate(original):
+                if (line == EXEC_MARKER and index + 1 < len(original)
+                        and original[index + 1].startswith("Exec=" + EXEC_PREFIX)):
+                    continue
+                if (index and original[index - 1] == EXEC_MARKER
+                        and line.startswith("Exec=" + EXEC_PREFIX)):
+                    line = "Exec=" + line[len("Exec=" + EXEC_PREFIX):]
+                lines.append(line)
+            # A legacy global marker cannot prove ownership of each Exec prefix.
+            text = "".join(lines).replace(DESKTOP_MARKER, "")
             if source and text == source.read_text():
                 desktop.unlink()
             else:
@@ -84,9 +158,11 @@ def configure(remove=False):
     for path, content in envs.items():
         if path.exists() and path.read_text() not in (content, previous[path]):
             raise RuntimeError(f"preserving existing custom file: {path}")
+    command = kitty_command_plan(home)
     lines = []
     for line in text.splitlines(keepends=True):
         if line.startswith("Exec=") and "GLFW_IM_MODULE=" not in line:
+            lines.append(EXEC_MARKER)
             line = "Exec=" + EXEC_PREFIX + line[5:]
         lines.append(line)
     text = "".join(lines)
@@ -96,7 +172,16 @@ def configure(remove=False):
         write(desktop, text)
     for path, content in envs.items():
         write(path, content)
-    return "IME clients configured. Reopen Kitty from the menu; other session defaults apply at next login."
+    if command:
+        write(*command, mode=0o755)
+        selected = shutil.which("kitty")
+        if (not os.environ.get("GLFW_IM_MODULE")
+                and (not selected or Path(selected).resolve() != command[0].resolve())):
+            raise RuntimeError(
+                f"Kitty menu setup saved, but PATH bypasses {command[0]}. "
+                f"Put {command[0].parent} before other Kitty directories in PATH, "
+                "then run setup again.")
+    return "IME clients configured. New Kitty commands and menu launches use IBus; existing windows stay open. Other session defaults apply at next login."
 
 
 def status():
@@ -136,9 +221,23 @@ def status():
         except (OSError, ValueError):
             continue
     if kitty:
-        problems.append("Уже открытый Kitty не подключён к IBus. Открой новое окно из меню; рабочие окна Lay не закрывает.")
+        problems.append("Уже открытый Kitty не подключён к IBus. После настройки открой новое окно Kitty; рабочие окна Lay не закрывает.")
+    command = Path.home() / ".local/bin/kitty"
+    selected = shutil.which("kitty")
+    command_configured = False
+    try:
+        if owned_kitty_command(command) and kitty_command_plan(Path.home()):
+            command_configured = bool(selected and os.access(command, os.X_OK)
+                                      and Path(selected).resolve() == command.resolve())
+    except (OSError, RuntimeError):
+        pass
+    command_needed = bool(selected) and not env["GLFW_IM_MODULE"]
+    if command_needed and not command_configured:
+        problems.append("Обычная команда kitty ещё не настроена для IBus. Нажми «Настроить приложения для подсказок».")
     return dict(engine=engine, modules=env, conflicts=conflicts,
                 kitty_launcher_configured=configured, kitty_without_ibus=kitty,
+                kitty_command_configured=command_configured,
+                kitty_command_needed=command_needed,
                 problems=problems, client_acceptance="NOT_TESTED")
 
 
@@ -168,7 +267,7 @@ def show_dialog():
                             ["kbuildsycoca5", "--noincremental"]):
                 if shutil.which(command[0]):
                     subprocess.run(command, capture_output=True, timeout=15, check=False)
-            refresh("Настройки сохранены. Новое окно Kitty открой из меню. Для остальных приложений может потребоваться повторный вход в сеанс.")
+            refresh("Настройки сохранены. Открой новое окно Kitty обычным способом. Для остальных приложений может потребоваться повторный вход в сеанс.")
         except (OSError, RuntimeError, subprocess.TimeoutExpired) as error:
             refresh("Настройка не завершена: " + str(error))
 
@@ -195,8 +294,11 @@ def needs_setup(report):
     # Their absence alone is not evidence of a broken application connection.
     kde = "KDE" in os.environ.get("XDG_CURRENT_DESKTOP", "").upper().split(":")
     x11 = os.environ.get("XDG_SESSION_TYPE") == "x11"
-    return kde and x11 and any(not report["modules"][key] for key in
-                              ("GTK_IM_MODULE", "QT_IM_MODULE", "XMODIFIERS"))
+    return kde and x11 and (
+        any(not report["modules"][key] for key in
+            ("GTK_IM_MODULE", "QT_IM_MODULE", "XMODIFIERS"))
+        or report.get("kitty_command_needed", False)
+        and not report.get("kitty_command_configured", False))
 
 
 def main():

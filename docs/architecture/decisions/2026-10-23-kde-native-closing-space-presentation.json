@@ -1,0 +1,18 @@
+{
+  "status": "SOURCE_EXPERIMENT_PENDING_SOURCE_AND_NATIVE_PROOF",
+  "owner": "KDE native-document client-presentation adapter; existing acknowledge_owned_space_tail owner",
+  "affected_invariants": ["C05", "C07", "C08", "C09", "C10"],
+  "first_failed_transitions": [
+    "The 528f9526 trial passes first/second-word hint and Space/Tab4/4. The unchanged r18 fixed20 completes10PASS/8FAIL/2BLOCKED. Rich closed-word gestures still delegate before editing when the locally tracked closing Space differs from actual Chrome NBSP, so no pending layout-result acknowledgement can run yet.",
+    "A native manual projection can have no learning feedback for UnknownStart/private input. Requiring feedback as an edit-intent witness incorrectly excludes such results, even though pending layout_sync_text retains the authorized emitted layout surface."
+  ],
+  "decision": [
+    "With no pending result, a current native binding and unselected snapshot may acknowledge only its owned tail's final ASCII Space as NBSP, with every other owned character exact. Invoke the existing tail owner, which rechecks shared/local owner, epoch and text. Keep scope, epoch, layout and every older separator unchanged. This is a representation receipt, not a new input event, word birth or edit grant.",
+    "For a pending layout result, require its authorized emitted layout_sync_text ending in Space. Learning feedback may be absent; when present its kind must remain LayoutProjection. Compare the full actual field/caret/selection except the one emitted final slot, then use the same existing owner and unchanged final verifier. Correction feedback and missing emitted-layout material remain ineligible."
+  ],
+  "verification": "Source positive/negative controls cover owned closing-slot recognition with no word promotion; no-pending exclusivity; unrelated older Space/text, selection, epoch, focus, lease, layout, privacy, sealed/GNOME context, shared ownership and absent binding; pending layout with/without feedback; missing layout material/correction feedback rejection. Repeat the unchanged r18 actor, cold/same-field4 and broader Chrome scope. Retain failed browser-loss run separately: zero ManualToggleV3 calls, no held keys, ChromeDriver lost renderer/session before the seed.",
+  "receipts": ["chrome-941-space-presentation-smoke-r2-20261023/chrome/result.json", "chrome-941-first-second-word-r5-candidate-20261023/result.json", "chrome-941-space-presentation-smoke-20261023/chrome/driver.log"],
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false
+}

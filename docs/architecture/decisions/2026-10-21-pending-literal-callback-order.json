@@ -1,0 +1,23 @@
+{
+  "recorded_at": "2026-10-21T20:51:24.513178+00:00",
+  "status": "SOURCE_PASS_NATIVE_PARTIAL_FAIL",
+  "invariant": "C08 ordered acquisition, existing source-free owner and WordScope settlement",
+  "first_failed_transition": "PendingLiteral ingress -> local key callback completion -> Ready installation",
+  "cause": "Ready installation overtakes delayed pending Space callback; callback keeps non-authoritative classification and bypasses owned WordScope settlement",
+  "chosen": "existing bounded stamp completion barrier for the exact Ready request",
+  "new_owner": false,
+  "delivery_routes_changed": false,
+  "runtime_changed": true,
+  "evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/pending-literal-queued-v34-red.log",
+  "guard_alignment": {
+    "recorded_at": "2026-10-21T20:56:54.640223+00:00",
+    "reason": "Ready installation now follows matching literal callback completion; final application semantics and safety requirements remain enforced",
+    "early_ready_attempt": "Strengthen intermediate expectation: owner stays absent before the pending callback completes; retain final exact tail, live token, UnknownStart, and Tab commit assertions",
+    "bare_native_space": "Both callback schedules now install SourceFree after unowned native Space. Assert cleared unowned tail plus live UnknownStart token, preserve native Space delivery and next owned boundary promotion assertions. No typed preedit is discarded and no old word gains authority.",
+    "not_allowed": "Do not remove safety/effect assertions or convert client FAIL into PASS."
+  },
+  "last_verified_at": "2026-10-21T21:22:21.234437+00:00",
+  "source_result": "468/468 context-admission PASS; 8/8 targeted PASS; causal RED preserved",
+  "installed_engine_sha256": "1ab291b15d9eab9d4175b89a868597c6a8526a2d66bdfc7adf8b6094d24749d4",
+  "native_result": "Chrome omnibox5PASS/2FAIL; Firefox21/28PASS; Chrome21/28PASS; terminal hint/Tab and ten flips PASS; visual FAIL"
+}

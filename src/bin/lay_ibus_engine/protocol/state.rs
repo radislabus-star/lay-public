@@ -38,14 +38,33 @@ pub(crate) struct ShiftGestureHandoff {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct ExactReplayBoundaryHold {
+    pub(crate) token: crate::context_admission::AdmissionToken,
+    pub(crate) focus_serial: u64,
+    pub(crate) layout_generation: u64,
+    pub(crate) tail_epoch: u64,
+    pub(crate) observation_revision: u64,
+    /// The existing final key pair was dispatched, never a client result ACK.
+    pub(crate) dispatched: bool,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExactManualToggleSuppression {
     /// Inert admitted source. It never becomes live again after Reset.
     pub(crate) source_token: Option<Box<crate::context_admission::AdmissionToken>>,
+    /// Origin of that same validated source, never a replacement delivery ACK.
+    pub(crate) source_provenance: Option<crate::context_admission::ExactManualSourceProvenance>,
     pub(crate) path: String,
     pub(crate) epoch: u64,
     pub(crate) expires_at: Instant,
     pub(crate) owner_lease_identity: u64,
+    /// An explicit Ready may rebind delivery without changing the armed owner.
+    pub(crate) delivery_lease_identity: Option<u64>,
     pub(crate) target_layout_is_ru: bool,
+    /// Delivery progress survives lexical revocation; it never proves a word.
+    pub(crate) native_press_count: usize,
+    /// One planned Space; source admission still needs the actual whole word.
+    pub(crate) held_boundary: Option<Box<ExactReplayBoundaryHold>>,
     pub(crate) original_tail: String,
     pub(crate) original_suffix: String,
     pub(crate) unchanged_prefix: String,
@@ -85,6 +104,7 @@ pub(crate) struct SharedState {
     pub(crate) pending_auto_undo_retry: Option<PendingImeAutoUndoRetry>,
     pub(crate) shift_gesture_handoff: Option<ShiftGestureHandoff>,
     pub(crate) next_engine_id: u32,
+    pub(crate) hint_view: Option<crate::hint_view::HintViewBus>,
 }
 
 pub(crate) type Shared = Arc<Mutex<SharedState>>;

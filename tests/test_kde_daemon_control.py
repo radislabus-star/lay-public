@@ -22,6 +22,16 @@ def load_tray():
 
 
 class DaemonControllerTests(unittest.TestCase):
+    def test_status_uses_the_same_runtime_controller_as_menu_commands(self):
+        tray = load_tray()
+        for code in (0, 3):
+            with self.subTest(code=code), patch.object(tray, "run_cmd") as run:
+                run.return_value = subprocess.CompletedProcess([], code, "", "")
+                self.assertEqual(tray.daemon_active(), code == 0)
+                run.assert_called_once_with([
+                    str(Path.home() / ".local/bin/lay-runtime-control"), "daemon-is-active",
+                ])
+
     def test_daemon_commands_have_a_bounded_wait(self):
         tray = load_tray()
         for operation in ("start", "stop", "restart"):
@@ -57,6 +67,10 @@ import json, os, sys
 from pathlib import Path
 with Path(os.environ['COMMAND_LOG']).open('a') as stream:
     stream.write(json.dumps([Path(sys.argv[0]).name, *sys.argv[1:]]) + '\\n')
+if Path(sys.argv[0]).name == 'systemctl':
+    expected = 'unix:path=' + os.environ['XDG_RUNTIME_DIR'] + '/bus'
+    if os.environ.get('DBUS_SESSION_BUS_ADDRESS') != expected:
+        raise SystemExit(88)
 if sys.argv[1:] == ['--user', 'show-environment']:
     raise SystemExit(0)
 raise SystemExit(int(os.environ['ACTION_EXIT']))
@@ -86,6 +100,16 @@ raise SystemExit(int(os.environ['ACTION_EXIT']))
         result, commands = self.dispatch("daemon-stop", exit_code=7)
         self.assertEqual(result.returncode, 7)
         self.assertEqual(commands[-1], ["systemctl", "--user", "stop", "lay-daemon.service"])
+
+    def test_status_propagates_active_and_inactive_without_touching_ime(self):
+        for code in (0, 3):
+            with self.subTest(code=code):
+                result, commands = self.dispatch("daemon-is-active", exit_code=code)
+                self.assertEqual(result.returncode, code, result.stderr)
+                self.assertEqual(commands, [
+                    ["systemctl", "--user", "show-environment"],
+                    ["systemctl", "--user", "is-active", "--quiet", "lay-daemon.service"],
+                ])
 
 
 @unittest.skipUnless(os.environ.get("DISPLAY") or os.environ.get("QT_QPA_PLATFORM") in ("offscreen", "minimal"),

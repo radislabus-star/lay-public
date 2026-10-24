@@ -1,0 +1,26 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-20",
+  "status": "SOURCE_SHORT_PASS_NATIVE_PENDING",
+  "decision": "Extend the existing canonical KWin terminal qualification from Kitty to Konsole. A current exact field receipt, authenticated KWin observation and matching application/class identify native terminal key delivery even if the toolkit advertises SurroundingText without supplying it. Preserve explicit exact-refresh contracts.",
+  "reason": "Stock Konsole advertises caps41, supplies no text snapshot and paints the entire owned preedit with its inverse cursor. Typed letters must use the existing native terminal path to remain ordinary document text.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "konsole-fast-v4: 26 exact manifest-discovered regressions executed, 26 passed, 0 failed in 0.496244297 s execution (12.811072 s discovery/compilation separate). Includes first-letter/output, exact Konsole identity, current receipt, Kitty, activation, late SurroundingText and late exact-contract controls. Harness2 base1 review 7/10 found a real late-capability mode override; konsole-fast-v3-red reproduces it at 25/26. One added condition retains native mode only while uses_native_terminal_input remains true; v4 closes that source failure and preserves the explicit exact-contract fallback. Final engine/source/graph pins are recorded separately in konsole-final-build-v1/result.json. All receipts under /home/e/projects/lay-development-runner/kde-install-control-20261020/. No native presentation verdict follows.",
+  "not_tested": "New Konsole native presentation is for user verification. No full browser matrix.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "consequences": "Reuses one existing terminal qualification and executor, not a Konsole edit bypass. Terminal identity supplies no surrounding snapshot, KnownStart, deletion plan or acknowledgement. Existing reducer, live owner, observation, edit verifier, sensitive/selection guards and atomic route remain authoritative. No automatic commit of an unaccepted hint. Existing Kitty caps9 behavior remains identical."
+}

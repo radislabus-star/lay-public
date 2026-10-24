@@ -1,0 +1,29 @@
+{
+  "status": "INSTALLED_SOURCE31_PASS_NATIVE_FIXED20_RUNNING",
+  "owner": "KDE native-document observation adapter; existing result verifier and context reducer retain authority",
+  "affected_invariants": [
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "first_failed_transition": "Chrome can report the exact selection created by a successful native edit before CommitText becomes visible. native_observation_failed(native_selection_present) discards the current native binding and revokes word state. When the actual replacement arrives, the unchanged common verifier censors the result because that binding was destroyed. R18 active-burst gesture4 demonstrates this order. The later bd2a751e fixed20 run removes selection deadlines but still records selection_present, censored native results and closed-word/source-state failures.",
+  "decision": "Treat selection_present as an in-flight observation only while an exact native result is already pending for the current token, epoch, focus, lease, layout and identical field. Reuse the existing transient-read path: remove all current document-derived edit proof and await a fresh complete unselected observation. Keep the original pending result and its existing expiry/verifier. Selection alone never confirms an edit, creates an owner, extends a result deadline or grants another mutation. All ordinary selection loss without this pending exact result still revokes.",
+  "verification": [
+    "Positive source control: intermediate selection clears snapshot/edit route, retains the current pending result, then a complete actual final snapshot settles through the unchanged verifier and admission publication.",
+    "Negative source controls: absent pending/native/exact result; changed epoch, focus, lease, layout, field, privacy, sealed handoff and GNOME never retain the native subscription through selection loss.",
+    "Retain the independent selection-acknowledgement trial. Repeat unchanged r18 fixed20 and first/second-word Chrome presentation after byte-verified KDE installation. No full Chrome acceptance inferred from a subset."
+  ],
+  "receipts": [
+    "chrome-941-mode-diagnostic-20261023-r18/chrome/row-3-native-trace.jsonl",
+    "chrome-941-selection-ack-smoke-20261023/chrome/result.json"
+  ],
+  "runtime_authority_changed": false,
+  "installed": true,
+  "published": false,
+  "installed_pid": 1355635,
+  "installed_sha256": "37333022a36ade457d877b1acb99e458ec0a37a3aa148508fb2cbe80cfa590cc",
+  "source_receipt": "/home/e/projects/lay-development-runner/run-sWsLX8/tests",
+  "build_receipt": "chrome-941-intermediate-selection-build-20261023/result.json"
+}

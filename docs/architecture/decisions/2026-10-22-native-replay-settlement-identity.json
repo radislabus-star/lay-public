@@ -1,0 +1,120 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "status": "INSTALLED_NATIVE_PARTIAL_5_PASS_1_FAIL",
+  "recorded_at": "2026-10-22T04:55:30.519513+00:00",
+  "decision": "Preserve exact field identity and actual content privacy under existing complete paired live pending native replay proof; empty unknown text is never a text receipt or learning acknowledgement. An actual changed eligible whole replay surface requests a real SSI through existing WindowInteraction output. Duplicate observations request nothing. No text, edit or ACK is synthesized.",
+  "reason": "X11 settlement rejects an empty field receipt immediately; cleanup then cancels completed replay before the whole actual target observation. A causal actual-order callback test reproduces the empty identity.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owner": "WindowInteraction bridge readout and existing paired exact replay provenance; no new source owner, executor, timer or queue.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_owned_source.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "proof": "stock-replay-v62-settlement-actual-order-red/result.json; same native callback ordering includes late old deletion prefix, empty text and partial new target before final Space.",
+  "not_tested": "v64 physical native acceptance pending. v64 final Harness2 code review running. Current installed engine v61 unchanged; v63 never installed. Chrome typed prefix underline remains visual FAIL.",
+  "runtime_authority_changed": false,
+  "source_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v64-settlement-source-gate-result.json",
+  "refresh_proof": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v63-refresh-actual-receipt-red/result.json",
+  "updated_at": "2026-10-22T05:48:33.209266+00:00",
+  "fresh_read_source_proof": {
+    "real_causal_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v63-refresh-actual-receipt-red/result.json",
+    "focused_green": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v63-refresh-guarded-green-r3/result.json",
+    "cases": "2 prefixes x 8 live/refusal cases; whole target without Space requests actual SSI; duplicate cannot loop; no repeated edit or invented ACK; actual final receipt settles",
+    "oracle_corrections": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v63-test-oracle-scope.md"
+  },
+  "independent_policy_blocker": {
+    "actual_initial_v4_policy": true,
+    "actual_pending_v4_policy": false,
+    "consumer": "src/bin/lay_daemon/layout_controller/ime_bridge.rs:70-78",
+    "effect": "bound_v4_reply rejects changed retention policy before checking field identity; retaining field alone cannot solve this native flow",
+    "required_fix": "Under the same proven pending exact field only, report actual content_allows_personalization; text remains empty, no ACK or learning action; all unproved contexts retain false",
+    "review_scope": "v63 final Harness2 review 7/10 flags the same mismatch. v64 final bounded code review task 20261022T054215Z-8c4ebd23 running; no changed-byte native claim.",
+    "status": "CAUSAL_RED_THEN_FOCUSED_GREEN",
+    "red_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v64-policy-actual-lease-red-result.json",
+    "green_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v64-policy-actual-lease-green-result.json",
+    "consumer_construction_evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v64-consumer-policy-independent.json"
+  },
+  "build_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v64-build-result.json",
+  "candidate_sha256": "9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0",
+  "native_acceptance": {
+    "at": "2026-10-22T06:13:38.506100+00:00",
+    "status": "INSTALLED_NATIVE_PARTIAL_5_PASS_1_FAIL",
+    "sha256": "9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0",
+    "engine_pid": 2765777,
+    "writer_rows": [
+      {
+        "name": "prefix-hint-tab",
+        "status": "PASS",
+        "targets": []
+      },
+      {
+        "name": "second-word-hint-tab",
+        "status": "PASS",
+        "targets": []
+      },
+      {
+        "name": "active-double-shift-roundtrip",
+        "status": "PASS",
+        "targets": [
+          {
+            "expected": "ghbdtn",
+            "actual": "ghbdtn",
+            "latency_ms": 185.766
+          },
+          {
+            "expected": "привет",
+            "actual": "привет",
+            "latency_ms": 170.433
+          }
+        ]
+      },
+      {
+        "name": "closed-double-shift-roundtrip",
+        "status": "FAIL",
+        "targets": [
+          {
+            "expected": "ghbdtn ",
+            "actual": "ghbdtn ",
+            "latency_ms": 194.099
+          }
+        ]
+      },
+      {
+        "name": "ordinary-us-shift",
+        "status": "PASS",
+        "targets": []
+      },
+      {
+        "name": "space-auto-flip",
+        "status": "PASS",
+        "targets": []
+      }
+    ],
+    "writer_restoration": {
+      "a11y": true,
+      "engine": true,
+      "layout": true,
+      "focus": true,
+      "config": true,
+      "engine_bytes": true,
+      "protected_processes": true
+    },
+    "review_task": "20261022T054215Z-8c4ebd23",
+    "review_score": 9,
+    "harness_status": "ok",
+    "first_remaining_failure": "Actual final Writer surrounding snapshot lacks replayed boundary; RequireSurroundingText emitted, no final exact snapshot before cancellation. V4 identity and actual policy now preserved. No invented ACK.",
+    "runtime_authority_changed": false,
+    "controls_summary": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v64-native-controls-summary.json",
+    "chrome_visual": "FAIL typed prefix underlined; no native visual correction adopted",
+    "browser_matrix_changed": false
+  }
+}

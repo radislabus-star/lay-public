@@ -1,0 +1,38 @@
+{
+  "status": "CHROME_DEVELOPMENT_EXPERIMENT_PENDING_NATIVE_PROOF",
+  "owner": "Existing KDE native-document adapter and local AuthorizedEdit executor",
+  "affected_invariants": ["C05", "C07", "C08", "C09", "C10"],
+  "first_failed_transition": "The shared 20ms preflight/selection deadline can expire during repeated source reads. Separating the bounded phases reaches AddSelection, but the first installed candidate still fails: RegisterEvent sends three parameters, the deployed registry returns an empty reply without EventListenerRegistered, Chrome accepts AddSelection and later exposes the exact range, but the awaited notification never arrives. The same file already documents and uses the compatible two-parameter registration for TextChanged.",
+  "decision": "Use the existing 40ms observation budget for source preflight, then the unchanged 20ms selection/acknowledgement budget; total adapter bound60ms. Share one two-parameter text_event_registration wire contract between TextChanged and TextSelectionChanged. The exact unique sender/field signal match retains application scoping. Preserve every source, identity, admission, observed exact selection and final foreground check. No retries, speculative commits or delivery fallback.",
+  "alternatives": [
+    {
+      "name": "Separate bounded observation and selection phases",
+      "score_1_to_10": 9,
+      "reason": "Uses the adapter's existing phase budgets and keeps the full current-state proof. Native acceptance remains required."
+    },
+    {
+      "name": "Increase the shared native I/O budget globally",
+      "score_1_to_10": 4,
+      "reason": "Would also change activation and unrelated native I/O limits. Not selected."
+    },
+    {
+      "name": "Treat accepted AddSelection as actual selection",
+      "score_1_to_10": 1,
+      "reason": "Would remove the observed exact-range prerequisite for mutation. Rejected."
+    }
+  ],
+  "bounds": [
+    "Only the KDE native-document adapter changes native execution timing; the 20ms selection phase remains bounded including final foreground revalidation. Its bus adapter reuses the existing deployed Registry ABI for both event kinds.",
+    "The source must still match the current binding, complete original text, caret and absent selection; bus::select_exact rechecks the source and observes the actual selected range.",
+    "A failure remains an unknown partial CursorOrPreedit effect: no retry, fallback, cleanup of a successor, success report or learning.",
+    "No GNOME source/installation, desktop restart, correction/ranker change or alternate output owner.",
+    "Display version1.0.94.1 identifies the user-requested remote KDE Chrome trial, not a GitHub release."
+  ],
+  "verification": "Retain all old receipts. The first phase-only candidate b7cf5e4b was installed as1.0.94.1,26 native controls passed and baseline named failures/TD121 coverage error were unchanged; same r15 actor remains0PASS/1FAIL. Its passive wire shows RegisterEvent(sas+s) returning void without registration and AddSelection=true; later native GetSelection=[0,6], while CommitText was not sent. Add a source wire-signature regression for the selection event, retain exact-range/privacy/owner controls, then repeat the unchanged r15 actor before the full ten-field, three-mode Chrome scope. Verify installed bytes and actual process before user acceptance.",
+  "baseline_receipt": "chrome-all-fields-20261023-r12/result.json",
+  "independent_wire_analysis": "desktop-isolation-20261023/chrome-r12-evidence/wire-analysis.json",
+  "phase_only_native_receipt": "chrome-941-budget-native-pair-20261023/result.json",
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false
+}

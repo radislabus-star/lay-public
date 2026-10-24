@@ -17,7 +17,7 @@ use lay::typing_cpu::{is_allowed_visible_completion_suffix, phrase_candidate_suf
 
 use super::engine::{InputFrameIdentity, LayIbusEngine};
 use super::precognition_worker::PrecognitionWork;
-use super::text::{make_hint_ibus_text, make_ibus_text, make_preedit_ibus_text};
+use super::text::make_ibus_text;
 use super::trace;
 use lay::text_edit::{AuthorizedEdit, TextEditBackend};
 
@@ -639,7 +639,10 @@ impl LayIbusEngine {
         text: String,
         cursor_pos: u32,
     ) -> fdo::Result<()> {
-        if !emitter.supports_auxiliary_text() {
+        if crate::display::completion_presentation(self.config.active_layout_backend())
+            == crate::display::CompletionPresentation::Inline
+            || !emitter.supports_auxiliary_text()
+        {
             return self
                 .publish_preedit_payload(emitter, text, cursor_pos)
                 .await;
@@ -673,11 +676,25 @@ impl LayIbusEngine {
         if !visible && !self.composition.auxiliary_visible {
             return Ok(());
         }
+        let inline_view = self
+            .shared
+            .lock()
+            .expect("lay ime state poisoned")
+            .hint_view
+            .is_some();
+        if inline_view {
+            Box::pin(self.prepare_inline_terminal_hint(emitter, &hint)).await?;
+        }
+        if let Some(result) = Box::pin(self.publish_inline_hint(hint.clone())).await {
+            self.finish_inline_hint_publication(result)?;
+            self.composition.auxiliary_visible = visible;
+            return Ok(());
+        }
         // Keep the additional D-Bus future out of every enclosing key/lifecycle
         // future. Those paths also run on the ordinary bounded Rust test stack.
-        if let Err(error) =
-            Box::pin(emitter.update_auxiliary_text(make_hint_ibus_text(hint), visible)).await
-        {
+        let hint_payload =
+            crate::display::make_hint_ibus_text(self.config.active_layout_backend(), hint);
+        if let Err(error) = Box::pin(emitter.update_auxiliary_text(hint_payload, visible)).await {
             // The last successful display may still be on screen. Keep its
             // visibility for a later clear, but never accept an unseen result.
             self.clear_visible_precognition_candidates();
@@ -726,13 +743,13 @@ impl LayIbusEngine {
         // UpdatePreeditText owns the visible frame. Install the new payload
         // before ShowPreeditText so a client cannot expose an empty or stale
         // frame while a previous completion is being replaced.
+        let payload = crate::display::make_preedit_ibus_text(
+            self.config.active_layout_backend(),
+            text.clone(),
+            suggestion_start,
+        );
         emitter
-            .update_preedit_text(
-                make_preedit_ibus_text(text.clone(), suggestion_start),
-                cursor_pos,
-                true,
-                preedit_mode,
-            )
+            .update_preedit_text(payload, cursor_pos, true, preedit_mode)
             .await
             .map_err(|e| fdo::Error::Failed(e.to_string()))?;
         if emitter.is_legacy() {
@@ -972,6 +989,16 @@ impl LayIbusEngine {
         self.remember_selected_target(&partial);
     }
 
+    pub(crate) fn finish_inline_hint_publication(
+        &mut self,
+        result: fdo::Result<()>,
+    ) -> fdo::Result<()> {
+        if result.is_err() {
+            self.clear_visible_precognition_candidates();
+        }
+        result
+    }
+
     fn clear_visible_precognition_candidates(&mut self) {
         self.composition.preedit_suffix.clear();
         self.composition.preedit_candidates.clear();
@@ -1132,7 +1159,7 @@ impl LayIbusEngine {
     }
 
     pub(super) fn capture_observed_suffix_display_frame(&self) -> Option<InputFrameIdentity> {
-        if !self.context_observed_suffix_is_current() {
+        if !self.context_observed_suffix_readout_is_current() {
             return None;
         }
         let mut identity = self.capture_word_frame_identity()?;
@@ -1153,8 +1180,21 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<()> {
-        if self.context_word_is_known() || self.atomic.active || !self.composition.buffer.is_empty()
-        {
+        if self.atomic.active || !self.composition.buffer.is_empty() {
+            return Ok(());
+        }
+        if self.context_word_is_known() {
+            // Actual surrounding text may add pair provenance while a display
+            // result waits for release. Requeue against that current identity;
+            // retaining the old frame would discard the result at release.
+            if self.composition.preedit_display_only_pending
+                && self.exact_managed_surrounding_word_is_current()
+            {
+                let frame = self.capture_input_frame_identity();
+                return self
+                    .refresh_precognition_after_visible_input(emitter, frame)
+                    .await;
+            }
             return Ok(());
         }
         let frame = self.capture_observed_suffix_display_frame();
@@ -1660,6 +1700,7 @@ impl LayIbusEngine {
     }
 
     fn append_tail_mirror_char(&mut self, ch: char) {
+        self.committed_tail.observed_boundary_source = None;
         if self.content_is_sensitive() {
             self.close_committed_tail_field();
             return;

@@ -562,16 +562,68 @@ impl LayIbusEngine {
         Ok(true)
     }
 
+    /// A stock widget may send its first surrounding snapshot only after the
+    /// first literal key. Finish this live preedit once its exact projection
+    /// demonstrates an observation source. The projection is not a commit ACK:
+    /// the existing commit clears it and later edits still need a fresh receipt.
+    pub(super) async fn commit_observed_literal_preedit(
+        &mut self,
+        emitter: &mut EngineOutput<'_, '_>,
+    ) -> fdo::Result<bool> {
+        let scope_is_current = !self.context_admission_required
+            || self.context_word_scope.as_ref().is_some_and(|scope| {
+                self.context_token.as_ref().is_some_and(|token| {
+                    token.matches_word_scope(scope)
+                        && self
+                            .context_admission
+                            .as_ref()
+                            .is_some_and(|admission| admission.revalidate(token))
+                })
+            });
+        if !emitter.is_legacy()
+            || self.atomic.active
+            || self.context_handoff_sealed
+            || self.content_is_sensitive()
+            || self.uses_native_terminal_input()
+            || self.client_context.exact_surrounding_refresh_available
+            || !(self.client_context.surrounding_text_callback_observed
+                || self.native_document_is_current())
+            || self.composition.word_input_mode != Some(WordInputMode::ManagedCommit)
+            || !self.exact_owned_legacy_preedit_is_current()
+            || !self.composition.preedit_visible
+            || self.composition.preedit_dirty
+            || self.composition.cursor != self.composition.buffer.chars().count()
+            || !scope_is_current
+            || !self.current_external_snapshot_agrees_with_owned_tail()
+        {
+            return Ok(false);
+        }
+        // A pending prediction is display-only. Cancel it before committing
+        // the literal buffer; manual replacement/completion guards stay intact.
+        self.cancel_precognition_display_generation();
+        self.invalidate_space_autocorrect_path();
+        let result = self
+            .commit_active_composition(emitter, ActiveCompositionCommit::plain())
+            .await;
+        // A failed clear after a successful commit must not retain an owner
+        // that could resend the same letters on another surrounding callback.
+        self.retire_legacy_word_preedit_ownership_if_empty();
+        result?;
+        Ok(true)
+    }
+
     fn should_start_legacy_word_preedit(
         &self,
         emitter: &EngineOutput<'_, '_>,
         mode: WordInputMode,
         ch: char,
     ) -> bool {
-        // A current boundary observation establishes where a new, entirely
-        // IME-owned preedit begins even if the client advertises exact
-        // SurroundingText. It never grants deletion of client-owned text.
+        // Exact-refresh clients retain their explicit owned-preedit contract.
+        // A stock client that supplied a real boundary snapshot uses ordinary
+        // ManagedCommit instead: its typed prefix must remain document text.
+        // Each commit still needs a newer client receipt before any edit.
         let observed_preedit_boundary = self.client_context.surrounding_text_supported
+            && self.client_context.exact_surrounding_refresh_available
             && self
                 .client_context
                 .surrounding_text_snapshot
@@ -595,20 +647,21 @@ impl LayIbusEngine {
                                 .is_some_and(crate::preedit::is_observed_word_boundary))
                 });
         // Stock IBus clients may advertise SurroundingText even when their
-        // widget never supplies it. After authenticated Ready, only newly
-        // consumed letters may enter the existing literal preedit. This does
-        // not establish a boundary or authorize editing client-owned text.
-        let ready_stock_without_snapshot = self.config.nanda_precognition
+        // widget never supplies it. Newly consumed letters may enter the same
+        // literal preedit while admission is pending. Ready preserves it only
+        // with the matching acquisition receipt; this grants no client edit.
+        let stock_without_snapshot = self.config.nanda_precognition
             && !self.uses_native_terminal_input()
-            && self.live_context_token().is_some()
             && !self.client_context.exact_surrounding_refresh_available
+            && !self.client_context.surrounding_text_callback_observed
+            && self.client_context.native_document_binding.is_none()
             && self.client_context.surrounding_text_snapshot.is_none();
         emitter.is_legacy()
             && mode == WordInputMode::ManagedCommit
             && self.client_context.preedit_text_supported
             && (!self.client_context.surrounding_text_supported
                 || observed_preedit_boundary
-                || ready_stock_without_snapshot)
+                || stock_without_snapshot)
             && self.content_allows_text_assistance()
             && ch.is_alphabetic()
             && self

@@ -1,0 +1,71 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "SOURCE_GREEN_NATIVE_FAIL",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "first_failed_transition": "Tab commits the accepted active composition and ASCII Space. The client reports the exact completed word with final NBSP. Only unchanged UserInput currently captures the full-field expected receipt; VerifiedEdit completion loses it. ManualToggleV3 delegates, then VisibleTailV4 refuses passive:unknown-context because the owned and observed tails differ.",
+  "native_evidence": "/home/e/projects/lay-development-runner/kde-install-control-20261020/firefox-iframe-delegation-v15/summary.json",
+  "causal_red": "/home/e/projects/lay-development-runner/kde-install-control-20261020/completion-space-source-v16-red/result.json: one real key-path Tab test fails with owned abcdef ASCII Space versus observed abcdef NBSP; zero-test precursor is not proof.",
+  "alternatives": [
+    {
+      "score": 9,
+      "selected": true,
+      "option": "Reuse the existing exact owned-preedit Space receipt for an already AuthorizedEdit whose backend, from-text and to-text match the current composition and outgoing commit."
+    },
+    {
+      "score": 4,
+      "selected": false,
+      "option": "Special-case Tab or Firefox when reading the delegated tail.",
+      "reason_not_selected": "Splits the shared receipt owner and leaves other completion consumers inconsistent."
+    },
+    {
+      "score": 1,
+      "selected": false,
+      "option": "Treat all whitespace as equivalent or bypass unknown-context.",
+      "reason_not_selected": "Would weaken exact text, old-prefix, selection and current-owner evidence."
+    }
+  ],
+  "decision": "Capture the existing full-field preedit-start expectation before committing an already authorized single-word completion plus one Space. Require Ime backend, exact action from-text equal to the owned preedit and exact to-text equal to the outgoing payload. Reuse the existing final-ASCII-Space-to-NBSP acknowledgement, with all field, cursor, old prefix, epoch, owner and expiry checks retained. Unchanged UserInput behavior and output transport remain the same. No generic normalization, new mutation owner or learning signal is introduced.",
+  "verification": "257/257 affected source checks PASS, but actual Firefox iframe completion-to-DoubleShift FAIL on installed aecf29d3. The source fixture supplied an initial surrounding snapshot absent from the real client.",
+  "not_tested": "Full browser matrix, GNOME and universal presentation not rerun. Native screenshot evidence: Chrome prefix underline FAIL; Firefox iframe prefix hidden FAIL; Kitty hint not visible at capture despite functional Tab PASS. Konsole bounded black-on-white suffix visual PASS.",
+  "source_verification": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/completion-space-source-v16d-green/result.json",
+    "passed": 257,
+    "executed": 257,
+    "isolated": true,
+    "causal_red_executed": 1,
+    "causal_red_failed": 1,
+    "test_artifact_sha256": "3595f699e03b7634805807e9ca1d342ea1590d27ea3f4571b3b6c9a2fddc73d3",
+    "scope": "Affected source identities only. Native completion/Double Shift and presentation acceptance remain pending."
+  },
+  "review": {
+    "task_id": "20261021T165016Z-bbdbb45b",
+    "status": "DEGRADED_STATIC_RESULT_INDEPENDENTLY_AUDITED",
+    "calls": 8,
+    "failed_calls": 1,
+    "failed_stage": "dom1 240s timeout",
+    "fallbacks": 0,
+    "selected_score": 9,
+    "scope": "Old v16 only; no new stock-client delta or native acceptance.",
+    "acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/completion-space-review-v16/independent-acceptance.json"
+  },
+  "native_verification": {
+    "engine_sha256": "aecf29d3d1738f95647ea3aad5c4395cf3900a26cce9278efeafbed70c30b165",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/completion-space-browser-native-v16/summary.json",
+    "firefox_iframe": "FAIL",
+    "chrome_text": "PASS",
+    "first_observed_difference": "firefox-iframe-completion-trace-v17: client capabilities 41, no exact refresh, no precomposition surrounding snapshot; first callback after Tab. Therefore this full-field start-witness extension does not qualify in the failing client.",
+    "short_native": "completion-space-short-native-v16: GTK/Qt25/25; terminal20/20 individual DoubleShift transitions; ordinary Shift8/8; RU punctuation2FAIL retained. Functional hint/Tab does not prove appearance."
+  }
+}

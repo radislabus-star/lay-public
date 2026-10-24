@@ -1,0 +1,146 @@
+{
+  "at": "2026-10-22T06:26:31.131743+00:00",
+  "status": "REJECTED_NATIVE_KEY_ORDERING",
+  "owner": "existing WindowInteraction callback settlement and EngineOutput; exact replay plan/reducer and daemon unchanged",
+  "problem": "Last native forwarded key has no deterministic post-key SSI; replay looks complete but exact lease remains unacknowledged.",
+  "baseline": {
+    "source_pass": 465,
+    "native_writer_pass": 5,
+    "native_writer_fail": 1,
+    "engine_sha256": "9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0"
+  },
+  "options": [
+    {
+      "design": "Repeat RequireSurroundingText or increase deadline",
+      "score": 1,
+      "reason": "Installed libibus only sets a flag; no fresh client read is induced."
+    },
+    {
+      "design": "Consume final planned replay printable key as one literal CommitText under existing complete paired provenance",
+      "score": 8,
+      "reason": "Smallest causal after-edit readback using actual toolkit callback; explicit delivery-contract change, must prove single insertion and no receipt on dispatch."
+    },
+    {
+      "design": "Generic typed actual AT-SPI field-source adapter",
+      "score": 5,
+      "reason": "Viable broader source integration but needs new provenance/focus/cross-bus causality proof; cannot invent a surrounding callback."
+    }
+  ],
+  "consequence_check": {
+    "candidate_lattice_rank": "No lexical candidate generation/ranking or layout conversion changes. Final literal is already fixed by authorized replay. No word/client exceptions.",
+    "false_authority": "Commit dispatch does not finish quarantine, ACK, learning or lease. Actual matching SSI remains mandatory. Permission limited to existing full completed provenance; delivery-only/reset-unproven may never gain commit permission.",
+    "latency": "One normal signal instead of native fallthrough for final key; no sleep, new timer, polling, retry or extended80ms consumer deadline. Client latency unproved until native measurement.",
+    "CPU_RSS_allocation": "One <=4byte Unicode literal allocation per exact manual replay; no per-character polling/background work or cache.",
+    "cache_identity_invalidation": "Reuse exact source/path/ownerlease/epoch/layout/pair and existing expiry/provenance. No cache/source added. Negative invalidations must suppress new commit permission.",
+    "packages_reload": "No model/package/config changes or package-derived literal. Reloads cannot create this input authority; normal source revocation remains required.",
+    "learning": "No lexical correction or learning on the final key; private conversion policy unchanged.",
+    "concurrency": "Complete same-callback reducer settlement first, then validate full provenance and emit its last already-planned literal. No parallel callback settlement. Observe actual GTK sequencing natively. Commit failure never supplies ACK or retries; release marked consumed before await.",
+    "failure_rollback": "No ACK on I/O error/timeout; existing cancellation remains. Remove only the 22 added WindowInteraction lines to return to v64; retain the provenance/policy fix. No enum or lower-dispatcher change exists.",
+    "consumer_compatibility": "ManualToggleV3/V4 and exact lease unchanged. IBus literal commit naturally requests actual surrounding. Existing terminal executor and Kitty route must remain untouched. Explicit hybrid final-key delivery needs canon assessment, not one-gesture rhetoric.",
+    "maintenance_removal": "One bounded final-key representation in the current WindowInteraction owner, using existing EngineOutput; no second editor, source, enum or retained legacy handler."
+  },
+  "proof_plan": {
+    "causal_red": "At last planned replay key, require exactly one literal commit and handled press/release; current all-native code must fail. Keep pending no-ACK assertions.",
+    "source": "Canonical affected set466/466 PASS, including actual callback positive/error path and10 real pre-final invalidations; existing post-completion refusal matrix and strict no-edit earlier-key helper retained. Changed final-Space fixture assertions require exactly one CommitText on press and none on release.",
+    "native": "Same6 Writer rows plus short ordinary-launcher Kitty/Chrome controls, real final SSI and inverse required, restore owned windows/focus/layout/protectedprocesses."
+  },
+  "runtime_authority_changed": false,
+  "production_change": "22_LINES_INSTALLED_REMOTE_V65_NO_NATIVE_FIX",
+  "review_task": "20261022T090301Z-6e694fc2",
+  "review_result": {
+    "task": "20261022T090301Z-6e694fc2",
+    "status": "OK_ACCEPTED_SOURCE_ONLY",
+    "report": "/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T090301Z-6e694fc2/report.json",
+    "score": 9,
+    "calls": 8,
+    "failures": 0,
+    "fallbacks": [],
+    "independent_acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-replay-v65-final-review/independent-acceptance.json"
+  },
+  "causal_red": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v65-causal-red/result.json",
+    "expected_failure": "final planned literal press index7 state0: handled false versus true",
+    "discovery_s": 13.260242904070765,
+    "execution_s": 0.04456799104809761
+  },
+  "chosen_route": "Existing WindowInteraction after ordered key settlement; consume only last literal of the already validated complete paired replay, only with completed_exact_replay_boundary_provenance. No enum/dispatcher/source/lease changes.",
+  "canon_assessment": {
+    "C03": "No new owner or client observation; existing paired lease and reducer remain authoritative.",
+    "C04": "No gesture recognition or second toggle added.",
+    "C05": "One validated native key plan remains. Existing WindowInteraction observes its settled final key and represents only that key through existing EngineOutput, consuming native fallthrough and matching release once. No second EditAction, replacement selection, retries or fallback; explicit final-key delivery change.",
+    "C08": "Current source, token, active path, owner lease, expiry, layout, no-selection and paired local/shared scope required before new final-key disposition. Completion dispatch never supplies a client receipt."
+  },
+  "rejected_source_experiment": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v65-causal-green3/result.json",
+    "result": "Two source tests FAIL; no runtime installation. The boundary token does not exist inside the lower key dispatcher before callback settlement.",
+    "negative_fixture_correction": "A missing cached context_token is restored by genuine callback settlement and is not revocation. Keep existing post-callback no-token refusal; use actual missing adapter in pre-callback negative matrix."
+  },
+  "updated_at": "2026-10-22T10:06:07.869874+00:00",
+  "source_gate": {
+    "status": "PASS",
+    "passed": 466,
+    "failed": 0,
+    "architecture": "PASS",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v65-settlement-source-gate-r4/result.json",
+    "wall_s": 159.426,
+    "ended": "2026-10-22T09:02:02.018112+00:00",
+    "scope": "source-only; exact source closure and canonical affected set"
+  },
+  "build": {
+    "status": "PASS",
+    "candidate": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v65-build/lay-ibus-engine",
+    "engine_sha256": "092198d7d7705e572ba7b259b35d57888e24ed2caabecba2a870e8070b884528",
+    "architecture": "PASS",
+    "wall_s": 82.915,
+    "ended": "2026-10-22T09:04:04.528416+00:00"
+  },
+  "last_evidence_at": "2026-10-22T09:38:13.025113+00:00",
+  "native_result": {
+    "writer": {
+      "PASS": 5,
+      "FAIL": 1,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/libreoffice-no-capitalization-v65/result.json"
+    },
+    "controls": {
+      "PASS": 3,
+      "FAIL": 1,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v65-native-controls/summary.json"
+    },
+    "engine_pid": 3353802,
+    "engine_sha256": "092198d7d7705e572ba7b259b35d57888e24ed2caabecba2a870e8070b884528",
+    "verdict": "Final literal CommitText is delivered once, but actual SSI remains ghbdtn caret6 without final Space. Dispatch did not supply ACK; inverse still refused. Firefox short Space roundtrip also FAIL, no paired v64 comparison yet.",
+    "additional_failure": "Owned read-only GTK probe: ghbdt n instead of ghbdtn Space. Final literal commit overtakes pending native letter; reject hybrid final-key proposal."
+  },
+  "next_probe": "Completed: actual Writer getter remains sentence-limited; do not retry request or final literal commit. Review bounded actual full-field source and cross-bus field identity before implementation.",
+  "production_status": "REMOVED_22_LINES_RESTORED_EXACT_V64",
+  "current_runtime": {
+    "engine_pid": 3402648,
+    "engine_sha256": "9c789fe107c660a778dea1324f6f9a4ac100c63ad0e68ab99c7cb51ce7ee6fe0",
+    "restored_at": "2026-10-22T09:38:15.076429+00:00",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-replay-v65-rollback-native-ordering/result.json",
+    "protected_processes_unchanged": 9,
+    "config_unchanged": true
+  },
+  "writer_source_root": {
+    "native_first_toggle_ms": 145.359,
+    "native_inverse": "FAIL",
+    "getter_calls": 98,
+    "getter_final_text": "ghbdtn",
+    "getter_final_caret": 6,
+    "actual_document_text": "ghbdtn ",
+    "actual_document_caret": 7,
+    "source_mechanism": "SwEditWin uses GoStartSentence/GoEndSentence and VCL clamps independent cursor to surrounding string length. GTK passes that source unchanged.",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/libreoffice-no-capitalization-v67-v64-gtk-trace/result.json",
+    "authority_changed": false
+  },
+  "harness2_latest": {
+    "prior_id": "20261022T094446Z-6a30e4b1",
+    "prior_status": "base-failed",
+    "prior_timeout_s": 240.115,
+    "current_id": "20261022T100101Z-fca5bf95",
+    "current_status": "RUNNING",
+    "per_run_timeout_s": 600,
+    "input_bytes": 17043,
+    "shared_config_changed": false
+  }
+}

@@ -1,0 +1,165 @@
+{
+  "status": "NATIVE_MANUAL_FAILURES_REMOVED_FUNCTIONAL_REMAIN",
+  "native_short": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-smoke-20261024/continuity-summary.json",
+    "counts": {
+      "PASS": 14,
+      "FAIL": 4,
+      "BLOCKED": 2,
+      "NOT_TESTED": 0
+    },
+    "elapsed_seconds": 48.205,
+    "actual_forward_rebinds": 4,
+    "install_refusals": 0,
+    "evidence": "Three roundtrip rows with a real changed receipt pass. The guarded event requires same physical window/AT-SPI identity,current canonical binding and forward local lifetime;it directly crosses the previously failing strict identity guard.",
+    "limits": "Four functional failures remain(two ENRU Space,two moved boundary);this does not establish full220 acceptance."
+  },
+  "reviewed_source": {
+    "remote": "run-ah5rCj/tests",
+    "local": "/home/ubu/.cache/lay/development/run-8ddt9w31/RESULT.json",
+    "counts": "630PASS/15oldFAIL;sameTD121coverageerror;51native+3desktop PASS",
+    "review_effect": "Older same-field completion is rejected while newer binding/token/scope/epoch remain intact. Real field changes still revoke."
+  },
+  "installed_runtime": {
+    "pid": 3112354,
+    "sha256": "2100cb595447fc2c7e034ed10fc6d6f8580b34a6191a9ba9c55eeba15703126a",
+    "installed_at": "2026-10-24T02:46:18.066790+00:00",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-deployment-20261024/result.json",
+    "protected_processes_unchanged": 20,
+    "daemon_or_ibus_restarted": false
+  },
+  "green_source_v1": {
+    "remote": "run-PbBWkH/tests",
+    "local": "/home/ubu/.cache/lay/development/run-kpj37uic/RESULT.json",
+    "counts": "630 PASS / 15 old FAIL;same TD121 coverage error;51native+3desktop PASS",
+    "build": "chrome-941-field-continuity-build-20261024",
+    "candidate_sha256": "9c0086a806bc802262274432519f960859812263167415959421443ae0fe84f4",
+    "installed": false
+  },
+  "review_repair": "Before installation,changed stale same-field receipt rejection to preserve the newer installed binding/token/scope/epoch instead of treating an old completion as a real field change. Strengthened the negative semantic assertion. No separate RED was claimed for this review assertion;the original reconnect RED remains recorded. Reviewed source run-ah5rCj passed all51native+3desktop controls;v1 was never installed;reviewed2100 installed.",
+  "red_source": {
+    "remote": "/home/e/projects/lay-development-runner/run-PwVFdo/tests",
+    "local": "/home/ubu/.cache/lay/development/run-hmqr4nn9/RESULT.json",
+    "counts": "627 PASS / 16 FAIL;same old15failures plus exact new reconnect regression",
+    "first_assertion": "native_document_fresh_same_field_survives_forward_provider_reconnect fails at install_native_document,matching the captured physical-client refusal"
+  },
+  "owner": "Canonical KWin observations; KDE native-field continuity adapter; existing input/word/edit owners unchanged",
+  "affected_invariants": [
+    "C03",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "baseline_runtime_sha256": "d9ed79c6a37a082b94f751f02c2a35c2df3400bbc962e65e2a84098c548aff77",
+  "measured_first_failure": "Selected44 row41: transient_input_gate allowed=true after UnknownObject. The NEXT admitted press3866 obtains an actual document, then install_native_document refuses field_identity_changed. All AT-SPI bus/owner/application/field comparisons match; only desktop differs. That key is delegated and the model misses a letter. The temporary-read predicate was not the failing guard.",
+  "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-transient-gate-diagnostic-selected-20261024/gate-summary.json",
+  "measured_scope": "Selected44:36PASS/6FAIL/2BLOCKED,110.789s. All45 transient-input gate evaluations allowed retention. Last full220 onad5e remains153P/25F/42B and rejected.",
+  "source_facts": "kde_focus::Client creates a new local lifetime after a failed observation. observation() encodes session-bus GUID,KWin unique owner,local lifetime and window UUID into identity. The native adapter currently treats the whole receipt identity as physical field identity.",
+  "decision": "In KDE only, distinguish a forward local-provider reconnect from a different physical window. Reuse the authenticated canonical observation; compare PID,session-bus/KWin authority and window UUID,require nondecreasing existing provider lifetime,and keep AT-SPI bus/owner/application/field exact. Only a fresh observation whose token/focus/lease/layout/tail checks already pass may rebind. Keep strict receipt identity for notification ownership; use one explicit continuity helper at physical-field comparisons. No new owner,cache,generation,retry,deadline,text route or GNOME change.",
+  "implemented_type_contract": "NativeFieldIdentity equality denotes the physical field and stays symmetric/transitive. Explicit continues_from adds forward receipt ordering at fresh installation/source preflight. same_receipt_as preserves exact receipt ownership for subscriptions. Existing final verifiers compare the physical native-field value under their unchanged token,current-document and exact-snapshot guards;no common verifier source was edited.",
+  "implementation_files": [
+    "src/bin/lay_ibus_engine/kde/desktop/window_identity.rs",
+    "src/bin/lay_ibus_engine/kde/desktop.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs"
+  ],
+  "safety": "UnknownStart and key lineage never upgrade. Unavailable reads still clear document/edit/display proof. Older lifetimes and different physical windows/processes/buses/owners/fields reject;canonical lease and fresh snapshot guards remain. The KWin provider's strict identity,nonce validation and existing anti-replay tests are untouched.",
+  "hypothesis_boundary": "The captured trace does not print the two raw desktop identities. Local-lifetime-only change is the source-grounded hypothesis;the continuation predicate accepts ONLY that case. Actual native transport-recovery metadata plus correct surfaces is required before claiming the failure fixed.",
+  "alternatives": [
+    {
+      "option": "Add a typed physical-window field to the canonical KDE provider",
+      "score": 9,
+      "selected": false,
+      "reason": "Cleaner shared contract but changes the provider outside the user's KDE-folder scope;defer."
+    },
+    {
+      "option": "Decode the canonical receipt in the KDE adapter and use explicit forward field continuity",
+      "score": 8,
+      "selected": true,
+      "reason": "Minimal within authorized KDE files;unknown changed formats fail closed,strict receipt checks remain."
+    },
+    {
+      "option": "Ignore desktop identity or remove the field guard",
+      "score": 1,
+      "selected": false,
+      "reason": "Would admit real window changes and violate ownership."
+    }
+  ],
+  "required_proof": [
+    "RED fresh same-field reconnect must fail at the actual install identity guard",
+    "Production key router records the next ordinary key after a fresh accepted reconnect",
+    "Reject older lifetime,other window/compositor/session/PID/AT-SPI identity and all existing lease/privacy/selection controls",
+    "Review every KDE physical-field equality;notification receipt ownership remains strict",
+    "Identified private1.0.94.1 bytes;unchanged frozen native short/full protocols;retain every regression and blocked row"
+  ],
+  "runtime_authority_changed": false,
+  "native_acceptance": "Partial:manual gesture failures removed in frozen full220;functional9FAIL and separate upper omnibox remain;no full/user acceptance.",
+  "publication": "Not authorized;private KDE Chrome only",
+  "native_full": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-full-20261024/chrome/result.json",
+    "counts": {
+      "PASS": 172,
+      "FAIL": 9,
+      "BLOCKED": 39,
+      "NOT_TESTED": 0
+    },
+    "elapsed_seconds": 432.24664759635925,
+    "manual_failures": 0,
+    "remaining_failures": "Three ENRU Space;six moved-boundary",
+    "regressions_from_ad5e": "Two former PASS became FAIL:normal/search/space-en-ru,normal/iframe-rich/space-en-ru;one PASS became BLOCKED. Retain them.",
+    "manual_success_only_ms": {
+      "n": 473,
+      "median": 49.62286353111267,
+      "p95": 64.09735467750579,
+      "max": 94.2878860514611
+    },
+    "same_runtime_and_config_restored": true
+  },
+  "native_two_word": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-two-word-20261024/chrome/result.json",
+    "counts": {
+      "PASS": 1,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT_TESTED": 0
+    },
+    "surfaces": [
+      "проверка привет",
+      "проверка ghbdtn",
+      "проверка привет"
+    ],
+    "scope": "One diagnostic rich active row;does not cover upper omnibox or add a full-matrix PASS."
+  },
+  "current_restored_runtime": {
+    "status": "REJECTED_TRIAL_ROLLED_BACK_TO_RETAINED_NATIVE_TESTED_ARTIFACT",
+    "tested_rust_sources": 801,
+    "previous_native_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-full-20261024/result.json",
+    "source_acceptance": "/home/e/projects/lay-development-runner/run-ah5rCj/tests",
+    "source_gate": "UNCHANGED_BASELINE_FAILURES",
+    "native_document_tests_passed": 51,
+    "new_failures": [],
+    "review": "DIRECT_BOUNDED_CHANGE_REVIEW_NO_HARNESS",
+    "engine_pid": 3349193,
+    "engine_sha256": "2100cb595447fc2c7e034ed10fc6d6f8580b34a6191a9ba9c55eeba15703126a",
+    "activation_entrypoint": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "installed_sha256": "2100cb595447fc2c7e034ed10fc6d6f8580b34a6191a9ba9c55eeba15703126a",
+    "display_version": "lay-ibus-engine 1.0.94.1",
+    "tray_pid": 336128,
+    "tray_sha256": "3d10b77020ff8024882ca9bd92c6dce7bc035e8bd1185ca00a1750dcea98eaa3",
+    "config_unchanged": true,
+    "protected_processes_unchanged": 20,
+    "ibus_not_restarted": true,
+    "daemon_not_restarted": true,
+    "source_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-build-20261024/result.json",
+    "time": "2026-10-24T03:43:33.583365+00:00"
+  },
+  "post_rollback_two_word": {
+    "PASS": 1,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "NOT_TESTED": 0
+  },
+  "later_trial": "The separate key-time Space preparation trial8a66 was rejected169/10/41 and rolled back. This transport-continuity mechanism is retained unchanged,with its172/9/39 full proof."
+}

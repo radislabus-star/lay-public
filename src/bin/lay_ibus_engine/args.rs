@@ -1,9 +1,12 @@
 use clap::Parser;
 
+// Local development revision; this labels the IME, not a published release.
+pub(crate) const DISPLAY_VERSION: &str = concat!(env!("CARGO_PKG_VERSION"), ".1");
+
 #[derive(Parser, Debug)]
 #[command(
     name = "lay-ibus-engine",
-    version,
+    version = DISPLAY_VERSION,
     about = "Rust IBus text-edit bridge for lay"
 )]
 pub(crate) struct Args {

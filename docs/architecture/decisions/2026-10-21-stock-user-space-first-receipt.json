@@ -1,0 +1,168 @@
+{
+  "id": "2026-10-21-stock-user-space-first-receipt",
+  "status": "BOUNDED_NATIVE_REPAIRED_OPEN_LATENCY_AND_PRESENTATION",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "baseline": "Scoped KDE engine882385ae, daemon1802bb5e unchanged. Native browser-space-burst-current-v20: Firefox iframe after ordinary Space observes no converted targets in five gestures; Tab completion passed separately. Existing no-initial-observation postcondition explicitly rejects UserInput.",
+  "first_failed_transition": "Confirmed by actual-Space causal RED and new-byte native result: the owned ordinary-word CommitText plus ASCII Space had no conditional full-field expectation; the first exact client field reported NBSP and left the delegated visible tail unconfirmed.",
+  "alternatives": [
+    {
+      "score": 9,
+      "selected": true,
+      "option": "Reuse the existing conditional whole-field acknowledgement for exact live owned UserInput word plus one Space, with the same owner, tail, cursor, mode, sensitivity, epoch and deadline gates."
+    },
+    {
+      "score": 4,
+      "selected": false,
+      "option": "Wait for a fresh surrounding observation before ordinary Space.",
+      "reason": "Stock clients need not produce a precommit observation; adds a synchronization dependency and changes input timing."
+    },
+    {
+      "score": 1,
+      "selected": false,
+      "option": "Normalize all whitespace or trust a matching suffix in an otherwise unknown field.",
+      "reason": "Would weaken unchanged-field and caret proof; rejected."
+    }
+  ],
+  "decision": "Capture the same hypothetical entire-field postcondition for an exact owned single word plus Space, whether UserInput or already AuthorizedEdit. UserInput must equal the live composition, not an arbitrary replacement. No observed empty field or KnownStart is invented. The later entire field, end caret, no selection, owner, epoch and deadline must still match before ASCII-Space/NBSP acknowledgement. Known or partial starts retain their original strict checks. Output order, ManualToggleV3/VisibleTailV4, daemon detector and execution routes remain unchanged.",
+  "consequence_analysis": {
+    "candidate_retention_ranking_false_authority": "No lexical candidate generation, ranking or projection change. UserInput equality and a single nonempty word are required; hypothetical expected text grants no edit authority before a later exact receipt. Main risk is adopting an unrelated field, bounded by whole-field and existing context-owner gates plus negative tests.",
+    "latency_cpu_rss": "No RPC, wait, retry, worker, timer or deadline change. Reuses existing one-word allocation and pending postcondition. Newly eligible ordinary commits retain one small expected-field string until existing acknowledgement or expiry.",
+    "cache_identity_invalidation_packages": "No new cache or model/package dependency. Existing owner/epoch/deadline and surrounding revision invalidation remain authoritative. Source closure and installed artifact hashes identify proof.",
+    "learning_feedback": "No correction or acceptance feedback is added. Exact ordinary Space acknowledgement remains feedback-free and cannot train lexical data.",
+    "concurrency_stale_results": "No new owner or route. Stale epoch, foreign owner, expired receipt, selection, changed prefix/word, extra boundary and moved caret remain refusals; delayed callbacks cannot become pre-dispatch evidence.",
+    "failure_rollback": "CommitText failure cannot arm the postcondition. A nonmatching receipt leaves the tail unconfirmed as before. Revert only this eligibility extension if native receipt contradicts hypothesis; retain prior Tab fix.",
+    "compatibility_maintenance": "Common managed-preedit mechanism, no Firefox/KDE or word-specific runtime condition. Terminal passthrough, atomic, sensitive and exact-refresh routes remain excluded from the new no-snapshot branch. Reuse one helper and existing verifier; no second source of truth.",
+    "second_order_risks": "A future producer passing multiword text must be rejected, not acknowledged by this helper. Existing observed-start path must not fall through when stale. Package updates cannot relax these context requirements. Appearance and rapid-gesture latency remain separate failures."
+  },
+  "verification_plan": "Causal old-source regression: real legacy letter keys and Space, stock caps41, no initial snapshot, first field receipt with NBSP, actual ManualToggleV3/VisibleTailV4. Run affected prior262 controls plus new negative identities in isolated remote test lane; then graph/architecture/release-artifact checks and scoped engine installation. Native Firefox iframe Space burst plus Tab and terminal controls on exact new bytes; report every missing/late target.",
+  "proof_receipts": [
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-v21-red/result.json",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-v21-green/result.json",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-source-build-v21/result.json",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-deployment-v21/result.json",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-browser-native-v21/summary.json",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-terminals-v21/summary.json",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-terminals-v21/restoration.json"
+  ],
+  "not_tested": "No full320 browser matrix, private/fullscreen, GNOME, updater, release gate or publication. Native source repair scope is three selected browser cases and terminal functional controls. Four rapid browser cases, Chrome prefix underline, Firefox iframe prefix overlap and current Kitty missing hint remain FAIL. No global IBus/daemon restart.",
+  "causal_red": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-v21-red/result.json",
+    "executed": 1,
+    "passed": 0,
+    "first_failure": "Exact post-Space tail remains ASCII abc Space rather than observed abc NBSP after actual Space key; no fixture setup failure.",
+    "test_sha256": "6f74586a618e2d57fa49da7b8fb709109904e1b2584d2d69c32962b679352a11"
+  },
+  "source_verification": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-v21-green/result.json",
+    "executed": 266,
+    "passed": 266,
+    "failures": [],
+    "test_sha256": "65a2ab547f79c930d00e7e5f9d23aecfa0d5e8a0bb1f18f6d570052bf76c47a1",
+    "scope": "262 previous affected controls and four new ordinary-Space identities; default-stack isolated test lane, actual letter/Space dispatch and ManualToggleV3/VisibleTailV4."
+  },
+  "native_verification": {
+    "observed_at": "2026-10-21T17:54:00.062569+00:00",
+    "installed_engine_pid": 326051,
+    "engine_sha256": "cf76bc925c96a738e2b4a9a4a37619713e0efb3d544b54d4d9b75f56337604b0",
+    "source_closure_files": 1257,
+    "source_closure_sha256": "6d488123b563c16a7972862a88a79cad1cd4257428db6592c067f567eea922cd",
+    "local_remote_bytes_modes_match": true,
+    "browser_cases": {
+      "passed": 3,
+      "failed": 4,
+      "passes": [
+        "Firefox iframe ordinary Space roundtrip and next-letter decoder",
+        "Firefox iframe Tab completion roundtrip and decoder",
+        "Chrome text Tab completion roundtrip and decoder"
+      ],
+      "rapid_targets": 20,
+      "rapid_expected_targets": 20,
+      "rapid_cases_failed": 4,
+      "late_intergesture_targets": 15,
+      "latency_ms": {
+        "samples": 20,
+        "median": 167.92289220029488,
+        "p95": 234.95437088422477,
+        "maximum": 243.07592841796577
+      }
+    },
+    "terminal_controls": {
+      "hint_tab_roundtrip_decoder_passed": 2,
+      "active_space_five_cases_passed": 4,
+      "five_case_intermediate_targets_passed": 20,
+      "ordinary_shift_controls_passed": 8,
+      "russian_punctuation_failed": 2,
+      "punctuation_lay_causality": "NOT_PROVEN",
+      "appearance": {
+        "konsole": "PASS_CAPTURE_ONLY: ordinary prefix and complete opaque suffix",
+        "kitty": "FAIL_CAPTURE: text suffix available but rect=null; no visible hint"
+      }
+    },
+    "restoration": "All native wrapper restoration checks true; daemon/tray/config and protected processes unchanged."
+  },
+  "review": {
+    "harness2_task_id": "20261021T174153Z-6dce90b1",
+    "status": "ACCEPTED_INCOMPLETE_BOUNDED_STATIC_REVIEW",
+    "score": 7,
+    "report": "/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261021T174153Z-6dce90b1/report.json",
+    "calls_ok": 8,
+    "calls_total": 8,
+    "fallbacks": [],
+    "frozen_inputs_and_12_source_excerpts_match": true,
+    "audit": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-user-space-review-v21/independent-acceptance.json",
+    "scope": "Incomplete static review: combined read truncated and acknowledgement wrapper omitted. No demonstrated code defect. Preserve these gaps; native and source acceptance are independently recorded."
+  },
+  "additional_verification": {
+    "at": "2026-10-21T18:12:18.096679+00:00",
+    "identity_audit": "/home/e/projects/lay-development-runner/kde-install-control-20261020/native-short-checks-v21-acceptance.json",
+    "gtk_qt": {
+      "functional_passed": 25,
+      "functional_executed": 25,
+      "fields": [
+        "gtk-entry",
+        "gtk-text",
+        "qt-line",
+        "qt-rich",
+        "qt-plain"
+      ],
+      "rapid_scope": "active word; separate after-Space roundtrip",
+      "visual": "Five independently inspected desktop captures: ordinary prefix and complete black-on-opaque-white suffix. Captures only, no stability claim."
+    },
+    "kitty_geometry_diagnostic": {
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/kitty-hint-geometry-trace-v22/summary.json",
+      "functional": "PASS",
+      "diagnostic_rect": [
+        133,
+        163,
+        9,
+        18
+      ],
+      "baseline_rect": null,
+      "verdict": "UNRESOLVED_ORDER_DEPENDENCE: async publication clearing geometry is a source hypothesis, not a proven repaired mechanism."
+    },
+    "browser_latency_profile": {
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-user-space-dbus-profile-v21/summary.json",
+      "paired_metadata_calls": 821,
+      "unpaired_calls": 0,
+      "kwin_loads": 83,
+      "layout_list_calls": 30,
+      "layout_list_max_ms": 79.77509498596191,
+      "native_verdict": "FAIL: all five targets observed, intergesture deadlines missed; not included twice in seven-case result",
+      "causal_scope": "Identifies one expensive RPC and repeated fresh focus observations; does not explain the entire end-to-end latency or justify removing safety checks."
+    },
+    "restoration": "Fresh identity-only audit confirms compiled source closure, current engine and both activation/installed files, unchanged config/tray script and eight protected process executables. Wrapper mode/layout restoration all true.",
+    "local_review": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/native-short-checks-v21-local-review.json",
+    "manifest": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/v21-native-short-final-manifest.json"
+  }
+}

@@ -93,6 +93,7 @@ impl WindowInteraction {
                 live,
                 TextTargetAuthority::LocalTerminalErase
                     | TextTargetAuthority::LocalSurroundingDeleteCommit
+                    | TextTargetAuthority::LocalNativeRangeCommit
             )
         {
             return Ok(ExecutionReceipt::Rejected);

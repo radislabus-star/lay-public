@@ -1,0 +1,34 @@
+{
+  "status": "INSTALLED_BOUNDED_SOURCE_AND_RESOURCE_PROOF_FULL_CHROME_FAIL",
+  "owner": "KDE native_document observer; existing C07/C08 authority unchanged",
+  "affected_invariants": [
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "first_failed_transition": "Pooled transport candidate4fa has stable11 threads/10fds but frozen native r19 first gesture refuses after repeated source_read native_deadline80ms. zbus socket_reader awaits broadcast to the8-slot TextChanged stream while the current observer awaits the engine lock/refresh. A full unpolled signal queue can therefore block unrelated method replies on the pooled connection. This is a source hypothesis until the real-peer burst regression is RED.",
+  "decision": "Continuously drain native TextChanged notifications separately from the engine refresh future, coalescing notifications into a single dirty wakeup. Every refresh retains all original current-owner and actual-source revalidation. No event payload becomes document proof. Keep bounded queues, no increased limit/deadline and no extra OS threads. End/cancel both futures together.",
+  "verification": "Real p2p Text peer, production watch_changes loop, engine-side refresh held pending,64 signals into capacity8, then fresh GetText/snapshot over the same connection within250ms. The sequential existing loop must fail before the drain fix. Then all existing native source controls and unchanged installed r19/full220/cold4 protocols, resource before/after.",
+  "source_receipt": "/home/e/projects/lay-development-runner/run-iXKM7W/tests/logs/bin-lay-ibus-engine.log",
+  "runtime_authority_changed": false,
+  "installed": true,
+  "published": false,
+  "measured_red": "Production sequential watch_changes:64 signals, queue8, refresh pending, real snapshot fails native_deadline250ms. The one new named failure is the new regression;40 earlier native controls remain PASS.",
+  "runtime_pid": 1810604,
+  "runtime_sha256": "8d99bb1bcc869c00761e95c516657d68ece1398b9235b192434d264939fcbe02",
+  "native_source_controls_passed": 41,
+  "full_native_verdict": {
+    "PASS": 143,
+    "FAIL": 36,
+    "BLOCKED": 41,
+    "NOT_TESTED": 0
+  },
+  "complete_chrome_acceptance": false,
+  "updated_at": "2026-10-23T21:15:29.197590+00:00",
+  "current_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-notification-drain-full-20261023/result.json",
+  "red_source_receipt": "/home/e/projects/lay-development-runner/run-iXKM7W/tests/logs/bin-lay-ibus-engine.log",
+  "green_source_receipt": "/home/e/projects/lay-development-runner/run-7PoXXO/tests/logs/bin-lay-ibus-engine.log",
+  "native_pair_before_after": "Same frozen r19 FAIL on4fa before drain; PASS62.056/41.497ms on8d99 after. Aggregate full220 regressed146/34/40 ->143/36/41; no complete client-improvement claim."
+}

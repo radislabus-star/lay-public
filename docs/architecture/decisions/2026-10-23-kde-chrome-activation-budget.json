@@ -1,0 +1,46 @@
+{
+  "id": "2026-10-23-kde-chrome-activation-budget",
+  "status": "USER_REQUESTED_DEVELOPMENT_TRIAL_NOT_CLIENT_ACCEPTANCE",
+  "scope": "KDE Chrome compatibility activation timing only. GNOME/native-ID/default clients retain their existing 50ms activation budget.",
+  "source_owner": "context_admission/adapter.rs retains the single request/fence/reducer/expiry worker; KDE Chrome selects only a finite deadline.",
+  "first_failed_transition": "v136 cold fullscreen iframe: marker emitted at 1792727829706076us, ingress at 1792727829767564us (61.488ms); the unchanged 50ms fence expires and correctly prevents native display admission. Actual prefix remains in legacy composition, visibly underlined.",
+  "evidence": [
+    "chrome-only-fullscreen-cold-repeat-v136-native/result.json: 2 PASS / 1 FAIL",
+    "v136 first fullscreen/normal/private/focus-cycle: 21 PASS / 0 FAIL",
+    "chrome-only-marker-wire-v136-native/result.json: 3 PASS; passive IBus marker arrival matches ingress within 100us for observed nonexpired markers; this does not reproduce the expired marker or prove its internal IBus cause.",
+    "chrome-only-fullscreen-v137-native/result.json: 2 PASS / 1 FAIL; iframe first letter stamped Passive before request creation, then discarded on Ready. No activation expiry in that run; get_started ~99.8ms remaining.",
+    "chrome-only-activation-budget-v138-r2-source/result.json: 158/158 PASS; installed SHA422e08ba7e8be8dfbfea9e7e4458ba123e4723dd252cb6efd89342a31c5d8ea8.",
+    "chrome-only-fullscreen-v138-r2-native/result.json: 3/3 PASS; chrome-only-normal-v138-r2-native/result.json: 9 PASS / 1 FAIL, iframe-input preserves пров in legacy composition without hint. No activation expiry: delayed FocusIn handlers open obsolete requests after later observed FocusOut. Final FocusIn revokes the duplicate pending request.",
+    "chrome-only-queued-focus-v139-red/result.json: EXPECTED_RED on unchanged v138 runtime source; real ordered p2p FocusIn/FocusOut/FocusIn entered before callbacks; obsolete callback incorrectly opened a request.",
+    "chrome-only-queued-lifecycle-v140-red/result.json: actual full lifecycle EXPECTED_RED 0 PASS / 3 FAIL at 2026-10-23T05:26:12.218939Z, original v139 source; successor atomic/background work is cancelled."
+  ],
+  "decision": "A fresh canonical KDE window observation, bounded by existing 20ms I/O budget, plus actual /proc PID executable chrome selects a 100ms compatibility activation deadline. All existing ordered Get/nonce/marker/request/revocation/expiry/Ready checks are reused. Missing observation, another executable or non-KDE selects the original default. No retries, extra wakeup, queue, cached proof or edit authority. Begin the existing activation request synchronously before any platform timing future is polled. Select the Chrome deadline inside that same acquisition worker; no extra worker or request owner. This preserves the exact PendingLiteral receipt for the first key during classification.",
+  "tradeoff": "KDE compatibility focus now performs one bounded canonical-window timing classification; only actual Chrome receives the longer admission budget. This is not an unconditional 100ms wait. Other KDE clients retain their deadline but additional focus-probe latency is not physically certified by this Chrome-only work. Canonical KWin classification is synchronous, bounded by the existing 20ms deadline, and executes in the existing worker; it can occupy the connection executor for that bounded period. No sleep, retry or longer unbounded classification is introduced.",
+  "supersedes": "2026-10-23-kde-chrome-observation-budget.json remains observation40ms/edit20ms; its no-admission-timeout-change statement described v136 and is superseded only for the measured Chrome timing policy by this decision.",
+  "required_proof": [
+    "Chrome scope/default refusal and GNOME no-probe source tests",
+    "Real p2p acquisition still has no token before the ordered marker with explicit deadline",
+    "Delayed platform-timing future: request exists immediately, first real key ingress is PendingLiteral, no grant before ordered marker, exact first-letter composition/tail survives Ready installation.",
+    "Existing expiry/revocation/admission and native-document privacy/geometry checks",
+    "Installed compiler artifact SHA/protected process/config preservation",
+    "Physical normal/private/fullscreen/focus-return Chrome plus a cold fullscreen repeat; preserve every prior failure",
+    "Controlled p2p queued FocusIn/FocusOut/FocusIn: obsolete handler refuses without mutating a newer request; current request still requires actual ordered marker. Missing/revoked/evicted metadata refuses; ordinary/unrelated old-path FocusOut does not replace the current focus.",
+    "Real p2p full WindowInteraction lifecycle callback, retained/revoked/evicted old metadata crossed with successor Pending/Ready/Installed: exact current request/fence/ready/token and local work/snapshot unchanged; original source must reproduce failure."
+  ],
+  "acceptance": "FOCUSED_DEVELOPMENT_SOURCE_163_NATIVE_CHROME_24_PASS_NOT_RELEASE_OR_FULL_MATRIX",
+  "queued_focus_trial": "Reuse existing bounded CallbackStampStore, not another lifecycle cache/generation. Publish focus stamps under existing reducer lock; the KDE compatibility-with-platform-timing route refuses an old FocusIn under that same lock before request creation or revocation. Refusal does not revoke a newer pending request. GNOME/default/native-ID request APIs do not select this gate. No Get/marker/admission/expiry/Ready rule is loosened.",
+  "full_lifecycle_trial": "Propagate an explicit ignored result for KDE compatibility stale/missing FocusIn metadata, before current-owner revocation and outer finish_focus_in cleanup. Preserve the existing bool/native-ID/default API. No additional owner/cache/queue/observer or change to Get/nonce/marker/expiry authority.",
+  "focused_verification": {
+    "at": "2026-10-23T05:40:52.712505+00:00",
+    "source_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-activation-budget-v140-r2-source/result.json",
+    "deployment_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-activation-budget-v140-r2-deployment/result.json",
+    "native_pass": 24,
+    "native_fail": 0,
+    "source_pass": 163,
+    "engine_sha256": "b8249005a395273c44a35ba1b3c194e6060d8d37489d7f93eefae36c2c1ccd3a",
+    "engine_pid": 2957531,
+    "visual_scope": "Ten normal field screenshots only; prior v139 anomaly retained",
+    "harness2_review_scope": "USED20261023T051104Z-f89a405c frozen v139 HOLD6/10; caller issues independently reproduced and repaired in v140; no repeated score",
+    "full_matrix_changed": false
+  }
+}

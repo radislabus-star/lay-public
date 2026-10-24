@@ -1,0 +1,317 @@
+{
+  "status": "REJECTED_NATIVE_AGGREGATE_AND_PAIR_REGRESSION_ROLLED_BACK",
+  "at": "2026-10-24T03:19:56.574201+00:00",
+  "owner": "KDE authenticated native-document installation -> existing Space prefetch worker",
+  "affected_invariants": [
+    "C03",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "first_failed_transition": "Frozen r18 row17:worker slot prepared at tail575;new t/n commits advance577;Space source_read succeeds;current Space frame is admitted but lookup uses old generation2/tail575 and returns stale. Rows87/97 also request a later epoch than the last prepared slot. This is not a worker-timeout proof.",
+  "baseline_runtime_sha256": "2100cb595447fc2c7e034ed10fc6d6f8580b34a6191a9ba9c55eeba15703126a",
+  "decision": "When KDE install_native_document accepts a current actual snapshot,prepare the existing canonical Space frame immediately using the same guard/helper as display notification recovery. Reuse schedule registration/deduplication. No extra worker,read,retry,budget,word exception,proof promotion,or edit route.",
+  "scope": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs"
+  ],
+  "alternatives": [
+    {
+      "option": "Prepare at accepted actual native snapshot installation",
+      "score": 9,
+      "selected": true
+    },
+    {
+      "option": "Increase Space wait budget",
+      "score": 2,
+      "selected": false,
+      "reason": "A completed old-identity slot remains stale regardless of wait."
+    },
+    {
+      "option": "Accept the old slot or bypass identity",
+      "score": 1,
+      "selected": false,
+      "reason": "Violates revision-bound authority."
+    }
+  ],
+  "required_proof": [
+    "RED actual production install leaves earlier-word slot stale after a later ordinary CommitText",
+    "GREEN accepted current native receipt queues canonical current frame;UnknownStart/token/scope/epoch unchanged;no text mutation",
+    "Existing privacy/selection/focus/old-receipt tests remain",
+    "Installed identified private bytes;bounded native affected controls before deciding whether full220 is warranted"
+  ],
+  "receipts": [
+    "/home/ubu/.cache/lay/development/chrome-941-review-20261024/current-nine-failure-census.json",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-full-20261024/chrome/row-17-native-trace.jsonl"
+  ],
+  "unresolved": "Six moved-boundary failures include five full verifier refusals and one stale result;do not claim this preparation change solves their independent verifier cause. Upper real omnibox geometry remains separateFAIL;common hooks unapproved.",
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false,
+  "red_source": {
+    "remote": "run-pgO3io/tests",
+    "local": "/home/ubu/.cache/lay/development/run-mvmn4j4u/RESULT.json",
+    "counts": "630PASS/16FAIL;exact new key-time production-install regression plus unchanged15oldFAIL;same TD121 missing-status error",
+    "assertion": "the key-time native receipt left Space work on the earlier word"
+  },
+  "green_source": {
+    "remote": "run-fvKmhu/tests",
+    "local": "/home/ubu/.cache/lay/development/run-xq043bxs/RESULT.json",
+    "counts": "631PASS/15oldFAIL;sameTD121missing-status error;all52native controls and3desktop controls pass",
+    "new_failures": []
+  },
+  "native_acceptance": "Rejected. Source invariant passes but aggregate and moved-boundary class regress. Restore retained2100 with its172/9/39 full proof. No full/user acceptance.",
+  "installed_trial": {
+    "status": "DEVELOPMENT_TRIAL_INSTALLED_NATIVE_NOT_TESTED",
+    "source_acceptance": "/home/e/projects/lay-development-runner/run-fvKmhu/tests",
+    "source_gate": "UNCHANGED_BASELINE_FAILURES",
+    "native_document_tests_passed": 52,
+    "new_failures": [],
+    "review": "DIRECT_BOUNDED_CHANGE_REVIEW_NO_HARNESS",
+    "engine_pid": 3285390,
+    "engine_sha256": "8a66b576988efdeb2e04710c89681e84259d2c6f9f34e06a4af73f60c9de00fc",
+    "activation_entrypoint": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "installed_sha256": "8a66b576988efdeb2e04710c89681e84259d2c6f9f34e06a4af73f60c9de00fc",
+    "display_version": "lay-ibus-engine 1.0.94.1",
+    "tray_pid": 336128,
+    "tray_sha256": "3d10b77020ff8024882ca9bd92c6dce7bc035e8bd1185ca00a1750dcea98eaa3",
+    "config_unchanged": true,
+    "protected_processes_unchanged": 20,
+    "ibus_not_restarted": true,
+    "daemon_not_restarted": true,
+    "source_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-keytime-space-build-20261024/result.json",
+    "time": "2026-10-24T03:29:12.563558+00:00"
+  },
+  "native_full": {
+    "verdict": "REJECT_NATIVE_REGRESSION",
+    "counts": {
+      "PASS": 169,
+      "FAIL": 10,
+      "BLOCKED": 41,
+      "NOT_TESTED": 0
+    },
+    "previous_counts": {
+      "PASS": 172,
+      "FAIL": 9,
+      "BLOCKED": 39,
+      "NOT_TESTED": 0
+    },
+    "classes": {
+      "consecutive-two": {
+        "PASS": 52,
+        "BLOCKED": 8
+      },
+      "moved-boundary": {
+        "FAIL": 8,
+        "BLOCKED": 2
+      },
+      "rapid-five": {
+        "PASS": 52,
+        "BLOCKED": 8
+      },
+      "roundtrip": {
+        "PASS": 51,
+        "BLOCKED": 9
+      },
+      "space-en-ru": {
+        "PASS": 6,
+        "BLOCKED": 2,
+        "FAIL": 2
+      },
+      "tab": {
+        "PASS": 8,
+        "BLOCKED": 2
+      },
+      "typo-undo": {
+        "BLOCKED": 10
+      }
+    },
+    "transitions": {
+      "PASS->PASS": 167,
+      "BLOCKED->BLOCKED": 39,
+      "FAIL->FAIL": 7,
+      "FAIL->PASS": 2,
+      "PASS->FAIL": 3,
+      "PASS->BLOCKED": 2
+    },
+    "runtime_before": {
+      "pid": 3285390,
+      "sha256": "8a66b576988efdeb2e04710c89681e84259d2c6f9f34e06a4af73f60c9de00fc"
+    },
+    "runtime_after": {
+      "pid": 3285390,
+      "sha256": "8a66b576988efdeb2e04710c89681e84259d2c6f9f34e06a4af73f60c9de00fc"
+    },
+    "config_restored": true,
+    "elapsed_s": 432.1059057712555,
+    "resources_after": {
+      "pid": 3285390,
+      "cgroup": "/user.slice/user-1000.slice/user@1000.service/app.slice/lay-chrome-ime-941-deferred-handoff-20261023.service",
+      "thread_names": {
+        "lay-ibus-engine": 1,
+        "async-io": 1,
+        "async-process": 1,
+        "zbus::Connectio": 4,
+        "lay-l3-memory-w": 1,
+        "lay-debug-log-w": 1,
+        "lay-precognitio": 1,
+        "lay-layout-swit": 1,
+        "lay-space-prefe": 1
+      },
+      "fd_count": 10,
+      "kernel": {
+        "pids.current": "12",
+        "pids.max": "512",
+        "pids.events": "max 0",
+        "pids.peak": "19",
+        "memory.events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0"
+      }
+    },
+    "failures": [
+      {
+        "case": [
+          "normal",
+          "text",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "FAIL",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 19466.899999976158, 'raw_text': 'должн ыбыть ', 'rect': {'x': 455.3235321044922, 'y': 191.64706420898438}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "search",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "PASS",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 40134.39999997616, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 191.64706420898438}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "tel",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "FAIL",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 67716.89999997616, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 259.41175842285156}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "textarea",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "FAIL",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 91872.29999995232, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 327.1764831542969}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "rich",
+          "space-en-ru",
+          "functional"
+        ],
+        "old_status": "PASS",
+        "error": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 111089, 'raw_text': 'ghbdtn\\xa0', 'rect': {'x': 455.3235321044922, 'y': 399.8970642089844}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'ghbdtn '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "rich",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "FAIL",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 114294.39999997616, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x': 455.3235321044922, 'y': 399.8970642089844}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "plain",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "FAIL",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 135393.39999997616, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 399.8970642089844}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "iframe-input",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "PASS",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 156376.19999992847, 'raw_text': 'должн ыбыть ', 'rect': {'x': 454.2941131591797, 'y': 466.6617736816406}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "iframe-rich",
+          "space-en-ru",
+          "functional"
+        ],
+        "old_status": "FAIL",
+        "error": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 175625, 'raw_text': 'ghbdtn\\xa0', 'rect': {'x': 1037.2940979003906, 'y': 466.6617736816406}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'ghbdtn '}}"
+      },
+      {
+        "case": [
+          "normal",
+          "iframe-rich",
+          "moved-boundary",
+          "functional"
+        ],
+        "old_status": "FAIL",
+        "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 178823.69999992847, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x': 1037.2940979003906, 'y': 466.6617736816406}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      }
+    ]
+  },
+  "rollback": {
+    "status": "REJECTED_TRIAL_ROLLED_BACK_TO_RETAINED_NATIVE_TESTED_ARTIFACT",
+    "tested_rust_sources": 801,
+    "previous_native_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-full-20261024/result.json",
+    "source_acceptance": "/home/e/projects/lay-development-runner/run-ah5rCj/tests",
+    "source_gate": "UNCHANGED_BASELINE_FAILURES",
+    "native_document_tests_passed": 51,
+    "new_failures": [],
+    "review": "DIRECT_BOUNDED_CHANGE_REVIEW_NO_HARNESS",
+    "engine_pid": 3349193,
+    "engine_sha256": "2100cb595447fc2c7e034ed10fc6d6f8580b34a6191a9ba9c55eeba15703126a",
+    "activation_entrypoint": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "installed_sha256": "2100cb595447fc2c7e034ed10fc6d6f8580b34a6191a9ba9c55eeba15703126a",
+    "display_version": "lay-ibus-engine 1.0.94.1",
+    "tray_pid": 336128,
+    "tray_sha256": "3d10b77020ff8024882ca9bd92c6dce7bc035e8bd1185ca00a1750dcea98eaa3",
+    "config_unchanged": true,
+    "protected_processes_unchanged": 20,
+    "ibus_not_restarted": true,
+    "daemon_not_restarted": true,
+    "source_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-field-continuity-reviewed-build-20261024/result.json",
+    "time": "2026-10-24T03:43:33.583365+00:00"
+  },
+  "source_reversion": {
+    "receipt": "/home/ubu/.cache/lay/development/chrome-941-review-20261024/keytime-source-reversion.json",
+    "all_active_rust_match_tested_2100": 801,
+    "rejected_source_saved": "/home/ubu/.cache/lay/development/chrome-941-review-20261024/rejected-keytime-source"
+  },
+  "post_rollback_native": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-keytime-rollback-two-word-20261024/chrome/result.json",
+    "counts": {
+      "PASS": 1,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT_TESTED": 0
+    },
+    "elapsed_s": 5.440912485122681,
+    "surfaces": [
+      "проверка привет",
+      "проверка ghbdtn",
+      "проверка привет"
+    ]
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Use the existing ordinary ManagedCommit input path at an observed word boundary in a stock legacy client that has actually supplied a current SurroundingText callback. Preserve owned preedit for opaque clients and the explicit exact-refresh contract.",
+  "reason": "Chrome renders its owned composition with an underline even for IBus UNDERLINE_NONE. The current entrypoint unnecessarily starts owned preedit after an actual stock-client boundary observation. The existing ManagedCommit path already records each commit's snapshot floor and requires a newer actual receipt for committed-word edit authority.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/td125_legacy_preedit_tests.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "Unadopted policy regression is RED: run-52tfg6r6/RESULT.json, 943 PASS / 1 FAIL / 944. The only failure is td160_actual_stock_boundary_types_ordinary_text_without_owned_preedit. This establishes the old branch under an actual callback; actual remote Chrome supplies no such callbacks, so it does not establish applicability. Preserve the regression patch separately, remove the unadopted policy test from the production suite, and retain the previously verified 943-test production behavior. No production input logic was changed.",
+  "not_tested": "No candidate native run: the qualifying callback is absent in the retained chrome-ime-stock-owned-v4/engine-trace.jsonl (caps41 but no surrounding observation). Do not implement or replay this proposal for the same opaque client without new causal evidence.",
+  "runtime_authority_changed": false,
+  "consequences": "Commit timing changes only for the observed stock-client branch of the existing managed input. No new executor, text owner, callback, timer, queue or client-name branch. A successful CommitText is not a widget receipt: retain managed_commit_snapshot_floor, exact_managed_surrounding_word_is_current, snapshot/selection/sensitive guards, verifier and reducer unchanged. No fabricated ManagedWordStartWitness. Explicit exact-refresh and atomic clients keep their current contracts. Missing or stale observations may suppress edits; do not weaken guards to hide such a failure. Reject the approach if native controls regress. The separate read-only view remains the only unaccepted hint display. This is a bounded step, not universal closure.",
+  "status": "REJECTED_FOR_CURRENT_FAILURE_NOT_IMPLEMENTED"
+}

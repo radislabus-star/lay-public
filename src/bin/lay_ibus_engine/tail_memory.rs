@@ -6,6 +6,9 @@ use super::protocol::{
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use std::time::{Duration, Instant};
 
+#[path = "tail_memory/held_replay_boundary.rs"]
+mod held_replay_boundary;
+
 #[cfg(test)]
 std::thread_local! {
     static ACCEPTED_COMPLETION_FEEDBACK: std::cell::RefCell<Vec<(String, String)>> =
@@ -55,6 +58,7 @@ pub(crate) enum SurroundingSnapshotMatch {
 pub(super) enum ExactReplayPress {
     Inactive,
     Native,
+    HeldBoundary,
     Rejected,
 }
 
@@ -940,13 +944,18 @@ impl LayIbusEngine {
     }
 
     pub(super) fn publish_tail_handoff(&mut self) -> bool {
+        let next_epoch = self.committed_tail.epoch.wrapping_add(1);
+        self.publish_tail_handoff_at_epoch(next_epoch) && self.settle_context_bridge_output()
+    }
+
+    fn publish_tail_handoff_at_epoch(&mut self, epoch: u64) -> bool {
         let Ok(mut state) = self.shared.lock() else {
             return false;
         };
         if !self.owns_shared_context_state(&state) {
             return false;
         }
-        self.committed_tail.epoch = self.committed_tail.epoch.wrapping_add(1);
+        self.committed_tail.epoch = epoch;
         state.handoff_tail_buffer = self.committed_tail.buffer.clone();
         state.handoff_tail_epoch = self.committed_tail.epoch;
         state.handoff_focus_receipt = self.client_context.focus_receipt.clone();
@@ -955,8 +964,7 @@ impl LayIbusEngine {
         if had_exact_epoch || had_exact_path {
             advance_suppression_revision(&mut state);
         }
-        drop(state);
-        self.settle_context_bridge_output()
+        true
     }
 
     pub(super) fn fresh_exact_manual_source_read_allowed(&self) -> bool {
@@ -1020,11 +1028,10 @@ impl LayIbusEngine {
     }
 
     pub(super) fn revoke_pending_fresh_manual_source(&mut self) {
-        if self.layout_gesture.pending_manual_refresh_at.is_some()
-            && self.committed_tail.buffer.is_empty()
-        {
-            // Cancellation spends this empty-source read admission. A daemon
-            // follow-up must not revive the same gesture as a new read.
+        if self.layout_gesture.pending_manual_refresh_at.is_some() {
+            // Cancellation spends this queued source admission, including a
+            // completed replay's nonempty tail. The daemon's same-gesture
+            // follow-up must not regain authority after the queue is cleared.
             self.revoke_context_word();
         }
     }
@@ -1109,6 +1116,12 @@ impl LayIbusEngine {
 
     pub(super) fn prepare_exact_manual_toggle_layout_handoff(&mut self) {
         let source_snapshot_is_exact = self.current_external_snapshot_agrees_with_owned_tail();
+        let observed_boundary_source_is_current =
+            self.client_context.surrounding_text_callback_observed
+                && self.context_stock_owned_manual_source_is_current();
+        let observed_boundary_source = observed_boundary_source_is_current
+            .then(|| self.committed_tail.observed_boundary_source.clone())
+            .flatten();
         let source_token = self.context_token.clone();
         let source_observation_revision = self.client_context.surrounding_observation_revision;
         if let Some(AutocorrectSuppression::ExactReplay(scope)) =
@@ -1133,7 +1146,27 @@ impl LayIbusEngine {
         state.exact_manual_toggle_handoff_path = Some(self.path.clone());
         advance_suppression_revision(&mut state);
         drop(state);
-        if source_snapshot_is_exact {
+        // This existing authenticated handoff republishes the identical tail
+        // at a new epoch. Carry only its already-current manual source; never
+        // publish an exact client snapshot or acknowledge replay delivery.
+        if observed_boundary_source_is_current {
+            if let Some(source) = self.committed_tail.observed_boundary_source.as_mut() {
+                source.tail_epoch = self.committed_tail.epoch;
+            }
+        }
+        if source_snapshot_is_exact || observed_boundary_source.is_some() {
+            use super::context_admission::ExactManualSourceProvenance;
+            let (prefix, provenance) = if source_snapshot_is_exact {
+                (
+                    self.current_full_external_prefix(),
+                    self.document_source_provenance(),
+                )
+            } else {
+                (
+                    observed_boundary_source.and_then(|source| source.observed_external_prefix),
+                    ExactManualSourceProvenance::ObservedWordAndLocalSpace,
+                )
+            };
             if let (Some(admission), Some(token)) =
                 (self.context_admission.as_ref(), source_token.as_ref())
             {
@@ -1141,9 +1174,10 @@ impl LayIbusEngine {
                     token,
                     self.committed_tail.epoch,
                     self.committed_tail.buffer.clone(),
-                    self.current_full_external_prefix(),
+                    prefix,
                     source_observation_revision,
                     expires_at,
+                    provenance,
                 );
             }
         }
@@ -1293,7 +1327,16 @@ impl LayIbusEngine {
             && state.autocorrect_suppression.as_ref()
                 == self.committed_tail.autocorrect_suppression.as_ref()
         {
-            state.autocorrect_suppression = None;
+            state.autocorrect_suppression = match state.autocorrect_suppression.clone() {
+                Some(AutocorrectSuppression::ExactReplay(mut scope))
+                    if self.exact_replay_delivery_is_current(&scope) =>
+                {
+                    scope.source_token = None;
+                    scope.observed_external_prefix = None;
+                    Some(AutocorrectSuppression::ExactReplay(scope))
+                }
+                _ => None,
+            };
             advance_suppression_revision(&mut state);
         }
         if local_suppression_is_current {
@@ -1342,10 +1385,19 @@ impl LayIbusEngine {
             return false;
         }
         let current_snapshot_is_exact = self.current_external_snapshot_agrees_with_owned_tail();
-        if !(current_snapshot_is_exact
-            || self.inherited_exact_manual_snapshot_agrees_with_owned_tail()
-            || self.context_stock_owned_manual_source_is_current())
-        {
+        use super::context_admission::ExactManualSourceProvenance;
+        let source_provenance = if current_snapshot_is_exact {
+            Some(self.document_source_provenance())
+        } else if self.inherited_exact_manual_snapshot_agrees_with_owned_tail() {
+            self.exact_manual_target_snapshot
+                .as_ref()
+                .map(|receipt| receipt.source.provenance.clone())
+        } else if self.context_stock_owned_manual_source_is_current() {
+            Some(ExactManualSourceProvenance::ObservedWordAndLocalSpace)
+        } else {
+            None
+        };
+        if source_provenance.is_none() {
             self.clear_identity_bound_exact_manual_toggle_authority();
             return false;
         }
@@ -1397,11 +1449,15 @@ impl LayIbusEngine {
             .to_string();
         let suppression = AutocorrectSuppression::ExactReplay(ExactManualToggleSuppression {
             source_token,
+            source_provenance,
             path: expected_path.to_string(),
             epoch: expected_epoch,
             expires_at: Instant::now() + IME_LAYOUT_HANDOFF_MAX_AGE,
             owner_lease_identity: self.client_context.runtime_owner_lease_identity,
+            delivery_lease_identity: None,
             target_layout_is_ru: expected_layout_is_ru,
+            native_press_count: 0,
+            held_boundary: None,
             original_tail: self.committed_tail.buffer.clone(),
             original_suffix: expected_suffix.to_string(),
             unchanged_prefix,
@@ -1679,6 +1735,65 @@ impl LayIbusEngine {
             && self.exact_replay_scope_is_current_except_expiry(scope)
     }
 
+    /// Only native delivery is preserved across Reset. This predicate does not
+    /// consult or grant lexical ownership and must not be used to admit a word.
+    pub(crate) fn exact_replay_delivery_is_current(
+        &self,
+        scope: &ExactManualToggleSuppression,
+    ) -> bool {
+        scope.path == self.path
+            && scope
+                .delivery_lease_identity
+                .unwrap_or(scope.owner_lease_identity)
+                == self.client_context.runtime_owner_lease_identity
+            && scope.target_layout_is_ru == self.layout_gesture.layout_is_ru
+            && Instant::now() <= scope.expires_at
+            && !self.content_is_sensitive()
+            && !self.atomic.active
+            && self.composition.buffer.is_empty()
+            && scope.native_press_count
+                < scope.original_suffix.chars().count() + scope.replacement.chars().count()
+    }
+
+    fn advance_exact_replay_delivery(
+        &mut self,
+        scope: &ExactManualToggleSuppression,
+        mirror: bool,
+    ) -> bool {
+        let mut next = scope.clone();
+        next.native_press_count += 1;
+        if !mirror {
+            next.source_token = None;
+            next.observed_external_prefix = None;
+        }
+        let Ok(mut shared) = self.shared.lock() else {
+            return false;
+        };
+        if shared.active_path.as_deref() != Some(self.path.as_str())
+            || scope.path != self.path
+            || scope
+                .delivery_lease_identity
+                .unwrap_or(scope.owner_lease_identity)
+                != self.client_context.runtime_owner_lease_identity
+            || shared.autocorrect_suppression.as_ref()
+                != Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
+        {
+            return false;
+        }
+        shared.autocorrect_suppression = Some(AutocorrectSuppression::ExactReplay(next.clone()));
+        advance_suppression_revision(&mut shared);
+        if mirror {
+            self.committed_tail.autocorrect_suppression =
+                Some(AutocorrectSuppression::ExactReplay(next.clone()));
+            if let Some(receipt) = self.client_context.native_replay_progress.as_mut() {
+                if receipt.scope == *scope {
+                    receipt.scope = next.clone();
+                }
+            }
+        }
+        true
+    }
+
     // Failure-only metadata: this cannot admit or preserve a replay. Call before
     // revocation, after the existing predicate has already rejected the event.
     fn trace_exact_replay_rejection(&self, scope: &ExactManualToggleSuppression, reason: &str) {
@@ -1732,10 +1847,15 @@ impl LayIbusEngine {
             self.committed_tail.autocorrect_suppression = None;
         }
         if let Ok(mut state) = self.shared.lock() {
-            if self.owns_shared_context_state(&state)
-                && state.active_path.as_deref() == Some(self.path.as_str())
+            // Retiring this exact inert marker grants no edit authority.
+            // Its word owner may already have been revoked by Reset/FocusOut;
+            // requiring that owner here would leave an orphaned input veto.
+            if state.active_path.as_deref() == Some(self.path.as_str())
                 && scope.path == self.path
-                && scope.owner_lease_identity == self.client_context.runtime_owner_lease_identity
+                && scope
+                    .delivery_lease_identity
+                    .unwrap_or(scope.owner_lease_identity)
+                    == self.client_context.runtime_owner_lease_identity
                 && state.autocorrect_suppression.as_ref()
                     == Some(&AutocorrectSuppression::ExactReplay(scope.clone()))
             {
@@ -2021,19 +2141,52 @@ impl LayIbusEngine {
         let Some(scope) = local.clone().or(shared.clone()) else {
             return ExactReplayPress::Inactive;
         };
-        if local.as_ref() != Some(&scope) || shared.as_ref() != Some(&scope) {
-            self.trace_exact_replay_rejection(&scope, "scope_pair");
+        if scope.held_boundary.is_some() {
+            // The original Space was consumed. A later key belongs to the
+            // caller; it cannot complete or revive this delayed output.
             self.revoke_exact_replay_scope(&scope);
-            return ExactReplayPress::Rejected;
+            return ExactReplayPress::Inactive;
+        }
+        if local.is_none()
+            && shared.as_ref() == Some(&scope)
+            && scope.path == self.path
+            && scope
+                .delivery_lease_identity
+                .unwrap_or(scope.owner_lease_identity)
+                == self.client_context.runtime_owner_lease_identity
+            && scope.native_press_count
+                == scope.original_suffix.chars().count() + scope.replacement.chars().count()
+        {
+            self.revoke_exact_replay_scope(&scope);
+            return ExactReplayPress::Inactive;
+        }
+        let delivery_only = local.is_none()
+            && shared.as_ref() == Some(&scope)
+            && self.context_admission_required
+            && (self.context_owner.is_none()
+                || (scope.source_token.is_none() && scope.observed_external_prefix.is_none()))
+            && self.exact_replay_delivery_is_current(&scope);
+        if local.as_ref() != Some(&scope) || shared.as_ref() != Some(&scope) {
+            if !delivery_only {
+                self.trace_exact_replay_rejection(&scope, "scope_pair");
+                self.revoke_exact_replay_scope(&scope);
+                return ExactReplayPress::Rejected;
+            }
         }
 
         let delete_chars = scope.original_suffix.chars().count();
-        let distance = self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize;
-        if self.exact_replay_scope_is_completed(&scope) {
+        let distance = if delivery_only {
+            scope.native_press_count
+        } else {
+            self.committed_tail.epoch.wrapping_sub(scope.epoch) as usize
+        };
+        if !delivery_only && self.exact_replay_scope_is_completed(&scope) {
             self.retire_completed_exact_replay(&scope);
             return ExactReplayPress::Inactive;
         }
-        if !self.exact_replay_scope_is_current(&scope) {
+        if !delivery_only
+            && (!self.exact_replay_scope_is_current(&scope) || scope.native_press_count != distance)
+        {
             self.trace_exact_replay_rejection(&scope, "scope_current");
             self.revoke_exact_replay_scope(&scope);
             return ExactReplayPress::Rejected;
@@ -2060,7 +2213,14 @@ impl LayIbusEngine {
             self.revoke_exact_replay_scope(&scope);
             return ExactReplayPress::Rejected;
         };
-        if !self.exact_replay_mirror_transition(&scope, append) {
+        if !delivery_only && append == Some(' ') && self.hold_exact_replay_boundary(&scope) {
+            return ExactReplayPress::HeldBoundary;
+        }
+        if !delivery_only && !self.exact_replay_mirror_transition(&scope, append) {
+            return ExactReplayPress::Rejected;
+        }
+        if !self.advance_exact_replay_delivery(&scope, !delivery_only) {
+            self.revoke_exact_replay_scope(&scope);
             return ExactReplayPress::Rejected;
         }
         ExactReplayPress::Native
@@ -2238,6 +2398,7 @@ impl LayIbusEngine {
         self.composition.word_input_mode = None;
         self.committed_tail.last_input_at = None;
         self.committed_tail.last_commit_at = None;
+        self.committed_tail.observed_boundary_source = None;
         self.committed_tail.recent_replace = None;
         self.layout_gesture.pending_manual_toggle = false;
         self.layout_gesture.pending_manual_refresh_at = None;

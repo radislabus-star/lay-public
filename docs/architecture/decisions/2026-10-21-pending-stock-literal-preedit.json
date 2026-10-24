@@ -1,0 +1,56 @@
+{
+  "id": "2026-10-21-pending-stock-literal-preedit",
+  "status": "SOURCE_PASS_NATIVE_PARTIAL_FAIL",
+  "invariants": [
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "first_failed_transition": "Authenticated pending literal keys in a stock client advertising but not supplying SurroundingText are committed rather than retained in local composition. Later source-free Ready clears that committed mirror; inverse manual toggle loses the prefix.",
+  "alternatives": [
+    {
+      "score": 9,
+      "selected": true,
+      "option": "Align no-snapshot literal-preedit eligibility with the existing no-SurroundingText route; preserve only under the existing exact acquisition receipt."
+    },
+    {
+      "score": 4,
+      "selected": false,
+      "option": "Delay native replacement until a new field acquisition completes.",
+      "reason": "Changes execution timing and adds coordination; not needed for local pending-literal ownership."
+    },
+    {
+      "score": 2,
+      "selected": false,
+      "option": "Increase activation timeout alone.",
+      "reason": "Does not preserve early committed letters even when the current deadline succeeds."
+    },
+    {
+      "score": 1,
+      "selected": false,
+      "option": "Reuse the revoked word owner from matching window/text.",
+      "reason": "Violates C03/C07; rejected."
+    }
+  ],
+  "decision": "Remove only live_context_token from stock literal-preedit eligibility. Newly consumed letters remain local and uncommitted. Existing receipt request, nonce, revocation, focus, sensitivity, composition equality and current-outcome checks still decide Ready preservation. No client prefix is imported; completeness stays UnknownStart. No timers, deadlines, reducers, routes or verifier gates change.",
+  "verification_plan": "Causal held-marker RED, exact no-CommitText/no-delete early-letter GREEN, affected stale/replaced/reset/sensitive/mode/receipt controls, guarded release engine artifact and scoped install, native Chrome after-Space roundtrip/five plus heldShift/Tab controls. Retain unresolved marker-delay and rendering failures separately.",
+  "proof_receipts": [
+    "pending-stock-literal-red-v29.log",
+    "pending-stock-literal-green-v29.log"
+  ],
+  "native_followup": {
+    "v29": "5 PASS / 2 FAIL in seven Chrome rows",
+    "v30_first_failed_transition": "Space commits fresh literal input before matching Ready; activation discards committed mirror",
+    "installed_pid": 789121,
+    "installed_sha256": "1477678ecceff657b788c18cad1158b7d4b183578e6da7dde3d3401ca9a04e6f",
+    "receipt_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+    "harness2_task": "20261021T200308Z-22f7cc91",
+    "independent_acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/pending-stock-literal-review-v29/independent-acceptance.json"
+  }
+}

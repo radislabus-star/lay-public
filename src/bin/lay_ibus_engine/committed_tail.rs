@@ -12,7 +12,9 @@ use super::space_autocorrect_prefetch::{
 use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace::{self, SpaceCorrectionLeaseOutcome};
-use super::window_interaction::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
+use super::window_interaction::{
+    ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure, TextTargetEditRoute,
+};
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
@@ -1007,7 +1009,8 @@ impl LayIbusEngine {
             return Ok((None, ExecutionReceipt::Rejected));
         };
         if emitter.is_legacy()
-            && self.client_context.surrounding_text_supported
+            && self.text_target_edit_route(plan.backspaces)
+                == TextTargetEditRoute::ExactSurroundingText
             && self.client_context.surrounding_text_snapshot.is_none()
         {
             self.layout_gesture.pending_manual_toggle = !self.layout_gesture.pending_manual_toggle;
@@ -1468,11 +1471,15 @@ mod tests {
         assert!(engine.bind_focus_path());
         let expired = ExactManualToggleSuppression {
             source_token: None,
+            source_provenance: None,
             path: engine.path.clone(),
             epoch: 7,
             expires_at: Instant::now() - Duration::from_millis(1),
             owner_lease_identity: engine.client_context.runtime_owner_lease_identity,
+            delivery_lease_identity: None,
             target_layout_is_ru: engine.layout_gesture.layout_is_ru,
+            native_press_count: 0,
+            held_boundary: None,
             original_tail: "x".to_string(),
             original_suffix: "x".to_string(),
             unchanged_prefix: String::new(),

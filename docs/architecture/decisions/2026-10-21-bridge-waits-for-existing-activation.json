@@ -1,0 +1,69 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "SOURCE_GREEN_NATIVE_QT_PASS_BROWSER_ACCEPTANCE_OPEN",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "first_failed_transition": "KDE exact replay changes the selected engine; VisibleTailV3 mode read races its existing activation fence. arm_fence returns Busy before the activation marker publishes the target owner. The daemon restores the initial layout without deleting or inserting text.",
+  "measured_evidence": "terminal-v6-qt-plain-bus-trace/bridge-bus.log and engine-trace.jsonl: Ping completes at 14:53:23.161069 UTC; activation marker is observed at 14:53:23.161979 UTC. The mode read fails Busy at 14:53:23.161259 UTC.",
+  "alternatives": [
+    {
+      "score": 9,
+      "option": "Reuse adapter.changed to wait only for an existing Acquisition fence, within the original bridge deadline; restart the Ping/marker proof afterwards.",
+      "selected": true
+    },
+    {
+      "score": 6,
+      "option": "Retry mode reads in the KDE controller.",
+      "reason_not_selected": "Duplicates admission coordination and leaves other bridge consumers exposed to the same race."
+    },
+    {
+      "score": 1,
+      "option": "Ignore Busy or treat selected-engine identity as decoder/owner readiness.",
+      "reason_not_selected": "Would bypass the independent activation and ownership proof."
+    }
+  ],
+  "decision": "begin_bridge_fence may wait for an occupied Acquisition slot using the existing notification and unchanged 20ms deadline. It never clears the activation slot. It then uses a fresh nonce and Ping position. An occupied Bridge remains Busy; cancellation and timeout remain refusals. No queue, new authority, text replay or app-specific branch is added.",
+  "causal_regression": "bridge-fence-red-v7b/result.json: exact three identities; two semantic failures on the old production adapter report Busy, and the concurrent-Bridge refusal control passes. The earlier v7 attempt was interrupted after a test-fixture wait error and is not RED proof.",
+  "verification": "shift-hint-source-candidate-v7b/result.json: 242/242 exact affected Rust tests, 14 JS and 2 Python checks PASS; architecture PASS; release artifact 5934db2f64e5fee37e376b85eb955b6e1bdc3b2aaa7de7c681156dc846b39b01 installed as development engine PID4076822. bridge-v7b-qt-plain-fields/result.json: 5/5 native PASS, previous after-Space FAIL fixed. bus monitor has zero Busy/errors. The trace collector lost its rotation anchor for that five-case job, so the field and bus receipts are the native evidence; no isolated engine trace is claimed.",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "not_tested": "Complete source/release gates have not been rerun after the fixture-layout repair; its former crashing identity passes in the selected scope. Full browser matrix and GNOME are not rerun. Firefox burst now retains all five target events but its old approximate onset clock fails; precise-onset diagnostic pending. Chrome typed-prefix underline remains FAIL. RFB native acceptance does not prove a physical USB keyboard.",
+  "fixture_stack_regression": "Expanded v7 source check still crashed in td121_pending_cross_profile_reset_or_content_type_retains_source_free_unknown_request. v7b replaces four distinct await sites with one loop, retaining the same four ordered (loss,evidence,serial) tuples and all assertions, same one-second fixture deadline and default thread stack. All four cases and 242 selected tests PASS. This is test-future layout only; no runtime or guard change.",
+  "latest_native_browser_diagnostic": {
+    "at": "2026-10-21T15:44:34.075357+00:00",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/bridge-v7b-browser-double-shift-v9/summary.json",
+    "per_browser": {
+      "Firefox": {
+        "PASS": 10,
+        "FAIL": 10,
+        "BLOCKED": 0,
+        "NOT_TESTED": 0
+      },
+      "Chrome": {
+        "PASS": 10,
+        "FAIL": 10,
+        "BLOCKED": 0,
+        "NOT_TESTED": 0
+      }
+    },
+    "split": "All active bursts PASS; all after-Space bursts FAIL. Historical full matrix unchanged."
+  },
+  "bounded_review": {
+    "task": "20261021T151518Z-2319fcc6",
+    "status": "ok",
+    "calls_ok": 8,
+    "fallbacks": 0,
+    "score": 9,
+    "findings": 0,
+    "scope": "Static adapter delta only; independent native/browser acceptance remains separate."
+  }
+}

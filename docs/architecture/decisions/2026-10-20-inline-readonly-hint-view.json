@@ -1,0 +1,12 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Prototype a versioned read-only inline hint view in the existing GNOME extension and KDE tray, projected by the current IME through its existing session bridge.",
+  "reason": "The user rejects the separate auxiliary field and requests the old working GNOME appearance. Reusing document preedit for an unaccepted continuation reintroduces the established Firefox blur-commit defect.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C08", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/preedit.rs", "src/bin/lay_ibus_engine/bridge.rs", "scripts/lay-kde-tray.py", "extension/lay@radislabus-star.github.io/lay-impl.js"],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "IMPLEMENTED_BOUNDED_NATIVE_PASS. 943/943 IME source checks; remote engine 9e751d3ccff8581f7c2fb2d0b4c4da189a401d402cf3cf30f0b605578cd257c2. Actual KDE-menu Kitty prefix/suffix independently inspected; raw PTY Tab/blur 2/2 PASS, one Tab reaction sample 1.786365 ms. Receipt roots and exact limits in the owning preflight and lay2 handoff. Harness2 review 7/10 has one open GNOME queued-frame lifecycle finding; no universal promotion.",
+  "not_tested": "GNOME/Wayland native appearance, full changed-byte browser matrix, current Konsole inline presentation. Chrome typed-prefix underline and its bounded manual-conversion control remain FAIL/OPEN; prior FAIL and NOT_TESTED denominators remain intact.",
+  "runtime_authority_changed": false,
+  "consequences": "Only a bounded view projection and paint surface; no separate process, text owner, edit route, client acknowledgement, gesture detector, deadline increase or atomic protocol change. Proven native terminal input with no owned buffer or visible composition may send one existing HidePreeditText before a positive hint, invalidate old geometry and wait for a cursor report. Geometry refresh does not repeat this request. Never send hint text as document preedit or infer edit authority from geometry. See the preflight for measured PTY/cursor ordering, alternatives, race/rollback/update analysis and proof denominators."
+}

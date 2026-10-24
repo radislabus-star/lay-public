@@ -25,6 +25,7 @@ pub(super) use super::window_interaction::{
 };
 pub(super) use state_groups::{
     AtomicRouteState, CommittedTailState, CompositionState, LayoutGestureState,
+    PendingActivationLiteralInput, StockObservedBoundarySource,
 };
 pub(super) use types::{
     DeferredLayoutAction, DeferredLearningAction, InputFrameIdentity, ManualToggleAuthority,
@@ -93,14 +94,18 @@ impl LayIbusEngine {
     }
 
     pub(super) fn has_proven_terminal_input(&self) -> bool {
-        !self.client_context.surrounding_text_supported
-            && (self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL
-                || (self.client_context.content_purpose == 0
-                    && self.client_context.preedit_text_supported
-                    && self.client_context.cursor_cell_width >= 5
-                    && self.client_context.kitty_terminal_focus_receipt.is_some()
-                    && self.client_context.kitty_terminal_focus_receipt
-                        == self.terminal_input_focus_receipt()))
+        // A terminal may advertise SurroundingText without implementing it.
+        // Exact current-field terminal evidence selects ordinary key delivery;
+        // it supplies neither surrounding text nor permission to edit a tail.
+        (!self.client_context.surrounding_text_supported
+            && self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL)
+            || (self.client_context.content_purpose == 0
+                && self.client_context.preedit_text_supported
+                && !self.client_context.exact_surrounding_refresh_available
+                && self.client_context.cursor_cell_width >= 5
+                && self.client_context.terminal_focus_receipt.is_some()
+                && self.client_context.terminal_focus_receipt
+                    == self.terminal_input_focus_receipt())
     }
 
     pub(super) fn terminal_input_focus_receipt(&self) -> Option<String> {
@@ -112,10 +117,10 @@ impl LayIbusEngine {
         }
     }
 
-    pub(super) fn finish_kitty_focus_probe(
+    pub(super) fn finish_terminal_focus_probe(
         &mut self,
         expected_focus_receipt: Option<&str>,
-        is_kitty: bool,
+        is_terminal: bool,
     ) -> bool {
         let Some(expected_focus_receipt) = expected_focus_receipt else {
             return false;
@@ -123,10 +128,10 @@ impl LayIbusEngine {
         if self.terminal_input_focus_receipt().as_deref() != Some(expected_focus_receipt) {
             return false;
         }
-        self.client_context.kitty_focus_probe_serial = Some(self.client_context.focus_serial);
-        self.client_context.kitty_terminal_focus_receipt =
-            is_kitty.then(|| expected_focus_receipt.to_string());
-        is_kitty
+        self.client_context.terminal_focus_probe_serial = Some(self.client_context.focus_serial);
+        self.client_context.terminal_focus_receipt =
+            is_terminal.then(|| expected_focus_receipt.to_string());
+        is_terminal
     }
 
     pub(super) fn preedit_waits_for_cursor_ack(&self) -> bool {
@@ -498,7 +503,7 @@ mod tests {
         );
 
         engine.client_context.focus_receipt = Some("kitty-context".to_string());
-        engine.client_context.kitty_terminal_focus_receipt = Some("kitty-context".to_string());
+        engine.client_context.terminal_focus_receipt = Some("kitty-context".to_string());
         assert_eq!(
             engine.initial_word_input_mode(),
             WordInputMode::TerminalPassthrough

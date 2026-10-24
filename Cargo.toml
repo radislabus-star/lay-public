@@ -1,6 +1,6 @@
 [package]
 name = "lay"
-version = "1.0.94"
+version = "1.0.95"
 edition = "2021"
 description = "Typing correction and RU/EN layout switching for Linux desktops"
 license-file = "LICENSE"
@@ -86,6 +86,7 @@ required-features = ["research-tools"]
 clap = { version = "4", features = ["derive"] }
 arboard = "3"
 async-io = "2.6.0"
+futures-lite = "2"
 event-listener = "5.4.2"
 ordered-stream = "0.2.0"
 ureq = { version = "2", features = ["json"] }
@@ -105,7 +106,6 @@ niri-ipc = "26"
 llama_cpp = { version = "0.3.2", optional = true }
 
 [dev-dependencies]
-futures-lite = "2"
 zbus = { version = "5.15.0", features = ["p2p", "bus-impl"] }
 
 [patch.crates-io]

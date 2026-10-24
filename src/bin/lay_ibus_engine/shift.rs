@@ -53,11 +53,14 @@ impl LayIbusEngine {
         if !self.context_word_is_known() && !owned_preedit_at_entry {
             self.clear_preedit_completion_state();
             if self.context_allows_manual_toggle() {
-                // Explicit terminal projection only. Incomplete words cannot
-                // enter auto-undo, active composition or daemon delegation.
-                trace::record(
-                    r#"{"kind":"ibus_manual_toggle_dispatch","source":"observed_terminal_suffix","executor":"terminal_erase_commit"}"#,
-                );
+                // An explicit request uses a proved terminal suffix or a
+                // complete actual native range. Neither grants KnownStart or
+                // enters auto-undo, active composition or daemon delegation.
+                trace::record(if self.native_manual_word_is_current() {
+                    r#"{"kind":"ibus_manual_toggle_dispatch","source":"native_document","executor":"native_exact_range_commit"}"#
+                } else {
+                    r#"{"kind":"ibus_manual_toggle_dispatch","source":"observed_terminal_suffix","executor":"terminal_erase_commit"}"#
+                });
                 return self
                     .toggle_committed_tail_target_with_disposition(emitter)
                     .await;
@@ -147,10 +150,13 @@ impl LayIbusEngine {
         match authority {
             ManualToggleAuthority::ImeCommittedTail => {
                 if self.terminal_committed_tail_executor_available()
+                    || self.native_manual_word_is_current()
                     || self.atomic.speculation && !emitter.is_legacy()
                 {
                     trace::record(if self.atomic.speculation {
                         r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"atomic_frame"}"#
+                    } else if self.native_manual_word_is_current() {
+                        r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"native_exact_range_commit"}"#
                     } else {
                         r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#
                     });

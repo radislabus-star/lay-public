@@ -1,17 +1,36 @@
 //! Retiring owned preedit may admit a new manual read, never the old word.
 use super::*;
+use crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH;
 
 async fn owned_preedit(harness: &mut Harness, serial: &mut u32, hints: u32) -> LayIbusEngine {
+    owned_preedit_in_mode(harness, serial, hints, false).await
+}
+
+async fn owned_preedit_in_mode(
+    harness: &mut Harness,
+    serial: &mut u32,
+    hints: u32,
+    exact_refresh: bool,
+) -> LayIbusEngine {
     let mut engine = td159_fresh_focus_source(harness).await;
     // Metadata belongs to the field before input. A privacy-mode transition
     // after typing must instead retire the source and is tested below.
     engine.set_content_type_state(0, hints);
-    exact_surrounding_receipt(harness, &mut engine, "prefix ").await;
+    if exact_refresh {
+        engine.set_client_capabilities(41 | IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH);
+    }
+    if hints != 0 || exact_refresh {
+        exact_surrounding_receipt(harness, &mut engine, "prefix ").await;
+    } else {
+        // Stock owned mode begins before its first actual client snapshot.
+        engine.config.nanda_precognition = true;
+    }
     let mut commits = 0;
     for (ch, code) in [('a', 30), ('b', 48)] {
         assert!(legacy_key(harness, &mut engine, *serial, ch as u32, code, 0).await);
         *serial += 1;
         let effects = drain_output_to_proof(harness).await;
+        engine.config.nanda_precognition = false;
         if harness
             .peer
             .detached_callback_reply_serials
@@ -38,6 +57,7 @@ async fn owned_preedit(harness: &mut Harness, serial: &mut u32, hints: u32) -> L
         }
     }
     if hints == 0 {
+        exact_surrounding_receipt(harness, &mut engine, "prefix ").await;
         assert_eq!(commits, 0);
         assert!(engine.composition.legacy_word_preedit_active);
         assert_eq!(engine.composition.buffer, "ab");
@@ -162,7 +182,10 @@ fn td159_owned_preedit_reset_after_surrounding_requests_new_same_gesture_read() 
     zbus::block_on(bounded(async {
         let mut harness = cycle09_harness().await;
         let mut serial = 9300;
-        let mut engine = owned_preedit(&mut harness, &mut serial, 0).await;
+        // This contract requires ownership to survive a matching snapshot.
+        // Declare the explicit exact-refresh mode before its first key. Stock
+        // delayed projections now finish literal input (covered separately).
+        let mut engine = owned_preedit_in_mode(&mut harness, &mut serial, 0, true).await;
         // Actual Qt ordering: the last snapshot is delivered between two
         // Reset callbacks, so the second Reset retires it before the gesture.
         exact_surrounding_receipt(&mut harness, &mut engine, "prefix ab").await;

@@ -1,0 +1,24 @@
+{
+  "id": "2026-10-23-kde-chrome-observation-budget",
+  "status": "USER_REQUESTED_DEVELOPMENT_TRIAL_NOT_CLIENT_ACCEPTANCE",
+  "scope": "KDE Chrome actual-document observation only; GNOME and other clients unchanged",
+  "source_owner": "src/bin/lay_ibus_engine/kde/native_document.rs",
+  "first_failed_transition": "A complete native document observation exceeds 20 ms during fullscreen iframe input. A final canonical KWin read then fails and correctly retires its connection lifetime; the next observation cannot reuse the old field identity.",
+  "measured_evidence": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-fullscreen-v135-r2-native/result.json",
+    "native_bus_log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-only-fullscreen-v135-r2-native/a11y-calls.log",
+    "GetNSelections_reply_ms": 13.118,
+    "source_tests": "v135-r2 75/75 PASS; this does not certify the budget change",
+    "client_result": "v135-r2 fullscreen text and rich PASS; iframe-rich FAIL"
+  },
+  "decision": "Use a 40 ms total bound for actual-document observation. Preserve the existing 20 ms selection/edit preflight and observer subscription bounds. No retries, extra wakeups, cached proof, identity normalization, admission timeout changes or mutation authority changes.",
+  "tradeoff": "An observation can occupy the serialized engine for at most 20 ms longer. Measure visible hint and Tab latency and repeat the failed physical Chrome scenario before acceptance.",
+  "required_proof": [
+    "Existing bounded native transport, privacy, identity, selection and presentation tests pass",
+    "Canonical architecture guards pass",
+    "Installed engine bytes match the compiler artifact",
+    "Physical Chrome fullscreen iframe input produces a fresh joined suffix and exact Tab result",
+    "Normal, private and focus-return Chrome checks remain valid"
+  ],
+  "acceptance": "PENDING"
+}

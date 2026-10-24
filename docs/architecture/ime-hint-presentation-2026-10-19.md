@@ -1,16 +1,18 @@
 # IME hint presentation in every application and system
 
-Requested behavior: a suggested, unaccepted suffix uses muted gray `#888888` or,
-where the system controls its color, a translucent presentation. The user
-explicitly accepted translucency during implementation. User-entered and
-committed text retain their normal styling. This is presentation under C06;
-it adds no text, visibility, acceptance, input-source or mutation authority.
+Current requested behavior (2026-10-21): every suggested, unaccepted suffix
+character is black `#000000` on an opaque white `#ffffff` background, inline
+after ordinary typed text. This explicitly supersedes the earlier muted-gray
+request and rejected 50% translucency. Lay must not change actor opacity.
+User-entered and committed text retain their normal styling. This is
+presentation under C06; it adds no text, visibility, acceptance, input-source
+or mutation authority. Earlier dated receipts below describe historical bytes.
 
 ## Universal acceptance requirement — 2026-10-20
 
 The user clarified that this applies everywhere, in every system, including
 Chrome and terminals: entered characters remain ordinary text. Only the
-unaccepted suggestion may use muted gray or translucent hint styling. Coloring,
+unaccepted suggestion may use the requested contrasting hint styling. Coloring,
 selecting, reversing or underlining the whole typed word is a presentation FAIL,
 even if completion, correction and Double Shift pass. Functional native counts
 must not be used as visual acceptance. Inspect both the owned typed prefix and
@@ -48,6 +50,51 @@ establish any other field or platform. The minimal solution options, ownership
 pitfalls and required native proof are recorded in
 [TD-160](../../tech_debt/160-universal-ime-prefix-presentation.md). The common
 browser protocol now requires a separate visual verdict and screenshot.
+
+## Inline appearance follow-up — 2026-10-20
+
+Latest bounded result (remote runtime rechecked 16:06 UTC): installed engine
+`9e751d3c` has 943/943 source checks and ordinary KDE-menu Kitty native visual
+PASS. Its prefix is ordinary white, continuation gray and inline, and Tab
+accepts once. Raw PTY Tab/blur is 2/2 PASS; one reaction sample is 1.786365 ms.
+The user's old Kitty was launched without GLFW_IM_MODULE and remains open;
+new native menu launch obtains ibus from the desktop entry. Exact receipts:
+`user-kitty-native-v2`, `kitty-kde-menu-launch-v1`, `inline-kitty-geometry-v5`
+under the 2026-10-20 remote control root. Chrome typed-prefix underline and a
+manual-conversion control remain open, as does the GNOME queued-frame review
+finding. The full changed-byte browser matrix and GNOME native appearance
+are not tested. See the preflight and current lay2 handoff; the following
+implementation checkpoint is historical.
+
+The user rejected the separate auxiliary field. The preceding Kitty PASS
+establishes ordinary-prefix / muted-suffix styling only; it does not establish
+the now-required inline placement. The user's loaded GNOME engine is 1.0.90,
+not the installed menu's newer version. Its document-preedit hint explains the
+appearance, but reverting that route would restore the measured Firefox blur
+commit defect. Keep the existing blur protection.
+
+The bounded implementation projects only display text/geometry through the
+existing bridge into the existing KDE tray and GNOME extension. It adds no
+document composition, key handler, candidate or acceptance owner. Full
+consequence analysis, alternatives, unavailable-frontend behavior and scope:
+[inline preflight](ime-inline-hint-preflight-2026-10-20.md), with decision
+`2026-10-20-inline-readonly-hint-view.json`. Neither emitted geometry nor a
+successful signal is client-paint or edit acknowledgement.
+
+Remote experiment: glyph-only painting over black/white owned Qt fixtures
+preserved X11 focus, but is not native IME acceptance. Its exact screenshot and
+receipt are in the preflight. First compiled source failed by stack overflow in
+an unchanged native-transfer regression. Bounding the geometry snapshot and
+new nested futures passed the same unchanged-stack IME target: 941 selected,
+941 executed, 941 PASS, 0 FAIL, 132.2 seconds. Receipt:
+`/home/ubu/.cache/lay/development/run-ubqe2a89/RESULT.json`.
+The intervening refused launch is BLOCKED_RESOURCE, not a correctness result.
+
+Frontend source checks and candidate build are underway. No inline candidate
+is installed or physically accepted at this checkpoint. Native baseline remains
+Firefox 85/75/0/0 and Chrome 9/7/0/144 (PASS/FAIL/BLOCKED/NOT_TESTED). GNOME native,
+Wayland, inline placement and Chrome owned-prefix styling remain unproven.
+Runtime input authority is unchanged.
 
 ## KWin qualification correction — 2026-10-20 12:16 UTC
 

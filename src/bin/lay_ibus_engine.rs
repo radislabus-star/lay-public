@@ -16,12 +16,20 @@ mod composition_commit;
 mod composition_edit;
 #[path = "lay_ibus_engine/context_admission.rs"]
 mod context_admission;
+#[path = "lay_ibus_engine/display.rs"]
+mod display;
 #[path = "lay_ibus_engine/engine.rs"]
 mod engine;
 #[path = "lay_ibus_engine/factory.rs"]
 mod factory;
+#[path = "lay_ibus_engine/gnome/mod.rs"]
+mod gnome;
+#[path = "lay_ibus_engine/hint_view.rs"]
+mod hint_view;
 #[path = "lay_ibus_engine/ibus_interface.rs"]
 mod ibus_interface;
+#[path = "lay_ibus_engine/kde/mod.rs"]
+mod kde;
 #[path = "lay_daemon/kde_focus.rs"]
 mod kde_focus;
 #[path = "lay_ibus_engine/key_decode.rs"]

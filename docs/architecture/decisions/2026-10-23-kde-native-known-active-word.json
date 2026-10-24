@@ -1,0 +1,17 @@
+{
+  "status": "SOURCE_EXPERIMENT_PENDING_SOURCE_AND_NATIVE_PROOF",
+  "owner": "Existing KDE native-document adapter; ContextAdmission KnownStart owner and AuthorizedEdit verifier unchanged",
+  "affected_invariants": ["C05", "C07", "C08", "C09", "C10"],
+  "first_failed_transition": "On installed840f48e6 the r19 native two-word active scenario seeds ordinary text 'проверка привет', but VisibleTailV4 retains NBSP in the older separator. KnownStart=true, exact_managed=true, actual current-word text/caret/both boundaries are exact. ManualToggleV3 delegates(status3) without an edit because native_manual_word_is_current requires byte equality of the whole historical tail, including the untouched prefix.",
+  "decision": "For an active KnownStart word in the current native binding only, accept the exact current last-token surface with both actual document word boundaries and no selection as the native manual-word witness. It remains valid after the same verified layout handoff without another key or managed-mode receipt. Preserve the original full-tail proof as the existing path. UnknownStart and closed-word predicates retain their old proof; no whitespace normalization or model rewriting. The common executor still checks the literal requested backspace span, revalidates the complete native source and identity, observes exact selection, and verifies the full final field, preserving every prefix/right-context character.",
+  "alternatives": [
+    {"name": "Use the existing KnownStart with exact active-word native span", "score_1_to_10": 9, "reason": "Checks the actual mutation range, keeps all consumers/owners/verifiers and avoids changes outside KDE."},
+    {"name": "Normalize all older field/tail spaces", "score_1_to_10": 2, "reason": "Would change unrelated history and broader source comparisons."},
+    {"name": "Replace native executor or delegate to a new fallback", "score_1_to_10": 1, "reason": "Would change delivery and introduce another authority path."}
+  ],
+  "verification": "Keep the existing UnknownStart readout-does-not-authorize-prefix test unchanged. Add KnownStart active success and unknown/word/left/right/selection/epoch/focus/lease/layout/privacy/sealed/closed/GNOME controls with unchanged scope/token/epoch. Repeat the unchanged r19 two-gesture actor, r18 fixed20 and first/second-word4 on installed bytes; full browser acceptance remains separate.",
+  "receipt": "chrome-941-two-word-native-diagnostic-20261023/chrome/result.json",
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false
+}

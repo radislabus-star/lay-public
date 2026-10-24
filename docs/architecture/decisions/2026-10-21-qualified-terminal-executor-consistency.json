@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "SOURCE_FOCUSED_PASS_NATIVE_PARTIAL_FAIL",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "delivery_routes_changed": false,
+  "decision": "Use the existing qualified native-terminal executor consistently for manual committed-tail replacement when a terminal merely advertises SurroundingText. Its existing exact-refresh contract still takes precedence.",
+  "reason": "Native Konsole caps41 initially advertises SurroundingText without a snapshot. The capability bit shadowed the proven terminal executor; a route-only fix then stranded the next toggle on an unused postcondition channel. Fresh physical evidence after engine handoff additionally supplies cursor7/anchor0 for the unchanged seven-character tail, so the selection guard correctly refuses the return toggle. That observation-domain defect is still unresolved.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/state.rs"
+  ],
+  "verification": "RED route failure, then RED repeat failure for caps41; final focused two manifest-discovered tests PASS. Four caps9/caps41 and legacy/nonlegacy combinations round-trip, with five invalidation controls. Receipts: shift-hint-route-red-v1, shift-hint-route-red-legacy-v1, shift-hint-route-green-v2 under remote kde-install-control-20261020.",
+  "not_tested": "Candidate scoped source197 PASS; Kitty native round trip PASS13.8248/18.9078ms; Konsole first flip PASS15.8173ms and return FAIL on selection metadata. Native receipts are shift-hint-after-v1-kitty-double and shift-hint-after-v2-konsole-trace. Complete source/browser gates remain open. Emission is not a visible-outcome receipt.",
+  "runtime_authority_changed": true,
+  "consequences": "Reuse existing terminal qualification, edit plan, verifier, field/epoch/sensitive/selection checks and terminal executor. Only the selected executor determines whether a legacy surrounding refresh and surrounding postcondition apply. No new recognizer, mutation owner, application-name edit branch, partial-output fallback or fabricated client outcome. CommitOnly GUI postconditions stay unchanged."
+}

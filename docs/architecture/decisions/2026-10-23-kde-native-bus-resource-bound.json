@@ -1,0 +1,53 @@
+{
+  "status": "INSTALLED_BOUNDED_SOURCE_AND_RESOURCE_PROOF_FULL_CHROME_FAIL",
+  "owner": "KDE native-document bus transport adapter; per-binding C07/C08/C09 authority unchanged",
+  "affected_invariants": [
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "first_failed_transition": "After the full220 run, installed906f8dfe has510 threads against TasksMax512, including502 zbus connection executors. The cgroup records2872 task-creation failures; memory high/oom events are0 and CPU throttling is low. Socket peer inspection attributes499 retained connections to the accessibility dbus-daemon,2 to session and1 to IBus. read_focused opens a fresh accessibility connection for each new binding/context, while retained bindings/subscriptions keep old transports. A timeout-only change cannot remove this exhaustion.",
+  "decision": "Retain one cached native accessibility Connection for the exact GetAddress value. Keep the std mutex only around clone/publication, never across I/O. Concurrent misses return one published winner and drop unused temporary connections. Discover application PID/unique owner and focused field afresh after every cache lookup; retain independent field/token/focus/lease/layout/epoch checks in each binding. On disconnected socket I/O, evict only that same cached connection; a delayed failure from an old transport cannot clear its successor. Return the existing error with no retry or mutation fallback. No word, document, privacy or edit grant is cached.",
+  "alternatives": [
+    {
+      "name": "Share only the native bus transport",
+      "score_1_to_10": 9,
+      "reason": "Small KDE-only change, matches the existing cached KWin-client resource pattern, and preserves every authority consumer."
+    },
+    {
+      "name": "Rework lifetime of all IBus engine objects",
+      "score_1_to_10": 6,
+      "reason": "Potential later debt; broader lifecycle/late-callback proof scope is unnecessary for bounding this immediate transport resource."
+    },
+    {
+      "name": "Only increase observation deadline",
+      "score_1_to_10": 3,
+      "reason": "May help a slow valid read but cannot create resources at the task limit."
+    },
+    {
+      "name": "Increase TasksMax to hide connection growth",
+      "score_1_to_10": 1,
+      "reason": "Leaves unbounded resource retention; rejected."
+    }
+  ],
+  "verification": "Add reuse-with-fresh-document, concurrent-winner, failed/cancelled initialization and old-disconnect/successor controls using existing local bus peers. Retain all37 existing native owner/privacy/source controls. Install with the same TasksMax512, capture process/thread/socket/cgroup resources before and after the unchanged r18 full220 and cold/same-field4. Record both installed bytes and physical results. Read80 remains a separate bounded-read headroom adjustment; improvement must not be attributed to it alone.",
+  "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/native-bus-resource-exhaustion-20261023.json",
+  "runtime_authority_changed": false,
+  "installed": true,
+  "published": false,
+  "runtime_pid": 1810604,
+  "runtime_sha256": "8d99bb1bcc869c00761e95c516657d68ece1398b9235b192434d264939fcbe02",
+  "native_source_controls_passed": 41,
+  "full_native_verdict": {
+    "PASS": 143,
+    "FAIL": 36,
+    "BLOCKED": 41,
+    "NOT_TESTED": 0
+  },
+  "complete_chrome_acceptance": false,
+  "updated_at": "2026-10-23T21:15:29.197414+00:00",
+  "current_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-notification-drain-full-20261023/result.json",
+  "measured_resource_after": "Full220:threads11->12,zbus4->4,fds10->10,pids.events max0,peak19,max512,memory high/max/oom0."
+}

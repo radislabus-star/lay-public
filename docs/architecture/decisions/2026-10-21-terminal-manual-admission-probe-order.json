@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "NATIVE_RED_REPRODUCED_ORDERING_FIX_PENDING_PROOF",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "delivery_routes_changed": false,
+  "runtime_authority_changed": false,
+  "decision": "Run the existing current-field terminal qualification before manual-toggle eligibility. Revalidate bridge token after the await. Remove its now-late duplicate. Keep all eligibility, target, source, field, owner and output checks.",
+  "reason": "Native Kitty/Konsole after-Space five-toggle rows pass, but both active-word return toggles fail context_authority. Cursor geometry arrives before activation Ready; UnknownStart eligibility requires qualification and currently rejects before the existing refresh can run.",
+  "native_red": "terminal-candidate-v4-konsole-five/result.json; terminal-candidate-v4-kitty-five/result.json; terminal-candidate-v4-konsole-active-trace/engine-trace.jsonl",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "verification": "Pending affected source checks plus real remote five-toggle active/after-Space regression. Never infer native success from a source-order assertion.",
+  "not_tested": "Unchanged full source stack-overflow failure; complete browser matrix; GNOME; Chrome typed-prefix underline remains FAIL."
+}

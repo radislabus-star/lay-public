@@ -18,7 +18,8 @@ use std::time::{Duration, Instant};
 pub(crate) use adapter::tests::word_scope::residuals::assert_window_interaction_reset_rereceipt_contract;
 pub(crate) use adapter::{
     ActivationOutcome, AdapterConfig, AdapterError, ContextAdmissionAdapter, KeyCallback,
-    KeyCallbackObservation, PendingContextAdapter, PendingFence, PendingLiteralInputReceipt,
+    KeyCallbackObservation, PendingContextAdapter, PendingFence, PendingHintActivation,
+    PendingLiteralInputReceipt,
 };
 pub(crate) use ordered_merge::{join_ordered_streams, next_ordered_message};
 pub(crate) use rendezvous::{
@@ -542,11 +543,22 @@ pub(crate) enum KeyWordEffect {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) enum ExactManualSourceProvenance {
+    ClientSnapshot,
+    /// Actual native document, never an IBus callback or replay projection.
+    NativeDocument,
+    /// The word was actually observed; only its following Space was local.
+    /// This is source evidence, never a result snapshot or delivery ACK.
+    ObservedWordAndLocalSpace,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub(crate) struct ExactManualSourceSnapshotReceipt {
     source_token: AdmissionToken,
     pub(crate) tail_epoch: u64,
     pub(crate) tail: String,
     pub(crate) observed_external_prefix: Option<String>,
+    pub(crate) provenance: ExactManualSourceProvenance,
     pub(crate) observation_revision: u64,
     pub(crate) expires_at: Instant,
 }
@@ -609,6 +621,17 @@ pub(crate) struct AdmissionToken {
     owner: EngineOwner,
     activation: FocusActivation,
     lineage: WordLineage,
+}
+
+/// Source-only boundary after an actual whole-word observation and one local
+/// planned Space. It never represents a client result or replay ACK.
+#[derive(Debug, Clone, Copy)]
+pub(crate) struct ObservedReplayBoundary {
+    pub(crate) source_epoch: u64,
+    pub(crate) word_epoch: u64,
+    pub(crate) projected_changes: usize,
+    pub(crate) observation_revision: u64,
+    pub(crate) retained_boundary: u32,
 }
 
 impl AdmissionToken {
@@ -1156,6 +1179,44 @@ where
         true
     }
 
+    /// The key callback retained the final Space without a word effect. Only
+    /// this explicit observed boundary may advance its lexical generation.
+    fn settle_observed_replay_boundary(
+        &mut self,
+        source: &AdmissionToken,
+        word_token: &AdmissionToken,
+        boundary: ObservedReplayBoundary,
+    ) -> Option<AdmissionToken> {
+        let completed_epoch = boundary.word_epoch.checked_add(1)?;
+        let source_is_current = self.exact_replay_reset_provenance_is_current(source)
+            || (self.mode == GlobalEngineMode::Verified
+                && self.lifecycle_is_settled()
+                && source.connection == self.connection
+                && self.owner.as_ref() == Some(&source.owner)
+                && self.activation.as_ref() == Some(&source.activation)
+                && source.revocation == self.revocation);
+        if !source_is_current
+            || !self.revalidate_bridge(word_token)
+            || self.latest_tail_epoch != boundary.word_epoch
+            || boundary.projected_changes == 0
+            || boundary
+                .source_epoch
+                .checked_add(boundary.projected_changes as u64)
+                != Some(completed_epoch)
+        {
+            return None;
+        }
+        let mut next_scope = WordScope::new(self.lineage);
+        next_scope.close_at_observed_boundary(
+            boundary.observation_revision,
+            Some(boundary.retained_boundary),
+        );
+        self.lineage = next_scope.lineage();
+        self.latest_tail_epoch = completed_epoch;
+        self.exact_manual_snapshot = None;
+        self.admission_token()
+    }
+
     pub(crate) fn publish_exact_manual_snapshot(
         &mut self,
         token: &AdmissionToken,
@@ -1164,8 +1225,11 @@ where
         observed_external_prefix: Option<String>,
         observation_revision: u64,
         expires_at: Instant,
+        provenance: ExactManualSourceProvenance,
     ) -> bool {
         if tail.is_empty()
+            || (provenance == ExactManualSourceProvenance::ObservedWordAndLocalSpace
+                && !tail.ends_with(' '))
             || expires_at <= Instant::now()
             || !self.revalidate_bridge(token)
             || tail_epoch != self.latest_tail_epoch
@@ -1183,6 +1247,7 @@ where
             tail_epoch,
             tail,
             observed_external_prefix,
+            provenance,
             observation_revision,
             expires_at,
         });
@@ -2157,6 +2222,45 @@ where
         // Retain the consumed receipt as bounded path provenance. The grant is
         // still one-use because the bound epoch no longer matches it.
         true
+    }
+
+    /// Settle only newly consumed literal input after its exact source-free
+    /// Ready has been installed. The adapter validates the pending receipt and
+    /// consumes that same Ready atomically; this never restores an old owner.
+    pub(crate) fn settle_source_free_literal_input(
+        &mut self,
+        grant: &ActivationGrant,
+        tail_epoch: u64,
+        literal_tail: &str,
+        content_type: (u32, u32),
+    ) -> Option<(WordScope, AdmissionToken)> {
+        if self.mode != GlobalEngineMode::Verified
+            || self.source_free.as_ref()?.status != TicketStatus::Consumed
+            || self.revocation != grant.revocation
+            || self.owner.as_ref() != Some(&grant.target_owner)
+            || self.activation.as_ref() != Some(&grant.target_activation)
+            || self.lineage != grant.lineage
+            || self.latest_tail_epoch != tail_epoch
+            || tail_epoch <= grant.tail_epoch
+            || literal_tail.is_empty()
+            || literal_tail.chars().count() > crate::preedit::PREEDIT_TAIL_LIMIT
+        {
+            return None;
+        }
+        let mut scope = WordScope::new(grant.lineage);
+        for (offset, ch) in literal_tail.chars().enumerate() {
+            if crate::preedit::is_observed_word_boundary(ch) {
+                scope.close_at_observed_boundary(tail_epoch, Some(offset as u32));
+            } else {
+                scope.observe_tail_append_span(offset as u32 + 1, 1);
+            }
+        }
+        self.lineage = scope.lineage();
+        self.next_lineage = self
+            .next_lineage
+            .max(next_generation(self.lineage.generation.0));
+        self.settled_content_type = Some(content_type);
+        Some((scope, self.admission_token()?))
     }
 
     pub(crate) fn bind_reset_tail_epoch(

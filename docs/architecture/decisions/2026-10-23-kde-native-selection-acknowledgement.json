@@ -1,0 +1,17 @@
+{
+  "status": "DEVELOPMENT_EXPERIMENT_PENDING_SOURCE_AND_NATIVE_PROOF",
+  "owner": "Existing KDE native-document adapter; AuthorizedEdit retains mutation authority",
+  "affected_invariants": ["C05", "C07", "C08", "C09", "C10"],
+  "first_failed_transition": "The installed 8c674d4d Chrome trial passes an uninterrupted two-gesture row, but r18 text/rapid-five/space receives native_deadline on its second ManualToggleV3. Chrome has already selected [0,7]; no replacement is committed. Three later attempts fail context authority. The complete per-row trace and passive manual/native bus logs distinguish this partial selection failure from other source-seal failures.",
+  "decision": "Give the existing exact native-selection acknowledgement phase a dedicated 40ms deadline. Keep source preflight at40ms and activation/subscription I/O at20ms. The local maximum becomes80ms; the deadline still covers actual selection confirmation, source checks and final canonical foreground revalidation. Preserve all failures as partial CursorOrPreedit effects, with no retry, cleanup, fallback or synthetic success.",
+  "alternatives": [
+    {"name": "Dedicated bounded selection acknowledgement", "score_1_to_10": 9, "reason": "Changes one measured insufficient adapter phase while retaining the full edit proof."},
+    {"name": "Increase all native I/O deadlines", "score_1_to_10": 4, "reason": "Would change unrelated activation and subscriptions."},
+    {"name": "Commit immediately after accepted AddSelection", "score_1_to_10": 1, "reason": "Would confuse an accepted asynchronous request with actual exact selection."}
+  ],
+  "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-mode-diagnostic-20261023-r18/chrome/result.json",
+  "verification": "Repeat the unchanged r18 fixed20 actor after source, architecture and byte-verified KDE development installation. Retain prior failures; do not infer that this also fixes the independent active-burst missing-source result or rich second-word presentation.",
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false
+}

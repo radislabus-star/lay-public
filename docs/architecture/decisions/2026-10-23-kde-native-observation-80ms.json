@@ -1,0 +1,51 @@
+{
+  "status": "INSTALLED_BOUNDED_SOURCE_AND_RESOURCE_PROOF_FULL_CHROME_FAIL",
+  "owner": "Existing KDE native-document read adapter; all authority and mutation owners unchanged",
+  "affected_invariants": [
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "first_failed_transition": "On906f8dfe the cold r7 ordinary second-word hint has text erka but rectnull despite correct local/DOM tail and valid native GetCharacterExtents=[157,285,11,21]. Complete native reads after the last character fail at40183/40113us. Source proof is correctly discarded; no later real text event recovers its rectangle before the hint wait expires. The same receipt has7 observation deadline failures. These are read failures, not evidence of reversed styling or a missing coordinate from Chrome.",
+  "decision": "Increase only OBSERVATION_BUDGET from40ms to80ms for complete native document reads and the existing read-only edit preflight. Keep selection acknowledgement40ms and activation/subscription IO20ms. Maximum source-preflight+selection bound becomes120ms. No mandatory delay, new retry, fallback, old-geometry reuse, ownership lifetime extension or relaxed postcondition. Full field/identity/caret/privacy/foreground checks remain unchanged.",
+  "alternatives": [
+    {
+      "name": "Bound complete native observation at80ms",
+      "score_1_to_10": 9,
+      "reason": "One measured insufficient phase; normal calls return immediately and no extra owner is introduced."
+    },
+    {
+      "name": "Use old coordinates after a read deadline",
+      "score_1_to_10": 1,
+      "reason": "Would show a hint without current field/character proof."
+    },
+    {
+      "name": "Increase every native timeout or poll indefinitely",
+      "score_1_to_10": 2,
+      "reason": "Would affect unrelated phases and conceal missing evidence."
+    }
+  ],
+  "verification": "Retain37 semantic native controls and baseline failure identities. Rebuild, verify installed/activation/process bytes, repeat same-field4, unchanged r19 active pair and unchanged r18 fixed20/full220. Record latency distributions separately from the configured maximum wait. No assertion that all remaining correction/decoder/observer failures have this cause.",
+  "receipts": [
+    "chrome-941-first-second-word-r7-candidate-20261023/result.json",
+    "chrome-941-first-second-word-r7-candidate-20261023/a11y-calls.log",
+    "chrome-941-known-word-full-20261023/chrome/result.json"
+  ],
+  "runtime_authority_changed": false,
+  "installed": true,
+  "published": false,
+  "runtime_pid": 1810604,
+  "runtime_sha256": "8d99bb1bcc869c00761e95c516657d68ece1398b9235b192434d264939fcbe02",
+  "native_source_controls_passed": 41,
+  "full_native_verdict": {
+    "PASS": 143,
+    "FAIL": 36,
+    "BLOCKED": 41,
+    "NOT_TESTED": 0
+  },
+  "complete_chrome_acceptance": false,
+  "updated_at": "2026-10-23T21:15:29.197721+00:00",
+  "current_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-notification-drain-full-20261023/result.json"
+}

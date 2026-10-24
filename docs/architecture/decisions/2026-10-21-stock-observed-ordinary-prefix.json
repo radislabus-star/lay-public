@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Stock legacy clients with an actual surrounding-text boundary use the existing ordinary ManagedCommit input; explicit exact-refresh clients keep their owned preedit.",
+  "reason": "LibreOffice GTK3 v49 reproduced an underlined typed prefix and supplied ten real SetSurroundingText callbacks. This qualifies the existing ordinary-input path for that mechanism. Opaque Chrome did not supply such callbacks and is not covered.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/td125_legacy_preedit_tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "v55 source26/26 and452/452 PASS; build and engine-only install verified. Actual LibreOffice functional5PASS/1FAIL, prefix presentationFAIL in both positions. Native delayed initial SSI disproves applicability of the pre-snapshot fixture. Receipt libreoffice-presentation-probe-v55/result.json; protected runtime and seven restorations verified.",
+  "not_tested": "No full browser matrix or GNOME rerun; Chrome plain prefix unresolved; no accessibility provider adopted.",
+  "runtime_authority_changed": false,
+  "consequences": "One existing input-mode predicate changes. No new owner, input/output transport, executor, fake surrounding snapshot or client-name branch. Preserve managed_commit_snapshot_floor, exact_managed_surrounding_word_is_current, focus/selection/privacy guards and verifier. Missing snapshots keep the opaque-client owned-preedit path. Native LibreOffice acceptance must include hint/Tab, word-boundary correction, physical Shift and Double Shift; retain Kitty/Chrome controls. Reject if ordinary typing is lost or authority guards regress.",
+  "status": "SOURCE_PASS_NATIVE_FAIL",
+  "recorded_at": "2026-10-21T23:04:20.091127+00:00",
+  "updated_at": "2026-10-21T23:40:13.096653+00:00"
+}

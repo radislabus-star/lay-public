@@ -14,6 +14,10 @@ import json, os, sys
 from pathlib import Path
 p = Path(os.environ['STUB_STATE']); state = json.loads(p.read_text())
 name, args = Path(sys.argv[0]).name, sys.argv[1:]
+expected_bus = ('unix:path=' + os.environ['XDG_RUNTIME_DIR'] + '/bus'
+                if name == 'systemctl' else 'unix:path=/nonexistent-isolated-bus')
+if os.environ.get('DBUS_SESSION_BUS_ADDRESS') != expected_bus:
+    sys.exit(88)
 with Path(os.environ['STUB_LOG']).open('a') as f:
     f.write(json.dumps([name, *args]) + '\n')
 if name == 'pgrep': sys.exit(1)
