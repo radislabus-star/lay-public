@@ -1,8 +1,8 @@
 {
   "schema": "lay.debt-release-worklog.v1",
   "version": "1.0.97",
-  "state": "GATES_PASSED_NATIVE_LIMITS_RECORDED_PUBLICATION_PENDING",
-  "public_stable": "1.0.96",
+  "state": "RELEASED_SCOPED_FIX_REMAINING_NATIVE_DEBT_OPEN",
+  "public_stable": "1.0.97",
   "native_installed": "final97 ten hash-verified artifacts; system IBus1.5.26 restored after private comparison; IME3168368 daemon3168498",
   "baseline_native": {
     "firefox": {
@@ -273,5 +273,15 @@
       "total": 220
     },
     "ci": "CI40243726181 and Security40243726160 SUCCESS on3236fe6c"
-  }
+  },
+  "publication": {
+    "status": "PUBLISHED_STABLE",
+    "tag": "v1.0.97",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.97",
+    "published_at": "2026-10-25T23:33:05Z",
+    "tag_object": "7759fcaca97f1029159fa156310dca984e3577f1",
+    "tag_commit": "f53bf27ab59fe6193613a324aafe296f8e791fe4",
+    "functional_commit": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
+  },
+  "next_stage": "1.0.98 Chrome Space correction (8 current native FAIL); Firefox shared long-sequence/rapid debt retained for stage3"
 }

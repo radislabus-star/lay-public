@@ -1259,4 +1259,14 @@ protected processes match. Restoration/control receipts are in the comparison
 learning and all Lay output/authority owners remain unchanged. Chrome's full
 unchanged-r18 run on these final bytes and restored system stack is pending.
 Public source3236fe6c is pushed; CI40243726181/Security40243726160 are running.
-Stable release remains96 until the publication and updater gates complete.
+Stable release remained96 until the publication and updater gates completed.
+
+Finalization: CI40243726181 and Security40243726160 SUCCESS, including real
+release binaries. Final original-stack Chrome220 is170P8F42B; paired published
+same97-byte grids total280P80F80B/440. Old96->97 losses are retained (Firefox
+11P->F/1P->B, Chrome1P->F/1P->B), not called regression-free acceptance.
+Stablev1.0.97 published2026-10-25T23:33:05Z, peeled tagf53bf27a, functional
+source3236fe6c. Installed updater checks: local96 offers97; remote97 current.
+No manual local install. Raw per-case/native/update records are in
+tech_debt/evidence/release-1.0.97-{native,verification,updater}.json. Remaining
+Chrome Space failures and shared lifecycle/rapid debt stay open in stages2/3.

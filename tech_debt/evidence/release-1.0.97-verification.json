@@ -1,7 +1,7 @@
 {
   "schema": "lay.release-verification.v1",
   "version": "1.0.97",
-  "state": "SOURCE_BUILD_AND_SCOPED_NATIVE_VERIFIED_PUBLICATION_PENDING",
+  "state": "PUBLISHED_SCOPED_FIX_WITH_NATIVE_RESIDUALS",
   "source": {
     "files": 1285,
     "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
@@ -600,7 +600,15 @@
       "scope": "full same-final97-byte Firefox and Chrome grids, system IBus1.5.26; separate native runs, all original verdicts retained"
     }
   },
-  "public": "READY_NOT_YET_PUBLISHED",
+  "public": {
+    "status": "PUBLISHED_STABLE",
+    "tag": "v1.0.97",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.97",
+    "published_at": "2026-10-25T23:33:05Z",
+    "tag_object": "7759fcaca97f1029159fa156310dca984e3577f1",
+    "tag_commit": "f53bf27ab59fe6193613a324aafe296f8e791fe4",
+    "functional_commit": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
+  },
   "local_gnome": "No manual installation/restart, last observed CLI/extension96",
   "authority_change": {
     "owners_unchanged": true,
@@ -645,5 +653,13 @@
       "url": "https://github.com/radislabus-star/lay-public/actions/runs/40243726160",
       "head_sha": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
     }
+  },
+  "updater_verification": {
+    "receipt": "tech_debt/evidence/release-1.0.97-updater.json",
+    "local_installed": "1.0.96",
+    "local_live_check": "offers1.0.97",
+    "remote_installed": "1.0.97",
+    "remote_live_check": "current",
+    "manual_local_install": false
   }
 }

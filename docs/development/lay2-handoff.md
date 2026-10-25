@@ -1,4 +1,39 @@
-## Current milestone — 2026-10-25 23:19:08 UTC
+## Current milestone — 2026-10-25 23:33:52 UTC
+
+FIRST OF SIX RELEASES PUBLISHED: stablev1.0.97 at2026-10-25T23:33:05Z,
+https://github.com/radislabus-star/lay-public/releases/tag/v1.0.97.
+Functional commit3236fe6c, release tag peeledf53bf27a, private/public pushed.
+CI40243726181 and Security40243726160 SUCCESS, including release binaries.
+Installed local updater --check explicitly offers96->97; remote installed
+updater --check97 current. Local CLI/daemon/IME/extension still96 at check;
+no manual local install/restart. Actual proof in release-1.0.97-updater.json.
+
+Final original-stack native grids on SAME97 bytes: Firefox110P72F38B/220,
+Chrome170P8F42B/220; total280P80F80B/440,0untested. NOT regression-free:
+FF old96 PASS->11FAIL+1BLOCKED, Chrome->1FAIL+1BLOCKED. All raw cells,
+matched transitions and latency coverage are in release-1.0.97-native.json
+and verification.json. Rich closed-erasure witness passes; source320 shapes,
+3512 source,11performance,417Python+10skips,ten binaries all proven.
+Private IBus upgrade REJECTED (modern16gains/10losses; restored old controls
+also3PASS). Do not repeat that upgrade. See previous milestone for runtime
+units/PIDs: current systemIBus3168326, IME3168368, daemon3168498, same bytes.
+No heavy test job running now. All exec95815/71981/96474/37719/83778 completed.
+
+ACTIVE STAGE2 (reserved98): analyze eight Chrome Space failures from final97
+baseline BEFORE code. Correct current per-case native_trace filenames must be
+read from the JSON, NOT guessed row numbers. First text Space is row-7 in this
+run (not row9); raw cached Chrome full result is retained-final/chrome-full.json.
+A preliminary unrelated row9 trace showed stale/not_ready worker generations;
+this is a hypothesis, not yet exact first loss for all8. Query located
+src/bin/lay_ibus_engine/committed_tail.rs:206-304 and existing
+space_autocorrect_prefetch.rs. Read source and eight mapped actual traces,
+reuse prior rejected key-time-Space experiment in owner doc; do not repeat it.
+Worker candidates are data; fresh current owner/verifier remains sole permission.
+No routes, SafetyGate, canon gates or GNOME behavior may be weakened. No word
+exceptions, no new model fit. Explain actual first failure and alternatives
+before editing. Other five-release debts remain queued. No Harness2/agents.
+
+## Previous milestone — 2026-10-25 23:19:08 UTC
 
 Stage1 source is committed and pushed to private branch and public main:
 3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34, same final97 closure/artifacts below.

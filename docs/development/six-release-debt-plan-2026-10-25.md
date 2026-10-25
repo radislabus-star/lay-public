@@ -16,9 +16,9 @@ client effects, BLOCKED prerequisites and NOT_TESTED coverage.
 
 | Order | Planned release | Scope | State |
 | --- | --- | --- | --- |
-| 1 | 1.0.97 | KDE Firefox functional failures and default native observation prerequisites | IN_PROGRESS: exact320 GREEN; full release gates running; final native pending |
-| 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | QUEUED |
-| 3 | 1.0.99 | Remaining inline presentation, terminal rapid gestures and applicable native coverage | QUEUED |
+| 1 | 1.0.97 | KDE Firefox functional failures and default native observation prerequisites | RELEASED: bounded closed-erasure repair; complete source/build gates, raw native limits and updater discovery recorded |
+| 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | IN_PROGRESS: eight final97 native failures mapped before code |
+| 3 | 1.0.99 | Shared long-sequence lifecycle/rapid gestures, remaining inline presentation, terminals and native coverage | QUEUED; Firefox residuals from97 retained here |
 | 4 | 1.0.100 | Build warnings: measured reachability and minimal research/runtime boundaries | QUEUED |
 | 5 | 1.0.101 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | QUEUED |
 | 6 | 1.0.102 | Reconcile debt queue and final acceptance/release/updater evidence | QUEUED |
@@ -51,6 +51,18 @@ https://github.com/radislabus-star/lay-public/issues/47#issuecomment-6402315617.
 The residual remains unproved independently of the public issue state.
 
 ## Per-stage finish record
+
+Stage1 published2026-10-25T23:33:05Z as stablev1.0.97, functional3236fe6c,
+tagf53bf27a. CI40243726181/Security40243726160 SUCCESS,3512 correctness/package,
+11performance,417Python (10 skipped), both MSRV1.88 and all-ten-bin release.
+Final native on system IBus1.5.26: Firefox110P72F38B,Chrome170P8F42B of220
+each. Exact oldPASS losses remain recorded; this is scoped publication, not
+all-client or regression-free acceptance. Private IBus upgrade was rejected
+after16 gains/10 losses and fresh old-version3PASS controls. Local installed
+updater offers96->97, remote updater97 current; no manual local install.
+See release-1.0.97-{verification,native,updater}.json. Chrome Space8 remain
+stage2, shared Firefox long-sequence/rapid debt stays stage3. Later stage
+reconciliation must not mark those residuals closed from this publication.
 
 Stage1 first mechanism: Firefox closed-word native erasure after the decoder
 probe loses the existing pending receipt. RED1085PASS/1FAIL of1086 under the
