@@ -1,9 +1,9 @@
 {
   "schema": "lay.debt-release-worklog.v1",
   "version": "1.0.97",
-  "state": "IN_PROGRESS_NOT_PUBLISHED",
+  "state": "GATES_PASSED_NATIVE_LIMITS_RECORDED_PUBLICATION_PENDING",
   "public_stable": "1.0.96",
-  "native_installed": "final97 ten artifacts verified; temporary same-byte private IBus comparison, automatic old-system restoration pending",
+  "native_installed": "final97 ten hash-verified artifacts; system IBus1.5.26 restored after private comparison; IME3168368 daemon3168498",
   "baseline_native": {
     "firefox": {
       "PASS": 81,
@@ -263,7 +263,15 @@
       "NOT_TESTED": 0,
       "total": 220
     },
-    "protocol_comparison": "3 native controls PASS on private IBus1.5.34; complete matrix and fresh old-version control pending",
-    "authority_owners_changed": false
+    "protocol_comparison": "modern117P66F37B;16F->P/10P->F; fresh old1.5.26 controls3PASS; dependency promotion rejected",
+    "authority_owners_changed": false,
+    "chrome_original_ibus": {
+      "PASS": 170,
+      "FAIL": 8,
+      "BLOCKED": 42,
+      "NOT_TESTED": 0,
+      "total": 220
+    },
+    "ci": "CI40243726181 and Security40243726160 SUCCESS on3236fe6c"
   }
 }

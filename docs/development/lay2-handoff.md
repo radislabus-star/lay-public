@@ -1,4 +1,50 @@
-## Current milestone — 2026-10-25 22:43:01 UTC
+## Current milestone — 2026-10-25 23:19:08 UTC
+
+Stage1 source is committed and pushed to private branch and public main:
+3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34, same final97 closure/artifacts below.
+GitHub CI40243726181 is still in source tests; public installer/MSRV passed.
+Security40243726160 SUCCESS. Stable still96; do not tag/publish97 until CI
+and final native/updater finish. No other stage started. No agents/Harness2.
+
+Private IBus comparison COMPLETED, dependency promotion REJECTED. On SAME
+final97 bytes, private1.5.34 Firefox117P66F37B/220, unchanged frozenr18.
+Against original1.5.26 110P72F38B:16F->P,10P->F,1B->P. Fresh old1.5.26
+controls after restoration also3PASS (text-active,url-active,rich-space).
+Thus version alone is NOT proved cause; stop pursuing an IBus upgrade as
+the fix. Actual FocusInId was observed on modern1.5.34, none on old1.5.26;
+upstream1.5.27 already supports it. Long-sequence lifecycle state remains.
+Modern latency has different coverage; no speed-gain claim. Raw old results
+and failed operator prerequisites remain immutable. Private prefix stays
+inactive, not shipped or globally installed. System packages unchanged.
+
+Restored actual stack: old /usr/bin/ibus-daemon1.5.26 PID3168326, unit
+lay-release97-restored-system-ibus.service; one auto-activated final97 engine
+PID3168368 in that unit, daemon3168498. Lay engine SHA611a4b935b73e0f75734105
+cbcda4f2c2f671f8458f933c427c3905dab4bf9e6. Initial deployment's2959534 is
+HISTORICAL, no longer alive. Config/protected processes unchanged. Local
+GNOME not manually installed/restarted, models/learning untouched.
+
+Comparison dir remote ibus-protocol-comparison/native-comparison-registry,
+result.json plus restored-controls/result.json. First wrong-registry/duplicate
+operator attempt at native-comparison failed before input; ready-only attempt
+failed before mutation because no-focused bridge admission refused. Corrected
+operator uses original cached component directory
+/home/e/.cache/lay/kde-live-20261019/component and ONE auto-activated factory,
+never explicit+automatic racing instances. Build private1.5.34 used upstream
+portal-codegen Makefile rule for hostGLib2.72, not edited generated C/XML.
+
+RUNNING full original r18 Chrome final97 on restored1.5.26, exec95815:
+remote release97-chrome-final-full. Wrapper is
+ibus-protocol-comparison/native-comparison-registry/restored-controls/run-native.py
+(only changed deployment-identity path from original final wrapper), proves
+current3168368, same actorSHA17dc93b5f2769d5dde62bfe8f5a539fb68af40744139e823c5f18a848b4ce7e6.
+Do not use old run-native-final97.py with historical2959534. Finish the grid,
+retain full verdicts/latency coverage, update release97 evidence/notes. Check CI,
+then docs-only finalization commit [skip ci], tag/release97, installed updater
+--check for local and remote (no manual local install), update plan and proceed98.
+Memory relevant only native-evidence distinction at MEMORY.md5436-5437.
+
+## Previous milestone — 2026-10-25 22:43:01 UTC
 
 Final97 source passed3512 correctness/package,11 performance,417 Python
 (10 skipped), strict lints, both MSRV1.88 configurations, architecture50 and

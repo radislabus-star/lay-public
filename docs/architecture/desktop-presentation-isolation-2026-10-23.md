@@ -1238,8 +1238,25 @@ Corrected comparison `ibus-protocol-comparison/native-comparison-registry`
 has three unchanged-r18 native controls PASS: text:roundtrip:active and
 url:roundtrip:active (both FAIL in the original full grid), plus the existing
 rich:roundtrip:space PASS control. The trace contains actual FocusInId and
-no bare FocusIn in the first control. A complete220 comparison is running;
-its pending cells must not be reported PASS. A fresh old-IBus control after
-restoration is still required to distinguish protocol version from restart
-state. The controller restores the system IBus afterward. Local GNOME,
-models, learning and all Lay output/authority owners remain unchanged.
+no bare FocusIn in the first control. Complete220 comparison:
+117PASS/66FAIL/37BLOCKED, zero untested. Exact same identities yield
+100P->P,16F->P,56F->F,37B->B,10P->F,1B->P. This is not regression-free.
+
+Crucial negative control after restoration: the SAME three short cases also
+PASS on freshly restarted system IBus1.5.26. Therefore the protocol version
+alone is NOT established as their cause, and the private dependency is NOT
+promoted. Do not keep rebuilding/upgrading IBus to pursue these refusals.
+Long-sequence lifecycle state and rapid-gesture timing remain separate debt.
+The original full matrix is retained unchanged. Native latency samples on
+1.5.26:224 samples/75 of220 rows, median162.98ms/p95261.56/max285.69;
+on1.5.34:280 samples/88 rows, median163.06/p95246.17/max297.30. These
+different coverage sets do not establish a speed improvement.
+
+System IBus is restored: root3168326, one automatically activated final97
+factory3168368, daemon3168498. The final engine hash is unchanged; config and
+protected processes match. Restoration/control receipts are in the comparison
+`result.json` and `restored-controls/result.json`. Local GNOME, models,
+learning and all Lay output/authority owners remain unchanged. Chrome's full
+unchanged-r18 run on these final bytes and restored system stack is pending.
+Public source3236fe6c is pushed; CI40243726181/Security40243726160 are running.
+Stable release remains96 until the publication and updater gates complete.

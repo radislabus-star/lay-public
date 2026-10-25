@@ -1,7 +1,7 @@
 {
   "schema": "lay.release-verification.v1",
   "version": "1.0.97",
-  "state": "FINAL97_OLD_IBUS_GRID_RECORDED_MODERN_IBUS_COMPARISON_PENDING",
+  "state": "SOURCE_BUILD_AND_SCOPED_NATIVE_VERIFIED_PUBLICATION_PENDING",
   "source": {
     "files": 1285,
     "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
@@ -472,12 +472,135 @@
         "NOT_TESTED": 0
       },
       "total": 220,
-      "scope": "KDE/X11 IBus1.5.26; frozen r18 default TCP unchanged; complete final97 bytes",
-      "remote_receipt": "release97-firefox-final-full/firefox/result.json"
+      "scope": "final97 KDE/X11 system IBus1.5.26; frozen r18 default TCP/cadence/assertions unchanged",
+      "remote_receipt": "release97-firefox-final-full/firefox/result.json",
+      "latency": {
+        "samples": 224,
+        "rows_with_samples": 75,
+        "rows_total": 220,
+        "median_ms": 162.97968477010727,
+        "p95_ms": 261.56289456412196,
+        "max_ms": 285.6935183517635,
+        "scope": "frozen r18 measured target observations only; failing/missing gestures are not latency samples"
+      },
+      "transitions_from_96": {
+        "PASS->PASS": 69,
+        "PASS->FAIL": 11,
+        "FAIL->FAIL": 61,
+        "FAIL->PASS": 41,
+        "BLOCKED->BLOCKED": 36,
+        "PASS->BLOCKED": 1,
+        "FAIL->BLOCKED": 1
+      }
     },
-    "chrome": "NOT_TESTED_ON_FINAL97; retained96 baseline168P10F42B"
+    "chrome": "final97 full result retained in full_chrome; old96 baseline retained separately",
+    "protocol_comparison": {
+      "status": "NOT_ACCEPTED_AS_DEPENDENCY_FIX",
+      "lay_bytes_unchanged": true,
+      "modern_ibus_version": "1.5.34",
+      "modern_counts": {
+        "PASS": 117,
+        "FAIL": 66,
+        "BLOCKED": 37,
+        "NOT_TESTED": 0
+      },
+      "original_counts": {
+        "PASS": 110,
+        "FAIL": 72,
+        "BLOCKED": 38,
+        "NOT_TESTED": 0
+      },
+      "transitions": {
+        "PASS->PASS": 100,
+        "FAIL->PASS": 16,
+        "FAIL->FAIL": 56,
+        "BLOCKED->BLOCKED": 37,
+        "PASS->FAIL": 10,
+        "BLOCKED->PASS": 1
+      },
+      "modern_latency": {
+        "samples": 280,
+        "rows_with_samples": 88,
+        "rows_total": 220,
+        "median_ms": 163.06220763362944,
+        "p95_ms": 246.1725629400462,
+        "max_ms": 297.30224260129035,
+        "scope": "frozen r18 native key-release to observed target; measured samples only; missing/failing gestures excluded, not a speed promotion"
+      },
+      "fresh_system_ibus_controls": [
+        {
+          "label": "text-active",
+          "counts": {
+            "PASS": 1,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "NOT_TESTED": 0
+          },
+          "exit": 0
+        },
+        {
+          "label": "url-active",
+          "counts": {
+            "PASS": 1,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "NOT_TESTED": 0
+          },
+          "exit": 0
+        },
+        {
+          "label": "rich-space",
+          "counts": {
+            "PASS": 1,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "NOT_TESTED": 0
+          },
+          "exit": 0
+        }
+      ],
+      "conclusion": "FocusInId observed on modern protocol, but fresh1.5.26 controls also pass and ten old PASS become FAIL. Version alone is not established cause. System IBus restored. Private helper not shipped.",
+      "remote_receipt": "ibus-protocol-comparison/native-comparison-registry/result.json"
+    },
+    "full_chrome": {
+      "counts": {
+        "PASS": 170,
+        "FAIL": 8,
+        "BLOCKED": 42,
+        "NOT_TESTED": 0
+      },
+      "total": 220,
+      "latency": {
+        "samples": 371,
+        "rows_with_samples": 112,
+        "rows_total": 220,
+        "median_ms": 47.022705199196935,
+        "p95_ms": 62.176152132451534,
+        "max_ms": 89.79784208349884,
+        "scope": "frozen r18 measured target observations only; failing/missing gestures are not latency samples"
+      },
+      "transitions_from_96": {
+        "PASS->PASS": 166,
+        "FAIL->FAIL": 7,
+        "BLOCKED->BLOCKED": 41,
+        "PASS->FAIL": 1,
+        "FAIL->PASS": 3,
+        "BLOCKED->PASS": 1,
+        "PASS->BLOCKED": 1
+      },
+      "scope": "final97 KDE/X11 system IBus1.5.26; frozen r18 default TCP/cadence/assertions unchanged",
+      "remote_receipt": "release97-chrome-final-full/chrome/result.json"
+    },
+    "combined_final97_original_stack": {
+      "PASS": 280,
+      "FAIL": 80,
+      "BLOCKED": 80,
+      "NOT_TESTED": 0,
+      "total": 440,
+      "scope": "full same-final97-byte Firefox and Chrome grids, system IBus1.5.26; separate native runs, all original verdicts retained"
+    }
   },
-  "public": "NOT_PUBLISHED",
+  "public": "READY_NOT_YET_PUBLISHED",
   "local_gnome": "No manual installation/restart, last observed CLI/extension96",
   "authority_change": {
     "owners_unchanged": true,
@@ -498,6 +621,29 @@
     "warning_counts": {
       "unmaintained": 2,
       "yanked": 1
+    }
+  },
+  "deployment_current_after_protocol_comparison": {
+    "ibus_pid": 3168326,
+    "engine_pid": 3168368,
+    "engine_sha256": "611a4b935b73e0f75734105cbcda4f2c2f671f8458f933c427c3905dab4bf9e6",
+    "daemon_pid": 3168498,
+    "system_ibus": true,
+    "note": "intentional private test-bus restart; original deployment remains historical hash proof; no local GNOME change"
+  },
+  "ci": {
+    "source_commit": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34",
+    "CI": {
+      "run": 40243726181,
+      "state": "SUCCESS",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/40243726181",
+      "head_sha": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
+    },
+    "Security": {
+      "run": 40243726160,
+      "state": "SUCCESS",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/40243726160",
+      "head_sha": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
     }
   }
 }
