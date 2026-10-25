@@ -20542,3 +20542,5 @@ fn native_space_without_eligible_predecessor_cannot_create_reset_authority() {
         assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
     }));
 }
+#[path = "residuals/release97_firefox.rs"]
+mod release97_firefox;

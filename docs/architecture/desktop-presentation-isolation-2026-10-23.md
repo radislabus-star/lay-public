@@ -992,3 +992,254 @@ properties stay false; this preparation does not certify ordinary Firefox
 startup. These red results are evidence of remaining KDE client failures,
 not full compatibility acceptance. GNOME51/OrangePi physical tests remain
 NOT_TESTED. The issue fixes are scoped to startup/flags and Shell API changes.
+## Firefox closed-word erasure experiment — 2026-10-25, source only
+
+Stage1 of `../development/six-release-debt-plan-2026-10-25.md` starts from
+release96 source07867bf6. Frozen Firefox row10/row4 traces show one successful
+manual replay followed by a committed decoder probe, actual Reset/SSI,
+ordinary Backspace, Reset/SSI and `context_authority`. The final whole document
+is correct, but the existing native-erasure continuation rejects returning
+from a one-character new word to the preceding closed word. Native reader
+`native_not_chrome` is a separate observed restriction, not this proven cause.
+
+New production-path regression
+`release97_kde_closed_replay_probe_erasure_restores_exact_manual_source`
+fails on the unchanged runtime mechanism: expected exact-tail delegation,
+actual NotHandled, UnknownStart/observed_suffix_chars0/receiptNone. Focused
+RED:1085PASS/1FAIL of1086; remote run
+`/home/e/projects/lay-development-runner/run-OzUqL1`, local request/result/logs
+`/home/ubu/.cache/lay/development/release-1.0.97-20261025/red-closed-erasure-v2`.
+The earlier transfer attempt stopped before tests because tar's data filter
+removed group-write mode; it is BLOCKED infrastructure, not semantic RED.
+
+Alternatives: weaken generic manual admission2/10 (rejected); extend Chrome's
+native transport to Firefox5/10 (unproved broader scope); describe KDE's
+expected closed range and reuse existing exact native-erasure receipt9/10.
+The candidate uses `kde/native_erasure.rs` for that observation shape only.
+Existing pending receipt, actual shortened snapshot, same-field/owner/revision
+checks and the existing manual executor retain authority. Other desktop
+backends get no new range. No new input/delivery route, permission owner,
+reconstructed observed snapshot or wait is introduced.
+
+GREEN/native/release are pending; no client PASS or publication is claimed.
+Runtime installed on remote KDE remains stable96 until a separately recorded
+candidate deployment. No local GNOME runtime change was performed.
+
+### Candidate A native refusal and no-Reset permutation — 2026-10-25
+
+The original first regression reached GREEN1086/1086, including24 actual
+receipt combinations. Real all-ten-bin build217.4s and architecture PASS;
+source closure8f49b24248b10cfaa7590d566b304f3a665ac6b64a7ee162baa5f9ba36770701.
+Private candidate A1.0.97 is installed on remote KDE only; loaded core hashes
+match retained compiler artifacts. No public97 release exists.
+
+The unchanged r18 text:tab:functional witness FAILS1/1 at the second Double
+Shift (first delegation succeeds; final context_authority). Unlike the first
+fixture, its probe insertion receives actual SSI without preceding Reset.
+The insertion snapshot exists; an earlier commentary calling it absent was
+corrected. Raw case/trace are retained under release97-native-firefox-tab-a.
+The expanded fixture adds both append-Reset orders, Unicode prefixes and six
+receipt shapes (48 combinations). Its frozen source fails the no-Reset case
+before any new native deployment; existing1085 other IME tests remain PASS.
+
+Rejected source-only experiment: a separate ObservedWord variant in the native
+erasure evidence failed to acquire the required source and was removed before
+any build/deployment. This was not an accepted fix. Preserve that failure; do
+not alternate between this producer and the same failed candidate again.
+
+Current bounded diagnosis reuses the existing pending owned-append receipt
+for the first KDE literal character after a confirmed closed word. The first
+actual appended receipt and subsequent actual erasure receipt remain required.
+New early assertions distinguish loss on commit, on SSI and on deletion.
+Exact checks reuse canonical cargo discovery and test_lanes.execution.run_target
+with its actual sandbox, expected nonzero test identity, source-stability and
+unchanged-manifest checks. These are development-only; they do not replace
+the complete IME and release gates. Receipt root remains
+/home/ubu/.cache/lay/development/release-1.0.97-20261025.
+
+### Exact no-Reset source and matched erasure Reset — 2026-10-25
+
+Further frozen facts reject the synthetic next-word Reset alternative:
+ordinary KnownStart input can retain the same admission token. A pending
+Reset with identical predecessor/current tokens is correctly invalid. That
+experiment and its next-word shape helper were removed; the actual inserted
+surface assertion replaces an inappropriate demand for a Reset receipt.
+
+Current source adds no persistent evidence variant, owner, timer or executor.
+Before native Backspace it uses the existing ManagedCommitSnapshotFloor
+(same focus/lease/layout/epoch, later actual observation revision), the actual
+whole inserted SSI and the callback's current token on the stack. Only KDE's
+bounded closed-word erasure shape can use this source. Common native-erasure
+Awaiting still owns the pending effect and requires the whole shortened SSI.
+
+The second measured loss is Reset capture: an independent Awaiting native
+erasure was excluded by generic capture of an older spent manual replay.
+Capture now preserves that existing witness only for the reducer's actual
+same-owner matched Reset, same effect token, epoch/revision/foreground and
+current tail. Existing arm/confirmation checks remain; no actual snapshot
+is reconstructed or installed. GNOME's fresh-source shape remains unavailable.
+
+Frozen exact check run-FGVInx PASS: one original test identity executes48
+combinations (both append Reset orders, prefixes and six erasure surfaces).
+Receipt: release-1.0.97-20261025/exact-matched-erasure-reset/RESULT.json under
+the private local evidence root. This is not full-source or native acceptance.
+Full IME and candidate B physical checks follow; A's1/1 native FAIL is retained.
+
+### Candidate B source and native controls — 2026-10-25
+
+Explicit KDE-only source passed1086/1086 IME tests (run-rOn6Pm). B's actual
+all-ten-bin optimized build took73.776s, source closure after canonical graph
+a0cde87728327be0418597e9a125b1b5203f9490f5a9f0cbaee373e434096708.
+Remote build/deployment receipts: release97-candidate-b-{build,deployment}/
+result.json under the existing install-control root. Loaded artifacts match;
+IME2666745, daemon2704331 after a same-byte temporary verbose diagnostic.
+Local GNOME CLI/extension remain96; IBus, models and desktop were not replaced.
+
+Unchanged native r18 controls: text:tab:functional PASS, text:roundtrip:space
+PASS, text:consecutive-two:space PASS; rapid-five:space FAIL (final target
+missing), rapid-five:active FAIL (four actual handled requests for five
+gestures). Short controls are not a new220-case matrix. Raw evidence:
+release97-native-firefox-tab-b and release97-native-firefox-short-b-{1,2,3,4}.
+
+Bounded diagnostic release97-firefox-burst-verbose-b used identical daemon
+bytes and one active burst. Five FSM recognitions/handled requests occurred,
+but two intermediate effects missed the original next-gesture deadline.
+Processing batches were roughly250ms apart. A subsequent syscall-wait timing
+diagnostic release97-firefox-burst-waits-b passed once. That observation
+indicates timing sensitivity; neither diagnostic is accepted regression proof.
+Logging/configuration were restored, only the earlier verbose run restarted
+the daemon. No performance fix, focus-cache relaxation or cadence change was
+made. The complete unchanged Firefox220 grid is running as
+release97-firefox-full-b. Baseline Firefox81P/103F/36B and Chrome168P/10F/42B
+remain immutable until the new complete result exists.
+
+Wire enum was rechecked:1=Handled,4=AwaitingExactSnapshot. The regression's
+negative assertion now accepts only0/4 with false target direction and no
+captured replay authority; this stronger assertion needs its own final run.
+
+### Complete B grid and rejected NBSP-only hypothesis — 2026-10-25
+
+Frozen r18 Firefox220 completed:106PASS/76FAIL/38BLOCKED,0NOT_TESTED.
+Against96's identical220 identities:71P->P,35F->P,66F->F,10P->F,36B->B,
+2F->B. The improved total is not an acceptance gate: ten old PASS cases fail
+in this run. Four BLOCKED native/DOM disagreements (two already BLOCKED) remain
+visible alongside24 sanitized URL/email trailing Spaces and10TD137 controls.
+FAIL groups:48rapid-five,16roundtrip,5consecutive-two,4moved-boundary,3Tab.
+Receipt: release97-firefox-full-b/firefox/result.json, retained locally under
+release-1.0.97-20261025/retained-b; no denominator or cadence changed.
+
+Rich/plain closed failures expose DOM U+00A0. The expanded original regression
+now exercises96 combinations (Space/NBSP, two prefixes, both Reset orders and
+six receipt shapes), with the corrected negative0/4 assertion. Exact canonical
+run-dpFYwN PASS. Therefore NBSP alone does not reproduce the native loss;
+no normalization, presentation acknowledgement or permission fix is justified.
+Added KDE-only metadata diagnostics expose existing source/range/arm checks,
+without payload text, new authority or changed decisions. These will identify
+the actual missing rich-field receipt; native candidate C is diagnostic only.
+
+### Actual late separator transition and full erasure result — 2026-10-25
+
+C's unchanged rich:roundtrip:space witness FAILS. Its source metadata proves
+the managed-commit floor's epoch/focus/lease/layout/revision all current,
+an allowed confirmed Reset source, empty composition and eight characters in
+both mirror and actual SSI. Only literal whole-tail equality is false. Range
+selection then rejects closed_return and leaves no erasure seed. Receipt:
+release97-firefox-rich-diagnostic-c/firefox/row-1-native-trace.jsonl.
+
+The missing permutation is the presentation change on appending an ordinary
+letter, after a prior closed-word receipt. Frozen RED is retained at local
+release-1.0.97-20261025/red-late-separator-presentation/RESULT.json. The initial
+GREEN attempt failed a new wrong-prefix negative: ordinary suffix continuation
+could promote the reset despite rejection of the full erasure image. That
+failure is retained at green-late-separator-presentation/RESULT.json.
+
+The chosen minimal KDE observation repair (9/10) compares every character and
+allows Space/U+00A0 only at the immediately preceding owned separator. It
+keeps the mirror's witnessed closed range; the actual before/after erasure
+images must agree across the whole field, with only that final separator's
+presentation returning to the witnessed form. Existing owner, revision, Reset,
+caret/selection and token checks remain. A contradictory whole erasure result
+discards the inert candidate; it cannot fall through to ordinary suffix proof.
+No alternate input executor, authority, timeout or GNOME presentation rule.
+General whitespace normalization (1/10) and a new native delivery adapter
+(4/10) were rejected as broader and unable to establish the missing receipt.
+
+Canonical exact run-B9DC5F PASS:320 combinations (two prefixes, initial and
+late Space/NBSP forms, both Reset orders and ten full/negative receipts).
+Full release gates are in progress at release97-full-gates; final changed
+runtime bytes are not installed or physically accepted yet. The existing
+3511 identities remain unchanged; discovery adds only the one regression,
+for3512 correctness/package,11 performance and41 ignored tests.
+
+External source check: Mozilla documents separate TextEditor and HTMLEditor
+implementations, with WhiteSpaceVisibilityKeeper handling NBSP normalization:
+https://firefox-source-docs.mozilla.org/editor/EditorModuleStructure.html .
+This supports the field-type hypothesis; only the actual native receipts and
+regression establish the Lay failure and its repair. It does not certify a
+particular Firefox version or replace native acceptance.
+
+One separate frozen-actor diagnostic enabled TCP_NODELAY only on the existing
+loopback RFB socket. No cadence, input action, observer/assertion or actor bytes
+changed. Active5 targets PASS with8-14ms observations; closed5 targets still
+FAIL original deadlines (145-270ms). Paths: release97-firefox-nodelay-{active,
+space}-c. This identifies a transport timing contribution, not a daemon fix
+or a replacement for the original220-case evidence.
+### Final97 release proof and separate IBus protocol comparison — 2026-10-25
+
+Final source closure is
+`b8582cfeb51c7928c71c9f997729b8c04a25064bd56efcf82eddd27e27340e63`
+(1285 files). Canonical correctness/package passed3512/3512 with no failure
+baseline additions, performance11/11, Python417 (10 skips), strict lints,
+both Rust1.88 configurations, architecture50 and the optimized locked build
+of all ten installed binaries. The existing warning inventory is unchanged.
+The new exact residual test covers320 combinations, including contradictory
+whole-field receipts; no negative may fall through suffix-only continuation.
+
+Remote deployment `release97-final-deployment/result.json` binds all ten
+installed artifacts to compiler executables. Its initial IME2959534 SHA is
+`611a4b935b73e0f75734105cbcda4f2c2f671f8458f933c427c3905dab4bf9e6`.
+On unchanged r18, rich:roundtrip:space passed after candidate C failed.
+The complete final97 Firefox grid on the original IBus1.5.26 is
+110PASS/72FAIL/38BLOCKED of220, with no untested cells. That result establishes
+neither complete Firefox compatibility nor Chrome acceptance on these bytes.
+Receipts: `release97-full-gates`, `release97-final-firefox-rich`,
+`release97-firefox-final-full` under the remote install-control root, with
+compact source/build/deploy/native records retained locally in
+`release-1.0.97-20261025/retained-final` and
+`tech_debt/evidence/release-1.0.97-verification.json`.
+
+Separate environment finding: the actual Ubuntu22.04.5 IBus1.5.26-4 daemon
+has no FocusId/FocusInId support, matching upstream1.5.26. Upstream1.5.27,
+1.5.28 and1.5.29 engineproxy.c already contain both names. The final grid's
+URL first-toggle failure had a timely marker (about18ms of its20ms budget
+left), but lifecycle_pending/revoked admission after bare FocusIn and
+stale_context callbacks. Increasing the marker deadline would not repair
+that evidence. The modern boolean FocusId property getter and factory's
+pre-export admission attachment were inspected and are correct; neither was
+changed. Source tests using FocusInId do not certify a real1.5.26 stack.
+
+A private stable IBus1.5.34 was built from the official tarball (SHA
+`12a72210ce5250f8a66df562a75e034e67b2bce74c4df2983dc86d1154894943`)
+under `/home/e/.local/lib/lay-test/ibus-1.5.34`, without system package changes.
+Its portal's generated C was regenerated using the upstream Makefile rule
+and the host's GLib2.72 tools; the interface XML was unchanged. Private build
+receipt: `ibus-protocol-comparison/build-result.json`. This is an experiment,
+not a shipped dependency or a runtime authority migration.
+
+The first comparison failed before native input: it omitted the existing
+private Lay component directory from the new daemon's registry, then raced
+automatic and explicit factory activation on rollback. Raw failure retained
+at `ibus-protocol-comparison/native-comparison/result.json`; it is not a
+Double Shift verdict. The corrected operator uses the original component
+XML directory and one automatically activated, hash-verified factory.
+No product source was changed to compensate for the operator prerequisite.
+
+Corrected comparison `ibus-protocol-comparison/native-comparison-registry`
+has three unchanged-r18 native controls PASS: text:roundtrip:active and
+url:roundtrip:active (both FAIL in the original full grid), plus the existing
+rich:roundtrip:space PASS control. The trace contains actual FocusInId and
+no bare FocusIn in the first control. A complete220 comparison is running;
+its pending cells must not be reported PASS. A fresh old-IBus control after
+restoration is still required to distinguish protocol version from restart
+state. The controller restores the system IBus afterward. Local GNOME,
+models, learning and all Lay output/authority owners remain unchanged.

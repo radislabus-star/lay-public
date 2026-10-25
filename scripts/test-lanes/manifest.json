@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3475,
+    "correctness": 3476,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 471,
+    "process": 472,
     "target": 3092
   },
   "package_fixtures": [
@@ -1894,6 +1894,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::private_manual_toggle_real_v4_preserves_volatile_proof_and_redacts_replay_keys",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::release97_firefox::release97_kde_closed_replay_probe_erasure_restores_exact_manual_source",
       "target": "bin:lay-ibus-engine"
     },
     {

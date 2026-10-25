@@ -1,4 +1,104 @@
-## Active repair plan — 2026-10-24
+## Current milestone — 2026-10-25 22:43:01 UTC
+
+Final97 source passed3512 correctness/package,11 performance,417 Python
+(10 skipped), strict lints, both MSRV1.88 configurations, architecture50 and
+all ten optimized release binaries. Local source closure exactly matches
+b8582cfeb51c7928c71c9f997729b8c04a25064bd56efcf82eddd27e27340e63.
+Final bytes installed remote only: IME2959534/daemon2959629/tray2959646,
+unit lay-release97-final-kde-ime.service. Source/compiled/deployment evidence
+is release97-full-gates, release97-final-deployment; retained locally under
+release-1.0.97-20261025/retained-final. Actual rich:roundtrip:space PASS on
+unchanged r18 after C FAIL. Complete final r18 Firefox110P72F38B/220:
+Tab8P2B, consecutive52P1F7B, roundtrip37P16F7B, rapid2P50F8B,
+Space layout7P1F2B, moved pair4P4F2B, inverse10B. No public97 yet.
+Source proof is in tech_debt/evidence/release-1.0.97-{test-observation,
+verification}.json; empty known-failure contract rebound to the actual new
+observation, no failure rows added, canonical closure unchanged.
+
+Important new external/protocol evidence: remote is Ubuntu22.04.5,
+IBus1.5.26-4. Its actual /usr/bin/ibus-daemon contains neither FocusId nor
+FocusInId, consistent with upstream1.5.26 bus/engineproxy.c. First-toggle
+refusals show marker arriving within2ms,18ms left, but lifecycle_pending /
+revoked / marker observed / zero unsettled callbacks. Their preceding
+callbacks contain bare FocusIn/Enable followed by stale_context Set/Resets.
+DO NOT raise the20ms marker deadline or bypass revocation to hide this.
+Current Lay FocusId property returns bool and advertises support before
+object export (factory passes the adapter); upstream modern proxy expects
+boolean. The XML's tuple-looking(b) is NOT justification to change the getter
+or invent a construction race. Both were investigated and rejected.
+
+Next different-method experiment: build stable IBus1.5.34 in a private user
+prefix and compare the SAME final97 bytes on the private KDE bus only.
+No source change, system package replacement or local GNOME change planned.
+Official release tar SHA12a72210ce5250f8a66df562a75e034e67b2bce74c4df2983dc86d1154894943;
+source/control directory remote ibus-protocol-comparison is being prepared.
+The latest release API named an RC, so choose stable1.5.34 tar explicitly.
+Do not claim old/new protocol causality until the physical comparison exists.
+The old native matrix and all failed source experiments remain immutable.
+
+A current cargo-audit0.22.2 was built under the shared guard in audit-tool;
+release97-current-security/result.json PASS,0 vulnerabilities/unsoundness,
+RustSec commit21d909e4c8bd4e14c7aea58bf980c881a0053ab1. Maintenance/yanked
+warnings remain visible. The earlier missing-tool exit127 is retained.
+No Harness2/agents, no manual local GNOME installation/restart. Six sequential
+releases remain authorized; finish97 and publish, then stages2-6. Resource
+lease refusals must never be bypassed. Current free disk413GiB; cleanup not
+needed. User explicitly permits reproducible remote cleanup if space runs low.
+
+## Active six-release sequence — 2026-10-25
+
+The user authorized six sequential debt releases, starting with KDE Firefox,
+then Chrome, presentation/terminals, warnings, remaining core/structure, and
+queue reconciliation. Follow `six-release-debt-plan-2026-10-25.md`; stage1 is
+in progress from source07867bf6. Remote KDE now runs diagnostic candidate C1.0.97,
+engine2824404/daemon2824500; retained build/deploy in release97-candidate-c-*
+under the existing remote install-control root. All ten artifacts/loaded hashes
+verified; local GNOME/IBus/models untouched. Candidate A source passed1086/1086,
+but its actual Firefox text:tab:functional witness FAILED the second Double Shift.
+The added no-Reset-on-append permutation also fails: SSI for the committed
+probe arrives without Reset. Do not repeat candidate A unchanged or publish it.
+The ObservedWord variant and a synthetic new-word Reset receipt both failed
+and were removed. The latter produced equal predecessor/current tokens on
+ordinary KnownStart input, correctly rejected by existing guards. Do not
+reintroduce either. Current source captures the existing managed-commit floor
+plus the current token on the Backspace callback stack, reuses native-erasure
+Awaiting, and retains that evidence across a genuinely matched Reset before
+actual shortened SSI. Final KDE-only source passed1086/1086 (run-rOn6Pm).
+B all-ten-bin optimized build and loaded bytes verified. Unchanged r18 native
+Tab/second-toggle, closed roundtrip and consecutive-two controls PASS (3 cases).
+Both rapid-five controls FAIL: closed final target absent; active missed one
+gesture. A one-shot verbose diagnostic captured all five but late effects;
+a separate ptrace timing diagnostic passed, which is diagnostic timing
+sensitivity, not regression acceptance. Both used the same B bytes and restored
+configuration/logging. No daemon performance patch has been made. Complete
+unchanged Firefox220 grid finished under release97-firefox-full-b:
+106P/76F/38B. Exact identity comparison:35F->P,10P->F,2F->B. Do not accept
+the improved aggregate as regression-free or erase old results. On C, native
+rich:roundtrip:space reproduces the failure and metadata proves a current
+source/owner/floor with a literal separator mismatch after managed append.
+Initial NBSP-only96-combination proof passed, so do not re-normalize all spaces.
+Late separator changes were then reproduced RED; exact receipt:
+release-1.0.97-20261025/red-late-separator-presentation/RESULT.json.
+Final actual canonical GREEN is run-B9DC5F,320 combinations: use only one
+immediately preceding Space/NBSP slot, require the complete actual erasure
+result, discard a contradictory seed before generic suffix continuation.
+The first attempted GREEN failed the new wrong-prefix negative and is retained.
+No new input route, owner, wait, generic whitespace equivalence or GNOME branch.
+Full release gates are running: release97-full-gates (exec session48505 at
+22:02UTC). Canonical discovery adds exactly this one test, all old identities
+and lanes unchanged:3512 correctness/package,11 performance,41 ignored.
+Python417 (10 skips), architecture50 and early checks passed; full source,
+MSRV/lints/build/native final bytes/updater/publication remain pending.
+Final source is not installed yet. Frozen actor TCP_NODELAY=1 diagnostic
+leaves its hash/cadence/assertions intact: active five targets PASS8-14ms;
+closed five targets FAIL original deadlines145-270ms. This is a separate
+transport diagnostic, not replacement native acceptance or a daemon fix.
+Continue with final gate outputs and deployment/native verification; no public97.
+No Harness2/subagents; preserve
+the local GNOME runtime and existing authority/input routes. #47 was closed as
+not_planned at the user's request, not established fixed; public issue count0.
+
+## Previous repair plan — 2026-10-24
 
 Continue [the ordered repair and release plan](weekend-repair-plan-2026-10-24.md).
 The user authorized completing build/CI/security fixes, all three open public

@@ -17,7 +17,12 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.96`
+- `1.0.97`
+
+1.0.97 preserves verified KDE closed-word replay after an ordinary new-word
+letter is erased, including one owned Space/NBSP presentation transition.
+Full source/build proofs and the limited native Firefox result are recorded in
+[release notes](docs/release-1.0.97.md); remaining client failures stay visible.
 
 1.0.96 repairs graphical-session startup and upgrade migration, GNOME 51 API
 compatibility, installer diagnostic output and locked security dependencies.

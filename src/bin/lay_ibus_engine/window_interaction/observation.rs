@@ -2718,13 +2718,17 @@ impl LayIbusEngine {
         state: u32,
         tail_before: &str,
         handled: bool,
-        boundary: (Option<ContextResetRereceiptCandidate>, bool),
+        boundary: (
+            Option<ContextResetRereceiptCandidate>,
+            bool,
+            Option<AdmissionToken>,
+        ),
     ) {
         if self.native_cursor_edit_receipt().is_some() {
             self.rebind_native_cursor_after_key(keyval, keycode, state, handled, tail_before);
             return;
         }
-        let (boundary_candidate, native_space_eligible) = boundary;
+        let (boundary_candidate, native_space_eligible, native_backspace_source) = boundary;
         let owned_append = handled
             || (self.exact_replay_tail_change_quarantined && self.exact_replay_quarantine_active());
         if is_key_press(state) && keyval == KEY_BACKSPACE {
@@ -2808,45 +2812,90 @@ impl LayIbusEngine {
             // the shortened range before it can authorize completion acceptance.
             let shortened = (|| {
                 let candidate = boundary_candidate?;
-                let pending = self.context_reset_rereceipt.as_ref()?;
                 let (last, _) = tail_before.char_indices().next_back()?;
                 let token = self.live_context_token()?;
                 let scope = self.context_word_scope.as_ref()?;
                 let owner = self.context_owner.as_ref()?;
-                let token_text = self.last_tail_token_text();
+                let actual_before = candidate.owned_preedit_return_snapshot?;
+                // Actual SSI may confirm an owned literal commit without Reset.
+                // Its pre-key token lives only on this callback's stack; never
+                // fabricate a Reset with an equal predecessor and successor.
+                let fresh_source = native_backspace_source
+                    .as_ref()
+                    .filter(|source| *source == &candidate.token);
+                let source_token = if let Some(source) = fresh_source {
+                    source
+                } else {
+                    let pending = self.context_reset_rereceipt.as_ref()?;
+                    if !pending.confirmed
+                        || candidate.token != pending.predecessor_token
+                        || candidate.tail_epoch != pending.tail_epoch
+                        || candidate.token_text != pending.token_text
+                        || candidate.observed_suffix_chars != pending.observed_suffix_chars
+                    {
+                        return None;
+                    }
+                    &pending.token
+                };
+                // KDE commits the ordinary probe letter into the document.
+                // Erasing its whole one-character word can return to the
+                // preceding closed word. Keep only an expected range here;
+                // the existing native-erasure proof still requires the next
+                // whole actual receipt before permitting any manual effect.
+                let closed_return = crate::kde::native_erasure::closed_word_after_erasure(
+                    self.config.active_layout_backend(),
+                    &actual_before,
+                    tail_before,
+                    &self.committed_tail.buffer,
+                    &candidate.token_text,
+                    candidate.observed_suffix_chars,
+                );
+                let returns_to_closed_word = closed_return.is_some();
+                let token_text = closed_return.unwrap_or_else(|| self.last_tail_token_text());
                 let chars = token_text.chars().count();
+                if crate::kde::native_erasure::supports(self.config.active_layout_backend()) {
+                    trace::record(format!(
+                        r#"{{"kind":"ibus_native_erasure_candidate","stage":"range","closed_return":{returns_to_closed_word},"fresh_source":{},"scope_known":{},"scope_chars":{},"returned_chars":{chars},"source_lineage_current":{},"candidate_revision_current":{},"tail_epoch_current":{},"whole_tail_current":{}}}"#,
+                        fresh_source.is_some(),
+                        scope.lineage().completeness == WordCompleteness::KnownStart,
+                        scope.lineage().observed_suffix_chars,
+                        source_token.word_scope().lineage().generation
+                            == scope.lineage().generation,
+                        candidate.armed_revision
+                            == self.client_context.surrounding_observation_revision,
+                        candidate.tail_epoch.checked_add(1) == Some(self.committed_tail.epoch),
+                        actual_before.text.ends_with(tail_before),
+                    ));
+                }
                 if handled
                     || has_command_modifier(state)
                     || !self.composition.buffer.is_empty()
-                    || !pending.confirmed
-                    || candidate.token != pending.predecessor_token
-                    || candidate.tail_epoch != pending.tail_epoch
-                    || candidate.token_text != pending.token_text
-                    || candidate.observed_suffix_chars != pending.observed_suffix_chars
                     || candidate.armed_revision
                         != self.client_context.surrounding_observation_revision
                     || tail_before[..last] != self.committed_tail.buffer
-                    || !tail_before.ends_with(pending.token_text.as_str())
+                    || !tail_before.ends_with(candidate.token_text.as_str())
                     || chars == 0
-                    || chars + 1 != pending.observed_suffix_chars as usize
-                    || pending.tail_epoch.checked_add(1) != Some(self.committed_tail.epoch)
-                    || !pending.token_text.starts_with(&token_text)
+                    || (!returns_to_closed_word
+                        && chars + 1 != candidate.observed_suffix_chars as usize)
+                    || candidate.tail_epoch.checked_add(1) != Some(self.committed_tail.epoch)
+                    || (!returns_to_closed_word && !candidate.token_text.starts_with(&token_text))
+                    || (fresh_source.is_some() && !returns_to_closed_word)
                     || !token.matches_owner(owner)
-                    || !pending.token.matches_owner(owner)
+                    || !source_token.matches_owner(owner)
                     || !token.matches_word_scope(scope)
-                    || pending.token.word_scope().lineage().generation != scope.lineage().generation
-                    || scope.lineage().completeness != WordCompleteness::UnknownStart
-                    || scope.lineage().observed_suffix_chars >= chars as u32
+                    || source_token.word_scope().lineage().generation != scope.lineage().generation
+                    || (fresh_source.is_none()
+                        && (scope.lineage().completeness != WordCompleteness::UnknownStart
+                            || scope.lineage().observed_suffix_chars >= chars as u32))
                 {
                     return None;
                 }
-                let actual_before = candidate.owned_preedit_return_snapshot?;
                 if actual_before.has_selection()
                     || actual_before.cursor_pos as usize != actual_before.text.chars().count()
                     || !snapshot_exactly_bounds_token(
                         &actual_before,
-                        &pending.token_text,
-                        pending.observed_suffix_chars as usize,
+                        &candidate.token_text,
+                        candidate.observed_suffix_chars as usize,
                     )
                 {
                     return None;
@@ -2864,7 +2913,7 @@ impl LayIbusEngine {
                         layout_generation: self.layout_gesture.layout_generation,
                     }),
                     token,
-                    predecessor_token: pending.predecessor_token.clone(),
+                    predecessor_token: candidate.token,
                     tail_epoch: self.committed_tail.epoch,
                     token_text,
                     observed_suffix_chars: chars as u32,
@@ -2875,6 +2924,12 @@ impl LayIbusEngine {
                     published_preedit: None,
                 })
             })();
+            if crate::kde::native_erasure::supports(self.config.active_layout_backend()) {
+                trace::record(format!(
+                    r#"{{"kind":"ibus_native_erasure_candidate","stage":"armed","pending":{}}}"#,
+                    shortened.is_some(),
+                ));
+            }
             self.context_reset_rereceipt = shortened;
             return;
         }
@@ -3062,15 +3117,83 @@ impl LayIbusEngine {
     fn capture_native_backspace_reset_rereceipt_candidate(
         &self,
     ) -> Option<ContextResetRereceiptCandidate> {
-        let pending = self.context_reset_rereceipt.as_ref()?;
         let snapshot = self.client_context.surrounding_text_snapshot.as_ref()?;
-        if !self.context_reset_rereceipt_exact_manual_handoff_allowed()
-            || self.context_token.as_ref() != Some(&pending.token)
-            || snapshot.cursor_pos as usize != snapshot.text.chars().count()
+        if crate::kde::native_erasure::supports(self.config.active_layout_backend()) {
+            let floor = self.client_context.managed_commit_snapshot_floor.as_ref();
+            trace::record(format!(
+                r#"{{"kind":"ibus_native_erasure_candidate","stage":"source","snapshot_chars":{},"tail_chars":{},"word_chars":{},"whole_tail_current":{},"reset_source":{},"managed_input":{},"composition_empty":{},"floor_epoch_current":{},"floor_focus_current":{},"floor_lease_current":{},"floor_layout_current":{},"floor_revision_current":{}}}"#,
+                snapshot.text.chars().count(),
+                self.committed_tail.buffer.chars().count(),
+                self.last_tail_token_text().chars().count(),
+                snapshot.text.ends_with(&self.committed_tail.buffer),
+                self.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                self.client_context.managed_input,
+                self.composition.buffer.is_empty(),
+                floor.is_some_and(|f| f.tail_epoch == self.committed_tail.epoch),
+                floor.is_some_and(|f| f.focus_serial == self.client_context.focus_serial),
+                floor.is_some_and(|f| f.runtime_owner_lease_identity
+                    == self.client_context.runtime_owner_lease_identity),
+                floor.is_some_and(|f| f.layout_generation == self.layout_gesture.layout_generation),
+                floor.is_some_and(|f| f.observation_revision
+                    < self.client_context.surrounding_observation_revision),
+            ));
+        }
+        if snapshot.has_selection() || snapshot.cursor_pos as usize != snapshot.text.chars().count()
         {
             return None;
         }
-        let mut candidate = self.capture_context_reset_rereceipt_candidate()?;
+        let mut candidate = if self.context_reset_rereceipt_exact_manual_handoff_allowed()
+            && self
+                .context_reset_rereceipt
+                .as_ref()
+                .is_some_and(|pending| self.context_token.as_ref() == Some(&pending.token))
+        {
+            self.capture_context_reset_rereceipt_candidate()?
+        } else {
+            // Existing owned-commit provenance binds this actual SSI to one
+            // local append; it supplies no new fresh-read capability or owner.
+            let effect = self.client_context.managed_commit_snapshot_floor.as_ref()?;
+            if self.context_handoff_sealed
+                || self.atomic.active
+                || self.content_is_sensitive()
+                || !self.composition.buffer.is_empty()
+                || self.composition.legacy_word_preedit_active
+                || !self.client_context.managed_input
+                || effect.tail_epoch != self.committed_tail.epoch
+                || effect.focus_serial != self.client_context.focus_serial
+                || effect.runtime_owner_lease_identity
+                    != self.client_context.runtime_owner_lease_identity
+                || effect.layout_generation != self.layout_gesture.layout_generation
+                || self.client_context.surrounding_observation_revision
+                    <= effect.observation_revision
+            {
+                return None;
+            }
+            let token_text = self.last_tail_token_text();
+            let chars = token_text.chars().count() as u32;
+            let mut shortened = self.committed_tail.buffer.clone();
+            shortened.pop()?;
+            crate::kde::native_erasure::closed_word_after_erasure(
+                self.config.active_layout_backend(),
+                snapshot,
+                &self.committed_tail.buffer,
+                &shortened,
+                &token_text,
+                chars,
+            )?;
+            ContextResetRereceiptCandidate {
+                owned_preedit_return_snapshot: None,
+                completed_replay: None,
+                confirmed_native_replay_reset_ack: None,
+                native_mutation_reset_evidence: None,
+                token: self.live_context_token()?,
+                tail_epoch: self.committed_tail.epoch,
+                token_text,
+                observed_suffix_chars: chars,
+                armed_revision: self.client_context.surrounding_observation_revision,
+                published_preedit: None,
+            }
+        };
         candidate.owned_preedit_return_snapshot = Some(snapshot.clone());
         Some(candidate)
     }
@@ -3209,7 +3332,13 @@ impl LayIbusEngine {
             || !(direct_effect_is_current || matched_reset_effect_is_current)
             || actual_before.has_selection()
             || actual_before.cursor_pos as usize != actual_before.text.chars().count()
-            || snapshot.text != expected
+            || (snapshot.text != expected
+                && !crate::kde::native_erasure::closed_erasure_presentation_matches(
+                    self.config.active_layout_backend(),
+                    &expected,
+                    &snapshot.text,
+                    &pending.token_text,
+                ))
             || snapshot.has_selection()
             || snapshot.cursor_pos as usize != expected.chars().count()
         {
@@ -3368,8 +3497,60 @@ impl LayIbusEngine {
         }
     }
 
+    fn capture_pending_native_erasure_reset_candidate(
+        &self,
+    ) -> Option<ContextResetRereceiptCandidate> {
+        if !crate::kde::native_erasure::supports(self.config.active_layout_backend()) {
+            return None;
+        }
+        let pending = self.context_reset_rereceipt.as_ref()?;
+        let evidence = pending.native_mutation_reset_evidence.as_ref()?;
+        let NativeMutationResetEvidence::Awaiting { effect_token, .. } = evidence else {
+            return None;
+        };
+        if self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || !self.composition.buffer.is_empty()
+            || self.composition.legacy_word_preedit_active
+            || pending.confirmed
+            || pending.awaiting_owned_append_receipt
+            || self.context_token.as_ref() != Some(&pending.token)
+            || effect_token != &pending.token
+            || pending.tail_epoch != self.committed_tail.epoch
+            || pending.token_text != self.last_tail_with_boundary()
+            || pending.armed_revision != self.client_context.surrounding_observation_revision
+            || !self.native_erasure_reset_identity_is_current(evidence)
+            || !self
+                .context_owner
+                .as_ref()
+                .is_some_and(|owner| effect_token.matches_owner(owner))
+            || !self.context_admission.as_ref().is_some_and(|admission| {
+                admission.exact_replay_reset_provenance_is_current(effect_token)
+            })
+        {
+            return None;
+        }
+        // The observer has already recorded this same-owner Reset. Preserve
+        // only the actual native-erasure witness, independently of an older
+        // spent manual replay. The next whole SSI still proves its result.
+        Some(ContextResetRereceiptCandidate {
+            owned_preedit_return_snapshot: None,
+            completed_replay: None,
+            confirmed_native_replay_reset_ack: None,
+            native_mutation_reset_evidence: Some(evidence.clone()),
+            token: effect_token.clone(),
+            tail_epoch: pending.tail_epoch,
+            token_text: pending.token_text.clone(),
+            observed_suffix_chars: pending.observed_suffix_chars,
+            armed_revision: pending.armed_revision,
+            published_preedit: None,
+        })
+    }
+
     fn capture_context_reset_rereceipt_candidate(&self) -> Option<ContextResetRereceiptCandidate> {
-        self.capture_owned_context_reset_rereceipt_candidate()
+        self.capture_pending_native_erasure_reset_candidate()
+            .or_else(|| self.capture_owned_context_reset_rereceipt_candidate())
             .or_else(|| {
                 if self.context_handoff_sealed || self.atomic.active {
                     return None;
@@ -3730,6 +3911,19 @@ impl LayIbusEngine {
             return;
         };
         let erasure_reset_ack = self.confirmed_native_erasure_for_receipt(&pending);
+        if crate::kde::native_erasure::supports(self.config.active_layout_backend())
+            && matches!(
+                pending.native_mutation_reset_evidence.as_ref(),
+                Some(NativeMutationResetEvidence::Awaiting { .. })
+            )
+            && erasure_reset_ack.is_none()
+        {
+            // An independently observed erasure requires its whole actual
+            // result. A matching suffix must not bypass a failed full-field
+            // receipt through the ordinary owned-Reset continuation below.
+            self.context_reset_rereceipt = None;
+            return;
+        }
         // The first real SSI spends an erasure seed even when contradictory.
         // A later suffix-only match cannot create the effect's Reset ACK.
         if let Some(current) = self.context_reset_rereceipt.as_mut() {
@@ -5398,6 +5592,9 @@ impl WindowInteraction {
                 .map(|token| (token, engine.layout_gesture.layout_is_ru))
         })
         .flatten();
+        let native_backspace_source = native_backspace_identity
+            .as_ref()
+            .and_then(|_| engine.live_context_token());
         let boundary_candidate = if native_backspace_identity.is_some() {
             engine
                 .capture_native_backspace_reset_rereceipt_candidate()
@@ -5538,7 +5735,11 @@ impl WindowInteraction {
                     state,
                     &tail_before,
                     handled,
-                    (boundary_candidate, native_space_eligible),
+                    (
+                        boundary_candidate,
+                        native_space_eligible,
+                        native_backspace_source,
+                    ),
                 );
             }
             if handled_release && handled {
