@@ -1,8 +1,8 @@
 {
   "schema": "lay.release-verification.v1",
   "version": "1.0.99",
-  "status": "FINAL_SOURCE_BUILD_PACKAGE_VERIFIED_FULL_CI_AND_MEASURED_COMPILER_BUDGET_PENDING",
-  "at_utc": "2026-10-26T15:09:12.787932+00:00",
+  "status": "REQUIRED_SOURCE_BUILD_CI_AND_MEASURED_COMPILER_BUDGET_PASS",
+  "at_utc": "2026-10-26T15:38:51.810605+00:00",
   "functional_scope": [
     "apt: require actual pkexec and polkitd packages instead of removed transitional policykit-1 (#70)",
     "updater service: remove premature3GiB soft threshold; preserve hard4GiB,swap256MiB,1CPU and one build job"
@@ -455,8 +455,31 @@
       }
     },
     "first_cached_probe": "NOT accepted as compiler-budget proof (0.315s/72MB cached outputs)",
-    "actual_recompile_probe": "RUNNING /home/e/projects/lay-development-runner/kde-install-control-20261020/release99-updater-budget-clean-build/result.json; oneCPU/hard4GiB/swap256MiB; private target package99 only cleaned, retained artifacts preserved"
+    "actual_recompile_probe": {
+      "status": "PASS_BOUNDED_COMPILER_BUILD",
+      "elapsed_s": 509.5954214660451,
+      "cpu_quota": "one CPU",
+      "memory_high_bytes": 4294967296,
+      "memory_max_bytes": 4294967296,
+      "memory_peak_bytes": 3803045888,
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0",
+      "memory_pressure": "some avg10=0.00 avg60=0.00 avg300=0.00 total=0\nfull avg10=0.00 avg60=0.00 avg300=0.00 total=0",
+      "source_unchanged": true,
+      "all_ten_artifacts_identical": true,
+      "method": "lay@1.0.99 private package release cache cleaned; dependencies warm; actual compiler invocation verified",
+      "raw_local": "/home/ubu/.cache/lay/development/release-1.0.99-20261026/updater-budget-clean-build.json",
+      "raw_remote": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release99-updater-budget-clean-build/result.json",
+      "scope": "compiler build budget only; not automatic installation or clean-dependencies proof"
+    }
   },
-  "publication": "NOT_PUBLISHED",
-  "updater_discovery_after_release": "PENDING"
+  "publication": "READY_FOR_PUBLICATION; updater discovery follows actual release",
+  "updater_discovery_after_release": "PENDING",
+  "ci": {
+    "functional_commit": "bb6dc5b60442e6a5ff636c3a9a050b9b1657f4dd",
+    "CI": "https://github.com/radislabus-star/lay-public/actions/runs/40346543321",
+    "Security": "https://github.com/radislabus-star/lay-public/actions/runs/40346543338",
+    "both_status": "completed/success",
+    "tag_relation": "final evidence-only descendant; production source, dependencies, installer, service, scripts and tests identical to this CI commit; exact diff recorded before tag",
+    "full_rust_correctness_package": 3515
+  }
 }

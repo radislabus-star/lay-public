@@ -24,3 +24,11 @@ other old updater instances may need an independently verified bounded repair.
 Finish by checking actual installed updater release discovery after publication,
 record any timeout/build failure honestly, and retain the automatic install
 receipt separately from source and native acceptance.
+
+2026-10-26 measured follow-up: actual all10-binary warm-dependency rebuild
+PASS in509.595s, peak3,803,045,888bytes under4GiB, zero high/max/OOM events;
+all executable hashes equal final-source B. Earlier cached run rejected.
+Raw receipt and limits are in release-1.0.99-verification.json. Final CI and
+release discovery remain pending; successful automatic installation is not
+inferred from this compiler proof. Remote ordinary builds use dedicated20CPU/
+28GiB per the user's subsequent authorization, separately from this diagnostic.

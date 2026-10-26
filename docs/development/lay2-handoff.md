@@ -1,4 +1,103 @@
-## Current milestone — 2026-10-26T14:43:02.995933+00:00
+## Current99 publication gate — 2026-10-26T15:38:51.810605+00:00
+
+Both final public CI40346543321 and Security40346543338 SUCCESS on functional
+bb6dc5b60442e6a5ff636c3a9a050b9b1657f4dd; required sources/builds complete.
+Measured actual10compiler build509.595s/peak3.542GiB/zeroOOM,allSHAequal.
+Commit/push ONLY99evidence documents, tag99evidence descendant after checking
+no production diff frombb6, publish99, verify installed updater on bothhosts,
+reply/close70. Stage100 untracked owner+decision are NOT part of99tag.
+Isolated100RED proved; first candidate2/3 (new teststillFAIL), B consumer
+alignment currently awaiting readback. No100runtime installed. Noagents/Harness.
+Remote20CPU/28GiB policy verified; localGNOME untouched.
+
+## Current resource authorization and99compiler proof —2026-10-26T15:21Z
+
+Remote192.168.3.94 is explicitly dedicated by the user to programming/tests.
+Use all20CPU and28GiB RAM with equal high/max (no early24GiB reclaim),
+Cargo20, serialized test execution; about3GiB stays with KDE/kernel/SSH.
+Source `/home/e/projects/lay-development-runner/dedicated-resource.env` for
+normal guarded remote jobs. Kernel proof dedicated-resource-kernel-proof.json
+reads cpu.max2000000/100000,high=max30064771072. Do not apply remote budget
+to local GNOME or shipped updater defaults. No agents or Harness2.
+
+The separate updater-budget diagnostic has FINISHED: actual crate recompile
+after package-only cache clean, all10binaries in509.595s,peak3803045888bytes,
+zero high/max/OOM/pressure, source5e1e44cd unchanged and all10SHAidentical.
+Receipt CROOT/release99-updater-budget-clean-build/result.json and localCACHE99
+updater-budget-clean-build.json. Session1325finished; no retry needed. CI
+40346543321 still running at15:31Z(last step release binaries), Security
+40346543338success. Finish99publication/discovery/reply70, then100-103.
+
+## Current milestone — 2026-10-26T15:14:27.229113+00:00
+
+CONTINUE original six groups + newly arrived installer hotfix, no final stop,
+no agents/Harness2/manual local GNOME install/restart. Stable97 and98published.
+98tag5052c3df,14:25:12Z; bothCI40292706780/Security40292706831SUCCESS.
+Both installed updater discoveryPASS: local96offers98,remote98current. Local
+old96->97auto build timed out90min beforeinstall; measured early reclaim fixed
+within same hard4GiB, no source/runtime IME manual install/restart.
+
+SOURCE99 FUNCTIONAL COMMITTED/PUSHED privatebranch+publicmain:
+bb6dc5b60442e6a5ff636c3a9a050b9b1657f4dd. PublicCI40346543321 and
+Security40346543338 running(lastread), CIwatch unifiedexec54781.99NOTtagged/
+published. Exact sourceB5e1e44cd7964c6970b4e9f352dbb974920188dc6a77da9d20e414302c5c3382f,
+1286sourcefiles/modes equalslocal. All10compiler artifacts version99; IMEhash
+b05868c02d2e9cdd22fc5df0cb2208277f9ddf5fc3361b832c0be37b4d65ed13.
+No99runtime installed. NoIMEfunctional change: aptpkexec+polkitd package list,
+one platform regression, updater unit removes earlyMemoryHigh3G, hard4G/
+swap256M/CPU1/jobs1 unchanged, one resource invariant test. Metadata99.
+
+99A full source3515/perf11/all10optimized actualbuild220.07sPASS:
+CROOT/release99-full-gates/result.json, sourceA0f0eba25.... Bpolicy delta then
+verified exact Rust/Cargo/data/mode equality, regenerated semantic-identical
+compiled receipt, final36package419Python(10skipped),allcanon/lints/bothMSRV/
+audit50/perf11/buildall10PASS. FinalB CROOT/release99-final-gates/result.json;
+all10binary SHA IDENTICAL A/B. LocalCACHE99/gates-{a,b}-final.json and
+local-final-parity.json. Both sessions56528/41866done. Finalgraphs+manifests
+synced8files, sourceparityproved. Do not rerun unchanged fullsource manually;
+final GitHubCI must cover3515 onbb6dc5b6 beforepublication.
+
+EXTRA CONTROLLED BUILD CURRENTLY RUNNING exec1325,
+CROOT/release99-updater-budget-clean-build/result.json. ActualoneCPU4GiBhard+
+soft4G,swap256M,jobs1/Rayon1, nice>=15,ioniceidle. Cleaned ONLY current
+lay@1.0.99 --release in disposable candidate-target (dryinventory retained),
+all10retained FINAL artifacts verified beforehand; all10cachebins removed;
+actualfullLay crate recompilation with warmdeps. Latestheartbeat240s,
+currentmem1.14GB, earlier3.63GB>old3GiB threshold. Wait actualfinal status,
+peak/OOM/high events, sourceclosure unchanged and all10SHAparity. Timeout
+5400s matchesproduction90min, no arbitrary testdeadline increase. Never
+present this as fresh-dependencies install or localGNOME updateproof.
+Earlier CROOT/release99-updater-budget-build is CACHED0.315s/72MB, explicitly
+NOT_ACCEPTED as memory proof; retained, do not use its initialPASSlabel.
+No models/installed binaries/userwindows affected by package cacheclean.
+
+NEXT: finishCI+budgetprobe, download proof, update99verification/releasebody/
+owning stable-auto-update doc/tasks, record exactmetadata-only diff if final
+proofcommit afterCI. Publish99tag/release, actually check installed local+remote
+updaters, reply to/close public#70 onlyafterrelease. Then originalstage3=100
+(sharednative/lifecycle),101warnings,102core,103finalreconcile. ExtraP0 hotfix
+inserted; originalsix groups notabandoned. Taskpath polkit is descriptive
+tech_debt/ubuntu-26-04-polkit-package-compatibility.md; existingTD154/155
+untouched (earlier apttaskIDcollision corrected currenttree). SourceB policy
+ownerdoc stable-auto-update2026-10-19, task auto-update-build-memory-budget2026-10-26.
+
+Stage100 READ-ONLY INVESTIGATION ONLY,no new runtimecode yet:
+CACHE100 row52Firefoxnormaltextarea/roundtripactive, fromfinal98. Firsttoggle
+producesghbdtn, secondcontext_authority refusal bridge_token_live=true,
+manual_toggle_allowed=false/manual_refresh_allowed=false, UnknownStart.
+Firstdelegationstatus3 observed_suffix_ime_committed_tail. IMPORTANT real
+suppression is daemon_exactV2 accepted thenCANCELLED epoch4433/pathUS764,
+NOTLegacyReplayV1; don't invent TD122 as root. Productionnative_not_chrome
+is expected fallback exclusion for Firefox(stockSSI); do notenableFirefox
+as unsupported bypass or callthat alonecause. Need correlate whyexisting
+exacthandoff cancelled and finalSSI/resetreceipt lost. Sourceowner
+window_interaction/authority.rs735+, observation.rs4539+, shift.rs68+,
+daemonlayout_controller/ime_bridge.rs. Full98FF63FAIL groups11roundtripactive,
+21rapidactive,24rapidspace,4consecutive-space,3movedpair. Late-target timings
+and authorityfailures are separate untilprovedshared. Lastfull98table stays
+295P66F79B/440, native99NOT_RUN. Sound only actualfinalgoalcompletion.
+
+## Previous milestone — 2026-10-26T14:43:02.995933+00:00
 
 CONTINUE user-authorized six original debt groups, no stopping/questions,
 no agents/Harness2. RELEASE97 and RELEASE98 BOTH PUBLISHED.98tag/functional

@@ -18,7 +18,7 @@ client effects, BLOCKED prerequisites and NOT_TESTED coverage.
 | --- | --- | --- | --- |
 | 1 | 1.0.97 | KDE Firefox functional failures and default native observation prerequisites | RELEASED: bounded closed-erasure repair; complete source/build gates, raw native limits and updater discovery recorded |
 | 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | RELEASED at2026-10-26T14:25:12Z,5052c3df;295P66F79B. Both installed updater discoveryPASS; retained native failures stayOPEN. |
-| extra installer blocker | 1.0.99 | Ubuntu26.04 missing transitional polkit package (#70 installer) | SOURCE/BUILD_GREEN; apt regression11/11, updater9/9; final CI and bounded compilation proof pending |
+| extra installer blocker | 1.0.99 | Ubuntu26.04 missing transitional polkit package (#70 installer) | ALL_REQUIRED_GATES_PASS; CI/Security success, measured all10compiler build fits4GiB; publication next |
 | 3 | 1.0.100 | Shared long-sequence lifecycle/rapid gestures, remaining inline presentation, terminals and native coverage | QUEUED; Firefox residuals from97 retained here |
 | 4 | 1.0.101 | Build warnings: measured reachability and minimal research/runtime boundaries | QUEUED |
 | 5 | 1.0.102 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | QUEUED |

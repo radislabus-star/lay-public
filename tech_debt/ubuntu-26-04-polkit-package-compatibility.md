@@ -1,9 +1,8 @@
 # Installer blocker #70 — install supported polkit binaries on apt systems
 
-Priority: P0 installer blocker. State: SOURCE_AND_BUILD_GREEN_PUBLICATION_PENDING. Public issue:
+Priority: P0 installer blocker. State: REQUIRED_GATES_AND_CI_PASS_PUBLICATION_NEXT. Public issue:
 https://github.com/radislabus-star/lay-public/issues/70 (2026-10-26).
-Execute immediately after the in-progress1.0.98 publication; preserve its
-already verified runtime/source closure while collecting final native proof.
+Inserted after completed1.0.98 publication; preserve its accepted runtime.
 
 ## First failure and owner
 
@@ -54,3 +53,7 @@ not a full clean Ubuntu26.04 installation receipt; state that limit explicitly.
 package gates,all10optimized binaries PASS. Ubuntu22.04 apt candidate read-only
 confirms both real components. CleanUbuntu26.04 installNOT_TESTED. Final public
 CI/publication/updater discovery/reply to70 stillPENDING; do not close from tests.
+
+Final public CI40346543321 andSecurity40346543338 PASS onbb6dc5b6.
+All mandatory source/build gates complete; actual publication/discovery and
+public reply follow in a separate receipt. CleanUbuntu26.04 install unproved.

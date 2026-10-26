@@ -178,3 +178,26 @@ auto-update tests pass. systemd user verification exits0; an unrelated existing
 spice-vdagent unit warning is retained rather than changing that service.
 This new policy applies when the new unit is installed; it is not a general
 bootstrap repair for every already-running old updater on other machines.
+
+
+### Measured compiler budget follow-up —2026-10-26
+
+The final1.0.99 source was recompiled after inventorying and removing only its
+disposable private package release cache. Dependencies stayed warm; all10
+retained final binaries were preserved before cleanup. The actual cgroup used
+oneCPU,4GiB hard/soft RAM and256MiB swap. Compilation completed in509.595s,
+peak3,803,045,888bytes, with zero high/max/OOM events and zero memory pressure.
+All10 new executable hashes equal the retained final-build artifacts; source
+closure5e1e44cd7964c6970b4e9f352dbb974920188dc6a77da9d20e414302c5c3382f
+remained unchanged. The earlier0.315s cached run is explicitly not accepted as
+compiler-budget evidence. Raw receipt:
+`/home/e/projects/lay-development-runner/kde-install-control-20261020/release99-updater-budget-clean-build/result.json`;
+compact evidence: `tech_debt/evidence/release-1.0.99-verification.json`.
+This proves the measured warm-dependency compiler phase fits its existing hard
+budget. It does not prove a fresh dependency build, automatic installation,
+or physical-client acceptance. Local GNOME was not manually installed/restarted.
+
+The user separately dedicated the remote development host to programming/tests.
+Future normal remote jobs use all20CPU and up to28GiB, without an early24GiB
+soft threshold, leaving about3GiB for KDE/kernel/SSH. This is a developer-host
+policy, not a shipped updater budget increase or a local GNOME policy change.
