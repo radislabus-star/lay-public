@@ -24,3 +24,10 @@ cleanup. Old/new paired control confirms oldPASS/currentFAIL. CandidateB uses
 existing local activation discard before normal cleanup, strengthens both
 positive semantic tests without changing identities, and reruns full proof.
 Do not mark DONE from A CI or its full matrix. See owning document.
+
+
+CandidateB rejected as well: full295P67F78B, and paired focused-context control
+oldAPASS/BFAIL. Context discard was stronger than word invalidation. CandidateC
+preserves that field anchor, restores factory-mode cleanup via the existing
+setter, retains both strengthened positive regressions and adds the no-new-
+FocusIn ordinary/private semantic regression. Full3523 verification is next.

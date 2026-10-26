@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793049143.0182009,
-    "ast_hash": "6c6536f9b8217f027df263e8edaa77cb",
+    "mtime": 1793052243.6643558,
+    "ast_hash": "7a9ae08d67a2ac81a1ea1e9e5010f8ae",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4995,7 +4995,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.json": {
-    "mtime": 1793051252.8184192,
+    "mtime": 1793054063.2761338,
     "ast_hash": "e22df33a2e3dad4a45f4f8588d0b5210",
     "semantic_hash": ""
   },
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793051300.010788,
-    "ast_hash": "b7cc33c1a8f8ddae2b6d043b63ec16d2",
+    "mtime": 1793054110.1384745,
+    "ast_hash": "248589058227294113eca7aed71e0f66",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793051300.008788,
-    "ast_hash": "1a4986ff526d49ef7d4df6ba36254ddc",
+    "mtime": 1793054110.1364744,
+    "ast_hash": "d451491ed2903a080754a082a84ceb93",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5185,7 +5185,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.default.json": {
-    "mtime": 1793051217.575142,
+    "mtime": 1793054027.6278746,
     "ast_hash": "6e2772d62e64178b8399a1d6ec06ff80",
     "semantic_hash": ""
   },
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1793050998.4989076,
-    "ast_hash": "64d1b53fcec9cdbe9d786e12a336c618",
+    "mtime": 1793053786.81171,
+    "ast_hash": "5c404566b994200a90e796d5302f4efa",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -7520,8 +7520,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs": {
-    "mtime": 1793050998.4999077,
-    "ast_hash": "c16fa61e193eea2236c10e9dc3b3fa51",
+    "mtime": 1793053787.7637112,
+    "ast_hash": "a9ec463acf08db1e7a09372913993c9b",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-19-fresh-manual-read-same-gesture.json": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793050906.9884212,
-    "ast_hash": "2841d02e2bd60c009c9c5178f3f65680",
+    "mtime": 1793053627.75125,
+    "ast_hash": "2cf1cc7636b7b4bd7a18419efc4317ce",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8715,8 +8715,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/authenticated-revocation-retirement-2026-10-26.md": {
-    "mtime": 1793051146.1592672,
-    "ast_hash": "927d42109eee31217ad7a8068607992c",
+    "mtime": 1793053931.4260106,
+    "ast_hash": "0d3574001b740b443bb664f477ec0360",
     "semantic_hash": ""
   },
   "docs/release-1.0.101.md": {
@@ -8725,8 +8725,8 @@
     "semantic_hash": ""
   },
   "tech_debt/authenticated-revocation-retirement-2026-10-26.md": {
-    "mtime": 1793051146.1743524,
-    "ast_hash": "19c1de2c5aeff3111f503db6e8a3da36",
+    "mtime": 1793053931.4261398,
+    "ast_hash": "c39fad8fd8b38f6feedb7e0f59e77fad",
     "semantic_hash": ""
   },
   "docs/architecture/auto-update-build-bootstrap-2026-10-27.md": {

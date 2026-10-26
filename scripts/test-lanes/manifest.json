@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3486,
+    "correctness": 3487,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 479,
+    "process": 480,
     "target": 3095
   },
   "package_fixtures": [
@@ -1866,6 +1866,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::owned_preedit_reset_source::authenticated_revocation_disable_retains_received_focus",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::owned_preedit_reset_source::authenticated_revocation_preserves_focused_context_without_new_focus_in",
       "target": "bin:lay-ibus-engine"
     },
     {

@@ -425,11 +425,11 @@ impl LayIbusEngine {
         if matches!(observed.header.member.as_str(), "FocusOut" | "FocusOutId")
             && admission.revocation_matches(&owner, &observed)
         {
-            // Ingress already revoked this exact old owner. Drop its local
-            // activation without erasing later received focus metadata. Normal
-            // lifecycle cleanup still owns preedit and factory-mode retirement.
+            // Ingress already revoked the old word. Retain its inert context
+            // reference for later field receipts; normal blur cleanup still
+            // removes focus. Neither operation admits an old-word handoff.
             self.context_handoff_sealed = false;
-            self.discard_context_activation();
+            self.strip_legacy_word_preedit_mirror();
             self.retire_context_word_locally();
             return true;
         }
@@ -511,10 +511,19 @@ impl LayIbusEngine {
         }
         if observed.header.member == "Disable" && admission.revocation_matches(&owner, &observed) {
             self.context_handoff_sealed = false;
-            // Keep normal preedit/mode cleanup, but remove the revoked local
-            // owner so that cleanup cannot revoke successor metadata again.
-            self.discard_context_activation();
+            // Disable can revoke the word while its client stays focused.
+            // Preserve that context for fresh reads, retiring only word data.
+            let discarded_owned_preedit = self.strip_legacy_word_preedit_mirror();
             self.retire_context_word_locally();
+            if discarded_owned_preedit {
+                // Soft reset normally restores this mode while stripping the
+                // composition; its strip will now correctly be a no-op.
+                self.set_layout_is_ru(
+                    self.client_context
+                        .factory_engine_profile
+                        .initial_layout_is_ru(),
+                );
+            }
             return true;
         }
         let accepted = observed.header.member == "Disable" && admission.disable(&owner, &observed);
@@ -4899,6 +4908,8 @@ impl LayIbusEngine {
         )
     }
 
+    // Word invalidation preserves the focused field as an inert read anchor.
+    // discard_context_activation has stronger, separate focus semantics.
     fn retire_context_word_locally(&mut self) {
         self.committed_tail.observed_boundary_source = None;
         self.layout_gesture.native_letter_release_focus.clear();

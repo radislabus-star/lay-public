@@ -91,3 +91,45 @@ factory mode and assert normal restoration as well as retained received focus,
 fresh Get/marker/UnknownStart0, invalid old token and no edit/learning.
 All test names/lanes stay unchanged. B requires fresh full gates, new CI and
 native receipts; A proof is historical, not B acceptance.
+
+
+## Candidate B rejected: a word is not its focused field
+
+B f5dd7e1a/source d0193b6c passes3522+11/all10/sourceCI but fullnative is
+Firefox122P61F37B,Chrome173P6F41B,total295P67F78B;Wez5FAIL. No release.
+OldA versusB paired real Disable WITHOUT a following FocusIn proves oldA
+retains the focused field while B clears it. That cleanup also removed shared
+focus/read continuity, stronger than the word revocation being handled.
+Receipt:CROOT/release102-focused-context-characterization/result.json;
+source restored in finally. This disproves the earlier B helper selection,
+not the requirement to preserve future focus metadata or factory-mode cleanup.
+
+C preserves the inert context using local word retirement, matching oldA.
+A canceled owned preedit is stripped locally, and Disable explicitly invokes
+the existing factory-mode setter for that strip, before ordinary cleanup.
+Word witnesses and pending learning are revoked before the setter. There is
+no new flag/cache/owner or reset bypass. The original positive2 tests still
+assert futurefocus AND mode; a fourth regression covers ordinaryowned and
+privatecommitted Disable without newFocusIn: focus retained, old token invalid,
+word unknown, no text edit or learning. Full manifest adds exactly1 correctness
+test to B (3523), retaining every prior identity/lane.
+
+Measured evidence favors this bounded9/10 repair. B activation-discard was
+5/10 after its broader side effects were measured; it is reserved for actual
+activation failure, not word loss in a still-focused client. Neither coarse
+context discard nor global stamp retention should be substituted here.
+Fresh Cfull/source/native/CI required; no A/B acceptance is reused for changed
+behavior. These are retained rejected experiments, not release claims.
+
+
+## Scope map completed and user authorizes verification — 2026-10-26T23:15:04.130542+00:00
+
+The user required a full influence map before proceeding, then explicitly
+authorized fix -> test -> release if accepted. See
+`docs/development/ime-impact-map-2026-10-27.md`. C changes two exact admitted
+revocation branches of the common owner; delivery, profiles, ranker and verifier
+remain unchanged. This scope is explicitly common rather than browser-only.
+C full source proof:3523+11/all10, source1289/e72574e997f6e4494ef3647e2b2b9f43826ac2b4bd72240c37c45ede57f5cbf2.
+Local source bytes and modes matched; no physical C acceptance is implied.
+A fresh native101 baseline runs under the same current conditions before C.
+No reliable manual-window trigger for the controlled ordering defect is known.

@@ -627,3 +627,38 @@ fn unobserved_revocation_cannot_retain_focus_or_recover_the_old_word() {
         }));
     }
 }
+
+#[test]
+fn authenticated_revocation_preserves_focused_context_without_new_focus_in() {
+    for hints in [0, 1 << 7] {
+        zbus::block_on(bounded(async {
+            let mut harness = cycle09_harness().await;
+            let mut serial = 99_000;
+            let mut engine = owned_preedit(&mut harness, &mut serial, hints).await;
+            let old = engine.live_context_token().expect("initial word token");
+            let path = engine.path.clone();
+            assert_eq!(
+                engine.shared.lock().unwrap().active_path.as_deref(),
+                Some(path.as_str())
+            );
+            let disable = observed_callback_without_reply(serial, &path, "Disable");
+            send_manually_dispatched_callback(&mut harness.peer, &disable, &path, ENGINE_INTERFACE)
+                .await;
+            assert!(harness.observer.process_next().await.unwrap());
+            consume_detached_callback_reply(&mut harness.peer, serial).await;
+            engine.disable(disable.header()).await;
+            assert_eq!(
+                engine.shared.lock().unwrap().active_path.as_deref(),
+                Some(path.as_str()),
+                "word revocation must preserve its focused context"
+            );
+            assert_eq!(engine.context_owner.as_ref(), Some(&old.owner));
+            assert!(!harness.adapter.revalidate(&old));
+            assert!(!engine.context_word_is_known());
+            assert!(!engine.context_handoff_sealed);
+            assert!(engine.composition.buffer.is_empty());
+            assert!(engine.committed_tail.pending_completion_learning.is_none());
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+        }));
+    }
+}

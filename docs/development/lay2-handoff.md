@@ -1,3 +1,77 @@
+## Map completed; fix/test/release authorized — 2026-10-26T23:15:04.130542+00:00
+
+Active worktree: /home/ubu/projects/lay-revocation-isolated-20261027,
+branch codex/revocation-isolated-20261027. The user's later instruction authorizes
+fix -> tests -> release only if accepted, after the full influence map.
+Map: docs/development/ime-impact-map-2026-10-27.md. Common C08 lifecycle fix;
+no Chrome-only claim. Only two exact admitted revocation branches change runtime.
+No manual window trigger is established; the confirmed cause is a controlled
+P2P ordering failure on unchanged101. Do not call this the cause of every KDE FAIL.
+
+C source gates COMPLETE:3523+11,10 optimized artifacts,1289files source closure
+e72574e997f6e4494ef3647e2b2b9f43826ac2b4bd72240c37c45ede57f5cbf2.
+Isolated local source/modes now match; git checkout IDs recorded separately.
+New worktree's group-write modes normalized to measured source, content unchanged.
+Completed gates live at CROOT/release102c-final-gates/result.json.
+
+Baseline101 full native comparison RUNNING exec79012 via run-baseline101-v2-stage.sh;
+expected220/browser+15 terminal controls, same cadence/20CPUroot. Use retained101
+verified artifacts; current C build mirror separately pinned and not overwritten.
+First baseline helper incorrectly expected102 in one final version assertion;
+its full rollback to B was verified:engine3965013/3ffc8e5c,daemon3965046,
+all11 paths exactB/rootIBus3168326 preserved. Raw failure retained. V2 corrects
+only helper version expectation and records rollback as its previous identity.
+CandidateC is NOT installed yet; run candidate102c-v2-stage only after baseline.
+No local GNOME restart/install, no agents/Harness2, no learning cleanup.
+
+Next user task AFTER current fix: common GUI/input family illustrated by WeChat,
+letter lost during repeated English toggles. All windows of the same type,
+not a process-name exception. Determine actual toolkit first; task file
+tech_debt/wechat-family-double-toggle-letter-loss-2026-10-27.md.
+This latest priority precedes older updater-bootstrap queue. Keep its minimal
+proven plan; renumber future release if needed to keep mechanisms separate.
+
+## User scope correction — 2026-10-26T22:39:10.269727+00:00
+
+HOLD the common 102C experiment: the user requires isolated fixes for the
+specific browser. The current FocusOut/Disable changes in
+window_interaction/observation.rs are shared across IBus clients and have no
+Chrome/Firefox/KDE selector. Separate Git worktree isolation is not runtime
+client isolation. Do not install, publish, or describe C as a browser-only fix.
+
+Exact uncommitted C snapshot preserved at /home/ubu/projects/lay-revocation-isolated-20261027, branch codex/revocation-isolated-20261027,
+base f5dd7e1a105e759316f86af61389615ca6df72ce; all five file hashes and full patch were verified identical.
+Receipt: /home/ubu/.cache/lay/development/release-1.0.102-20261026/c/isolation/receipt.json.
+The original checkout changes were preserved; no reset or runtime change.
+An already running source-only gate (exec90198, release102c-final-gates) may
+finish as experimental evidence. It authorizes no native run or deployment.
+Do not sync its generated files into the original checkout or promote it.
+
+Next: identify the failing browser-specific transition before editing; use
+its existing adapter when the defect is client-specific. If the first failed
+transition is shared, report that scope explicitly before changing shared
+behavior. Keep old debt/release work pending; do not silently widen this scope.
+
+## Additional102B focus-continuity characterization pending, HOLDPUBLICATION
+
+Bfullsource/CI is not native acceptance. FirefoxB complete122P61F37B/220,
+7AoldPASS->FAIL/3gains, newmanual failures context_authority/manual_refreshfalse.
+Review: discard_context_activation clears shared.active_path/owner even for
+Disable with NO actual FocusOut. This may over-retire field focus instead of
+only word authority. CACHE102/focused-context-characterization.rs is prepared:
+realDisablewithoutlaterFocusIn, ordinaryowned +privatecommitted cases, assert
+focusedcontext retained but oldwordtoken/authorityinvalid/noedit/learning.
+Paired oldAobservation0c14... vs currentB; execute ONLYafter native59545finishes.
+Runner run-focused-context-characterization.py restores source in finally.
+IfoldAPASS/BFAIL: Bdiscardhelper too broad. MinimalcandidateC should preserve
+focusedcontext with localwordretirement and earlystrip, restoring factorymode
+via existing setter ONLYwhen cancellingownedpreedit. No activationdiscard,
+newmodeAPI/globalresetbypass; positive2mode/focus tests retained, add this fourth
+focused-context semantic test, count3523. Sourceanalysis beforeediting must
+inspect cancel_native_autocorrection_restoration ifsetterordering matters;
+retire localwordwitnesses before strip/setmode matchesoldcleanup ordering.
+NoCproductionedit yet. KeepA/Braw and do not publishf5fromsourceCI alone.
+
 ## Current102B full verification; A rejected —2026-10-26T21:56:24.193262+00:00
 
 Continue six original release groups, NO agents/Harness2/manual local GNOME install.
@@ -29,7 +103,7 @@ andlanes unchanged, strongerasserts. RUNNING exec97885,CROOT/release102b-final-g
 frozen /home/e/projects/lay-development-runner/release102b-source-ZQwkDL,
 2008files archive39a4d056951b3fff1b9fd3774f20c77816fab9226157e7c18f8625463254d812.
 CACHE102/b holds scripts/request/archive/early-source-verification.json.
-Commit/push Bnow and capture NEWCI; ACI doesnotcertifyB. Afterfullgates sync-final
+Bfunctional f5dd7e1a105e759316f86af61389615ca6df72ce pushedBOTH; newCI40408535735/Security40408535850 pending. ACI doesnotcertifyB. Afterfullgates sync-final
 then installverifiedB and fullnative before102publication/updater. Nativewrapper
 andinstaller prepared/uploaded: install-candidate102b.py usesprevious
 release102-final-deployment-b (A), outputrelease102b-final-deployment; wrapper
