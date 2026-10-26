@@ -1,3 +1,96 @@
+## Current100B2 final gates — 2026-10-26T17:32:58.104745+00:00
+
+Continue original six releases:97/98/extra99 published;100 remains unpublished.
+No agents/Harness2/manual local GNOME installation. Remote dedicated resource
+profile uses20CPU and28GiB high/hard; preserve KDE/SSH and unrelated processes.
+
+Afunctional46852329 is pushed both remotes and CI passed, but native Firefox
+108P74F38B/220 rejected against98(121P63F36B). AChrome220NOT_TESTED.
+Remote still runs Aengine2334859, SHA f8c9ab4f622430425f2a48ee3b22d87de441059f18355eabd5d53154e847a707.
+Do not tag A or reuse its CI as B proof. RootIBus3168326 remains protected.
+
+B2 source prepared for functional commit: authenticated owned-preedit blur retires the old
+word while retaining actual later received lifecycle stamps. Generic revoke
+still clears stamps; successor needs real freshGet/marker/UnknownStart.
+B1 full source caught early committed-prefix clearing:3518PASS/1FAIL at
+native_transfer::td125_focus_out_refuses_transfer_of_cancelled_owned_preedit.
+B2 reuses local word cleanup, retains inert prefix, and passes43/43 owned-
+preedit checks including that existing assertion and two new regression tests.
+RED1/1 failed at the lost actual FocusIn before implementation; retained.
+
+B2 gates COMPLETE: CROOT/release100b2-final-gates.3519/3519 source,
+11/11 performance,419Python(10skip), guards/lints/bothMSRV/all10release PASS.
+Build73.5365s. Original handoff trailing-space audit failure retained; exact
+one-space correction left source closure unchanged. Source/modes1287files:
+9e1486e38397f45e824ffc4471649ce8e90f1b8fbc09abc0bf45f2347f1a426e.
+Generated8files synced and local parity verified. B2 installed remote only:
+engine2662296 SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
+daemon2662418/tray2662424, all10artifacts match; originalIBus/protected kept.
+Frozen full Firefox220 RUNNING exec99328, output CROOT/release100b2-final-
+native-firefox; Chrome220 still pending. CACHE100/b2 holds raw gates/parity/
+deployment and prepared native wrapper. Do not reuse ACI asB2 verification.
+
+After all gates: sync exact generated files, remote-only retained-artifact
+install with loaded SHA verification, frozen r18 Firefox then Chrome220each,
+new actual B2 functional commit/CI, per-case deltas/speed and scoped release100.
+Then101 warnings (259raw/258normalized baseline records),102 core/structure,
+103 queue/final acceptance including old3GiB updater bootstrap and actual
+remote automatic completion. Stable99 discovery alone does not prove it.
+
+## Current100 candidateA rejected; causal FocusOut RED — 2026-10-26T16:47:39.777966+00:00
+
+MainHEAD46852329ba8acc802a0bc71a1be9e1b4155eecbd pushedboth.99stablepublished
+0ed833b2, updater both98->99PASS,#70repliedclosed. Originalremaining releases
+100sharedlifecycle/101warnings/102core/103updater+reconcile, continue no agents
+orHarness2 or manual localGNOME install. Remote dedicated20CPU28GiB env
+/home/e/projects/lay-development-runner/dedicated-resource.env verifiedkernel.
+
+100A source/build ALLPASS:3517correctness/package,11perf,419Python(10skips),
+strictlints/bothMSRV/all10optimized217.066s. Runtime source1287files/modes
+44c0764c2f8931c06d8b91460608334ed16aac0c61ea0dbc7f1ac7fc49f034d4.
+CROOT/release100-final-gates/result.json, localCACHE100/gates-final.json
+plus local-final-parity.json. First gate run PythonliveL3SIGTERM contract
+needed24GiBsoft/28hard; same419tests rerun under declared24soft onlyPython
+phase, restored28beforeallRustcompile. Failed original retained, no testchange.
+Local graph/testmanifest8canonical files synced; no protective gatebytes change.
+
+100A installed onlyremote via retainedartifacts, engine2334859SHAf8c9ab4f622430425f2a48ee3b22d87de441059f18355eabd5d53154e847a707,daemon2334974,tray2334981.
+RootIBus3168326 and originalparentunit preserved,7protectedprocesses unchanged.
+FullnativeFirefoxA FINISHED108P74F38B/220, worse98(121P63F36B). DO NOT PUBLISH
+this candidate. Chrome100A220NOT_TESTED; old98Chrome is not100acceptance.
+Raw CROOT/release100-final-native-firefox/firefox/result.json downloaded
+CACHE100/firefox-native-candidate-a.json. Originalrow52textarea roundtrip
+active isPASS; otherlosses stay real. Freshold98singlecontrol was1BLOCKED
+beforeinput DOMfocus, notproductRED. Pointercoordinates correct, server71notviewonly.
+
+100A CI40357762198 +Security40357762395 on46852329. CIwatch exec49808; at16:40Z
+laststepRustlint. Recheck actualstatus, not acceptance untilnative qualifies.
+
+NEXT CONCRETE: poll exec48744, CROOT/release100-owned-focus-red/result.json.
+Testdraft CACHE100/owned-preedit-focus-regression.rs usesexistingowned_preedit
+fixture, observes realFocusOut thenlaterFocusIn BEFOREoldFocusOutcallback.
+Expected passivefocusstamp survives whileoldtoken/word revoked, thenexisting
+freshGet+marker SourceFreeUnknownStart0. Oldcode expectedFAIL atlostFocusIn
+metadata; remote testfile restoredfinally. No new production code beyond100A.
+Sourcepath current suspectedfirstloss: observation.rs legacy-preedit blur
+earlyreturn calls discard_legacy_word_preedit_ownership -> globalrevoke +
+stamps.revoke, erasinglaterreceivedFocusIn. Existing reducer sourcefree
+activation already recovers revokedfactory; do NOT changeallRevoked tickets
+toConsumed, increasebudgets, createowner/protocol or weaken genericrevoke.
+Recommended narrow helpervalidates exact acceptedFocusOut/currentowner,
+revokes oldword through existingreducer but preserves received metadata,
+usesexisting discard_pending_target_word if acquisition alreadyopened,
+thenlocal-onlystrip/discard_context_activation. NewtargetstillmustfreshGet
+andmarker; oldkey stampscannotgrantwords/edits. REDmustprovebeforeedit.
+No sourceBdecision/implementation yet; owning doc appended measuredAverdict.
+
+After100nativevalid sourceB, runrequiredgates/finalmatrix, source/loadedparity,
+publishactualversion +installedupdaterdiscovery. Then101warninginventory: raw
+259normalized258warningrecords storedCACHE101/warning-inventory99-normalized.json;
+normalizewarninggroups bysymbols beforeclaimcount. No warning suppression.
+Stage103 explicitly includes existingold3GiBautoupdater bootstrap / actualremote
+auto-updatecompletion;99servicefilealone isnotend-to-endproof.
+
 ## Current stage100 after published99 — 2026-10-26T15:42:08.245938+00:00
 
 Stable99 PUBLISHED 2026-10-26T15:39:23Z,tag0ed833b22a11295cf16959b7f45cf206898cd405.

@@ -1,0 +1,27 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-26-owned-preedit-blur-receive-order",
+  "date": "2026-10-26",
+  "status": "RED_PROVED_43_FOCUSED_PASS_FULL_B2_PENDING",
+  "owning_document": "docs/architecture/owned-preedit-blur-receive-order-2026-10-26.md",
+  "invariants": [
+    "C03",
+    "C05",
+    "C07",
+    "C08"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs"
+  ],
+  "decision": "Validate exact acceptedFocusOut/currentowner; retire oldword through existingreducer without deleting received metadata. Reuse existing pending-target source-free transition if begun. Factor existinglocal word-witness cleanup from broadrevoke, preserving inertcommittedprefix/shared publication untilfinishFocusOut. Genericunknownrevocation, actualGet/marker,UnknownStart andverifier stay strict.",
+  "reason": "Native candidateA row62 plus exact sourceRED prove a word-cancellation callback erases later received passive FocusIn, preventing actual new-field acquisition. Barrier had18.9ms remaining, so timeout increase is ungrounded.",
+  "verification": "Exactold1/1RED at lost receivedFocusIn. FirstB full3518PASS/1FAIL of3519 caught premature committed-prefix loss; oldassertion unchanged. Correction43/43owned-preedit testsPASS6.801s, including actualfreshGet+markerUnknownStart and unobserved/superseded refusals. FullfinalB2/nativepending.",
+  "not_tested": "Candidate not yet built/installed; GNOME/Wayland/hardware and candidateB native not tested. CandidateA fullFirefox rejected108P74F38B/220.",
+  "runtime_authority_changed": false,
+  "runtime_behavior_changed": true,
+  "existing_authority": "ContextAdmissionReducer -> ContextAdmissionAdapter actual context acquisition+marker -> UnknownStart -> WindowInteraction/verifier",
+  "rollback": "Revert this lifecycle-metadata retention change as one unit; keep all100A rejection evidence and accepted97/98/99 proofs. No local GNOME installation.",
+  "recorded_at_utc": "2026-10-26T16:49:59.952980+00:00"
+}

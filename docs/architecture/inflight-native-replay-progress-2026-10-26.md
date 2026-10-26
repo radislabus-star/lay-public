@@ -92,3 +92,27 @@ Fresh old98 single nativecontrol is1BLOCKED before input, DOM focus setup;
 RFB pointer moved to correct1042,513 on1600x900 DISPLAY71 and server is not
 view-only. This does not establish a productRED or its cause. No native test
 assertion/cadence changed. Full100 native and finalCI still pending.
+
+CandidateA native rejection at2026-10-26T16:47:39.777966+00:00: full frozenr18 Firefox220cases is
+108PASS/74FAIL/38BLOCKED/0NOT_TESTED, worse than final98(121/63/36). Original
+normaltextarea roundtrip(active) nowPASS, but this does not accept the build.
+Chrome220NOT_TESTED onA; do not combine historical98Chrome into a100table.
+Do not publish100A or claim all native failures fixed. Installed remoteA
+IMEf8c9ab4f622430425f2a48ee3b22d87de441059f18355eabd5d53154e847a707
+PID2334859,daemon2334974,tray2334981, source44c0764c unchanged; no GNOME install.
+
+Additional observed failure class: row62rich firstDoubleShift reaches barrier
+in1.1ms with18.9ms remaining, then bridge_readiness_reason=lifecycle_pending,
+reducer_status=revoked,unsettled0. Therefore a bridge timeout explanation is
+REJECTED. Earlier Factory/FocusOut/Disable/FocusIn observation is present, but
+Disable and FocusIn callbacks report refused_timeout. Sourceold119 retained
+owned preedit before blur; accepted legacy-preedit FocusOut calls
+discard_legacy_word_preedit_ownership -> revoke_context_word ->
+ContextAdmissionAdapter::revoke_current_owner -> stamps.revoke, deleting
+already observed future passiveFocusIn metadata. Existing source-free
+acquisition can recover a revoked factory but requires that actual focus stamp.
+A causal receiver-order RED is running (session48744), no further production
+change yet. CandidateB must preserve strict word/token revocation and original
+fresh Get/marker/UnknownStart while retaining authenticated received lifecycle
+metadata only. Use existing narrow adapter/localcleanup, no new owner, route,
+timer or relaxed generic revoke/rendezvous/verifier.

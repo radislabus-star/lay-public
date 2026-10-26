@@ -1201,6 +1201,50 @@ impl ContextAdmissionAdapter {
         })
     }
 
+    /// Cancel the old composition after its authenticated blur without erasing
+    /// later received lifecycle metadata. Such metadata grants no word or edit;
+    /// the successor still needs its actual context receipt and marker.
+    pub(crate) fn retire_owned_preedit_after_focus_out(
+        &self,
+        owner: &EngineOwner,
+        stamp: &ObservedCallback,
+    ) -> bool {
+        let ticket = match &stamp.disposition {
+            IngressDisposition::FocusOut {
+                owner: observed_owner,
+                ticket,
+            } if observed_owner == owner => *ticket,
+            _ => return false,
+        };
+        let Ok(mut reducer) = self.shared.reducer.lock() else {
+            return false;
+        };
+        if !reducer.is_current_owner(owner)
+            || !reducer.ticket.as_ref().is_some_and(|current| {
+                current.id == ticket
+                    && current.status == TicketStatus::Pending
+                    && current.source_owner == *owner
+                    && current.source_seal.is_none()
+                    && current.focus_out_position.as_ref() == Some(&stamp.position)
+            })
+        {
+            return false;
+        }
+        let retained_acquisition = reducer
+            .pending_transfer_target()
+            .is_some_and(|target| reducer.discard_pending_target_word(&target));
+        if !retained_acquisition {
+            reducer.malformed_or_unobserved_lifecycle();
+        }
+        // Generic unknown-input revocation still clears the stamp store. Here
+        // the exact old FocusOut is already admitted; preserve later received
+        // FocusIn/Disable records so existing source-free acquisition can run.
+        drop(reducer);
+        self.refresh_acquisition_fence_ready();
+        self.shared.changed.notify(usize::MAX);
+        true
+    }
+
     pub(crate) fn focus_out_retired_by_later_ingress(
         &self,
         owner: &EngineOwner,

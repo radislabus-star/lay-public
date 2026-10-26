@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793026797.9356446,
-    "ast_hash": "416813e130d9c616560cfd0800d1b985",
+    "mtime": 1793031019.926999,
+    "ast_hash": "85a6bbd0b98bc51f8c298f797599dce5",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793029725.8918042,
-    "ast_hash": "8c2ee2c41aa843ad9426b1280dbe40f2",
+    "mtime": 1793035146.9918778,
+    "ast_hash": "afce0a7b37f135bf1d9d8deca50e4226",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793029725.8908043,
-    "ast_hash": "bfff3e1e97e5b22bcda787c288c9346a",
+    "mtime": 1793035146.9908779,
+    "ast_hash": "1217e6491ca6d9432282949890fcb5da",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5405,8 +5405,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter.rs": {
-    "mtime": 1792855505.5198865,
-    "ast_hash": "5482e95f92d232aacc33c9777560fc51",
+    "mtime": 1793033417.951715,
+    "ast_hash": "6567e1ed905ae0a0f207d1690a69cc9e",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests.rs": {
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1793029497.9553702,
-    "ast_hash": "1196f24adea2b7a4ee689c3dab7fa6d5",
+    "mtime": 1793034796.6675706,
+    "ast_hash": "e9a53f134fadeff0a2c5b9d248710547",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -7520,8 +7520,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs": {
-    "mtime": 1792626808.2644022,
-    "ast_hash": "a382a2089b921c68d436083e92864251",
+    "mtime": 1793033499.2058876,
+    "ast_hash": "c025419af3c76c6f2487aff219fff4fd",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-19-fresh-manual-read-same-gesture.json": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793029328.2482564,
-    "ast_hash": "d19852ab11936e90b7f9fc1e337cc5b3",
+    "mtime": 1793034236.6847548,
+    "ast_hash": "0b56485d3bce5ee7f2edfbe75c102745",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8515,8 +8515,8 @@
     "semantic_hash": ""
   },
   "docs/development/six-release-debt-plan-2026-10-25.md": {
-    "mtime": 1793029328.2471693,
-    "ast_hash": "37588170c5ad0337503a066c0dabd811",
+    "mtime": 1793030825.6219687,
+    "ast_hash": "5862b15d8e48dda2e49d18a7005a48e9",
     "semantic_hash": ""
   },
   "docs/release-1.0.95.md": {
@@ -8610,8 +8610,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-26-inflight-native-replay-progress.json": {
-    "mtime": 1793029526.9488423,
-    "ast_hash": "d7dd50f9cfaac34394208680a3dcf29d",
+    "mtime": 1793031411.4863935,
+    "ast_hash": "7b58f44e8d53e6a81a3d9138c9c12e7c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/inflight_replay_progress.rs": {
@@ -8630,13 +8630,33 @@
     "semantic_hash": ""
   },
   "docs/architecture/inflight-native-replay-progress-2026-10-26.md": {
-    "mtime": 1793029526.9486547,
-    "ast_hash": "3726cdfc4086b237fb0b9c17fefc6a4b",
+    "mtime": 1793033259.7781124,
+    "ast_hash": "60dcb1448a950aa3c6b374208e8750e8",
     "semantic_hash": ""
   },
   "docs/release-1.0.99.md": {
     "mtime": 1793029131.8111317,
     "ast_hash": "9ac09181898f5486699a931b147fe7c5",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-26-owned-preedit-blur-receive-order.json": {
+    "mtime": 1793035065.31365,
+    "ast_hash": "54934038dca93bf318b250d5c52406d1",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.100-verification.json": {
+    "mtime": 1793031411.4860406,
+    "ast_hash": "57d1bc5a025b04cdec8bf82bf528467d",
+    "semantic_hash": ""
+  },
+  "docs/architecture/owned-preedit-blur-receive-order-2026-10-26.md": {
+    "mtime": 1793035065.3135188,
+    "ast_hash": "a7eef5c9cbfb54221febf185f29a64d2",
+    "semantic_hash": ""
+  },
+  "docs/release-1.0.100.md": {
+    "mtime": 1793031411.4861665,
+    "ast_hash": "d8407068de185def60e47c346abdaca5",
     "semantic_hash": ""
   }
 }

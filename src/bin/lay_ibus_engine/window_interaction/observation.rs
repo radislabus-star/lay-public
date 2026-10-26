@@ -439,9 +439,14 @@ impl LayIbusEngine {
             // The settled lineage described the canceled word, so this focus
             // transition must become source-free instead of sealing a prefix
             // under that stale lineage.
-            self.context_handoff_sealed = false;
-            self.context_reset_rereceipt = None;
-            self.discard_legacy_word_preedit_ownership();
+            self.strip_legacy_word_preedit_mirror();
+            self.composition.preedit_visible = false;
+            self.publish_tail_handoff();
+            // Keep the committed prefix as inert data, but revoke every local
+            // word witness. A broad adapter revoke would also erase a later
+            // FocusIn already received for the pending successor.
+            self.retire_context_word_locally();
+            admission.retire_owned_preedit_after_focus_out(&owner, &observed);
             return true;
         }
         let accepted =
@@ -4889,7 +4894,7 @@ impl LayIbusEngine {
         )
     }
 
-    pub(crate) fn revoke_context_word(&mut self) {
+    fn retire_context_word_locally(&mut self) {
         self.committed_tail.observed_boundary_source = None;
         self.layout_gesture.native_letter_release_focus.clear();
         self.exact_manual_target_snapshot = None;
@@ -4897,6 +4902,13 @@ impl LayIbusEngine {
         if let Some(scope) = self.context_word_scope.as_mut() {
             scope.revoke_for_input_gap();
         }
+        self.context_token = None;
+        self.committed_tail.pending_completion_learning = None;
+        self.clear_preedit_completion_state();
+    }
+
+    pub(crate) fn revoke_context_word(&mut self) {
+        self.retire_context_word_locally();
         if let (Some(admission), Some(owner)) =
             (self.context_admission.as_ref(), self.context_owner.as_ref())
         {
@@ -4912,8 +4924,6 @@ impl LayIbusEngine {
         } else {
             self.context_token = None;
         }
-        self.committed_tail.pending_completion_learning = None;
-        self.clear_preedit_completion_state();
     }
 }
 

@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3481,
+    "correctness": 3483,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 474,
+    "process": 476,
     "target": 3095
   },
   "package_fixtures": [
@@ -1859,6 +1859,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::owned_preedit_focus::td159_owned_preedit_blur_retains_clear_for_nonowners_and_atomic",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::owned_preedit_reset_source::owned_preedit_blur_cannot_recover_from_unobserved_or_superseded_focus",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::owned_preedit_reset_source::owned_preedit_blur_preserves_received_focus_for_fresh_source_free_admission",
       "target": "bin:lay-ibus-engine"
     },
     {
