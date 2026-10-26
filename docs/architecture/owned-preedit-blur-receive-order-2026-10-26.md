@@ -60,7 +60,13 @@ SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
 daemon2662418/tray2662424. All10 retained artifacts and loaded versions match;
 rootIBus3168326 and protected processes kept. Receipt
 CROOT/release100b2-final-deployment/result.json. No manual local GNOME install.
-Frozen full r18 Firefox220 started; Chrome220 pending, not inherited from98.
+Frozen full r18 completed: Firefox128P53F39B andChrome174P4F42B/220each.
+Normal rich roundtrip(active), refused in candidateA, is now PASS. Total302P57F81B;
+12 prior98PASS-to-FAIL losses remain, so this is scoped lifecycle proof and
+not regression-free/all-client acceptance. CI40370251745 andSecurity40370251729
+SUCCESS on functional2725bcf449000fbbce71770d4bbe7293ce4ad3ed.
+Exact native deltas, speed coverage, trace completeness, separate dedicated-
+CPU short runs and terminal failures: tech_debt/evidence/release-1.0.100-native.json.
 
 CandidateB1 full run: all required guards/lints/MSRV/PythonPASS, actual
 Rust3518PASS/1FAIL of3519. The known-failure set stays0; gate therefore reports

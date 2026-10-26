@@ -1,41 +1,48 @@
-## Current100B2 final gates — 2026-10-26T17:32:58.104745+00:00
+## Current100 scoped publication ready — 2026-10-26T18:13:22.952747+00:00
 
-Continue original six releases:97/98/extra99 published;100 remains unpublished.
-No agents/Harness2/manual local GNOME installation. Remote dedicated resource
-profile uses20CPU and28GiB high/hard; preserve KDE/SSH and unrelated processes.
+Continue six original groups without agents/Harness2/manual local GNOME install.
+97/98/extra99 published;100 source/native receipts complete, publication next.
+Functional2725bcf449000fbbce71770d4bbe7293ce4ad3ed pushed both remotes;
+CI40370251745 andSecurity40370251729 both SUCCESS on that exact commit.
+Source/modes1287files9e1486e38397f45e824ffc4471649ce8e90f1b8fbc09abc0bf45f2347f1a426e.
+3519source/11performance/419Python(10skip)/lints/MSRV/all10optimized PASS.
+Raw CROOT/release100b2-final-gates, local CACHE100/b2. Remote engine2662296
+SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
+daemon2662418/tray2662424, all10installed. OriginalIBus3168326 kept.
 
-Afunctional46852329 is pushed both remotes and CI passed, but native Firefox
-108P74F38B/220 rejected against98(121P63F36B). AChrome220NOT_TESTED.
-Remote still runs Aengine2334859, SHA f8c9ab4f622430425f2a48ee3b22d87de441059f18355eabd5d53154e847a707.
-Do not tag A or reuse its CI as B proof. RootIBus3168326 remains protected.
+Full frozenr18:Firefox128P53F39B,Chrome174P4F42B /220each,302P57F81Btotal.
+Against98 there are12oldPASS-to-FAIL losses; scoped improvement, not universal
+or regression-free acceptance. AFirefox108P74F38B and B1source3518P1F retained.
+Two actual causal regressions fixed: bounded in-flight replay progress and
+owned-preedit blur erasing received focus metadata. SourceA row52 stillPASS;
+B2 normalrich roundtripactive is nowPASS versusAFAIL.
 
-B2 source prepared for functional commit: authenticated owned-preedit blur retires the old
-word while retaining actual later received lifecycle stamps. Generic revoke
-still clears stamps; successor needs real freshGet/marker/UnknownStart.
-B1 full source caught early committed-prefix clearing:3518PASS/1FAIL at
-native_transfer::td125_focus_out_refuses_transfer_of_cancelled_owned_preedit.
-B2 reuses local word cleanup, retains inert prefix, and passes43/43 owned-
-preedit checks including that existing assertion and two new regression tests.
-RED1/1 failed at the lost actual FocusIn before implementation; retained.
+Dedicated remote builds20CPU/28GiB. Found old owned IBus unit1CPU cap; after
+fullmatrix changed only its CPUQuota to2000%, samePID/bytes/memory. Actual
+Chrome-tail delta1throttle11ms does not explain allFAIL. Separate20case smoke
+Firefox12P6F2B,Chrome16P2F2B; never replaces full440. CPUproof
+CROOT/release100b2-runtime-envelope-after.json and dedicated-resource-policy.json.
+Terminals5scenarios:Kitty5PASS,Konsole5PASS,WezTerm5FAIL. Later tracedWezTerm
+hintTab1PASS does not replace failures; screenshot+emittedpreedit show only
+4typedchars,no continuation, greenprefix. VisualFAIL remains. Existing XIM
+helper/session/config setup verified, permanent missing-XIM disproved.
 
-B2 gates COMPLETE: CROOT/release100b2-final-gates.3519/3519 source,
-11/11 performance,419Python(10skip), guards/lints/bothMSRV/all10release PASS.
-Build73.5365s. Original handoff trailing-space audit failure retained; exact
-one-space correction left source closure unchanged. Source/modes1287files:
-9e1486e38397f45e824ffc4471649ce8e90f1b8fbc09abc0bf45f2347f1a426e.
-Generated8files synced and local parity verified. B2 installed remote only:
-engine2662296 SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
-daemon2662418/tray2662424, all10artifacts match; originalIBus/protected kept.
-Frozen full Firefox220 RUNNING exec99328, output CROOT/release100b2-final-
-native-firefox; Chrome220 still pending. CACHE100/b2 holds raw gates/parity/
-deployment and prepared native wrapper. Do not reuse ACI asB2 verification.
-
-After all gates: sync exact generated files, remote-only retained-artifact
-install with loaded SHA verification, frozen r18 Firefox then Chrome220each,
-new actual B2 functional commit/CI, per-case deltas/speed and scoped release100.
-Then101 warnings (259raw/258normalized baseline records),102 core/structure,
-103 queue/final acceptance including old3GiB updater bootstrap and actual
-remote automatic completion. Stable99 discovery alone does not prove it.
+Current release records docs/release-1.0.100.md and tech_debt/evidence/release-
+1.0.100-{verification,native}.json; native followup staysOPEN. Commit metadata,
+push/tag/release100, actual installed updater --check bothhosts, then101.
+Do not rerun functional checks for this evidence-only commit.
+101 inventory259raw/258normalized warnings CACHE101/warning-inventory99-normalized.json;
+installer builds research-tools, so a research-only cfg alone cannot remove
+lib warnings. Most leaves test-only; protectedtext_edit.rs/gate.rs unchanged.
+Output-transaction prototype needs a test-only module shim + shared offline
+implementation if removed from compiled library; preserve all test identities.
+102 inspect TD122/123/132/134 and evidence before changes. Candidate next shared
+issue: authenticated Revocation FocusOut/Disable calls broad revoke_context_word
+again, possibly erasing later focus stamps; needs RED before any edit, not a
+proven explanation of every WezTerm failure. WezTerm preview policy emits only
+typed prefix despite available Tab completion; separate presentation followup.
+103 final queue/evidence and real old3GiB updater bootstrap/completion, not merely
+discovery. No general wave-quality closure from these lifecycle receipts.
 
 ## Current100 candidateA rejected; causal FocusOut RED — 2026-10-26T16:47:39.777966+00:00
 

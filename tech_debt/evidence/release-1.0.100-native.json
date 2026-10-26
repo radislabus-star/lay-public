@@ -1,0 +1,155 @@
+{
+  "version": "1.0.100",
+  "functional_commit": "2725bcf449000fbbce71770d4bbe7293ce4ad3ed",
+  "engine_sha256": "443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811",
+  "scope": "Frozen r18 KDE/X11 RFB + actual native/DOM field agreement;220rows per browser",
+  "browsers": {
+    "firefox": {
+      "counts": {
+        "PASS": 128,
+        "FAIL": 53,
+        "BLOCKED": 39,
+        "NOT_TESTED": 0
+      },
+      "rows": 220,
+      "original_r18_actor_sha256": "17dc93b5f2769d5dde62bfe8f5a539fb68af40744139e823c5f18a848b4ce7e6",
+      "baseline98_transitions": {
+        "PASS -> PASS": 112,
+        "FAIL -> PASS": 16,
+        "FAIL -> FAIL": 44,
+        "BLOCKED -> BLOCKED": 36,
+        "PASS -> FAIL": 9,
+        "FAIL -> BLOCKED": 3
+      },
+      "latency": {
+        "samples": 289,
+        "rows_with_samples": 94,
+        "total_rows": 220,
+        "median_ms": 162.40034066140652,
+        "p95_nearest_rank_ms": 243.92745667137206,
+        "max_ms": 281.50770138017833,
+        "scope": "Matched native target observations after actual key release; excludes failures without a target sample"
+      },
+      "native_trace_complete_rows": {
+        "True": 204,
+        "False": 16
+      },
+      "raw_receipt": "CROOT/release100b2-final-native-firefox/firefox/result.json",
+      "raw_receipt_sha256": "17285accf6e8c992d0b46517b7355e39f3ddee2f6d26b78162831e96a01ba018",
+      "dedicated_cpu_smoke": {
+        "rows": 20,
+        "counts": {
+          "PASS": 12,
+          "FAIL": 6,
+          "BLOCKED": 2
+        },
+        "receipt": "CROOT/release100b2-dedicated-cpu-smoke-firefox/firefox/result.json",
+        "scope": "Separate short run after CPU-only unit change; never substitutes the full matrix"
+      }
+    },
+    "chrome": {
+      "counts": {
+        "PASS": 174,
+        "BLOCKED": 42,
+        "FAIL": 4,
+        "NOT_TESTED": 0
+      },
+      "rows": 220,
+      "original_r18_actor_sha256": "17dc93b5f2769d5dde62bfe8f5a539fb68af40744139e823c5f18a848b4ce7e6",
+      "baseline98_transitions": {
+        "PASS -> PASS": 171,
+        "BLOCKED -> BLOCKED": 42,
+        "BLOCKED -> PASS": 1,
+        "PASS -> FAIL": 3,
+        "FAIL -> PASS": 2,
+        "FAIL -> FAIL": 1
+      },
+      "latency": {
+        "samples": 366,
+        "rows_with_samples": 111,
+        "total_rows": 220,
+        "median_ms": 47.79122618492693,
+        "p95_nearest_rank_ms": 64.82836068607867,
+        "max_ms": 84.61727201938629,
+        "scope": "Matched native target observations after actual key release; excludes failures without a target sample"
+      },
+      "native_trace_complete_rows": {
+        "True": 220
+      },
+      "raw_receipt": "CROOT/release100b2-final-native-chrome/chrome/result.json",
+      "raw_receipt_sha256": "d36d9ce58b5d47e65ffe44b26fd3c2fb2bae211dd5499bdcdcec3bb87790f1e9",
+      "dedicated_cpu_smoke": {
+        "rows": 20,
+        "counts": {
+          "PASS": 16,
+          "BLOCKED": 2,
+          "FAIL": 2
+        },
+        "receipt": "CROOT/release100b2-dedicated-cpu-smoke-chrome/chrome/result.json",
+        "scope": "Separate short run after CPU-only unit change; never substitutes the full matrix"
+      }
+    }
+  },
+  "total": {
+    "PASS": 302,
+    "FAIL": 57,
+    "BLOCKED": 81,
+    "NOT_TESTED": 0,
+    "total": 440
+  },
+  "sampled_old_pass_to_fail_total": 12,
+  "regression_free": false,
+  "resource_profiles": {
+    "full_matrix": "Existing owned IBus unit 1CPU,512MiB MemoryHigh/1GiB hard; actor20CPU/28GiB",
+    "after_full": "Same running IME bytes/PID; own unit CPUQuota2000%, memory unchanged; short browser and terminal controls only",
+    "proof": "CROOT/release100b2-runtime-envelope-after.json",
+    "limited_chrome_tail_cpu_delta": {
+      "usage_usec": 58190226,
+      "nr_periods": 2554,
+      "nr_throttled": 1,
+      "throttled_usec": 11046
+    },
+    "causality": "one11ms CPU throttle in measured Chrome tail does not explain all FAIL; no universal CPU fix claimed"
+  },
+  "terminals": {
+    "scope": "Five native PTY scenarios each; repeated terminal five waits for each observed target and differs from browser rapid-five",
+    "counts": {
+      "kitty": {
+        "PASS": 5
+      },
+      "konsole": {
+        "PASS": 5
+      },
+      "wezterm": {
+        "FAIL": 5
+      }
+    },
+    "receipt": "CROOT/release100b2-terminal-controls/result.json",
+    "visuals": {
+      "kitty": "PASS: typed prefix plain, suffix white background in saved hint frame",
+      "konsole": "PASS: typed prefix plain, suffix white background in saved hint frame",
+      "wezterm": "FAIL: later diagnostic Tab succeeds but hint frame contains green typed prefix without continuation; emitted preedit text prov only,4chars"
+    },
+    "diagnostic_wezterm": {
+      "functional_hint_tab": "PASS",
+      "rows": 1,
+      "not_a_replacement_for_initial_five_failures": true,
+      "receipt": "CROOT/release100b2-wezterm-hint-diagnostic/terminal/result.json"
+    }
+  },
+  "residuals_open": [
+    "rapid-five missed or late targets",
+    "some cold hint/Tab readiness",
+    "moved-boundary Space prefetch not ready at the native deadline",
+    "WezTerm intermittent functional failure and missing visible continuation",
+    "unchanged blocked prerequisites including isolated-learning inverse cases"
+  ],
+  "rejected": {
+    "candidate_a": "Firefox108PASS74FAIL38BLOCKED; Chrome not tested; no release",
+    "candidate_b1": "3518PASS1FAIL source; premature prefix cleanup; fixed without weakening prior assertion"
+  },
+  "evidence_aliases": {
+    "CROOT": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+    "CACHE100": "/home/ubu/.cache/lay/development/release-1.0.100-20261026"
+  }
+}

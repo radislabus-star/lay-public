@@ -3,6 +3,24 @@
 Priority: P1. Status: OPEN, not part of the accepted source-test PASS.
 Owner: the next bounded desktop compatibility task, without Harness2/agents.
 
+## Latest measured candidate100 —2026-10-26
+
+Functional2725bcf4, exact1287file/mode closure9e1486e38397f45e824ffc4471649ce8e90f1b8fbc09abc0bf45f2347f1a426e.
+Full unchanged r18: Firefox128P53F39B,Chrome174P4F42B of220each;
+total302P57F81B/440. Relative98,12oldPASS-to-FAIL losses retained. A rejected
+candidate108P74F38B Firefox and B1source3518P1F are not erased.
+This task remains OPEN; see evidence/release-1.0.100-native.json for every
+version delta, latency coverage and the separate CPU-envelope short controls.
+Native trace completeness: Firefox204/220 rows,Chrome220/220; diagnostic
+trace coverage is separate from actual native/DOM verdicts.
+
+Five-scenario native PTY controls: Kitty5PASS,Konsole5PASS,WezTerm5FAIL.
+Later WezTerm hint-only functional TabPASS has missing visible continuation;
+visual FAIL and original functional failures remain OPEN in
+[the bounded follow-up](wezterm-native-preedit-followup-2026-10-26.md).
+Do not replace the original cases with this diagnostic or count native
+browser rapid-five as equivalent to terminal five-with-settlement.
+
 ## Frozen evidence
 
 Release1.0.96 source26d5ca24; final compiler and loaded byte identities are in
