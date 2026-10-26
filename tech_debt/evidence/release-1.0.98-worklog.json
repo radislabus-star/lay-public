@@ -1,7 +1,7 @@
 {
   "schema": "lay.debt-release-worklog.v1",
   "version": "1.0.98",
-  "state": "FINAL_SOURCE_BUILD_NATIVE_RECORDED_PUBLICATION_PENDING",
+  "state": "PUBLISHED_VERIFIED_SOURCE_BUILD_CI_DISCOVERY_NATIVE_RESIDUAL_OPEN",
   "stable": "1.0.97",
   "origin_head": "d35bee538bf8d1ed2e2b5d27bff51664573ed2e3",
   "baseline": {
@@ -129,7 +129,7 @@
     "v2": "run-0MDMHg:1/1FAIL, actual chain Some(6), native None because snapshot intentionally cleared after CommitText",
     "v3": "Exact run-zHY98C1/1PASS; full run-H8NVzr1088/1088PASS including all old guards and c20 unchanged. Prior c20 failure retained, no budget changed."
   },
-  "updated_at": "2026-10-26T08:28:39.495314+00:00",
+  "updated_at": "2026-10-26T14:43:02.995933+00:00",
   "candidate_b": {
     "ime_pid": 3810595,
     "daemon_pid": 3810630,
@@ -617,7 +617,17 @@
   },
   "next_stage": {
     "public_issue": 70,
-    "task": "tech_debt/154-apt-polkit-package-compatibility.md",
+    "task": "tech_debt/ubuntu-26-04-polkit-package-compatibility.md",
     "shared_native": "same-byte Firefox63FAIL/Chrome3FAIL remain; per-case raw receipts and losses retained"
-  }
+  },
+  "public": {
+    "tag_name": "v1.0.98",
+    "published_at": "2026-10-26T14:25:12Z",
+    "html_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.98",
+    "target_commitish": "main",
+    "draft": false,
+    "prerelease": false
+  },
+  "ci": "40292706780/40292706831 SUCCESS on5052c3df",
+  "updater_evidence": "tech_debt/evidence/release-1.0.98-updater.json"
 }

@@ -17,11 +17,12 @@ client effects, BLOCKED prerequisites and NOT_TESTED coverage.
 | Order | Planned release | Scope | State |
 | --- | --- | --- | --- |
 | 1 | 1.0.97 | KDE Firefox functional failures and default native observation prerequisites | RELEASED: bounded closed-erasure repair; complete source/build gates, raw native limits and updater discovery recorded |
-| 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | SOURCE/BUILD/NATIVE_RECORDED; publication pending. Chrome174P3F43B, Firefox121P63F36B; retained shared lifecycle and oldPASS losses in stage3 |
-| 3 | 1.0.99 | Shared long-sequence lifecycle/rapid gestures, remaining inline presentation, terminals and native coverage | QUEUED; Firefox residuals from97 retained here |
-| 4 | 1.0.100 | Build warnings: measured reachability and minimal research/runtime boundaries | QUEUED |
-| 5 | 1.0.101 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | QUEUED |
-| 6 | 1.0.102 | Reconcile debt queue and final acceptance/release/updater evidence | QUEUED |
+| 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | RELEASED at2026-10-26T14:25:12Z,5052c3df;295P66F79B. Both installed updater discoveryPASS; retained native failures stayOPEN. |
+| extra installer blocker | 1.0.99 | Ubuntu26.04 missing transitional polkit package (#70 installer) | IN_PROGRESS; actual apt platform RED then11/11 installer GREEN, build pending |
+| 3 | 1.0.100 | Shared long-sequence lifecycle/rapid gestures, remaining inline presentation, terminals and native coverage | QUEUED; Firefox residuals from97 retained here |
+| 4 | 1.0.101 | Build warnings: measured reachability and minimal research/runtime boundaries | QUEUED |
+| 5 | 1.0.102 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | QUEUED |
+| 6 | 1.0.103 | Reconcile debt queue and final acceptance/release/updater evidence | QUEUED |
 
 ## Stage 1 baseline and next action
 
@@ -88,7 +89,7 @@ the owning document at each milestone; keep rejected experiments visible.
 ## New installer blocker —2026-10-26
 
 Public#70 arrived during final98 native verification: obsolete apt binary
-`policykit-1` has no candidate on Ubuntu26.04. TD154 records the first failure,
+`policykit-1` has no candidate on Ubuntu26.04. The installer task records the first failure,
 primary package evidence and minimal binary-package fix. Handle immediately
 after current98 publication, without changing98 tested source or interrupting
 its full Firefox proof. User already authorized issue fixes, releases and replies.
@@ -98,3 +99,16 @@ PASS; original frozen full native440 recorded295P66F79B including11 oldPASS
 toFAIL losses. Preparation improves6 original ChromeFAIL cases but remaining
 shared observation/dispatch failures stay OPEN in stage3; do not mark universal
 compatibility or all browser debt closed. Publication/updater still pending.
+
+2026-10-26T14:25Z: stage2 published98 after CI40292706780 andSecurity40292706831
+SUCCESS. New P0 issue70 is an extra isolated installer release99 inserted
+before original stage3. Original six groups remain; reserved later versions
+shift by one (100 shared native,101 warnings,102 core,103 reconciliation).
+Local installed update check currently75 because another update owns its lock;
+this is WAIT, not no-update/PASS. Remote installed98 check isPASS/current.
+
+2026-10-26T14:41Z: local installed updater now exits0/offers96->98; remote
+exits0/installed98current. The earlier local busy75 receipt is preserved.
+Its separate old96->97 automatic build timed out90min without installation;
+measured early memory reclaim and bounded source policy repair join installer99.
+No manual local binary install or IME restart was issued.

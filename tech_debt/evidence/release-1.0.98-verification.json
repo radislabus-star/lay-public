@@ -1,7 +1,7 @@
 {
   "schema": "lay.release-verification.v1",
   "version": "1.0.98",
-  "status": "SOURCE_BUILD_INSTALLED_PASS_SCOPED_NATIVE_IMPROVEMENT_PUBLICATION_PENDING",
+  "status": "PUBLISHED_SOURCE_BUILD_CI_UPDATER_DISCOVERY_VERIFIED_SCOPED_NATIVE_LIMITS",
   "verified_at": "2026-10-26T08:28:39.495314+00:00",
   "source": {
     "files": 1286,
@@ -322,6 +322,23 @@
   },
   "native_limit": "66FAIL/79BLOCKED remain; Chrome1 and Firefox10 oldPASS becameFAIL; not regression-free or whole-client acceptance",
   "public": {
-    "state": "NOT_PUBLISHED"
-  }
+    "tag_name": "v1.0.98",
+    "published_at": "2026-10-26T14:25:12Z",
+    "html_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.98",
+    "target_commitish": "main",
+    "draft": false,
+    "prerelease": false,
+    "commit": "5052c3df06d255a1dca3da69a53e9366d8d5de13",
+    "ci_runs": [
+      {
+        "id": 40292706780,
+        "conclusion": "success"
+      },
+      {
+        "id": 40292706831,
+        "conclusion": "success"
+      }
+    ]
+  },
+  "updater_evidence": "tech_debt/evidence/release-1.0.98-updater.json"
 }

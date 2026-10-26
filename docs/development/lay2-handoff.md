@@ -1,4 +1,58 @@
-## Current milestone — 2026-10-26T08:29:51.679402+00:00
+## Current milestone — 2026-10-26T14:43:02.995933+00:00
+
+CONTINUE user-authorized six original debt groups, no stopping/questions,
+no agents/Harness2. RELEASE97 and RELEASE98 BOTH PUBLISHED.98tag/functional
+5052c3df06d255a1dca3da69a53e9366d8d5de13 at2026-10-26T14:25:12Z,
+public URL /releases/tag/v1.0.98; CI40292706780/Security40292706831 SUCCESS.
+Installed discovery actuallyPASS: local96 offers98,remote98current,exit0each.
+Earlier local busy75 retained. Full98 native same bytesFF121P63F36B and
+Chrome174P3F43B/220each, total295P66F79B. All raw losses/timings retained;
+not universal or regression-free. Source3515/perf11/all10buildPASS.
+
+NEW P0 public#70 was created after original plan: apt policykit-1 binary
+missing onUbuntu26.04. Inserted separate installer99 before original stage3;
+original remaining group versions shift to100shared native/101warnings/
+102core/103reconciliation. All six original groups remain authorized.
+Current UNCOMMITTED source99 changes: apt realpkexec+polkitd, one new platform
+regression, version99 metadata. RED apt case proved; public installer11/11GREEN.
+Task now tech_debt/ubuntu-26-04-polkit-package-compatibility.md: avoid colliding
+with pre-existing TD154! Original154/155 tasks are untouched.
+
+FULL99 SOURCE A GATES CURRENTLY RUNNING unified exec56528,
+CROOT/release99-full-gates, runner CROOT sibling
+/home/e/projects/lay-development-runner/release99-source-vTE2u1/release99-gates.py.
+Archive1982files SHA662a2d30589bd8c9e4f461a9a67d2330e75237949e46a8e92aab55d47ba94ef7.
+Preparation verifies prior98 closure14af075c before owned-mirror rsync under
+same heavy guard. Expected unchanged all Rust identities/lanes/knownfailures0.
+Gate now passed graph/canon/Python/public/install/Node/audit50/lints/bothMSRV;
+full3515 source,perf11,all10optimized build/artifacts still running. NO99publication.
+
+IMPORTANT LOCAL SOURCE B POLICY DELTA NOT IN RUNNING99A: actual existing local
+auto updater96->97 stalled over1hour becauseMemoryHigh3GiB whileMax4GiB;
+4.9millionhigh events,memory-fullPSI28%,rustcRSS3.245GB. Runtime-only raised
+soft threshold to EXISTING hard4G, keepingCPU1/swap256M/hard4G unchanged,
+NO restart/manual installation. PSI fell0.07%, compilation advanced; old
+90min deadline still expired,Resulttimeout/143,NO install. Currentlocal96.
+SourceB systemd/lay-auto-update.service removes earlyMemoryHigh, hard4G etc
+unchanged, tests/test_auto_update.py adds one resource invariant;9/9PASS,
+systemdverify0(unrelatedspice-vdagent warning retained). Own doc
+stable-auto-update-2026-10-19.md appended actualfacts; task
+tech_debt/auto-update-build-memory-budget-2026-10-26.md. CACHE99 contains RED,
+actual cgroup before/after and old timeout. SourceB must be synced ONLY AFTER
+99A gates complete. Run affected policy/installer/package/canon/graph gates,
+verify all Rust runtime sources unchanged except generated receipt, rebuild
+all10 if needed and record exact FINAL source/artifact parity. Do not pretend
+Aproof covered Bfiles. CI must pass final99 commit before tag/release99;
+installed updater check, reply/close#70 after actual release, then stage100.
+
+CACHE99=/home/ubu/.cache/lay/development/release-1.0.99-20261026.
+No live KDE99install yet;98native receipt does not qualify newbytes. Local
+automatic run failed itself; no manual GNOMEinstall/restart allowed. Runtime
+soft-threshold override4G remains for updater unit in this boot; source unit
+fix applies on installation, other old auto updater instances not provedfixed.
+Sound only actual final task completion. Keep updates<60s, reduce speculation.
+
+## Previous milestone — 2026-10-26T08:29:51.679402+00:00
 
 FINAL C FULL NATIVE COMPLETE: Chrome174P3F43B,Firefox121P63F36B,
 220each/440total,295P66F79B. Same IME744266/hash7b6f0701..., systemIBus

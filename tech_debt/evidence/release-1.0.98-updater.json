@@ -1,0 +1,24 @@
+{
+  "schema": "lay.release-updater-check.v1",
+  "version": "1.0.98",
+  "at_utc": "2026-10-26T14:43:02.995933+00:00",
+  "local": {
+    "entry": "/home/ubu/.local/bin/lay-update --check",
+    "at_utc": "2026-10-26T14:41:27.510151+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.96\nстабильный релиз: 1.0.98\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.96 → 1.0.98\n",
+    "stderr": ""
+  },
+  "remote": {
+    "host": "192.168.3.94",
+    "entry": "/home/e/.local/bin/lay-update --check",
+    "at_utc": "2026-10-26T14:26:20.034505+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.98\nстабильный релиз: 1.0.98\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+    "stderr": ""
+  },
+  "manual_local_install": false,
+  "status": "PASS_INSTALLED_RELEASE_DISCOVERY_BOTH_HOSTS",
+  "old_automatic_install": "Separate96->97 attempt timed out after90min, no install; actual early memory reclaim and bounded policy repair recorded for99. Discovery PASS is not automatic-install PASS.",
+  "first_busy_check": "/home/ubu/.cache/lay/development/release-1.0.98-20261025/local-updater-busy-first.json"
+}
