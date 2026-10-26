@@ -5,6 +5,8 @@ use super::*;
 mod active_composition_space_receipt;
 #[path = "exact_manual_observation.rs"]
 mod exact_manual_observation;
+#[path = "inflight_replay_progress.rs"]
+mod inflight_replay_progress;
 #[path = "kde_owned_preedit.rs"]
 mod kde_owned_preedit;
 #[path = "late_native_replay_refresh.rs"]

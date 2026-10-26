@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793003967.908609,
-    "ast_hash": "f937e3bc47ae2415140b085c73385724",
+    "mtime": 1793029526.9101474,
+    "ast_hash": "769a2adde62ffa70f6c8b82ea94a1215",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793003967.908609,
-    "ast_hash": "536d2daad38a3fe47ac98970a999cff8",
+    "mtime": 1793029526.9102998,
+    "ast_hash": "d87412ccb1df115cfd361ef8815e964b",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -950,8 +950,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1792855505.5218863,
-    "ast_hash": "66d6dfb848ae677a28156d6a9ddf66c6",
+    "mtime": 1793029497.9553702,
+    "ast_hash": "750c4c4253fe1117d63161f6221cecee",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/text.rs": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793003967.908609,
-    "ast_hash": "57ba67c9349b75671fc0f1adca2c0ce1",
+    "mtime": 1793029526.9104526,
+    "ast_hash": "63d591c14d16e1fab97371118c4bd029",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793026134.3218293,
-    "ast_hash": "6a0c20751bab53660cfcac789b617a35",
+    "mtime": 1793026797.9356446,
+    "ast_hash": "416813e130d9c616560cfd0800d1b985",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793026311.0765736,
-    "ast_hash": "9a31dae1b573de37386801e955996659",
+    "mtime": 1793029725.8918042,
+    "ast_hash": "8c2ee2c41aa843ad9426b1280dbe40f2",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793026311.0755734,
-    "ast_hash": "0292044cca2a6e614ee66492b9a40566",
+    "mtime": 1793029725.8908043,
+    "ast_hash": "bfff3e1e97e5b22bcda787c288c9346a",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1792958264.7952356,
-    "ast_hash": "d2c288b2426ebc16c7c86a38fcbebde1",
+    "mtime": 1793029497.9603703,
+    "ast_hash": "55aa276359439c73c998c0352ac489fd",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1792980469.062173,
-    "ast_hash": "d60c84d1e9ea542840bccd2e2fbcf5aa",
+    "mtime": 1793029497.9553702,
+    "ast_hash": "1196f24adea2b7a4ee689c3dab7fa6d5",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -7620,8 +7620,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/stable-auto-update-2026-10-19.md": {
-    "mtime": 1793025623.6108496,
-    "ast_hash": "e8df112a8c30749067b64a7cfa92a074",
+    "mtime": 1793028126.940998,
+    "ast_hash": "79fa2933351c44405ac53fbc5526abf1",
     "semantic_hash": ""
   },
   "docs/release-1.0.93.md": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793025782.998751,
-    "ast_hash": "b8f7f1efac88c8cc447a569372cd01c8",
+    "mtime": 1793029328.2482564,
+    "ast_hash": "d19852ab11936e90b7f9fc1e337cc5b3",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8515,8 +8515,8 @@
     "semantic_hash": ""
   },
   "docs/development/six-release-debt-plan-2026-10-25.md": {
-    "mtime": 1793025782.9970827,
-    "ast_hash": "a3dfd6f1d4ae1dbb8b4fb1f1aeb3a368",
+    "mtime": 1793029328.2471693,
+    "ast_hash": "37588170c5ad0337503a066c0dabd811",
     "semantic_hash": ""
   },
   "docs/release-1.0.95.md": {
@@ -8600,13 +8600,43 @@
     "semantic_hash": ""
   },
   "tech_debt/auto-update-build-memory-budget-2026-10-26.md": {
-    "mtime": 1793025623.6109774,
-    "ast_hash": "08d219904d44b4577e1f7634625a0de4",
+    "mtime": 1793029328.2470696,
+    "ast_hash": "fa6bebcab3c4a1316b33b32128704a55",
     "semantic_hash": ""
   },
   "tech_debt/ubuntu-26-04-polkit-package-compatibility.md": {
-    "mtime": 1793025623.5962756,
-    "ast_hash": "a458735217491b85f5fdd81f2d413b3f",
+    "mtime": 1793029328.2469714,
+    "ast_hash": "471a3390ff45f4f304056d6f8a570ff8",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-26-inflight-native-replay-progress.json": {
+    "mtime": 1793029526.9488423,
+    "ast_hash": "d7dd50f9cfaac34394208680a3dcf29d",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_ibus_engine/context_admission/adapter/tests/inflight_replay_progress.rs": {
+    "mtime": 1793029560.9945052,
+    "ast_hash": "5327737a6b52e1aad807365c8867ebf2",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.99-updater.json": {
+    "mtime": 1793029328.246427,
+    "ast_hash": "40c4352d388642ce3d909b78014600aa",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.99-verification.json": {
+    "mtime": 1793029328.2468486,
+    "ast_hash": "d338a09ea55822f0a76690c8c10b7e32",
+    "semantic_hash": ""
+  },
+  "docs/architecture/inflight-native-replay-progress-2026-10-26.md": {
+    "mtime": 1793029526.9486547,
+    "ast_hash": "3726cdfc4086b237fb0b9c17fefc6a4b",
+    "semantic_hash": ""
+  },
+  "docs/release-1.0.99.md": {
+    "mtime": 1793029131.8111317,
+    "ast_hash": "9ac09181898f5486699a931b147fe7c5",
     "semantic_hash": ""
   }
 }

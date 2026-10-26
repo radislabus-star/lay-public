@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3479,
+    "correctness": 3481,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 472,
+    "process": 474,
     "target": 3095
   },
   "package_fixtures": [
@@ -1579,6 +1579,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::firefox_zero_width_visible_completion_tab_appends_once_with_space",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::inflight_replay_progress::inflight_native_replay_contradictory_progress_cannot_revive_from_final_surface",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::inflight_replay_progress::inflight_native_replay_growing_surface_with_lagging_caret_waits_for_exact_final",
       "target": "bin:lay-ibus-engine"
     },
     {

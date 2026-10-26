@@ -1972,14 +1972,14 @@ impl LayIbusEngine {
         Some(local)
     }
 
-    pub(super) fn completed_exact_replay_target_advances(
+    pub(super) fn exact_replay_target_advances(
         &self,
         previous: &super::engine::SurroundingTextSnapshot,
         current: &super::engine::SurroundingTextSnapshot,
     ) -> bool {
         let Some(replay) = self
             .completed_exact_replay_boundary_provenance()
-            .or_else(|| self.exact_replay_reset_provenance(true))
+            .or_else(|| self.exact_replay_reset_provenance(false))
         else {
             return false;
         };
@@ -1989,16 +1989,25 @@ impl LayIbusEngine {
         let prefix = format!("{external_prefix}{}", replay.unchanged_prefix);
         let expected = format!("{prefix}{}", replay.replacement);
         let prefix_chars = prefix.chars().count();
+        let Some(observed_replacement_chars) =
+            (self.committed_tail.epoch.wrapping_sub(replay.epoch) as usize)
+                .checked_sub(replay.original_suffix.chars().count())
+        else {
+            return false;
+        };
         let is_target_surface = |surface: &super::engine::SurroundingTextSnapshot| {
             !surface.has_selection()
+                && surface.text.chars().count() <= prefix_chars + observed_replacement_chars
                 && surface.text.starts_with(&prefix)
                 && expected.starts_with(&surface.text)
                 && surface.cursor_pos as usize >= prefix_chars
                 && surface.cursor_pos as usize <= surface.text.chars().count()
         };
         // Two actual adjacent observations can explain text overtaking its
-        // caret. An unchanged body or a backwards caret supplies no such proof.
-        // This recognizes only inert progress, never a final receipt or range.
+        // caret, including while replacement keys are still arriving. Only
+        // already observed presses may explain a surface. An unchanged body
+        // or a backwards caret supplies no such proof. This recognizes only
+        // inert progress, never a final receipt or range.
         is_target_surface(previous)
             && is_target_surface(current)
             && current.text.len() > previous.text.len()

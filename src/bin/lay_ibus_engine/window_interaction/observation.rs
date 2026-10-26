@@ -4041,7 +4041,7 @@ impl LayIbusEngine {
                 .or(retained_native_progress)
                 .zip(self.client_context.surrounding_text_snapshot.as_ref())
                 .is_some_and(|(previous, current)| {
-                    self.completed_exact_replay_target_advances(previous, current)
+                    self.exact_replay_target_advances(previous, current)
                 });
         if !pending.confirmed
             && revision_gap == Some(1)
@@ -5228,6 +5228,8 @@ impl LayIbusEngine {
         // A native replay invalidates current client text on every key. Keep
         // its last actual observation only as an inert adjacent-progress proof;
         // never restore it as the current snapshot or an authorized edit range.
+        // The paired scope may still be receiving replacement keys; completion
+        // is required for the final receipt, not for retaining inert progress.
         let retained_progress =
             self.client_context
                 .native_replay_progress
@@ -5238,7 +5240,7 @@ impl LayIbusEngine {
                         && receipt.layout_generation == self.layout_gesture.layout_generation
                         && self
                             .completed_exact_replay_boundary_provenance()
-                            .or_else(|| self.exact_replay_reset_provenance(true))
+                            .or_else(|| self.exact_replay_reset_provenance(false))
                             .as_ref()
                             == Some(&receipt.scope)
                 });

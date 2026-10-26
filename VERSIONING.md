@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.99`
+- `1.0.100`
 
 1.0.97 preserves verified KDE closed-word replay after an ordinary new-word
 letter is erased, including one owned Space/NBSP presentation transition.
@@ -350,3 +350,7 @@ The version must be updated in:
 
 1.0.99 fixes apt polkit package selection and removes premature updater memory
 reclaim within its existing hard budget. See [release notes](docs/release-1.0.99.md).
+
+1.0.100 is the in-progress shared native replay observation repair.
+Exact final client receipts and the existing verifier remain mandatory;
+release acceptance and publication are pending.

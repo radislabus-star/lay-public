@@ -112,3 +112,15 @@ exits0/installed98current. The earlier local busy75 receipt is preserved.
 Its separate old96->97 automatic build timed out90min without installation;
 measured early memory reclaim and bounded source policy repair join installer99.
 No manual local binary install or IME restart was issued.
+
+## Final updater boundary still open after99
+
+Release99 proves the corrected service contract and actual compiler phase,
+not automatic completion on every already-installed older unit. The old local
+unit with3GiB MemoryHigh timed out; replacing a service file only after a
+successful build does not itself establish bootstrap recovery for that old
+active unit. Keep this as an explicit stage6/103 update-path acceptance item:
+inspect the actual installed fetch/build/unit lifecycle, reproduce the first
+failed transition if still reachable, use an existing bounded own-unit repair
+if required, and obtain a real remote automatic update completion receipt.
+No manual local GNOME install/restart or inferred success from discovery.
