@@ -1,6 +1,7 @@
 # Automatic update build: premature memory reclaim
 
-PriorityP0; source repairGREEN, actual update completionPENDING.
+PriorityP0; DONE_SCOPED_RESOURCE_CONTRACT_RELEASED_1.0.99.
+Automatic end-to-end installation remains NOT_PROVED.
 Measured first failure: a source build exceeds the unit's3GiB MemoryHigh
 while staying under its4GiB MemoryMax; millions of high events and28% full
 memory pressure stall the compiler and keep update.lock busy for over an hour.
@@ -32,3 +33,7 @@ Raw receipt and limits are in release-1.0.99-verification.json. Final CI and
 release discovery remain pending; successful automatic installation is not
 inferred from this compiler proof. Remote ordinary builds use dedicated20CPU/
 28GiB per the user's subsequent authorization, separately from this diagnostic.
+
+Published1.0.99: final CI and SecurityPASS; actual both-host installed updater
+discovery98->99PASS. See release-1.0.99-updater.json. Old timeout and absence
+of new automatic-install proof remain explicit; no manual GNOME install.

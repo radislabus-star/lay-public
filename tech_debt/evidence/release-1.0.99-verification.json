@@ -1,8 +1,8 @@
 {
   "schema": "lay.release-verification.v1",
   "version": "1.0.99",
-  "status": "REQUIRED_SOURCE_BUILD_CI_AND_MEASURED_COMPILER_BUDGET_PASS",
-  "at_utc": "2026-10-26T15:38:51.810605+00:00",
+  "status": "PUBLISHED_SOURCE_BUILD_CI_AND_DISCOVERY_VERIFIED",
+  "at_utc": "2026-10-26T15:42:08.245938+00:00",
   "functional_scope": [
     "apt: require actual pkexec and polkitd packages instead of removed transitional policykit-1 (#70)",
     "updater service: remove premature3GiB soft threshold; preserve hard4GiB,swap256MiB,1CPU and one build job"
@@ -472,8 +472,14 @@
       "scope": "compiler build budget only; not automatic installation or clean-dependencies proof"
     }
   },
-  "publication": "READY_FOR_PUBLICATION; updater discovery follows actual release",
-  "updater_discovery_after_release": "PENDING",
+  "publication": {
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.99",
+    "publishedAt": "2026-10-26T15:39:23Z",
+    "tag_commit": "0ed833b22a11295cf16959b7f45cf206898cd405",
+    "functional_ci_commit": "bb6dc5b60442e6a5ff636c3a9a050b9b1657f4dd",
+    "production_tree_identical": true
+  },
+  "updater_discovery_after_release": "PASS both installed98 -> stable99, exit0; see release-1.0.99-updater.json",
   "ci": {
     "functional_commit": "bb6dc5b60442e6a5ff636c3a9a050b9b1657f4dd",
     "CI": "https://github.com/radislabus-star/lay-public/actions/runs/40346543321",

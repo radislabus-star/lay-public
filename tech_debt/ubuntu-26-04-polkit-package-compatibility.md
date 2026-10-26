@@ -1,6 +1,6 @@
 # Installer blocker #70 — install supported polkit binaries on apt systems
 
-Priority: P0 installer blocker. State: REQUIRED_GATES_AND_CI_PASS_PUBLICATION_NEXT. Public issue:
+Priority: P0 installer blocker. State: DONE_SCOPED_PACKAGE_SELECTION_RELEASED_1.0.99. Public issue:
 https://github.com/radislabus-star/lay-public/issues/70 (2026-10-26).
 Inserted after completed1.0.98 publication; preserve its accepted runtime.
 
@@ -57,3 +57,7 @@ CI/publication/updater discovery/reply to70 stillPENDING; do not close from test
 Final public CI40346543321 andSecurity40346543338 PASS onbb6dc5b6.
 All mandatory source/build gates complete; actual publication/discovery and
 public reply follow in a separate receipt. CleanUbuntu26.04 install unproved.
+
+Published 2026-10-26T15:39:23Z: https://github.com/radislabus-star/lay-public/releases/tag/v1.0.99. Both actual installed updater
+entries offer98->99,exit0. Public#70 answered and closed at2026-10-26T15:40:35Z;
+reply https://github.com/radislabus-star/lay-public/issues/70#issuecomment-6420231601. Full cleanUbuntu26.04 remainsNOT_TESTED.
