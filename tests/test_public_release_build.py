@@ -227,6 +227,21 @@ class PublicReleaseBuildTests(unittest.TestCase):
         for name in ["installed", "links", "models", "cargo.json"]:
             self.assertFalse((self.work / name).exists())
 
+    def test_apt_requires_polkit_daemon_and_privilege_helper(self):
+        env = {**self.env, "LAY_PACKAGE_MANAGER_OVERRIDE": "apt"}
+        result = subprocess.run(
+            ["bash", str(ROOT / "install.sh"), "--check-platform"],
+            env=env, text=True, capture_output=True, timeout=10,
+        )
+        self.assertEqual(result.returncode, 0, result.stderr)
+        packages = next(line.partition("=")[2].split()
+                        for line in result.stdout.splitlines()
+                        if line.startswith("base_packages="))
+        # Ubuntu26.04 removed the transitional binary. Both actual components
+        # are required: polkitd alone would leave Lay's pkexec dialog unavailable.
+        self.assertNotIn("policykit-1", packages)
+        self.assertTrue({"pkexec", "polkitd"}.issubset(packages), packages)
+
     def test_required_json_tool_is_declared_for_each_package_manager(self):
         for manager in ["apt", "pacman", "rpm-ostree", "dnf", "yum"]:
             with self.subTest(manager=manager):

@@ -1,4 +1,5 @@
 """Isolated update-mode install and actual frontend command adapters."""
+import configparser
 import importlib.util
 import json
 import os
@@ -11,6 +12,20 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 UUID = "lay@radislabus-star.github.io"
+
+
+class AutoUpdateResourceTests(unittest.TestCase):
+    def test_build_can_use_its_existing_bounded_memory_budget(self):
+        unit = configparser.ConfigParser(interpolation=None, strict=False)
+        unit.read(ROOT / "systemd/lay-auto-update.service")
+        service = unit["Service"]
+        # A 3GiB soft ceiling made the actual compiler reclaim continuously
+        # while its unchanged 4GiB hard budget still had room.
+        self.assertIn(service.get("MemoryHigh", "infinity"),
+                      ("infinity", service["MemoryMax"]))
+        self.assertEqual(service["MemoryMax"], "4G")
+        self.assertEqual(service["MemorySwapMax"], "256M")
+        self.assertEqual(service["CPUQuota"], "100%")
 
 
 class UpdateInstallTests(unittest.TestCase):

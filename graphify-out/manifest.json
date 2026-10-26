@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1792976256.2653728,
-    "ast_hash": "03ea2a3432c2b475f23c9ce6e53f6946",
+    "mtime": 1793003967.908609,
+    "ast_hash": "f937e3bc47ae2415140b085c73385724",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1792976256.2654839,
-    "ast_hash": "9820e63a5704035c5625c7b1a50b4dcb",
+    "mtime": 1793003967.908609,
+    "ast_hash": "536d2daad38a3fe47ac98970a999cff8",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -50,8 +50,8 @@
     "semantic_hash": "5275471b604b12b7e282a3bde6476734"
   },
   "install.sh": {
-    "mtime": 1792851725.1445415,
-    "ast_hash": "96d1bc17a6373ee71a7707ff5570d62c",
+    "mtime": 1793003717.6377509,
+    "ast_hash": "ee3cc935bf44580e77ca001063f88963",
     "semantic_hash": ""
   },
   "scripts/bump-lay-version.sh": {
@@ -1225,7 +1225,7 @@
     "semantic_hash": "e6fdbc6001da80e49fd905fe306afbac"
   },
   "src/ime_correction.rs": {
-    "mtime": 1793000657.9054499,
+    "mtime": 1793000570.752227,
     "ast_hash": "4820cc9b03af4981fbcd0967b5362bc0",
     "semantic_hash": ""
   },
@@ -1935,7 +1935,7 @@
     "semantic_hash": "aab27e3f956ca4e44e3d7c29b07a656d"
   },
   "src/text_edit.rs": {
-    "mtime": 1793000657.8334494,
+    "mtime": 1793000570.8571212,
     "ast_hash": "bb2fbefab979008430e062a2a363feee",
     "semantic_hash": ""
   },
@@ -1965,7 +1965,7 @@
     "semantic_hash": ""
   },
   "src/text_edit/gate.rs": {
-    "mtime": 1793000657.5054476,
+    "mtime": 1793000570.855108,
     "ast_hash": "1c7907651b9324284c6ebdc8b0e531ba",
     "semantic_hash": ""
   },
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1792976256.2872572,
-    "ast_hash": "a64b0851f6b626cda63df724638ed098",
+    "mtime": 1793003967.908609,
+    "ast_hash": "57ba67c9349b75671fc0f1adca2c0ce1",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1792999713.7400908,
-    "ast_hash": "de278ed6ebfbbc65e5d2f0f46a41114a",
+    "mtime": 1793026134.3218293,
+    "ast_hash": "6a0c20751bab53660cfcac789b617a35",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793000759.5520234,
+    "mtime": 1793026311.0765736,
     "ast_hash": "9a31dae1b573de37386801e955996659",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793000759.5470233,
+    "mtime": 1793026311.0755734,
     "ast_hash": "0292044cca2a6e614ee66492b9a40566",
     "semantic_hash": ""
   },
@@ -5685,8 +5685,8 @@
     "semantic_hash": ""
   },
   "tests/test_public_release_build.py": {
-    "mtime": 1792851456.706374,
-    "ast_hash": "f8fb962ef6638d2645b97d4dc8aca12e",
+    "mtime": 1793003717.6377509,
+    "ast_hash": "5d2e0467199b3bdfc2de41bac79eec12",
     "semantic_hash": ""
   },
   "docs/public-issues-42-44-release-1.0.70.md": {
@@ -7610,8 +7610,8 @@
     "semantic_hash": ""
   },
   "tests/test_auto_update.py": {
-    "mtime": 1792853832.4602969,
-    "ast_hash": "61687c2f6e59204710e7ee78a778f20d",
+    "mtime": 1793025633.3632457,
+    "ast_hash": "c72a7035168fe40e1c79e08a3bf8def2",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-19-stable-auto-update.md": {
@@ -7620,8 +7620,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/stable-auto-update-2026-10-19.md": {
-    "mtime": 1792423778.766032,
-    "ast_hash": "634f9f13b14a0b86396b88fff76cb639",
+    "mtime": 1793025623.6108496,
+    "ast_hash": "e8df112a8c30749067b64a7cfa92a074",
     "semantic_hash": ""
   },
   "docs/release-1.0.93.md": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1792979696.9639356,
-    "ast_hash": "f2077756e5696f062914818608ac33fc",
+    "mtime": 1793025782.998751,
+    "ast_hash": "b8f7f1efac88c8cc447a569372cd01c8",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8325,8 +8325,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/desktop-presentation-isolation-2026-10-23.md": {
-    "mtime": 1792979671.9121735,
-    "ast_hash": "1eb56afb2f393395e2e10760d67149d4",
+    "mtime": 1793003319.4970636,
+    "ast_hash": "f74ab341d59e02fabb03f3e4252b19c2",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/gnome/README.md": {
@@ -8515,8 +8515,8 @@
     "semantic_hash": ""
   },
   "docs/development/six-release-debt-plan-2026-10-25.md": {
-    "mtime": 1792971380.0351129,
-    "ast_hash": "efb00112938ca6962d8feccfc8800594",
+    "mtime": 1793025782.9970827,
+    "ast_hash": "a3dfd6f1d4ae1dbb8b4fb1f1aeb3a368",
     "semantic_hash": ""
   },
   "docs/release-1.0.95.md": {
@@ -8570,13 +8570,43 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/release-1.0.98-worklog.json": {
-    "mtime": 1792979671.9119077,
-    "ast_hash": "ef350fbeb971312fd12c1555ead75624",
+    "mtime": 1793025782.996985,
+    "ast_hash": "822d544b756075692c4cd4e2a0da7ceb",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-26-kde-native-owned-space-preparation.json": {
-    "mtime": 1792999636.3316467,
-    "ast_hash": "ae91a75c0d2c3e6374c4b844dc039993",
+    "mtime": 1793003319.4969308,
+    "ast_hash": "e50892c9ec1b1bc688d8201c6ff9a878",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.98-native.json": {
+    "mtime": 1793003205.442462,
+    "ast_hash": "be89067faf8b6a46861c40a473fca8a7",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.98-updater.json": {
+    "mtime": 1793025782.9961782,
+    "ast_hash": "f26fc493194abcc15822063b84871e93",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.98-verification.json": {
+    "mtime": 1793025782.9965217,
+    "ast_hash": "f948b961f577f2ac50d78c406e9fedb5",
+    "semantic_hash": ""
+  },
+  "docs/release-1.0.98.md": {
+    "mtime": 1793003319.4975572,
+    "ast_hash": "2c6bfd46b8927f1ec9f4b00a2e73c7d4",
+    "semantic_hash": ""
+  },
+  "tech_debt/auto-update-build-memory-budget-2026-10-26.md": {
+    "mtime": 1793025623.6109774,
+    "ast_hash": "08d219904d44b4577e1f7634625a0de4",
+    "semantic_hash": ""
+  },
+  "tech_debt/ubuntu-26-04-polkit-package-compatibility.md": {
+    "mtime": 1793025623.5962756,
+    "ast_hash": "a458735217491b85f5fdd81f2d413b3f",
     "semantic_hash": ""
   }
 }

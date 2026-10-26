@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.98`
+- `1.0.99`
 
 1.0.97 preserves verified KDE closed-word replay after an ordinary new-word
 letter is erased, including one owned Space/NBSP presentation transition.
@@ -347,3 +347,6 @@ The version must be updated in:
 - `Cargo.lock`
 - `extension/lay@radislabus-star.github.io/metadata.json`
 - `extension/lay@radislabus-star.github.io/tray_support.js`
+
+1.0.99 fixes apt polkit package selection and removes premature updater memory
+reclaim within its existing hard budget. See [release notes](docs/release-1.0.99.md).

@@ -88,7 +88,7 @@ install_packages() {
 base_packages_for_pm() {
     pm="$1"
     case "$pm" in
-        apt) echo "curl ca-certificates jq libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi gir1.2-gtk-3.0 policykit-1 x11-xkb-utils" ;;
+        apt) echo "curl ca-certificates jq libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi gir1.2-gtk-3.0 pkexec polkitd x11-xkb-utils" ;;
         pacman) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python-gobject gtk3 polkit xorg-xkbcomp" ;;
         rpm-ostree|dnf|yum) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python3-gobject gtk3 polkit xkbcomp" ;;
         *) echo "" ;;

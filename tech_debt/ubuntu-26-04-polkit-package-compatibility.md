@@ -1,6 +1,6 @@
-# TD-154 — install supported polkit binaries on apt systems
+# Installer blocker #70 — install supported polkit binaries on apt systems
 
-Priority: P0 installer blocker. State: OPEN. Public issue:
+Priority: P0 installer blocker. State: SOURCE_AND_BUILD_GREEN_PUBLICATION_PENDING. Public issue:
 https://github.com/radislabus-star/lay-public/issues/70 (2026-10-26).
 Execute immediately after the in-progress1.0.98 publication; preserve its
 already verified runtime/source closure while collecting final native proof.
@@ -49,3 +49,8 @@ a gratuitous system upgrade. Publish a new version only after required release
 checks; verify the actual installed updater discovers it, then reply to/close
 #70 with the concrete release and verification scope. A mock/platform PASS is
 not a full clean Ubuntu26.04 installation receipt; state that limit explicitly.
+
+2026-10-26: apt exactRED then public-build11/11GREEN; final remote source and
+package gates,all10optimized binaries PASS. Ubuntu22.04 apt candidate read-only
+confirms both real components. CleanUbuntu26.04 installNOT_TESTED. Final public
+CI/publication/updater discovery/reply to70 stillPENDING; do not close from tests.
