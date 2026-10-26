@@ -6,32 +6,50 @@ use crate::stable_hash::mix64_golden;
 use super::corpus::{MorphCorpus, MorphExample};
 use super::{MorphBinding16, MorphPhaseCenter64, MAX_SUBCENTERS, PHASE_CELLS, POS_NOUN};
 
+#[cfg(any(test, feature = "research-tools"))]
 const SUBCENTER_MERGE_COHERENCE: i32 = 720;
 
 #[derive(Clone, Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 struct MorphSlotProfile {
     positive: Vec<MorphPhaseCenter64>,
     anti: Vec<MorphPhaseCenter64>,
 }
 
 #[derive(Clone, Copy, Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct MorphCalibration {
     pub(super) minimum_positive: i32,
     pub(super) minimum_margin: i32,
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct MorphologyField {
     bindings: Vec<MorphBinding16>,
     surfaces: Vec<String>,
     bindings_by_form: Vec<Vec<MorphBinding16>>,
     forms_by_lemma: Vec<Vec<u32>>,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                all(feature = "research-tools", not(feature = "lexical-compiler")),
+                feature = "lexical-compiler"
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     form_ids_by_surface: BTreeMap<String, Vec<u32>>,
     profiles: BTreeMap<u32, MorphSlotProfile>,
     calibration: MorphCalibration,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct ScoredSurface {
     pub(super) form_center_id: u32,
     pub(super) surface: String,
@@ -42,6 +60,7 @@ pub(super) struct ScoredSurface {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct MorphSlotScore {
     positive: i32,
     anti: i32,
@@ -49,12 +68,14 @@ pub(super) struct MorphSlotScore {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) enum MorphReadout {
     Winner(ScoredSurface),
     Tied(Vec<ScoredSurface>),
     Abstain(Vec<ScoredSurface>),
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl MorphologyField {
     pub(super) fn train(corpus: &MorphCorpus) -> Result<Self, String> {
         let mut bindings = corpus.bindings.clone();
@@ -325,6 +346,7 @@ impl MorphologyField {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn classify_scored(scored: Vec<ScoredSurface>, calibration: MorphCalibration) -> MorphReadout {
     let Some(winner) = scored.first() else {
         return MorphReadout::Abstain(Vec::new());
@@ -341,6 +363,7 @@ fn classify_scored(scored: Vec<ScoredSurface>, calibration: MorphCalibration) ->
     MorphReadout::Winner(winner.clone())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl MorphSlotProfile {
     fn observe_positive(&mut self, scene: &[i8; PHASE_CELLS]) {
         observe_bank(&mut self.positive, scene);
@@ -359,6 +382,7 @@ impl MorphSlotProfile {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn calibrate(field: &MorphologyField, corpus: &MorphCorpus) -> Result<MorphCalibration, String> {
     let observations = corpus
         .train
@@ -384,12 +408,14 @@ fn calibrate(field: &MorphologyField, corpus: &MorphCorpus) -> Result<MorphCalib
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 struct CalibrationObservation {
     correct: bool,
     positive: i32,
     margin: i32,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn calibration_observation(
     field: &MorphologyField,
     example: &MorphExample,
@@ -407,6 +433,7 @@ fn calibration_observation(
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn observe_bank(bank: &mut Vec<MorphPhaseCenter64>, scene: &[i8; PHASE_CELLS]) {
     if bank.is_empty() {
         bank.push(center_from_scene(scene));
@@ -425,6 +452,7 @@ fn observe_bank(bank: &mut Vec<MorphPhaseCenter64>, scene: &[i8; PHASE_CELLS]) {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn center_from_scene(scene: &[i8; PHASE_CELLS]) -> MorphPhaseCenter64 {
     MorphPhaseCenter64 {
         cells: *scene,
@@ -436,6 +464,7 @@ fn center_from_scene(scene: &[i8; PHASE_CELLS]) -> MorphPhaseCenter64 {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn merge_center(center: &mut MorphPhaseCenter64, scene: &[i8; PHASE_CELLS]) {
     let old_support = i32::from(center.support.max(1));
     let new_support = old_support.saturating_add(1);
@@ -451,6 +480,7 @@ fn merge_center(center: &mut MorphPhaseCenter64, scene: &[i8; PHASE_CELLS]) {
         .sum();
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn bank_score(bank: &[MorphPhaseCenter64], scene: &[i8; PHASE_CELLS]) -> i32 {
     bank.iter()
         .map(|center| coherence(&center.cells, scene))
@@ -458,6 +488,7 @@ fn bank_score(bank: &[MorphPhaseCenter64], scene: &[i8; PHASE_CELLS]) -> i32 {
         .unwrap_or(0)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn coherence(left: &[i8; PHASE_CELLS], right: &[i8; PHASE_CELLS]) -> i32 {
     let mut dot = 0_i64;
     let mut left_norm = 0_i64;
@@ -478,6 +509,7 @@ fn coherence(left: &[i8; PHASE_CELLS], right: &[i8; PHASE_CELLS]) -> i32 {
         .clamp(-1_000.0, 1_000.0) as i32
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn scene_wave(context: &str) -> [i8; PHASE_CELLS] {
     let tokens = context.split_whitespace().collect::<Vec<_>>();
     let placeholder = tokens.iter().position(|token| *token == "_").unwrap_or(0);
@@ -512,6 +544,7 @@ fn scene_wave(context: &str) -> [i8; PHASE_CELLS] {
     normalized
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn add_feature(cells: &mut [i16; PHASE_CELLS], feature: &str, weight: i16) {
     let mut state = hash_text(feature);
     for lane in 0..4_u64 {
@@ -526,6 +559,7 @@ fn add_feature(cells: &mut [i16; PHASE_CELLS], feature: &str, weight: i16) {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn hash_text(text: &str) -> u64 {
     text.as_bytes().iter().fold(
         mix64_golden(0x4d4f_5250_485f_4c32 ^ text.len() as u64),
@@ -533,6 +567,7 @@ fn hash_text(text: &str) -> u64 {
     )
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn score_order(left: &ScoredSurface, right: &ScoredSurface) -> Ordering {
     right
         .score

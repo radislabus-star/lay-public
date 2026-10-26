@@ -112,6 +112,7 @@ struct AtomicBuildNodeV1 {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(test)]
 pub(super) struct InstantiatedProductiveTerminalV1 {
     pub(super) normalized_surface: String,
     pub(super) terminal: ProductiveTerminalAttributionV1,
@@ -510,6 +511,7 @@ fn minimum_terminal_identity(
 }
 
 impl ProductiveTrieForestV1 {
+    #[cfg(test)]
     pub(super) fn exact_allomorph_surface(&self, form_ref: u32) -> Option<&str> {
         self.exact_allomorph_surfaces
             .get(&form_ref)
@@ -562,6 +564,7 @@ impl ProductiveTrieForestV1 {
         Ok(())
     }
 
+    #[cfg(test)]
     pub(super) fn instantiate(
         &self,
         paradigm_id: u32,
@@ -618,6 +621,7 @@ fn arc_order(left: &ProductiveTrieArcV1, right: &ProductiveTrieArcV1) -> std::cm
         .then_with(|| left.stable_order.cmp(&right.stable_order))
 }
 
+#[cfg(test)]
 fn apply_arc(
     action: &ProductiveTrieArcActionV1,
     source: &[char],

@@ -553,6 +553,7 @@ pub(super) enum ProductiveCalibratedVerdictV1 {
     },
 }
 
+#[cfg(test)]
 pub(super) fn calibrated_readout(
     table: &CalibrationTableV1,
     stratum: &ObservableCalibrationStratumV1,

@@ -61,6 +61,7 @@ impl ReverseBank {
         Ok(Self { relations })
     }
 
+    #[cfg(test)]
     pub(super) fn exact(
         package: &LexicalGrokkingPackage,
         support: &ExactSupportField,
@@ -92,6 +93,7 @@ impl ReverseBank {
         })
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     fn build(
         terminal_ids: &[u32],
         mut reconstruct: impl FnMut(u32) -> Result<Vec<WaveCoupling>, String>,
@@ -202,6 +204,7 @@ impl ReverseParityMetrics {
     }
 }
 
+#[cfg(test)]
 fn reconstruct_exact_reverse(
     package: &LexicalGrokkingPackage,
     support: &ExactSupportField,

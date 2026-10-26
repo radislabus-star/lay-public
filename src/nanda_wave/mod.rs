@@ -27,6 +27,8 @@ pub mod learned;
 pub mod lexical_attractor;
 mod lexical_grokking;
 mod lexical_phase;
+#[cfg(feature = "research-tools")]
+pub use lexical_phase::compiler_api as lexical_phase_compiler;
 pub mod llmwave;
 pub mod mode;
 mod morphology_phase;

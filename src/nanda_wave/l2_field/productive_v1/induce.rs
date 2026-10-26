@@ -1,4 +1,5 @@
 use std::cmp::Ordering;
+#[cfg(test)]
 use std::collections::{BTreeMap, BTreeSet};
 
 use super::types::{MorphologyApplicabilityMaskV1, MorphologySlotKeyV1};
@@ -310,6 +311,7 @@ impl EditTemplateV1 {
         Ok(output)
     }
 
+    #[cfg(test)]
     pub(super) fn source_ranges_valid(&self, source_scalar_len: usize) -> bool {
         if source_scalar_len > MAX_WIRE_SCALARS {
             return false;
@@ -717,6 +719,7 @@ impl ParadigmTransitionKeyV1 {
         bytes
     }
 
+    #[cfg(test)]
     fn source_ranges_valid(&self, source_scalar_len: usize) -> bool {
         let template = EditTemplateV1 {
             source_slot_id: 1,
@@ -765,18 +768,21 @@ impl ParadigmSignatureV1 {
         })
     }
 
+    #[cfg(test)]
     pub(super) fn semantically_equivalent(&self, other: &Self) -> bool {
         self == other
     }
 }
 
 #[derive(Clone, Debug)]
+#[cfg(test)]
 pub(super) struct LemmaTransitionObservationV1 {
     pub(super) lemma_id: u32,
     pub(super) target_form_ref: u32,
     pub(super) template: EditTemplateV1,
 }
 
+#[cfg(test)]
 pub(super) fn apply_transfer_support_gate(
     observations: &mut [LemmaTransitionObservationV1],
 ) -> Result<BTreeMap<ParadigmTransitionKeyV1, u32>, &'static str> {
@@ -811,6 +817,7 @@ pub(super) fn apply_transfer_support_gate(
     Ok(support_counts)
 }
 
+#[cfg(test)]
 pub(super) fn compatible_with_paradigm(
     incomplete: &ParadigmSignatureV1,
     paradigm: &ParadigmSignatureV1,

@@ -6,20 +6,25 @@
 
 #[cfg(test)]
 use crate::lexical_surface_atoms::SURFACE_WAVE_NGRAM;
+#[cfg(any(test, feature = "research-tools"))]
 use crate::lexical_surface_atoms::{
     surface_atom_projection, SurfaceFieldEncoder, SURFACE_WAVE_DIM,
 };
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) const SURFACE_WAVE_BYTES: usize =
     SURFACE_WAVE_DIM * std::mem::size_of::<SurfaceWaveLane>();
 
+#[cfg(any(test, feature = "research-tools"))]
 type SurfaceWaveLane = i16;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct SurfaceWave4096 {
     lanes: [SurfaceWaveLane; SURFACE_WAVE_DIM],
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl SurfaceWave4096 {
     #[must_use]
     pub(super) const fn zero() -> Self {
@@ -54,6 +59,7 @@ impl SurfaceWave4096 {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl Default for SurfaceWave4096 {
     fn default() -> Self {
         Self::zero()

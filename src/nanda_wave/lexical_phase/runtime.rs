@@ -272,6 +272,7 @@ impl LexicalPhaseMemory {
         })
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     pub(crate) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
         let bytes = ArtifactBytes::Owned(bytes.into_boxed_slice());
         let header = read_header(bytes.as_slice())?;
@@ -386,6 +387,7 @@ impl LexicalPhaseMemory {
         read_terminal(self.bytes(), self.header, terminal).map(|record| record.rank as usize)
     }
 
+    #[cfg(test)]
     pub(crate) fn hot_prefix_frontier(&self, prefix_lens: &[usize], limit: usize) -> Vec<String> {
         if prefix_lens.is_empty() || limit == 0 {
             return Vec::new();
@@ -1926,6 +1928,13 @@ fn sort_candidates(candidates: &mut Vec<LexicalPhaseCandidate>) {
 enum ArtifactBytes {
     #[cfg(target_os = "linux")]
     Mapped(MappedFile),
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Owned(Box<[u8]>),
 }
 

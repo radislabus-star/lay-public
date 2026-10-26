@@ -18,6 +18,7 @@ pub(super) fn encode_records<T: FixedRecordV1>(records: &[T]) -> Vec<u8> {
     bytes
 }
 
+#[cfg(test)]
 pub(super) fn decode_records<T: FixedRecordV1>(bytes: &[u8]) -> Result<Vec<T>, &'static str> {
     if !bytes.len().is_multiple_of(T::BYTES) {
         return Err("productive fixed-record section has a partial record");
@@ -415,6 +416,13 @@ pub(super) struct DeltaManifestRecordV1 {
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[cfg_attr(
+    not(test),
+    expect(
+        dead_code,
+        reason = "Fixed delta wire record is also required by its codec macro; build-boundary decision 2026-10-26"
+    )
+)]
 pub(super) struct DeltaRecordHeaderRecordV1 {
     pub(super) kind: u16,
     pub(super) flags: u16,

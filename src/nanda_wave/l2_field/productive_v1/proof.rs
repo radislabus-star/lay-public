@@ -216,6 +216,13 @@ pub(super) struct FixedSharedReplayAuditCorpusV1 {
     pub(super) cases: Vec<FixedSharedReplayAuditCaseV1>,
     pub(super) scanned_proof_events: usize,
     pub(super) sampled_events_by_cohort: BTreeMap<&'static str, usize>,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) workers: usize,
     pub(super) cold_load_us: u64,
     pub(super) sampling_us: u64,

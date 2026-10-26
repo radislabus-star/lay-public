@@ -1,7 +1,9 @@
 //! Physical Phase 8I package: compact V7 base plus exact-support overflow.
 
 use std::fs::{self, File};
-use std::io::{self, Read, Write};
+#[cfg(any(test, feature = "lexical-compiler"))]
+use std::io::Read;
+use std::io::{self, Write};
 use std::path::{Path, PathBuf};
 
 use sha2::{Digest, Sha256};
@@ -44,6 +46,7 @@ pub(super) fn read_header(bytes: &[u8]) -> Result<V9Header, String> {
     read_header_with_file_bytes(bytes, bytes.len() as u64)
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub(super) fn read_file_header(path: &Path) -> Result<V9Header, String> {
     let mut file = File::open(path).map_err(|error| format!("{}: {error}", path.display()))?;
     let file_bytes = file

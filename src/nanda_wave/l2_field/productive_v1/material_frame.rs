@@ -1454,6 +1454,7 @@ impl MaterialTargetAccumulatorV1 {
     }
 }
 
+#[cfg(test)]
 pub(super) fn prepare_context_neutral_productive_material(
     observed: &str,
     package_tuple: ExactPackageTupleV1,

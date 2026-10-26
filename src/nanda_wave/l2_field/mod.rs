@@ -29,9 +29,11 @@ pub(crate) use super::morphology_phase::{
     feature_primary_pos as canonical_morphology_primary_pos,
 };
 
+#[cfg(any(test, feature = "research-tools"))]
+pub(crate) use bridge::cold_probe_surfaces;
 pub(crate) use bridge::{
     canonical_ime_candidates_observed, canonical_text_candidates,
-    canonical_text_readout_observed_with_frame, cold_probe_surfaces,
+    canonical_text_readout_observed_with_frame,
 };
 #[cfg(test)]
 pub(crate) use productive_v1::test_bound_lexical_pipeline;

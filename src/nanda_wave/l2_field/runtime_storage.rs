@@ -30,6 +30,7 @@ impl RuntimeL2Package {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
         if compact_format::is_compact_package(&bytes) {
             CompactPackageView::from_bytes(bytes).map(Self::Compact)
@@ -38,6 +39,7 @@ impl RuntimeL2Package {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn from_reference(package: L2FieldPackage) -> Self {
         Self::Reference(package)
     }

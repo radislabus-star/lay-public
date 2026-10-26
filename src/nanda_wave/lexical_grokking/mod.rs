@@ -16,7 +16,7 @@ mod forward_decoder_index;
 mod model;
 mod ngram_graph;
 mod pairwise;
-#[cfg(any(test, feature = "lexical-compiler"))]
+#[cfg(test)]
 mod peak_oracle;
 mod peak_search;
 #[cfg(any(test, feature = "lexical-compiler"))]

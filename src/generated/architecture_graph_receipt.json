@@ -6,9 +6,9 @@
         "src/typing_transition/decision.rs:L103:.evaluate_candidates()",
         "src/typing_transition/decision.rs:L61:TransitionDecisionCore",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L166:.select_ime_readout()",
-        "src/typing_transition/live_candidate.rs:L84:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L85:.select_live_completions()"
+        "src/typing_transition/live_candidate.rs:L106:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L107:.select_live_completions()",
+        "src/typing_transition/live_candidate.rs:L188:.select_ime_readout()"
       ],
       "id": "decision-authority",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:71647",
-        "graph_nodes:27762"
+        "graph_links:71667",
+        "graph_nodes:27780"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -118,16 +118,16 @@
   ],
   "duplicate_symbols": {
     "normalize_surface()": [
-      "src/nanda_wave/l2_field/compositional.rs:L1811:normalize_surface()",
+      "src/nanda_wave/l2_field/compositional.rs:L1818:normalize_surface()",
       "src/nanda_wave/lexical_grokking/composite.rs:L442:normalize_surface()",
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "92d3ce8f4c86abeb660c9a119f087d040dfe88cd0eb523b34dac60ef08ebc886",
-  "graph_fingerprint": "9b650c8af0bd5d27db20c6bafae9f4cd5c4b539c38fa339431098c82d2b76541",
-  "graph_links": 71647,
-  "graph_nodes": 27762,
+  "graph_binding_fingerprint": "bf6a15673102a82b7d57fc0f2851bec3d2ed3b061536aa00bd48f865b238396b",
+  "graph_fingerprint": "b514332a6f59ea06db83d6e3ee6ec423a2afe0a1396a8b6b450aa8f9e417f259",
+  "graph_links": 71667,
+  "graph_nodes": 27780,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "d68c91724ca8e91aa0d27e6df3a20d5a455682db9a591445d8328879cac2e9b8",
+  "source_fingerprint": "8bb96c3a8032b0a13552741c475f7075ccf8876616e57fa53b9bd1c0a12ea468",
   "verdict": "PASS"
 }

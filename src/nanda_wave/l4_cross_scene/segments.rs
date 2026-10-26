@@ -121,6 +121,7 @@ fn spawn_inbox_writer() -> Option<SyncSender<PendingEpisode>> {
     Some(sender)
 }
 
+#[cfg(test)]
 pub(super) fn seal_episode_at(
     root: &Path,
     rows: Vec<serde_json::Value>,
@@ -174,6 +175,7 @@ fn seal_pending_episode(root: &Path, pending: PendingEpisode) -> io::Result<Seal
     Ok(sealed)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) fn read_segments_after(
     root: &Path,
     applied_segment: u64,
@@ -205,6 +207,7 @@ pub(super) fn read_segments_after(
     Ok(segments)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) fn delete_acknowledged(root: &Path, applied_segment: u64) -> io::Result<usize> {
     advance_sequence_floor(root, applied_segment)?;
     let mut deleted = 0usize;

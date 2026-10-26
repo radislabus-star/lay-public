@@ -223,6 +223,7 @@ fn finish_reopened_imported_lemma(
 }
 
 #[derive(Clone, Debug)]
+#[cfg(test)]
 struct PendingFormV1 {
     support: u32,
     event_identities: Vec<[u8; 32]>,
@@ -236,6 +237,7 @@ struct ImportedPendingFormV1 {
     event_identities: Vec<[u8; 32]>,
 }
 
+#[cfg(test)]
 pub(super) fn reduce_train_morphology(
     sorted: &SortedTypedEventSpoolManifestV1,
     config: &TrainMorphologyReduceConfigV1,
@@ -567,6 +569,7 @@ fn flush_imported_lemma(
     )
 }
 
+#[cfg(test)]
 fn flush_lemma(
     (language, normalized_lemma): (String, String),
     forms: &mut BTreeMap<(MorphologySlotKeyV1, String), PendingFormV1>,

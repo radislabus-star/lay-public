@@ -2,6 +2,7 @@ use sha2::{Digest, Sha256};
 
 use super::types::{MorphologySlotKeyV1, AXIS_INAPPLICABLE};
 use super::L2_SCENE_PHASE_CELLS;
+#[cfg(test)]
 use crate::typing_transition::target_evidence::NormalizationLayoutProfileIdV1;
 
 const L2_SCENE_V1_SEED: u64 = 0x4c32_5343_454e_4531;
@@ -75,6 +76,7 @@ pub(super) struct L2LocalSceneV1 {
 }
 
 impl L2LocalSceneV1 {
+    #[cfg(test)]
     pub(super) const fn common_normalization_layout_profile_id(
         &self,
     ) -> NormalizationLayoutProfileIdV1 {

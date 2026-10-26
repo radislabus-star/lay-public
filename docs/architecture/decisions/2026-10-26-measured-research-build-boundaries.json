@@ -1,0 +1,58 @@
+{
+  "decision": "measured-research-build-boundaries",
+  "date": "2026-10-26",
+  "status": "accepted_for_source_implementation_and_verification",
+  "authorization": "The user authorized all six staged debt releases; stage4 explicitly covers measured warning/research boundaries. No new fit or model promotion is authorized by this change.",
+  "owner": "existing nanda_wave compiler/package/runtime and text_edit offline proof contracts",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "evidence": "Compiler diagnostics for the same100 source closure in default, research-tools and lexical-compiler configurations; exact AST item mapping before source edits",
+  "change": [
+    "Compile private proof/research items only in configurations where the original compiler reachability requires them; preserve cfg(test) identities",
+    "Keep reserved enum discriminants and shared carrier layouts; narrowly scoped expect(dead_code) records exact intentionally unused fields/variants and fails when the measured condition changes",
+    "Share the existing lexical compiler through a research-only facade rather than compiling another runtime/reader copy into the training executable; keep prior binary test modules under cfg(test)",
+    "Move the existing durable-output prototype implementation behind the original test-only module shim and the existing offline microproof executable; rebind the exact OpenOptions owner path to the moved implementation"
+  ],
+  "not_changed": [
+    "input delivery routes",
+    "live state owners",
+    "SafetyGate/verifier authority",
+    "model/package bytes and schemas",
+    "learning policy",
+    "protected text_edit.rs and gate.rs"
+  ],
+  "proof_required": [
+    "three feature configurations",
+    "no unexplained new lint baseline entries",
+    "all prior test identities and lanes retained",
+    "all release binaries and CI",
+    "unchanged compiler/package round trips",
+    "applicable loaded-byte and short native controls"
+  ],
+  "quality_scope": "No restoration quality claim or new fit. Canonical heldout and per-class gates remain mandatory for a later quality promotion.",
+  "guard_change": "Exact source-path migration of the same durable-output-journal owner; no wildcard allowance or authority relaxation",
+  "lint_baseline_path_rebinding": {
+    "old": "src/text_edit/output_transaction.rs",
+    "new": "src/text_edit/output_transaction/implementation.rs",
+    "implementation_sha256": "cc36c4e8a7b9bc8da91602f74bed342cd5f6db7fae8fa061de402710084244d2",
+    "rule": "Only unchanged prototype identities rebind; monotonic writer and all other identities remain strict"
+  },
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-26-measured-research-build-boundaries",
+  "owning_document": "docs/architecture/research-build-boundaries-2026-10-26.md",
+  "protected_paths": [
+    "scripts/architecture_scope_gate.py",
+    "scripts/lint-baseline/dead_code.default.json",
+    "scripts/lint-baseline/dead_code.json"
+  ],
+  "reason": "Same source has259 installer-build dead-code records from private proof/research scopes and duplicated cold compiler support. Reuse measured feature/test boundaries, keeping stable data and existing owners.",
+  "verification": "Three all-target feature configurations compile; production research library emits0warnings; protected source pinsPASS; monotonic lint reductionPASS; all3519 correctness/package and11performance identities/lanes retained. Full tests/build/native pending.",
+  "not_tested": "Full101 source/performance/optimized/native gates pending; no new quality fit, package promotion or GNOME native acceptance claimed.",
+  "runtime_authority_changed": false
+}

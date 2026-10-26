@@ -1,9 +1,13 @@
 use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(any(test, feature = "research-tools"))]
+use std::path::PathBuf;
 use std::sync::Arc;
 
-use super::super::phase_field::{dequantize, quantize, PhaseCell, PhaseCenter};
+#[cfg(any(test, feature = "research-tools"))]
+use super::super::phase_field::quantize;
+use super::super::phase_field::{dequantize, PhaseCell, PhaseCenter};
 use super::{
     ContextCandidateProfile, ContextPairPhaseProfile, ContextPhasePackage, TokenSemanticState,
     CELLS, MAGIC, MAX_HARD_PAIR_CENTERS_PER_BANK, MAX_PAIR_CENTERS_PER_BANK, MAX_PAIR_PROFILES,
@@ -21,6 +25,7 @@ const CENTER_HEADER_BYTES: usize = 4;
 const PAIR_PROFILE_HEADER_BYTES: usize = 24;
 const VECTOR_BYTES: usize = CELLS * 2;
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::Result<()> {
     let bytes = encode_package(package);
     let temporary = temporary_package_path(path);
@@ -32,6 +37,7 @@ pub(crate) fn write_package(path: &Path, package: &ContextPhasePackage) -> io::R
     Ok(())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     let mut bytes = Vec::with_capacity(
         HEADER_BYTES_V5
@@ -103,6 +109,7 @@ pub(crate) fn encode_package(package: &ContextPhasePackage) -> Vec<u8> {
     bytes
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_pair_profile(bytes: &mut Vec<u8>, pair: &ContextPairPhaseProfile) {
     bytes.extend_from_slice(&pair.low_hash.to_le_bytes());
     bytes.extend_from_slice(&pair.high_hash.to_le_bytes());
@@ -126,6 +133,7 @@ fn write_pair_profile(bytes: &mut Vec<u8>, pair: &ContextPairPhaseProfile) {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn temporary_package_path(path: &Path) -> PathBuf {
     let name = path
         .file_name()
@@ -134,6 +142,7 @@ fn temporary_package_path(path: &Path) -> PathBuf {
     path.with_file_name(format!(".{name}.{}.tmp", std::process::id()))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_profile(bytes: &mut Vec<u8>, profile: &ContextCandidateProfile) {
     bytes.extend_from_slice(&profile.token_hash.to_le_bytes());
     bytes.extend_from_slice(&profile.positive_examples.to_le_bytes());
@@ -154,6 +163,7 @@ fn write_profile(bytes: &mut Vec<u8>, profile: &ContextCandidateProfile) {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn profile_encoded_bytes(profile: &ContextCandidateProfile) -> usize {
     PROFILE_HEADER_BYTES_V2
         + (profile.positive.len() + profile.negative.len() + profile.hard_negative.len())
@@ -396,6 +406,7 @@ fn read_profile(
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_vector(bytes: &mut Vec<u8>, vector: &[PhaseCell]) {
     for index in 0..CELLS {
         let cell = vector.get(index).copied().unwrap_or_default();

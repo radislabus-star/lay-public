@@ -1,11 +1,13 @@
+#[cfg(test)]
 use std::cmp::Ordering;
+#[cfg(test)]
 use std::collections::BTreeMap;
 
-use super::geometry::{
-    GeometryPathIdentityV1, GeometryTerminalEvidenceV1, GeometryTraversalStateV1,
-    ObservedGeometryV1,
-};
+use super::geometry::GeometryTraversalStateV1;
+#[cfg(test)]
+use super::geometry::{GeometryPathIdentityV1, GeometryTerminalEvidenceV1, ObservedGeometryV1};
 use super::induce::SourceAnchorV1;
+#[cfg(test)]
 use super::trie::{
     ProductiveTerminalAttributionV1, ProductiveTrieArcActionV1, ProductiveTrieForestV1,
 };
@@ -13,6 +15,7 @@ use super::trie::{
 pub(super) const PRODUCTIVE_PHYSICAL_TOP_K: usize = 32;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[cfg(test)]
 pub(super) struct SpeedParityEvidenceV1 {
     pub(super) family_specificity: u8,
     pub(super) profile_evidence_milli: u16,
@@ -21,6 +24,7 @@ pub(super) struct SpeedParityEvidenceV1 {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(test)]
 pub(super) struct SpeedParityCandidateV1 {
     pub(super) normalized_surface: String,
     pub(super) terminal: ProductiveTerminalAttributionV1,
@@ -99,10 +103,18 @@ pub(super) struct TraversalFrameV1 {
     pub(super) source_cursor: usize,
     pub(super) trace_ref: Option<u32>,
     pub(super) geometry: GeometryTraversalStateV1,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) exact_allomorph: bool,
 }
 
 #[derive(Clone)]
+#[cfg(test)]
 struct BoundedCandidateV1 {
     surface_scalars: Vec<u32>,
     terminal: ProductiveTerminalAttributionV1,
@@ -110,6 +122,7 @@ struct BoundedCandidateV1 {
     geometry: GeometryTerminalEvidenceV1,
 }
 
+#[cfg(test)]
 pub(super) fn traverse_speed_parity(
     forest: &ProductiveTrieForestV1,
     paradigm_id: u32,
@@ -197,6 +210,7 @@ pub(super) fn traverse_speed_parity(
         .collect()
 }
 
+#[cfg(test)]
 fn retain_bounded_candidate(selected: &mut Vec<BoundedCandidateV1>, candidate: BoundedCandidateV1) {
     if let Some(existing) = selected
         .iter_mut()
@@ -222,6 +236,7 @@ fn retain_bounded_candidate(selected: &mut Vec<BoundedCandidateV1>, candidate: B
     }
 }
 
+#[cfg(test)]
 fn candidate_order(left: &BoundedCandidateV1, right: &BoundedCandidateV1) -> Ordering {
     left.evidence
         .family_specificity
@@ -246,6 +261,7 @@ fn candidate_order(left: &BoundedCandidateV1, right: &BoundedCandidateV1) -> Ord
         .then_with(|| right.terminal.cmp(&left.terminal))
 }
 
+#[cfg(test)]
 fn advance_arc(
     action: &ProductiveTrieArcActionV1,
     forest: &ProductiveTrieForestV1,

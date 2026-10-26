@@ -1,6 +1,7 @@
 use super::*;
 
 impl OnlineContextPhaseLearner {
+    #[cfg(any(test, feature = "research-tools"))]
     pub(in crate::nanda_wave::context_phase) fn prepare_supervised_sentence_basis(
         &mut self,
         scene_tokens: &[String],
@@ -19,6 +20,7 @@ impl OnlineContextPhaseLearner {
     /// Learns one causally labelled sentence slot against the complete bounded
     /// L2 competitor set. The caller owns episode independence; this method
     /// never infers a target from a shown or automatically applied candidate.
+    #[cfg(any(test, feature = "research-tools"))]
     pub(in crate::nanda_wave::context_phase) fn ingest_supervised_sentence(
         &mut self,
         scene_tokens: &[String],
@@ -41,6 +43,7 @@ impl OnlineContextPhaseLearner {
     /// Reduces labelled evidence against a basis prepared from the complete
     /// bounded episode batch. This keeps phase coordinates stationary while
     /// independent observations reinforce or split directional subcenters.
+    #[cfg(any(test, feature = "research-tools"))]
     pub(in crate::nanda_wave::context_phase) fn ingest_supervised_sentence_on_prepared_basis(
         &mut self,
         scene_tokens: &[String],
@@ -182,6 +185,7 @@ impl OnlineContextPhaseLearner {
         debug_assert!(target_examples > 0);
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     fn update_pair_view_winner(
         &mut self,
         winner: u64,
@@ -197,6 +201,7 @@ impl OnlineContextPhaseLearner {
         self.update_pair_key(key, winner == key.low_hash, scene, false, None);
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     fn update_pair_view_relation(
         &mut self,
         winner: u64,

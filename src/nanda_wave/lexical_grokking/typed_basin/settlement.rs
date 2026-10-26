@@ -79,6 +79,19 @@ struct SettlementFingerprint {
     candidates: Vec<GrokkingCandidate>,
     readout: RestorationReadout,
     phase_noop: bool,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     elapsed_us: u64,
 }
 
@@ -86,9 +99,61 @@ struct SettlementFingerprint {
 pub(super) struct ExactSettlementResult {
     pub(super) candidates: Vec<GrokkingCandidate>,
     pub(super) readout: RestorationReadout,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) phase_noop: bool,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) reverse_terminals: usize,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) reverse_relations: usize,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) elapsed_us: u64,
 }
 

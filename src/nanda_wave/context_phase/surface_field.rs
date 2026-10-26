@@ -10,10 +10,13 @@ use std::io;
 
 use serde::Deserialize;
 
+#[cfg(any(test, feature = "research-tools"))]
 const POSITION_BUCKETS: usize = 8;
+#[cfg(any(test, feature = "research-tools"))]
 const MAX_MODES: usize = 32;
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) enum SurfaceMutationKind {
     MissingFromTyped,
     SparseMultiMissingFromTyped,
@@ -23,6 +26,7 @@ pub(super) enum SurfaceMutationKind {
 }
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct SurfaceMutationMode {
     kind: SurfaceMutationKind,
     position_bucket: u8,
@@ -30,6 +34,7 @@ pub(super) struct SurfaceMutationMode {
 }
 
 #[derive(Clone, Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) struct SurfaceMutationField {
     modes: Vec<SurfaceMutationMode>,
     source_rows: usize,
@@ -37,6 +42,7 @@ pub(crate) struct SurfaceMutationField {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) struct SurfaceMutationFieldReport {
     pub(crate) source_rows: usize,
     pub(crate) admitted_rows: usize,
@@ -44,6 +50,7 @@ pub(crate) struct SurfaceMutationFieldReport {
 }
 
 #[derive(Deserialize)]
+#[cfg(any(test, feature = "research-tools"))]
 struct CorrectionReceipt {
     #[serde(default)]
     from: String,
@@ -51,6 +58,7 @@ struct CorrectionReceipt {
     to: String,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl SurfaceMutationField {
     pub(crate) fn from_corrections_jsonl(text: &str, min_support: u32) -> io::Result<Self> {
         let min_support = min_support.max(1);
@@ -181,6 +189,7 @@ impl SurfaceMutationField {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn mutation_mode(from: &str, to: &str) -> Option<SurfaceMutationMode> {
     let from = normalized_single_word(from)?;
     let to = normalized_single_word(to)?;
@@ -235,15 +244,18 @@ fn mutation_mode(from: &str, to: &str) -> Option<SurfaceMutationMode> {
     None
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn normalized_single_word(value: &str) -> Option<String> {
     let value = crate::typing_memory::normalize_memory_word(value);
     is_single_word(&value).then_some(value)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn is_single_word(value: &str) -> bool {
     !value.is_empty() && value.chars().all(char::is_alphabetic)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn same_script(left: &str, right: &str) -> bool {
     let left_cyrillic = left.chars().all(crate::keyboard::is_cyrillic_letter);
     let right_cyrillic = right.chars().all(crate::keyboard::is_cyrillic_letter);
@@ -252,6 +264,7 @@ fn same_script(left: &str, right: &str) -> bool {
     (left_cyrillic && right_cyrillic) || (left_ascii && right_ascii)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn one_missing_position(source: &[char], target: &[char]) -> Option<usize> {
     let mut source_index = 0_usize;
     let mut skipped = None;
@@ -265,6 +278,7 @@ fn one_missing_position(source: &[char], target: &[char]) -> Option<usize> {
     (source_index == source.len()).then_some(skipped.unwrap_or(target.len() - 1))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn two_missing_positions(source: &[char], target: &[char]) -> Option<(usize, usize)> {
     let mut source_index = 0_usize;
     let mut skipped = Vec::with_capacity(2);
@@ -285,6 +299,7 @@ fn two_missing_positions(source: &[char], target: &[char]) -> Option<(usize, usi
     (skipped.len() == 2).then_some((skipped[0], skipped[1]))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn adjacent_swap_position(source: &[char], target: &[char]) -> Option<usize> {
     let mismatches = source
         .iter()
@@ -299,6 +314,7 @@ fn adjacent_swap_position(source: &[char], target: &[char]) -> Option<usize> {
     (source[index] == target[index + 1] && source[index + 1] == target[index]).then_some(index)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn substitution_position(source: &[char], target: &[char]) -> Option<usize> {
     let mismatches = source
         .iter()
@@ -309,10 +325,12 @@ fn substitution_position(source: &[char], target: &[char]) -> Option<usize> {
     (mismatches.len() == 1).then_some(mismatches[0])
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn position_bucket(position: usize, length: usize) -> u8 {
     ((position.saturating_mul(POSITION_BUCKETS) / length.max(1)).min(POSITION_BUCKETS - 1)) as u8
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn bucket_position(length: usize, bucket: u8) -> usize {
     // A bucket records an interval. Reconstruct its midpoint instead of its
     // left edge, otherwise early buckets systematically move edits left.
@@ -323,6 +341,7 @@ fn bucket_position(length: usize, bucket: u8) -> usize {
         .min(length.saturating_sub(1))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn length_bucket(length: usize) -> u8 {
     length.min(18) as u8
 }

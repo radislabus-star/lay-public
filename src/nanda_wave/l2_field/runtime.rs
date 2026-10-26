@@ -11,9 +11,11 @@ use super::compositional::{
     LemmaWaveIndex, RuntimeLemmaWaveIndex, SurfaceGeometryWorkspace,
 };
 use super::context::{context_mode, scene_wave};
+#[cfg(test)]
+use super::model::L2FieldPackage;
 use super::model::{
-    L2FieldPackage, MorphBinding, SlotPhaseCenter, TieCalibration,
-    COMPETITION_FLAG_EXPLICIT_NEIGHBOR, L2_PHASE_CELLS, NO_L1_TERMINAL,
+    MorphBinding, SlotPhaseCenter, TieCalibration, COMPETITION_FLAG_EXPLICIT_NEIGHBOR,
+    L2_PHASE_CELLS, NO_L1_TERMINAL,
 };
 use super::productive::{
     directional_evidence_margin, package_canonical_source, package_lemma,
@@ -371,14 +373,17 @@ impl StandaloneL2Field {
         Self::from_runtime_package(RuntimeL2Package::load(path)?)
     }
 
+    #[cfg(test)]
     pub(crate) fn from_bytes(bytes: &[u8]) -> Result<Self, String> {
         Self::from_owned_bytes(bytes.to_vec())
     }
 
+    #[cfg(test)]
     pub(crate) fn from_package(package: L2FieldPackage) -> Result<Self, String> {
         Self::from_runtime_package(RuntimeL2Package::from_reference(package))
     }
 
+    #[cfg(test)]
     fn from_owned_bytes(bytes: Vec<u8>) -> Result<Self, String> {
         Self::from_runtime_package(RuntimeL2Package::from_bytes(bytes)?)
     }
@@ -527,6 +532,7 @@ impl StandaloneL2Field {
         self.lemma_wave_source
     }
 
+    #[cfg(test)]
     pub(crate) fn compositional_form_births(
         &self,
         observed_surface: &str,

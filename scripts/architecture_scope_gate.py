@@ -42,7 +42,7 @@ SLEEP_OWNER_FILES = {
 
 OPEN_OPTIONS_OWNERS = {
     "src/private_file.rs": "private-user-data",
-    "src/text_edit/output_transaction.rs": "durable-output-journal",
+    "src/text_edit/output_transaction/implementation.rs": "durable-output-journal",
     "src/nanda_wave/context_phase/composite.rs": "immutable-context-package",
     "src/nanda_wave/l4_cross_scene/format.rs": "immutable-l4-package",
     "src/nanda_wave/l4_cross_scene/incremental.rs": "l4-package-lock",

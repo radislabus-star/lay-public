@@ -1,17 +1,23 @@
+#[cfg(test)]
 use std::cmp::Ordering;
+#[cfg(test)]
 use std::collections::BTreeMap;
 
 use super::scene::SceneWaveV1;
+use super::L2_SCENE_PHASE_CELLS;
+#[cfg(test)]
 use super::{
-    L2_SCENE_PHASE_CELLS, MAX_AMBIGUITY_SUBCENTERS, MAX_ANTI_SUBCENTERS,
-    MAX_HARD_NEGATIVE_SUBCENTERS, MAX_POSITIVE_SUBCENTERS, PRODUCTIVE_V1_INNER_FOLDS,
+    MAX_AMBIGUITY_SUBCENTERS, MAX_ANTI_SUBCENTERS, MAX_HARD_NEGATIVE_SUBCENTERS,
+    MAX_POSITIVE_SUBCENTERS, PRODUCTIVE_V1_INNER_FOLDS,
 };
 
 const PHASE_COSINE_SCALE: i64 = 1_000_000;
+#[cfg(test)]
 const PHASE_CENTER_SUPPORT_SATURATED: u8 = 1 << 0;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 #[repr(i8)]
+#[cfg(test)]
 pub(super) enum PhaseBankKindV1 {
     HardNegative = -2,
     Anti = -1,
@@ -19,6 +25,7 @@ pub(super) enum PhaseBankKindV1 {
     Positive = 1,
 }
 
+#[cfg(test)]
 impl PhaseBankKindV1 {
     const fn limit(self) -> usize {
         match self {
@@ -31,6 +38,7 @@ impl PhaseBankKindV1 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg(test)]
 pub(super) struct PhaseObservationV1 {
     pub(super) event_identity: [u8; 32],
     pub(super) inner_fold: u8,
@@ -56,6 +64,7 @@ pub(super) struct FittedPhaseBankV1 {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(test)]
 pub(super) struct PhaseRankingSelectionGroupV1 {
     pub(super) group_identity: [u8; 32],
     pub(super) inner_fold: u8,
@@ -64,12 +73,14 @@ pub(super) struct PhaseRankingSelectionGroupV1 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg(test)]
 pub(super) struct AmbiguityPhaseMemberV1 {
     pub(super) slot_profile_id: u32,
     pub(super) wave: SceneWaveV1,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(test)]
 pub(super) struct AmbiguityPhaseSelectionGroupV1 {
     pub(super) group_identity: [u8; 32],
     pub(super) inner_fold: u8,
@@ -77,6 +88,7 @@ pub(super) struct AmbiguityPhaseSelectionGroupV1 {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(test)]
 struct RawPhaseClusterV1 {
     cells: [i8; L2_SCENE_PHASE_CELLS],
     exact_support: u32,
@@ -101,6 +113,7 @@ pub(super) fn integer_cosine(left: &SceneWaveV1, right: &SceneWaveV1) -> i64 {
     (numerator / denominator as i128) as i64
 }
 
+#[cfg(test)]
 pub(super) fn maximum_phase_coherence(wave: &SceneWaveV1, centers: &[FittedPhaseCenterV1]) -> i64 {
     centers
         .iter()
@@ -109,6 +122,7 @@ pub(super) fn maximum_phase_coherence(wave: &SceneWaveV1, centers: &[FittedPhase
         .unwrap_or_default()
 }
 
+#[cfg(test)]
 pub(super) fn fit_ranking_phase_bank(
     kind: PhaseBankKindV1,
     observations: &[PhaseObservationV1],
@@ -165,6 +179,7 @@ pub(super) fn fit_ranking_phase_bank(
     ))
 }
 
+#[cfg(test)]
 pub(super) fn fit_ambiguity_phase_banks(
     observations_by_profile: &BTreeMap<u32, Vec<PhaseObservationV1>>,
     groups: &[AmbiguityPhaseSelectionGroupV1],
@@ -284,6 +299,7 @@ pub(super) fn fit_ambiguity_phase_banks(
         .collect()
 }
 
+#[cfg(test)]
 fn validated_observations(
     observations: &[PhaseObservationV1],
 ) -> Result<Vec<PhaseObservationV1>, &'static str> {
@@ -304,6 +320,7 @@ fn validated_observations(
     Ok(ordered)
 }
 
+#[cfg(test)]
 fn validated_ranking_groups(
     groups: &[PhaseRankingSelectionGroupV1],
 ) -> Result<Vec<PhaseRankingSelectionGroupV1>, &'static str> {
@@ -325,6 +342,7 @@ fn validated_ranking_groups(
     Ok(ordered)
 }
 
+#[cfg(test)]
 fn validated_ambiguity_groups(
     groups: &[AmbiguityPhaseSelectionGroupV1],
 ) -> Result<Vec<AmbiguityPhaseSelectionGroupV1>, &'static str> {
@@ -344,6 +362,7 @@ fn validated_ambiguity_groups(
     Ok(ordered)
 }
 
+#[cfg(test)]
 fn ranking_fold_losses(
     groups: &[PhaseRankingSelectionGroupV1],
     mut centers_for_fold: impl FnMut(u8) -> Result<Vec<RawPhaseClusterV1>, &'static str>,
@@ -380,6 +399,7 @@ fn ranking_fold_losses(
     Ok(losses)
 }
 
+#[cfg(test)]
 fn cluster_phase_waves(
     observations: &[PhaseObservationV1],
     k: usize,
@@ -481,6 +501,7 @@ fn cluster_phase_waves(
         .collect())
 }
 
+#[cfg(test)]
 fn normalize_mean(
     mean: [i64; L2_SCENE_PHASE_CELLS],
 ) -> Result<[i8; L2_SCENE_PHASE_CELLS], &'static str> {
@@ -507,6 +528,7 @@ fn normalize_mean(
     Ok(normalized)
 }
 
+#[cfg(test)]
 fn package_centers(
     kind: PhaseBankKindV1,
     selected_k: usize,
@@ -543,6 +565,7 @@ fn package_centers(
     }
 }
 
+#[cfg(test)]
 fn maximum_raw_coherence(wave: &SceneWaveV1, centers: &[RawPhaseClusterV1]) -> i64 {
     centers
         .iter()
@@ -551,6 +574,7 @@ fn maximum_raw_coherence(wave: &SceneWaveV1, centers: &[RawPhaseClusterV1]) -> i
         .unwrap_or_default()
 }
 
+#[cfg(test)]
 fn mean_loss(losses: &[f64; PRODUCTIVE_V1_INNER_FOLDS as usize]) -> f64 {
     losses.iter().sum::<f64>() / PRODUCTIVE_V1_INNER_FOLDS as f64
 }

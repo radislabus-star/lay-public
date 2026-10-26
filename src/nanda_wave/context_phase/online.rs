@@ -18,19 +18,31 @@ use super::{
     MAX_RELATION_PAIR_PROFILES, MAX_SIGNATURE_PROFILES,
 };
 
+#[cfg(any(test, feature = "research-tools"))]
 const MAX_POSITIVE_CENTERS: usize = 8;
+#[cfg(any(test, feature = "research-tools"))]
 const MAX_ANTI_CENTERS: usize = 24;
+#[cfg(test)]
 const MAX_PENDING_ANTI_CENTERS: usize = 4;
+#[cfg(any(test, feature = "research-tools"))]
 const CENTER_SPLIT_COHERENCE: f32 = 0.76;
+#[cfg(any(test, feature = "research-tools"))]
 const MAX_COMPETITORS: usize = 4;
+#[cfg(any(test, feature = "research-tools"))]
 const MAX_L2_TRAINING_SURFACES: usize = 4;
+#[cfg(any(test, feature = "research-tools"))]
 const PROFILE_CALIBRATION_SAMPLES: usize = 32;
+#[cfg(any(test, feature = "research-tools"))]
 const COMPETITION_CALIBRATION_SAMPLES: usize = 2_048;
+#[cfg(any(test, feature = "research-tools"))]
 const ADMISSION_SKETCH_LANES: usize = 2;
+#[cfg(any(test, feature = "research-tools"))]
 const ADMISSION_SKETCH_WIDTH: usize = 1 << 16;
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) const L2_PROBE_BATCH_FRAGMENTS: usize = 128;
 
 #[derive(Clone, Copy, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct OnlineContextPhaseConfig {
     pub(super) min_profile_support: u32,
     pub(super) signature_schema: u32,
@@ -41,6 +53,7 @@ pub(super) struct OnlineContextPhaseConfig {
     pub(super) max_hard_negative_phase_centers: usize,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl OnlineContextPhaseConfig {
     pub(super) fn production(min_profile_support: u32) -> Self {
         Self::production_with_signature_schema(
@@ -66,6 +79,7 @@ impl OnlineContextPhaseConfig {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct OnlineContextPhaseStats {
     pub(super) fragments: u64,
     pub(super) transitions: u64,
@@ -91,12 +105,14 @@ pub(super) struct OnlineContextPhaseStats {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 struct SemanticBuilder {
     sum: Vec<PhaseCell>,
     center: Vec<PhaseCell>,
     support: u32,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl SemanticBuilder {
     fn new() -> Self {
         Self {
@@ -108,6 +124,7 @@ impl SemanticBuilder {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 struct ProfileBuilder {
     positive: Vec<PhaseCenter>,
     negative: Vec<PhaseCenter>,
@@ -119,6 +136,7 @@ struct ProfileBuilder {
 }
 
 #[derive(Default)]
+#[cfg(any(test, feature = "research-tools"))]
 struct PairProfileBuilder {
     low_wins: Vec<PhaseCenter>,
     high_wins: Vec<PhaseCenter>,
@@ -129,6 +147,7 @@ struct PairProfileBuilder {
     observations: u32,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl ProfileBuilder {
     fn new() -> Self {
         Self {
@@ -154,12 +173,15 @@ impl ProfileBuilder {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 struct PendingNegativeBuilder {
     negative: Vec<PhaseCenter>,
     negative_examples: u32,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl PendingNegativeBuilder {
+    #[cfg(test)]
     fn new() -> Self {
         Self {
             negative: Vec::new(),
@@ -169,6 +191,7 @@ impl PendingNegativeBuilder {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 struct ScalarReservoir {
     values: Vec<i32>,
     seen: u64,
@@ -176,6 +199,7 @@ struct ScalarReservoir {
 }
 
 #[derive(Clone, Copy)]
+#[cfg(any(test, feature = "research-tools"))]
 struct CompetitionCalibrationCase {
     target_hash: u64,
     target_relation_role: bool,
@@ -186,6 +210,7 @@ struct CompetitionCalibrationCase {
     competitor_len: u8,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl CompetitionCalibrationCase {
     fn new(
         target_hash: u64,
@@ -229,11 +254,13 @@ impl CompetitionCalibrationCase {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 struct CompetitionCalibrationReservoir {
     cases: Vec<CompetitionCalibrationCase>,
     seen: u64,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl CompetitionCalibrationReservoir {
     fn new() -> Self {
         Self {
@@ -259,10 +286,12 @@ impl CompetitionCalibrationReservoir {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 struct BoundedFrequencySketch {
     counters: Box<[u16]>,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl BoundedFrequencySketch {
     fn new() -> Self {
         Self {
@@ -289,10 +318,12 @@ impl BoundedFrequencySketch {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn pair_key_hash(key: PairKey) -> u64 {
     crate::stable_hash::mix64_golden(key.low_hash ^ key.high_hash.rotate_left(29))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl ScalarReservoir {
     fn new(limit: usize) -> Self {
         Self {
@@ -333,6 +364,7 @@ impl ScalarReservoir {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg(any(test, feature = "research-tools"))]
 enum ClusterUpdate {
     Reinforced,
     Split,
@@ -340,11 +372,26 @@ enum ClusterUpdate {
 }
 
 #[derive(Clone, Copy)]
+#[cfg(any(test, feature = "research-tools"))]
 enum ProfileBank {
     Positive,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                all(feature = "research-tools", not(feature = "lexical-compiler")),
+                feature = "lexical-compiler"
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Negative,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct L2ProbeRequest {
     context_tokens: Vec<String>,
     target: String,
@@ -355,6 +402,7 @@ pub(super) struct L2ProbeRequest {
     surface_field: Arc<SurfaceMutationField>,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct L2ProbeResult {
     target_hash: u64,
     target_signature: u64,
@@ -365,15 +413,19 @@ pub(super) struct L2ProbeResult {
     competitors: Vec<(u64, u64, bool)>,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 type ProbeJob = (usize, L2ProbeRequest);
+#[cfg(any(test, feature = "research-tools"))]
 type ProbeReceipt = (usize, L2ProbeResult);
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct L2ProbePool {
     senders: Vec<SyncSender<ProbeJob>>,
     receipts: Receiver<ProbeReceipt>,
     workers: Vec<JoinHandle<()>>,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl L2ProbePool {
     pub(super) fn new() -> Self {
         let worker_count = if cfg!(test) {
@@ -445,6 +497,7 @@ impl L2ProbePool {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl Drop for L2ProbePool {
     fn drop(&mut self) {
         self.senders.clear();
@@ -454,6 +507,7 @@ impl Drop for L2ProbePool {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct OnlineContextPhaseLearner {
     config: OnlineContextPhaseConfig,
     semantic: HashMap<u64, SemanticBuilder>,
@@ -480,6 +534,7 @@ pub(super) struct OnlineContextPhaseLearner {
     stats: OnlineContextPhaseStats,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl OnlineContextPhaseLearner {
     #[cfg(test)]
     pub(super) fn new(config: OnlineContextPhaseConfig) -> Self {
@@ -1182,6 +1237,7 @@ impl OnlineContextPhaseLearner {
         false
     }
 
+    #[cfg(test)]
     fn update_negative_relation(&mut self, token_hash: u64, vector: &[PhaseCell]) {
         if self.profiles.contains_key(&token_hash) {
             if self.update_profile_bank(token_hash, ProfileBank::Negative, vector) {
@@ -1244,6 +1300,7 @@ impl OnlineContextPhaseLearner {
         }
     }
 
+    #[cfg(test)]
     fn update_hard_negative_relation(&mut self, token_hash: u64, vector: &[PhaseCell]) {
         let Some(profile) = self.profiles.get_mut(&token_hash) else {
             return;
@@ -1264,6 +1321,7 @@ impl OnlineContextPhaseLearner {
             self.stats.hard_negative_false_winners.saturating_add(1);
     }
 
+    #[cfg(test)]
     fn evict_pending_negative_profile(&mut self) -> bool {
         while let Some(token_hash) = self.pending_negative_order.pop_front() {
             let Some(pending) = self.pending_negative.get(&token_hash) else {
@@ -1505,6 +1563,7 @@ impl OnlineContextPhaseLearner {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn update_bounded_cluster(
     centers: &mut Vec<PhaseCenter>,
     vector: &[PhaseCell],
@@ -1534,6 +1593,7 @@ fn update_bounded_cluster(
     ClusterUpdate::Split
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn execute_l2_probe(request: L2ProbeRequest) -> L2ProbeResult {
     let L2ProbeRequest {
         context_tokens,
@@ -1580,11 +1640,13 @@ fn execute_l2_probe(request: L2ProbeRequest) -> L2ProbeResult {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct L2LatticeProbe {
     pub(super) competitors: Vec<String>,
     pub(super) target_retained: bool,
 }
 
+#[cfg(test)]
 pub(super) fn l2_lattice_competitors(
     context: &[String],
     target: &str,
@@ -1594,6 +1656,7 @@ pub(super) fn l2_lattice_competitors(
     l2_lattice_probe(context, target, limit, surface_field).competitors
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) fn l2_lattice_probe(
     context: &[String],
     target: &str,
@@ -1682,6 +1745,7 @@ pub(super) fn l2_lattice_probe(
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn one_letter_real_probe_surfaces(target: &str, projected: String) -> Vec<String> {
     let mut damaged = vec![projected];
     let normalized_target = target.to_lowercase();
@@ -1698,6 +1762,7 @@ fn one_letter_real_probe_surfaces(target: &str, projected: String) -> Vec<String
     damaged
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn real_l2_lattice_competitors<F>(
     context_prefix: &str,
     normalized_target: &str,
@@ -1729,6 +1794,7 @@ where
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn percentile_i32(values: &[i32], percentile: usize) -> Option<i32> {
     if values.is_empty() {
         return None;
@@ -1741,6 +1807,7 @@ fn percentile_i32(values: &[i32], percentile: usize) -> Option<i32> {
     values.get(index).copied()
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn micro_i32(value: i64) -> i32 {
     value.clamp(i64::from(i32::MIN), i64::from(i32::MAX)) as i32
 }

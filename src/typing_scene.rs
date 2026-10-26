@@ -260,6 +260,7 @@ impl LanguageSceneIdentity {
         self
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     pub(crate) fn known_symbols(self) -> Vec<SceneSymbol> {
         let mut symbols = Vec::with_capacity(5);
         for language in [self.source_language, self.target_language] {

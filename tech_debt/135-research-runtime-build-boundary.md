@@ -1,8 +1,16 @@
 # TD-135 — Граница research/runtime по реальной reachability
 
-Status: DEFERRED_STAGE2_DISCUSSION. Priority: P3. Size: неизвестен.
+Status: ACTIVE_SCOPED_BUILD under the user's six-release order2026-10-25.
+Priority: P3. Size: bounded warning/compiler/proof cleanup for1.0.101.
 Owner: nanda_wave existing package/runtime/compiler contracts.
 Quality owner: authoritative syntax-agreement roadmap; никакого нового fit.
+
+2026-10-26: the explicit stage4 implementation order admits the measured
+build-boundary slice, not a new quality fit or crate-wide redesign. Current
+owner/probes: docs/architecture/research-build-boundaries-2026-10-26.md.
+All three configurations compile; full test/build/native/publishing pending.
+The historical discussion prerequisite below is retained as history and does
+not revoke this later scoped user authorization.
 
 ## Факты, гипотеза и варианты
 

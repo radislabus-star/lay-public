@@ -239,6 +239,7 @@ impl ProductiveMorphologyIndex {
         ))
     }
 
+    #[cfg(test)]
     fn train_lemmas(
         lemmas: &[ProductiveLemma],
         include_lemma: impl Fn(u32) -> bool,
@@ -399,6 +400,7 @@ impl ProductiveMorphologyIndex {
         Ok(())
     }
 
+    #[cfg(test)]
     fn train_context_slots(
         &mut self,
         mut reader: impl BufRead,
@@ -1188,6 +1190,7 @@ fn edge_transform(source: &str, target: &str) -> Option<(u8, String, u8, String)
     ))
 }
 
+#[cfg(test)]
 pub(super) fn apply_edge_transform(
     source: &str,
     remove_prefix_chars: usize,

@@ -3,16 +3,24 @@
 //! The package stores parent links for compact terminal-to-root decoding. This
 //! module derives the opposite direction without changing package bytes.
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::fs::File;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::io::{self, Read};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::path::Path;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use std::time::Instant;
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 use serde::Serialize;
+#[cfg(any(test, feature = "lexical-compiler"))]
 use sha2::{Digest, Sha256};
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::format;
 use super::model::{DecoderNode, LexicalGrokkingPackage};
+#[cfg(any(test, feature = "lexical-compiler"))]
 use super::runtime::LexicalGrokkingMemory;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -30,6 +38,7 @@ pub(super) struct ForwardDecoderIndex {
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Serialize)]
+#[cfg(any(test, feature = "lexical-compiler"))]
 struct RoundtripStats {
     primary_terminals: usize,
     roundtripped_terminals: usize,
@@ -143,6 +152,7 @@ impl ForwardDecoderIndex {
             .unwrap_or_default()
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     fn traverse(&self, surface: &str) -> Option<u32> {
         let mut node = 0_u32;
         for symbol in surface.chars().map(|character| character as u32) {
@@ -164,6 +174,7 @@ impl ForwardDecoderIndex {
             .unwrap_or_default()
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     fn validate_roundtrip(
         &self,
         package: &LexicalGrokkingPackage,
@@ -227,6 +238,7 @@ impl ForwardDecoderIndex {
             )
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     fn maximum_children_per_node(&self) -> usize {
         self.child_offsets
             .windows(2)
@@ -235,6 +247,7 @@ impl ForwardDecoderIndex {
             .unwrap_or_default()
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(super) fn fingerprint(&self) -> String {
         let mut hasher = Sha256::new();
         hash_u32_slice(&mut hasher, &self.child_offsets);
@@ -248,6 +261,7 @@ impl ForwardDecoderIndex {
     }
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub fn prove_l1_forward_decoder_index(package_path: &Path) -> io::Result<serde_json::Value> {
     let package_sha256_before = file_sha256(package_path)?;
     let package_bytes = std::fs::metadata(package_path)?.len();
@@ -369,6 +383,7 @@ fn prefix_offsets(counts: &[u32], name: &str) -> Result<Vec<u32>, String> {
     Ok(offsets)
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn hash_u32_slice(hasher: &mut Sha256, values: &[u32]) {
     hasher.update((values.len() as u64).to_le_bytes());
     for value in values {
@@ -376,6 +391,7 @@ fn hash_u32_slice(hasher: &mut Sha256, values: &[u32]) {
     }
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub(super) fn file_sha256(path: &Path) -> io::Result<String> {
     let mut file = File::open(path)?;
     let mut hasher = Sha256::new();
@@ -390,6 +406,7 @@ pub(super) fn file_sha256(path: &Path) -> io::Result<String> {
     Ok(format!("{:x}", hasher.finalize()))
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 fn current_rss_bytes() -> Option<u64> {
     let status = std::fs::read_to_string("/proc/self/status").ok()?;
     let kib = status

@@ -23,6 +23,7 @@ pub(super) fn ascii_to_russian_layout_candidate(
     ascii_to_russian_layout_candidate_inner(token, allow_shift_fallback, true)
 }
 
+#[cfg(test)]
 pub(super) fn exact_ascii_to_russian_layout_candidate(
     token: &str,
 ) -> Option<AsciiToRussianLayoutCandidate> {

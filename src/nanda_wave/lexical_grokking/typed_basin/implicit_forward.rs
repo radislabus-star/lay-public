@@ -10,6 +10,19 @@ use super::support::ExactSupportField;
 #[derive(Clone, Debug)]
 pub(super) struct ImplicitForwardRelation {
     pub(super) atom_id: u32,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) channel: AtomChannel,
     pub(super) coupling: WaveCoupling,
 }
@@ -17,6 +30,19 @@ pub(super) struct ImplicitForwardRelation {
 #[derive(Clone, Debug)]
 pub(super) struct ImplicitCandidate {
     pub(super) terminal_id: u32,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) relations: Vec<ImplicitForwardRelation>,
     pub(super) exact_reverse: Arc<[WaveCoupling]>,
     pub(super) activation: ForwardActivation,
@@ -106,6 +132,7 @@ pub(super) fn activation_from_relations(
     activation
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub(super) fn activation_equal(left: ForwardActivation, right: ForwardActivation) -> bool {
     left.mass == right.mass
         && left.hits == right.hits
@@ -113,6 +140,7 @@ pub(super) fn activation_equal(left: ForwardActivation, right: ForwardActivation
         && left.keyboard_hits == right.keyboard_hits
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub(super) fn candidates_equal(left: &[ImplicitCandidate], right: &[ImplicitCandidate]) -> bool {
     left.len() == right.len()
         && left.iter().zip(right).all(|(left, right)| {

@@ -414,6 +414,7 @@ impl AnchorRecoveryPackageViewV1 {
             .collect()
     }
 
+    #[cfg(test)]
     pub(super) fn recover_anchor(
         &self,
         program: MorphProgramHeaderRecordV1,
@@ -425,6 +426,7 @@ impl AnchorRecoveryPackageViewV1 {
         Ok(output)
     }
 
+    #[cfg(test)]
     pub(super) fn recover_anchor_into(
         &self,
         program: MorphProgramHeaderRecordV1,

@@ -1,6 +1,8 @@
 use super::super::phase_field::{PhaseCell, PhaseCenter};
 use crate::transition_relation::TransitionOperatorKind;
-use crate::typing_memory::{LayoutProjectionDirection, LayoutProjectionScope, TypingMemoryOutcome};
+#[cfg(any(test, feature = "research-tools"))]
+use crate::typing_memory::TypingMemoryOutcome;
+use crate::typing_memory::{LayoutProjectionDirection, LayoutProjectionScope};
 use crate::typing_scene::{
     LanguageId, LanguageSceneIdentity, SceneSymbol, SentenceLanguageEvidence,
 };
@@ -100,12 +102,34 @@ pub(crate) struct L4CrossSceneInput<'a> {
 #[derive(Clone, Debug)]
 pub(crate) struct EncodedL4Scene {
     pub(crate) vector: Vec<PhaseCell>,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(crate) fingerprint: u64,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(crate) candidate_relation_id: u64,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(crate) keep_relation_id: u64,
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) struct L4CrossSceneObservation {
     pub(crate) receipt_id: u64,
     pub(crate) complete_chain: bool,
@@ -124,6 +148,7 @@ pub(crate) struct L4CrossSceneObservation {
     pub(crate) outcome: TypingMemoryOutcome,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl L4CrossSceneObservation {
     pub(crate) fn input(&self) -> L4CrossSceneInput<'_> {
         L4CrossSceneInput {
@@ -268,6 +293,7 @@ pub(crate) struct L4CrossSceneReadout {
 }
 
 #[derive(Clone, Debug, Default, serde::Serialize)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) struct CrossSceneCompileReport {
     pub(crate) source_observations: u32,
     pub(crate) live_source_observations: u32,

@@ -60,22 +60,27 @@ impl TypedExactView {
             .ok_or_else(|| "typed V13 edge range is out of bounds".to_string())
     }
 
+    #[cfg(test)]
     pub(super) fn state_count(&self) -> usize {
         self.states.len()
     }
 
+    #[cfg(test)]
     pub(super) fn edge_count(&self) -> usize {
         self.edges.len()
     }
 
+    #[cfg(test)]
     pub(super) fn root_state(&self) -> u32 {
         self.root_state
     }
 
+    #[cfg(test)]
     pub(super) fn identity(&self) -> V13Identity {
         self.identity
     }
 
+    #[cfg(test)]
     pub(super) fn symbol_digest(&self) -> [u8; 32] {
         self.symbol_digest
     }
@@ -84,7 +89,21 @@ impl TypedExactView {
 pub(super) struct TypedMaterialization {
     view: TypedExactView,
     payload_bytes: usize,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     states_checked: usize,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     edges_checked: usize,
 }
 
@@ -197,10 +216,12 @@ impl TypedMaterialization {
         self.payload_bytes
     }
 
+    #[cfg(test)]
     pub(super) fn states_checked(&self) -> usize {
         self.states_checked
     }
 
+    #[cfg(test)]
     pub(super) fn edges_checked(&self) -> usize {
         self.edges_checked
     }

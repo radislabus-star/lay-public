@@ -91,6 +91,7 @@ impl TypedBasinRuntime {
         self.query_failures.load(Ordering::Relaxed)
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(in crate::nanda_wave::lexical_grokking) fn support(&self) -> &ExactSupportField {
         &self.support
     }

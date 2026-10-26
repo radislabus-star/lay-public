@@ -11,7 +11,21 @@ use super::{
 
 #[derive(Clone, Copy, Debug, Default)]
 pub(super) struct EpochSearchMetrics {
+    #[cfg_attr(
+        all(not(test), feature = "lexical-compiler"),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) posting_relations_total: usize,
+    #[cfg_attr(
+        all(not(test), feature = "lexical-compiler"),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) posting_relations_decoded: usize,
     pub(super) partition_operations: usize,
     pub(super) touched_centers: usize,

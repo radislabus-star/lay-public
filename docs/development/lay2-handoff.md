@@ -1,48 +1,57 @@
-## Current100 scoped publication ready — 2026-10-26T18:13:22.952747+00:00
+## Current101 full source/build gates running — 2026-10-26T19:49:07.048533+00:00
 
-Continue six original groups without agents/Harness2/manual local GNOME install.
-97/98/extra99 published;100 source/native receipts complete, publication next.
-Functional2725bcf449000fbbce71770d4bbe7293ce4ad3ed pushed both remotes;
-CI40370251745 andSecurity40370251729 both SUCCESS on that exact commit.
-Source/modes1287files9e1486e38397f45e824ffc4471649ce8e90f1b8fbc09abc0bf45f2347f1a426e.
-3519source/11performance/419Python(10skip)/lints/MSRV/all10optimized PASS.
-Raw CROOT/release100b2-final-gates, local CACHE100/b2. Remote engine2662296
-SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
-daemon2662418/tray2662424, all10installed. OriginalIBus3168326 kept.
+Continue original6groups without agents/Harness2/manual GNOME installation.
+Published97/98/extra99/100. Stable100tag36fd0e7a, functional2725bcf4; actual
+installed updater discovery BOTH exit0/current100; local automatic100completed
+13m18.5s wall/3.6Gpeak, not a manual install. Full100 native302P57F81B/440,
+12oldPASS losses. Kitty5PASS/Konsole5PASS/Wez5FAIL; laterWezTab1PASS doesnot
+fix missing visible suffix (4typedchars only). Keep all native residuals OPEN.
 
-Full frozenr18:Firefox128P53F39B,Chrome174P4F42B /220each,302P57F81Btotal.
-Against98 there are12oldPASS-to-FAIL losses; scoped improvement, not universal
-or regression-free acceptance. AFirefox108P74F38B and B1source3518P1F retained.
-Two actual causal regressions fixed: bounded in-flight replay progress and
-owned-preedit blur erasing received focus metadata. SourceA row52 stillPASS;
-B2 normalrich roundtripactive is nowPASS versusAFAIL.
+101 SOURCE c5d66a0849a7e48df7434db8a6357f9819c755886b5db3e3755c0f30af4e50bf,
+1289files/modes. Code/compiler/proof boundaries, research compiler facade,
+unchanged journal implementation behind testshim, source version bundle101.
+Protected text_edit.rs/gate.rs unchanged. Implementationbodycc36c4e8... same100.
+No input delivery/model/learning/desktop-rendering edits; source GNOME files
+onlyversionmetadata. All3configurationtypechecks pass; production R library
+0warnings. Tests retain exactly3519correctness/package,11performance,41ignored.
+Default lintbaseline530->117, research354->129; strict monotonic writer PASS.
+Only exact unchanged prototype source paths rebound before pruning, under new
+canondecision; no guard/test weakened. Final compiler all10/parity stillpending.
 
-Dedicated remote builds20CPU/28GiB. Found old owned IBus unit1CPU cap; after
-fullmatrix changed only its CPUQuota to2000%, samePID/bytes/memory. Actual
-Chrome-tail delta1throttle11ms does not explain allFAIL. Separate20case smoke
-Firefox12P6F2B,Chrome16P2F2B; never replaces full440. CPUproof
-CROOT/release100b2-runtime-envelope-after.json and dedicated-resource-policy.json.
-Terminals5scenarios:Kitty5PASS,Konsole5PASS,WezTerm5FAIL. Later tracedWezTerm
-hintTab1PASS does not replace failures; screenshot+emittedpreedit show only
-4typedchars,no continuation, greenprefix. VisualFAIL remains. Existing XIM
-helper/session/config setup verified, permanent missing-XIM disproved.
+RUNNING exec83921,CROOT/release101-final-gates. Earlierfull-gates stopped only
+ourdecision JSONschema/requiredfields error; corrected document, identical
+sourcehash,5passedprerequisites reused, rawcanonFAILretained. Currentcanon,
+Python419(10skip),public,install,Node,audit50,lints,bothMSRV PASS. Fullsource
+running,performance/optimizedall10/tinyold-newfixturebyteparity pending.
+Frozenrun /home/e/projects/lay-development-runner/release101-final-source-MmcR9f;
+2001files archive3fd5807e010d07f6fb697ff1a1cdb2bc2f4e4f3704f5adf655e37b36abbd7dde.
+LocalCACHE101/final holdsoriginalsnapshot,canoncorrection/resumehelper and
+early-source-verification.json.10generated/baseline files synced; exactlocal
+sourcec5d parityverified. Functional101commit/CI beingstarted before full
+source completes; do not publish from early source verification alone.
 
-Current release records docs/release-1.0.100.md and tech_debt/evidence/release-
-1.0.100-{verification,native}.json; native followup staysOPEN. Commit metadata,
-push/tag/release100, actual installed updater --check bothhosts, then101.
-Do not rerun functional checks for this evidence-only commit.
-101 inventory259raw/258normalized warnings CACHE101/warning-inventory99-normalized.json;
-installer builds research-tools, so a research-only cfg alone cannot remove
-lib warnings. Most leaves test-only; protectedtext_edit.rs/gate.rs unchanged.
-Output-transaction prototype needs a test-only module shim + shared offline
-implementation if removed from compiled library; preserve all test identities.
-102 inspect TD122/123/132/134 and evidence before changes. Candidate next shared
-issue: authenticated Revocation FocusOut/Disable calls broad revoke_context_word
-again, possibly erasing later focus stamps; needs RED before any edit, not a
-proven explanation of every WezTerm failure. WezTerm preview policy emits only
-typed prefix despite available Tab completion; separate presentation followup.
-103 final queue/evidence and real old3GiB updater bootstrap/completion, not merely
-discovery. No general wave-quality closure from these lifecycle receipts.
+Earlierprobe1 typeerrors11D/3R/3L were mismatchedimports/module scopes and
+requiredfixed-wiretype; fixed. Probe2 allcompile, imports remaining; probe3
+allcompile/nondeadwarnings0. Keep all rawruns; do not rerun initialautopatcher
+or restore originalscopeblindly. Wholecold/testmodules useparentgates where
+proved; reserved enumtags/carrierfields kept with precise expectations.
+
+Remote still100engine2662296/SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
+daemon2662418/tray2662424; no101install. RootIBus3168326 unchanged, CPU20 after
+userdedicated-host authorization; memory512M/1G unchanged. Buildguard20CPU28G.
+All100retainedbinaries verified before owned package-only cacheclean; dependencies,
+installedbinaries/models/learning preserved. Fixture package100baseline in
+CROOT/release101-package-parity-baseline; this is tinyformatproof, not newfit.
+
+NEXT: await full101 gates; exactretainedartifactdeploy(remoteonly),shortfrozen
+native controls/newloadedhashes, newactual101CI success, release101+updater.
+Then102reconcileTD122/123/132/134, repair proved sharedmechanism beforemoves;
+no newqualityfit before authoritative roadmap gates. Candidate next bug only:
+authenticated Revocation FocusOut/Disable calls broad revoke again and may
+clear laterreceivedfocus; mustproveRED, not assume allWezfailures sharecause.
+103finalqueue/acceptance+shippingold3G updaterbootstrap and realremoteautomatic
+completion. Actual local100success followed14:32runtimeMemoryHigh3->4G repair;
+it doesnot certify bootstrapforallolderinstalledunits. Soundonlywholecompletion.
 
 ## Current100 candidateA rejected; causal FocusOut RED — 2026-10-26T16:47:39.777966+00:00
 

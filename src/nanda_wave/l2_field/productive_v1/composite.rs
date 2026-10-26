@@ -3,9 +3,9 @@ use std::collections::{BTreeMap, BTreeSet};
 use crate::nanda_wave::lexical_grokking::restoration::{
     AbstainReason, RestorationCandidate, RestorationReadout,
 };
-use crate::typing_transition::target_evidence::{
-    stable_bytes_ref, EnumerationCompletenessV1, IncompletenessReasonV1, MAX_TARGETS_PER_FIELD,
-};
+#[cfg(test)]
+use crate::typing_transition::target_evidence::{stable_bytes_ref, IncompletenessReasonV1};
+use crate::typing_transition::target_evidence::{EnumerationCompletenessV1, MAX_TARGETS_PER_FIELD};
 
 use super::calibrate::ProductiveCalibratedVerdictV1;
 use super::packaged_runtime::{PackagedProductiveCandidateV1, PackagedProductiveReadoutV1};
@@ -159,6 +159,7 @@ impl CompositeL2LatticeV1 {
         })
     }
 
+    #[cfg(test)]
     pub(super) fn common_completeness(&self) -> EnumerationCompletenessV1 {
         if self.productive_integrity_error.is_some() {
             return EnumerationCompletenessV1::failed(IncompletenessReasonV1::IntegrityFailure);

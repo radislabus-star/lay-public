@@ -10,6 +10,7 @@ pub(super) const AXIS_UNKNOWN_OR_UNANNOTATED: u8 = 1;
 pub(super) struct ImportedCanonicalL2LemmaRefV1(pub(super) u32);
 
 impl ImportedCanonicalL2LemmaRefV1 {
+    #[cfg(test)]
     pub(super) fn validate_for_count(self, count: usize) -> Result<(), &'static str> {
         if self.0 as usize >= count {
             return Err("imported canonical L2 lemma reference is out of range");
@@ -23,6 +24,7 @@ impl ImportedCanonicalL2LemmaRefV1 {
 pub(super) struct ImportedCanonicalL2FormRefV1(pub(super) u32);
 
 impl ImportedCanonicalL2FormRefV1 {
+    #[cfg(test)]
     pub(super) fn validate_for_count(self, count: usize) -> Result<(), &'static str> {
         if self.0 as usize >= count {
             return Err("imported canonical L2 form reference is out of range");
@@ -219,6 +221,7 @@ impl fmt::Display for SlotValidationErrorV1 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Hash)]
+#[cfg(test)]
 pub(super) struct FormIdentityV1 {
     pub(super) lemma_id: u32,
     pub(super) morphology_slot_id: u32,
@@ -226,6 +229,7 @@ pub(super) struct FormIdentityV1 {
     pub(super) variant_id: u32,
 }
 
+#[cfg(test)]
 impl FormIdentityV1 {
     pub(super) fn validate(self) -> Result<(), &'static str> {
         if self.morphology_slot_id == 0 || self.normalized_surface_id == 0 || self.variant_id == 0 {
@@ -263,8 +267,29 @@ pub(super) struct ProductiveCandidateIdentityV1 {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub(super) enum IndependentEvidenceSourceKindV1 {
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     ExplicitFeedback = 1,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     StructurallyImpossibleAgreement = 2,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     LocalContextAntiCenter = 3,
 }
 

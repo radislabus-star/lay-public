@@ -22,6 +22,13 @@ pub(crate) enum LiveCandidateLane {
 
 #[derive(Debug, Clone)]
 pub(crate) struct LiveCompletionProposal {
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(crate) state_before: u64,
     pub(crate) scene: LiveCompletionScene,
     /// Inventory membership only; effective after existing admission checks.
@@ -58,7 +65,21 @@ pub(crate) struct LiveCompletionProposal {
     pub(crate) l3_memory_supported: bool,
     pub(crate) context_birth: bool,
     pub(crate) completed_state_known: bool,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(crate) corrected_prefix_completion: bool,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(crate) l3_relation_class: u64,
     pub(crate) l4_transition_state_specific: bool,
     pub(crate) l4_transition_attract_count: u32,
@@ -66,6 +87,7 @@ pub(crate) struct LiveCompletionProposal {
 }
 
 impl LiveCompletionProposal {
+    #[cfg(test)]
     pub(crate) fn common_target_evidence(&self) -> super::target_evidence::TargetEvidenceSetV1 {
         self.replacement_target_evidence.to_common()
     }

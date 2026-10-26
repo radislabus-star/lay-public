@@ -356,6 +356,7 @@ impl PreparedCanonicalTokenField {
 
 /// Prepares the only live L2 field owner. Canonical L2 is a read-only identity
 /// index; its historical local verdict is deliberately absent from this path.
+#[cfg(test)]
 pub(in crate::nanda_wave::l2_field) fn prepare_live_productive_v1_field(
     context_prefix: &str,
     observed: &str,

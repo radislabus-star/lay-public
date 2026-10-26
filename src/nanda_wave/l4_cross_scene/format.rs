@@ -1,9 +1,17 @@
 use std::collections::{BTreeMap, BTreeSet};
-use std::fs::{self, OpenOptions};
-use std::io::{self, Write};
+use std::fs;
+#[cfg(any(test, feature = "research-tools"))]
+use std::fs::OpenOptions;
+use std::io;
+#[cfg(any(test, feature = "research-tools"))]
+use std::io::Write;
 #[cfg(unix)]
+#[cfg(any(test, feature = "research-tools"))]
 use std::os::unix::fs::OpenOptionsExt;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(any(test, feature = "research-tools"))]
+use std::path::PathBuf;
+#[cfg(any(test, feature = "research-tools"))]
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 
@@ -28,16 +36,24 @@ const VERSION_V1: u16 = 1;
 const VERSION_V2: u16 = 2;
 const HEADER_V1_BYTES: usize = 60;
 const HEADER_V2_BYTES: usize = 76;
+#[cfg(any(test, feature = "research-tools"))]
 const KEY_V1_BYTES: usize = 4;
+#[cfg(any(test, feature = "research-tools"))]
 const KEY_V2_BYTES: usize = 56;
+#[cfg(any(test, feature = "research-tools"))]
 const PROFILE_PAYLOAD_BYTES: usize = 28;
+#[cfg(any(test, feature = "research-tools"))]
 const PAIR_PAYLOAD_BYTES: usize = 32;
+#[cfg(any(test, feature = "research-tools"))]
 const CENTER_BYTES: usize = 4 + CELLS * 2;
+#[cfg(any(test, feature = "research-tools"))]
 const SYMBOL_HEADER_BYTES: usize = 12;
 const CHECKSUM_BYTES: usize = 8;
 const MAX_PACKAGE_BYTES: usize = 16 * 1024 * 1024;
+#[cfg(any(test, feature = "research-tools"))]
 static TEMPORARY_SEQUENCE: AtomicU64 = AtomicU64::new(0);
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn write_package(path: &Path, package: &L4CrossScenePackage) -> io::Result<()> {
     let bytes = encode_package_checked(package).map_err(invalid_data)?;
     decode_package(bytes.clone()).map_err(invalid_data)?;
@@ -76,10 +92,12 @@ pub(crate) fn read_package(path: &Path) -> io::Result<L4CrossScenePackage> {
     decode_package(bytes).map_err(invalid_data)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn encode_package(package: &L4CrossScenePackage) -> Vec<u8> {
     encode_package_checked(package).expect("validated L4 cross-scene package")
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn encode_package_checked(package: &L4CrossScenePackage) -> Result<Vec<u8>, String> {
     validate_package(package)?;
     let version = format_version(package)?;
@@ -133,12 +151,14 @@ fn encode_package_checked(package: &L4CrossScenePackage) -> Result<Vec<u8>, Stri
 }
 
 /// Returns the exact compact representation used by runtime readout.
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn canonical_runtime_package(
     package: &L4CrossScenePackage,
 ) -> Result<L4CrossScenePackage, String> {
     decode_package(encode_package_checked(package)?)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_header(bytes: &mut Vec<u8>, package: &L4CrossScenePackage, version: u16) {
     bytes.extend_from_slice(MAGIC);
     put_u16(bytes, version);
@@ -255,6 +275,7 @@ fn decode_package(bytes: Vec<u8>) -> Result<L4CrossScenePackage, String> {
     Ok(package)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_symbol(bytes: &mut Vec<u8>, symbol: &SceneSymbol) {
     bytes.push(symbol.kind as u8);
     bytes.push(symbol.label.len() as u8);
@@ -277,6 +298,7 @@ fn read_symbol(cursor: &mut Cursor) -> Result<SceneSymbol, String> {
     Ok(SceneSymbol { kind, id, label })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_profile(bytes: &mut Vec<u8>, profile: &L4CrossSceneProfile, version: u16) {
     write_key(bytes, profile.key, version);
     put_i32(bytes, profile.threshold_micro);
@@ -331,6 +353,7 @@ fn read_profile(cursor: &mut Cursor, version: u16) -> Result<L4CrossSceneProfile
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_pair(bytes: &mut Vec<u8>, pair: &L4CrossScenePairProfile, version: u16) {
     write_key(bytes, pair.key, version);
     put_u64(bytes, pair.low_relation);
@@ -391,6 +414,7 @@ fn read_pair(cursor: &mut Cursor, version: u16) -> Result<L4CrossScenePairProfil
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_key(bytes: &mut Vec<u8>, key: L4CrossSceneProfileKey, version: u16) {
     bytes.push(key.operator as u8);
     bytes.push(key.direction.map_or(0, LayoutProjectionDirection::code));
@@ -464,6 +488,7 @@ fn read_key(cursor: &mut Cursor, version: u16) -> Result<L4CrossSceneProfileKey,
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_center(bytes: &mut Vec<u8>, center: &PhaseCenter) {
     put_u32(bytes, center.support);
     center.write_compact(bytes);
@@ -609,6 +634,7 @@ fn format_version(package: &L4CrossScenePackage) -> Result<u16, String> {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn center_count(package: &L4CrossScenePackage) -> usize {
     package
         .profiles
@@ -654,6 +680,7 @@ fn validate_order(package: &L4CrossScenePackage) -> Result<(), String> {
     Ok(())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn temporary_path(path: &Path) -> PathBuf {
     let sequence = TEMPORARY_SEQUENCE.fetch_add(1, Ordering::Relaxed);
     let name = path
@@ -673,18 +700,22 @@ fn checksum64(bytes: &[u8]) -> u64 {
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn put_u16(bytes: &mut Vec<u8>, value: u16) {
     bytes.extend_from_slice(&value.to_le_bytes());
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn put_u32(bytes: &mut Vec<u8>, value: u32) {
     bytes.extend_from_slice(&value.to_le_bytes());
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn put_i32(bytes: &mut Vec<u8>, value: i32) {
     bytes.extend_from_slice(&value.to_le_bytes());
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn put_u64(bytes: &mut Vec<u8>, value: u64) {
     bytes.extend_from_slice(&value.to_le_bytes());
 }

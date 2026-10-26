@@ -15,6 +15,7 @@ pub(crate) struct TransitionRelationInput<'a> {
     pub(crate) changed_tokens: usize,
 }
 
+#[cfg(test)]
 pub(crate) fn transition_state_id(text: &str) -> String {
     let tokens = text.split_whitespace().collect::<Vec<_>>();
     let Some(last) = tokens.last() else {
@@ -64,6 +65,7 @@ fn exact_transition_id(kind: &str, text: &str) -> String {
 /// Unlike `transition_state_id`, this intentionally keeps every normalized
 /// token. L4 uses it to distinguish whole boundary transitions such as
 /// `мыслов -> мы слов` from candidates that merely share the last word.
+#[cfg(test)]
 pub(crate) fn transition_target_id(text: &str) -> String {
     let mut bytes = Vec::new();
     for token in text.split_whitespace() {

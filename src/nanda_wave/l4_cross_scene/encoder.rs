@@ -2,6 +2,7 @@ use super::super::phase_field::{add_hashed_atom, phase_center_from_sum, stable_h
 use super::model::{EncodedL4Scene, L4CrossSceneContextSignal, L4CrossSceneInput};
 use super::CELLS;
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn encode_scene(input: L4CrossSceneInput<'_>) -> EncodedL4Scene {
     encode_scene_v2(input)
 }

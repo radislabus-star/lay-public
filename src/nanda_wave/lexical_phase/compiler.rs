@@ -22,7 +22,7 @@ where
     )
 }
 
-pub(crate) fn compile_words_with_training<'a, 'b, I, J>(
+pub fn compile_words_with_training<'a, 'b, I, J>(
     base_words: I,
     training_words: J,
 ) -> Result<Vec<u8>, String>

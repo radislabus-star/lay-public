@@ -7,7 +7,7 @@ use clap::Parser;
 use serde::Serialize;
 use sha2::{Digest, Sha256};
 
-#[path = "../text_edit/output_transaction.rs"]
+#[path = "../text_edit/output_transaction/implementation.rs"]
 mod output_transaction;
 
 use output_transaction::{
