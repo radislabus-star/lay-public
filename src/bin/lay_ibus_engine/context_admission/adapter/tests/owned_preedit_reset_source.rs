@@ -493,6 +493,11 @@ async fn authenticated_revocation_retains_received_focus(repeat_blur: bool) {
     let mut harness = cycle09_harness().await;
     let mut serial = 96_000;
     let mut engine = owned_preedit(&mut harness, &mut serial, 0).await;
+    let factory_mode = engine
+        .client_context
+        .factory_engine_profile
+        .initial_layout_is_ru();
+    engine.set_layout_is_ru(!factory_mode);
     let old_token = engine.live_context_token().expect("owned source");
     let path = engine.path.clone();
     if repeat_blur {
@@ -540,6 +545,7 @@ async fn authenticated_revocation_retains_received_focus(repeat_blur: bool) {
     let after = after.unwrap();
     assert_eq!(before.position, after.position);
     assert_eq!(before.disposition, after.disposition);
+    assert_eq!(engine.layout_gesture.layout_is_ru, factory_mode);
     assert!(!engine.context_handoff_sealed);
     assert!(engine.live_context_token().is_none());
     assert!(engine.committed_tail.buffer.is_empty());

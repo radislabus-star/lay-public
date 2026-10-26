@@ -1,3 +1,107 @@
+## Current102B full verification; A rejected —2026-10-26T21:56:24.193262+00:00
+
+Continue six original release groups, NO agents/Harness2/manual local GNOME install.
+Stable101tag9b83e9ee2d3efbe9bbf5e52d322633a989599b33. Both actual101 updater
+checksPASS (local100offers101,remote101current at20:46Z); localloadedIME96 is
+separate and must not be manually restarted.97/98/extra99/100/101published.
+
+102A functional32bb94f217eec360f8ab5ad74f8eada78ebf553c CI40400667305 and
+Security40400667306 SUCCESS,3522+11/all10/fullnative440 complete, BUT REJECTED.
+FullA Firefox126P57F37B,Chrome175P4F41B,total301P61F78B. Kitty5P/Konsole5P/
+Wez1P4F. These results are notB acceptance. Real paired Disable mode diagnostic
+old101bodyPASS/currentAFAIL proves earlystrip skipped original factory-mode
+cleanup. Source-restored finally. CROOT/release102-disable-mode-characterization.
+CACHE102/full retains allA raw/native/gates/source and rejected analysis.
+
+B minimal fix reuses existing discard_context_activation plus
+retire_context_word_locally in ONLY the two exact Revocation branches. It
+leaves composition for normal lifecycle cleanup, preserving all old mode/
+preedit/publication behavior without secondglobalrevocation of futurefocus.
+ValidPending-ticket FocusOut inertprefix unchanged. Both existing positive
+regressions now flip mode oppositefactory and assert restoration together with
+realreceivedFocusIn/freshGet+marker/SourceFreeUnknownStart0/no oldtoken/edit/
+learning. Genericunobserved negative unchanged. No newinputroute/owner/resetbypass.
+
+Bsource1289files/modes d0193b6c0c83d99f2978644f65918e3478bfe7f0b469aae2a91524669b7ebd90.
+EarlysourceparityPROVED,10generated files synced.12focused controls and all15
+prerequisitesPASS; full3522/perf11/all10/native pending. All3522 test identities
+andlanes unchanged, strongerasserts. RUNNING exec97885,CROOT/release102b-final-gates,
+frozen /home/e/projects/lay-development-runner/release102b-source-ZQwkDL,
+2008files archive39a4d056951b3fff1b9fd3774f20c77816fab9226157e7c18f8625463254d812.
+CACHE102/b holds scripts/request/archive/early-source-verification.json.
+Commit/push Bnow and capture NEWCI; ACI doesnotcertifyB. Afterfullgates sync-final
+then installverifiedB and fullnative before102publication/updater. Nativewrapper
+andinstaller prepared/uploaded: install-candidate102b.py usesprevious
+release102-final-deployment-b (A), outputrelease102b-final-deployment; wrapper
+run-native-stage102b-final.sh outputsrelease102b-native-{firefox,chrome} and
+release102b-terminal-controls. Frozenr18actorSHA17dc93b5... unchanged220each.
+
+CurrentlyRUNNING remoteA102engine3502803SHA973d9b67b805bed29205a5312d3a2f59617c6717360222b9caa6660786302b9d,
+daemon3502916/tray3502923. RootIBus3168326 unchanged. Dedicated20CPU28G env,
+source Pythonphase24Gonly and restored28GforRust. No models/learning reset.
+Afirstinstallationblocked atnonemptyinertprojection, ownedemptyGTK+Escape
+cleared asynchronously; bothblockedattempts retained, noguard weakened.
+
+103smaller bootstrap fix alreadyproven: move existingauto unitcopy/daemon-reload
+beforecompile. Kernelprobe samePID/hard/CPU/tasks,soft32M->max under64Mtest;
+isolatedoldinstallRED1/movedblockGREEN1. No newmemorypolicyhelper. Own103doc
+is ready and canbe committed asfuture measuredplan withB; implementation after102.
+CROOT/release103-unit-reload-probe.json and release103-install-ordering.
+CACHE103=/home/ubu/.cache/lay/development/release-1.0.103-20261027 contains
+prove-install-ordering.py,new-regression-method.pyfrag,bootstrap-controls-and-old-unit.json.
+Realremoteoldauto unitstill3Gsoft/4Ghard/CPU1/swap256M, no runtimeoverrides.
+DefaultmanagerGUI=GNOME:10; privateKDEdaemonGUI=:71/privateDBus. Scope real
+102->103automaticvalidation toKDE via temporaryownunitEnvironment dropin only;
+no globalmanagerenvchange. Currentdaemon has runtime99/100KDEdropins preserved
+byinstaller. Record installedvsloaded; updaterdeliberately preservesactiveIME.
+Do not manually patchafterauto and callthatautomaticactivation. Optional final
+remoteidle activation must be a separate audited operation. No localmanualrestart.
+
+TD122completionproofstillmissing/DECISION_REQUIRED;TD123 ACTIVE_QUALITY belongs
+to syntaxagreementHEAD0e8ca416/roadmapqualityNOT_PASS;no fit here. TD132/134
+unproved extraction DEFERRED. No falseDONE. Remainingnative failures OPEN.
+
+## Publication HOLD102 for mode-cleanup characterization —2026-10-26T21:36:11.141055+00:00
+
+Source/build/CI32bb94f2 all passed and remote102engine3502803 is running.
+Fullnative exec75998 underway: Firefox126P57F37B/220 complete; Chrome running,
+then15terminals. No102publication yet; stable101 remains9b83e9ee. The full gate
+proof is CROOT/release102-full-gates/result.json, sourceac2264f5...,3522+11/all10.
+
+Manual semantic review found a possible regression requiring RED before release:
+validatedDisable now strips legacy preedit BEFORE reset_for_ibus_soft_reset.
+That reset formerly restored factory layout only if its own strip returnedtrue.
+Pre-stripping may skip that original mode cleanup. FocusOut always restoresmode,
+so it is asymmetric. DO NOT publish102 merely becauseA CI/source passes.
+CACHE102/disable-mode-characterization.rs is a draft semantic control, not run:
+owned_preedit; setexistingmode opposite factory; realobservedDisable; assert
+factorymode restored/no edit/learning. Run after native75998 completes to avoid
+CPU contamination. Controlled old101observation body vs current102 expectedold
+PASS/currentFAIL if hypothesiscorrect; restorefullsourcefinally. Ifconfirmed,
+retainA results as rejected, restore prior factory-mode cleanup in ONLYvalidated
+Disable owned-strip branch, strengthen both existing positive tests toflipmode
+andassertcleanup, keepalltestIDs, thenBfullgates/newCI/fullnative beforepublication.
+Ifconfirmed, prefer existing discard_context_activation + retire_context_word_locally
+in the exact Revocation branches, leaving legacy preedit intact for normal
+lifecycle cleanup. That drops only this revoked local owner; the subsequent
+normal reset cannot globally revoke it again, but retains its old factory-mode,
+preedit and publication semantics. This reuses nearby late-retired lifecycle
+cleanup. Do not patch only the mode setter or add a reset bypass/parallel owner.
+Accepted FocusOut/Pending-ticket branch must remain unchanged (inert prefix
+retention was required by TD125). No newproductioncode beyondA/draftyet.
+
+103 smaller solution alreadyproven: moving EXISTINGauto unitcopy/daemon-reload
+block beforecompile removesoldsoftlimitlive, samePID/hard/CPU/tasks.64Mprobe
+CROOT/release103-unit-reload-probe.json; isolated actualinstall oldRED1/newGREEN1
+CROOT/release103-install-ordering. No newmemorypolicyhelper needed. Own103doc
+is UNTRACKED, exclude from102release metadata. Realremoteautounitstill3Gsoft/4G
+hard/CPU1/swap256M, so actual102->103autoapply will test realoldbudget. ManagerGUI
+isGNOME:10; privateKDEdaemonGUI:71/privateDBus. Scopeauto test toprivateKDE via
+ownedtemporaryEnvironmentdropin, no globalmanagerenvchange. Currentdaemon has
+runtime99/100privateKDEdropins, so normaldaemonrestart can retainprivateenvironment.
+103 runtimeactivation separate: updaterpreservesactiveIME; localfiles100 but
+loadedIME96/PID3037150. No manual localrestart allowed. Recordinstalled vsloaded.
+
 ## Current102 minimal lifecycle fix in full verification — 2026-10-26T21:00:24.413286+00:00
 
 Continue six original release groups, no agents/Harness2/manual local GNOME install.

@@ -17,3 +17,10 @@ checks on exact loaded bytes, then publish and verify installed updater.
 Do not mark unrelated quality, V1 protocol or native residual tasks DONE.
 
 Implementation and all12 focused revocation controls PASS in CROOT/release102-full-gates/revocation-controls.log. The full fixed manifest adds exactly3 correctness tests and keeps every prior identity/lane; full3522/performance11/build/native/CI remain pending.
+
+
+CandidateA32bb94f2 rejected before release: early strip skipped factory-mode
+cleanup. Old/new paired control confirms oldPASS/currentFAIL. CandidateB uses
+existing local activation discard before normal cleanup, strengthens both
+positive semantic tests without changing identities, and reruns full proof.
+Do not mark DONE from A CI or its full matrix. See owning document.

@@ -65,3 +65,29 @@ actual no-old-word permission contract, not a changed runtime rule. That revised
 negative passes on unchanged101 (CROOT/release102-unobserved-revocation-baseline).
 The rejected draft run has11PASS/1FAIL of12 and remains retained under
 release102-authenticated-revocation-controls. Full102 verification is next.
+
+
+## Candidate A rejected: preserve the complete lifecycle cleanup contract
+
+A functional32bb94f2/sourceac2264f5 passes3522+11/all10/CI and records full
+native301P61F78B/440 (Firefox126/57/37,Chrome175/4/41), Kitty5P/Konsole5P/
+Wez1P4F. No release. Before promotion, paired semantic characterization found
+that pre-stripping the composition skipped the factory-mode restoration in
+reset_for_ibus_soft_reset. The old observation body passes that real Disable
+schedule; A fails on the exact factory-mode assertion. Receipts:
+CROOT/release102-disable-mode-characterization/{result.json,*control.log,*candidate.log,source-restored.json}.
+Original source is restored in finally; installed A runtime was not changed.
+
+B reuses nearby discard_context_activation plus retire_context_word_locally
+ONLY in exact revocation_matches branches. It drops this already revoked local
+owner, leaving composition retirement to normal FocusOut/Disable cleanup. That
+normal reset preserves all prior mode/preedit/publication behavior and cannot
+revoke successor metadata again because the old local owner is gone. Valid
+Pending-ticket FocusOut remains unchanged, including its TD125 inert prefix.
+No new owner, flag, reset bypass, delivery route or mode-specific setter copy.
+This existing-owner reuse9/10 is preferred over a mode-only duplicate5/10 or
+wider reset bypass2/10. Both original positive tests now arrange the opposite
+factory mode and assert normal restoration as well as retained received focus,
+fresh Get/marker/UnknownStart0, invalid old token and no edit/learning.
+All test names/lanes stay unchanged. B requires fresh full gates, new CI and
+native receipts; A proof is historical, not B acceptance.

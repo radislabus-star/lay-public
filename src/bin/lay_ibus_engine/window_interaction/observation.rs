@@ -425,11 +425,11 @@ impl LayIbusEngine {
         if matches!(observed.header.member.as_str(), "FocusOut" | "FocusOutId")
             && admission.revocation_matches(&owner, &observed)
         {
-            // Ingress already revoked this exact old owner. Retire its local
-            // preedit before normal blur cleanup, preserving later received
-            // focus metadata without admitting any old-word text handoff.
+            // Ingress already revoked this exact old owner. Drop its local
+            // activation without erasing later received focus metadata. Normal
+            // lifecycle cleanup still owns preedit and factory-mode retirement.
             self.context_handoff_sealed = false;
-            self.strip_legacy_word_preedit_mirror();
+            self.discard_context_activation();
             self.retire_context_word_locally();
             return true;
         }
@@ -511,9 +511,9 @@ impl LayIbusEngine {
         }
         if observed.header.member == "Disable" && admission.revocation_matches(&owner, &observed) {
             self.context_handoff_sealed = false;
-            // The observer's exact revocation already ended the old word.
-            // A second global revoke would erase a received successor focus.
-            self.strip_legacy_word_preedit_mirror();
+            // Keep normal preedit/mode cleanup, but remove the revoked local
+            // owner so that cleanup cannot revoke successor metadata again.
+            self.discard_context_activation();
             self.retire_context_word_locally();
             return true;
         }
