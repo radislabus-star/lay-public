@@ -17,7 +17,7 @@ client effects, BLOCKED prerequisites and NOT_TESTED coverage.
 | Order | Planned release | Scope | State |
 | --- | --- | --- | --- |
 | 1 | 1.0.97 | KDE Firefox functional failures and default native observation prerequisites | RELEASED: bounded closed-erasure repair; complete source/build gates, raw native limits and updater discovery recorded |
-| 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | IN_PROGRESS: eight final97 native failures mapped before code |
+| 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | SOURCE/BUILD/NATIVE_RECORDED; publication pending. Chrome174P3F43B, Firefox121P63F36B; retained shared lifecycle and oldPASS losses in stage3 |
 | 3 | 1.0.99 | Shared long-sequence lifecycle/rapid gestures, remaining inline presentation, terminals and native coverage | QUEUED; Firefox residuals from97 retained here |
 | 4 | 1.0.100 | Build warnings: measured reachability and minimal research/runtime boundaries | QUEUED |
 | 5 | 1.0.101 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | QUEUED |
@@ -84,3 +84,17 @@ compiler artifacts and loaded bytes, unchanged native manifest and all raw
 verdicts, latency sample coverage/median/p95/max, full release gates, public
 commit/tag/URL, and actual installed updater discovery. Update this file and
 the owning document at each milestone; keep rejected experiments visible.
+
+## New installer blocker —2026-10-26
+
+Public#70 arrived during final98 native verification: obsolete apt binary
+`policykit-1` has no candidate on Ubuntu26.04. TD154 records the first failure,
+primary package evidence and minimal binary-package fix. Handle immediately
+after current98 publication, without changing98 tested source or interrupting
+its full Firefox proof. User already authorized issue fixes, releases and replies.
+
+Stage2 final proof:3515source/package,11performance,all10optimized binaries
+PASS; original frozen full native440 recorded295P66F79B including11 oldPASS
+toFAIL losses. Preparation improves6 original ChromeFAIL cases but remaining
+shared observation/dispatch failures stay OPEN in stage3; do not mark universal
+compatibility or all browser debt closed. Publication/updater still pending.

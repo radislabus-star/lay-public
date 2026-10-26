@@ -102,7 +102,8 @@ impl LayIbusEngine {
                     .managed_word_start
                     .as_ref()
                     .is_some_and(|witness| witness.identity == witness_identity)
-                && self.managed_word_start_is_current()
+                && (self.managed_word_start_is_current()
+                    || self.native_word_preparation_edit_is_current())
                 && self.input_frame_authority_matches(expected)
                 && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
         } else if let Some(revision) = expected.space_autocorrect_surrounding_revision {
@@ -131,6 +132,14 @@ impl LayIbusEngine {
         expected: &InputFrameIdentity,
     ) -> bool {
         self.space_autocorrect_identity_matches(expected)
+            || (expected.space_autocorrect_managed_start_identity.is_some()
+                && self.native_word_preparation_identity()
+                    == expected.space_autocorrect_managed_start_identity
+                && expected.display_suffix_token.is_none()
+                && expected.space_autocorrect_suffix_token.is_none()
+                && expected.space_autocorrect_surrounding_revision.is_none()
+                && self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected))
             || (expected.space_autocorrect_suffix_token.is_some()
                 && expected.space_autocorrect_surrounding_revision.is_none()
                 && expected.space_autocorrect_managed_start_identity.is_none()
@@ -373,7 +382,8 @@ impl LayIbusEngine {
         let proved_managed_external_snapshot = pair_scope
             .as_ref()
             .and_then(|scope| match &scope.provenance {
-                super::engine::SpaceBoundaryPairProvenance::Client { .. } => {
+                super::engine::SpaceBoundaryPairProvenance::Client { .. }
+                | super::engine::SpaceBoundaryPairProvenance::NativePrepared { .. } => {
                     self.space_pair_client_snapshot(scope)
                 }
                 _ => None,

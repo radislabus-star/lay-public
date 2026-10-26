@@ -271,6 +271,223 @@ fn native_document_actual_read_queues_current_space_frame_without_promoting_scop
 }
 
 #[test]
+fn native_space_preparation_continues_owned_append_without_reusing_edit_receipt() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    let mut engine = managed_native_acquisition_suffix();
+    engine.config.auto_replace = true;
+    let original_scope = engine.context_word_scope;
+    let original_token = engine.context_token.clone();
+    let before = engine.capture_space_autocorrect_frame_identity().unwrap();
+    let binding = engine
+        .client_context
+        .native_document_binding
+        .clone()
+        .unwrap();
+    assert_eq!(before.observed_token, "пров");
+    assert!(
+        engine.client_context.managed_word_start.is_some(),
+        "native={} managed={} mode={:?} snapshot={:?}",
+        engine.native_document_is_current(),
+        engine.client_context.managed_input,
+        engine.composition.word_input_mode,
+        engine.client_context.surrounding_text_snapshot,
+    );
+
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(Box::pin(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        'е',
+        18,
+    )))
+    .unwrap();
+    assert_eq!(output.committed_texts, ["е"]);
+    assert!(!engine.native_document_is_current());
+    assert_eq!(
+        engine.text_target_edit_route(5),
+        TextTargetEditRoute::Unsupported
+    );
+    assert!(
+        engine
+            .client_context
+            .surrounding_text_snapshot
+            .as_ref()
+            .is_none_or(|snapshot| snapshot.text == "пров"),
+        "a local commit must not manufacture a new actual observation"
+    );
+    let prepared = engine
+        .capture_space_autocorrect_frame_identity()
+        .unwrap_or_else(|| {
+            panic!(
+                "owned append preparation missing: chain={:?} native={:?} witness={:?} snapshot={}",
+                engine.managed_word_start_preparation_identity(),
+                engine.native_word_preparation_identity(),
+                engine.client_context.managed_word_start,
+                engine.client_context.surrounding_text_snapshot.is_some(),
+            )
+        });
+    assert_eq!(prepared.observed_token, "прове");
+    assert_ne!(
+        prepared, before,
+        "the old four-letter calculation stays stale"
+    );
+
+    // A native read can complete while Chrome still exposes the preceding
+    // owned prefix. That actual document cannot edit the new five-letter word,
+    // but must not erase its inert preparation or invent a different owner.
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new("пров".into(), 4, 4)));
+    assert!(!engine.native_word_preparation_edit_is_current());
+    assert_eq!(
+        engine.capture_space_autocorrect_frame_identity().as_ref(),
+        Some(&prepared),
+        "an earlier owned-prefix observation must not replace the new input material"
+    );
+
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new("прове".into(), 5, 5)));
+    assert_eq!(
+        engine.capture_space_autocorrect_frame_identity().as_ref(),
+        Some(&prepared),
+        "the actual matching receipt corroborates the same owned input material"
+    );
+    assert_eq!(
+        engine.text_target_edit_route(5),
+        TextTargetEditRoute::NativeRangeCommit
+    );
+    assert_eq!(engine.context_word_scope, original_scope);
+    assert_eq!(engine.context_token, original_token);
+    assert!(!engine.context_word_is_known());
+}
+
+#[test]
+fn native_space_pair_preparation_survives_prior_prefix_without_edit_permission() {
+    use crate::engine::WordInputMode;
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    let (mut engine, binding) = observed_native_engine();
+    engine.config.text_backend = "ime".into();
+    engine.layout_gesture.layout_is_ru = true;
+    engine.set_client_capabilities(41);
+    engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+    engine.committed_tail.buffer = "тест про".into();
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new("тест про".into(), 8, 8)));
+    let scope = engine.context_word_scope;
+    let token = engine.context_token.clone();
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(Box::pin(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        'в',
+        32,
+    )))
+    .unwrap();
+    let prepared = engine.capture_space_autocorrect_frame_identity().unwrap();
+    assert_eq!(
+        prepared
+            .space_boundary_pair
+            .as_ref()
+            .map(|pair| pair.text.as_str()),
+        Some("тест пров"),
+        "the complete pair is preparation data before the native receipt"
+    );
+    let pair = prepared.space_boundary_pair.as_ref().unwrap();
+    assert!(engine.space_pair_client_snapshot(pair).is_none());
+    assert!(!engine.native_word_preparation_edit_is_current());
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new("тест про".into(), 8, 8)));
+    assert_eq!(
+        engine.capture_space_autocorrect_frame_identity().as_ref(),
+        Some(&prepared)
+    );
+    assert!(engine.space_pair_client_snapshot(pair).is_none());
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new("тест пров".into(), 9, 9)));
+    assert_eq!(
+        engine.capture_space_autocorrect_frame_identity().as_ref(),
+        Some(&prepared)
+    );
+    assert!(engine.space_pair_client_snapshot(pair).is_some());
+    assert_eq!(engine.context_word_scope, scope);
+    assert_eq!(engine.context_token, token);
+    assert!(!engine.context_word_is_known());
+    assert_eq!(output.committed_texts, ["в"]);
+    assert!(output.surrounding_deletes.is_empty());
+    assert!(output.forwarded_keys.is_empty());
+}
+
+#[test]
+fn native_space_preparation_rejects_changed_owner_and_nonappend_input() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    for changed in [
+        "focus",
+        "lease",
+        "layout",
+        "token",
+        "scope",
+        "handoff",
+        "gnome",
+        "atomic",
+        "selection",
+        "snapshot",
+        "tail_aba",
+        "text",
+        "mode",
+    ] {
+        let mut engine = managed_native_acquisition_suffix();
+        let mut output = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        zbus::block_on(Box::pin(engine.commit_managed_passthrough_char(
+            &mut EngineOutput::test(&mut output),
+            'е',
+            18,
+        )))
+        .unwrap();
+        assert!(engine.native_word_preparation_identity().is_some());
+        assert!(!engine.native_word_preparation_edit_is_current());
+        match changed {
+            "focus" => engine.client_context.focus_serial += 1,
+            "lease" => engine.client_context.runtime_owner_lease_identity += 1,
+            "layout" => engine.layout_gesture.layout_generation += 1,
+            "token" => engine.context_token = None,
+            "scope" => engine.context_word_scope = None,
+            "handoff" => engine.context_handoff_sealed = true,
+            "gnome" => engine.config.layout_backend = "gnome".into(),
+            "atomic" => engine.atomic.active = true,
+            "selection" => {
+                engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new(
+                    "прове".into(),
+                    5,
+                    0,
+                )));
+            }
+            "snapshot" => engine.observe_document_snapshot(None),
+            "tail_aba" => engine.committed_tail.epoch += 2,
+            "text" => engine.committed_tail.buffer.push('и'),
+            "mode" => engine.composition.word_input_mode = None,
+            _ => unreachable!(),
+        }
+        assert!(
+            engine.native_word_preparation_identity().is_none(),
+            "{changed}"
+        );
+        assert!(
+            !engine.native_word_preparation_edit_is_current(),
+            "{changed}"
+        );
+    }
+}
+
+#[test]
 fn native_document_space_refresh_rejects_changed_source_or_authority() {
     use crate::output::{EngineOutput, TestEngineOutput};
     use crate::space_autocorrect_prefetch;

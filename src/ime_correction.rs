@@ -277,6 +277,20 @@ fn decide_active_composition_autocorrect_with_evidence(
     .expect("uncancelled IME correction computation")
 }
 
+fn record_kde_space_projection_refusal(config: &LayConfig, reason: &'static str) {
+    if config.debug_action_log
+        && config.active_layout_backend() == crate::desktop::LayoutBackend::Kde
+    {
+        crate::nanda_wave::record_ime_runtime_trace(|| {
+            serde_json::json!({
+                "kind": "ibus_space_projection_refused",
+                "reason": reason,
+            })
+            .to_string()
+        });
+    }
+}
+
 fn decide_active_composition_autocorrect_with_evidence_if_current(
     request: ActiveCompositionAutocorrectRequest<'_>,
     evidence: ActiveCompositionEvidence<'_>,
@@ -371,13 +385,26 @@ fn decide_active_composition_autocorrect_with_evidence_if_current(
                             input_gate: Some(input_gate),
                         });
                     }
+                } else {
+                    record_kde_space_projection_refusal(
+                        request.config,
+                        "pair_replacement_prefix_mismatch",
+                    );
                 }
+            } else {
+                record_kde_space_projection_refusal(request.config, "pair_not_exact");
             }
         }
         let replacement = if active_prefix.is_empty() {
             replacement.clone()
         } else {
-            let stripped = replacement.strip_prefix(&active_prefix)?;
+            let Some(stripped) = replacement.strip_prefix(&active_prefix) else {
+                record_kde_space_projection_refusal(
+                    request.config,
+                    "replacement_changes_uneditable_prefix",
+                );
+                return None;
+            };
             stripped.to_string()
         };
         let (action_from_text, plan) = if let Some(projection) =

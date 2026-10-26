@@ -1,4 +1,338 @@
-## Current milestone — 2026-10-25 23:33:52 UTC
+## Current milestone — 2026-10-26T08:29:51.679402+00:00
+
+FINAL C FULL NATIVE COMPLETE: Chrome174P3F43B,Firefox121P63F36B,
+220each/440total,295P66F79B. Same IME744266/hash7b6f0701..., systemIBus
+root3168326 unchanged; config restored both runs. Full source3515 andperf11,
+10optimized artifacts allPASS. Exact closure14af075c... matches local1286files.
+Native evidence includes all per-row statuses, comparison to97, eleven oldPASS
+losses toFAIL and one toBLOCKED. No all-client/regression-free acceptance.
+Chrome lat365samples/110rows median46.64,p9562.90; FF240/82 median163.28,
+p95233.15. All raw results downloaded inCACHE98, remote CROOT final-native dirs.
+
+98publication PENDING, files/evidence/release notes now ready for commit/push
+and public mainCI. Public main currentlyd35bee53; tag98absent. Push normal
+fast-forward only. After successfulCI tag/release98, actually run installed
+local+remote lay-update --check, record result, do not manually install local.
+Continue immediately TD154 public#70 apt obsoletepolicykit-1 installer blocker,
+then shared native lifecycle/presentation stage3 and remaining100-102 debt.
+No agents/Harness2. Do not stop with a status report. Do not rerun completed
+source/native checks merely for documentation. No remaining heavy job.
+
+## Previous milestone — 2026-10-26T08:22:00.986053+00:00
+
+CONTINUE six authorized sequential releases:97published,98notpublished,
+99-102queued. No agents/Harness2/manual local GNOME install/restart.
+FINAL C all gates DONE:3515/3515 correctness+package,11/11performance,
+strict lints, both MSRV1.88 routes, all10 optimized binaries. Exact restored
+TD113 gate remains HEAD byte-identical; no fixture/guard/baseline changes.
+Closure14af075c4ee05b8041a9ba794fe98d4cf862eeea628d1d17ae9c73406b6ca655;
+IME7b6f07010ef58d3c98c80b121b353de108e3a5d62084867e4e9d49dbcd00790b.
+Local1286file/mode closure equals remote final compiler source. Final graphs
+and compiler-discovered manifest synced already. Native installed finalC:
+IME744266/daemon744379/tray744386, original IBus root3168326 unchanged.
+Gate receipt CROOT/release98-full-gates-r3/result.json; installation
+CROOT/release98-final-deployment/result.json. CACHE98 retains local copies.
+
+FULL Chrome r18 COMPLETE:174PASS/3FAIL/43BLOCKED/0NOT_TESTED of220.
+Compared matched97:168P->P,6F->P,2F->F,42B->B,1P->F,1P->B.
+LostPASS normal/plain/moved-boundary; P->B private/email/rapid-five
+(native/DOM disagreement). Current FAIL textarea/rich/plain moved-boundary.
+Six gains include all3 original wrong-layout Space, text/tel pair and iframe
+pair. This is improvement with retained losses, NOT all-Chrome acceptance.
+Latency365samples/110of220rows:median46.6446ms,p95nearest-rank62.8967ms,
+max84.1229ms. Global trace incomplete(rotation), all3failed-row traces complete.
+Source tests do not certify clients. Specific plain failure proves actual
+fresh native snapshot10chars while prepared pair11chars; guard safely refuses.
+Textarea source_read native_document_changed/stale; rich terminal verifier
+prefix refusal. No weakening or unproved NBSP normalization implemented.
+
+FULL Firefox now RUNNING unified exec55390, CROOT/release98-final-native-firefox,
+same finalC PID/hash, unchanged frozen actor17dc93b5..., full220, owned-process
+GNOME_ACCESSIBILITY=1 only (XDG_CURRENT_DESKTOP=KDE). Latest95rows53P21F21B.
+Wait actual result, download raw220 and compute matching transitions from97.
+Do not combine currentChrome and historicalFirefox as same-version totals.
+Then owning docs/evidence/release notes/publication+CI+actual updater discovery;
+retain every remaining failure for next shared lifecycle stage. Do not stop.
+Sound only final actual task completion. Remote disk413GiB free, no deletion.
+
+## Previous milestone — 2026-10-26T07:53:03.465519+00:00
+
+CONTINUE six authorized sequential releases without final stop.97published;
+98in progress,99-102queued. No agents/Harness2/local GNOME manual install or
+restart. Latest user said continue. Current KDE loaded bytes still B98,
+IME3810595/daemon3810630/tray3810637, SHA0b63f8d9080d5b1ea1e2050f140c1838a8c580b0de3e1aca5e23b842442f3de3,
+sourceB15862371; native smoke17PASS/1FAIL/2BLOCKED only. Both layout Space and
+plain-text pair PASS; iframe pair NotReady persists. Full98 grid not yet run.
+Actual native retained prefix4chars/current5 with edit_authorityfalse is proven.
+Latest full97 FF110P72F38B/Chrome170P8F42B of220each remains unchanged.
+
+CURRENT SOURCE C = B functional KDE preparation plus REMOVAL of temporary
+text-edit-gate diagnostics. Exact restored src/text_edit/gate.rs HEADSHA6ed5eda0f5ad0a25c61a2c81a9cf7b33711db127fc9e217edf56c934a2fc286f;
+src/text_edit.rs also exactlyHEAD. The10-reason Result enum/API was diagnostic
+only and is gone; do not reintroduce it or alter byte-pin tests/baselines.
+Small KDE-only prefix-refusal trace in src/ime_correction.rs remains. Functional
+KDE witness/NativePrepared pair code unchanged; no final C native acceptance yet.
+Reason: full-gates-r2 all source had exactly one contract failure: TD113 frozen
+gate byte pin. Other source results3514 passed/one pin (3515selected); immutable
+fixture/decision chain unchanged. R1 earlierfailed missing new architecture
+record; added docs/architecture/decisions/2026-10-26-kde-native-owned-space-preparation.json
+without modifying canon/guards. Historical failed attempts retained.
+
+FULL FINAL C GATE R3 RUNNING, unified exec20787, CROOT/release98-full-gates-r3.
+Remote workspace received exactly3 C files (gate.rs,text_edit.rs,ime_correction.rs),
+then frozen full gate. Preflight TD1137/7PASS,fmt,graph,canon,Python,public,
+installer,Node,audit50,lints,both MSRV PASS. All-source3515 now running with
+same3new identities/no old changes,0known failures. After source: performance11,
+canonical release build + compiler-artifact all10 optimized binaries. Wait for
+actual final result, do not claim completed or push98 prematurely.
+
+PREPARED CROOT/install-final98.py: expects actual FULL R3 proof
+RELEASE_GATES_VERIFIED,3515source/0failures and every required gatePASS. Binds
+previousB deployment exactPID/hash, atomic file backups, terminates ONLY child
+IME in protected oldIBusroot3168326, one factory auto activation, own daemon/tray
+restart; never stop root IBus/KDE/other windows. Output release98-final-deployment.
+No installation yet. CROOT/run-native-final98.py binds fullR3 compiler artifact
+hash + FINAL deploymentPID, checks runtime BEFORE debug config mutation, keeps
+frozen r18actor SHA17dc93b5... unchanged. After successful final install run
+--browser chrome --output CROOT/release98-final-native-chrome WITHOUT --smoke
+for full220. This wrapper corrects only preflight ordering, no expected outcomes
+or cadence changes. Keep FAIL/BLOCKED, oldPASS losses and latency coverage;
+resolve remaining mechanisms from actual full per-row traces. Firefox as
+applicable. Only then publish98/CI/updater, continue99-102. No agents/Harness2.
+
+CACHE98=/home/ubu/.cache/lay/development/release-1.0.98-20261025; CROOT as below.
+Local graph/manifest need FINAL R3 sync after gate; don't use local graphifier
+cached wrong namespace or weaken type guards. Source docs/development/six-release-debt-plan-2026-10-25.md
+still main queue. docs/release-1.0.98.md is explicitly DRAFT with only Bpartial
+facts; must rewrite to actual final proof before publication. Update owner doc,
+98-worklog, actual artifact/source hashes, full stats+speed, public updater.
+No new empty-boundary/Space-NBSP hypotheses implemented. Avoid more speculative
+code; finish actual C gates + full native evidence first. Sound at real final
+turn completion only. Disk413GiB free, no deletion needed. Issues0/openPRs5 at
+latestread; no new issue messages/merges. Preserve user/model/learning data.
+
+## Previous milestone — 2026-10-26T07:33:08.619894+00:00
+
+DO NOT END TURN: six authorized releases,97published;98in progress,99-102queued.
+No agents/Harness2/manual local GNOME install or restart. Latest user steering
+is continue. Remote private KDE currently SOURCE B98: IME3810595,daemon3810630,
+tray3810637; all10files/loaded hashes verified. Bclosure15862371268afd7c414c5e565ff0afb999420910621bb4fe130ce50bbb14e14b,
+IME0b63f8d9080d5b1ea1e2050f140c1838a8c580b0de3e1aca5e23b842442f3de3.
+RootIBus3168326/config/models/KDE and localGNOME unchanged. B build/deploy proofs
+CROOT/release98-owned-prefix-b-build/result.json and b-deployment/result.json.
+Source1089/1089PASS run-gsSyqq. Latest frozen r18 smoke20 B17P1F2B: both
+wrong-layout Space cases PASS; ordinary text moved pair PASS; iframe-rich pair
+FAIL prefetch_not_ready, with background candidates lacking editable pair scope.
+Earlier15P3F2B and A16P2F2B retained; no robust full-grid improvement claim.
+Actual native logs now prove earlier-prefix retention: observed4/prepared5,
+edit_authorityfalse. Bsource uses NativePrepared pair DATA proposal, fresh full
+actual native snapshot still needed at dispatch, UnknownStart/GNOME guards
+preserved. Latest complete grids STILL97 FF110P72F38B,Chrome170P8F42B/220each.
+
+REQUIRED FULL RELEASE GATES RUNNING, local exec23918, CROOT/release98-full-gates-r2.
+First full attempt stopped at canon (missing new protected-path decision);
+source/test/guard not weakened. Added docs/architecture/decisions/2026-10-26-kde-native-owned-space-preparation.json
+with exact source/native limits. R2 retains previous baseline manifest from
+r1/manifest-before.json, asserts exactly3 added test identities/no old changes;
+0knownfailures preserved. R2 canon, Python, public issues, installer, Node,
+audit50 PASS so far; Rust lints/MSRV/full3515correctness+package,11perf,
+all10optimized still need final actual result. Do not publish until required
+gates and fixed full native check. Full gate may change graph/manifest hashes:
+compare ALL final compiler-artifact hashes to B installed ones; if same, record
+parity (no reinstall); if different, install exact verified final artifacts
+in private KDE with same child-only/root-preserving installer. Then unchanged
+r18 Chrome FULL220 (wrapper B binds actual Bhash/PID; adapt receipts if replaced).
+Keep FAIL/BLOCKED/oldPASSlosses and speed sample coverage. No actor edits or
+transport cadence changes. Full Firefox/other KDE coverage as applicable.
+
+Current source/native failure diagnosis remains open, not a completed98 fix:
+iframe final Space missing ready pair. Source inspection found last_tail_token
+returns previous word even when tail ends withSpace, so native managed-start
+constructor cannot anchor the empty post-Space word using that closed token;
+first empty-field witness can also be discarded by exact-refresh-only zero-char
+rebind. These are INSPECTION hypotheses, no new test/implementation yet; do not
+claim actual native cause or repeat rejected global Space/NBSP-only fixes.
+Avoid speculative changes: finish B full gates/full native evidence first.
+Next source probes must keep data preparation vs fresh edit authority distinct,
+use existing witness/owner and KDE-only entry, never relax protected edit paths.
+
+CACHE98=/home/ubu/.cache/lay/development/release-1.0.98-20261025.
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+All current B evidence copied CACHE98/owned-prefix-b-*.json; canonical graph
+synced before full gates, will need final sync. New required full script
+CROOT/release98-gates-r2.py. Remaining6plan version scopes unchanged. Full
+publication+CI+actual installed updater --check after98, then99-102. Sound only
+when entire active turn really done; user requested no stops/questions.
+
+## Previous milestone — 2026-10-26T02:11:42.680587+00:00
+
+Active release98 source candidate B, NO final stop, five releases still remain
+of user's six-release sequence (97 already published). No agents/Harness2,
+manual local GNOME install/restart. Private remote KDE currently candidate A:
+IME3732597/daem3732713/tray3732722; closure9154c3bd, IMEa760b569...; all10 installed
+hashes, config/models/KDE/IBusroot3168326 preserved. A frozen r18 smoke20 result
+16PASS/2FAIL/2BLOCKED, mixed: text Space FAIL, text pair PASS, iframe Space PASS,
+iframe pair FAIL. Do not claim robust improvement from prior15P3F2B. Actual
+full6char computation finishes935us, then a native read makes manual/exact
+source false; later fresh read changes material identity. Actual earlier-prefix
+shape not logged there, don't claim proven exact native shape. Full97 grids
+still FF110P72F38B,Chrome170P8F42B/220each; no full98 grid yet.
+
+Source B extends only read-only preparation: strict earlier own-prefix receipts
+can retain existing ManagedWordStartWitness, never edit authority. It records
+ibus_native_preparation_progress with character counts when actually observed.
+No new owner/queue/cache/timer/delivery/read; all GNOME exact-refresh checks stay.
+Pair data gets explicit NativePrepared provenance in engine/types.rs; common
+capture uses existing snapshot_proves, native adapter returns only fresh ACTUAL
+full matching snapshot at dispatch. DecisionCore/verifier/attestation unchanged.
+Files common observation/preedit/committed_tail/types, KDE native_document +new
+preparation.rs; no daemon change. Missing-prefix retention RED run-CtFKsv1FAIL;
+missing pair proposal RED run-WY4Rsn1FAIL. Full B1089 source run-gsSyqq is running,
+exec6186;649aggregatePASS already,443discovered isolated/performance remainder.
+Prior A source1088/1088 PASS; previous c20 flake0vs1 retained, no timeout change.
+
+Prepared private B scripts in CACHE98: build-owned-prefix-b98.py asserts final
+run-gsSyqq PASS, canonical remote graph + functional parity + all10 optimized
+artifacts -> CROOT/release98-owned-prefix-b-build. Installer binds A exact prior
+PID/hash, atomically replaces activation and only terminates child IME, preserves
+root IBus and lets ONE original factory activate, restarts own daemon/tray.
+Output release98-owned-prefix-b-deployment; native B wrapper binds those proofs.
+Do not run build before full source result or use A loaded bytes as B evidence.
+After B acceptance run full release gates (CROOT/release97-gates.py is existing
+72-line full script to adapt), full unchanged r18 Chrome and applicable Firefox,
+publish98/update check, then99-102. All experiments in owner doc/98-worklog.
+
+## Previous milestone — 2026-10-26T01:53:10.140693+00:00
+
+Continue six authorized sequential releases without a final stop; first97 is
+published, five remain. Active98 only. No agents/Harness2 or manual local
+GNOME install/restart. Live private KDE diagnostic98 is IME3617078,
+daemon3617128,tray3617134 (all10 loaded artifact hashes verified), systemIBus
+root3168326 unchanged. Build receipt CROOT/release98-diagnostic-a3-build and
+deploy release98-diagnostic-b-deployment. That loaded version has diagnostics,
+not the functional preparation candidate now in source.
+
+Frozen r18 Chrome diagnostic smoke20 gave15PASS/3FAIL/2BLOCKED. All four
+functional per-row traces complete; global journal rotated, completenessfalse
+retained. Text layout row7 and text pair final Space row9 stale_lease;
+iframe-rich layout row17 stale_lease; iframe pair row19 PASS. Background
+replacement_changes_uneditable_prefix logs are NOT the text failure diagnosis.
+No full98 native grid yet; latest complete97 remains FF110P72F38B and
+Chrome170P8F42B of220each. No all-client/regression-free claim.
+
+Functional candidate reuses ManagedWordStartWitness solely for native data
+preparation after an actual word observation plus owned local append. New
+KDE native_document/preparation.rs validates the old binding owner without
+promoting stale epoch into edit authority. Old is_current retains its exact
+epoch requirement. Computation and dispatch checks are distinct; dispatch
+requires fresh actual native document and complete snapshot agreement.
+GNOME exact-refresh checks unchanged; UnknownStart/token/scope stay unchanged.
+No new queue/cache/owner/delivery. Common files preedit.rs,committed_tail.rs,
+observation.rs connect the existing frame/worker contract; no daemon changes.
+
+RED run-X2wnvZ1FAIL. Candidate v1 run-bCxFbD1085/1088PASS: new2FAIL plus c20
+literal proposal0vs1 (retained, no timeout changes). Exact run-0MDMHg showed
+local chain Some(6), but actual snapshot intentionally absent after ownCommit.
+Reject requiring that old snapshot for inert data. Actual readfailure via
+observe_document_snapshot(None) still revokes witness. Exact v3 run-zHY98C1PASS
+including no edit route before fresh receipt, identical preparation afterwards.
+Current full1088 v4 run-H8NVzr PASS1088/1088,0FAIL including c20 unchanged.
+Owned-prefix all-ten-bin build now running, local unified exec43652. Source edits/uncommitted98 version,
+new2 tests with13 invalidations. Use final actual RESULT before any build.
+
+Private build RUNNING; installer/native scripts not executed. CACHE98/build-owned-prefix98.py
+assert run-H8NVzr PASS then canonical remote graph/update, source parity and all
+10 optimized artifacts -> CROOT/release98-owned-prefix-a-build. Installer uses
+prior diagnostic deployment's exact PID/hash and preserves protected IBusroot;
+output release98-owned-prefix-a-deployment. Native wrapper run-native-owned-prefix98.py
+binds those new receipts, frozen r18 SHA17dc93b5..., no actor changes. Run smoke
+then fix next proven mechanism; all gates and full native required before98
+publication/updater, then99-102. CACHE98=/home/ubu/.cache/lay/development/release-1.0.98-20261025.
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+Remote disk413GiB free, no cleanup needed. User issues live0; PRs68/67/66/65/64
+remain open; no blind merge. Owning doc and98-worklog retain experiments.
+
+## Previous milestone — 2026-10-26T01:21:20.748054+00:00
+
+Stage1 RELEASED97; all publication/CI/updater facts below remain current.
+Active stage2 reserved98. DO NOT END TURN; five releases remain, user requested
+six sequential releases without questions/stops. No agents/Harness2/local
+GNOME manual install. Current private runtime STILL final97 on old systemIBus:
+IME3168368, daemon3168498, root3168326; one auto factory in root unit
+lay-release97-restored-system-ibus.service. No98 installed yet.
+
+Local product changes (UNCOMMITTED): version98 Cargo/lock/extension metadata
+(date2026-10-26)/VERSIONING; diagnostic-only changes to src/text_edit/gate.rs,
+src/text_edit.rs,src/ime_correction.rs. Existing pair guard exact order/result
+is unchanged. New Result observation exposes static refusal reason; existing
+Option API delegates it. IME emits ibus_space_projection_refused only when
+config.debug_action_log and resolvedKDE. No correction/eligibility/route fix
+has been applied yet, do not claim any of eight current Chrome failures fixed.
+
+Actual source1086/1086 PASS at remote run-m2YBqs/RESULT.json, exact tested
+archive0ad6226967201edbd5b9bc6aaf3dceeaaddf8526caa3125342710d6fe74303fd.
+The proposed native-prefix test was earlier actually1/1FAIL at missing
+preparation after own append; it is ARCHIVED outside Rust in CACHE98/probes,
+not ignored/enrolled/baselined, because native read failure must still clear
+edit permission. Do not blindly enable ManagedWordStart for native data:
+inert preparation and fresh NativeRangeCommit authority must stay separate.
+No runtime implementation of that proposal was tried/reverted.
+
+New facts8 failures:2stale-prefix (lastwork4chars, current6),1not_ready,
+4ready full_no_apply/verifier,1tel noSpaceLookup not yet explained. Actual
+result remains original phrase for all8. Cached exact trace filenames in
+CACHE98/baseline-native-traces, first text layout row7, pair row9. Do NOT guess
+row ids. Stable iframe-rich pair fails3/3 in transport smoke ABA. NODELAY is
+NOT a fix: default15P3F2B, NODELAY16P2F2B, default16P2F2B; text layout
+PASS->FAIL->PASS. Stop transport retries/IBus upgrades. Original/full matrices
+retained. Built-in model-status CLI says canonicalL2 ready1875032forms,
+93672lemmas,3255785bindings,140556462-byte compact_v2_mmap_view package at
+actual LAY_L2_MODEL_DIR=/home/e/.cache/lay/td121-authority-deps.d9pohv/l2.
+Discovery DOES honor LAY_L2_MODEL_DIR; warm_up_l2_for_ime already warms
+standalone package. Do not invent missing-model/discovery/warmup repairs.
+Separate --canonical-l1-l2-report --probe returned ENOENT, not yet explained
+(possible relative data dependency; no conclusion). nanda_trace_text config
+is unused; do not enable it expecting candidate logs. Model tools are already
+among all ten installed binaries; use existing read-only flags before new tools.
+
+Local canonical graph update got WATCH for3unchanged daemon sinks despite
+real AuthorizedEdit parameters. Accepted graph IDs relative src_...; new
+cached graph IDs home_e_projects_lay_development_runner_workspace_... .
+Private detailed report CACHE98/diagnostic-graph-gate.json. NO guard edited,
+NO canonical receipt forged; old receipt kept when update refused. Do NOT
+change daemon source or weaken guard to fix graph. Current plan regenerates
+on the previously verified remote graphify tool instead. Local graph files
+currently dirty from failed refresh; sync verified remote graph back if PASS,
+preserve .graphify_root and local docs/source.
+
+RUNNING exec16553: guarded remote build-private-diagnostic98.py, output
+CROOT/release98-diagnostic-a3-build. This verifies every source archive file
+hash+execute mode against tested run-m2YBqs, runs canonical graph update,
+asserts all Rust/Cargo/extension sources unchanged by graph-only update,
+then builds/retains all10 optimized binaries with compiler-artifact paths and
+SHA and98 versions. Two earlier OPERATOR preflights (a,a2) failed before any
+build/install: full dev result has archive_sha256, NOT source; remote Python
+3.10 has no hashlib.file_digest. Corrected code now validates archive members
+with hashlib.sha256(read), no preflight bypass. Output so far target6.26GiB
+of12GiB budget. If graph fails, inspect precise reason and tool/cache fidelity;
+no install before graph PASS. No new diagnostic installer exists yet.
+
+Next: finish graph/build; reuse guarded atomic backup/install pattern on
+remote all10+activation and restart daemon/tray. Current IME is child of
+protected IBus ROOT unit: DO NOT stop that unit to replace IME. Atomic replace
+activation, terminate ONLY verified child3168368 and let original component
+activate ONE new factory (no explicit+automatic duplicates), verify GUI owner,
+loaded hashes and98 versions. Keep root/KDE/otherwindows/config/models.
+Old fullinstall script assumes dead standalone engine unit, so adapt it safely.
+Write deployment proof for freshPID; wrapper must bind new build hash andnewPID,
+not stale97 final2959534. Then unchanged frozenr18 smoke20 (text+iframe-rich)
+under debug config, restore bytes/config/layout; read new specific refusal.
+This is diagnostic, not accepted release98 or a functional fix. After fix/full
+release gates, publish98/update check, then stages3-6. Worklog/evidence current:
+tech_debt/evidence/release-1.0.98-worklog.json. Private CACHE98 is
+/home/ubu/.cache/lay/development/release-1.0.98-20261025; CROOT unchanged.
+
+## Previous milestone — 2026-10-25 23:33:52 UTC
 
 FIRST OF SIX RELEASES PUBLISHED: stablev1.0.97 at2026-10-25T23:33:05Z,
 https://github.com/radislabus-star/lay-public/releases/tag/v1.0.97.

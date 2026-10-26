@@ -1270,3 +1270,99 @@ source3236fe6c. Installed updater checks: local96 offers97; remote97 current.
 No manual local install. Raw per-case/native/update records are in
 tech_debt/evidence/release-1.0.97-{native,verification,updater}.json. Remaining
 Chrome Space failures and shared lifecycle/rapid debt stay open in stages2/3.
+
+### Stage2 diagnostic facts and unchanged pair guards — 2026-10-26
+
+Final97 Chrome eight FAIL map to two stale-prefix leases, one unready pair,
+four terminal verifier refusals, and one phone-field Space without an
+admission lookup. Trace filenames come from the actual case JSON, not row
+number assumptions. First stale text case: row-7, latest work epoch195 for
+four local letters versus Space epoch197 for six; the old work must stay stale.
+The stable iframe-rich pair refusal repeats in all three transport controls.
+
+A proposed native-word continuation source test actually ran one test and
+failed at the missing new-word preparation frame after an owned append. It
+also requires Unsupported edit route until a fresh actual native snapshot;
+no synthetic snapshot, scope promotion or weaker permission is permitted.
+This is a desired preparation extension, not a shipped fix. Its whole source
+and exact failed receipt are retained at the private release98/probes and
+red-owned-native-prefix-formatted directories (remote run-X2wnvZ). The test
+was not enrolled in the canonical manifest and is now archived outside Rust
+while the stable verifier refusal is diagnosed. No ignored test or failure
+baseline was added. The initial unformatted preflight did not run the test
+and is retained separately; it is not the semantic RED receipt.
+
+Frozen r18 smoke20, same97 bytes, A/B/A TCP_NODELAY diagnostic:
+15P3F2B (default),16P2F2B (NODELAY),16P2F2B (default). Text layout changed
+PASS->FAIL->PASS; iframe-rich pair FAIL in all three. Transport-only repair
+is not established and is not promoted. All cadence, target expectations,
+actor hash and raw FAIL remain unchanged. Receipt remote
+release98-space-transport-diagnostic/result.json. No more transport retries
+are justified by these results alone.
+
+Existing installed model-status tool, same IME model environment, reads the
+canonical package successfully:1875032 forms,93672 lemmas,3255785 bindings,
+compact_v2_mmap_view. Read-only receipt release98-model-readout/result.json.
+The separate L1/L2 report returned ENOENT, which does not establish missing
+L2 or a missing L1 service; its exact dependency still needs identification.
+No training, learned-data reset, package replacement or fitting occurred.
+
+Private98 diagnosis now preserves the pair planner's exact predicate order
+and Option API, with a Result observation carrying only a closed refusal
+reason. The IME records that reason only for debug-enabled KDE and records
+an attempted replacement of uneditable context separately. This does not
+change eligibility, target competition, verifier, source/edit owners, output
+routes or GNOME behavior. Files:src/text_edit/gate.rs, src/text_edit.rs,
+src/ime_correction.rs. Source/native verification and installation of these
+diagnostic bytes are pending; they do not fix any of the eight failures yet.
+
+
+### Stage98 owned-native preparation experiment — 2026-10-26T01:43:34.969184+00:00
+
+Diagnostic98 is loaded only in the private remote KDE session: IME3617078, daemon3617128, tray3617134; source closure1852f10e, IME SHAa4a9005af5a7b24dd1e177091df4b1a614831b7b228c75098c5a008d4f2025bd. All-ten-bin optimized build and actual loaded hashes are verified. Frozen r18 Chrome smoke20:15PASS/3FAIL/2BLOCKED; global trace rotated, but each relevant row has its own complete trace. Text Space and its final pair Space reject stale calculation; iframe pair passed despite background prefix-refusal logs. Those logs are not the text case diagnosis. Raw receipt: CROOT/release98-diagnostic-a-native/result.json and chrome/row-7,9,17,19-native-trace.jsonl.
+
+Next candidate reuses ManagedWordStartWitness as inert provenance after an actual native word observation plus only local append commits. KDE validates the existing observation owner; computation can advance to the new exact token without changing UnknownStart, snapshot, input route or edit permission. Actual dispatch still requires fresh native range, actual full-snapshot agreement, DecisionCore/verifier and the old executor. GNOME exact-refresh gates are preserved. No new owner, cache, queue or delivery route. RED probe was1executed/1FAIL in run-X2wnvZ, now enrolled with13 invalidation shapes. Runtime candidate/source test outcomes pending; no Chrome fix claimed. Alternatives: extra synchronous reads6/10 (key-path latency), broad native edit-witness relaxation2/10 (authority conflation), retained data-only preparation9/10 (chosen).
+
+Stage98 source experiment follow-up 2026-10-26T01:50:11.656112+00:00: run-bCxFbD1085/1088PASS (new2FAIL plus c20 literal-proposal failure0vs1 retained). Exact run-0MDMHg established the owned-chain witness survives, but CommitText intentionally clears the actual snapshot. Requiring that old snapshot for inert work was rejected. Actual observe_document_snapshot(None) still invalidates the witness; data-only preparation now survives only the normal local snapshot invalidation. Exact run-zHY98C1/1PASS including no edit route before a new actual snapshot, same prepared identity after matching snapshot, unchanged UnknownStart/token/scope. Full1088 check running; c20 is not dismissed or given a higher budget. No candidate native install yet.
+
+Stage98 full source run-H8NVzr1088/1088PASS,0FAIL, existing c20 passes unchanged; previous literal failure is retained above, no timeout/fixture relaxation. Frozen tested archive8b3c7e392cbf0c3267c4b75fae73baa00a0667f904a353953286413ec2837540. Owned-prefix all-ten-bin build and canonical remote graph are running; no functional candidate loaded or Chrome acceptance yet.
+
+Stage98 native candidate A 2026-10-26T02:09:21.662087+00:00: all10 optimized artifacts, canonical architecture PASS; closure9154c3bd, IMEa760b569868de56dece3966cf70744b4b03d9bf0dacf64b3072e8fe37c81ac01 loaded PID3732597, daemon3732713/tray3732722. IBusroot/desktop/config/models preserved,7 protected processes unchanged. Frozen r18 Chrome smoke20:16PASS/2FAIL/2BLOCKED; text pair and iframe layout PASS, text layout and iframe pair FAIL. This is mixed acceptance, not a robust improvement claim: prior diagnostic15PASS/3FAIL/2BLOCKED also had iframe pair PASS. Per-case traces show current-token116 preparation completes in935us, then actual read makes exact_managed/manualword false and Space rejects stale identity. Actual shorter-prefix shape was not logged at that boundary; do not claim it measured. Source reproduction of an earlier owned-prefix receipt now actually1/1FAIL (run-CtFKsv), so a data-only retention candidate is added; native trace will explicitly report whether it occurs. New pair-proposal test actually1/1FAIL (run-WY4Rsn) at missing two-word scope, before implementation.
+
+Candidate B uses one existing ManagedWordStartWitness/input frame and worker. A strict earlier native prefix may retain inert preparation (exact original prefix/suffix, >=anchored characters, local append epoch and same owner), never fresh edit authority. Pair provenance gets NativePrepared{witness_identity,cursor}, distinct from Client; fresh actual full-snapshot equality is mandatory when dispatch requests its client snapshot. Existing pair shape/attestation/DecisionCore/verifier and native executor are unchanged. No rule/canon bypass, owner, queue, timer, extra read or GNOME behavior. Full1089 source check running before B build; no B native receipt yet. Raw CROOT/release98-owned-prefix-a-{build,deployment,native}/result.json, local copies CACHE98/owned-prefix-a-*.json.
+
+2026-10-26T07:37:39.484814+00:00 required full98 gates: first attempt stopped on missing protected-path decision, preserved at CROOT/release98-full-gates. New explicit decision2026-10-26-kde-native-owned-space-preparation.json was added without changing canon/guards. R2 runs from exactly verified original manifest baseline; adds only3 source identities, retains all prior tests/lanes/known-failure list. Graph,canon,Python,public,installer,Node,audit50,strict Rust lints,both MSRV configurations PASS. All-Lay source running: manifest3479correctness+36package,41historical ignored,11perf; daemon328PASS/debug12PASS so far. Full source/build/native/publication still pending; partial source is not client acceptance.
+
+Final C full release verification 2026-10-26T08:12:14.231225+00:00: R3 all3515correctness/package and11performance PASS, strict lints/bothMSRV/Python/Node/audit/canon PASS, all10optimized artifacts verified. Protected gate restored exactly6ed5eda0..., no frozen guard/fixture or baseline changed. Closure14af075c4ee05b8041a9ba794fe98d4cf862eeea628d1d17ae9c73406b6ca655, IME7b6f07010ef58d3c98c80b121b353de108e3a5d62084867e4e9d49dbcd00790b actually loadedPID744266; daemon744379,tray744386. All10installed files match, rootIBus/KDE/config/models/7protectedprocesses unchanged. Full final Chrome r18 running; Firefox/current C full native not established, no publication yet. Receipt tech_debt/evidence/release-1.0.98-verification.json.
+
+## Final1.0.98 native evidence — 2026-10-26T08:28:39.495314+00:00
+
+Tested: unchanged r18 full220 cases per browser, original system IBus1.5.26,
+remote private KDE X11/RFB session. Final compiler/loaded IME
+7b6f07010ef58d3c98c80b121b353de108e3a5d62084867e4e9d49dbcd00790b,
+PID744266 unchanged throughout. Config restored after each browser; original
+IBus root/KDE and local GNOME runtime not restarted. Full source3515/3515 and
+performance11/11 PASS, all10 optimized compiler artifacts verified.
+
+Measured: Chrome174PASS/3FAIL/43BLOCKED, Firefox121PASS/63FAIL/36BLOCKED;
+440 cases,295P66F79B,0NOT_TESTED within this manifest. Exact comparison to97:
+Chrome6F->P,1P->F,1P->B; Firefox20F->P,1B->P,10P->F,2B->F,1F->B.
+Unchanged transitions and all individual identities are preserved in
+`tech_debt/evidence/release-1.0.98-native.json`. No regression-free claim.
+Chrome remaining pair failures: textarea source_read native_document_changed
+then stale lease; rich verifier rejects uneditable prefix; plain actual native
+snapshot10chars while the prepared pair11chars, then stale_surrounding_text.
+The last is an explicit safe refusal, not permission to fabricate a receipt.
+Shared post-CommitText observation/dispatch lifecycle stays OPEN for stage3.
+
+Latency from final RFB release to observed successful target: Chrome365samples
+in110/220rows,median46.6446ms,p95nearest-rank62.8967ms,max84.1229ms; Firefox
+240samples in82/220rows,median163.2846ms,p95233.1523ms,max295.3155ms.
+Coverage differs from97; aggregate speedup is not established.
+
+Not tested: final98 native GNOME/Wayland/hardware evdev/other KDE apps. Global
+trace rotation made global traces incomplete; per-row completeness is recorded
+separately. Exact receipts CROOT/release98-final-native-{chrome,firefox}/result.json
+and same subdirectories' browser/result.json. Runtime authority changed:NO.
+Verdict: source/build PASS and bounded preparation improvement with explicitly
+retained native FAIL/BLOCKED and oldPASS losses. Full compatibility unaccepted.

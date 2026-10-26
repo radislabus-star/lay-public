@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3476,
+    "correctness": 3479,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 472,
-    "target": 3092
+    "target": 3095
   },
   "package_fixtures": [
     {
@@ -24161,6 +24161,27 @@
       "kind": "test",
       "lane": "correctness",
       "name": "window_interaction::native_document::tests::native_selection_notification_registration_supports_atspi_2_44",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::native_space_pair_preparation_survives_prior_prefix_without_edit_permission",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::native_space_preparation_continues_owned_append_without_reusing_edit_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::native_space_preparation_rejects_changed_owner_and_nonappend_input",
       "target": "bin:lay-ibus-engine"
     },
     {

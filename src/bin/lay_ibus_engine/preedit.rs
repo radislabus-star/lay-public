@@ -1252,6 +1252,11 @@ impl LayIbusEngine {
         if let Some(identity) = self.capture_input_frame_identity() {
             return Some(identity);
         }
+        if let Some(witness_identity) = self.native_word_preparation_identity() {
+            let mut identity = self.capture_word_frame_identity()?;
+            identity.space_autocorrect_managed_start_identity = Some(witness_identity);
+            return Some(identity);
+        }
         let exact_native_suffix =
             self.uses_native_terminal_input() && self.context_observed_suffix_is_exact_current();
         let exact_marked_suffix = self.exact_marked_surrounding_suffix_is_current();

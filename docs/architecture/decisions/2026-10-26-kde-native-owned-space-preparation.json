@@ -1,0 +1,34 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-26-kde-native-owned-space-preparation",
+  "date": "2026-10-26",
+  "status": "SOURCE_BUILD_PASS_SCOPED_NATIVE_IMPROVEMENT_SHARED_LIFECYCLE_OPEN",
+  "owning_document": "docs/architecture/desktop-presentation-isolation-2026-10-23.md",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/engine/types.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs"
+  ],
+  "decision": "Reuse the existing managed-word-start witness and canonical Space worker for inert KDE native input preparation after an actual bounded word plus successful local append commits. Earlier exact prefixes may retain preparation only. NativePrepared pair provenance is a proposal: dispatch must obtain the fresh actual matching full native snapshot, existing admission, DecisionCore/verifier and AuthorizedEdit executor. Preserve GNOME exact-refresh requirements and UnknownStart. No new input owner, cache, queue, timeout, read, or delivery route.",
+  "reason": "Frozen Chrome native traces show a prepared current-token calculation becoming stale after native observations; exact source reproductions separately prove lost append preparation, earlier-prefix loss, and absent two-word preparation scope. Computing data must remain separate from permission to edit client text.",
+  "verification": "Exact RED run-X2wnvZ, run-CtFKsv and run-WY4Rsn each executed1/failed1. Full current IME source run-gsSyqq passed1089/1089. All-ten-bin optimized candidate B built, canonical architecture passed, exact installed/runtime hashes matched on private remote KDE. Frozen r18 smoke20:17PASS/1FAIL/2BLOCKED, both wrong-layout Space cases and ordinary text pair passed. Native earlier-prefix retention has actual character-count evidence. Earlier mixed candidates, one c20 literal-proposal failure, and all raw FAILs are retained in the owning document and release98 worklog. Required full-release run initially stopped because this decision record was missing; no guard was weakened. Final C restored the immutable gate/export bytes and passed all3515 correctness/package and11 performance cases, strict lints, both MSRV routes and all10 optimized compiler artifacts. Final local1286-file/mode closure equals remote tested source14af075c4ee05b8041a9ba794fe98d4cf862eeea628d1d17ae9c73406b6ca655. Loaded IME7b6f07010ef58d3c98c80b121b353de108e3a5d62084867e4e9d49dbcd00790b stayed PID744266 across full unchanged r18 Chrome174P3F43B and Firefox121P63F36B of220each. All raw transitions,11 oldPASS-toFAIL losses and latency coverage are retained in release-1.0.98-native.json.",
+  "not_tested": "Other KDE clients on final98 bytes, GNOME native behavior, Wayland and physical hardware keyboards are NOT_TESTED. Global debug trace rotation makes global trace incomplete; per-row observations are retained separately. Chrome3 andFirefox63 functional FAIL plus79 combinedBLOCKED remain. The earlier iframe pair smoke failure passed in the full run; that does not erase the smoke failure. No universal compatibility or regression-free claim. Public updater discovery follows actual publication.",
+  "runtime_authority_changed": false,
+  "runtime_behavior_changed": true,
+  "existing_authority": "ContextAdmissionReducer -> WindowInteraction -> DecisionCore/EditAction verifier -> AuthorizedEdit native executor",
+  "rollback": "Revert this preparation-only change as one unit; retain the released97 repair and do not modify active GNOME runtime or model/learning data."
+}

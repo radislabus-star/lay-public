@@ -1061,6 +1061,13 @@ impl LayIbusEngine {
     }
 
     pub(crate) fn managed_word_start_invalid_reason(&self) -> Option<&'static str> {
+        self.managed_word_start_chain_invalid_reason(true)
+    }
+
+    fn managed_word_start_chain_invalid_reason(
+        &self,
+        require_exact_refresh: bool,
+    ) -> Option<&'static str> {
         let Some(witness) = self.client_context.managed_word_start.as_ref() else {
             return Some("missing");
         };
@@ -1070,7 +1077,7 @@ impl LayIbusEngine {
         if self.composition.word_input_mode != Some(WordInputMode::ManagedCommit) {
             return Some("mode");
         }
-        if !self.client_context.exact_surrounding_refresh_available {
+        if require_exact_refresh && !self.client_context.exact_surrounding_refresh_available {
             return Some("refresh");
         }
         if !self.client_context.surrounding_text_supported {
@@ -1128,6 +1135,26 @@ impl LayIbusEngine {
     /// installed as a newly observed client snapshot.
     pub(crate) fn managed_word_start_projected_snapshot(&self) -> Option<SurroundingTextSnapshot> {
         self.managed_word_start_is_current().then_some(())?;
+        self.managed_word_start_preparation_snapshot()
+    }
+
+    /// Inert input material only. Native callers must separately validate the
+    /// observation owner; this never makes a client snapshot or edit receipt.
+    pub(crate) fn managed_word_start_preparation_identity(&self) -> Option<u64> {
+        self.managed_word_start_chain_invalid_reason(false)
+            .is_none()
+            .then_some(())?;
+        let witness = self.client_context.managed_word_start.as_ref()?;
+        (!witness.exact_refresh_at_start && self.committed_tail.epoch > witness.start_tail_epoch)
+            .then_some(witness.identity)
+    }
+
+    pub(crate) fn managed_word_start_preparation_snapshot(
+        &self,
+    ) -> Option<SurroundingTextSnapshot> {
+        self.managed_word_start_chain_invalid_reason(false)
+            .is_none()
+            .then_some(())?;
         let witness = self.client_context.managed_word_start.as_ref()?;
         let token = self.last_tail_token_text();
         let cursor = witness
@@ -1260,7 +1287,16 @@ impl LayIbusEngine {
                     .nth(cursor)
                     .is_none_or(crate::preedit::is_observed_word_boundary)
         };
-        let provenance = if self.composition.legacy_word_preedit_active {
+        let provenance = if let Some(witness_identity) = self.native_word_preparation_identity() {
+            let snapshot = self.managed_word_start_preparation_snapshot()?;
+            if !snapshot_proves(&snapshot, &pair) {
+                return None;
+            }
+            SpaceBoundaryPairProvenance::NativePrepared {
+                witness_identity,
+                cursor: snapshot.cursor_pos,
+            }
+        } else if self.composition.legacy_word_preedit_active {
             let witness = self.composition.legacy_preedit_start_boundary.as_ref()?;
             if !self.owned_preedit_start_boundary_matches(witness)
                 || self.composition.buffer != right
@@ -1367,6 +1403,10 @@ impl LayIbusEngine {
             return None;
         }
         match &scope.provenance {
+            crate::engine::SpaceBoundaryPairProvenance::NativePrepared {
+                witness_identity,
+                cursor,
+            } => self.native_word_preparation_pair_snapshot(*witness_identity, *cursor),
             crate::engine::SpaceBoundaryPairProvenance::Client { .. } => {
                 if self.exact_managed_surrounding_word_is_current() {
                     self.client_context.surrounding_text_snapshot.clone()
@@ -1567,7 +1607,7 @@ impl LayIbusEngine {
         &self,
         token: &str,
     ) -> Option<ManagedWordStartWitness> {
-        self.observed_word_start_from_current_snapshot(token, true)
+        self.observed_word_start_from_current_snapshot(token, !self.native_document_is_current())
     }
 
     fn observed_word_start_from_current_snapshot(
@@ -1651,7 +1691,9 @@ impl LayIbusEngine {
         let Some(snapshot) = self.client_context.surrounding_text_snapshot.as_ref() else {
             return false;
         };
-        if snapshot.has_selection() || !self.managed_word_start_is_current() {
+        let native_preparation = self.native_word_preparation_identity().is_some();
+        if snapshot.has_selection() || !(self.managed_word_start_is_current() || native_preparation)
+        {
             return false;
         }
         let token = self.last_tail_token_text();
@@ -1661,13 +1703,42 @@ impl LayIbusEngine {
             .saturating_add(u32::try_from(token.chars().count()).unwrap_or(u32::MAX));
         let cursor = snapshot.cursor_pos as usize;
         let text_chars = snapshot.text.chars().collect::<Vec<_>>();
-        cursor <= text_chars.len()
-            && snapshot.cursor_pos == expected_cursor
-            && text_chars[..cursor].iter().collect::<String>() == expected_prefix
-            && text_chars[cursor..]
-                .iter()
-                .collect::<String>()
-                .ends_with(&witness.snapshot_suffix)
+        if cursor > text_chars.len() {
+            return false;
+        }
+        let actual_prefix = text_chars[..cursor].iter().collect::<String>();
+        let actual_suffix = text_chars[cursor..].iter().collect::<String>();
+        if snapshot.cursor_pos == expected_cursor && actual_prefix == expected_prefix {
+            return if native_preparation {
+                actual_suffix == witness.snapshot_suffix
+            } else {
+                actual_suffix.ends_with(&witness.snapshot_suffix)
+            };
+        }
+        // A native read may still expose an earlier prefix of our exact local
+        // append chain. Retain data only; the full actual-snapshot equality at
+        // edit dispatch remains false until every committed character arrives.
+        let earlier_prefix = actual_prefix.strip_prefix(witness.snapshot_prefix.as_str());
+        let retained = native_preparation
+            && actual_suffix == witness.snapshot_suffix
+            && earlier_prefix.is_some_and(|observed| {
+                token.starts_with(observed)
+                    && observed.chars().count() as u64 >= witness.anchored_token_chars
+                    && observed.chars().count() < token.chars().count()
+            });
+        if retained && crate::trace::enabled() {
+            crate::trace::record(
+                serde_json::json!({
+                    "kind": "ibus_native_preparation_progress",
+                    "observed_word_chars": earlier_prefix.map(|word| word.chars().count()),
+                    "prepared_word_chars": token.chars().count(),
+                    "tail_epoch": self.committed_tail.epoch,
+                    "edit_authority": false,
+                })
+                .to_string(),
+            );
+        }
+        retained
     }
 
     fn reconcile_managed_word_start_after_surrounding_observation(&mut self) {

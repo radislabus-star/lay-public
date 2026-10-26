@@ -96,6 +96,12 @@ pub(crate) enum SpaceBoundaryPairProvenance {
         revision: u64,
         cursor: u32,
     },
+    /// Data proposal only. Dispatch must obtain the actual matching native
+    /// document; this tag never substitutes for a Client edit receipt.
+    NativePrepared {
+        witness_identity: u64,
+        cursor: u32,
+    },
     OwnedPreedit {
         witness_identity: u64,
         cursor: u32,

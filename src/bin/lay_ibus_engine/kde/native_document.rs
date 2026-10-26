@@ -8,6 +8,8 @@ mod bus;
 mod client_presentation;
 #[path = "native_document/observer.rs"]
 mod observer;
+#[path = "native_document/preparation.rs"]
+mod preparation;
 #[cfg(test)]
 #[path = "native_document/tests.rs"]
 mod tests;
@@ -134,6 +136,10 @@ impl NativeDocumentBinding {
     }
 
     pub(crate) fn is_current(&self, engine: &LayIbusEngine) -> bool {
+        self.observation_owner_is_current(engine) && engine.committed_tail.epoch == self.tail_epoch
+    }
+
+    fn observation_owner_is_current(&self, engine: &LayIbusEngine) -> bool {
         engine.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
             && !engine.atomic.active
             && !engine.content_is_sensitive()
@@ -150,7 +156,6 @@ impl NativeDocumentBinding {
             && engine.client_context.focus_serial == self.focus_serial
             && engine.client_context.runtime_owner_lease_identity == self.owner_lease
             && engine.layout_gesture.layout_generation == self.layout_generation
-            && engine.committed_tail.epoch == self.tail_epoch
     }
 
     pub(crate) fn for_result(&self, engine: &LayIbusEngine) -> Self {
