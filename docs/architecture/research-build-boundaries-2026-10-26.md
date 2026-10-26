@@ -64,3 +64,13 @@ FAIL/BLOCKED and WezTerm visual failures separate; no universal native claim.
 
 Quality admission remains in the authoritative syntax-agreement roadmap.
 Format parity and source tests do not satisfy heldout/per-damage-class quality.
+
+
+First complete source run:3518PASS/1FAIL of3519, raw
+CROOT/release101-final-gates/source.log. The only failure is
+peak_oracle::tests::oracle_is_unreachable_from_production_source_owners,
+whose final string still requires the broader test-or-lexical-compiler gate.
+The new module is test-only. Its source guard now requires that stricter
+boundary; all original runtime/service/peak_search no-oracle assertions remain.
+No test identity/denominator or input guard is removed. Record this explicit
+source-guard migration in the same decision and rerun the complete proof.

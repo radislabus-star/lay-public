@@ -1,57 +1,47 @@
-## Current101 full source/build gates running — 2026-10-26T19:49:07.048533+00:00
+## Current101 corrected source guard; full verification running — 2026-10-26T20:20:38.868352+00:00
 
-Continue original6groups without agents/Harness2/manual GNOME installation.
-Published97/98/extra99/100. Stable100tag36fd0e7a, functional2725bcf4; actual
-installed updater discovery BOTH exit0/current100; local automatic100completed
-13m18.5s wall/3.6Gpeak, not a manual install. Full100 native302P57F81B/440,
-12oldPASS losses. Kitty5PASS/Konsole5PASS/Wez5FAIL; laterWezTab1PASS doesnot
-fix missing visible suffix (4typedchars only). Keep all native residuals OPEN.
+Continue original six release groups without agents/Harness2 or manual GNOME
+installation. Published97/98/extra99/100; stable100tag36fd0e7a, functional2725bcf4.
+Actual installed updater discovery both exit0/current100. Local automatic100
+completed13m18.5s wall/3.6G peak. Full100 native302PASS/57FAIL/81BLOCKED of440,
+including12oldPASS losses. Kitty5PASS/Konsole5PASS/Wez5FAIL; laterWezTabPASS
+still has absent visible suffix. These native residuals remain OPEN.
 
-101 SOURCE c5d66a0849a7e48df7434db8a6357f9819c755886b5db3e3755c0f30af4e50bf,
-1289files/modes. Code/compiler/proof boundaries, research compiler facade,
-unchanged journal implementation behind testshim, source version bundle101.
-Protected text_edit.rs/gate.rs unchanged. Implementationbodycc36c4e8... same100.
-No input delivery/model/learning/desktop-rendering edits; source GNOME files
-onlyversionmetadata. All3configurationtypechecks pass; production R library
-0warnings. Tests retain exactly3519correctness/package,11performance,41ignored.
-Default lintbaseline530->117, research354->129; strict monotonic writer PASS.
-Only exact unchanged prototype source paths rebound before pruning, under new
-canondecision; no guard/test weakened. Final compiler all10/parity stillpending.
+101 corrected source closure1289files/modes:
+8c25e15e9c6f9c481a0b91e5da1b59227749f19cfd6c2db187c8bf7ee27f1a9f.
+Measured compiler/proof feature boundaries, shared existing compiler facade,
+byte-identical offline journal behind test shim, source version bundle101.
+Protected text_edit.rs/gate.rs unchanged; no input route/model/learning/rendering
+changes. Production research library0warnings; all three configurations compile.
+Existing3519correctness/package,11performance and41ignored identities retained.
+Strict lint pruning reduced default530->117/research354->129, no new identities.
 
-RUNNING exec83921,CROOT/release101-final-gates. Earlierfull-gates stopped only
-ourdecision JSONschema/requiredfields error; corrected document, identical
-sourcehash,5passedprerequisites reused, rawcanonFAILretained. Currentcanon,
-Python419(10skip),public,install,Node,audit50,lints,bothMSRV PASS. Fullsource
-running,performance/optimizedall10/tinyold-newfixturebyteparity pending.
-Frozenrun /home/e/projects/lay-development-runner/release101-final-source-MmcR9f;
-2001files archive3fd5807e010d07f6fb697ff1a1cdb2bc2f4e4f3704f5adf655e37b36abbd7dde.
-LocalCACHE101/final holdsoriginalsnapshot,canoncorrection/resumehelper and
-early-source-verification.json.10generated/baseline files synced; exactlocal
-sourcec5d parityverified. Functional101commit/CI beingstarted before full
-source completes; do not publish from early source verification alone.
+First complete run CROOT/release101-final-gates:3518PASS/1FAIL of3519. Its only
+failure was peak_oracle::tests::oracle_is_unreachable_from_production_source_owners
+still demanding old test-or-lexical-compiler attribute. Corrected assertion now
+requires stricter test-only module; all six original runtime-source exclusions
+retained. Explicit architecture decision and owning document record migration.
+Old functional8901a75a CI40390157345 does NOT verify corrected source.
+Earlier decision-schema prerequisite failure is retained separately.
 
-Earlierprobe1 typeerrors11D/3R/3L were mismatchedimports/module scopes and
-requiredfixed-wiretype; fixed. Probe2 allcompile, imports remaining; probe3
-allcompile/nondeadwarnings0. Keep all rawruns; do not rerun initialautopatcher
-or restore originalscopeblindly. Wholecold/testmodules useparentgates where
-proved; reserved enumtags/carrierfields kept with precise expectations.
+Current complete run exec31167, CROOT/release101-verified-gates,
+frozen /home/e/projects/lay-development-runner/release101-verified-source-9akut5,
+archive5a638c3d3c077faa1ef3fe139ecb822aa59b3cdb3c37c26faa5cfbc416530e02.
+14prerequisites PASS including both MSRV; fullsource/performance/all10optimized/
+old-new tiny fixture byte parity still pending. CACHE101/verified contains request,
+raw snapshot, scripts, early-source-verification.json;10generated/baseline files
+synced and actual local source/mode closure matches. Do not publish early receipt.
+Next commit/push corrected guard+graph/docs to both remotes and capture NEWCI.
+After final gates install retained101 only on remote, verify loaded bytes, short
+native checks, then publish/tag/updater discovery. Continue102(core/debt) then
+103(real older-updater bootstrap/completion), no empty releases or false native
+closure. Active tasks: build-warning-reachability-cleanup-2026-10-26.md/TD135.
 
-Remote still100engine2662296/SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
-daemon2662418/tray2662424; no101install. RootIBus3168326 unchanged, CPU20 after
-userdedicated-host authorization; memory512M/1G unchanged. Buildguard20CPU28G.
-All100retainedbinaries verified before owned package-only cacheclean; dependencies,
-installedbinaries/models/learning preserved. Fixture package100baseline in
-CROOT/release101-package-parity-baseline; this is tinyformatproof, not newfit.
-
-NEXT: await full101 gates; exactretainedartifactdeploy(remoteonly),shortfrozen
-native controls/newloadedhashes, newactual101CI success, release101+updater.
-Then102reconcileTD122/123/132/134, repair proved sharedmechanism beforemoves;
-no newqualityfit before authoritative roadmap gates. Candidate next bug only:
-authenticated Revocation FocusOut/Disable calls broad revoke again and may
-clear laterreceivedfocus; mustproveRED, not assume allWezfailures sharecause.
-103finalqueue/acceptance+shippingold3G updaterbootstrap and realremoteautomatic
-completion. Actual local100success followed14:32runtimeMemoryHigh3->4G repair;
-it doesnot certify bootstrapforallolderinstalledunits. Soundonlywholecompletion.
+Remote still100engine2662296 SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
+daemon2662418/tray2662424. RootIBus3168326 preserved; CPU20, memory512M/1G unchanged.
+Build/test dedicated20CPU28G; own Python SIGTERM proof24G soft only during Python,
+restored28G for Rust. Model/learning bytes unchanged, all100artifacts retained.
+Do not rerun initial AST autopatcher or rebuild old dirty /home/ubu/projects/lay.
 
 ## Current100 candidateA rejected; causal FocusOut RED — 2026-10-26T16:47:39.777966+00:00
 

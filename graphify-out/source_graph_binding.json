@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "b514332a6f59ea06db83d6e3ee6ec423a2afe0a1396a8b6b450aa8f9e417f259",
-  "manifest_fingerprint": "c991ddc621b7afb2d2df1e27440877eab8626f781528253b3706505caa85d81f",
+  "graph_fingerprint": "42c871ecb3236d63b5c83a68e886ac964cdf53639a87451654e58d9d02752e03",
+  "manifest_fingerprint": "c80ddbd63917e072fbcf5f0011fbf857e3f0ead9f3763b02cf14742c3e7f0bc5",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -525,7 +525,7 @@
     "src/nanda_wave/lexical_grokking/model.rs": "a94daefaf97903c1adc9aa58e15903e6930c9ad5478102c4562f2043cf386195",
     "src/nanda_wave/lexical_grokking/ngram_graph.rs": "a251bb24e50ae0e70e5866c9674477e1d0b8847f988bd1e1f137a68674d374c6",
     "src/nanda_wave/lexical_grokking/pairwise.rs": "4cb83be4223a795747d0b092f7f715abf7219afccf9cbb7bcbbd019c45470a5c",
-    "src/nanda_wave/lexical_grokking/peak_oracle.rs": "5e65e6a15033cdcc9c341398fdc92b665319d158323f6b898bdbcae0dc57ca49",
+    "src/nanda_wave/lexical_grokking/peak_oracle.rs": "42e2175530ae0493c43ace13ef8026044827408527ce0edde4c2933d4972bbee",
     "src/nanda_wave/lexical_grokking/peak_search/mod.rs": "253cfceed6872750d50862904c66770e70092dbfaad715f984398f93e9cf2e07",
     "src/nanda_wave/lexical_grokking/posting_bounds.rs": "d8a247c2b21bef18f5c157c6cd5d94596e770a8a01bb61083c10eacfc7209694",
     "src/nanda_wave/lexical_grokking/posting_bounds/decoder_subtree_cover.rs": "9dace8eb0d671a14fa0e03523b237ab97c0e7980bbf3a637453002d02c5225fd",

@@ -49,10 +49,19 @@
   "protected_paths": [
     "scripts/architecture_scope_gate.py",
     "scripts/lint-baseline/dead_code.default.json",
-    "scripts/lint-baseline/dead_code.json"
+    "scripts/lint-baseline/dead_code.json",
+    "src/nanda_wave/lexical_grokking/mod.rs",
+    "src/nanda_wave/lexical_grokking/peak_oracle.rs"
   ],
   "reason": "Same source has259 installer-build dead-code records from private proof/research scopes and duplicated cold compiler support. Reuse measured feature/test boundaries, keeping stable data and existing owners.",
-  "verification": "Three all-target feature configurations compile; production research library emits0warnings; protected source pinsPASS; monotonic lint reductionPASS; all3519 correctness/package and11performance identities/lanes retained. Full tests/build/native pending.",
+  "verification": "Three feature builds, protected pins, lint monotonicity, graph/canon/Python/lints/MSRV passed. First complete run3518PASS/1FAIL of3519: only the source guard still demanded the old broader module attribute. That assertion now enforces test-only, retaining all runtime-source exclusions. Fresh complete run pending.",
   "not_tested": "Full101 source/performance/optimized/native gates pending; no new quality fit, package promotion or GNOME native acceptance claimed.",
-  "runtime_authority_changed": false
+  "runtime_authority_changed": false,
+  "source_guard_migration": {
+    "test": "oracle_is_unreachable_from_production_source_owners",
+    "old_boundary": "test or lexical-compiler",
+    "new_boundary": "test only, excludes every production feature configuration",
+    "runtime_source_no_oracle_assertions": "All six original contains checks for runtime/service/peak_search are retained",
+    "reason": "Source guard follows the stricter admitted boundary, not a relaxed reachability policy"
+  }
 }

@@ -627,7 +627,6 @@ mod tests {
             assert!(!source.contains("dense_oracle"));
         }
         let module_root = include_str!("mod.rs");
-        assert!(module_root
-            .contains("#[cfg(any(test, feature = \"lexical-compiler\"))]\nmod peak_oracle;"));
+        assert!(module_root.contains("#[cfg(test)]\nmod peak_oracle;"));
     }
 }

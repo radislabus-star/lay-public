@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793036115.5050864,
-    "ast_hash": "3273f08768324af95a43a9571ba9ad08",
+    "mtime": 1793044056.399349,
+    "ast_hash": "7c7e1cd0a262daf90ff2b7accbf0b3a9",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4425,8 +4425,8 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/peak_oracle.rs": {
-    "mtime": 1793041777.9922292,
-    "ast_hash": "b3cacb27f24174043a2a578a4389a332",
+    "mtime": 1793045177.2759695,
+    "ast_hash": "664558dba54ba5997a9fcd59b401bc64",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/proof_matrix.rs": {
@@ -4995,7 +4995,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.json": {
-    "mtime": 1793043163.6135452,
+    "mtime": 1793045459.1694539,
     "ast_hash": "e22df33a2e3dad4a45f4f8588d0b5210",
     "semantic_hash": ""
   },
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793043228.8769317,
+    "mtime": 1793045504.239718,
     "ast_hash": "afce0a7b37f135bf1d9d8deca50e4226",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793043228.8759315,
+    "mtime": 1793045504.2387178,
     "ast_hash": "1217e6491ca6d9432282949890fcb5da",
     "semantic_hash": ""
   },
@@ -5185,7 +5185,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.default.json": {
-    "mtime": 1793043136.5303855,
+    "mtime": 1793045424.9362535,
     "ast_hash": "6e2772d62e64178b8399a1d6ec06ff80",
     "semantic_hash": ""
   },
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793040487.1017618,
-    "ast_hash": "5a21634068d5a4b79364bb0805ae67fe",
+    "mtime": 1793044423.0957184,
+    "ast_hash": "e0ad81b41ee73561e1aa207589770a03",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8660,8 +8660,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-26-measured-research-build-boundaries.json": {
-    "mtime": 1793042361.796695,
-    "ast_hash": "a81e88a7c9fab98e8074b85a0c53f927",
+    "mtime": 1793045177.3807743,
+    "ast_hash": "cb4b5968f59c1ab67eb12737f93ec5a2",
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_phase/compiler_api.rs": {
@@ -8685,8 +8685,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/research-build-boundaries-2026-10-26.md": {
-    "mtime": 1793042361.66042,
-    "ast_hash": "cc53b13c7f5769ecfcbc7c3370bf65b3",
+    "mtime": 1793045177.3809414,
+    "ast_hash": "0b6b45a431ed6211c920f1c4bbb6278d",
     "semantic_hash": ""
   },
   "tech_debt/build-warning-reachability-cleanup-2026-10-26.md": {
