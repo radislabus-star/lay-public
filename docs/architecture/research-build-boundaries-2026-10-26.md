@@ -74,3 +74,28 @@ The new module is test-only. Its source guard now requires that stricter
 boundary; all original runtime/service/peak_search no-oracle assertions remain.
 No test identity/denominator or input guard is removed. Record this explicit
 source-guard migration in the same decision and rerun the complete proof.
+
+
+## Final 1.0.101 proof and scoped verdict
+
+CROOT/release101-verified-gates/result.json: all20 gates PASS,3519/3519
+correctness/package tests and11/11 performance,419Python(10skipped), lints,
+both MSRV1.88 configurations and10 optimized programs. Release build215.690s.
+The installer build emits0 Lay warnings (same100 build emitted259). The tiny
+old/new compiler fixture is byte-identical; no model/quality promotion follows.
+All original test identities/lanes remain unchanged. Source/modes1289files:
+8c25e15e9c6f9c481a0b91e5da1b59227749f19cfd6c2db187c8bf7ee27f1a9f.
+Local exact closure matches. CI40394811146 andSecurity40394811162 SUCCESS on
+functional4c61cdb6a7e5f7344e8bc9e78ccbf5d1bbdc9c22.
+
+Retained artifacts installed only on private remote KDE, engine3293136
+SHAf7b8c6cd6d0c04195c63d6a13420f07c1a0ae56abb133e634d69fa14fe903b0a,
+all10 binaries checked, original IBus/desktop preserved. Frozen r18 smoke20 each:
+Firefox12P6F2B,Chrome15P3F2B. Two previous PASS losses andonegain versus100short
+are retained; new ChromeSpace first refusal stale_lease, remains OPEN.
+Kitty5P,Konsole5P,WezTerm2P3F; new visuals NOT_TESTED. Raw terminal static
+version label100 is corrected by companion101 exactSHA/PID evidence without
+rewriting rawresults. Full440/GNOME native not tested on101. Detailed records:
+tech_debt/evidence/release-1.0.101-{verification,native}.json; raw CACHE101/verified.
+Verdict: build scope VERIFIED, native residuals OPEN, not regression-free.
+Runtime ownership, edit/verifier permission and model/learning authority unchanged.

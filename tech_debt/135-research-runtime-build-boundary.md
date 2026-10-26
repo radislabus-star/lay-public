@@ -1,6 +1,6 @@
 # TD-135 — Граница research/runtime по реальной reachability
 
-Status: ACTIVE_SCOPED_BUILD under the user's six-release order2026-10-25.
+Status: DONE_SCOPED_BUILD under the user's six-release order2026-10-25; broader research remains deferred.
 Priority: P3. Size: bounded warning/compiler/proof cleanup for1.0.101.
 Owner: nanda_wave existing package/runtime/compiler contracts.
 Quality owner: authoritative syntax-agreement roadmap; никакого нового fit.
@@ -8,7 +8,7 @@ Quality owner: authoritative syntax-agreement roadmap; никакого ново
 2026-10-26: the explicit stage4 implementation order admits the measured
 build-boundary slice, not a new quality fit or crate-wide redesign. Current
 owner/probes: docs/architecture/research-build-boundaries-2026-10-26.md.
-All three configurations compile; full test/build/native/publishing pending.
+All three configurations compile; full source/build, short native controls and both CI workflows passed. Publication/updater recorded separately.
 The historical discussion prerequisite below is retained as history and does
 not revoke this later scoped user authorization.
 
@@ -41,3 +41,12 @@ package/RSS/latency conjunctively; format parity не quality proof.
 Rollback возвращает feature/public API, immutable models не заменяются.
 Independent review<=2 passes, full release+physical нужны до live promotion.
 До отдельного обсуждения этапа2 никаких compiler/gating edits и fit.
+
+
+Measured101 closure:3519 correctness/package and11performance PASS, all10
+optimized binaries/zero installer warnings, strict monotonic lint reduction,
+unchanged compiler fixture bytes and original test identities. See
+release-1.0.101-verification.json and owning boundary document. Short native
+27P9F4B retains all failures and oldPASS losses; broader native/quality/RSS
+promotion is not claimed. No crate split or new fit. The historical final
+stage2 prerequisite does not override the later explicit scoped release order.

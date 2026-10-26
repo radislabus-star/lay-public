@@ -1,47 +1,53 @@
-## Current101 corrected source guard; full verification running — 2026-10-26T20:20:38.868352+00:00
+## Current101 all gates/native controls/CI complete; publishing next — 2026-10-26T20:39:33.477566+00:00
 
-Continue original six release groups without agents/Harness2 or manual GNOME
-installation. Published97/98/extra99/100; stable100tag36fd0e7a, functional2725bcf4.
-Actual installed updater discovery both exit0/current100. Local automatic100
-completed13m18.5s wall/3.6G peak. Full100 native302PASS/57FAIL/81BLOCKED of440,
-including12oldPASS losses. Kitty5PASS/Konsole5PASS/Wez5FAIL; laterWezTabPASS
-still has absent visible suffix. These native residuals remain OPEN.
+Continue original six release groups without agents/Harness2/manual GNOME install.
+Published97/98/extra99/100. Stable100tag36fd0e7a; actual both installed updater
+checks exit0/current100, local automatic100completed13m18.5s/3.6Gpeak.
+Full100 native302PASS57FAIL81BLOCKED/440, including12oldPASS losses; keep residuals.
 
-101 corrected source closure1289files/modes:
-8c25e15e9c6f9c481a0b91e5da1b59227749f19cfd6c2db187c8bf7ee27f1a9f.
-Measured compiler/proof feature boundaries, shared existing compiler facade,
-byte-identical offline journal behind test shim, source version bundle101.
-Protected text_edit.rs/gate.rs unchanged; no input route/model/learning/rendering
-changes. Production research library0warnings; all three configurations compile.
-Existing3519correctness/package,11performance and41ignored identities retained.
-Strict lint pruning reduced default530->117/research354->129, no new identities.
+101 functional4c61cdb6a7e5f7344e8bc9e78ccbf5d1bbdc9c22 pushed BOTH remotes.
+Source/modes1289files SHA8c25e15e9c6f9c481a0b91e5da1b59227749f19cfd6c2db187c8bf7ee27f1a9f.
+CROOT/release101-verified-gates/result.json ALLPASS:3519correctness/package,
+11performance,419Python(10skip),20requiredsteps,strictlints/bothMSRV/all10release,
+zero installer-build warnings, tinyold/newcompiler package bytes equal.
+Build215.690s, target4.2GB. All original identities/lanes retained. Local closure
+exact parity CACHE101/verified/local-final-parity.json. Source only GNOMEversion
+metadata; protected text_edit.rs/gate.rs unchanged, no input/model/learning edits.
 
-First complete run CROOT/release101-final-gates:3518PASS/1FAIL of3519. Its only
-failure was peak_oracle::tests::oracle_is_unreachable_from_production_source_owners
-still demanding old test-or-lexical-compiler attribute. Corrected assertion now
-requires stricter test-only module; all six original runtime-source exclusions
-retained. Explicit architecture decision and owning document record migration.
-Old functional8901a75a CI40390157345 does NOT verify corrected source.
-Earlier decision-schema prerequisite failure is retained separately.
+Remote private KDE101 installed exactretained10artifacts:
+engine3293136 SHAf7b8c6cd6d0c04195c63d6a13420f07c1a0ae56abb133e634d69fa14fe903b0a,
+daemon3293240,tray3293258; IBus3168326 and desktop preserved.
+Frozenr18short20each:Firefox12PASS6FAIL2BLOCKED,Chrome15PASS3FAIL2BLOCKED,
+total27P9F4B/40. Two oldPASS losses andonegain versus same100short retained.
+Chrome newSpacefailure firstrefusal stale_lease afterworkerprepared, NOT merely
+notready. Kitty5PASS/Konsole5PASS/Wez2PASS3FAIL. Rawterminalwrapperversionlabel
+accidentally100; companion native record explicitly resolves101 by exactloaded
+SHA/PID without rewriting rawreceipt or verdict. Visual101 NOT_TESTED.
+Historical100full440 is not101acceptance. Records/notes prepared but notpublic.
 
-Current complete run exec31167, CROOT/release101-verified-gates,
-frozen /home/e/projects/lay-development-runner/release101-verified-source-9akut5,
-archive5a638c3d3c077faa1ef3fe139ecb822aa59b3cdb3c37c26faa5cfbc416530e02.
-14prerequisites PASS including both MSRV; fullsource/performance/all10optimized/
-old-new tiny fixture byte parity still pending. CACHE101/verified contains request,
-raw snapshot, scripts, early-source-verification.json;10generated/baseline files
-synced and actual local source/mode closure matches. Do not publish early receipt.
-Next commit/push corrected guard+graph/docs to both remotes and capture NEWCI.
-After final gates install retained101 only on remote, verify loaded bytes, short
-native checks, then publish/tag/updater discovery. Continue102(core/debt) then
-103(real older-updater bootstrap/completion), no empty releases or false native
-closure. Active tasks: build-warning-reachability-cleanup-2026-10-26.md/TD135.
+CI40394811146 SUCCESS including final release binaries; test,MSRV,installer passed.
+Security40394811162 SUCCESS. Final CI verified; tagging/publishing101 next.
+Do not use old8901CI; firstfull3518P1F sourceguard mismatch retained. Corrected
+guard requires stricter test-only oracle; all six runtime exclusions retained.
+Repo release101 records now contain actual CI SUCCESS; finalize actual
+CI evidence, owner/task/plan notes, explicitstageonly101files, commit/push/tag/
+release, then actual installed updater --check BOTH; busy75 remains WAIT.
+New102ownerdoc/task untracked deliberately EXCLUDED from101 publication commit.
 
-Remote still100engine2662296 SHA443576475a38806da3c7e3e433f91869a57ffe3855374a20fc80f27b844c3811,
-daemon2662418/tray2662424. RootIBus3168326 preserved; CPU20, memory512M/1G unchanged.
-Build/test dedicated20CPU28G; own Python SIGTERM proof24G soft only during Python,
-restored28G for Rust. Model/learning bytes unchanged, all100artifacts retained.
-Do not rerun initial AST autopatcher or rebuild old dirty /home/ubu/projects/lay.
+102 controlled source experiments already COMPLETE, production NOTimplemented:
+real Disable-withoutblur and duplicateFocusOut followed by receivedFocusIn each
+RED on101; minimal stripmirror+localretirement in exact revocation_matches branches
+GREEN2/2, actualfreshGet/marker->SourceFreeUnknownStart0, oldtoken invalid/noedit.
+CROOT/release102-authenticated-revocation-red2 and -green; CACHE102/red-green-experiments.json.
+Both runners finallyrestore sourceclosure101; installed101 unchanged. Thenimplement
+existinghelpers, add negatives/supersession, fullgates/native/release102; reconcile
+TD122/123/132/134 honestly (no fit/forcedsplits/falseDONE). Then103 old-updater
+bootstrap must run via FRESHinstall/buildhelper; oldupdate.sh neverexecsnewupdate.sh.
+Real103autoapply test fromolder102, notnoop; localGNOME no manualinstall/restart.
+
+Remote dedicated20CPU28G env persists. Own Python SIGTERM proof24Gsoft onlyPython,
+restored28GforRust. IBusunitCPU20,512Msoft/1Ghard unchanged. Models/learning retained.
+Do not rerun AST autopatcher or build/install old dirty /home/ubu/projects/lay.
 
 ## Current100 candidateA rejected; causal FocusOut RED — 2026-10-26T16:47:39.777966+00:00
 

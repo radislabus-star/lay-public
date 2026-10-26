@@ -1,0 +1,145 @@
+{
+  "version": "1.0.101",
+  "at_utc": "2026-10-26T20:33:24.373562+00:00",
+  "engine_sha256": "f7b8c6cd6d0c04195c63d6a13420f07c1a0ae56abb133e634d69fa14fe903b0a",
+  "scope": "Frozen r18 --smoke20 each KDE/X11 actual RFB and native/DOM agreement; full440 NOT_TESTED on101",
+  "browsers": {
+    "firefox": {
+      "counts": {
+        "PASS": 12,
+        "FAIL": 6,
+        "BLOCKED": 2,
+        "NOT_TESTED": 0
+      },
+      "rows": 20,
+      "transitions_from_same20_on100": {
+        "PASS -> PASS": 11,
+        "FAIL -> PASS": 1,
+        "FAIL -> FAIL": 5,
+        "BLOCKED -> BLOCKED": 2,
+        "PASS -> FAIL": 1
+      },
+      "changes": [
+        {
+          "identity": [
+            "normal",
+            "text",
+            "roundtrip",
+            "active"
+          ],
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "identity": [
+            "normal",
+            "text",
+            "moved-boundary",
+            "functional"
+          ],
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 19485, 'raw_text': 'должн ыбыть ', 'rect': {'x': 452.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+        }
+      ],
+      "latency": {
+        "samples": 38,
+        "rows_with_samples": 14,
+        "total_rows": 20,
+        "median_ms": 158.10099802911282,
+        "p95_nearest_rank_ms": 272.4216105416417,
+        "max_ms": 294.11995224654675,
+        "scope": "matched actual target after real key release; unsuccessful observations excluded"
+      },
+      "actor_sha256": "17dc93b5f2769d5dde62bfe8f5a539fb68af40744139e823c5f18a848b4ce7e6",
+      "trace_complete_rows": {
+        "True": 19,
+        "False": 1
+      },
+      "receipt": "CROOT/release101-native-firefox/firefox/result.json"
+    },
+    "chrome": {
+      "counts": {
+        "PASS": 15,
+        "FAIL": 3,
+        "BLOCKED": 2,
+        "NOT_TESTED": 0
+      },
+      "rows": 20,
+      "transitions_from_same20_on100": {
+        "PASS -> PASS": 15,
+        "PASS -> FAIL": 1,
+        "BLOCKED -> BLOCKED": 2,
+        "FAIL -> FAIL": 2
+      },
+      "changes": [
+        {
+          "identity": [
+            "normal",
+            "text",
+            "space-en-ru",
+            "functional"
+          ],
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 17592.800000190735, 'raw_text': 'ghbdtn ', 'rect': {'x': 455.3235321044922, 'y': 191.64706420898438}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'ghbdtn '}}"
+        }
+      ],
+      "latency": {
+        "samples": 38,
+        "rows_with_samples": 14,
+        "total_rows": 20,
+        "median_ms": 48.11731621157378,
+        "p95_nearest_rank_ms": 66.94502220489085,
+        "max_ms": 71.94759952835739,
+        "scope": "matched actual target after real key release; unsuccessful observations excluded"
+      },
+      "actor_sha256": "17dc93b5f2769d5dde62bfe8f5a539fb68af40744139e823c5f18a848b4ce7e6",
+      "trace_complete_rows": {
+        "True": 20
+      },
+      "receipt": "CROOT/release101-native-chrome/chrome/result.json"
+    }
+  },
+  "total": {
+    "PASS": 27,
+    "FAIL": 9,
+    "BLOCKED": 4,
+    "NOT_TESTED": 0,
+    "total": 40
+  },
+  "old_pass_losses": 2,
+  "terminals": {
+    "counts": {
+      "kitty": {
+        "PASS": 5
+      },
+      "konsole": {
+        "PASS": 5
+      },
+      "wezterm": {
+        "PASS": 2,
+        "FAIL": 3
+      }
+    },
+    "rows": 15,
+    "receipt": "CROOT/release101-terminal-controls/result.json",
+    "visual": "NOT_TESTED on101; no appearance change claimed",
+    "metadata_erratum": "Raw wrapper label accidentally remains1.0.100; engine PID3293136 and exact loaded SHA match final101 artifact. Raw receipt is retained unchanged; this companion explicitly identifies101. Future wrapper corrected without rerunning or rewriting verdicts."
+  },
+  "regression_free": false,
+  "chrome_additional_space_failure": {
+    "case": "text:space-en-ru:ghbdtn",
+    "evidence": "CROOT/release101-native-chrome/chrome/row-7-native-trace.jsonl",
+    "first_refusal": "ibus_space_autocorrect status stale_lease; prepared worker5 tail929 exists; not readiness diagnosis",
+    "fixed": false
+  },
+  "historical_full100": "tech_debt/evidence/release-1.0.100-native.json",
+  "limitations": [
+    "No full440 rerun",
+    "No GNOME physical checks on101",
+    "No newly proved quality, latency improvement or universal compatibility",
+    "Original short-run losses retained"
+  ]
+}

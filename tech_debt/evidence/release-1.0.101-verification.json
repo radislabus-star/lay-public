@@ -1,0 +1,401 @@
+{
+  "version": "1.0.101",
+  "functional_commit": "4c61cdb6a7e5f7344e8bc9e78ccbf5d1bbdc9c22",
+  "at_utc": "2026-10-26T20:36:26.578908+00:00",
+  "acceptance": "VERIFIED_BUILD_SCOPES; NATIVE_RESIDUALS_OPEN; NOT_REGRESSION_FREE",
+  "source": {
+    "files": 1289,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "8c25e15e9c6f9c481a0b91e5da1b59227749f19cfd6c2db187c8bf7ee27f1a9f"
+  },
+  "source_identity_note": "Remote git_head is mirror base; files/modes closure matches committed functional code",
+  "rust": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 446.7800633350853,
+      "package": 49.73599672387354
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 152.3418355830945,
+      "bin:lay-debug-actions": 0.012508955085650086,
+      "bin:lay-ibus-engine": 146.02170149539597,
+      "bin:lay-l11-serve": 0.013299806043505669,
+      "bin:lay-memory-report": 0.008479543030261993,
+      "bin:lay-nanda-dataset": 0.031039354857057333,
+      "bin:lay-nanda-wave-eval": 1.3059505948331207,
+      "bin:lay-nanda-wave-train": 1.1797583678271621,
+      "bin:lay-test-input": 0.008244490949437022,
+      "bin:lay_output_transaction_microproof": 0.012966965092346072,
+      "lib:lay": 124.50588572141714,
+      "test:correction_gate_metrics": 2.06173775694333,
+      "test:decoder_alternating_stress": 1.2561057209968567,
+      "test:decoder_transition_regression": 2.232243222882971,
+      "test:ibus_wire_compat": 0.008859381079673767,
+      "test:ime_space_boundary_contract": 0.009877092903479934,
+      "test:input_gate_operator_contract": 0.010213366942480206,
+      "test:input_gate_space_contract": 8.245984903769568,
+      "test:l3_context_feedback_overlay_contract": 1.3761570379137993,
+      "test:l3_context_metrics_contract": 0.00792390899732709,
+      "test:l3_online_resource_contract": 0.008336767088621855,
+      "test:l4_feedback_memory_contract": 0.01021882682107389,
+      "test:live_candidate_gate_metrics": 3.342538563068956,
+      "test:protected_words_runtime": 1.7091371179558337,
+      "test:restore_word_cli": 5.742430031998083,
+      "test:space_boundary_shift_mechanism": 5.0210409390274435,
+      "test:td113_hybrid_source_contract": 0.03933738893829286,
+      "test:text_edit_gate_contract": 0.12657812284305692,
+      "test:text_mutation_monopoly_contract": 0.16565411118790507,
+      "test:tray_ui_contract": 0.017977695912122726,
+      "test:typing_assist_alternating_stress": 3.303886136971414,
+      "test:typing_assist_mixed_corpus": 33.53232793090865,
+      "test:typing_assist_short_alternating": 2.815952747128904,
+      "test:typing_transition_authority_contract": 0.029870409052819014
+    },
+    "elapsed_seconds": 497.12312628608197,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "selected": 3519,
+    "selected_by_lane": {
+      "correctness": 3483,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "performance": {
+    "selected": 11,
+    "verdict": "PASS"
+  },
+  "python": {
+    "total": 419,
+    "skipped": 10,
+    "failed": 0
+  },
+  "required_gates": [
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/budget-before.log",
+      "name": "budget-before",
+      "seconds": 0.07789440313354135,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/fmt.log",
+      "name": "fmt",
+      "seconds": 3.5200335781555623,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/protected-gate-preflight.log",
+      "name": "protected-gate-preflight",
+      "seconds": 0.36218033893965185,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/lint-baseline-prune.log",
+      "name": "lint-baseline-prune",
+      "seconds": 68.59822531603277,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/graph.log",
+      "name": "graph",
+      "seconds": 52.64994982583448,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/canon.log",
+      "name": "canon",
+      "seconds": 0.1382321179844439,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/python.log",
+      "name": "python",
+      "seconds": 26.523596935207024,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/public.log",
+      "name": "public",
+      "seconds": 10.312179224099964,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/install.log",
+      "name": "install",
+      "seconds": 0.32127691083587706,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/node.log",
+      "name": "node",
+      "seconds": 0.11357897217385471,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/audit50.log",
+      "name": "audit50",
+      "seconds": 24.086288479855284,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/lints.log",
+      "name": "lints",
+      "seconds": 68.5108423109632,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/msrv.log",
+      "name": "msrv",
+      "seconds": 13.907738595968112,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/msrv-lexical.log",
+      "name": "msrv-lexical",
+      "seconds": 13.828580984147266,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/source.log",
+      "name": "source",
+      "seconds": 522.1024377318099,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/performance.log",
+      "name": "performance",
+      "seconds": 23.220968670910224,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/release.log",
+      "name": "release",
+      "seconds": 215.69032626016997,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/artifacts.log",
+      "name": "artifacts",
+      "seconds": 0.2561369820032269,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release101-verified-gates/budget-after.log",
+      "name": "budget-after",
+      "seconds": 0.06763170985504985,
+      "status": "PASS"
+    }
+  ],
+  "artifacts": {
+    "lay": {
+      "sha256": "6a6fa73bd65b740675e4f63b1f39cecae86143283203caa487d84ff16e23a64d",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-daemon": {
+      "sha256": "0743e0d5e22bcdc037c307c128c68216e86ad5662743deff72750495b957ae05",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ibus-engine": {
+      "sha256": "f7b8c6cd6d0c04195c63d6a13420f07c1a0ae56abb133e634d69fa14fe903b0a",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-restore": {
+      "sha256": "bcd1f753cde5a87a60b538b56fa221afb54789fd5c502a16d7bfd194c4fd683b",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-serve": {
+      "sha256": "66446e85acbcb7c85c5b07171eb20bb69a24207ec6e3941601f5435c5ca13447",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-memory-report": {
+      "sha256": "f7be813d5b94fda19cef0f37407c7fe7027593064a73ea188228866aa4ca2f0b",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-eval": {
+      "sha256": "5c7530a607b9b023c446a2057193fc5ea292051ea0556ef3ac0c4f232e030760",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-train": {
+      "sha256": "da73619f259a4bf1e77a35545754c0c478243e83659a71b65a196a51d6dc7977",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ngram-corpus": {
+      "sha256": "0482adc77cd48824ca42746391e1d596581a57c84b8e4d8a2502a2ac0d02458c",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-test-input": {
+      "sha256": "60cc47bdbe00e9388c8be53565a140dda6bd3e782f3da45b73ec042bb2a20e85",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    }
+  },
+  "installer_build_warning_records_before": 259,
+  "installer_build_warning_records_after": 0,
+  "default_and_research_test_baseline": {
+    "before": [
+      530,
+      354
+    ],
+    "after": [
+      117,
+      129
+    ],
+    "all_test_identities_unchanged": true
+  },
+  "compiler_format_fixture": {
+    "after_version": "1.0.101",
+    "before_version": "1.0.100",
+    "bytes": 5440,
+    "equal": true,
+    "installed_models_changed": false,
+    "scope": "tiny offline format fixture; no quality/fit/promotion claim",
+    "sha256": "196dfed2249758b2645874e75244a9c4d2684e9e9b569019d7af04109b2a8924"
+  },
+  "manifest_preservation": {
+    "added": [],
+    "all_rows_unchanged": true,
+    "new_counts": {
+      "correctness": 3483,
+      "ignored": 41,
+      "package": 36,
+      "performance": 11
+    },
+    "old_counts": {
+      "correctness": 3483,
+      "ignored": 41,
+      "package": 36,
+      "performance": 11
+    },
+    "removed": []
+  },
+  "exact_loaded": {
+    "engine_pid": 3293136,
+    "engine_sha256": "f7b8c6cd6d0c04195c63d6a13420f07c1a0ae56abb133e634d69fa14fe903b0a",
+    "daemon_pid": 3293240,
+    "tray_pid": 3293258,
+    "scope": "Remote private KDE only",
+    "installed_artifacts": 10,
+    "ibus_not_restarted": true
+  },
+  "native_receipt": "tech_debt/evidence/release-1.0.101-native.json",
+  "source_receipt": "CROOT/release101-verified-gates/result.json",
+  "negative_history": [
+    {
+      "receipt": "CROOT/release101-full-gates/canon.log",
+      "reason": "New decision document schema initially incomplete; corrected without guard relaxation"
+    },
+    {
+      "receipt": "CROOT/release101-final-gates/source.log",
+      "PASS": 3518,
+      "FAIL": 1,
+      "reason": "Old source-guard literal demanded broader oracle cfg; now enforces stricter test-only boundary, all runtime exclusions retained"
+    }
+  ],
+  "unchanged": [
+    "model/package schemas and installed model bytes",
+    "learning policy",
+    "IME delivery routes and verifier authority",
+    "GNOME rendering implementation"
+  ],
+  "github": {
+    "40394811146": {
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "4c61cdb6a7e5f7344e8bc9e78ccbf5d1bbdc9c22",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/40394811146"
+    },
+    "40394811162": {
+      "status": "completed",
+      "conclusion": "success",
+      "headSha": "4c61cdb6a7e5f7344e8bc9e78ccbf5d1bbdc9c22",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/40394811162"
+    }
+  },
+  "public": "Release metadata ready; publication and installed updater discovery recorded separately after release"
+}

@@ -1,6 +1,6 @@
 # Build warnings: measured private proof/research boundaries
 
-Status: ACTIVE_SOURCE. Priority: P2. Release group:1.0.101.
+Status: DONE_SCOPED_BUILD. Priority: P2. Release group:1.0.101.
 Owner: existing package/runtime/compiler contracts; extends TD-135 under the
 user's explicit six-release implementation order. No new fit or input route.
 
@@ -44,3 +44,14 @@ actual diagnostics, artifacts, source/mode closure and short native controls.
 Keep public model bytes, live learning data and native residuals unchanged.
 Compilation/format parity does not prove improved restoration quality, RSS or
 latency; measure those separately if a claim is made.
+
+
+## Completion evidence
+
+All release gates passed, installed build diagnostics259->0, compiler tiny
+fixture bytes equal, all original3519 correctness/package and11performance
+identities retained. Both public CI workflows pass on4c61cdb6. Exact source,
+all10 artifacts and remote loaded-byte/native controls are in release101
+verification/native receipts and the owning document. This closes the measured
+build-warning slice; residual native failures and unadmitted research/quality
+work remain OPEN. Publication/updater discovery is recorded after publication.
