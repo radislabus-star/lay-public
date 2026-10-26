@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793042756.8783534,
-    "ast_hash": "c2349d1729aa588c93407800f17c2419",
+    "mtime": 1793047643.0534225,
+    "ast_hash": "cf21b8f464ad306a4c9857980e537662",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793042756.8785279,
-    "ast_hash": "5c7b0af5a034462e27c4b41344e4840c",
+    "mtime": 1793047643.0535283,
+    "ast_hash": "00e11f266ef57ab74d2edc681fa025bd",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793042756.8786845,
-    "ast_hash": "013c257eb7e5557b36ab8d51650ae4d8",
+    "mtime": 1793047643.0536325,
+    "ast_hash": "ba7fd0df2c75b95a814665d32cdadd73",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793044056.399349,
-    "ast_hash": "7c7e1cd0a262daf90ff2b7accbf0b3a9",
+    "mtime": 1793046485.513425,
+    "ast_hash": "7e9b561b517a63a68b674f3e468960f7",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4995,7 +4995,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.json": {
-    "mtime": 1793045459.1694539,
+    "mtime": 1793047959.5163481,
     "ast_hash": "e22df33a2e3dad4a45f4f8588d0b5210",
     "semantic_hash": ""
   },
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793045504.239718,
-    "ast_hash": "afce0a7b37f135bf1d9d8deca50e4226",
+    "mtime": 1793048024.4716718,
+    "ast_hash": "b7cc33c1a8f8ddae2b6d043b63ec16d2",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793045504.2387178,
-    "ast_hash": "1217e6491ca6d9432282949890fcb5da",
+    "mtime": 1793048024.470672,
+    "ast_hash": "1a4986ff526d49ef7d4df6ba36254ddc",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5185,7 +5185,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.default.json": {
-    "mtime": 1793045424.9362535,
+    "mtime": 1793047912.6220422,
     "ast_hash": "6e2772d62e64178b8399a1d6ec06ff80",
     "semantic_hash": ""
   },
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1793034796.6675706,
-    "ast_hash": "e9a53f134fadeff0a2c5b9d248710547",
+    "mtime": 1793047610.1326962,
+    "ast_hash": "588a79a1aea089dd656467d09b427b7f",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -6345,8 +6345,8 @@
     "semantic_hash": ""
   },
   "tech_debt/135-research-runtime-build-boundary.md": {
-    "mtime": 1793042361.7404203,
-    "ast_hash": "9c04e5ebf9107b942b81563a4aa34e60",
+    "mtime": 1793047513.5366597,
+    "ast_hash": "3aa551081360536f1165e676aaa5d170",
     "semantic_hash": ""
   },
   "tech_debt/136-functional-test-gaps-and-test-file-boundaries.md": {
@@ -7520,8 +7520,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs": {
-    "mtime": 1793033499.2058876,
-    "ast_hash": "c025419af3c76c6f2487aff219fff4fd",
+    "mtime": 1793047644.022523,
+    "ast_hash": "776b255e065ebc115e768d5bc37f7d67",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-19-fresh-manual-read-same-gesture.json": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793044423.0957184,
-    "ast_hash": "e0ad81b41ee73561e1aa207589770a03",
+    "mtime": 1793047513.5374491,
+    "ast_hash": "cf0c8c4d1ab086d7039d90fb63949aa6",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8515,8 +8515,8 @@
     "semantic_hash": ""
   },
   "docs/development/six-release-debt-plan-2026-10-25.md": {
-    "mtime": 1793040487.1002684,
-    "ast_hash": "26765929d71c619cb3e98a1e713a4ed3",
+    "mtime": 1793047473.9674456,
+    "ast_hash": "7bcb7477e2c066d2113d31a68f8a99de",
     "semantic_hash": ""
   },
   "docs/release-1.0.95.md": {
@@ -8685,18 +8685,48 @@
     "semantic_hash": ""
   },
   "docs/architecture/research-build-boundaries-2026-10-26.md": {
-    "mtime": 1793045177.3809414,
-    "ast_hash": "0b6b45a431ed6211c920f1c4bbb6278d",
+    "mtime": 1793047473.967213,
+    "ast_hash": "14814b083b1ecb43774fb7014aa91a84",
     "semantic_hash": ""
   },
   "tech_debt/build-warning-reachability-cleanup-2026-10-26.md": {
-    "mtime": 1793039936.1821084,
-    "ast_hash": "105e2ff1ed2f8aeda3acfe4ec3f87d70",
+    "mtime": 1793047473.9672952,
+    "ast_hash": "93549d163c2e9b244661f9fb83ce60ec",
     "semantic_hash": ""
   },
   "tech_debt/wezterm-native-preedit-followup-2026-10-26.md": {
     "mtime": 1793038301.8594005,
     "ast_hash": "b9561f50c8dc8f4f604167af41c1180b",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.101-native.json": {
+    "mtime": 1793046986.5796556,
+    "ast_hash": "2395c54a55339fb36a48561c62f06ec0",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.101-updater.json": {
+    "mtime": 1793047643.0717795,
+    "ast_hash": "2830762193dbae0df5dd5856aec236a1",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.101-verification.json": {
+    "mtime": 1793047473.9670923,
+    "ast_hash": "48d0a2c2e90b9ae35bb5196de7c7722e",
+    "semantic_hash": ""
+  },
+  "docs/architecture/authenticated-revocation-retirement-2026-10-26.md": {
+    "mtime": 1793047823.6783276,
+    "ast_hash": "ca8d4d727c6bb1aea8b0deb871397260",
+    "semantic_hash": ""
+  },
+  "docs/release-1.0.101.md": {
+    "mtime": 1793047473.9676633,
+    "ast_hash": "414ee8f604787d43629aea617ce34e7a",
+    "semantic_hash": ""
+  },
+  "tech_debt/authenticated-revocation-retirement-2026-10-26.md": {
+    "mtime": 1793047123.6763403,
+    "ast_hash": "794c22dcb20311c46f600c6016b630e1",
     "semantic_hash": ""
   }
 }

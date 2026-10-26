@@ -474,3 +474,150 @@ fn owned_preedit_blur_cannot_recover_from_unobserved_or_superseded_focus() {
         }));
     }
 }
+
+#[test]
+fn authenticated_revocation_disable_retains_received_focus() {
+    zbus::block_on(bounded(authenticated_revocation_retains_received_focus(
+        false,
+    )));
+}
+
+#[test]
+fn authenticated_revocation_repeat_blur_retains_received_focus() {
+    zbus::block_on(bounded(authenticated_revocation_retains_received_focus(
+        true,
+    )));
+}
+
+async fn authenticated_revocation_retains_received_focus(repeat_blur: bool) {
+    let mut harness = cycle09_harness().await;
+    let mut serial = 96_000;
+    let mut engine = owned_preedit(&mut harness, &mut serial, 0).await;
+    let old_token = engine.live_context_token().expect("owned source");
+    let path = engine.path.clone();
+    if repeat_blur {
+        let first = observed_callback_without_reply(serial, &path, "FocusOut");
+        send_manually_dispatched_callback(&mut harness.peer, &first, &path, ENGINE_INTERFACE).await;
+        assert!(harness.observer.process_next().await.unwrap());
+        consume_detached_callback_reply(&mut harness.peer, serial).await;
+        serial += 1;
+    }
+    let member = if repeat_blur { "FocusOut" } else { "Disable" };
+    let retired = observed_callback_without_reply(serial, &path, member);
+    send_manually_dispatched_callback(&mut harness.peer, &retired, &path, ENGINE_INTERFACE).await;
+    assert!(harness.observer.process_next().await.unwrap());
+    consume_detached_callback_reply(&mut harness.peer, serial).await;
+    serial += 1;
+    let stamp = harness
+        .adapter
+        .observe_callback(&retired.header(), Instant::now())
+        .await
+        .unwrap();
+    assert!(harness.adapter.revocation_matches(&old_token.owner, &stamp));
+    assert!(!harness.adapter.revalidate(&old_token));
+    let focus = observed_callback_without_reply(serial, &path, "FocusIn");
+    send_manually_dispatched_callback(&mut harness.peer, &focus, &path, ENGINE_INTERFACE).await;
+    assert!(harness.observer.process_next().await.unwrap());
+    consume_detached_callback_reply(&mut harness.peer, serial).await;
+    let before = harness
+        .adapter
+        .observe_callback(&focus.header(), Instant::now())
+        .await
+        .unwrap();
+    if repeat_blur {
+        engine.focus_out(retired.header()).await;
+    } else {
+        engine.disable(retired.header()).await;
+    }
+    let after = harness
+        .adapter
+        .observe_callback(&focus.header(), Instant::now())
+        .await;
+    assert!(
+        after.is_ok(),
+        "authenticated {member} revocation erased already received successor FocusIn: {after:?}"
+    );
+    let after = after.unwrap();
+    assert_eq!(before.position, after.position);
+    assert_eq!(before.disposition, after.disposition);
+    assert!(!engine.context_handoff_sealed);
+    assert!(engine.live_context_token().is_none());
+    assert!(engine.committed_tail.buffer.is_empty());
+    assert!(engine.committed_tail.pending_completion_learning.is_none());
+    cycle09_assert_no_local_text_effect(&mut harness).await;
+    engine.focus_in_callback(focus.header()).await;
+    let get = bounded(next_peer_message(&mut harness.peer)).await;
+    assert_eq!(get.header().member().map(|m| m.as_str()), Some("Get"));
+    harness
+        .peer
+        .connection
+        .reply(
+            &get.header(),
+            &OwnedValue::from(ObjectPath::try_from(CONTEXT_PATH).unwrap()),
+        )
+        .await
+        .unwrap();
+    forward_marker_bounded(&mut harness.peer).await;
+    assert!(harness.observer.process_next().await.unwrap());
+    let outcome = harness
+        .adapter
+        .try_finish_activation_for(&engine_path(&path))
+        .unwrap()
+        .expect("actual fresh context and marker");
+    assert!(matches!(&outcome, ActivationOutcome::SourceFree(_)));
+    assert!(engine.install_context_activation(outcome));
+    let scope = engine.context_word_scope.as_ref().unwrap().lineage();
+    assert_eq!(scope.completeness, WordCompleteness::UnknownStart);
+    assert_eq!(scope.observed_suffix_chars, 0);
+    assert!(!harness.adapter.revalidate(&old_token));
+    assert!(engine.committed_tail.buffer.is_empty());
+    cycle09_assert_no_local_text_effect(&mut harness).await;
+}
+
+#[test]
+fn unobserved_revocation_cannot_retain_focus_or_recover_the_old_word() {
+    for member in ["Disable", "FocusOut"] {
+        zbus::block_on(bounded(async {
+            let mut harness = cycle09_harness().await;
+            let mut serial = 97_000;
+            let mut engine = owned_preedit(&mut harness, &mut serial, 0).await;
+            let old = engine.live_context_token().unwrap();
+            let path = engine.path.clone();
+            let focus = observed_callback_without_reply(serial, &path, "FocusIn");
+            send_manually_dispatched_callback(&mut harness.peer, &focus, &path, ENGINE_INTERFACE)
+                .await;
+            assert!(harness.observer.process_next().await.unwrap());
+            consume_detached_callback_reply(&mut harness.peer, serial).await;
+            assert!(harness
+                .adapter
+                .observe_callback(&focus.header(), Instant::now())
+                .await
+                .is_ok());
+            // A constructed header is deliberately never received. It cannot
+            // authorize the narrow authenticated-retirement branch.
+            let absent = observed_callback_without_reply(serial + 1, &path, member);
+            if member == "Disable" {
+                engine.disable(absent.header()).await;
+            } else {
+                engine.focus_out(absent.header()).await;
+            }
+            assert!(!harness.adapter.revalidate(&old));
+            if let Some(current) = engine.live_context_token() {
+                assert_ne!(current, old, "revocation must invalidate the old token");
+            }
+            let scope = engine.context_word_scope.as_ref().unwrap().lineage();
+            assert_eq!(scope.completeness, WordCompleteness::UnknownStart);
+            assert_eq!(scope.observed_suffix_chars, 0);
+            assert!(!engine.can_acquire_fresh_exact_manual_source());
+            assert!(!engine.context_word_is_known());
+            assert!(!engine.context_handoff_sealed);
+            assert!(engine.committed_tail.pending_completion_learning.is_none());
+            assert!(harness
+                .adapter
+                .observe_callback(&focus.header(), Instant::now())
+                .await
+                .is_err());
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+        }));
+    }
+}

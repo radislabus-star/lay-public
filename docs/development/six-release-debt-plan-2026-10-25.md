@@ -20,8 +20,8 @@ client effects, BLOCKED prerequisites and NOT_TESTED coverage.
 | 2 | 1.0.98 | KDE Chrome Space layout and moved-boundary failures | RELEASED at2026-10-26T14:25:12Z,5052c3df;295P66F79B. Both installed updater discoveryPASS; retained native failures stayOPEN. |
 | extra installer blocker | 1.0.99 | Ubuntu26.04 missing transitional polkit package (#70 installer) | RELEASED 2026-10-26T15:39:23Z; all gates/CI/build-budget/discovery PASS; #70 answered/closed. Full clean26.04 installation untested. |
 | 3 | 1.0.100 | Shared long-sequence lifecycle/rapid gestures, remaining inline presentation, terminals and native coverage | RELEASED 2026-10-26T18:13:48Z,36fd0e7a; two lifecycle repairs;3519source/11performance/all10build/CI PASS;302P57F81B with12oldPASS losses. Both updater checks PASS; actual local automatic100 completed. Residuals OPEN |
-| 4 | 1.0.101 | Build warnings: measured reachability and minimal research/runtime boundaries | VERIFIED_BUILD:3519+11PASS,all10/zero install warnings,CI+SecuritySUCCESS; publication/updater next |
-| 5 | 1.0.102 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | QUEUED |
+| 4 | 1.0.101 | Build warnings: measured reachability and minimal research/runtime boundaries | RELEASED 2026-10-26T20:45:25Z,9b83e9ee;3519+11PASS,all10/zero install warnings,CI+SecuritySUCCESS; both installed updater checksPASS. Native residuals OPEN |
+| 5 | 1.0.102 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | ACTIVE_FULL: two authenticated-revocation schedules RED2/GREEN2; revised unobserved controlPASS on101;12targeted checksPASS; source/build/native/CI pending |
 | 6 | 1.0.103 | Reconcile debt queue and final acceptance/release/updater evidence | QUEUED |
 
 ## Stage 1 baseline and next action

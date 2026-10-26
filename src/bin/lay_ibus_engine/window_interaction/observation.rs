@@ -425,10 +425,12 @@ impl LayIbusEngine {
         if matches!(observed.header.member.as_str(), "FocusOut" | "FocusOutId")
             && admission.revocation_matches(&owner, &observed)
         {
-            // Authenticated loss of focus still requires local cleanup. The
-            // return value admits that lifecycle event, not a text handoff.
+            // Ingress already revoked this exact old owner. Retire its local
+            // preedit before normal blur cleanup, preserving later received
+            // focus metadata without admitting any old-word text handoff.
             self.context_handoff_sealed = false;
-            self.revoke_context_word();
+            self.strip_legacy_word_preedit_mirror();
+            self.retire_context_word_locally();
             return true;
         }
         let accepted_focus = matches!(observed.header.member.as_str(), "FocusOut" | "FocusOutId")
@@ -509,7 +511,10 @@ impl LayIbusEngine {
         }
         if observed.header.member == "Disable" && admission.revocation_matches(&owner, &observed) {
             self.context_handoff_sealed = false;
-            self.revoke_context_word();
+            // The observer's exact revocation already ended the old word.
+            // A second global revoke would erase a received successor focus.
+            self.strip_legacy_word_preedit_mirror();
+            self.retire_context_word_locally();
             return true;
         }
         let accepted = observed.header.member == "Disable" && admission.disable(&owner, &observed);

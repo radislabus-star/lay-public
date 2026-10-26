@@ -1,53 +1,49 @@
-## Current101 all gates/native controls/CI complete; publishing next — 2026-10-26T20:39:33.477566+00:00
+## Current102 minimal lifecycle fix in full verification — 2026-10-26T21:00:24.413286+00:00
 
-Continue original six release groups without agents/Harness2/manual GNOME install.
-Published97/98/extra99/100. Stable100tag36fd0e7a; actual both installed updater
-checks exit0/current100, local automatic100completed13m18.5s/3.6Gpeak.
-Full100 native302PASS57FAIL81BLOCKED/440, including12oldPASS losses; keep residuals.
+Continue six original release groups, no agents/Harness2/manual local GNOME install.
+Published97/98/extra99/100/101. Stable101tag9b83e9ee2d3efbe9bbf5e52d322633a989599b33,
+functional4c61cdb6; source1289/acrossfiles8c25e15e...;3519+11/all10/zero install
+warnings PASS, CI40394811146/Security40394811162 SUCCESS. Both actual installed
+updater checks26Oct20:46Z exit0: local100 offers101, remote101current.101updater
+receipt prepared to commit with102. Full100 native302P57F81B/440 historical;
+101short27P9F4B/40 including2oldPASS losses/onegain; Kitty5P/Konsole5P/Wez2P3F.
 
-101 functional4c61cdb6a7e5f7344e8bc9e78ccbf5d1bbdc9c22 pushed BOTH remotes.
-Source/modes1289files SHA8c25e15e9c6f9c481a0b91e5da1b59227749f19cfd6c2db187c8bf7ee27f1a9f.
-CROOT/release101-verified-gates/result.json ALLPASS:3519correctness/package,
-11performance,419Python(10skip),20requiredsteps,strictlints/bothMSRV/all10release,
-zero installer-build warnings, tinyold/newcompiler package bytes equal.
-Build215.690s, target4.2GB. All original identities/lanes retained. Local closure
-exact parity CACHE101/verified/local-final-parity.json. Source only GNOMEversion
-metadata; protected text_edit.rs/gate.rs unchanged, no input/model/learning edits.
+102 actual source/modes1289files ac2264f59e4f7dc9adbba38ccda84ec856c3daff0289326b03a95744d868c97a.
+Only validated Revocation branches of observe_context_focus_out/disable now
+strip old preedit and retire local witnesses with existing helpers. Generic
+unobserved/foreign refusals keep global strict revocation. Actual P2P source
+RED2/GREEN2; unobserved negative revised to existing UnknownStart/zero-suffix
+contract (not no-token), passes unchanged101. Rejected draft11P1F retained.
+Fullrun12focused controls PASS, then15prerequisites PASS; source3522/perf11/
+all10optimized/native pending. Exactly3new correctness tests, every oldidentity
+andlane retained. Owningdoc authenticated-revocation-retirement-2026-10-26.md.
 
-Remote private KDE101 installed exactretained10artifacts:
-engine3293136 SHAf7b8c6cd6d0c04195c63d6a13420f07c1a0ae56abb133e634d69fa14fe903b0a,
-daemon3293240,tray3293258; IBus3168326 and desktop preserved.
-Frozenr18short20each:Firefox12PASS6FAIL2BLOCKED,Chrome15PASS3FAIL2BLOCKED,
-total27P9F4B/40. Two oldPASS losses andonegain versus same100short retained.
-Chrome newSpacefailure firstrefusal stale_lease afterworkerprepared, NOT merely
-notready. Kitty5PASS/Konsole5PASS/Wez2PASS3FAIL. Rawterminalwrapperversionlabel
-accidentally100; companion native record explicitly resolves101 by exactloaded
-SHA/PID without rewriting rawreceipt or verdict. Visual101 NOT_TESTED.
-Historical100full440 is not101acceptance. Records/notes prepared but notpublic.
+RUNNING exec40060, CROOT/release102-full-gates; frozen
+/home/e/projects/lay-development-runner/release102-full-source-PQ6hrq,
+archive46412a9205ba7c215fcaaf89839e563af072dda87ad24be3acc80e82abd5287c,2007files.
+CACHE102/full has snapshot/scripts/request and early-source-verification.json;
+10generated/baselines synced, exactlocal source parity proved. Commit/push
+functional102 now to start publicCI while remaininggates run. No102runtime yet.
+Remote101engine3293136 SHA f7b8c6cd6d0c04195c63d6a13420f07c1a0ae56abb133e634d69fa14fe903b0a,
+daemon3293240/tray3293258. RootIBus3168326 unchanged. Dedicated20CPU28G persists.
 
-CI40394811146 SUCCESS including final release binaries; test,MSRV,installer passed.
-Security40394811162 SUCCESS. Final CI verified; tagging/publishing101 next.
-Do not use old8901CI; firstfull3518P1F sourceguard mismatch retained. Corrected
-guard requires stricter test-only oracle; all six runtime exclusions retained.
-Repo release101 records now contain actual CI SUCCESS; finalize actual
-CI evidence, owner/task/plan notes, explicitstageonly101files, commit/push/tag/
-release, then actual installed updater --check BOTH; busy75 remains WAIT.
-New102ownerdoc/task untracked deliberately EXCLUDED from101 publication commit.
+TD122 remains missing V1 completion proof/DECISION_REQUIRED; current exactV2
+cases do not prove V1 universally unused. TD123 ACTIVE_QUALITY belongs to
+syntax-agreement checkoutHEAD0e8ca416/currentroadmapQUALITY_NOT_PASS; nofit here.
+TD132/134 optionalunproved extraction DEFERRED. Reconciled current ownership,
+no falseDONE or forcedfile split. New Chrome Space stale_lease and WezTerm
+presentation remain OPEN, not explained by this source fix alone.
 
-102 controlled source experiments already COMPLETE, production NOTimplemented:
-real Disable-withoutblur and duplicateFocusOut followed by receivedFocusIn each
-RED on101; minimal stripmirror+localretirement in exact revocation_matches branches
-GREEN2/2, actualfreshGet/marker->SourceFreeUnknownStart0, oldtoken invalid/noedit.
-CROOT/release102-authenticated-revocation-red2 and -green; CACHE102/red-green-experiments.json.
-Both runners finallyrestore sourceclosure101; installed101 unchanged. Thenimplement
-existinghelpers, add negatives/supersession, fullgates/native/release102; reconcile
-TD122/123/132/134 honestly (no fit/forcedsplits/falseDONE). Then103 old-updater
-bootstrap must run via FRESHinstall/buildhelper; oldupdate.sh neverexecsnewupdate.sh.
-Real103autoapply test fromolder102, notnoop; localGNOME no manualinstall/restart.
-
-Remote dedicated20CPU28G env persists. Own Python SIGTERM proof24Gsoft onlyPython,
-restored28GforRust. IBusunitCPU20,512Msoft/1Ghard unchanged. Models/learning retained.
-Do not rerun AST autopatcher or build/install old dirty /home/ubu/projects/lay.
+103 next: oldupdater neverexecsnewupdate.sh; it does call fresh install/build.
+Bootstrapfiniteold MemoryHigh3G to sameexisting finitehard4G BEFOREcompile,
+verify onlyown updaterunit/ancestry/controlgroup, preservehard/CPU/swap. Tests
+and actualremote102->103 automaticapply required, not a no-op or manual install
+masquerading as automatic. Existing updater deliberately preserves activeIME:
+read-only LOCAL26Oct check found loadedenginePID3037150 version1.0.96 SHA
+1095c2648bb59e2f4363a3f58394013e6b6598eb9d8678f5b0fb98a01cd90ebc whilefiles100.
+Do not call installed version a loadedIMEversion; no localrestart authorized.
+Any pending runtime activation must be reported separately from auto file/build
+completion. Do not invent unsafe idlepoll+SIGTERM migration or new input owner.
 
 ## Current100 candidateA rejected; causal FocusOut RED — 2026-10-26T16:47:39.777966+00:00
 

@@ -67,3 +67,12 @@ Rollback — вернуть leaf тела/import, сохранить полез�
 - [ ] Characterization и adapter negative effects remote PASS, graph/canon PASS.
 - [ ] Fresh-context review >=8/10, максимум два прохода; source receipt/untested scope.
 - [ ] Task source-only DONE, commit/push; более крупный split остаётся TD-134.
+
+
+## Release102 reconciliation —2026-10-26
+
+2026-10-26 release102 reconciliation: the proved defect is in authenticated
+lifecycle retirement, not retired-preedit geometry. The two neighboring pure
+geometry helpers still share their existing owner and consumer. Keeping them
+together is the current8/10 minimal choice. No extraction is forced to close a
+checkbox; this optional discussion stays DEFERRED, with its existing guards.
