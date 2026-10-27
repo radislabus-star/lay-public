@@ -1,3 +1,116 @@
+## Current scoped102 publication — 2026-10-27T00:20:56.920094+00:00
+
+Active checkout: /home/ubu/projects/lay-revocation-isolated-20261027.
+Branch codex/revocation-isolated-20261027; functional fe6c7e91, canon305c4165.
+No agents, Harness2, manual local GNOME install or restart.
+
+Full influence map completed before user authorized fix -> tests -> release.
+C changes exactly two COMMON authenticated FocusOut/Disable revocation branches;
+no browser-only claim or reliable manual-window trigger. Source closure1289/
+e72574e997f6e4494ef3647e2b2b9f43826ac2b4bd72240c37c45ede57f5cbf2.
+All3523+11,419Python/10skip,lints,bothMSRV/all10 builds PASS. Functional305 CI
+40419118514,Security40419118458,canon40419118480 allfive checksSUCCESS.
+
+Full same-condition native101:FF125P55F40B,Chrome173P6F41B,298P61F81B/440.
+C:FF125P58F37B,Chrome172P5F43B,297P63F80B/440. Nine oldPASS losses/eight gains.
+GTKQt24P1F/25 and ordinaryShift11P7F/18 equal101 everyrow; terminalKitty5P,
+Konsole5P,Wez5F. Full grid and original losses remain OPEN, not regression-free.
+
+Single paired diagnostic nine identities:101=7P2F,C=8P1F. Original frozen r18
+--only forcesnormal; cases05/06 were supplementary normal controls. Corrected
+private two cases executed ONCE perversion using actorcopy with only validated
+window selector; both PASSbothversions. Do not rerun to green or replacefull440.
+Full rowtrace anchors do not ensure causal completeness: production logger
+flushes asynchronously1000ms. New wrapper waits outside keycadence whiledebug
+staysenabled. Both diagnostic iframe inputs contain exactwhole source and
+replacement_changes_uneditable_prefix/verifier refusal on101andC. No newruntime
+patch after C gates. Current acceptance:SCOPED lifecycle/build, native residuals
+OPEN, no all-window/visual/GNOME physical claim. Publication102PENDING.
+
+Current remote KDEIME37302/SHA28d672b97a6f49be785c6775145a744db5e367cc88f05717603c0ed0dcd76f67,
+daemon37416,tray37423. Deployment CROOT/release102c-private102-deployment/result.json.
+RootIBus3168326 unchanged. No running native jobs (private42235 completed).
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+CACHE=/home/ubu/.cache/lay/development/release-1.0.102-20261026;c=its/csubdirectory.
+Evidence tech_debt/evidence/release-1.0.102-{verification,native}.json.
+
+Publish via public repository only: public/main f5dd7e1a is ancestor. Private
+origin/main47fe54e6 has independent divergent work; DO NOT overwrite/merge it.
+Push isolated branch to both remotes; scoped public tag/release and BOTH installed
+updater discovery still required. No manual local update/restart.
+
+Next after102: WeChat-like GUI/input family repeated English DoubleShift loses
+letter. Identify actual toolkit/input stack first; no process-name specialcase
+or chat messages. Then Actions storage alert (user explicitly asked record):
+reported0.45GB/0.5GB90%, resetNov1, live billingUNVERIFIED. Taskfile
+tech_debt/github-actions-storage-budget-2026-10-27.md and authorized native note
+2026-10-26T23-35-58Z-lay-actions-storage-followup.md exist. No paid-budgetincrease.
+Original updater bootstrap deferred after these priorities; prototypeCACHE103,
+existing unit-copy+daemonreload beforecompile, no new policy helper. Renumberifneeded.
+
+Historical entries below are retained evidence, not the current job/runtime.
+
+## Current isolated C native verification — 2026-10-26T23:38:49.197075+00:00
+
+ACTIVE WORKTREE:/home/ubu/projects/lay-revocation-isolated-20261027;branch codex/revocation-isolated-20261027.
+HEAD305c41651635aa6289402e48b247d430ff1e9720 onorigin/public isolatedbranch.
+DraftPR71:https://github.com/radislabus-star/lay-public/pull/71.
+Stable remains101/tag9b83e9ee;102NOTPUBLISHED. No agents/Harness2/localGNOMEinstall.
+
+User required full influence map, THEN authorized fix -> test -> release ifOK.
+Map docs/development/ime-impact-map-2026-10-27.md completed280lines. C remains
+COMMON lifecycle repair in exactlytwo authenticatedrevocation branches, not
+Chrome-only. No proven manual-window trigger; don't claim cause ofallKDEFAIL.
+Csource1289/e72574e997f6e4494ef3647e2b2b9f43826ac2b4bd72240c37c45ede57f5cbf2,
+3523+11/all10optimized/lints/bothMSRV/Python41910skipPASS. Isolatedsource/modes
+match; group-write-only differences from newworktree normalized, no contents changed.
+Sourceproof CROOT/release102c-final-gates/result.json; CACHE/c/gates-final.json.
+
+Baseline101 fullnative COMPLETE undercurrent20CPUroot/sameRFBcadence/frozenactor:
+Firefox125P55F40B/220,Chrome173P6F41B/220,total298P61F81B/440.
+Terminals Kitty5P/Konsole5P/Wez5F (15scenarios total); printedfive counts cumulative.
+GTKQt24P1F/25 (GTKEntryroundtrip-spaceFAIL). OrdinaryShift controls11P7F/18:
+Kitty5P1F,Konsole5P1F,Wez1P5F; eight alphabeticShiftcases PASSinKitty/Konsole,
+RU punctuationfails allthree; Wez uppercasefourFAIL. No reclassification.
+CACHE/c/baseline101 contains8rawJSONplus GTKQt+ordinary summaries.
+Firstbaselinehelperversionassertwrong expected102 caused rollback; independently
+verifiedall11paths and Bengine3965013/source3ffc restored/rootIBus3168326 intact.
+V2 correctedhelperversion check only; raw failure preserved.
+
+C INSTALLED andRUNNING native exec46683 via run-candidate102c-v2-stage.sh.
+IME4068698/SHA28d672b97a6f49be785c6775145a744db5e367cc88f05717603c0ed0dcd76f67,
+daemon4068790,tray4068815;all10 installedversions102, rootIBus3168326 unchanged.
+CROOT/release102c-final-deployment/result.json. Sequence Firefox220,Chrome220,
+terminal15, then MUSTrun prepared run-extra-candidate102c.sh forGTKQt/ordinaryShift.
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+CACHE=/home/ubu/.cache/lay/development/release-1.0.102-20261026;c=its/csubdirectory.
+Use c/native/fetch-native.py afterfullcomplete; c/compare-native101-c.py compares
+all440exactidentities andretainslostPASS/gains pluslatencycoverage/median/p95/max.
+ExtraGTKQt path discoverfrom c/run-gtkqt-candidate102c.py: replacement gives
+release102c-candidate102c-gtkqt-gtkqt (do notguess paths). Ordinaryprefix
+release102c-candidate102c-ordinary-shift. Baselineprefix analogousbaseline101-v2.
+
+CI on305: canon40419118480PASS,Security40419118458PASS,CI40419118514public+MSRVPASS,
+Rust1.97/tray/extension stillpending atlastcheck. Initialfe6head canonfailed for
+missingnewdecision; addeddocs/architecture/decisions/2026-10-27-authenticated-word-revocation-retirement.json.
+Localbase=f5canonPASS+15guardtestsPASS; no runtime/checkweakened. No extra full
+functionalrerun fordocs-onlyrecord. Promoteonlyafternativecomparison/scopeverified;
+revieweverylostPASS, don'tacceptnetgainorhideknownFAIL/BLOCKED.
+
+Nextlatestuserpriority: ALL windows ofsameGUI/inputfamily asWeChat, repeated
+English toggles loseletter. Determineactualtoolkit/inputstack first, notWeChat-name
+specialcase; nochatmessages. Tasktech_debt/wechat-family-double-toggle-letter-loss-2026-10-27.md.
+Then newuserfollowup Actionsstorage reported0.45/0.5GB90%, resetNov1in6days,
+UNVERIFIEDreport. Tasktech_debt/github-actions-storage-budget-2026-10-27.md;
+userexplicitlyaskedrecord, nativead-hocnote saved2026-10-26T23-35-58Z-lay-actions-storage-followup.md.
+Currentfixnotinterrupted. Olderbootstrapqueue: provenexistingunitcopy/daemonreload
+beforecompile, prototypeCACHE103; postponeafternewpriorities, renumberifneeded.
+No newmemory-policyhelper; remoteoldautounitstill3Gsoft/4Ghard testbudget.
+
+LocalIME3037150loaded1095c264/96 atlatestread;file-pathdeleted, use/procbytesnot
+resolve(strict=True). No manual localrestart. Graph/source/evidence/currentGUI
+are separate. Scope physicalGNOME is NOT_TESTED unless actually established.
+
 ## Map completed; fix/test/release authorized — 2026-10-26T23:15:04.130542+00:00
 
 Active worktree: /home/ubu/projects/lay-revocation-isolated-20261027,

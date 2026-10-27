@@ -133,3 +133,76 @@ C full source proof:3523+11/all10, source1289/e72574e997f6e4494ef3647e2b2b9f4382
 Local source bytes and modes matched; no physical C acceptance is implied.
 A fresh native101 baseline runs under the same current conditions before C.
 No reliable manual-window trigger for the controlled ordering defect is known.
+
+
+## C native comparison HOLD; trace collection boundary
+
+Same-condition101 full:Firefox125P55F40B,Chrome173P6F41B,total298P61F81B/440.
+C full:Firefox125P58F37B,Chrome172P5F43B,total297P63F80B/440. Nine oldPASS
+losses/eight gains; no publication. Row identities retained in CACHE/c/
+baseline101-vs-c-native.json. Timingmedians101/C:Firefox163.864/165.170ms,
+Chrome47.829/46.969ms; p95245.305/244.198and63.602/63.176. Coverage differs,
+so no acceleration or all-window quality claim.
+
+Reading source debug_log.rs proves async production writes:1000ms active flush,
+bounded4096 channel and2048-line flush threshold; restoring debug=false can
+discard pending records. The frozen actor captures row logs immediately and
+its trace_complete flag checks only anchor uniqueness. That is not a causal
+completion fence. A successful baseline row's captured final key sequence can
+belong to a different operation; don't compare it to a failing row as root proof.
+Native DOM/a11y target verdicts remain unchanged; log-based causal attribution
+is restricted. Diagnostic collection must drain while logging remains enabled
+and validate actual observed key/source sequences. Do not change runtime logging
+or input delivery to repair the test reader.
+
+Predeclared bounded follow-up:all nine lost-PASS selectors, one cohort per
+version, using the unchanged actor --only selector/cadence/targets. No repeated
+full matrices, retry-to-green, safety changes or further IME patch without a
+measured first divergent transition. Protocol CACHE/c/native-causal-diagnostic-protocol.json.
+
+## Diagnostic selection correction — 2026-10-27
+
+The first bounded cohort completed, but inspecting actual row identities found
+that the frozen actor's `--only` explicitly selects `normal`. Its cases05/06
+therefore did not cover the requested private Firefox losses. Preserve those
+four results as supplementary normal controls, not private acceptance. Of the
+seven correctly selected target identities,101 has5PASS/2FAIL andC6PASS/1FAIL;
+iframe-rich moved-boundary fails on both, while Chrome textarea space-en-ru
+fails on101 and passes onC. This does not replace the full440 matrices or prove
+that each original loss is unrelated to the change.
+
+Amendment CACHE/c/private-scope-protocol.json predeclares exactly two actual
+private Firefox rapid-five cases (url/plain), once per version. A copied actor
+adds only a validated diagnostic-window argument and uses it in the existing
+mode selection. Native input, cadence, target predicates and original frozen
+actor remain unchanged. Copied actor SHA256:
+a0e865d7a46d1f61aef9b9c2a92634a5ecba0dc9ca1579a10e529bb2e7b23abc.
+Wrappers require the observed row.window to equal private; retained deployment
+artifacts and loaded process bytes are verified before each version. This is a
+correction of missing coverage, not a repeat of already valid target results.
+No additional runtime source change or publication is authorized by a test PASS
+alone. Full comparison, causal trace completeness and original failures remain
+separate acceptance boundaries.
+
+
+## Scoped lifecycle acceptance; native residuals remain OPEN
+
+All two actual private corrections pass on both versions. The complete bounded
+nine-target diagnostic is101=7PASS/2FAIL,C=8PASS/1FAIL, without a new oldPASS
+loss in that cohort. Source ordering controls, all3523+11 gates, all10 release
+artifacts and exact functional-source CI pass. Accept this bounded lifecycle
+repair for scoped publication under the existing six-release plan; do not
+promote it as browser-quality, visual or all-client acceptance. The original
+full440 nine losses/eight gains, preceding-state differences and trace limits
+remain recorded and OPEN. No assertion of regression freedom is made.
+
+Both diagnostic iframe source sequences equal the entire intended input
+«должн ыбыть ». Both reach replacement_changes_uneditable_prefix and then
+full_no_apply/verifier. That existing refusal is independently reproduced on101;
+it is not repaired here. Chrome diagnostic space-en-ru reaches identity_mismatch
+on101 and applies onC; one isolated pair does not attribute all full-run churn.
+
+Evidence:tech_debt/evidence/release-1.0.102-{verification,native}.json;
+CACHE/c/causal-paired-source-sequences.jsonl; private amendment as above.
+No runtime source changed after the measured C gates. Actions storage follow-up
+remains queued after the WeChat-family task, per the user's explicit request.
