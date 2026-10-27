@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793116213.5013,
-    "ast_hash": "0b590abe32696bb6dc1413119dd26cd6",
+    "mtime": 1793118146.3346722,
+    "ast_hash": "d17d5ef804e13b6487587711b73f91cf",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4995,7 +4995,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.json": {
-    "mtime": 1793117836.2218046,
+    "mtime": 1793118146.3344948,
     "ast_hash": "1b2a4e50b38f006f088ae135088d332f",
     "semantic_hash": ""
   },
@@ -5005,8 +5005,8 @@
     "semantic_hash": ""
   },
   "docs/lint-policy.md": {
-    "mtime": 1793101955.884799,
-    "ast_hash": "342d991508eef6841415d2f0d2ad7485",
+    "mtime": 1793118146.3348033,
+    "ast_hash": "57cd483f5b3a62cca4e7c8d5d0952e0e",
     "semantic_hash": ""
   },
   "scripts/check-lay-tests.sh": {
@@ -5185,7 +5185,7 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.default.json": {
-    "mtime": 1793117789.0764196,
+    "mtime": 1793118145.6938279,
     "ast_hash": "cbf51f210367cad683a4898e5557f971",
     "semantic_hash": ""
   },
@@ -8850,8 +8850,8 @@
     "semantic_hash": ""
   },
   "docs/development/dependency-updates-2026-10-27.md": {
-    "mtime": 1793117635.000554,
-    "ast_hash": "6b5340788fc2d13c223d3468d75df359",
+    "mtime": 1793118146.3350532,
+    "ast_hash": "efa5d80dc3b0f039762e7c47a65a8b91",
     "semantic_hash": ""
   },
   "docs/release-1.0.103.md": {
@@ -8890,8 +8890,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-27-sha2-lint-location-refresh.json": {
-    "mtime": 1793117635.0002987,
-    "ast_hash": "8b0c638a13e05a4e1708e6fd86d30dcd",
+    "mtime": 1793118146.3349304,
+    "ast_hash": "d33afae5f7cbcd9a45e367f840ff500b",
     "semantic_hash": ""
   }
 }

@@ -501,3 +501,10 @@ No Rust source changed during refresh. The policy's obsolete542/366 labels are
 also corrected to117/129; procedures and acceptance rules are unchanged.
 Refresh graph once for that final documentation update, then freeze final
 metadata before new source/build/CI. Original3541PASS and failed lint CI retained.
+
+Final metadata graph refresh PASS, verified3-file import. GitHub reproduced
+exactly the same3added/3removed locator mismatch in old05eb source CI; raw old
+failure remains in CACHE/pr66-ci/failed.log. No Rust function body was changed
+for lint maintenance, no new diagnostic or suppression. Final source/build/CI
+now rerun on the consistent metadata closure. The completed3541 old source
+PASS remains separate evidence, not relabeled as the new run.

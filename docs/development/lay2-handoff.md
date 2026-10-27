@@ -17,16 +17,16 @@ one-off timeout not reproduced, cause/rate unproven, remains open limitation.
 Do not call full native PASS. All source/CI and private diagnostic receipts
 in tech_debt/evidence/dependency-pr68-2026-10-27.json. All68 jobs finished.
 
-Current66 frozen05eb372add1410904b165cdba21163e40890446f, source run-iohfvf44
-PASS3541 (session18952 finished), original CI4/5 (watcher77148, CACHE/pr66-ci).
-Followup66gates-v1 FAILED at lint baseline locations:3default warnings only
-moved coordinates. No new logical warning identified. New explicit location-only
-ADR and preflight now added before standard writer. Need refresh via existing
---write-baseline, compare exact logical multiset/cardinality and same name spans,
-then existing graph wrapper. Do NOT change Rust code or suppress warnings.
-Old3541 source PASS retained; final source/build/CI must bind new metadata.
-Current base public/main ee889c28. Canon delta uploaded before checks.
-Remote preparation v4 PASS and verified10-file import committed05eb372a.
+Current66 final metadata closure ready to freeze after exact lint-locator
+refresh. Earlier source05eb372a run-iohfvf44 PASS3541; original CI4/5FAIL due
+same3added/3removed warning byte-coordinate mismatch, no new logical warning.
+Unchanged standard writer and both hard Clippy routes PASS:117default and129
+research entries retained,3moved records each, all other fields literal exact.
+Old-source span witness from mainee889c28 matches each new source-name byte slice.
+Explicit ADR covers location-only changes. Policy's stale542/366labels corrected
+to117/129, no rule change. Graph refreshed after final doc update and safe3-file
+import. Failed gates-v1 retained; final fullsource/gates-v2/freshCI required.
+
 Only21Rust files:22library hash-format calls, one independent TD113 test
 formatter (23total), one bounded production reader and test-helper reuse.
 Private library sha256_hex.rs owns encoder; stable_hash.rs restored exactly
