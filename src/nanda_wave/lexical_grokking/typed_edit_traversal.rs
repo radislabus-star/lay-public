@@ -2056,7 +2056,7 @@ fn prove_l1_typed_edit_phase(
 
 #[cfg(any(test, feature = "lexical-compiler"))]
 fn sha256_hex(bytes: &[u8]) -> String {
-    crate::stable_hash::encode_sha256_hex(Sha256::digest(bytes).into())
+    crate::sha256_hex::encode(Sha256::digest(bytes).into())
 }
 
 #[cfg(test)]

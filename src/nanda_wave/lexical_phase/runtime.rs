@@ -2337,7 +2337,7 @@ mod tests {
         println!(
             "TD123_RECONSTRUCTION_SOURCE {}",
             serde_json::json!({
-                "sha256": crate::stable_hash::encode_sha256_hex(Sha256::digest(memory.bytes()).into()),
+                "sha256": crate::sha256_hex::encode(Sha256::digest(memory.bytes()).into()),
                 "source_words": memory.stats().source_words,
             }),
         );
@@ -2393,7 +2393,7 @@ mod tests {
                     serde_json::json!({
                         "class": class, "surface": surface, "limit": limit,
                         "count": candidates.len(),
-                        "sha256": crate::stable_hash::encode_sha256_hex(Sha256::digest(format!("{candidates:?}").as_bytes()).into()),
+                        "sha256": crate::sha256_hex::encode(Sha256::digest(format!("{candidates:?}").as_bytes()).into()),
                         "elapsed_us": elapsed_us,
                         "raw_evaluations": reconstruction_count(&memory) - before_count,
                         "raw_material_us": reconstruction_us(&memory) - before_us,

@@ -49,6 +49,7 @@ pub(crate) mod russian_prefixes;
 pub(crate) mod russian_typo_candidates;
 pub(crate) mod russian_typo_scoring;
 pub(crate) mod scoped_tail;
+mod sha256_hex;
 mod stable_hash;
 pub mod stats;
 pub mod text_backend;

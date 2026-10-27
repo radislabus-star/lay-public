@@ -454,3 +454,16 @@ assertion, expected hash, mode and test identity. The new explicit ADR now
 covers this API compatibility change as well as inventory bindings. Total
 scope20files (19source/test-helper files plus1integration test),23format
 expressions,4newtests; no new runtime or acceptance condition.
+
+Preparation v3 compiled every Cargo target but rejected the actual inventory:
+stable_hash.rs is shared by lib and the training binary, so placing encoder
+tests there also registered2tests in the binary. Preserve this rejection rather
+than silently accepting a broader count. Do not add cfg flags or suppress
+unused-code warnings. Move only our new pure encoder/tests to private library
+sha256_hex.rs and declare it in lib.rs; restore the unchanged shared mix64 module.
+The reader remains with its original L2 owner, reused by the existing test
+helper. Options: library-only utility9/10; duplicate formatting22times5/10;
+conditional compilation/suppression3/10. Select the library-only module.
+Final intended scope21Rust files including lib/new utility;23format sites,
+exactly4library tests. Both unique mix64 function bodies remain byte-identical.
+This changes no ranking, input authority, desktop or delivery contract.

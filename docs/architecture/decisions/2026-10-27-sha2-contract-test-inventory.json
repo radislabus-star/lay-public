@@ -1,7 +1,7 @@
 {
   "schema": "lay.architecture-decision.v1",
-  "decision": "Preserve protected-artifact SHA256 verification under the sha20.11 API and extend the canonical inventory only with four representation/streaming-reader contract tests.",
-  "reason": "The upgrade removes io::Write on Sha256 and LowerHex on the output array. The bounded compatibility adaptation needs exact hash and I/O-error coverage while retaining every existing test, lane and zero-known-failure requirement. The independent TD113 artifact guard also uses the removed LowerHex API; adapt only its output-byte formatter using standard u8 formatting, preserving all assertions, expected hashes, modes and protected surfaces. Keep it independent of the production encoder.",
+  "decision": "Preserve protected-artifact SHA256 verification under the sha2 0.11 API and extend the canonical inventory only with four representation/streaming-reader contract tests.",
+  "reason": "The upgrade removes io::Write on Sha256 and LowerHex on the output array. The bounded compatibility adaptation needs exact hash and I/O-error coverage while retaining every existing test, lane and zero-known-failure requirement. The independent TD113 artifact guard also uses the removed LowerHex API; adapt only its output-byte formatter using standard u8 formatting, preserving all assertions, expected hashes, modes and protected surfaces. Keep it independent of the production encoder. stable_hash.rs is also included by the training binary; keep its mixed-hash owners unchanged and place the pure encoder/tests in a private library-only sha256_hex module, avoiding duplicate test registration or unused code in that binary.",
   "invariants": [
     "C01",
     "C10"

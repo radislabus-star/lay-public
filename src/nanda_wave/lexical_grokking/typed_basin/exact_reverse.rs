@@ -145,7 +145,7 @@ impl ReverseBank {
                 ]);
             }
         }
-        crate::stable_hash::encode_sha256_hex(hasher.finalize().into())
+        crate::sha256_hex::encode(hasher.finalize().into())
     }
 
     #[cfg(any(test, feature = "lexical-compiler"))]

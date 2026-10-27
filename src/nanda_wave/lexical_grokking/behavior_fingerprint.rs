@@ -39,7 +39,7 @@ impl RouteDigest {
     fn finish(self) -> Value {
         json!({
             "rows": self.rows,
-            "sha256": crate::stable_hash::encode_sha256_hex(self.digest.finalize().into()),
+            "sha256": crate::sha256_hex::encode(self.digest.finalize().into()),
             "framing": "u64_le_byte_length_then_canonical_compact_json",
         })
     }
@@ -471,7 +471,7 @@ fn file_identity(path: &Path) -> io::Result<Value> {
 
 fn json_sha256(value: &impl serde::Serialize) -> io::Result<String> {
     let bytes = serde_json::to_vec(value).map_err(io::Error::other)?;
-    Ok(crate::stable_hash::encode_sha256_hex(Sha256::digest(bytes).into()))
+    Ok(crate::sha256_hex::encode(Sha256::digest(bytes).into()))
 }
 
 fn sha256_file(path: &Path) -> io::Result<String> {
@@ -485,7 +485,7 @@ fn sha256_file(path: &Path) -> io::Result<String> {
         }
         digest.update(&buffer[..read]);
     }
-    Ok(crate::stable_hash::encode_sha256_hex(digest.finalize().into()))
+    Ok(crate::sha256_hex::encode(digest.finalize().into()))
 }
 
 fn write_projection(path: &Path, projection: &Value) -> io::Result<usize> {

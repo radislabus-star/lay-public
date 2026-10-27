@@ -231,7 +231,7 @@ fn candidate_fingerprint(
         digest.update((bytes.len() as u64).to_le_bytes());
         digest.update(bytes);
     }
-    Ok(crate::stable_hash::encode_sha256_hex(digest.finalize().into()))
+    Ok(crate::sha256_hex::encode(digest.finalize().into()))
 }
 
 fn benchmark_host_once(host: &L1RestorationHost, surface: &str, limit: usize) -> u64 {
