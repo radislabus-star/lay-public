@@ -1,16 +1,17 @@
 {
   "schema": "lay.architecture-decision.v1",
-  "decision": "Extend the canonical test inventory only with four SHA-256 representation and streaming-reader contract tests for the sha2 0.11 API migration.",
-  "reason": "The upgrade removes io::Write on Sha256 and LowerHex on the output array. The bounded compatibility adaptation needs exact hash and I/O-error coverage while retaining every existing test, lane and zero-known-failure requirement.",
+  "decision": "Preserve protected-artifact SHA256 verification under the sha20.11 API and extend the canonical inventory only with four representation/streaming-reader contract tests.",
+  "reason": "The upgrade removes io::Write on Sha256 and LowerHex on the output array. The bounded compatibility adaptation needs exact hash and I/O-error coverage while retaining every existing test, lane and zero-known-failure requirement. The independent TD113 artifact guard also uses the removed LowerHex API; adapt only its output-byte formatter using standard u8 formatting, preserving all assertions, expected hashes, modes and protected surfaces. Keep it independent of the production encoder.",
   "invariants": [
     "C01",
     "C10"
   ],
   "protected_paths": [
     "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json"
+    "scripts/test-lanes/known_failures.json",
+    "tests/td113_hybrid_source_contract.rs"
   ],
-  "verification": "Guarded locked Cargo discovery must add exactly the four declared tests with no old-row change or removal. Bind the same zero-known-failure declaration to the new manifest. Fresh complete correctness/package/performance, clean release build and exact-head CI provide new-source evidence; the older declaration alone does not.",
+  "verification": "Guarded locked Cargo discovery must add exactly the four declared tests with no old-row change or removal. Bind the same zero-known-failure declaration to the new manifest. Fresh complete correctness/package/performance, clean release build and exact-head CI provide new-source evidence; the older declaration alone does not. The guard helper alone changes to equivalent lowercase two-digit byte formatting; no pin, test body, exception or guard acceptance condition may change.",
   "not_tested": "Inventory discovery, package-byte parity and source checks do not establish general wave quality, installed runtime or physical-client acceptance. No input, ownership, desktop or delivery contract is changed.",
   "runtime_authority_changed": false
 }

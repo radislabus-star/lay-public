@@ -443,3 +443,14 @@ path/error wording. No second reader implementation. Scope becomes19Rust files,
 22format calls, one production reader adaptation and this test-only reuse;
 still exactly4new tests. Remaining io::copy in posting_spool targets a File
 and is intentionally retained. Fresh source preparation is required.
+
+Preparation v2 exposed the remaining integration-test LowerHex helper at
+TD113 guard line30. Focused diagnostic v2 preserves the exact compiler error.
+The source-only inventory omitted this tests/ site; a fresh AST inventory
+across src/tests/examples/benches identifies it as the sole remaining direct
+LowerHex expression. Adapt only that guard helper to existing independent
+standard u8 formatting, not the production encoder. Preserve every guard
+assertion, expected hash, mode and test identity. The new explicit ADR now
+covers this API compatibility change as well as inventory bindings. Total
+scope20files (19source/test-helper files plus1integration test),23format
+expressions,4newtests; no new runtime or acceptance condition.
