@@ -140,6 +140,26 @@ touch target/release/lay target/release/lay-daemon
         calls = (self.home / 'calls').read_text().splitlines()
         self.assertLess(calls.index('reload'), calls.index('build'))
 
+    def test_existing_rustup_environment_precedes_system_cargo(self):
+        self.shell(self.home / ".cargo/bin/cargo", "exit 0")
+        self.shell(self.home / ".cargo/bin/rustc", "echo rustup-existing")
+        (self.home / ".cargo/env").write_text(
+            'export PATH="$HOME/.cargo/bin:$PATH"\n')
+        self.shell(self.source / "scripts/build-release-binaries.sh", '''set -e
+if [ "$(command -v cargo)" != "$HOME/.cargo/bin/cargo" ]; then
+    echo 'existing rustup environment not loaded before compiler' >&2
+    exit 92
+fi
+test "$(rustc --version)" = rustup-existing
+echo build >> "$HOME/calls"
+mkdir -p target/release
+touch target/release/lay target/release/lay-daemon
+''')
+        result = self.install()
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertFalse((self.home / "forbidden").exists())
+        self.assertEqual('{"manual_corrections": 3}', self.personal.read_text())
+
     def test_build_failure_precedes_binary_and_updater_replacement(self):
         self.shell(self.source / "scripts/build-release-binaries.sh", "exit 44")
         result = self.install()

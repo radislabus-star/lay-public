@@ -1,7 +1,7 @@
 {
   "schema": "lay.architecture-decision.v1",
-  "decision": "Install the existing auto-update service/timer files and daemon-reload before the fresh installer's compiler starts, reusing the same installation owner and preserving timer choice.",
-  "reason": "An old running updater executes the fresh install.sh without re-executing the new updater. Copying the new unit only after compilation keeps the compiler under the obsolete MemoryHigh=3G setting. The existing unit refresh already supplies the required operation; no new policy helper is needed.",
+  "decision": "Load the existing user rustup environment before checking visible cargo, then install the existing auto-update service/timer files and daemon-reload before the fresh installer's compiler starts. Reuse the same installation owner and preserve timer choice.",
+  "reason": "An old running updater executes the fresh install.sh without re-executing the new updater. Copying the new unit only after compilation keeps the compiler under the obsolete MemoryHigh=3G setting. A present system cargo can also hide the already installed user rustup in systemd's older PATH. Existing environment loading and unit refresh already supply both required operations; no new toolchain or policy helper is needed.",
   "invariants": ["C01", "C10"],
   "protected_paths": ["install.sh", "tests/test_auto_update.py"],
   "runtime_authority_changed": false,

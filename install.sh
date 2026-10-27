@@ -131,10 +131,8 @@ elif [ "$#" -gt 0 ]; then
 fi
 
 echo "=== проверка cargo ==="
-if ! command -v cargo >/dev/null; then
-    if [ -f "$HOME/.cargo/env" ]; then
-        . "$HOME/.cargo/env"
-    fi
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
 fi
 if ! command -v cargo >/dev/null; then
     echo "rust не установлен. Поставь:" >&2

@@ -70,3 +70,32 @@ unchanged. The existing successful-order assertion now requires reload before
 resolve/build. The existing failed-build test still forbids binary/updater
 replacement. Cargo/lock/extension metadata advance to103; no Rust runtime source
 or IME path changes. Full gates and actual old-service automatic apply PENDING.
+
+## First staged service attempt and installed toolchain admission
+
+Budget-only source64d63e2c/graphd9bedb48 passed3523+11/all10,Python420/10skip,
+all source/build gates and allfive GitHub checks. First real installed automatic
+attempt PID463731 did NOT reach compilation: the test supplied the private KDE
+GUI bus to systemctl; daemon-reload could not contact the user manager. Receipt:
+CROOT/release103-automatic-staged/result.json and journal-by-invocation.log.
+The failed timestamp-based journal capture is retained separately. No binary
+upgrade occurred; source installer's early unit copy was followed by the test
+cleanup's manager reload, so the fresh policy is already loaded. A new legacy
+transition test must explicitly re-establish the byte-verified old unit only
+while it is stopped, then remove its own environmental override on completion.
+
+The actual service log also exposes a separate installer admission defect:
+it reports system rustc1.75 although existing user rustup is installed. The
+installer sources ~/.cargo/env only when cargo is absent. Source that existing
+file before the presence check, reusing the same owner, without installing or
+selecting a new toolchain. The new regression is EXPECTED_RED1 on the unchanged
+budget-only installer: visible system cargo must not hide existing rustup.
+CROOT/release103-rustup-selection-red/result.json. This adds no IME change.
+
+Next complete source must keep both bootstrap fixes and renew affected/final
+gates. The actual update's Cargo guard must acquire its own existing heavy
+lease; a lightweight observer must not hold that lease while waiting for the
+production service. Do not spoof guard flags or bypass a rejection. The real
+service retains its original4G/1CPU/256M kernel bounds; only its old soft limit
+is refreshed. GUI observations and user-manager control use their separate
+buses. None of these test corrections is a new production input route.

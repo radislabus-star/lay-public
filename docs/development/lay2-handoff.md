@@ -1,3 +1,40 @@
+## 103 source revision after actual service diagnosis — 2026-10-27T02:35:08.039172+00:00
+
+Active checkout/branch:lay-update-bootstrap-20261027 /codex/update-bootstrap-20261027.
+Budget-only64d63e2c+graphd9bedb48 passed all3523+11/all10/Python420/CIall5.
+PR72draft. First real staged attemptCROOT/release103-automatic-staged failed
+BEFOREcompiler: privateKDEGUI bus supplied to systemctl, manager reload refused.
+Recovered journal-by-invocation.log; PID463731/Invocation7172dde4e3ff425ca3b125afde8bf0c1.
+FilesCLI102/engineC102 unchanged. Earlyunitfilecopy+cleanupmanagerreload loaded
+freshMemoryHigh=infinity. Oldunit template2b7559a9 isexact public98 unit.
+Retestlegacy whileunitstopped; use managerbusforcontrol, GUIprivatebusforqueries.
+Do NOT hold parentheavy lease while realserviceCargo needs itsown existinglease.
+Lightweight observer may run bounded separately; realauto unitowns4G/CPU1/swap256M.
+Do not spoof guardflags or bypass resource refusal.
+
+Actual service printed systemrustc1.75 despiteexistinguserRustup. New meaningful
+regressionEXPECTED_RED1:CROOT/release103-rustup-selection-red. Minimal SECOND
+installer fix:reuse existing ~/.cargo/env loading beforecheckingvisiblecargo,
+removing outer if-cargo-absent gate. No new toolchain install/helper/IME change.
+NewUpdateInstallTests count4; Pythonexpected421. Renew finalgates/actualapply
+for this source; oldGgates are history, not acceptance of changedinstaller.
+Currentworkspace source still oldGclosure4fd1fab7; newarchive needs explicit
+Git tar.umask0022 and normalized localgroupwrite beforefreeze. Keep oldfailed
+transport and staged receipts. Publicmain870698c6; stable10204a0f65e. Private
+origin/main47fe54e6 mustremain untouched. No agents/Harness2/localGNOMErestart.
+
+Next:finalsource/graph/CI, stagedrealautomatic (normalcompiler with observer),
+then publication only afterscopeverified, then officialtransport/fullupdate
+proof and both installeddiscovery. Savedactualcompiler/fullsource receipts:
+CACHE103 andCROOT/release103-final-gates-v2. Caller/data isolation instructions
+in ownerdoc; package outputs needexplicitLAY_NANDA_L2_PHASE_MEMORY override
+(defaultignoresXDG_DATA_HOME), lexical/L3/canonicaldir scratchpaths. Keepreal
+liveconfig and loadedIMEprotected. OriginalQt6WeChatletterlossNOT_REPRODUCED;
+SDKxi2SetupDevicescrashOPEN, no speculativetransportfix. Actionsaccountreport
+storedprivately outsidepublictree; uniqueotherprojectfailureevidenceNOTdeleted.
+
+Historical entries below are not current jobs.
+
 ## Stage6/103 installer bootstrap active — 2026-10-27T01:18:11.021568+00:00
 
 Active checkout:/home/ubu/projects/lay-update-bootstrap-20261027,
