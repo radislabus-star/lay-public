@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793104833.4607303,
-    "ast_hash": "3328e70a2446fdb6f48e86deb4f361dc",
+    "mtime": 1793116213.5013,
+    "ast_hash": "0b590abe32696bb6dc1413119dd26cd6",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3880,7 +3880,7 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/l2_field/mod.rs": {
-    "mtime": 1793116035.4384947,
+    "mtime": 1793116213.501741,
     "ast_hash": "9ba053590daba1b9144cd1fbf855387e",
     "semantic_hash": ""
   },
@@ -4450,7 +4450,7 @@
     "semantic_hash": ""
   },
   "src/nanda_wave/lexical_grokking/posting_bounds.rs": {
-    "mtime": 1793116036.1195,
+    "mtime": 1793116213.5022864,
     "ast_hash": "564820946cbd30b68bb31b3c0a6127a9",
     "semantic_hash": ""
   },
@@ -4995,8 +4995,8 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.json": {
-    "mtime": 1793101982.1649103,
-    "ast_hash": "e22df33a2e3dad4a45f4f8588d0b5210",
+    "mtime": 1793117836.2218046,
+    "ast_hash": "1b2a4e50b38f006f088ae135088d332f",
     "semantic_hash": ""
   },
   "scripts/lint_inventory.py": {
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793116074.3047855,
+    "mtime": 1793116212.5295646,
     "ast_hash": "046ebddf39a0f385173fdfd9bb88cdca",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793116074.2927854,
+    "mtime": 1793116213.3445873,
     "ast_hash": "504e290cf3599c84036d92aeb51e2aaf",
     "semantic_hash": ""
   },
@@ -5185,8 +5185,8 @@
     "semantic_hash": ""
   },
   "scripts/lint-baseline/dead_code.default.json": {
-    "mtime": 1793101982.1639104,
-    "ast_hash": "6e2772d62e64178b8399a1d6ec06ff80",
+    "mtime": 1793117789.0764196,
+    "ast_hash": "cbf51f210367cad683a4898e5557f971",
     "semantic_hash": ""
   },
   "src/nanda_wave/ime_runtime_lifecycle.rs": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793114893.036935,
-    "ast_hash": "3d6fc62f4bc7fcc48a20c908a1bb2fa6",
+    "mtime": 1793117635.0019414,
+    "ast_hash": "f745e929cba9804fb95d7a6204a55fc9",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8850,8 +8850,8 @@
     "semantic_hash": ""
   },
   "docs/development/dependency-updates-2026-10-27.md": {
-    "mtime": 1793115887.4817927,
-    "ast_hash": "0c1d86e684f010d2de06a628edf21631",
+    "mtime": 1793117635.000554,
+    "ast_hash": "6b5340788fc2d13c223d3468d75df359",
     "semantic_hash": ""
   },
   "docs/release-1.0.103.md": {
@@ -8887,6 +8887,11 @@
   "tech_debt/evidence/dependency-pr68-2026-10-27.json": {
     "mtime": 1793114893.035053,
     "ast_hash": "0300fefb558f619f99ddb7bbd07c8eac",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-27-sha2-lint-location-refresh.json": {
+    "mtime": 1793117635.0002987,
+    "ast_hash": "8b0c638a13e05a4e1708e6fd86d30dcd",
     "semantic_hash": ""
   }
 }

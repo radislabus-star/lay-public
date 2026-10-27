@@ -2410,8 +2410,8 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 34257,
-          "byte_start": 34240,
+          "byte_end": 34274,
+          "byte_start": 34257,
           "file": "src/nanda_wave/lexical_grokking/posting_bounds/modal_residual.rs"
         }
       ],
@@ -4371,8 +4371,8 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 89152,
-          "byte_start": 89126,
+          "byte_end": 89184,
+          "byte_start": 89158,
           "file": "src/nanda_wave/lexical_grokking/posting_bounds.rs"
         }
       ],
@@ -4402,8 +4402,8 @@
       "code": "dead_code",
       "locations": [
         {
-          "byte_end": 89654,
-          "byte_start": 89644,
+          "byte_end": 89703,
+          "byte_start": 89693,
           "file": "src/nanda_wave/lexical_grokking/posting_bounds.rs"
         }
       ],

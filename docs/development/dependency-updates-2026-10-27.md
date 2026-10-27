@@ -491,3 +491,13 @@ cardinality preserved; no source code, warning suppressions, rule changes,
 semantic expectations or new warning budget. Standard --write-baseline stages
 both candidates atomically and enforces both hard Clippy routes. Validate it
 before a new full gate, including canonical ordering and same source-name span.
+
+Lint refresh PASS using the unchanged standard writer:117default/129research
+rows, same cardinalities and exact logical multisets,3moved records in each.
+All non-location fields remain literal identical. A pre-API source-span witness
+from public mainee889c28 proves each new span contains the exact same source-name
+bytes. Both hard Clippy routes and lint self-tests pass, with0non-dead diagnostics.
+No Rust source changed during refresh. The policy's obsolete542/366 labels are
+also corrected to117/129; procedures and acceptance rules are unchanged.
+Refresh graph once for that final documentation update, then freeze final
+metadata before new source/build/CI. Original3541PASS and failed lint CI retained.
