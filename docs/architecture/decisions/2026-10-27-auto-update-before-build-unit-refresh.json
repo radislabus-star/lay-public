@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Install the existing auto-update service/timer files and daemon-reload before the fresh installer's compiler starts, reusing the same installation owner and preserving timer choice.",
+  "reason": "An old running updater executes the fresh install.sh without re-executing the new updater. Copying the new unit only after compilation keeps the compiler under the obsolete MemoryHigh=3G setting. The existing unit refresh already supplies the required operation; no new policy helper is needed.",
+  "invariants": ["C01", "C10"],
+  "protected_paths": ["install.sh", "tests/test_auto_update.py"],
+  "runtime_authority_changed": false,
+  "verification": "Require the exact old-budget regression RED on unchanged installer and GREEN on the move, preserve hard memory/CPU/swap limits, no timer enable/disable, learning and initial-IME-setup protections, all release gates/artifacts, and actual remote automatic 102-to-103 completion. Check-only, a mock compiler or manual deployment cannot establish automatic completion.",
+  "not_tested": "At decision entry, the original installer failed the new real-fixture regression as expected. Updated source gates and real automatic application remain pending. No IME restart, delivery route, active-word ownership, local GNOME installation, model fit or all-client acceptance is authorized by this metadata refresh."
+}

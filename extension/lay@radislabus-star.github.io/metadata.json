@@ -2,7 +2,7 @@
   "uuid": "lay@radislabus-star.github.io",
   "name": "Lay Layout Switcher",
   "version": 1000102,
-  "version-name": "1.0.102",
+  "version-name": "1.0.103",
   "description": "Трей и GNOME bridge для Lay: RU/EN, режим ввода, автозамена, диагностика и управление службами.",
   "shell-version": [
     "45",

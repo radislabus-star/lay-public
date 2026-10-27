@@ -186,6 +186,12 @@ fi
 fi
 
 echo ""
+mkdir -p "$HOME/.config/systemd/user"
+cp "$DIR/systemd/lay-auto-update.service" "$HOME/.config/systemd/user/"
+cp "$DIR/systemd/lay-auto-update.timer" "$HOME/.config/systemd/user/"
+systemctl --user daemon-reload
+# Preserve the user's choice. Only the menu's explicit action enables the timer.
+
 echo "=== canonical L2 model ==="
 LAY_L2_PACKAGE_SOURCE="$(scripts/resolve-l2-package.sh)"
 export LAY_L2_PACKAGE_SOURCE
@@ -251,11 +257,6 @@ sed "s|/home/ubu|$HOME|g" "$DIR/extension/lay-settings.desktop" \
 update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
 echo "✓ settings launcher: ~/.local/share/applications/io.github.radislabus_star.LaySettings.desktop"
 
-mkdir -p "$HOME/.config/systemd/user"
-cp "$DIR/systemd/lay-auto-update.service" "$HOME/.config/systemd/user/"
-cp "$DIR/systemd/lay-auto-update.timer" "$HOME/.config/systemd/user/"
-systemctl --user daemon-reload
-# Preserve the user's choice. Only the menu's explicit action enables the timer.
 
 echo "=== службы графической сессии Lay ==="
 if [ "$UPDATE_EXISTING" = 1 ]; then

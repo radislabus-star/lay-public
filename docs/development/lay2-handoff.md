@@ -1,3 +1,36 @@
+## Stage6/103 installer bootstrap active — 2026-10-27T01:18:11.021568+00:00
+
+Active checkout:/home/ubu/projects/lay-update-bootstrap-20261027,
+branch codex/update-bootstrap-20261027 from870698c6. Only functional change is
+existing install.sh service/timer copy+daemonreload moved before model/compiler;
+installer SHAbe23551e matches priorGREEN. Tests add meaningful legacy-budget
+case and update successful semantic order. Cargo/lock/extension version103;
+no Rust runtime, IME route, styling, resource ceiling, timer-choice change.
+
+New integrated regression ran against exact unchanged actual installer5219e977:
+EXPECTED_RED,1test/1failure/0errors,correct old-soft-limit reason. No runtimechange.
+CROOT/release103-source-regression-red/result.json. Next GREEN/full gates,
+all10actual release builds/CI and REAL remote automatic102->103 completion.
+Original4G hard/CPU1/swap256M must remain; don't raise them to conceal failure.
+Only process-local privateKDE env for automatic run; manager defaultsGNOME10.0.
+No manual local install/restart, agents or Harness2. Source/runtime/public/native
+boundaries remain separate; oldIME may remain loaded after automatic fileupdate.
+
+102 is published04a0f65e; allsource3523+11/all10+functionalCIpassed; native
+297P63F80B/440 with9losses/8gainsOPEN. RemoteKDE Cengine37302/28d672b9,daemon37416,
+rootIBus3168326 unchanged. No activeheavy/nativejobs. PriorQt6/default15BLOCKED,
+core-clientcontrol9P6F, letterlossNOT_REPRODUCED, SDKxi2SetupDevices crashOPEN;
+see task/proof; do not blindly retain master (knownChrome regression decision).
+Actions follow-up recorded and inventoried privately; no Layartifacts, no deletion,
+private other-project evidence/budget/scopes preserved. Full report outsidepublic
+repo at /home/ubu/.cache/lay/development/actions-storage-20261027/followup.md.
+
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+CACHE103=/home/ubu/.cache/lay/development/release-1.0.103-20261027.
+Source buildmirror disposable workspace; targetcandidate-target-cache-20261023.
+Private origin/main47fe54e6 divergent: NEVER overwrite/merge into this release.
+Current public/main870698c6. Historical entries below are not currentjobs.
+
 ## Next original stage6; scoped102 published, diagnostics retained — 2026-10-27T01:04:38.701607+00:00
 
 Current checkout /home/ubu/projects/lay-wechat-family-20261027,

@@ -53,3 +53,20 @@ completion and current physical native acceptance.
 
 CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
 CACHE103=/home/ubu/.cache/lay/development/release-1.0.103-20261027.
+
+## Actual source move starts after102 publication —2026-10-27
+
+Source checkout:/home/ubu/projects/lay-update-bootstrap-20261027,
+branch codex/update-bootstrap-20261027 from870698c6.102 is published and both
+installed update-discovery checks passed. The new integrated regression was
+executed once against unchanged actual install.sh SHA5219e977:one expected
+failure, no infrastructure error, explicit legacy-soft-limit-before-compiler
+message. Receipt:CROOT/release103-source-regression-red/result.json.
+
+The existing five-line block moved before canonical L2 resolution/compilation,
+exactly matching the earlier controlled GREEN installer SHAbe23551e. Its timer
+choice comment and operations are unchanged; source unit resource limits stay
+unchanged. The existing successful-order assertion now requires reload before
+resolve/build. The existing failed-build test still forbids binary/updater
+replacement. Cargo/lock/extension metadata advance to103; no Rust runtime source
+or IME path changes. Full gates and actual old-service automatic apply PENDING.
