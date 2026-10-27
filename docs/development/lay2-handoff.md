@@ -1,49 +1,40 @@
 # Current task — sequential dependency PRs
 
-The user approved #65 → #67 → #64 → #68 → #66 on 2026-10-27.
-Work directly without agents/Harness2 in
-`/home/ubu/projects/lay-dependency-updates-20261027`, branch
-`codex/dependency-updates-20261027`. Preserve the other dirty worktree and
-local GNOME runtime. PR65 was integrated with public main85859d97 in
-merge988cfd27; only serde_json changes in the package map. Preflight and
-acceptance boundaries: `dependency-updates-2026-10-27.md` in this directory.
-Current step:64 preflight, integrate only arboard3.7 lockfile, then freeze,
-full worker gates, paired actual private clipboard proof and fresh CI.
-PR67 MERGED3b7873bfa62a013850db12cf98a0716facc17fa7 at2026-10-27T13:55:58Z.
-Functional CB789bc3 proof and metadata-only accepted83b6663c have identical
-source closure39975b2b9ed1797d21d19c4546ad589175a5314cf8ad5e30ee6555fd2b1350a8.
+User-approved order65→67→64→68→66; first three MERGED with independent full
+source and fresh CI5/5 evidence. Active checkout /home/ubu/projects/lay-dependency-updates-20261027,
+branch codex/dependency-updates-20261027. Direct work, no agents/Harness2.
+Current public main68eb82a6ba1cdecb4582732eae16997e43c9940e (PR64 merged
+2026-10-27T14:49:01Z). PR65 merge1afcb292,67merge3b7873bf; do not repeat
+completed gates. Detailed map/preflight/results dependency-updates-2026-10-27.md,
+versioned receipts tech_debt/evidence/dependency-pr{65,67,64}-2026-10-27.json.
+
+PR64: head860bc1fe,source closure9b682ccb3e03ebfb8c5d8f1a8b4d63ab23e492f9b4bb5067748ff63eaca41abc;
 3537Rust/11performance/421Python10skip/all10release/zero warnings/bothMSRV/
-package parity PASS. Second CI5/5PASS, exact merge tree verified. Old4/5
-canon failure was stale PR base8687eea0; REST PATCH base=main fixed metadata.
-Actual canonical diff checker passed and still rejects an undeclared protected
-edit. Never weaken canon or rewrite legacy decisions to address this.
-All67 worker jobs/watchers finished. Before every later PR push, REST PATCH
-base=main and verify it equals actual public main. gh pr edit is broken by
-retired Projects-classic API; use REST. Guarded workers require script files,
-not stdin. Next full gates use24G/28G envelope, no agents/Harness2.
-Private clipboard actor qualified with installed xclipboard: baseline67
-CLI4/4PASS, raw text incl LF/emoji preserved. Actor file/cache:
-/home/ubu/.cache/lay/development/dependency-updates-20261027/clipboard-probe-xclipboard.py;
-remote dependency-clipboard-probe-xclipboard-20261027.py. Baseline receipt
-clipboard-baseline67-result.json, source binary hash bound to67 artifacts.
-Retain earlier failed custom-GTK/standalone-Klipper setup; those do not prove
-an arboard3.7 regression or behavior of full Plasma. Do not alter CLI/IME for
-that setup mismatch. Use the identical positive actor for baseline+candidate64.
-Source67 run run-7enc6623; extra dependency-pr67-gates-v1. Disposable cache
-now4.71GB after verified prune, retained binaries intact. Next68,66 after64.
-PR65 is MERGED1afcb2920ddf294df9463d0a82cf37a55dd5f86e at2026-10-27T12:31:05Z.
-Verified head a5d063b2, closure e73e7b03798ef4ef955168d013740a558f581d3c190caf4152bc2d578607bf2d:
-3537Rust/11performance/421Python(10skip), all10actual release binaries,
-zero warnings, both MSRV profiles and package parity PASS. Fresh CI5/5 PASS;
-merged tree equals verified PR tree. Evidence dependency-pr65-2026-10-27.json.
-Original offline-cache and Python-envelope launch failures retained; no runtime
-source workaround. All worker jobs/watchers for65 finished. Source run
-run-fghjrpfp; followup dependency-pr65-gates-v2. Subsequent gate launches must
-set LAY_RESOURCE_MEMORY_HIGH=24G; the worker envelope requires24G/28G.
-Three dependency PRs remain:64,68,66. Do not redo completed65/67 verification.
-Full browser FAIL investigation is
-queued after the five dependency updates; old full-matrix numbers remain
-historical, not a measurement of1.0.104.
+byte parity/17followup gates PASS. Paired private native clipboard8/8PASS
+with identical frozen xclipboard actor; exact multiline/emoji after CLI exit.
+Source run-d9qbu0l3; followup dependency-pr64-gates-v1. All64 jobs/watchers finished.
+
+Next68zbus lock-only after this preflight commit. Base REST PATCH=main before
+push must equal actual public main. No unrestricted cargo update. Full source
+then gates-v3 with --canon-delta,24G/28G. Worker synthetic a8fbda3c is not source
+history; use canonical changed/added set. No canon/driver/guard weakening.
+Private9-role IBus fixture remoteCROOT/dependency-ibus-fixture-v1 has exact
+copied models/active receipt/current64service and baseline64config. Its
+immediate lifecycle FAILED driver806 before0/3completed cases; retain as
+pre-upgrade known failure, no source workaround. Other baseline protocol lanes
+manual-toggle3/terminal-delivery4 post-exact-ready remain to qualify. Driver
+unchanged. These are not physical browser acceptance or cold quality.
+
+CACHE=/home/ubu/.cache/lay/development/dependency-updates-20261027;
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+Generic cache watcher watch-pr.py; exact merge merge-verified-pr.py;
+followup dependency-gates-v3.py; canon check check-canonical-delta.py.
+Resource guard explicit uploaded script files, never stdin; followup memory
+high24G/max28G. Retained stage binaries outside disposable Cargo cache.
+After68→66 API migration, full browser FAIL investigation remains queued.
+Old full table100PASS/76FAIL/144NOT_TESTED of320 is historical; do not replace
+it with source/clipboard successes or the prior focused24native cases.
+No local GNOME install/restart, global IBus change or IME delivery-route change.
 
 # Current accepted release — 1.0.104 published and updater verified
 
