@@ -1,3 +1,56 @@
+# Current accepted release — 1.0.104 published and updater verified
+
+At 2026-10-27T11:28:34.189257+00:00. Current task COMPLETE: user-confirmed US→RU short function words
+`d→в`, `yf→на`, `b→и` on Space, first and later word. Stable public release:
+https://github.com/radislabus-star/lay-public/releases/tag/v1.0.104
+Tag commit b1232f1ab51864f952567b630d76e14a9ab23e9c; functional commit
+835c0058bd443ef02b82cbf787395aafe82e6d10 has CI+Security4/4PASS (direct push
+has3CIjobs+1Security; canon gate is local, not a fifth GitHub job). Private
+origin own branch and public main advanced normally; no force/tag rewrite.
+
+Source/build final:3537/3537 Rust,11/11 performance,421Python/10skip,
+all18steps/all10actual release binaries/no release warnings/MSRVboth/canon/
+graph/audit50PASS. Frozen source closure4b6a28cafe8f9df92c44595613f8e432b5aad0fd5364470f5b002dba7c0a7bcd,
+1289files; all ten final hashes match actual native-tested preview.
+Native scoped fixed24: KDE Chrome12/12,Firefox12/12, normal plain text, first/
+subsequent5 conversions+2English controls. Actual Chrome later:yf resamples
+one coherent earlier own prefix, then `пишу на ` caret8/no selection. Same
+80ms bound, no output retry, fake snapshot, owner/verifier/delivery/GNOME style
+change. Old full browser matrix NOT rerun; no USB/evdev qualification claim.
+Latency n10/browser from Space release: Chrome59.6/77.2ms median/p95;
+Firefox16.8/17.4ms, includes observer polling. Protected English bp/pf and
+uppercase acronyms unchanged. Cold atomic subset fixture remains OPEN P2;
+no assertion/ranker workaround or claim its cause was established.
+
+Actual installed menu updater --check both PASS against official stable API:
+local103→104 available; remote104=current. Updater SHAaebfb65e both scripts.
+Fresh local inventory: files103/liveIME96 PID3037150 SHA1095c264; preserved.
+Remote live104 engine2122913 SHA138d936899f383937bf4868eeffa275d86fe7cf2f2f3779ffb03046b725f16b0,
+daemon2123003,tray2123021; fresh hash still equal native receipt. No manual
+local install/restart. User updates through menu, then finishes input and
+uses «Lay включён» off/on to load new engine. GNOME has no restartLay menu
+item; KDE «restart daemon» alone does not reload IME. Do not give wrong labels.
+
+Version labels were separately synchronized in metadata-only commit b1232f1a:
+Cargo104, metadata name104/integer1000104, APP_VERSION104/date2026-10-27,
+VERSIONING104. Runtime source unchanged; accepted verification reused. For a
+future release sync ALL labels before freeze/build. Never invoke default bump
+helper on local GNOME: it also builds/installs/reloads. All heavy work remains
+remote under existing guards; no agents/Harness² or unrelated route changes.
+
+Evidence in `tech_debt/evidence/release-1.0.104-{verification,native,updater}.json`;
+map/chronological results in `docs/architecture/short-function-layout-2026-10-27.md`.
+CACHE=/home/ubu/.cache/lay/development/short-function-layout-20261027.
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+Raw final `short-function-release104-final/result.json`; deployed preview
+`short-function-freshness-preview-deployment/result.json`; native
+`short-function-freshness-native-v2-{browser}/{browser}/result.json`.
+Initial missing --smoke invocation is retained NOT_TESTED12, never PASS.
+All heavy jobs/watchers finished. Only final metadata audit push, Hindsight
+checkpoint and completion sound remain; no new functional tests/builds needed.
+
+--- Historical checkpoints, not active instructions; current result above ---
+
 # Current continuation — 1.0.104 verified, publication next
 
 At 2026-10-27T10:54:46.046756+00:00. Worktree `/home/ubu/projects/lay-short-function-layout-20261027`,

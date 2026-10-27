@@ -1,10 +1,16 @@
 # Short Russian function words in exact Space layout conversion
 
-Status at 2026-10-27T10:44:43.071949+00:00: remote KDE candidate1.0.104 passes the fixed24-row native
-short-function Space proof (Chrome12/12,Firefox12/12). Full final release
-gates PASS:3537/3537 correctness+package,11/11 performance,421Python(10skip),
-18required steps, all10artifact hashes identical to the native-tested preview.
-Public stable remains1.0.103 until exact-commit CI/security and publication.
+Status at 2026-10-27T11:28:34.189257+00:00: stable1.0.104 is PUBLISHED at tagv1.0.104,
+release commitb1232f1ab51864f952567b630d76e14a9ab23e9c. Functional commit
+835c0058bd443ef02b82cbf787395aafe82e6d10 has four successful GitHub checks
+(CI3+Security1); architecture canon is an additional local release gate, not
+a fifth direct-push GitHub job. Final source3537/3537, performance11/11,
+Python421(10skip), all10actual release binaries and native24 PASS.
+The tag adds only five release-label value updates in three metadata files;
+verified runtime source closure4b6a28ca remains equal. Both actual installed
+menu updater scripts now discover104 correctly: local103→104 available;
+remote104 current. No manual local install or restart.
+
 Direction explicitly confirmed by the user: US->RU d->в,yf->на,b->и. Reverse
 policy, common output routes, decision/verifier and GNOME display unchanged.
 
@@ -373,3 +379,24 @@ Post-acceptance entries record measurements/publication metadata only. The
 graph and compiled architecture receipt remain the frozen verified Rust graph;
 no Rust/generated-receipt change or new functional verification is introduced
 by these result/release-note entries (accepted-version publication contract).
+
+## Published stable and installed updater result
+
+Publication2026-10-27T11:24:32Z, public tagv1.0.104→b1232f1a. Functional
+commit835c0058 CI run40492220973 and Security40492220967 finish success4/4.
+No CI was repeated for metadata-only labels, per accepted-version publication
+contract. VERSIONING.md, metadata version-name/integer, APP_VERSION/date now
+agree104/1000104/2026-10-27; GNOME rendering and behavior are unchanged.
+
+Actual installed menu owners and resolved updater script hashes were inspected
+on both hosts. Their `--check` outputs use the official stable releases/latest
+API: local103→104 available, remote104=current, both exit0. This is discovery,
+not proof of applying104 through updater. Local postpublication files103/live
+IME96(PID3037150) remained unchanged; remote actual engine104/PID2122913
+still matches native-tested SHA138d9368. Completing input then toggling
+«Lay включён» off/on loads the newly installed IME; do not refer to a
+nonexistent GNOME «restartLay» menu action. Global IBus was never restarted.
+Durable publication/updater evidence: tech_debt/evidence/release-1.0.104-updater.json.
+For the next release synchronize all package, metadata integer/name, APP_VERSION,
+release date and VERSIONING values BEFORE the initial freeze/build; do not run
+the bump helper locally because its default also builds/installs/reloads.

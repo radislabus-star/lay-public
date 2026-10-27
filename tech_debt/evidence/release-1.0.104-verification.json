@@ -1,7 +1,7 @@
 {
   "schema": "lay.release104.verification.v1",
   "recorded_at": "2026-10-27T10:53:54.626981+00:00",
-  "status": "SOURCE_BUILD_NATIVE_VERIFIED_PUBLICATION_PENDING",
+  "status": "PUBLISHED_STABLE_SOURCE_BUILD_NATIVE_CI_AND_DISCOVERY_VERIFIED",
   "version": "1.0.104",
   "canonical_base": "c52d6e4133cb05217d604bcddf7595595db0e964",
   "source": {
@@ -216,7 +216,48 @@
   "cargo_target_budget_bytes": 12884901888,
   "local_install_or_restart": false,
   "runtime_authority_changed": false,
-  "ci": "PENDING_EXACT_COMMIT",
-  "security": "PENDING_EXACT_COMMIT",
-  "stable_updater": "PENDING_PUBLICATION"
+  "ci": {
+    "recorded_at": "2026-10-27T11:24:26.449848+00:00",
+    "functional_commit": "835c0058bd443ef02b82cbf787395aafe82e6d10",
+    "release_commit": "b1232f1ab51864f952567b630d76e14a9ab23e9c",
+    "metadata_only_delta": [
+      "VERSIONING.md",
+      "extension/lay@radislabus-star.github.io/metadata.json",
+      "extension/lay@radislabus-star.github.io/tray_support.js"
+    ],
+    "runtime_source_unchanged": true,
+    "status": "PASS",
+    "checks": [
+      {
+        "name": "Public installer regressions",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148703010"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148702851"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220967/job/122148702708"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148702572"
+      }
+    ]
+  },
+  "security": "PASS_RUSTSEC_EXACT_FUNCTIONAL_COMMIT",
+  "stable_updater": "tech_debt/evidence/release-1.0.104-updater.json",
+  "publication": {
+    "tag": "v1.0.104",
+    "release_commit": "b1232f1ab51864f952567b630d76e14a9ab23e9c",
+    "published_at": "2026-10-27T11:24:32Z",
+    "release_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.104",
+    "draft": false,
+    "prerelease": false
+  }
 }
