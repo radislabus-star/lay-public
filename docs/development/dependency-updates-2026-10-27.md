@@ -27,8 +27,8 @@ The full browser failure investigation remains queued after this sequence.
 |---|---|---|---|
 | 65 | serde_json 1.0.151 → 1.0.154 | Merged1afcb292; source/CI PASS | Current-main integration; parser/writer contracts |
 | 67 | rayon 1.10.0 → 1.12.0 | Merged3b7873bf; source/CI PASS | Stale architecture source binding; parallel-runtime contracts |
-| 64 | arboard 3.6.1 → 3.7.0 | Preflight written | Installer preservation failure and test inventory drift; causality unproven |
-| 68 | zbus 5.15.0 → 5.16.0 | Queued | D-Bus/IBus integration and transitive zvariant update |
+| 64 | arboard 3.6.1 → 3.7.0 | Merged68eb82a6; source/native clipboard/CI PASS | Installer preservation failure and test inventory drift; causality unproven |
+| 68 | zbus 5.15.0 → 5.16.0 | Preflight written | D-Bus/IBus integration and transitive zvariant update |
 | 66 | sha2 0.10.9 → 0.11.1 | Queued | Removed io::Write and output LowerHex implementations |
 
 Read-only triage receipt:
@@ -258,3 +258,81 @@ contents. This does not establish a regression in arboard3.7 (not applied),
 or behavior of a full Plasma session. Do not change CLI/IME delivery to fix a
 fixture capability mismatch. The candidate must use the same frozen positive
 xclipboard actor and all4 exact cases, with baseline control retained.
+
+### PR64 accepted result
+
+Merged68eb82a6ba1cdecb4582732eae16997e43c9940e at2026-10-27T14:49:01Z.
+Frozen head860bc1fe17e8bf59f87577bdb8c379345531b856, source closure
+9b682ccb3e03ebfb8c5d8f1a8b4d63ab23e492f9b4bb5067748ff63eaca41abc.
+3537Rust,11performance,421Python/10existing skips,17followup gates,
+all10actual release binaries,zero warnings,both MSRV profiles,package parity,
+fresh CI5/5 PASS. Actual canonical delta and protected-edit negative control
+PASS; no guard changes. Merge tree equals tested head. Native clipboard8/8
+PASS: all4 UTF-8/case/multiline/emoji cases on each retained old/new CLI,
+identical frozen xclipboard actor and real receiver after process exit.
+Process times6.2–7.9ms,n4/version include5ms observer polling; these are not
+IME/keyboard response times. Browser/Wayland/physical matrix NOT_TESTED.
+Source run run-d9qbu0l3; followup dependency-pr64-gates-v1; exact evidence in
+tech_debt/evidence/dependency-pr64-2026-10-27.json. No runtime installation.
+
+## PR #68 preflight — before applying zbus 5.16
+
+Current public main is68eb82a6ba1cdecb4582732eae16997e43c9940e.
+Existing owners are the IBus connection/factory and bridge modules, daemon
+D-Bus clients, tray D-Bus interfaces and existing desktop dispatch. The PR is
+lockfile-only: zbus5.15→5.16 with its macros/zvariant closure. Inspect the
+complete package multiset rather than trusting the misleading branch label
+(zbus-5.19.0). Keep vendored zbus_names=4.3.2 and its compatibility feature.
+No first broken production transition has been demonstrated for this upgrade;
+the existing old-base CI successes do not establish current compatibility.
+
+Options: hold5.15 (7/10); reviewed bounded lockfile upgrade with real bus and
+full-source proof (9/10); unrestricted update or transport redesign (3/10).
+Select the bounded upgrade. Do not add compatibility bypasses speculatively.
+
+Consequences and checks:
+
+- C01: freeze actual source files/modes, lockfile, package closure, compiler
+  artifacts and candidate hashes. Worker synthetic Git metadata is not the
+  canonical source commit. Correct PR base metadata before pushing; compare
+  the canonical changed/added sets through the unchanged canon checker.
+- C02/C03: ranking, candidate retention, mutation decisions and word/context
+  ownership remain with their existing reducers. Transport can change arrival
+  order; the complete fixed proof must preserve stale-result refusal and exact
+  focus/epoch/transaction identity. No second authority or connection pool.
+- C04/C05: retain one command per gesture and one typed delivery execution.
+  No changed wire method, fallback, client-specific path, retry, timeout or
+  desktop detection. Keep existing80ms source/40ms selected-text boundaries.
+- Real-zbus peer-to-peer tests cover factory callback rendezvous, marker and
+  ping signatures, bounded bursts, ordered readiness and observer cancellation;
+  ibus_wire_compat and daemon/tray tests remain in the fixed full3537 set.
+  All10 actual release binaries and both MSRV profiles must compile cleanly.
+- zvariant's borrowed/owned values, signatures and error propagation may
+  change; inspect transitive versions, default features and vendor pin. Do not
+  reinterpret a failed D-Bus call as valid observation or grant edit authority.
+- Concurrency/allocation/startup/latency can change despite no Rust diff.
+  Run existing enforced11performance cases and bounded resource/disk checks.
+  New library version is not a speedup claim. No new cache, thread, scheduler,
+  queue or lifetime owner is introduced in Lay.
+- Serialization, model/delta reload, feedback and integrity remain governed
+  by current modules. Retain package/learning tests and offline package-byte
+  parity. No shared model/learning mutation, training or cleanup.
+- Additional integration uses the existing immutable V3 actual-input-context
+  driver in a fresh private bus/PID/network/mount namespace. Copy/hash the9
+  required dependency roles, preserve the active receipt bytes and mount path,
+  bind the actual retained engine and service. No global IBus or GUI restart.
+- Qualified baseline64 fixture's immediate lifecycle lane FAILED before its
+  first completed case: driver.py806 sees visible/output changed after refocus.
+  Receipt: remoteCROOT/dependency-ibus-baseline64-lifecycle-v1/receipt.json.
+  This precedes the zbus upgrade and is not blamed on5.16. Preserve failure;
+  never change driver assertions, readiness, deadlines or scenario bodies.
+- Test the existing manual-toggle3 and terminal-delivery4 lanes with the same
+  admitted post-exact-ready schedule on both retained engines. This is private
+  actual IBus/GNU Readline transport coverage, not cold restoration quality,
+  desktop/browser acceptance, physical keyboard or immediate-Space latency.
+  Retain unavailable/failing cases in their original denominators. Any new
+  regression blocks merge. The baseline lifecycle refusal remains separate
+  open evidence, not silently removed or relabeled PASS.
+- All source, package, installer, lints, graph, audit and fresh CI/security gates
+  remain required. Rollback is the reviewed lockfile closure; no installed
+  runtime or data is changed by the dependency merge.

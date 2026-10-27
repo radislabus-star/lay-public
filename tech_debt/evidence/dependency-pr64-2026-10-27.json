@@ -1,0 +1,503 @@
+{
+  "schema": "lay.dependency-acceptance.v1",
+  "pr": 64,
+  "url": "https://github.com/radislabus-star/lay-public/pull/64",
+  "checked_at": "2026-10-27T14:50:55.466427+00:00",
+  "state": "MERGED",
+  "base": "3b7873bfa62a013850db12cf98a0716facc17fa7",
+  "functional_head": "860bc1fe17e8bf59f87577bdb8c379345531b856",
+  "merge": {
+    "mergeCommit": {
+      "oid": "68eb82a6ba1cdecb4582732eae16997e43c9940e"
+    },
+    "mergedAt": "2026-10-27T14:49:01Z",
+    "number": 64,
+    "state": "MERGED",
+    "url": "https://github.com/radislabus-star/lay-public/pull/64"
+  },
+  "change": {
+    "arboard": {
+      "from": "3.6.1",
+      "to": "3.7.0"
+    },
+    "removed_only_unused_windows_closure": true,
+    "rust_behavior_source_changed": false
+  },
+  "source": {
+    "files": 1289,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "9b682ccb3e03ebfb8c5d8f1a8b4d63ab23e492f9b4bb5067748ff63eaca41abc"
+  },
+  "archive_sha256": "9b921f66bb5480f48282cec76fa7af5243dea74618eda0f0d9feea21c4b56373",
+  "lock_sha256": "b6b23013f7f9a7a82799c693523c1bc8bfd46e5bc8aa1298a5f9b5662e2077f2",
+  "worker_metadata_git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+  "worker_git_head_is_source_commit": false,
+  "tests": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 446.76569708413444,
+      "package": 49.47224287665449
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 151.45852089580148,
+      "bin:lay-debug-actions": 0.011096358997747302,
+      "bin:lay-ibus-engine": 146.59579666447826,
+      "bin:lay-l11-serve": 0.013960554962977767,
+      "bin:lay-memory-report": 0.008970445021986961,
+      "bin:lay-nanda-dataset": 0.030411629006266594,
+      "bin:lay-nanda-wave-eval": 1.3212485099211335,
+      "bin:lay-nanda-wave-train": 1.1834875179920346,
+      "bin:lay-test-input": 0.00787648418918252,
+      "bin:lay_output_transaction_microproof": 0.013367527164518833,
+      "lib:lay": 124.95712813665159,
+      "test:correction_gate_metrics": 2.0684113658498973,
+      "test:decoder_alternating_stress": 1.2523669239599258,
+      "test:decoder_transition_regression": 2.185294738970697,
+      "test:ibus_wire_compat": 0.008765120059251785,
+      "test:ime_space_boundary_contract": 0.00845127203501761,
+      "test:input_gate_operator_contract": 0.009146178839728236,
+      "test:input_gate_space_contract": 8.160691736033186,
+      "test:l3_context_feedback_overlay_contract": 1.38786873803474,
+      "test:l3_context_metrics_contract": 0.006889950018376112,
+      "test:l3_online_resource_contract": 0.00678643211722374,
+      "test:l4_feedback_memory_contract": 0.008595534134656191,
+      "test:live_candidate_gate_metrics": 3.3882884718477726,
+      "test:protected_words_runtime": 1.6845893478021026,
+      "test:restore_word_cli": 5.678398564923555,
+      "test:space_boundary_shift_mechanism": 4.9772282261401415,
+      "test:td113_hybrid_source_contract": 0.03438178380019963,
+      "test:text_edit_gate_contract": 0.11617256491445005,
+      "test:text_mutation_monopoly_contract": 0.14374545705504715,
+      "test:tray_ui_contract": 0.015222926158457994,
+      "test:typing_assist_alternating_stress": 3.234681726898998,
+      "test:typing_assist_mixed_corpus": 33.44363360898569,
+      "test:typing_assist_short_alternating": 2.7907039660494775,
+      "test:typing_transition_authority_contract": 0.0257606019731611
+    },
+    "elapsed_seconds": 496.8364863379393,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "selected": 3537,
+    "selected_by_lane": {
+      "correctness": 3501,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "source_gate_result": "development/run-d9qbu0l3/RESULT.json",
+  "additional_gate_result": "development/dependency-updates-20261027/pr64-gates-v1-result.json",
+  "steps": [
+    {
+      "name": "budget-before",
+      "status": "PASS",
+      "seconds": 0.06983467703685164
+    },
+    {
+      "name": "graph",
+      "status": "PASS",
+      "seconds": 18.04603186319582
+    },
+    {
+      "name": "canon",
+      "status": "PASS",
+      "seconds": 0.22541831200942397
+    },
+    {
+      "name": "python",
+      "status": "PASS",
+      "seconds": 26.899004509905353
+    },
+    {
+      "name": "public",
+      "status": "PASS",
+      "seconds": 10.514678573934361
+    },
+    {
+      "name": "install",
+      "status": "PASS",
+      "seconds": 0.34876423818059266
+    },
+    {
+      "name": "node",
+      "status": "PASS",
+      "seconds": 0.12697979318909347
+    },
+    {
+      "name": "audit50",
+      "status": "PASS",
+      "seconds": 24.620611045975238
+    },
+    {
+      "name": "lints",
+      "status": "PASS",
+      "seconds": 94.41138459695503
+    },
+    {
+      "name": "msrv",
+      "status": "PASS",
+      "seconds": 19.85043633915484
+    },
+    {
+      "name": "msrv-lexical",
+      "status": "PASS",
+      "seconds": 21.346061852993444
+    },
+    {
+      "name": "performance",
+      "status": "PASS",
+      "seconds": 23.270403912989423
+    },
+    {
+      "name": "resolved-features",
+      "status": "PASS",
+      "seconds": 0.25425398792140186
+    },
+    {
+      "name": "release",
+      "status": "PASS",
+      "seconds": 221.0576555780135
+    },
+    {
+      "name": "artifacts",
+      "status": "PASS",
+      "seconds": 0.258698791032657
+    },
+    {
+      "name": "package-parity",
+      "status": "PASS",
+      "seconds": 0.00193530204705894
+    },
+    {
+      "name": "budget-after",
+      "status": "PASS",
+      "seconds": 0.06883331411518157
+    }
+  ],
+  "canon_actual_delta": {
+    "added": [],
+    "base_sha": "3b7873bfa62a013850db12cf98a0716facc17fa7",
+    "changed": [
+      "Cargo.lock",
+      "docs/development/dependency-updates-2026-10-27.md",
+      "docs/development/lay2-handoff.md",
+      "tech_debt/evidence/dependency-pr67-2026-10-27.json"
+    ],
+    "checker_sha256": "9333f0071bd6125d985cc1a562c0fbde46c0b7574553e474add0005ec09c9445",
+    "delta_sha256": "b67aa1fde45bb941c62ed646c058b3e03c35773ab89fd51a5284321a4866d040",
+    "errors": [],
+    "head_sha": "860bc1fe17e8bf59f87577bdb8c379345531b856",
+    "negative_control": "protected change without new decision is rejected",
+    "protected_changes": [],
+    "rules_changed": false,
+    "runtime_behavior": "NOT_TESTED",
+    "status": "PASS"
+  },
+  "ci": {
+    "headRefOid": "860bc1fe17e8bf59f87577bdb8c379345531b856",
+    "mergeStateStatus": "CLEAN",
+    "number": 64,
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:04:38Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40517623380/job/122235249458",
+        "name": "Canon links and change records",
+        "startedAt": "2026-10-27T14:04:13Z",
+        "status": "COMPLETED",
+        "workflowName": "Architecture canon"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:04:37Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40517623307/job/122235249424",
+        "name": "Public installer regressions",
+        "startedAt": "2026-10-27T14:04:13Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:08:45Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40517623180/job/122235249495",
+        "name": "RustSec vulnerabilities and unsoundness",
+        "startedAt": "2026-10-27T14:04:14Z",
+        "status": "COMPLETED",
+        "workflowName": "Security"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:06:45Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40517623307/job/122235249663",
+        "name": "Rust 1.88.0 MSRV",
+        "startedAt": "2026-10-27T14:04:14Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:32:40Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40517623307/job/122235250194",
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "startedAt": "2026-10-27T14:04:13Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ],
+    "checked_at": "2026-10-27T14:33:29.816287+00:00",
+    "verdict": "PASS"
+  },
+  "artifacts": {
+    "lay": {
+      "sha256": "57e22518ab2a4d20ae94bbcaa81ee3a09c18d43ff9976ada931be01ed94dc122",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-daemon": {
+      "sha256": "d103c2c5c7dd277c723cea97477dfc927ad668bb62d167675c618edbdade8d26",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ibus-engine": {
+      "sha256": "db175f118547ef5b38858375dd8d8b6c13f938f01cfb68c6951c68ef372dade3",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-restore": {
+      "sha256": "a7ecc98f1024b9d7ff409f1b132a49344c7bbbbc2e1668794a47ac96bc518418",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-serve": {
+      "sha256": "220d571e7b28fd6ca7e54ceda1f25d6e7524db16fa6b025c420daf821ea2e9d0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-memory-report": {
+      "sha256": "b69aef7bfa37568dc035d2c2f599b921a84d7fb23a88f8ab21810c5fdce09956",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-eval": {
+      "sha256": "9996a25d20f84fe7bd2a4af4a5cdb3aa557aff70e360bf65de379180c6c76f36",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-train": {
+      "sha256": "64ebef89188ffaa1b709879bdaecc073dee35b23f1f03bed6a714173b051f11f",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ngram-corpus": {
+      "sha256": "b013da14c52e29d33de1d55980f2fa66154cd5d99206a2706b363d2b7f017a51",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-test-input": {
+      "sha256": "e019cfc799b117f0179ebc5267d5a12b020d5309e7cc246132048d40873decb0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    }
+  },
+  "release_compiler_warnings": 0,
+  "performance": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "verdict": "PASS"
+  },
+  "python": {
+    "tests": 421,
+    "failed": 0,
+    "skipped": 10
+  },
+  "package_parity": {
+    "equal": true,
+    "installed_models_changed": false,
+    "scope": "tiny offline format fixture, not package quality",
+    "sha256": "196dfed2249758b2645874e75244a9c4d2684e9e9b569019d7af04109b2a8924"
+  },
+  "followup_cgroup": {
+    "cpu.max": "2000000 100000",
+    "memory.high": "25769803776",
+    "memory.max": "30064771072",
+    "memory.swap.max": "1073741824",
+    "pids.max": "512"
+  },
+  "native_clipboard": {
+    "verdict": "PASS",
+    "scope": "private X11 CLI clipboard with installed xclipboard",
+    "planned": 8,
+    "rows": [
+      {
+        "role": "baseline",
+        "case": 1,
+        "original": "ghbdtn",
+        "expected": "привет",
+        "observed": "привет",
+        "returncode": 0,
+        "stderr": "[dict] \"ghbdtn\" → \"привет\"\n",
+        "process_elapsed_ms": 7.4586758855730295,
+        "status": "PASS"
+      },
+      {
+        "role": "baseline",
+        "case": 2,
+        "original": "Ghbdtn",
+        "expected": "Привет",
+        "observed": "Привет",
+        "returncode": 0,
+        "stderr": "[dict] \"Ghbdtn\" → \"Привет\"\n",
+        "process_elapsed_ms": 6.244992837309837,
+        "status": "PASS"
+      },
+      {
+        "role": "baseline",
+        "case": 3,
+        "original": "ghbdtn\nvbh",
+        "expected": "привет\nмир",
+        "observed": "привет\nмир",
+        "returncode": 0,
+        "stderr": "[dict] \"ghbdtn\\nvbh\" → \"привет\\nмир\"\n",
+        "process_elapsed_ms": 6.815094035118818,
+        "status": "PASS"
+      },
+      {
+        "role": "baseline",
+        "case": 4,
+        "original": "Ghbdtn 🙂",
+        "expected": "Привет 🙂",
+        "observed": "Привет 🙂",
+        "returncode": 0,
+        "stderr": "[dict] \"Ghbdtn 🙂\" → \"Привет 🙂\"\n",
+        "process_elapsed_ms": 7.81365716829896,
+        "status": "PASS"
+      },
+      {
+        "role": "candidate",
+        "case": 1,
+        "original": "ghbdtn",
+        "expected": "привет",
+        "observed": "привет",
+        "returncode": 0,
+        "stderr": "[dict] \"ghbdtn\" → \"привет\"\n",
+        "process_elapsed_ms": 7.390171056613326,
+        "status": "PASS"
+      },
+      {
+        "role": "candidate",
+        "case": 2,
+        "original": "Ghbdtn",
+        "expected": "Привет",
+        "observed": "Привет",
+        "returncode": 0,
+        "stderr": "[dict] \"Ghbdtn\" → \"Привет\"\n",
+        "process_elapsed_ms": 7.213724078610539,
+        "status": "PASS"
+      },
+      {
+        "role": "candidate",
+        "case": 3,
+        "original": "ghbdtn\nvbh",
+        "expected": "привет\nмир",
+        "observed": "привет\nмир",
+        "returncode": 0,
+        "stderr": "[dict] \"ghbdtn\\nvbh\" → \"привет\\nмир\"\n",
+        "process_elapsed_ms": 7.620756980031729,
+        "status": "PASS"
+      },
+      {
+        "role": "candidate",
+        "case": 4,
+        "original": "Ghbdtn 🙂",
+        "expected": "Привет 🙂",
+        "observed": "Привет 🙂",
+        "returncode": 0,
+        "stderr": "[dict] \"Ghbdtn 🙂\" → \"Привет 🙂\"\n",
+        "process_elapsed_ms": 6.748360116034746,
+        "status": "PASS"
+      }
+    ],
+    "browser_or_physical_acceptance": "NOT_TESTED",
+    "manager_sha256": "01c59173d46d5f7084f2f66137d7b626412e9cd29ce1c23827e8e3b9209834e1",
+    "manager_owner": 6291482,
+    "binary_sha256": {
+      "baseline": "4af8b2aa29ca628ed05165218d9dba7bafa1b9ebf9b7275ff0ddd40df53f24aa",
+      "candidate": "57e22518ab2a4d20ae94bbcaa81ee3a09c18d43ff9976ada931be01ed94dc122"
+    },
+    "counts": {
+      "PASS": 8,
+      "FAIL": 0,
+      "NOT_TESTED": 0,
+      "total": 8
+    },
+    "actor_sha256": "4b857f198224f3c13418f1c6a69ab90fd31f5677ec8cd300a5a59761e33839e4"
+  },
+  "native_clipboard_receipt": "development/dependency-updates-20261027/pr64-clipboard-result.json",
+  "browser_physical_acceptance": "NOT_TESTED",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "merge_tree_equals_verified_head": true
+}
