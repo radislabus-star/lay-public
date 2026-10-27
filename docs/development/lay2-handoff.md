@@ -17,8 +17,16 @@ one-off timeout not reproduced, cause/rate unproven, remains open limitation.
 Do not call full native PASS. All source/CI and private diagnostic receipts
 in tech_debt/evidence/dependency-pr68-2026-10-27.json. All68 jobs finished.
 
-Current66 API adaptation complete, preparing final freeze after successful
-remote preparation v4 (source b1681ce0 before formatting/inventory import).
+Current66 frozen05eb372add1410904b165cdba21163e40890446f, source run-iohfvf44
+PASS3541 (session18952 finished), original CI4/5 (watcher77148, CACHE/pr66-ci).
+Followup66gates-v1 FAILED at lint baseline locations:3default warnings only
+moved coordinates. No new logical warning identified. New explicit location-only
+ADR and preflight now added before standard writer. Need refresh via existing
+--write-baseline, compare exact logical multiset/cardinality and same name spans,
+then existing graph wrapper. Do NOT change Rust code or suppress warnings.
+Old3541 source PASS retained; final source/build/CI must bind new metadata.
+Current base public/main ee889c28. Canon delta uploaded before checks.
+Remote preparation v4 PASS and verified10-file import committed05eb372a.
 Only21Rust files:22library hash-format calls, one independent TD113 test
 formatter (23total), one bounded production reader and test-helper reuse.
 Private library sha256_hex.rs owns encoder; stable_hash.rs restored exactly

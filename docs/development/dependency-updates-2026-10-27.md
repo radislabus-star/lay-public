@@ -477,3 +477,17 @@ and CI are required next. Existing graph wrapper refreshed metadata and canon
 source binding successfully. Imported only the verified formatting/inventory/
 graph files from this exact owned snapshot, with content/mode/archive checks.
 Failed v1/v2 compilation and v3duplicate-inventory rejection remain retained.
+
+### PR66 source PASS and lint-locator maintenance preflight
+
+Frozen05eb372add1410904b165cdba21163e40890446f source run-iohfvf44 PASS3541,
+including all4new hash/I/O tests and every previous test. Followup gates-v1
+passed graph/canon/Python421(10skip)/installer/Node/audit but stopped at exact
+lint inventory:3default warnings shifted source byte positions. Preserve
+failed receipt/log; these are not3new logical dead-code items. Reuse the
+existing policy/writer and2026-10-08-space-prefetch-lint-locations precedent.
+A new explicit ADR permits only byte-locator updates, literal inventories and
+cardinality preserved; no source code, warning suppressions, rule changes,
+semantic expectations or new warning budget. Standard --write-baseline stages
+both candidates atomically and enforces both hard Clippy routes. Validate it
+before a new full gate, including canonical ordering and same source-name span.
