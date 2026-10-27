@@ -37,3 +37,19 @@ inferred from this compiler proof. Remote ordinary builds use dedicated20CPU/
 Published1.0.99: final CI and SecurityPASS; actual both-host installed updater
 discovery98->99PASS. See release-1.0.99-updater.json. Old timeout and absence
 of new automatic-install proof remain explicit; no manual GNOME install.
+
+## 1.0.103 bootstrap verification
+
+The original resource-only99 fix did not refresh an already running old unit
+before compilation. Existing installer operations now run before the build,
+and existing user rustup is loaded even when system cargo is present. Both
+new integrated regressions are RED on their respective old installer and
+GREEN on final source. Final3523+11/Python421/all10/no warnings/CI PASS.
+Actual installed102->103 staged automatic apply completed679.60s, same-PID
+soft-budget refresh,232 real compiler entries, all10 installed Cargo hashes
+matched. The currentIME remains102; no localGNOME install/restart.
+
+Owning proof: docs/architecture/auto-update-build-bootstrap-2026-10-27.md and
+tech_debt/evidence/release-1.0.103-verification.json. Official production GitHub
+automatic apply/discovery remains PENDING publication; staged transport is not
+that receipt. Earlier99 timing/timeout/NOT_PROVED history is retained above.

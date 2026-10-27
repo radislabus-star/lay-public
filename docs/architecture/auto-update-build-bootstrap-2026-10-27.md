@@ -99,3 +99,39 @@ production service. Do not spoof guard flags or bypass a rejection. The real
 service retains its original4G/1CPU/256M kernel bounds; only its old soft limit
 is refreshed. GUI observations and user-manager control use their separate
 buses. None of these test corrections is a new production input route.
+
+## Final bootstrap source gates —2026-10-27
+
+Functional toolchain fix153adad4 and graph05213990 are verified with source
+closure1289/a3f83e36c3e28d8ca3d8e8d7e07919704b7c6f3dbb105ad0e165b24e7161e8f1.
+CROOT/release103-final-gates-v3/result.json:3523 correctness/package,11performance,
+421Python/10skip, four installer tests, bothMSRV1.88 variants, strict lints,
+canon/public/shell/extension gates and allten optimized artifacts PASS. Release
+build221.99s, zero install warnings; no installed runtime changed by these gates.
+The earlier budget-only v2 proof remains retained; it does not certify the
+later rustup change. The final graph/source parity is recorded separately.
+
+Actual old-service automatic apply is RUNNING under the v2 staged protocol.
+Its lightweight bounded observer holds no compilation lease: the real
+production service owns its existing4G/1CPU/256M bounds and Cargo lock. Source
+policy, timer choice, model isolation and protected IBus/desktop processes are
+unchanged. Protocol review or this launch is not automatic completion.
+CROOT/release103-automatic-staged-v2/ retains the real result and invocation log.
+
+## Real old-service staged apply PASS
+
+CROOT/release103-automatic-staged-v2/result.json records actual installed
+102->103 automatic completion in679.60s. MainPID626209 remained the same across
+MemoryHigh3G->max; hard4G/1CPU/256M stayed unchanged.232 real compiler entries
+ran after the policy refresh; rustc1.97.1 was selected. Allten installed SHA256
+values match fresh Cargo executable records, daemonPID666559 uses its new
+artifact. IMEPID37302/SHA28d672b9 remains102 deliberately. Config/timer choice
+and7 protected desktop/IBus process identities were checked unchanged; test environmental drop-in removed. A read-only
+observation measured4G peak and noOOM kills at that instant. Earlier failed
+attempts remain retained, never replaced by this PASS.
+
+Source commit05213990 was fetched from GitHub into the owned bare test remote.
+The release-metadata API/local-bare transport were staged; official production
+GitHub API/fetch acceptance stays PENDING until publication. No new physical
+window, terminal, model-quality or localGNOME acceptance follows from this
+installation test. See tech_debt/evidence/release-1.0.103-verification.json.

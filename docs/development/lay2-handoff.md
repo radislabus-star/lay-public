@@ -1,3 +1,26 @@
+# Current continuation — 1.0.103 publication
+
+Source:/home/ubu/projects/lay-update-bootstrap-20261027; functional153adad4,
+graph05213990. Full3523+11/Python421(10skip)/all10/no warnings/all5CI PASS.
+Actual staged102->103 automatic PASS679.60s,232 compiler entries, same-PID
+3G->max refresh,4G/1CPU/256M unchanged, all10 actual Cargo hashes verified.
+CROOT/release103-automatic-staged-v2/result.json. Its test drop-in is removed.
+Daemon666559 uses103; IME37302/28d672b9 remains102 deliberately.
+
+Publish103 from these verified bytes/metadata, then run the separately prepared
+actual OFFICIAL GitHub automatic protocol from real102 files and the same
+staged build cache. Script CACHE103/run-automatic-official.py is prepared,
+not yet deployed/run. Stage transport used loopback metadata/local bare source;
+do not call it official API proof. Both installed updater discovery checks
+follow publication. No new source/native gate for docs-only publication.
+
+Publicmain870698c6 at this entry; privateorigin/main independent/do not merge.
+WeChat-family letter loss OPEN/not reproduced; no input path patch.
+Actions storage recorded privately/no other-project deletion. No agents,
+Harness2 or manual localGNOME install/restart. Play finish sound at final.
+
+--- Previous handoff history ---
+
 ## 103 source revision after actual service diagnosis — 2026-10-27T02:35:08.039172+00:00
 
 Active checkout/branch:lay-update-bootstrap-20261027 /codex/update-bootstrap-20261027.
