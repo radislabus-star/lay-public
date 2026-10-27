@@ -206,3 +206,13 @@ Evidence:tech_debt/evidence/release-1.0.102-{verification,native}.json;
 CACHE/c/causal-paired-source-sequences.jsonl; private amendment as above.
 No runtime source changed after the measured C gates. Actions storage follow-up
 remains queued after the WeChat-family task, per the user's explicit request.
+
+
+## Published1.0.102 — 2026-10-27T00:23:46Z
+
+Public tagv1.0.102 resolves04a0f65e0a4e22e317a350652cc7638c23849680;
+PR71 merged by fast-forward. Both installed lay-update --check exit0: local
+101->102 offered, remote102current. Receipt release-1.0.102-updater.json.
+No manual local install/restart. Private divergent origin/main47fe54e6 unchanged.
+The publication changes evidence only after functional305 validation; no fresh
+all-window, GNOME appearance or regression-free acceptance is implied.

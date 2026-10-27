@@ -1,3 +1,28 @@
+## Release102 complete; next WeChat-family letter loss — 2026-10-27T00:25:52.775756+00:00
+
+Stable v1.0.102 published2026-10-27T00:23:46Z at04a0f65e0a4e22e317a350652cc7638c23849680.
+Public PR71 merged; public/main fast-forward only. Private origin/main47fe54e6
+is divergent independent work: untouched. Exact functional source remains
+C/e72574e9,3523+11/all10/fullfunctionalCI PASS. Complete native residuals:
+Firefox125P58F37B/220,Chrome172P5F43B/220,total297P63F80B/440;9oldPASS losses,
+8gains retained. Paired diagnosticnine:101=7P2F/C=8P1F, no extra loss reproduced;
+this does not replacefull440 or prove no regressions. See prior current block
+and tech_debt/evidence/release-1.0.102-{verification,native,updater}.json.
+Both INSTALLED updater checks exit0: local101->102 offered; remote102current.
+No manual local installation/restart. RootIBus3168326 unchanged. Last measured
+remoteKDE engine37302/28d672b9,daemon37416,tray37423. No active heavy/nativejob.
+
+NEXT: toolkit/input-family issue exemplified by WeChat: repeated English
+DoubleShift loses oneletter eachtoggle. Identify actual loaded stack first;
+reproduce in standalone equivalent editor without chatmessages. Reserve103
+only for an actual scoped fix; previous bootstrap stage renumbers if needed.
+Then user-requested Actions90% storage inventory/retention task; queued file
+and authorized ad-hoc memory note already saved. Original updaterbootstrap
+follows; don't confuse installed discovery with automatic-upgrade completion.
+No agents/Harness2, no shared route rewrite, no manual local GNOME update.
+
+Historical entries below retain prior states; they are not current jobs.
+
 ## Current scoped102 publication — 2026-10-27T00:20:56.920094+00:00
 
 Active checkout: /home/ubu/projects/lay-revocation-isolated-20261027.

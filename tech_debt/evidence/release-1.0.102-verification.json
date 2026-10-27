@@ -400,5 +400,10 @@
     "all_five_conclusions": "SUCCESS",
     "note": "Exact functional source and architecture decision validated. Later publication evidence is documentation only."
   },
-  "public": "PENDING_PUBLICATION"
+  "public": {
+    "status": "PUBLISHED_SCOPED",
+    "commit": "04a0f65e0a4e22e317a350652cc7638c23849680",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.102",
+    "updater_receipt": "tech_debt/evidence/release-1.0.102-updater.json"
+  }
 }

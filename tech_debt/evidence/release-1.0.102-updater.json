@@ -1,0 +1,26 @@
+{
+  "version": "1.0.102",
+  "at_utc": "2026-10-27 00:25:10 UTC",
+  "release": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.102",
+  "tag_commit": "04a0f65e0a4e22e317a350652cc7638c23849680",
+  "public_main_fast_forward": true,
+  "private_origin_main_untouched": "47fe54e6d05e5a6e4360d890f667cf3e65ce90f6",
+  "pull_request": {
+    "head_sha": "04a0f65e0a4e22e317a350652cc7638c23849680",
+    "merge_commit_sha": "04a0f65e0a4e22e317a350652cc7638c23849680",
+    "merged": true,
+    "number": 71,
+    "state": "closed"
+  },
+  "local": {
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.101\nстабильный релиз: 1.0.102\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.101 → 1.0.102\n",
+    "mode": "installed lay-update --check; no install/restart"
+  },
+  "remote": {
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.102\nстабильный релиз: 1.0.102\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+    "mode": "installed lay-update --check; exact retained102 artifacts previously installed"
+  },
+  "limits": "Discovery PASS is not automatic upgrade completion or all-client acceptance. Original bootstrap repair remains queued; source CI on functional305 retained; documentation-only publication04a does not change1289-file closure."
+}
