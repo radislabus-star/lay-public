@@ -7,22 +7,30 @@ Work directly without agents/Harness2 in
 local GNOME runtime. PR65 was integrated with public main85859d97 in
 merge988cfd27; only serde_json changes in the package map. Preflight and
 acceptance boundaries: `dependency-updates-2026-10-27.md` in this directory.
-Current step:67 source PASS, second fresh CI event next; first CI4/5 with
-canon refusal caused by stale GitHub PR base8687eea0 (18October), while
-actual merge parent is1afcb292. REST PATCH base=main repaired stored base.
-Worker actual canonical diff check PASS, negative protected-edit control
-still refused; no rule/workflow/legacy decision changed. Use actual canonical
-diff inputs, not worker synthetic Git history, for PR change-review evidence.
-Functional head cb789bc3; closure39975b2b9ed1797d21d19c4546ad589175a5314cf8ad5e30ee6555fd2b1350a8.
+Current step:64 preflight, integrate only arboard3.7 lockfile, then freeze,
+full worker gates, paired actual private clipboard proof and fresh CI.
+PR67 MERGED3b7873bfa62a013850db12cf98a0716facc17fa7 at2026-10-27T13:55:58Z.
+Functional CB789bc3 proof and metadata-only accepted83b6663c have identical
+source closure39975b2b9ed1797d21d19c4546ad589175a5314cf8ad5e30ee6555fd2b1350a8.
 3537Rust/11performance/421Python10skip/all10release/zero warnings/bothMSRV/
-package parity PASS. Source run run-7enc6623; extra dependency-pr67-gates-v1.
-All worker jobs finished; old CI watch91067 finished FAIL4/5, do not resume it.
-New documentation-only commit will trigger correct-base CI, with unchanged
-runtime closure and reusable source/build proof. Before later PR pushes,
-REST PATCH base=main and verify base equals actual current public main.
-Pass guarded workers by file; stdin is not forwarded. Verified disposable
-Lay-package prune8.3GiB complete; retained10 hashes/live targetexe0 checked.
-Evidence dependency-pr67-2026-10-27.json; next64,68,66 after67 merge.
+package parity PASS. Second CI5/5PASS, exact merge tree verified. Old4/5
+canon failure was stale PR base8687eea0; REST PATCH base=main fixed metadata.
+Actual canonical diff checker passed and still rejects an undeclared protected
+edit. Never weaken canon or rewrite legacy decisions to address this.
+All67 worker jobs/watchers finished. Before every later PR push, REST PATCH
+base=main and verify it equals actual public main. gh pr edit is broken by
+retired Projects-classic API; use REST. Guarded workers require script files,
+not stdin. Next full gates use24G/28G envelope, no agents/Harness2.
+Private clipboard actor qualified with installed xclipboard: baseline67
+CLI4/4PASS, raw text incl LF/emoji preserved. Actor file/cache:
+/home/ubu/.cache/lay/development/dependency-updates-20261027/clipboard-probe-xclipboard.py;
+remote dependency-clipboard-probe-xclipboard-20261027.py. Baseline receipt
+clipboard-baseline67-result.json, source binary hash bound to67 artifacts.
+Retain earlier failed custom-GTK/standalone-Klipper setup; those do not prove
+an arboard3.7 regression or behavior of full Plasma. Do not alter CLI/IME for
+that setup mismatch. Use the identical positive actor for baseline+candidate64.
+Source67 run run-7enc6623; extra dependency-pr67-gates-v1. Disposable cache
+now4.71GB after verified prune, retained binaries intact. Next68,66 after64.
 PR65 is MERGED1afcb2920ddf294df9463d0a82cf37a55dd5f86e at2026-10-27T12:31:05Z.
 Verified head a5d063b2, closure e73e7b03798ef4ef955168d013740a558f581d3c190caf4152bc2d578607bf2d:
 3537Rust/11performance/421Python(10skip), all10actual release binaries,
@@ -32,7 +40,7 @@ Original offline-cache and Python-envelope launch failures retained; no runtime
 source workaround. All worker jobs/watchers for65 finished. Source run
 run-fghjrpfp; followup dependency-pr65-gates-v2. Subsequent gate launches must
 set LAY_RESOURCE_MEMORY_HIGH=24G; the worker envelope requires24G/28G.
-Four dependency PRs remain:67,64,68,66. Do not redo completed65 verification.
+Three dependency PRs remain:64,68,66. Do not redo completed65/67 verification.
 Full browser FAIL investigation is
 queued after the five dependency updates; old full-matrix numbers remain
 historical, not a measurement of1.0.104.
