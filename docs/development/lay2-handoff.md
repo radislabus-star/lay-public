@@ -17,19 +17,22 @@ one-off timeout not reproduced, cause/rate unproven, remains open limitation.
 Do not call full native PASS. All source/CI and private diagnostic receipts
 in tech_debt/evidence/dependency-pr68-2026-10-27.json. All68 jobs finished.
 
-Next66 preflight now written in dependency-updates-2026-10-27.md before edits.
-CACHE drafts sha2-api-draft.patch(18files,22format sites,4meaningful tests),
-sha2-api-draft-manifest.json,sha2-inventory-decision-draft.json,prepare-sha2.py.
-Patch dry-checked but not applied yet. First commit this metadata preflight,
-merge Dependabot66 branch into current verified main, inspect complete package
-multiset, add ADR and apply exact declared SHA2 patch. Self-test prepares owned
-remote snapshot; prepare-sha2 helper validates hashes/modes, fetches locked,
-formats declared18files, discovers only4new tests preserving every old row,
-updates zero ledger binding, refreshes graph through official wrapper. Import
-only verified allowed files; commit/freeze. Full dev-check check required.
-Important: source_closure_identity excludes known_failures.json, so fresh actual
-full-run evidence can rebind ledger without invalidating unchanged source proof.
-Do not weaken failures, tests, canon, driver, readiness or deadlines.
+Current66 API adaptation complete, preparing final freeze after successful
+remote preparation v4 (source b1681ce0 before formatting/inventory import).
+Only21Rust files:22library hash-format calls, one independent TD113 test
+formatter (23total), one bounded production reader and test-helper reuse.
+Private library sha256_hex.rs owns encoder; stable_hash.rs restored exactly
+unchanged because its test-only training-bin inclusion duplicated2tests.
+Exactly4new library tests, correctness3501→3505; package36/performance11/
+ignored41 and all old rows/targets/lanes/isolation unchanged. Known failures0.
+New explicit ADR covers protected guard-helper API and inventory bindings;
+all assertions/hash/mode pins remain unchanged. No suppressions or new cfg.
+Prep v1 missing test-only Write, v2 independent guard LowerHex, v3 duplicate
+inventory failures retained. v4 real all-target compilation/discovery/graph
+refresh PASS; safe import hash/mode/archive checks passed. Next full source
+3541 plus gates-v3/fresh CI on frozen head. Old zero-failure observation is a
+contract declaration, not fresh proof; keep unchanged and record current full
+source/CI results separately. Do not fabricate/reuse old counts as new proof.
 
 After66 full gates+freshCI merge, full browser FAIL investigation remains queued.
 Old full table100PASS/76FAIL/144NOT_TESTED of320 is historical, not104 evidence.

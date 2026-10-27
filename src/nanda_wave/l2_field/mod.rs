@@ -1633,7 +1633,11 @@ mod sha256_tests {
             let expected: [u8; 32] = Sha256::digest(input).into();
             assert_eq!(sha256_reader(&mut Cursor::new(input)).unwrap(), expected);
             assert_eq!(
-                sha256_reader(&mut ShortReader { inner: Cursor::new(input), reads: 0 }).unwrap(),
+                sha256_reader(&mut ShortReader {
+                    inner: Cursor::new(input),
+                    reads: 0
+                })
+                .unwrap(),
                 expected
             );
         }
@@ -1647,7 +1651,10 @@ mod sha256_tests {
                 if self.0.position() < self.0.get_ref().len() as u64 {
                     self.0.read(buffer)
                 } else {
-                    Err(io::Error::new(io::ErrorKind::PermissionDenied, "injected read failure"))
+                    Err(io::Error::new(
+                        io::ErrorKind::PermissionDenied,
+                        "injected read failure",
+                    ))
                 }
             }
         }

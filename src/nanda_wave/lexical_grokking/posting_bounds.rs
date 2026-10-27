@@ -2187,7 +2187,9 @@ pub fn prove_l1_posting_bounds(
 }
 
 fn file_sha256(path: &Path) -> io::Result<String> {
-    Ok(crate::sha256_hex::encode(Sha256::digest(std::fs::read(path)?).into()))
+    Ok(crate::sha256_hex::encode(
+        Sha256::digest(std::fs::read(path)?).into(),
+    ))
 }
 
 fn fixed_case_manifest_sha256(cases: &[FixedHeldoutCase], requested_k: usize) -> String {

@@ -467,3 +467,13 @@ conditional compilation/suppression3/10. Select the library-only module.
 Final intended scope21Rust files including lib/new utility;23format sites,
 exactly4library tests. Both unique mix64 function bodies remain byte-identical.
 This changes no ranking, input authority, desktop or delivery contract.
+
+Preparation v4 PASS: real locked Cargo compilation/discovery adds exactly4
+library tests, old3501→3505correctness, package36/performance11/ignored41
+unchanged. All previous test rows/targets/kinds/lanes/isolation retained. The
+zero-failure ledger remains a declaration with its original observation;
+it does not certify the changed source. Fresh3541 correctness/package proof
+and CI are required next. Existing graph wrapper refreshed metadata and canon
+source binding successfully. Imported only the verified formatting/inventory/
+graph files from this exact owned snapshot, with content/mode/archive checks.
+Failed v1/v2 compilation and v3duplicate-inventory rejection remain retained.

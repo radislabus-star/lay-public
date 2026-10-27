@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3501,
+    "correctness": 3505,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 480,
-    "target": 3109
+    "target": 3113
   },
   "package_fixtures": [
     {
@@ -13170,6 +13170,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "nanda_wave::l2_field::sha256_tests::streamed_sha256_handles_short_reads_and_interrupted",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "nanda_wave::l2_field::sha256_tests::streamed_sha256_propagates_read_errors",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::l2_field::teacher::tests::teacher_keeps_cross_lemma_neighbor_scenes_separate",
       "target": "lib:lay"
     },
@@ -18303,6 +18317,20 @@
       "lane": "correctness",
       "name": "settings_expose_only_user_owned_controls",
       "target": "test:tray_ui_contract"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "sha256_hex::tests::sha256_hex_preserves_all_bytes_and_leading_zeroes",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "sha256_hex::tests::sha256_vectors_remain_stable",
+      "target": "lib:lay"
     },
     {
       "isolation": "target",
