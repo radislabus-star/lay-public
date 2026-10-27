@@ -64,6 +64,7 @@ impl SortableSpoolRecordV1 {
     }
 }
 
+#[cfg(test)]
 pub(super) fn external_sort_verified_spool(
     manifest: &TypedEventSpoolManifestV1,
     config: &ExternalSpoolSortConfigV1,

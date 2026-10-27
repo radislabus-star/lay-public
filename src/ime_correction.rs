@@ -277,6 +277,20 @@ fn decide_active_composition_autocorrect_with_evidence(
     .expect("uncancelled IME correction computation")
 }
 
+fn record_kde_space_projection_refusal(config: &LayConfig, reason: &'static str) {
+    if config.debug_action_log
+        && config.active_layout_backend() == crate::desktop::LayoutBackend::Kde
+    {
+        crate::nanda_wave::record_ime_runtime_trace(|| {
+            serde_json::json!({
+                "kind": "ibus_space_projection_refused",
+                "reason": reason,
+            })
+            .to_string()
+        });
+    }
+}
+
 fn decide_active_composition_autocorrect_with_evidence_if_current(
     request: ActiveCompositionAutocorrectRequest<'_>,
     evidence: ActiveCompositionEvidence<'_>,
@@ -371,13 +385,26 @@ fn decide_active_composition_autocorrect_with_evidence_if_current(
                             input_gate: Some(input_gate),
                         });
                     }
+                } else {
+                    record_kde_space_projection_refusal(
+                        request.config,
+                        "pair_replacement_prefix_mismatch",
+                    );
                 }
+            } else {
+                record_kde_space_projection_refusal(request.config, "pair_not_exact");
             }
         }
         let replacement = if active_prefix.is_empty() {
             replacement.clone()
         } else {
-            let stripped = replacement.strip_prefix(&active_prefix)?;
+            let Some(stripped) = replacement.strip_prefix(&active_prefix) else {
+                record_kde_space_projection_refusal(
+                    request.config,
+                    "replacement_changes_uneditable_prefix",
+                );
+                return None;
+            };
             stripped.to_string()
         };
         let (action_from_text, plan) = if let Some(projection) =
@@ -1311,6 +1338,143 @@ mod tests {
             "не"
         );
         assert_frameless_abstains("yt ", "yt", Some(false));
+    }
+
+    #[test]
+    fn short_function_layout_preposition_v_after_russian_context() {
+        assert_exact_us_layout_replacement("d", "идём d", "в ");
+    }
+
+    #[test]
+    fn short_function_layout_conjunction_i_after_russian_context() {
+        assert_exact_us_layout_replacement("b", "кошка b", "и ");
+    }
+
+    #[test]
+    fn short_function_layout_preposition_na_at_start_and_after_context() {
+        assert_exact_us_layout_replacement("yf", "yf", "на ");
+        assert_exact_us_layout_replacement("yf", "смотрю yf", "на ");
+    }
+
+    #[test]
+    fn short_function_layout_covers_existing_class_case_and_position() {
+        let words = crate::data_lines::data_lines(include_str!(
+            "../data/lexicon/ru_one_letter_function.txt"
+        ))
+        .collect::<Vec<_>>();
+        assert_eq!(words.len(), 8, "existing lexical class coverage changed");
+        for word in words {
+            for target in [word.to_string(), word.to_uppercase()] {
+                let source = crate::dict::convert(&target, crate::dict::Direction::Ru2Us);
+                let expected = format!("{target} ");
+                assert_exact_us_layout_replacement(&source, &source, &expected);
+                assert_exact_us_layout_replacement(&source, &format!("пишу {source}"), &expected);
+            }
+        }
+    }
+
+    #[test]
+    fn short_function_layout_covers_existing_preposition_data() {
+        let words = crate::data_lines::data_lines(include_str!(
+            "../data/lexicon/ru_short_prepositions.txt"
+        ))
+        .collect::<Vec<_>>();
+        assert_eq!(words.len(), 12, "existing preposition coverage changed");
+        // The remaining uppercase projections are protected ASCII acronyms.
+        assert_exact_us_layout_replacement("J<", "J<", "ОБ ");
+        let cfg = config();
+        for word in words {
+            let mut letters = word.chars();
+            let title = format!(
+                "{}{}",
+                letters.next().expect("nonempty preposition").to_uppercase(),
+                letters.as_str()
+            );
+            for target in [word.to_string(), title] {
+                let source = crate::dict::convert(&target, crate::dict::Direction::Ru2Us);
+                let expected = format!("{target} ");
+                // Dictionary overlap must preserve the English source even
+                // when its physical-key projection is a Russian preposition.
+                let english = crate::word_recognizer::exact_english_word_if_warm(
+                    &source.to_ascii_lowercase(),
+                )
+                .expect("warm English inventory");
+                for context in [source.clone(), format!("пишу {source}")] {
+                    if english {
+                        let text = format!("{source} ");
+                        assert!(
+                            prepare_exact_layout_active_composition_autocorrect_observed(
+                                ActiveCompositionAutocorrectRequest {
+                                    text: &text,
+                                    committed_tail: &context,
+                                    config: &cfg,
+                                    lexical_authority_frame: None,
+                                    active_layout_is_ru: Some(false),
+                                },
+                                &exact_us_frame(&source),
+                            )
+                            .prepared
+                            .is_none(),
+                            "English overlap must remain protected: {source:?} -> {target:?}"
+                        );
+                    } else {
+                        assert_exact_us_layout_replacement(&source, &context, &expected);
+                    }
+                }
+            }
+        }
+    }
+
+    #[test]
+    fn short_function_layout_preserves_english_words_and_acronyms() {
+        let cfg = config();
+        for token in [
+            "a", "I", "in", "on", "to", "of", "by", "if", "we", "no", "is", "<TP", "LJ", "BP",
+            "PF", "YF", "YFL", "JN", "GJ", "GJL", "GHB", "GHJ",
+        ] {
+            let text = format!("{token} ");
+            let result = prepare_exact_layout_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
+                    text: &text,
+                    committed_tail: token,
+                    config: &cfg,
+                    lexical_authority_frame: None,
+                    active_layout_is_ru: Some(false),
+                },
+                &exact_us_frame(token),
+            );
+            assert!(result.prepared.is_none(), "English source {token:?}");
+        }
+    }
+
+    #[test]
+    fn short_function_layout_rejects_punctuation_and_nonword_targets() {
+        let cfg = config();
+        for token in [
+            "hello,",
+            "'hello",
+            "--help",
+            "a1",
+            "@home",
+            "https://x",
+            "`",
+            ",",
+            "q",
+            "qq",
+        ] {
+            let text = format!("{token} ");
+            let result = prepare_exact_layout_active_composition_autocorrect_observed(
+                ActiveCompositionAutocorrectRequest {
+                    text: &text,
+                    committed_tail: token,
+                    config: &cfg,
+                    lexical_authority_frame: None,
+                    active_layout_is_ru: Some(false),
+                },
+                &exact_us_frame(token),
+            );
+            assert!(result.prepared.is_none(), "nonword source {token:?}");
+        }
     }
 
     #[test]

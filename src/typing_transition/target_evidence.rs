@@ -56,7 +56,9 @@ pub(crate) struct EnumerationWorkBudgetV1 {
     pub(crate) aggregate: EnumerationWorkCountersV1,
 }
 
+#[cfg(test)]
 const LEGACY_L2_OPERATOR_BASE: u32 = 0x4c32_0000;
+#[cfg(test)]
 const LEGACY_LIVE_OPERATOR_BASE: u32 = 0x4c56_0000;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
@@ -89,9 +91,30 @@ pub(crate) enum GroundingNamespaceV1 {
     L11Terminal = 1,
     CanonicalForm = 2,
     ProductiveSurface = 3,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     ComposedSurface = 4,
     CompositeBoundary = 5,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     LegacyL2Ime = 6,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     LegacyLiveReplacement = 7,
     LegacyCorrectionCandidate = 8,
     ReferenceSurface = 9,
@@ -464,6 +487,7 @@ impl TargetEvidenceSetV1 {
         Self::from_sorted_slice(&witnesses)
     }
 
+    #[cfg(test)]
     pub(crate) fn failed(reason: IncompletenessReasonV1) -> Self {
         Self {
             state: EnumerationStateV1::Failed,
@@ -534,6 +558,7 @@ impl TargetEvidenceSetV1 {
         self.scope
     }
 
+    #[cfg(test)]
     pub(crate) fn with_exhaustive_scope(mut self, scope: CompletenessScopeV1) -> Self {
         self.scope = scope;
         self
@@ -547,10 +572,12 @@ impl TargetEvidenceSetV1 {
         self.retained_count
     }
 
+    #[cfg(test)]
     pub(crate) const fn all_seen_digest(&self) -> [u64; 2] {
         self.all_seen_digest
     }
 
+    #[cfg(test)]
     pub(crate) fn try_single_complete_witness(
         &self,
     ) -> Result<TargetWitnessV1, LegacyProjectionErrorV1> {
@@ -650,6 +677,7 @@ fn mix_u64(mut value: u64) -> u64 {
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg(test)]
 pub(crate) enum LegacyProjectionErrorV1 {
     Incomplete,
     NotSingleton,
@@ -671,6 +699,7 @@ pub(crate) enum L2ImeTargetEvidence {
 }
 
 impl L2ImeTargetEvidence {
+    #[cfg(test)]
     pub(crate) fn to_common(self) -> TargetEvidenceSetV1 {
         let Some((relation, variant)) = self.common_parts() else {
             return TargetEvidenceSetV1::complete_empty();
@@ -688,6 +717,7 @@ impl L2ImeTargetEvidence {
         ))
     }
 
+    #[cfg(test)]
     pub(crate) fn try_from_common(
         evidence: &TargetEvidenceSetV1,
     ) -> Result<Self, LegacyProjectionErrorV1> {
@@ -709,6 +739,7 @@ impl L2ImeTargetEvidence {
         }
     }
 
+    #[cfg(test)]
     fn common_parts(self) -> Option<(TargetRelationV1, u32)> {
         match self {
             Self::None => None,
@@ -737,6 +768,7 @@ impl ReplacementTargetEvidence {
         !matches!(self, Self::None)
     }
 
+    #[cfg(test)]
     pub(crate) fn to_common(self) -> TargetEvidenceSetV1 {
         let Some((relation, variant)) = self.common_parts() else {
             return TargetEvidenceSetV1::complete_empty();
@@ -754,6 +786,7 @@ impl ReplacementTargetEvidence {
         ))
     }
 
+    #[cfg(test)]
     pub(crate) fn try_from_common(
         evidence: &TargetEvidenceSetV1,
     ) -> Result<Self, LegacyProjectionErrorV1> {
@@ -773,6 +806,7 @@ impl ReplacementTargetEvidence {
         }
     }
 
+    #[cfg(test)]
     fn common_parts(self) -> Option<(TargetRelationV1, u32)> {
         match self {
             Self::None => None,
@@ -832,6 +866,13 @@ pub(crate) enum PreparedOriginalLexicalStatusV1 {
     Unknown = 0,
     Damaged = 1,
     Clean = 2,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Protected = 3,
 }
 
@@ -850,6 +891,13 @@ pub(crate) enum PreparedOriginalPunctuationStatusV1 {
     #[default]
     Unknown = 0,
     Stable = 1,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Protected = 2,
 }
 
@@ -1075,6 +1123,13 @@ pub(crate) enum LeaseConsumerStateV1 {
     #[default]
     Display = 0,
     FrameSettlement = 1,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     EventPlan = 2,
 }
 
@@ -1211,9 +1266,23 @@ pub(crate) enum CandidateStateV1 {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub(crate) enum WitnessRejectionReasonV1 {
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     GroundingRefMismatch = 1,
     GeometryReplayMismatch = 2,
     MalformedEvidenceRoot = 3,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     StaleWitnessGeneration = 4,
 }
 
@@ -1228,10 +1297,24 @@ pub(crate) enum TargetRejectionReasonV1 {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 #[repr(u8)]
 pub(crate) enum AbsoluteAuthorityBlockerV1 {
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     WitnessOverflow = 1,
     TargetSetOverflow = 2,
     UpstreamEnumerationIncomplete = 3,
     EvidenceIntegrityIncomplete = 4,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     MultipleEditComponents = 5,
 }
 

@@ -1,0 +1,15 @@
+{
+  "status": "USER_REQUESTED_DEVELOPMENT_INSTALL_NOT_RELEASE_ACCEPTANCE",
+  "decision": "Install the existing native-document candidate on the remote KDE development machine for the user's Chrome check. Limit native-prefix presentation eligibility to the canonical KDE window process whose actual executable is chrome. This eligibility grants no edit authority; retain every existing admission, native-field, selection, verifier and actual-result requirement.",
+  "scope": "KDE Chrome only. GNOME and non-Chrome clients cannot enter the native-document candidate. No other client work, release, browser matrix or speed experiment is authorized by this installation step.",
+  "supersedes_for_this_trial": "The restore-after-each-diagnostic restriction in 2026-10-22-native-document-exact-range.json; the user explicitly requests leaving the new code installed for their own check. Its production adoption gates remain pending.",
+  "known_source_gaps": "The previous default-stack source run completed 478 of 480 selected tests successfully, with exact_manual_observation_order and private_manual_toggle trace failures. This is not a passing source gate. No test or guard is weakened or skipped to claim PASS.",
+  "review": "Harness2 lay2 task 20261022T214643Z-ed8face6 returned a partial report with one failed call. It is limited static evidence, not implementation or client acceptance.",
+  "installation_checks": [
+    "Existing architecture graph gate, exact release-bin compiler artifact and source identity",
+    "Back up both exact runtime entrypoints; replace and reactivate only the Lay IME engine",
+    "Verify actual running process bytes and preserve configuration, daemon, tray, IBus and desktop processes",
+    "Restore backed-up bytes if activation fails"
+  ],
+  "acceptance": "NOT_TESTED; installation is not proof of visual behavior or speed"
+}

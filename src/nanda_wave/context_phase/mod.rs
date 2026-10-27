@@ -8,6 +8,7 @@
 mod compiler;
 mod composite;
 mod format;
+#[cfg(any(test, feature = "research-tools"))]
 mod online;
 #[cfg(any(test, feature = "research-tools"))]
 mod proof;
@@ -15,10 +16,15 @@ mod runtime_refresh;
 mod sentence;
 #[cfg(any(test, feature = "research-tools"))]
 mod stream;
+#[cfg(any(test, feature = "research-tools"))]
 mod surface_field;
 
-use std::path::{Path, PathBuf};
-use std::{env, io};
+use std::env;
+#[cfg(any(test, feature = "research-tools"))]
+use std::io;
+#[cfg(any(test, feature = "research-tools"))]
+use std::path::Path;
+use std::path::PathBuf;
 
 use super::phase_field::{
     add_hashed_atom, add_phase_vector, add_rotated_vector, empty_vector, hash_text,
@@ -26,6 +32,7 @@ use super::phase_field::{
 };
 use crate::lexical_surface_atoms::{surface_atom_projection, SurfaceFieldEncoder};
 use crate::stable_hash::mix64_golden;
+#[cfg(any(test, feature = "research-tools"))]
 use sha2::{Digest, Sha256};
 
 #[cfg(any(test, feature = "research-tools"))]
@@ -42,7 +49,9 @@ pub(crate) use composite::{
     admit_delta, admit_delta_with_full_proof, compact_manifest, initialize_manifest,
     snapshot_manifest, snapshot_manifest_with_delta,
 };
-pub(crate) use format::{encode_package, read_package, write_package};
+pub(crate) use format::read_package;
+#[cfg(any(test, feature = "research-tools"))]
+pub(crate) use format::{encode_package, write_package};
 #[cfg(any(test, feature = "research-tools"))]
 pub(crate) use proof::build_and_prove_context_phase_path_with_surface_field;
 #[cfg(any(test, feature = "research-tools"))]
@@ -61,6 +70,7 @@ pub(crate) use sentence::{
     build_and_prove_sentence_context_path, compile_supervised_relation_delta,
     prove_sentence_context_delta_path,
 };
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) use surface_field::SurfaceMutationField;
 
 pub(crate) const MAGIC: &[u8; 8] = b"LAYL3P01";
@@ -87,14 +97,17 @@ pub(crate) const MAX_HARD_PAIR_CENTERS_PER_BANK: usize = 4;
 const PAIR_CENTER_SPLIT_COHERENCE: f32 = 0.76;
 const MIN_DIRECTIONAL_PAIR_SUPPORT: u32 = 2;
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn package_sha256(package: &ContextPhasePackage) -> String {
     sha256_hex(&encode_package(package))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn package_path_sha256(path: &Path) -> io::Result<String> {
     Ok(sha256_hex(&std::fs::read(path)?))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn sha256_hex(bytes: &[u8]) -> String {
     let digest = Sha256::digest(bytes);
     digest.iter().map(|byte| format!("{byte:02x}")).collect()
@@ -185,6 +198,7 @@ impl PairKey {
         })
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     fn is_relation(self) -> bool {
         self.low_hash == 0
     }
@@ -296,11 +310,46 @@ pub(crate) enum ContextPhaseMode {
     NoPhase,
     NoAnti,
     NoSemanticState,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     NoSignatureProfile,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     NoPairwise,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     NoHardPairwise,
     ShuffledPairDirection,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     ShuffledPairScene,
+    #[cfg_attr(
+        all(not(test), not(feature = "research-tools")),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     MagnitudeOnlyPairwise,
 }
 
@@ -531,6 +580,7 @@ impl ContextPhasePackage {
         self.profiles.is_empty() && self.signature_profiles.is_empty()
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     pub(crate) fn pair_profile_counts(&self) -> (usize, usize) {
         let generalized = self
             .pair_profiles
@@ -914,6 +964,7 @@ impl ContextPhasePackage {
         }
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     pub(crate) fn sentence_pair_debug(
         &self,
         scene: &sentence::SentenceContextScene,
@@ -933,6 +984,7 @@ impl ContextPhasePackage {
         })
     }
 
+    #[cfg(test)]
     pub(crate) fn pair_debug(
         &self,
         context_tokens: &[String],
@@ -978,6 +1030,7 @@ impl ContextPhasePackage {
         })
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     fn pair_view_debug(
         &self,
         context_tokens: &[String],
@@ -1676,6 +1729,7 @@ impl ContextPhasePackage {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn context_vector(
         &self,
         context_tokens: &[String],
@@ -1714,6 +1768,7 @@ impl ContextPhasePackage {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn candidate_relation_vector(
         &self,
         context_tokens: &[String],
@@ -2157,6 +2212,7 @@ fn relation_script_mismatch(context_tokens: &[String], candidate: &str) -> bool 
 /// The final two graphemes are a morphology projection, not lexical identity:
 /// forms such as `проверки` and `перезагрузки` can share contextual evidence
 /// without retaining either word at runtime.
+#[cfg(test)]
 pub(super) fn candidate_l2_signature(candidate: &str) -> u64 {
     candidate_l2_signature_for_schema(candidate, SIGNATURE_SCHEMA_MORPHOLOGY_PHASE)
 }
@@ -2433,6 +2489,7 @@ fn context_preserving_candidate_token(
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn package_report(path: &Path) -> serde_json::Value {
     match read_package(path) {
         Ok(package) => serde_json::json!({

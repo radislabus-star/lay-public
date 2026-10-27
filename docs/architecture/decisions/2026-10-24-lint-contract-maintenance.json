@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Repair strict lint failures while retaining the existing D-Bus and exact-observation contracts.",
+  "reason": "The restored full release gate reaches previously hidden Clippy failures. Preserve fixed wire arguments and the explicit token/text/revision/expiry publisher instead of changing an input protocol or introducing a new authority payload solely for a style threshold.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/context_admission.rs", "src/bin/lay_ibus_engine/context_admission/adapter.rs", "src/bin/lay_ibus_engine/tail_memory.rs"],
+  "verification": "Use the repository's existing narrowly scoped expect(too_many_arguments) convention on exactly three explicit contracts. No dead-code inventory, verifier assertion or source test is waived. Remove unused imports and redundant wrapper; simplify pure boolean/Option expressions; put test mutex guards in lexical scopes before await. Run both locked feature-profile lint gates and full source tests.",
+  "not_tested": "These source maintenance changes alone do not certify native clients.",
+  "runtime_authority_changed": false
+}

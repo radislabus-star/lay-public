@@ -1,5 +1,6 @@
 import Pango from 'gi://Pango';
 import St from 'gi://St';
+import Clutter from 'gi://Clutter';
 
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 
@@ -44,10 +45,13 @@ function recentActionRow(indicator, action) {
     item.can_focus = false;
     item.style = 'padding:4px 12px;';
     const box = new St.BoxLayout({
-        vertical: true,
         x_expand: true,
         style: 'spacing:2px;',
     });
+    if ('orientation' in box)
+        box.orientation = Clutter.Orientation.VERTICAL;
+    else
+        box.vertical = true;
     const title = new St.Label({
         text: `${indicator._actionKindLabel(action.kind)} · ${Number(action.elapsed_ms ?? 0)}мс`,
         style: 'font-weight:bold; font-size:86%;',

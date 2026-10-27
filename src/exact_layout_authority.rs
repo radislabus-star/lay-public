@@ -159,6 +159,7 @@ struct WarmExactAuthority {
     russian_terminal_fingerprint: u64,
     english_guard_fingerprint: u64,
     ascii_protection_fingerprint: u64,
+    ru_function_class_fingerprint: u64,
     cyrillic_protection_fingerprint: u64,
     receipt: ExactAuthorityWarmReceipt,
 }
@@ -173,6 +174,8 @@ pub fn warm_up_exact_layout_authority_for_ibus() -> Option<ExactAuthorityWarmRec
             let russian_terminal_fingerprint =
                 crate::nanda_wave::warm_up_exact_layout_terminal_authority()?;
             let guard = crate::word_recognizer::warm_up_exact_layout_guard();
+            let (ru_function_class_fingerprint, ru_function_class_bytes) =
+                crate::lexicon::warm_up_exact_ru_function_class();
             let (cyrillic_protection_fingerprint, cyrillic_entries, cyrillic_bytes) =
                 crate::lexicon::warm_up_exact_cyrillic_protection();
             let authority_fingerprint = fingerprint_u64s(&[
@@ -184,6 +187,7 @@ pub fn warm_up_exact_layout_authority_for_ibus() -> Option<ExactAuthorityWarmRec
                 russian_terminal_fingerprint,
                 guard.english_fingerprint,
                 guard.protection_fingerprint,
+                ru_function_class_fingerprint,
                 cyrillic_protection_fingerprint,
             ]);
             Some(WarmExactAuthority {
@@ -192,11 +196,15 @@ pub fn warm_up_exact_layout_authority_for_ibus() -> Option<ExactAuthorityWarmRec
                 russian_terminal_fingerprint,
                 english_guard_fingerprint: guard.english_fingerprint,
                 ascii_protection_fingerprint: guard.protection_fingerprint,
+                ru_function_class_fingerprint,
                 cyrillic_protection_fingerprint,
                 receipt: ExactAuthorityWarmReceipt {
                     english_entries: guard.english_entries,
                     protection_entries: guard.protection_entries.saturating_add(cyrillic_entries),
-                    resident_bytes: guard.resident_bytes.saturating_add(cyrillic_bytes),
+                    resident_bytes: guard
+                        .resident_bytes
+                        .saturating_add(cyrillic_bytes)
+                        .saturating_add(ru_function_class_bytes),
                     authority_fingerprint,
                 },
             })
@@ -218,7 +226,10 @@ pub fn exact_authority_snapshot_if_warm(
         (FactoryEngineProfile::UsQwerty, ActiveDecoderLayout::Us) => (
             fingerprint_bytes(US_QWERTY_PROFILE),
             authority.us_to_ru_map_fingerprint,
-            authority.ascii_protection_fingerprint,
+            fingerprint_u64s(&[
+                authority.ascii_protection_fingerprint,
+                authority.ru_function_class_fingerprint,
+            ]),
         ),
         (FactoryEngineProfile::Ru, ActiveDecoderLayout::Ru) => (
             fingerprint_bytes(RU_PROFILE),
@@ -291,21 +302,16 @@ fn exact_projected_token(
     direction: ExactLayoutDirection,
     snapshot: ExactAuthoritySnapshot,
 ) -> Option<String> {
-    if token.chars().count() < 2 {
+    let token_len = token.chars().count();
+    if token_len == 0 || token_len == 1 && direction == ExactLayoutDirection::RuToEn {
         return None;
     }
     match direction {
         ExactLayoutDirection::EnToRu => {
-            if !crate::layout_autoswitch::is_ascii_layout_letter_surface(token)
-                || !token
-                    .chars()
-                    .next()
-                    .is_some_and(|character| character.is_ascii_alphabetic())
-                || !token
-                    .chars()
-                    .last()
-                    .is_some_and(|character| character.is_ascii_alphabetic())
-            {
+            // Punctuation-shaped US keys can encode Russian letters at either
+            // edge too. The complete projected word must still be a known
+            // Cyrillic terminal, and the original keeps its protection checks.
+            if !crate::layout_autoswitch::is_ascii_layout_letter_surface(token) {
                 return None;
             }
             let source_lower = token.to_ascii_lowercase();
@@ -315,6 +321,13 @@ fn exact_projected_token(
                 return None;
             }
             let projected = crate::dict::convert_us_to_ru_if_warm(token)?;
+            if token_len == 1
+                && !crate::lexicon::is_ru_one_letter_function_word_if_warm(
+                    &projected.to_lowercase(),
+                )?
+            {
+                return None;
+            }
             (projected != token
                 && projected.chars().all(is_cyrillic_letter)
                 && crate::nanda_wave::exact_layout_terminal_contains_if_warm(

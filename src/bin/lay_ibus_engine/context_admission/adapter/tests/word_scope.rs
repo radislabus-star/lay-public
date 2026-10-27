@@ -1,6 +1,8 @@
 use super::*;
 #[path = "activation_preedit.rs"]
 mod activation_preedit;
+#[path = "queued_compatibility_focus.rs"]
+mod queued_compatibility_focus;
 #[path = "residuals.rs"]
 pub(crate) mod residuals;
 #[path = "stock_surrounding.rs"]
@@ -937,7 +939,8 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
     zbus::block_on(bounded(async {
         // The observer receives the press before the marker, but the actual
         // legacy handler starts only after the marker has made the activation
-        // ready. Installation cannot retrospectively authorize that press.
+        // ready. Installation waits for that literal callback, then clears its
+        // unowned local tail. It cannot retrospectively authorize that press.
         let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
         let mut engine = new_engine(&harness);
         start_source_free_pending(&harness).await;
@@ -962,7 +965,7 @@ fn legacy_pre_marker_space_schedules_remain_unknown_until_next_boundary() {
             native_space_was_visible,
         )
         .await;
-        assert_eq!(engine.committed_tail.buffer, " ");
+        assert!(engine.committed_tail.buffer.is_empty());
         assert!(engine.live_context_token().is_some());
         assert!(!engine.context_word_is_known());
 

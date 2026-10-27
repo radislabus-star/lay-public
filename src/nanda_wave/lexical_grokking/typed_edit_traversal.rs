@@ -23,7 +23,7 @@ use super::format;
 use super::forward_decoder_index::file_sha256;
 use super::forward_decoder_index::{ForwardChild, ForwardDecoderIndex};
 use super::model::DecoderNode;
-#[cfg(any(test, feature = "lexical-compiler"))]
+#[cfg(test)]
 use super::model::LexicalGrokkingPackage;
 #[cfg(any(test, feature = "lexical-compiler"))]
 use super::proof::{
@@ -103,8 +103,47 @@ impl LayoutDirection {
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum TraversalScope {
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Phase7A,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Phase7B,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Phase7C,
     Phase7D,
 }
@@ -228,6 +267,7 @@ enum TypedCertificate {
 }
 
 impl TypedCertificate {
+    #[cfg(any(test, feature = "lexical-compiler"))]
     fn class(&self) -> &'static str {
         match self {
             Self::Identity => "identity",
@@ -350,6 +390,7 @@ impl Phase7dCertificateOracle {
         lanes
     }
 
+    #[cfg(test)]
     pub(in crate::nanda_wave) fn certificate_keys(
         &self,
         expected: &str,
@@ -373,6 +414,7 @@ impl Phase7dCertificateOracle {
         self.certificate_evidence_for_symbols(&target)
     }
 
+    #[cfg(test)]
     pub(in crate::nanda_wave) fn certificate_keys_for_symbols(
         &self,
         target: &[u32],
@@ -404,6 +446,7 @@ pub(in crate::nanda_wave) fn phase7d_semantics_digest() -> [u8; 32] {
 }
 
 #[cfg(any(test, feature = "lexical-compiler"))]
+#[cfg(any(test, not(feature = "lexical-compiler")))]
 pub(in crate::nanda_wave) fn phase7d_retrieval_lanes(
     raw: &str,
 ) -> Result<Vec<Phase7dRetrievalLane>, String> {
@@ -411,6 +454,7 @@ pub(in crate::nanda_wave) fn phase7d_retrieval_lanes(
 }
 
 #[cfg(any(test, feature = "lexical-compiler"))]
+#[cfg(any(test, not(feature = "lexical-compiler")))]
 pub(in crate::nanda_wave) fn phase7d_certificate_keys(
     observed: &str,
     expected: &str,
@@ -494,7 +538,33 @@ struct TraversalState {
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 enum TraversalSchedule {
     Forward,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Reverse,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     Permuted(u64),
 }
 
@@ -526,6 +596,7 @@ pub(super) struct Phase7dTerminalEvidence {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub(super) struct Phase7dTerminalDiagnosticEvidence {
     pub(super) terminal: Phase7dTerminalEvidence,
     pub(super) certificate_classes: BTreeMap<u32, Vec<&'static str>>,
@@ -1223,6 +1294,7 @@ pub(super) fn phase7d_terminal_evidence(
     Ok(project_phase7d_terminal_evidence(&result))
 }
 
+#[cfg(any(test, feature = "lexical-compiler"))]
 pub(super) fn phase7d_terminal_diagnostic_evidence(
     index: &ForwardDecoderIndex,
     decoder_nodes: &[DecoderNode],
@@ -1589,6 +1661,7 @@ fn direct_typed_certificates(
 }
 
 #[cfg(any(test, feature = "lexical-compiler"))]
+#[cfg(any(test, not(feature = "lexical-compiler")))]
 fn direct_typed_oracle(
     package: &LexicalGrokkingPackage,
     query: &L1TypedQueryField,

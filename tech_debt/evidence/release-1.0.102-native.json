@@ -1,0 +1,808 @@
+{
+  "version": "1.0.102",
+  "at_utc": "2026-10-27T00:20:56.920094+00:00",
+  "acceptance": "NATIVE_RESIDUALS_OPEN; NOT_REGRESSION_FREE; scoped lifecycle release only",
+  "scope": "KDE X11 RFB with production a11y and DOM consensus; unchanged frozen r18 full220 per browser; no physical evdev or GNOME acceptance claim",
+  "engine_sha256": "28d672b97a6f49be785c6775145a744db5e367cc88f05717603c0ed0dcd76f67",
+  "full_comparison": {
+    "scope": "KDE same-condition 220/browser, row identity comparison",
+    "baseline": {
+      "firefox": {
+        "counts": {
+          "PASS": 125,
+          "FAIL": 55,
+          "BLOCKED": 40
+        },
+        "timing": {
+          "samples": 296,
+          "rows_with_samples": 96,
+          "median_ms": 163.86374714784324,
+          "p95_ms": 245.3052846249193,
+          "max_ms": 276.2474163901061
+        }
+      },
+      "chrome": {
+        "counts": {
+          "PASS": 173,
+          "BLOCKED": 41,
+          "FAIL": 6
+        },
+        "timing": {
+          "samples": 370,
+          "rows_with_samples": 111,
+          "median_ms": 47.82877606339753,
+          "p95_ms": 63.601875910535455,
+          "max_ms": 91.05244488455355
+        }
+      }
+    },
+    "candidate": {
+      "firefox": {
+        "counts": {
+          "PASS": 125,
+          "FAIL": 58,
+          "BLOCKED": 37
+        },
+        "timing": {
+          "samples": 295,
+          "rows_with_samples": 96,
+          "median_ms": 165.1699710637331,
+          "p95_ms": 244.19785221107304,
+          "max_ms": 289.2154126893729
+        }
+      },
+      "chrome": {
+        "counts": {
+          "PASS": 172,
+          "BLOCKED": 43,
+          "FAIL": 5
+        },
+        "timing": {
+          "samples": 366,
+          "rows_with_samples": 111,
+          "median_ms": 46.96871782653034,
+          "p95_ms": 63.17629688419402,
+          "max_ms": 86.69653092510998
+        }
+      }
+    },
+    "changes": [
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "text",
+          "consecutive-two",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 11239, 'raw_text': 'ghbdtn ', 'rect': {'x': 452.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn '}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "tel",
+          "roundtrip",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 54426, 'raw_text': 'ghbdtn', 'rect': {'x': 1037.25, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn'}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "tel",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 67783, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1037.25, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "BLOCKED",
+        "after": "FAIL",
+        "error_before": "native/DOM text disagreement",
+        "error_after": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 77436, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 418.3333129882813}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет', 'caret_observer': 'owned native AT-SPI field'}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "textarea",
+          "tab",
+          "functional"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'lay_hint_not_ready': {'version': 1, 'stream': ':1.103605', 'revision': '508', 'owner': '/io/github/radislabus_star/LayIme/engine/lay_ime_ru/119', 'text': '', 'rect': None, 'monospace': False}, 'baseline_revision': '504'}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "rich",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 105011, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "plain",
+          "consecutive-two",
+          "space"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 129778, 'raw_text': 'ghbdtn\\xa0', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn '}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "iframe-rich",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 181569, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x': 1036.5, 'y': 608.9666748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "private",
+          "url",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'late_targets': [{'target': 0, 'observed': 1255378.251551027, 'next_gesture_start': 1255378.228774857}, {'target': 1, 'observed': 1255378.464551027, 'next_gesture_start': 1255378.440068003}, {'target': 2, 'observed': 1255378.6655510268, 'next_gesture_start': 1255378.647819469}], 'clock_mapping_uncertainty_ms': 2.4240349885076284}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "private",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "BLOCKED",
+        "after": "FAIL",
+        "error_before": "native/DOM text disagreement",
+        "error_after": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 57871, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 418.3333129882813}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет', 'caret_observer': 'owned native AT-SPI field'}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "private",
+          "plain",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 97559, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "private",
+          "iframe-rich",
+          "roundtrip",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 123728, 'raw_text': 'ghbdtn', 'rect': {'x': 1036.5, 'y': 608.9666748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn'}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "fullscreen",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "BLOCKED",
+        "after": "FAIL",
+        "error_before": "native/DOM text disagreement",
+        "error_after": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 58627, 'raw_text': 'привет', 'rect': {'x': 507.75, 'y': 479.9500122070313}, 'rendered_text': None, 'rich': False, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'привет', 'caret_observer': 'owned native AT-SPI field'}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "fullscreen",
+          "plain",
+          "roundtrip",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 93539, 'raw_text': 'ghbdtn', 'rect': {'x': 1092.25, 'y': 578.3333129882812}, 'rendered_text': None, 'rich': True, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'ghbdtn'}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "fullscreen",
+          "plain",
+          "rapid-five",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 94676, 'text': 'привет'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 94733, 'text': 'привет'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 94808, 'text': 'приве'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 94808, 'text': 'приве'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 94813, 'text': 'прив'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 94813, 'text': 'прив'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 94816, 'text': 'при'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 94816, 'text': 'при'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 94816, 'text': 'пр'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 94816, 'text': 'пр'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 94818, 'text': 'п'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 94818, 'text': 'п'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': '', 't': 94821, 'text': ''}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 94821, 'text': ''}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 94849, 'text': 'g'}, {'id': 'plain', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 94849, 'text': 'g'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 94852, 'text': 'gh'}, {'id': 'plain', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 94852, 'text': 'gh'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 94855, 'text': 'ghb'}, {'id': 'plain', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 94855, 'text': 'ghb'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 94858, 'text': 'ghbd'}, {'id': 'plain', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 94858, 'text': 'ghbd'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 94860, 'text': 'ghbdt'}, {'id': 'plain', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 94861, 'text': 'ghbdt'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 94865, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 94865, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 94887, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 94945, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95102, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95159, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95338, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95394, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95547, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95604, 'text': 'ghbdtn'}]}",
+        "error_after": null
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "tel",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 64582.39999985695, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 259.41175842285156}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "BLOCKED",
+        "error_before": null,
+        "error_after": "native/DOM text disagreement"
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "textarea",
+          "space-en-ru",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 86571.09999990463, 'raw_text': 'ghbdtn ', 'rect': {'x': 1038.3235168457031, 'y': 327.1764831542969}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'ghbdtn '}}"
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "textarea",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 87739.79999995232, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 327.1764831542969}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}",
+        "error_after": null
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "plain",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 131269.89999985695, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 399.8970642089844}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}",
+        "error_after": null
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "private",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "BLOCKED",
+        "error_before": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 54748.799999952316, 'raw_text': 'ghbdtn', 'rect': {'x': 455.3235321044922, 'y': 327.1764831542969}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'ghbdtn', 'caret_observer': 'owned native AT-SPI field'}}",
+        "error_after": "native/DOM text disagreement"
+      }
+    ],
+    "pass_losses": [
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "tel",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 67783, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1037.25, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "rich",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 105011, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "plain",
+          "consecutive-two",
+          "space"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 129778, 'raw_text': 'ghbdtn\\xa0', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn '}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "iframe-rich",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 181569, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x': 1036.5, 'y': 608.9666748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "private",
+          "url",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'late_targets': [{'target': 0, 'observed': 1255378.251551027, 'next_gesture_start': 1255378.228774857}, {'target': 1, 'observed': 1255378.464551027, 'next_gesture_start': 1255378.440068003}, {'target': 2, 'observed': 1255378.6655510268, 'next_gesture_start': 1255378.647819469}], 'clock_mapping_uncertainty_ms': 2.4240349885076284}"
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "private",
+          "plain",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 97559, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "tel",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 64582.39999985695, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 259.41175842285156}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "BLOCKED",
+        "error_before": null,
+        "error_after": "native/DOM text disagreement"
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "textarea",
+          "space-en-ru",
+          "functional"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error_before": null,
+        "error_after": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 86571.09999990463, 'raw_text': 'ghbdtn ', 'rect': {'x': 1038.3235168457031, 'y': 327.1764831542969}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'ghbdtn '}}"
+      }
+    ],
+    "pass_gains": [
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "text",
+          "consecutive-two",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 11239, 'raw_text': 'ghbdtn ', 'rect': {'x': 452.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn '}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "tel",
+          "roundtrip",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 54426, 'raw_text': 'ghbdtn', 'rect': {'x': 1037.25, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn'}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "normal",
+          "textarea",
+          "tab",
+          "functional"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'lay_hint_not_ready': {'version': 1, 'stream': ':1.103605', 'revision': '508', 'owner': '/io/github/radislabus_star/LayIme/engine/lay_ime_ru/119', 'text': '', 'rect': None, 'monospace': False}, 'baseline_revision': '504'}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "private",
+          "iframe-rich",
+          "roundtrip",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 123728, 'raw_text': 'ghbdtn', 'rect': {'x': 1036.5, 'y': 608.9666748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn'}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "fullscreen",
+          "plain",
+          "roundtrip",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 93539, 'raw_text': 'ghbdtn', 'rect': {'x': 1092.25, 'y': 578.3333129882812}, 'rendered_text': None, 'rich': True, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'ghbdtn'}}",
+        "error_after": null
+      },
+      {
+        "browser": "firefox",
+        "case": [
+          "fullscreen",
+          "plain",
+          "rapid-five",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 94676, 'text': 'привет'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 94733, 'text': 'привет'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 94808, 'text': 'приве'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 94808, 'text': 'приве'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 94813, 'text': 'прив'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 94813, 'text': 'прив'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 94816, 'text': 'при'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 94816, 'text': 'при'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 94816, 'text': 'пр'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 94816, 'text': 'пр'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 94818, 'text': 'п'}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 94818, 'text': 'п'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': '', 't': 94821, 'text': ''}, {'id': 'plain', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 94821, 'text': ''}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 94849, 'text': 'g'}, {'id': 'plain', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 94849, 'text': 'g'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 94852, 'text': 'gh'}, {'id': 'plain', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 94852, 'text': 'gh'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 94855, 'text': 'ghb'}, {'id': 'plain', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 94855, 'text': 'ghb'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 94858, 'text': 'ghbd'}, {'id': 'plain', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 94858, 'text': 'ghbd'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 94860, 'text': 'ghbdt'}, {'id': 'plain', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 94861, 'text': 'ghbdt'}, {'id': 'plain', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 94865, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 94865, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 94887, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 94945, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95102, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95159, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95338, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95394, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95547, 'text': 'ghbdtn'}, {'id': 'plain', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 95604, 'text': 'ghbdtn'}]}",
+        "error_after": null
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "textarea",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 87739.79999995232, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 327.1764831542969}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}",
+        "error_after": null
+      },
+      {
+        "browser": "chrome",
+        "case": [
+          "normal",
+          "plain",
+          "moved-boundary",
+          "functional"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error_before": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 131269.89999985695, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 399.8970642089844}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}",
+        "error_after": null
+      }
+    ]
+  },
+  "candidate_total": {
+    "PASS": 297,
+    "FAIL": 63,
+    "BLOCKED": 80,
+    "total": 440
+  },
+  "baseline101_total": {
+    "PASS": 298,
+    "FAIL": 61,
+    "BLOCKED": 81,
+    "total": 440
+  },
+  "old_pass_losses": 9,
+  "gains": 8,
+  "paired_diagnostic": {
+    "protocol": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/native-causal-diagnostic-protocol.json",
+    "private_amendment": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/private-scope-protocol.json",
+    "cases": [
+      {
+        "browser": "firefox",
+        "identity": [
+          "normal",
+          "tel",
+          "moved-boundary",
+          "functional"
+        ],
+        "verdicts": {
+          "101": "PASS",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal101-01/firefox/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal102-01/firefox/result.json"
+        },
+        "interpretation": "original full-run loss not reproduced in this single isolated paired case; not proof of regression absence"
+      },
+      {
+        "browser": "firefox",
+        "identity": [
+          "normal",
+          "rich",
+          "rapid-five",
+          "active"
+        ],
+        "verdicts": {
+          "101": "PASS",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal101-02/firefox/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal102-02/firefox/result.json"
+        },
+        "interpretation": "original full-run loss not reproduced in this single isolated paired case; not proof of regression absence"
+      },
+      {
+        "browser": "firefox",
+        "identity": [
+          "normal",
+          "plain",
+          "consecutive-two",
+          "space"
+        ],
+        "verdicts": {
+          "101": "PASS",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal101-03/firefox/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal102-03/firefox/result.json"
+        },
+        "interpretation": "original full-run loss not reproduced in this single isolated paired case; not proof of regression absence"
+      },
+      {
+        "browser": "firefox",
+        "identity": [
+          "normal",
+          "iframe-rich",
+          "moved-boundary",
+          "functional"
+        ],
+        "verdicts": {
+          "101": "FAIL",
+          "102": "FAIL"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal101-04/firefox/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal102-04/firefox/result.json"
+        },
+        "interpretation": "existing verifier refusal reproduced on both versions; full decoded source sequence confirmed"
+      },
+      {
+        "browser": "firefox",
+        "identity": [
+          "private",
+          "url",
+          "rapid-five",
+          "active"
+        ],
+        "verdicts": {
+          "101": "PASS",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-private/release102c-private101-05/firefox/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-private/release102c-private102-05/firefox/result.json"
+        },
+        "interpretation": "original full-run loss not reproduced in this single isolated paired case; not proof of regression absence"
+      },
+      {
+        "browser": "firefox",
+        "identity": [
+          "private",
+          "plain",
+          "rapid-five",
+          "active"
+        ],
+        "verdicts": {
+          "101": "PASS",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-private/release102c-private101-06/firefox/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-private/release102c-private102-06/firefox/result.json"
+        },
+        "interpretation": "original full-run loss not reproduced in this single isolated paired case; not proof of regression absence"
+      },
+      {
+        "browser": "chrome",
+        "identity": [
+          "normal",
+          "tel",
+          "moved-boundary",
+          "functional"
+        ],
+        "verdicts": {
+          "101": "PASS",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal101-07/chrome/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal102-07/chrome/result.json"
+        },
+        "interpretation": "original full-run loss not reproduced in this single isolated paired case; not proof of regression absence"
+      },
+      {
+        "browser": "chrome",
+        "identity": [
+          "normal",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "verdicts": {
+          "101": "PASS",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal101-08/chrome/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal102-08/chrome/result.json"
+        },
+        "interpretation": "original full-run loss not reproduced in this single isolated paired case; not proof of regression absence"
+      },
+      {
+        "browser": "chrome",
+        "identity": [
+          "normal",
+          "textarea",
+          "space-en-ru",
+          "functional"
+        ],
+        "verdicts": {
+          "101": "FAIL",
+          "102": "PASS"
+        },
+        "receipts": {
+          "101": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal101-09/chrome/result.json",
+          "102": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c/causal-v1/release102c-causal102-09/chrome/result.json"
+        },
+        "interpretation": "101 identity_mismatch; C applied; no attribution from one isolated result"
+      }
+    ],
+    "baseline101": {
+      "PASS": 7,
+      "FAIL": 2
+    },
+    "candidate102": {
+      "PASS": 8,
+      "FAIL": 1
+    },
+    "limits": "Does not replace full440, establish equivalent preceding-case state, clear original losses, or prove all-window regression freedom. Original --only normal results05/06 retained as supplementary controls."
+  },
+  "trace_limits": "Full-matrix row captures may lag async production logger; anchor integrity is not causal completeness. Diagnostic collection waits outside input cadence with debug still enabled and source key sequence validated where cause is stated. No logger/runtime modification.",
+  "terminal_controls": {
+    "Kitty": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "Konsole": {
+      "PASS": 5,
+      "FAIL": 0
+    },
+    "WezTerm": {
+      "PASS": 0,
+      "FAIL": 5
+    },
+    "baseline_equal_every_row": true
+  },
+  "gtkqt": {
+    "PASS": 24,
+    "FAIL": 1,
+    "total": 25,
+    "baseline_equal_every_row": true,
+    "failure": "GTK Entry roundtrip-space"
+  },
+  "ordinary_shift": {
+    "PASS": 11,
+    "FAIL": 7,
+    "total": 18,
+    "baseline_equal_every_row": true,
+    "Kitty": {
+      "PASS": 5,
+      "FAIL": 1
+    },
+    "Konsole": {
+      "PASS": 5,
+      "FAIL": 1
+    },
+    "WezTerm": {
+      "PASS": 1,
+      "FAIL": 5
+    },
+    "limits": "Eight alphabetic RU/US left/right Shift controls pass across Kitty/Konsole. RU punctuation fails all three; WezTerm four uppercase controls fail."
+  },
+  "latency_policy": "Nearest-rank p95 over supplied latency samples; coverage retained per browser in full_comparison. No speedup claim.",
+  "raw_remote_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "raw_local_root": "/home/ubu/.cache/lay/development/release-1.0.102-20261026/c",
+  "visual_acceptance": "NOT_TESTED for a new appearance claim",
+  "physical_gnome": "NOT_TESTED; no manual local installation/restart"
+}

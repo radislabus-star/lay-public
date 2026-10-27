@@ -181,6 +181,57 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             .find(|check| check["id"].as_str() == Some(baseline_id))
             .unwrap_or_else(|| panic!("baseline check {baseline_id:?}"));
 
+        if baseline_id == "exact-authority" {
+            const DECISION: &str =
+                "docs/architecture/decisions/2026-10-27-short-function-layout.json";
+            let decision_path = Path::new(ROOT).join(DECISION);
+            assert_eq!(
+                sha256(&decision_path),
+                "a34c3ff96c0d09b3d315e55b6e1a07ca02b67c15ad574a001b98b9e6dd093f48"
+            );
+            let decision: serde_json::Value =
+                serde_json::from_str(&read(DECISION)).expect("short function layout decision");
+            assert_eq!(decision["schema"], "lay.architecture-decision.v1");
+            assert_eq!(decision["runtime_authority_changed"], false);
+            assert_eq!(
+                decision["source_review"]["verdict"],
+                "PASS_ROOT_STATIC_AND_FOCUSED"
+            );
+            assert_eq!(decision["source_review"]["focused_groups_pass"], 7);
+            let predecessor = &decision["predecessor"];
+            assert_eq!(
+                predecessor["manifest"],
+                "tech_debt/evidence/td113-implementation-preflight-v4.json"
+            );
+            assert_eq!(
+                predecessor["manifest_sha256"].as_str(),
+                Some(sha256(&manifest_path).as_str())
+            );
+            assert_eq!(predecessor["baseline_id"], baseline_id);
+            assert_eq!(baseline["path"], "../../src/exact_layout_authority.rs");
+            assert_eq!(predecessor["path"], "src/exact_layout_authority.rs");
+            assert_eq!(predecessor["sha256"], baseline["expect"]["sha256"]);
+            assert_eq!(predecessor["mode"], baseline["expect"]["mode"]);
+            let successor = &decision["successor"];
+            assert_eq!(successor["path"], predecessor["path"]);
+            let successor_path = Path::new(ROOT).join("src/exact_layout_authority.rs");
+            assert_eq!(
+                successor["sha256"].as_str(),
+                Some(sha256(&successor_path).as_str())
+            );
+            let mode = |value: &serde_json::Value| {
+                u32::from_str_radix(value.as_str().expect("protected mode"), 8)
+                    .expect("octal protected mode")
+                    & PROTECTED_MODE_BITS
+            };
+            assert_eq!(mode(&successor["mode"]), mode(&predecessor["mode"]));
+            assert_eq!(
+                successor_path.metadata().unwrap().permissions().mode() & PROTECTED_MODE_BITS,
+                mode(&successor["mode"])
+            );
+            continue;
+        }
+
         if baseline_id == "text-edit-gate" {
             const DECISION: &str =
                 "docs/architecture/decisions/2026-10-07-space-boundary-authority-scope.json";

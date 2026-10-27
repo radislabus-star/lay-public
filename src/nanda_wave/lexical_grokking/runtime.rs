@@ -393,6 +393,7 @@ impl LexicalGrokkingMemory {
             .unwrap_or_default()
     }
 
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(in crate::nanda_wave::lexical_grokking) fn typed_basin_support(
         &self,
     ) -> Option<&super::typed_basin::ExactSupportField> {

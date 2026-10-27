@@ -1,10 +1,10 @@
-use crate::lexical_surface_atoms::{
-    surface_atom_projection, visit_surface_atoms, EncodedSurfaceField,
-};
+#[cfg(test)]
+use crate::lexical_surface_atoms::visit_surface_atoms;
+use crate::lexical_surface_atoms::{surface_atom_projection, EncodedSurfaceField};
 use crate::stable_hash::mix64_golden;
 
 pub(super) const MAGIC: &[u8; 8] = b"LAYLPH02";
-pub(super) const VERSION: u32 = 2;
+pub const VERSION: u32 = 2;
 pub(super) const HEADER_BYTES: usize = 128;
 pub(super) const NODE_BYTES: usize = 24;
 pub(super) const ARC_BYTES: usize = 8;
@@ -15,28 +15,28 @@ pub(super) const POSTING_BYTES: usize = 4;
 pub(super) const DECODER_STATE_BYTES: usize = 8;
 pub(super) const DECODER_ARC_BYTES: usize = 8;
 pub(super) const NO_INDEX: u32 = u32::MAX;
-pub(super) const MAX_WORD_CHARS: usize = 24;
+pub const MAX_WORD_CHARS: usize = 24;
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
-pub(super) struct ArtifactHeader {
-    pub(super) file_bytes: u64,
-    pub(super) node_count: u32,
-    pub(super) arc_count: u32,
-    pub(super) terminal_count: u32,
-    pub(super) center_count: u32,
-    pub(super) posting_count: u32,
-    pub(super) nodes_offset: u64,
-    pub(super) arcs_offset: u64,
-    pub(super) terminals_offset: u64,
-    pub(super) centers_offset: u64,
-    pub(super) postings_offset: u64,
-    pub(super) checksum: u64,
-    pub(super) corpus_hash: u64,
-    pub(super) source_words: u32,
-    pub(super) decoder_state_count: u32,
-    pub(super) decoder_arc_count: u32,
-    pub(super) decoder_states_offset: u64,
-    pub(super) training_surfaces: u32,
+pub struct ArtifactHeader {
+    pub file_bytes: u64,
+    pub node_count: u32,
+    pub arc_count: u32,
+    pub terminal_count: u32,
+    pub center_count: u32,
+    pub posting_count: u32,
+    pub nodes_offset: u64,
+    pub arcs_offset: u64,
+    pub terminals_offset: u64,
+    pub centers_offset: u64,
+    pub postings_offset: u64,
+    pub checksum: u64,
+    pub corpus_hash: u64,
+    pub source_words: u32,
+    pub decoder_state_count: u32,
+    pub decoder_arc_count: u32,
+    pub decoder_states_offset: u64,
+    pub training_surfaces: u32,
 }
 
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
@@ -145,6 +145,7 @@ pub(super) fn surface_phase(field: &EncodedSurfaceField) -> ([i8; PHASE_CELLS], 
     (phase, field.atoms().len().min(u16::MAX as usize) as u16)
 }
 
+#[cfg(test)]
 pub(super) fn surface_phase_and_atom_center_keys(text: &str) -> ([i8; PHASE_CELLS], u16, Vec<u64>) {
     let mut accumulator = SurfaceFeatureAccumulator::default();
     visit_surface_atoms(text, |position, bytes| {
@@ -184,6 +185,7 @@ impl SurfaceFeatureAccumulator {
         self.atom_count = checkpoint.2;
     }
 
+    #[cfg(test)]
     pub(super) fn snapshot(&self) -> ([i8; PHASE_CELLS], u16, Vec<u64>) {
         let (phase, atom_count) = self.phase_and_atom_count();
         let mut keys = self.keys.clone();
@@ -239,7 +241,7 @@ fn atom_key(seed: u64, position: u64, bytes: &[u8]) -> u64 {
     mix64_golden(state ^ bytes.len() as u64)
 }
 
-pub(super) fn checksum(bytes: &[u8]) -> u64 {
+pub fn checksum(bytes: &[u8]) -> u64 {
     let mut state = 0x4c45_5849_4341_4c31u64;
     for byte in bytes {
         state ^= u64::from(*byte);
@@ -248,7 +250,7 @@ pub(super) fn checksum(bytes: &[u8]) -> u64 {
     mix64_golden(state ^ bytes.len() as u64)
 }
 
-pub(super) fn read_header(bytes: &[u8]) -> Result<ArtifactHeader, String> {
+pub fn read_header(bytes: &[u8]) -> Result<ArtifactHeader, String> {
     if bytes.len() < HEADER_BYTES || bytes.get(..8) != Some(MAGIC.as_slice()) {
         return Err("invalid lexical phase artifact magic".to_string());
     }
@@ -413,14 +415,17 @@ pub(super) fn read_decoder_arc(
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) fn put_u16(bytes: &mut [u8], offset: usize, value: u16) {
     bytes[offset..offset + 2].copy_from_slice(&value.to_le_bytes());
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) fn put_u32(bytes: &mut [u8], offset: usize, value: u32) {
     bytes[offset..offset + 4].copy_from_slice(&value.to_le_bytes());
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) fn put_u64(bytes: &mut [u8], offset: usize, value: u64) {
     bytes[offset..offset + 8].copy_from_slice(&value.to_le_bytes());
 }

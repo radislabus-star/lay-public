@@ -151,3 +151,53 @@ remains enabled. This proves installed stable discovery and the service's
 no-update path; applying a future newer stable release remains untested. The
 global IME process is unchanged, and no fresh native-input result is implied.
 Final receipt: `tech_debt/evidence/stable-auto-update-install-20261019.json`.
+
+## Build memory budget —2026-10-26
+
+The installed automatic updater started a96->97 source build at13:10:16UTC.
+At14:30UTC it still held the update lock: current cgroup memory3.30GB,
+MemoryHigh3GiB,MemoryMax4GiB,swap256MiB,1CPU/oneCargo job. The soft threshold
+had generated4,894,256 high events, with about28% memory-full pressure; actual
+rustc RSS3.245GB exceeded the threshold while hard budget was still available.
+This is measured early reclaim, not proof of inadequate whole-host RAM.
+
+A runtime-only adjustment on that exact updater unit raised the soft threshold
+to its existing4GiB hard cap. The service was not restarted; no manual binary
+installation or IME restart was requested. CPU quota, hard memory and swap caps
+stayed unchanged. Afterward memory-full avg10 dropped to0.07%, userCPU advanced
+about60seconds and current memory fell below3GiB. Build/install completion is
+a separate pending check; do not infer success from the pressure improvement.
+Exact before/after receipt:
+`/home/ubu/.cache/lay/development/release-1.0.99-20261026/updater-memory-runtime-adjustment.json`.
+
+The source unit removes the earlier3GiB soft threshold and preserves the4GiB
+hard cap,256MiB swap,1CPU,Nice/IO priority and one Cargo/Rayon job. This changes
+only the updater build resource policy, not text ownership/delivery or models.
+The regression rejects a soft threshold below the unchanged hard budget; all9
+auto-update tests pass. systemd user verification exits0; an unrelated existing
+spice-vdagent unit warning is retained rather than changing that service.
+This new policy applies when the new unit is installed; it is not a general
+bootstrap repair for every already-running old updater on other machines.
+
+
+### Measured compiler budget follow-up —2026-10-26
+
+The final1.0.99 source was recompiled after inventorying and removing only its
+disposable private package release cache. Dependencies stayed warm; all10
+retained final binaries were preserved before cleanup. The actual cgroup used
+oneCPU,4GiB hard/soft RAM and256MiB swap. Compilation completed in509.595s,
+peak3,803,045,888bytes, with zero high/max/OOM events and zero memory pressure.
+All10 new executable hashes equal the retained final-build artifacts; source
+closure5e1e44cd7964c6970b4e9f352dbb974920188dc6a77da9d20e414302c5c3382f
+remained unchanged. The earlier0.315s cached run is explicitly not accepted as
+compiler-budget evidence. Raw receipt:
+`/home/e/projects/lay-development-runner/kde-install-control-20261020/release99-updater-budget-clean-build/result.json`;
+compact evidence: `tech_debt/evidence/release-1.0.99-verification.json`.
+This proves the measured warm-dependency compiler phase fits its existing hard
+budget. It does not prove a fresh dependency build, automatic installation,
+or physical-client acceptance. Local GNOME was not manually installed/restarted.
+
+The user separately dedicated the remote development host to programming/tests.
+Future normal remote jobs use all20CPU and up to28GiB, without an early24GiB
+soft threshold, leaving about3GiB for KDE/kernel/SSH. This is a developer-host
+policy, not a shipped updater budget increase or a local GNOME policy change.

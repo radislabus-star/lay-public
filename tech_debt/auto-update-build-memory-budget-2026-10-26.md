@@ -1,0 +1,66 @@
+# Automatic update build: premature memory reclaim
+
+PriorityP0; DONE_BOOTSTRAP_AND_OFFICIAL_AUTOMATIC_APPLY_1.0.103.
+Original scoped resource contract shipped1.0.99; its old incomplete evidence
+is retained below. Final103 closes the bootstrap and official apply proof.
+Measured first failure: a source build exceeds the unit's3GiB MemoryHigh
+while staying under its4GiB MemoryMax; millions of high events and28% full
+memory pressure stall the compiler and keep update.lock busy for over an hour.
+Owning document: docs/architecture/stable-auto-update-2026-10-19.md,
+Build memory budget2026-10-26.
+
+Minimal repair removes the soft threshold while retaining hard4GiB/swap256MiB,
+1CPU and one Cargo/Rayon job. A runtime-only adjustment to the same existing
+hard budget on the exact active unit restored compilation progress without
+restarting the updater or manually installing/restarting Lay. Alternatives:
+keep3GiB and raise timeout2/10 (does not remove reclaim); raise hard memory5/10
+(needs larger host budget); remove early throttle within existing hard cap9/10.
+Do not bypass human-safe admission or throttle unrelated desktop apps.
+
+Regression proves the resource contract (new testGREEN, auto-update9/9PASS),
+systemd verify0. Full99 source/build gate started before this unit/test-only
+addition: preserve its exact source and compose final policy-specific checks
+and artifact parity explicitly. Do not pretend earlier evidence covered new
+files or native behavior. The new unit becomes effective on installation;
+other old updater instances may need an independently verified bounded repair.
+Finish by checking actual installed updater release discovery after publication,
+record any timeout/build failure honestly, and retain the automatic install
+receipt separately from source and native acceptance.
+
+2026-10-26 measured follow-up: actual all10-binary warm-dependency rebuild
+PASS in509.595s, peak3,803,045,888bytes under4GiB, zero high/max/OOM events;
+all executable hashes equal final-source B. Earlier cached run rejected.
+Raw receipt and limits are in release-1.0.99-verification.json. Final CI and
+release discovery remain pending; successful automatic installation is not
+inferred from this compiler proof. Remote ordinary builds use dedicated20CPU/
+28GiB per the user's subsequent authorization, separately from this diagnostic.
+
+Published1.0.99: final CI and SecurityPASS; actual both-host installed updater
+discovery98->99PASS. See release-1.0.99-updater.json. Old timeout and absence
+of new automatic-install proof remain explicit; no manual GNOME install.
+
+## 1.0.103 bootstrap verification
+
+The original resource-only99 fix did not refresh an already running old unit
+before compilation. Existing installer operations now run before the build,
+and existing user rustup is loaded even when system cargo is present. Both
+new integrated regressions are RED on their respective old installer and
+GREEN on final source. Final3523+11/Python421/all10/no warnings/CI PASS.
+Actual installed102->103 staged automatic apply completed679.60s, same-PID
+soft-budget refresh,232 real compiler entries, all10 installed Cargo hashes
+matched. The currentIME remains102; no localGNOME install/restart.
+
+Owning proof: docs/architecture/auto-update-build-bootstrap-2026-10-27.md and
+tech_debt/evidence/release-1.0.103-verification.json. Official production GitHub
+automatic apply/discovery remains PENDING publication; staged transport is not
+that receipt. Earlier99 timing/timeout/NOT_PROVED history is retained above.
+
+Final103 published at2026-10-27T03:18:57Z/taga256811f. Official default
+GitHub102->103 automatic applyPASS19.0406s using the staged build cache;
+all10 exact artifacts/loadeddaemon/KDEenvironment/config/timer verified.
+The retained first official precondition failure exposed an incomplete private
+KDE service fixture; it was corrected only in that per-unit test environment
+and the post-restart environment assertion was strengthened. This did not
+alter product source or waive native failures. Both installed --check PASS:
+local101->103 offered, remote103current. No local manual install/restart.
+See release-1.0.103-updater.json; no new all-window acceptance claim.

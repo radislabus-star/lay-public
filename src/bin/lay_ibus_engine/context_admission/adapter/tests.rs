@@ -874,6 +874,9 @@ fn context(path: &str) -> ContextKey {
 fn ime_config() -> lay::config::LayConfig {
     lay::config::LayConfig {
         text_backend: "ime".to_string(),
+        // This shared adapter fixture exercises the auxiliary presentation
+        // contract. GNOME inline publication has an explicit separate fixture.
+        layout_backend: "kde".to_string(),
         // Preserve diagnostics explicitly enabled by the process sandbox;
         // constructing a replacement engine must not silently disable them.
         debug_action_log: lay::config::LayConfig::load().debug_action_log,
@@ -1040,6 +1043,218 @@ fn method_message(sender: &str, serial: u32, path: &str, interface: &str, member
 }
 
 #[test]
+fn explicit_activation_deadline_still_requires_the_ordered_context_marker() {
+    zbus::block_on(async {
+        let mut config = AdapterConfig::new(ConnectionGeneration(60), vec![profile("lay-us")])
+            .unwrap()
+            .with_acquisition_budget(Duration::from_millis(250));
+        // Exhaust the default budget without sleeping. The platform deadline
+        // must be used by the existing acquisition, not a second grant path.
+        config.activation_budget = Duration::ZERO;
+        let mut harness = bootstrap_harness_with_config("lay-us", config).await;
+        let focus = observed_compatibility_focus(&mut harness, 165_190).await;
+        harness
+            .adapter
+            .start_compatibility_activation_with_deadline(
+                engine_path(TARGET_PATH),
+                focus.position,
+                std::future::ready(Some(Instant::now() + Duration::from_millis(250))),
+            )
+            .unwrap();
+        assert!(harness.adapter.current_token().is_none());
+        future::or(
+            async {
+                serve_current_context_and_marker(&mut harness.peer).await;
+                assert!(harness.adapter.current_token().is_none());
+                assert!(harness.observer.process_next().await.unwrap());
+                let token = harness
+                    .adapter
+                    .current_token()
+                    .expect("ordered marker grants context");
+                assert_eq!(token.owner_path(), TARGET_PATH);
+                assert!(harness.adapter.revalidate(&token));
+            },
+            async {
+                async_io::Timer::after(Duration::from_secs(2)).await;
+                panic!("explicit activation deadline did not complete");
+            },
+        )
+        .await;
+    });
+}
+
+async fn observed_compatibility_focus(harness: &mut Harness, serial: u32) -> ObservedCallback {
+    let message = method_message(
+        DISPATCH_SENDER,
+        serial,
+        TARGET_PATH,
+        ENGINE_INTERFACE,
+        "FocusIn",
+    );
+    send_manually_dispatched_callback(&mut harness.peer, &message, TARGET_PATH, ENGINE_INTERFACE)
+        .await;
+    assert!(harness.observer.process_next().await.unwrap());
+    harness
+        .adapter
+        .observe_callback(&message.header(), Instant::now())
+        .await
+        .unwrap()
+}
+
+#[test]
+fn activation_focus_metadata_refuses_missing_revoked_and_evicted_observations() {
+    let connection = ConnectionGeneration(60);
+    let store = CallbackStampStore::with_capacity(connection, OwnerGeneration(0), 3);
+    let publish = |serial, member, path| {
+        let message = method_message(DISPATCH_SENDER, serial, path, ENGINE_INTERFACE, member);
+        assert!(store.publish(IngressStamp {
+            header: HeaderKey::from_zbus_header(connection, &message.header()).unwrap(),
+            position: u64::from(serial),
+            disposition: IngressDisposition::Passive,
+        }));
+    };
+    assert!(!store.is_current_focus(TARGET_PATH, &1));
+    publish(1, "FocusIn", TARGET_PATH);
+    assert!(store.is_current_focus(TARGET_PATH, &1));
+    publish(2, "FocusOut", SOURCE_PATH);
+    assert!(
+        store.is_current_focus(TARGET_PATH, &1),
+        "old unrelated FocusOut is not this field's lifecycle"
+    );
+    publish(3, "FocusOut", TARGET_PATH);
+    assert!(!store.is_current_focus(TARGET_PATH, &1));
+    publish(4, "FocusInId", SOURCE_PATH);
+    assert!(
+        !store.is_current_focus(TARGET_PATH, &1),
+        "eviction cannot restore an old focus"
+    );
+    assert!(store.is_current_focus(SOURCE_PATH, &4));
+    store.revoke();
+    assert!(!store.is_current_focus(SOURCE_PATH, &4));
+    publish(5, "FocusIn", TARGET_PATH);
+    assert!(store.is_current_focus(TARGET_PATH, &5));
+    publish(6, "FocusIn", SOURCE_PATH);
+    assert!(
+        !store.is_current_focus(TARGET_PATH, &5),
+        "a newer engine focus supersedes this callback"
+    );
+    store.terminate_observer();
+    assert!(!store.is_current_focus(SOURCE_PATH, &6));
+}
+
+#[test]
+fn queued_compatibility_activation_ignores_obsolete_focus_without_revoking_current_request() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness_with_budget(Duration::from_millis(250)).await;
+        let mut focuses = Vec::new();
+        // Match the physical Chrome failure: all three calls enter the ordered
+        // observer before either FocusIn handler acquires the engine interface.
+        for (serial, member) in [
+            (165_200, "FocusIn"),
+            (165_201, "FocusOut"),
+            (165_202, "FocusIn"),
+        ] {
+            let message = method_message(
+                DISPATCH_SENDER,
+                serial,
+                TARGET_PATH,
+                ENGINE_INTERFACE,
+                member,
+            );
+            send_manually_dispatched_callback(
+                &mut harness.peer,
+                &message,
+                TARGET_PATH,
+                ENGINE_INTERFACE,
+            )
+            .await;
+            assert!(harness.observer.process_next().await.unwrap());
+            if member == "FocusIn" {
+                focuses.push(message);
+            }
+        }
+        let obsolete = harness
+            .adapter
+            .observe_callback(&focuses[0].header(), Instant::now())
+            .await
+            .unwrap();
+        let current = harness
+            .adapter
+            .observe_callback(&focuses[1].header(), Instant::now())
+            .await
+            .unwrap();
+        assert!(
+            harness
+                .adapter
+                .start_compatibility_activation_with_deadline(
+                    engine_path(TARGET_PATH),
+                    obsolete.position,
+                    std::future::ready(Some(Instant::now() + Duration::from_millis(250))),
+                )
+                .is_err(),
+            "an obsolete FocusIn must not open a request after a later FocusOut/FocusIn"
+        );
+        assert!(harness
+            .adapter
+            .shared
+            .reducer
+            .lock()
+            .unwrap()
+            .request
+            .is_none());
+        harness
+            .adapter
+            .start_compatibility_activation_with_deadline(
+                engine_path(TARGET_PATH),
+                current.position,
+                std::future::ready(Some(Instant::now() + Duration::from_millis(250))),
+            )
+            .unwrap();
+        let request = harness
+            .adapter
+            .shared
+            .reducer
+            .lock()
+            .unwrap()
+            .request
+            .as_ref()
+            .unwrap()
+            .generation;
+        assert!(harness.adapter.current_token().is_none());
+        assert!(harness
+            .adapter
+            .start_compatibility_activation_with_deadline(
+                engine_path(TARGET_PATH),
+                obsolete.position,
+                std::future::ready(Some(Instant::now() + Duration::from_millis(250))),
+            )
+            .is_err());
+        assert_eq!(
+            harness
+                .adapter
+                .shared
+                .reducer
+                .lock()
+                .unwrap()
+                .request
+                .as_ref()
+                .unwrap()
+                .generation,
+            request
+        );
+        serve_current_context_and_marker(&mut harness.peer).await;
+        assert!(harness.adapter.current_token().is_none());
+        assert!(harness.observer.process_next().await.unwrap());
+        let token = harness
+            .adapter
+            .current_token()
+            .expect("only the current ordered marker grants context");
+        assert_eq!(token.owner_path(), TARGET_PATH);
+        assert!(harness.adapter.revalidate(&token));
+    });
+}
+
+#[test]
 fn controlled_p2p_bootstrap_and_compatibility_get_marker_are_real_zbus() {
     zbus::block_on(async {
         let mut harness = bootstrap_harness().await;
@@ -1082,6 +1297,155 @@ fn controlled_p2p_native_marker_has_zero_get_and_ping_echo_returns_token() {
         let fence = fence.unwrap();
         assert!(harness.observer.process_next().await.unwrap());
         let token = harness.adapter.finish_bridge_fence(fence).unwrap();
+        assert!(harness.adapter.revalidate(&token));
+    });
+}
+
+#[test]
+fn bridge_fence_waits_for_activation_then_observes_a_fresh_ping() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness().await;
+        let (activation, activation_marker) = future::zip(
+            harness.adapter.begin_native_activation(
+                engine_path(TARGET_PATH),
+                context(CONTEXT_PATH),
+                Default::default(),
+            ),
+            next_peer_message(&mut harness.peer),
+        )
+        .await;
+        let _activation = activation.unwrap();
+        assert_eq!(
+            activation_marker.header().member().unwrap().as_str(),
+            MARKER_MEMBER
+        );
+        let nonce = activation_marker.body().deserialize::<u64>().unwrap();
+        let completed = std::sync::atomic::AtomicBool::new(false);
+        let begin = async {
+            let result = harness.adapter.begin_bridge_fence().await;
+            completed.store(true, Ordering::Release);
+            result
+        };
+        let peer = async {
+            let ping = next_peer_message(&mut harness.peer).await;
+            assert_eq!(ping.header().member().unwrap().as_str(), "Ping");
+            let value = ping.body().deserialize::<OwnedValue>().unwrap();
+            harness
+                .peer
+                .connection
+                .reply(&ping.header(), &value)
+                .await
+                .unwrap();
+            // Hold the activation marker until the bridge actually waits on
+            // the existing admission event. No sleep decides event order.
+            while harness.adapter.shared.changed.total_listeners() == 0 {
+                if completed.load(Ordering::Acquire) {
+                    return;
+                }
+                future::yield_now().await;
+            }
+            let marker = Message::signal(MARKER_PATH, MARKER_INTERFACE, MARKER_MEMBER)
+                .unwrap()
+                .sender(ADAPTER_SENDER)
+                .unwrap()
+                .build(&nonce)
+                .unwrap();
+            harness.peer.connection.send(&marker).await.unwrap();
+            assert!(harness.observer.process_next().await.unwrap());
+            assert!(harness.adapter.current_owner().is_some());
+            // The pre-activation Ping cannot certify the new owner.
+            serve_ping_and_marker(&mut harness.peer).await;
+            assert!(harness.observer.process_next().await.unwrap());
+        };
+        let (fence, ()) = future::or(future::zip(begin, peer), async {
+            async_io::Timer::after(Duration::from_secs(2)).await;
+            panic!("controlled activation/bridge handoff did not complete");
+        })
+        .await;
+        let token = harness.adapter.finish_bridge_fence(fence.unwrap()).unwrap();
+        assert!(harness.adapter.revalidate(&token));
+        assert_eq!(token.owner_path(), TARGET_PATH);
+    });
+}
+
+#[test]
+fn bridge_fence_activation_timeout_keeps_the_activation_fence() {
+    zbus::block_on(async {
+        let config = AdapterConfig::new(ConnectionGeneration(60), vec![profile("lay-us")])
+            .unwrap()
+            .with_acquisition_budget(Duration::from_millis(250));
+        let mut harness = bootstrap_harness_with_config(
+            "lay-us",
+            AdapterConfig {
+                bridge_budget: Duration::from_millis(10),
+                ..config
+            },
+        )
+        .await;
+        harness
+            .adapter
+            .start_native_activation(
+                engine_path(TARGET_PATH),
+                context(CONTEXT_PATH),
+                Default::default(),
+            )
+            .unwrap();
+        let marker = next_peer_message(&mut harness.peer).await;
+        let activation_nonce = marker.body().deserialize::<u64>().unwrap();
+        let respond = async {
+            let ping = next_peer_message(&mut harness.peer).await;
+            assert_eq!(ping.header().member().unwrap().as_str(), "Ping");
+            let value = ping.body().deserialize::<OwnedValue>().unwrap();
+            harness
+                .peer
+                .connection
+                .reply(&ping.header(), &value)
+                .await
+                .unwrap();
+        };
+        let (result, ()) = future::zip(harness.adapter.begin_bridge_fence(), respond).await;
+        assert!(matches!(result, Err(AdapterError::Timeout)), "{result:?}");
+        {
+            let pending = harness.adapter.shared.pending.lock().unwrap();
+            assert_eq!(pending.as_ref().unwrap().nonce.0, activation_nonce);
+        }
+        let forwarded = Message::signal(MARKER_PATH, MARKER_INTERFACE, MARKER_MEMBER)
+            .unwrap()
+            .sender(ADAPTER_SENDER)
+            .unwrap()
+            .build(&activation_nonce)
+            .unwrap();
+        harness.peer.connection.send(&forwarded).await.unwrap();
+        assert!(harness.observer.process_next().await.unwrap());
+        assert!(harness.adapter.current_owner().is_some());
+    });
+}
+
+#[test]
+fn bridge_fence_never_replaces_another_bridge_fence() {
+    zbus::block_on(async {
+        let mut harness = bootstrap_harness().await;
+        complete_native_activation(&mut harness).await;
+        let (first, ()) = future::zip(
+            harness.adapter.begin_bridge_fence(),
+            serve_ping_and_marker(&mut harness.peer),
+        )
+        .await;
+        let first = first.unwrap();
+        let respond = async {
+            let ping = next_peer_message(&mut harness.peer).await;
+            let value = ping.body().deserialize::<OwnedValue>().unwrap();
+            harness
+                .peer
+                .connection
+                .reply(&ping.header(), &value)
+                .await
+                .unwrap();
+        };
+        let (second, ()) = future::zip(harness.adapter.begin_bridge_fence(), respond).await;
+        assert!(matches!(second, Err(AdapterError::Busy)));
+        assert!(harness.observer.process_next().await.unwrap());
+        let token = harness.adapter.finish_bridge_fence(first).unwrap();
         assert!(harness.adapter.revalidate(&token));
     });
 }

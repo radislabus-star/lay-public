@@ -1,0 +1,42 @@
+{
+  "id": "2026-10-21-pending-literal-space-preservation",
+  "status": "SOURCE_PASS_NATIVE_PARTIAL_FAIL",
+  "at": "2026-10-21T20:25:48.989352+00:00",
+  "owner": "ContextAdmissionReducer / pending literal receipt / WordScope",
+  "invariants": [
+    "C03",
+    "C05",
+    "C07",
+    "C08"
+  ],
+  "baseline_engine_sha256": "1477678ecceff657b788c18cad1158b7d4b183578e6da7dde3d3401ca9a04e6f",
+  "first_failed_transition": "Space commits pending local input before matching Ready; source-free installation clears committed mirror",
+  "chosen_route": "exact same-acquisition literal tail preservation and atomic Ready settlement using existing owner",
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "authority_or_delivery_route_added": false,
+  "updated_at": "2026-10-21T20:42:40.139736+00:00",
+  "causal_red": {
+    "failed": 2,
+    "local_log": "pending-literal-space-red-v31.log"
+  },
+  "source_gate": {
+    "passed": 461,
+    "failed": 0,
+    "receipt": "pending-literal-space-admission-v31.json"
+  },
+  "installed": {
+    "pid": 878924,
+    "sha256": "716232d39e3b419982e0497c1e0702d670c691485ff3ac428e70815827fa2cda",
+    "receipt": "pending-literal-space-deployment-v31/result.json"
+  },
+  "native": {
+    "pass": 5,
+    "fail": 2,
+    "receipt": "pending-literal-space-native-v31/chrome-omnibox/result.json"
+  },
+  "harness2": {
+    "task_id": "20261021T203236Z-62aa6552",
+    "status": "RUNNING"
+  },
+  "runtime_authority": "existing reducer settles only new same-acquisition literal input; no new owner or delivery route"
+}

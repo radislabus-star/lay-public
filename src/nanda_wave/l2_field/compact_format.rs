@@ -779,6 +779,7 @@ impl DecoderBlockCache {
 }
 
 impl CompactPackageView {
+    #[cfg(test)]
     pub(super) fn from_bytes(bytes: Vec<u8>) -> Result<Self, String> {
         Self::from_backing(PackageBytes::from_vec(bytes))
     }

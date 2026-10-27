@@ -9,6 +9,7 @@ mod composite;
 mod conflict_cohort;
 mod contour_birth;
 mod corpus;
+#[cfg(test)]
 mod delta;
 mod events;
 mod evidence_reduce;

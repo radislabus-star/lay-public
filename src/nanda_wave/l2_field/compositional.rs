@@ -5,6 +5,7 @@ use std::ops::Range;
 use super::model::{L2FieldPackage, LemmaCenter, MorphBinding};
 use super::package_bytes::PackageBytes;
 use super::runtime_storage::RuntimeL2Package;
+#[cfg(test)]
 use super::CANONICAL_L2_ATOM_RELATION_LIMIT;
 
 const WAVE_BAND_BITS: usize = 16;
@@ -143,6 +144,7 @@ impl RuntimeLemmaWaveIndex {
         }
     }
 
+    #[cfg(test)]
     pub(super) fn atom_key_count(&self) -> usize {
         match self {
             Self::Owned(index) => index.atom_keys.len(),
@@ -301,6 +303,7 @@ impl LemmaWaveIndex {
         &self.atom_postings
     }
 
+    #[cfg(test)]
     pub(super) fn rank_lemmas(&self, surface: &str, limit: usize) -> Vec<LemmaWaveMatch> {
         self.rank_lemmas_with_atom_relation_limit(surface, limit, CANONICAL_L2_ATOM_RELATION_LIMIT)
     }
@@ -1423,6 +1426,7 @@ fn hamming_masks(radius: usize) -> Vec<u16> {
     masks
 }
 
+#[cfg(test)]
 pub(super) fn normalized_similarity_milli(observed: &str, expected: &str) -> u16 {
     let observed = surface_scoring_profile(observed);
     let expected = surface_scoring_profile(expected);
@@ -1449,6 +1453,7 @@ pub(super) fn prepared_normalized_similarity_milli(
     character.max(keyboard)
 }
 
+#[cfg(test)]
 pub(super) fn prepared_similarity_to_normalized_surface_milli(
     observed: &SurfaceScoringProfile,
     expected: &str,
@@ -1525,6 +1530,7 @@ pub(super) fn surface_wave_code(surface: &str) -> SurfaceWaveCode {
     }
 }
 
+#[cfg(test)]
 pub(super) fn surface_atom_profile(surface: &str) -> SurfaceAtomProfile {
     surface_atom_profile_normalized(&normalize_surface(surface))
 }
@@ -1538,6 +1544,7 @@ fn surface_atom_profile_normalized(surface: &str) -> SurfaceAtomProfile {
     }
 }
 
+#[cfg(test)]
 pub(super) fn surface_atom_similarity_milli(observed: &SurfaceAtomProfile, expected: &str) -> u16 {
     let expected = surface_atom_profile(expected);
     atom_profile_similarity_milli(observed, &expected)

@@ -32,6 +32,13 @@ pub(super) enum SearchCompleteness {
 
 pub(super) struct PeakSearchResult {
     pub(super) candidates: Vec<GrokkingCandidate>,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(super) completeness: SearchCompleteness,
 }
 

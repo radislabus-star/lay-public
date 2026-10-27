@@ -15,3 +15,6 @@ pub(crate) use compiler::compile_words;
 pub(crate) use runtime::{
     default_memory, default_memory_if_warm, LexicalPhaseCandidate, LexicalPhaseMemory,
 };
+
+#[cfg(feature = "research-tools")]
+pub mod compiler_api;

@@ -1,0 +1,263 @@
+{
+  "schema": "lay.release104.verification.v1",
+  "recorded_at": "2026-10-27T10:53:54.626981+00:00",
+  "status": "PUBLISHED_STABLE_SOURCE_BUILD_NATIVE_CI_AND_DISCOVERY_VERIFIED",
+  "version": "1.0.104",
+  "canonical_base": "c52d6e4133cb05217d604bcddf7595595db0e964",
+  "source": {
+    "files": 1289,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "4b6a28cafe8f9df92c44595613f8e432b5aad0fd5364470f5b002dba7c0a7bcd"
+  },
+  "canonical_source_equal_in_content_and_modes": true,
+  "correctness_and_package": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 448.14337400114164,
+      "package": 49.86557815154083
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 152.3125457847491,
+      "bin:lay-debug-actions": 0.010985787026584148,
+      "bin:lay-ibus-engine": 147.22839494422078,
+      "bin:lay-l11-serve": 0.012529043015092611,
+      "bin:lay-memory-report": 0.00963662494905293,
+      "bin:lay-nanda-dataset": 0.03116789716295898,
+      "bin:lay-nanda-wave-eval": 1.310575595125556,
+      "bin:lay-nanda-wave-train": 1.2099864010233432,
+      "bin:lay-test-input": 0.006883400026708841,
+      "bin:lay_output_transaction_microproof": 0.012303431052714586,
+      "lib:lay": 124.80845041037537,
+      "test:correction_gate_metrics": 2.11155593697913,
+      "test:decoder_alternating_stress": 1.2567559049930423,
+      "test:decoder_transition_regression": 2.1349080060608685,
+      "test:ibus_wire_compat": 0.00776072102598846,
+      "test:ime_space_boundary_contract": 0.009016440948471427,
+      "test:input_gate_operator_contract": 0.010835645021870732,
+      "test:input_gate_space_contract": 8.26078911894001,
+      "test:l3_context_feedback_overlay_contract": 1.3738324400037527,
+      "test:l3_context_metrics_contract": 0.008232677122578025,
+      "test:l3_online_resource_contract": 0.00712128309533,
+      "test:l4_feedback_memory_contract": 0.007910534041002393,
+      "test:live_candidate_gate_metrics": 3.349422438070178,
+      "test:protected_words_runtime": 1.7209693451877683,
+      "test:restore_word_cli": 5.784933258080855,
+      "test:space_boundary_shift_mechanism": 4.924718320835382,
+      "test:td113_hybrid_source_contract": 0.03899471811018884,
+      "test:text_edit_gate_contract": 0.12493601115420461,
+      "test:text_mutation_monopoly_contract": 0.15156914596445858,
+      "test:tray_ui_contract": 0.016276614973321557,
+      "test:typing_assist_alternating_stress": 3.2801848880480975,
+      "test:typing_assist_mixed_corpus": 33.60896150814369,
+      "test:typing_assist_short_alternating": 2.8399408070836216,
+      "test:typing_transition_authority_contract": 0.025867070071399212
+    },
+    "elapsed_seconds": 498.6201393790543,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "selected": 3537,
+    "selected_by_lane": {
+      "correctness": 3501,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "performance": {
+    "elapsed_seconds": {
+      "bin:lay-daemon::typing_assist_runtime::candidate::decoder::tests::startup_warmup_removes_first_boundary_decision_stall": 2.6414097470697016,
+      "bin:lay-daemon::typing_assist_worker::tests::submit_never_runs_boundary_decision_on_key_thread": 0.06851028697565198,
+      "bin:lay-ibus-engine::preedit::tests::cold_english_wave_memory_does_not_block_precognition": 0.3602351429872215,
+      "bin:lay-ibus-engine::preedit::tests::precognition_candidate_generation_stays_under_budget": 1.0504812318831682,
+      "bin:lay-ibus-engine::space_autocorrect_prefetch::proof::v27_component_latency_denominators": 3.0892386259511113,
+      "lib:lay::correction_core::tests::live_canonical_l2_field_stays_under_latency_budget": 9.180726706981659,
+      "lib:lay::exact_layout_authority::proof::v27_exact_en_guard_controlled_resource_budget": 0.6909424890764058,
+      "lib:lay::nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget": 0.4222701909020543,
+      "lib:lay::nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget": 0.44333090097643435,
+      "lib:lay::nanda_wave::context_phase::tests::compiled_hot_context_readout_stays_inside_microsecond_budget": 0.8783283438533545,
+      "lib:lay::nanda_wave::context_phase::tests::compiled_sentence_context_readout_stays_inside_preedit_budget": 3.664472423028201
+    },
+    "failed": 0,
+    "failures": [],
+    "passed": 11,
+    "schema": "lay.test-performance-run.v1",
+    "tests": 11,
+    "verdict": "PASS"
+  },
+  "python": {
+    "tests": 421,
+    "skipped": 10,
+    "verdict": "PASS"
+  },
+  "ignored_canonical_tests": 41,
+  "steps": [
+    {
+      "name": "budget-before",
+      "status": "PASS",
+      "seconds": 0.08032786287367344
+    },
+    {
+      "name": "fmt",
+      "status": "PASS",
+      "seconds": 3.5017296478617936
+    },
+    {
+      "name": "protected-gate-preflight",
+      "status": "PASS",
+      "seconds": 0.3257777951657772
+    },
+    {
+      "name": "graph",
+      "status": "PASS",
+      "seconds": 17.95431377296336
+    },
+    {
+      "name": "canon",
+      "status": "PASS",
+      "seconds": 0.050650079967454076
+    },
+    {
+      "name": "python",
+      "status": "PASS",
+      "seconds": 26.41300542280078
+    },
+    {
+      "name": "public",
+      "status": "PASS",
+      "seconds": 10.651618673931807
+    },
+    {
+      "name": "install",
+      "status": "PASS",
+      "seconds": 0.27048402605578303
+    },
+    {
+      "name": "node",
+      "status": "PASS",
+      "seconds": 0.12238352396525443
+    },
+    {
+      "name": "audit50",
+      "status": "PASS",
+      "seconds": 24.410546347033232
+    },
+    {
+      "name": "lints",
+      "status": "PASS",
+      "seconds": 2.01961543597281
+    },
+    {
+      "name": "msrv",
+      "status": "PASS",
+      "seconds": 0.29336491599678993
+    },
+    {
+      "name": "msrv-lexical",
+      "status": "PASS",
+      "seconds": 0.25012035202234983
+    },
+    {
+      "name": "source",
+      "status": "PASS",
+      "seconds": 499.4522535398137
+    },
+    {
+      "name": "performance",
+      "status": "PASS",
+      "seconds": 23.345079062972218
+    },
+    {
+      "name": "release",
+      "status": "PASS",
+      "seconds": 0.3659311530645937
+    },
+    {
+      "name": "artifacts",
+      "status": "PASS",
+      "seconds": 0.2651078749913722
+    },
+    {
+      "name": "budget-after",
+      "status": "PASS",
+      "seconds": 0.09865309204906225
+    }
+  ],
+  "artifacts_sha256": {
+    "lay": "f3f747b145de475a2d43e9220c210829dbbe748665cbb27505beaffae98876fe",
+    "lay-daemon": "e133d0409b5198ec15ed44b9155eb7d1bd071ebe8c114c800e385771a3df0834",
+    "lay-ibus-engine": "138d936899f383937bf4868eeffa275d86fe7cf2f2f3779ffb03046b725f16b0",
+    "lay-l11-restore": "7b95040118ace19dee506fbedbab043f710ff1dc52d1877475b93c134d30c745",
+    "lay-l11-serve": "7a2775f423a0309b9509cb80e14abe2d00b4dd7d835626bb3ccab5ce8033d8f7",
+    "lay-memory-report": "b69aef7bfa37568dc035d2c2f599b921a84d7fb23a88f8ab21810c5fdce09956",
+    "lay-nanda-wave-eval": "3b96221c9c85e2499b25875dc2f35493534766c6d3873efb9aedd58044d83688",
+    "lay-nanda-wave-train": "e764ab80935a879e73241fa490554e4ec4fd64a621d2a378dca279a7d06f604d",
+    "lay-ngram-corpus": "f1d5a4f1088fb0cfb2d68a6a8ef6faec4d7d0dcf3c46b88fa9f5a2843818a1ac",
+    "lay-test-input": "2e65ac9387cddf8642c8b7f1830c7c6240c9f611ece34ad501006d3e1d5ab9a7"
+  },
+  "release_compiler_warnings": 0,
+  "final_binary_hashes_equal_native_tested_preview": true,
+  "native_evidence": "tech_debt/evidence/release-1.0.104-native.json",
+  "code_review": {
+    "reviewer": "/root",
+    "independent_agent": false,
+    "verdict": "PASS_SCOPED_SOURCE_AND_ACTUAL_NATIVE",
+    "scope": "Existing lexical class and warm terminal certificate, US Space frame activity and matching validator, KDE Chrome read-only coherent/fresh snapshot; ownership/DecisionCore/verifier/output routes unchanged",
+    "remaining_debt": "tech_debt/preedit-atomic-cold-subset-isolation-2026-10-27.md"
+  },
+  "raw_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/short-function-release104-final/result.json",
+  "cargo_target_bytes": 9474822144,
+  "cargo_target_budget_bytes": 12884901888,
+  "local_install_or_restart": false,
+  "runtime_authority_changed": false,
+  "ci": {
+    "recorded_at": "2026-10-27T11:24:26.449848+00:00",
+    "functional_commit": "835c0058bd443ef02b82cbf787395aafe82e6d10",
+    "release_commit": "b1232f1ab51864f952567b630d76e14a9ab23e9c",
+    "metadata_only_delta": [
+      "VERSIONING.md",
+      "extension/lay@radislabus-star.github.io/metadata.json",
+      "extension/lay@radislabus-star.github.io/tray_support.js"
+    ],
+    "runtime_source_unchanged": true,
+    "status": "PASS",
+    "checks": [
+      {
+        "name": "Public installer regressions",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148703010"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148702851"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220967/job/122148702708"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148702572"
+      }
+    ]
+  },
+  "security": "PASS_RUSTSEC_EXACT_FUNCTIONAL_COMMIT",
+  "stable_updater": "tech_debt/evidence/release-1.0.104-updater.json",
+  "publication": {
+    "tag": "v1.0.104",
+    "release_commit": "b1232f1ab51864f952567b630d76e14a9ab23e9c",
+    "published_at": "2026-10-27T11:24:32Z",
+    "release_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.104",
+    "draft": false,
+    "prerelease": false
+  }
+}

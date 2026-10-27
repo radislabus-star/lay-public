@@ -104,6 +104,7 @@ pub(crate) enum AdapterError {
     InvalidConfiguration(&'static str),
     InvalidBootstrap(&'static str),
     Busy,
+    SupersededFocus,
     Denied,
     Timeout,
     Cancelled,
@@ -119,6 +120,9 @@ impl fmt::Display for AdapterError {
             }
             Self::InvalidBootstrap(reason) => write!(formatter, "invalid bootstrap: {reason}"),
             Self::Busy => formatter.write_str("another context fence is pending"),
+            Self::SupersededFocus => {
+                formatter.write_str("a later focus ingress superseded this callback")
+            }
             Self::Denied => formatter.write_str("context admission denied"),
             Self::Timeout => formatter.write_str("context admission deadline expired"),
             Self::Cancelled => formatter.write_str("metadata observer cancelled"),
@@ -481,6 +485,32 @@ pub(crate) struct PendingLiteralInputReceipt {
     target_path: EnginePath,
     context: Option<ContextKey>,
     origin: ReceiptOrigin,
+}
+
+impl PendingLiteralInputReceipt {
+    fn matches_ready(&self, ready: &ReadyActivationState, outcome: &ActivationOutcome) -> bool {
+        let ActivationOutcome::SourceFree(grant) = outcome else {
+            return false;
+        };
+        ready.request == self.request
+            && ready.fence.nonce == self.nonce
+            && ready.target_path == self.target_path
+            && &ready.outcome == outcome
+            && grant.revocation == self.revocation
+            && grant.receipt_origin == self.origin
+            && self
+                .context
+                .as_ref()
+                .is_none_or(|context| &grant.target_activation.context == context)
+    }
+}
+
+/// Presentation metadata for one existing acquisition, never a text receipt.
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub(crate) struct PendingHintActivation {
+    request: RequestGeneration,
+    nonce: BarrierNonce,
+    target_path: EnginePath,
 }
 
 pub(crate) enum KeyCallbackObservation {
@@ -955,6 +985,17 @@ impl ContextAdmissionAdapter {
         })
     }
 
+    pub(crate) fn settle_observed_replay_boundary(
+        &self,
+        source: &AdmissionToken,
+        word_token: &AdmissionToken,
+        boundary: ObservedReplayBoundary,
+    ) -> Option<AdmissionToken> {
+        self.shared.reducer.lock().ok().and_then(|mut reducer| {
+            reducer.settle_observed_replay_boundary(source, word_token, boundary)
+        })
+    }
+
     pub(crate) fn settle_key_callback(
         &self,
         callback: &KeyCallback,
@@ -1012,14 +1053,73 @@ impl ContextAdmissionAdapter {
         (receipt.target_path.as_str() == path).then(|| receipt.clone())
     }
 
-    pub(crate) fn activation_preserves_literal_input(
+    pub(crate) fn complete_pending_literal_callback(
         &self,
+        header: &zbus::message::Header<'_>,
         receipt: &PendingLiteralInputReceipt,
-        outcome: &ActivationOutcome,
     ) -> bool {
-        let ActivationOutcome::SourceFree(grant) = outcome else {
+        let Some(key) = HeaderKey::from_zbus_header(self.shared.connection_generation, header)
+        else {
             return false;
         };
+        self.shared.stamps.complete_pending_literal(&key, receipt)
+    }
+
+    fn ready_literal_callbacks_completed(&self, ready: &ReadyActivationState) -> bool {
+        self.shared
+            .stamps
+            .pending_literal_callbacks_completed(|receipt| {
+                receipt.matches_ready(ready, &ready.outcome)
+            })
+    }
+
+    pub(crate) fn pending_hint_activation(&self, path: &str) -> Option<PendingHintActivation> {
+        if self.shared.cancelled.load(Ordering::Acquire) {
+            return None;
+        }
+        let target_path = EnginePath::new(path.to_owned())?;
+        // Preserve the existing ready -> reducer lock order.
+        let ready = self.shared.ready_activation.lock().ok()?;
+        let reducer = self.shared.reducer.lock().ok()?;
+        if let Some(ready) = ready.as_ref() {
+            return (ready.target_path == target_path
+                && reducer.revalidate(&ready.outcome.token()))
+            .then_some(PendingHintActivation {
+                request: ready.request,
+                nonce: ready.fence.nonce,
+                target_path,
+            });
+        }
+        let request = reducer.request.as_ref()?;
+        if request.lifecycle_revision != reducer.revocation_generation() {
+            return None;
+        }
+        let matches = match request.target {
+            RequestTarget::SourceFree => reducer.source_free.as_ref().is_some_and(|target| {
+                target.target_path == target_path
+                    && matches!(target.status, TicketStatus::Pending | TicketStatus::Ready)
+            }),
+            RequestTarget::Transfer(id) => reducer.ticket.as_ref().is_some_and(|target| {
+                target.id == id
+                    && target.target_path.as_ref() == Some(&target_path)
+                    && matches!(target.status, TicketStatus::Pending | TicketStatus::Ready)
+            }),
+        };
+        matches.then_some(PendingHintActivation {
+            request: request.generation,
+            nonce: request.nonce,
+            target_path,
+        })
+    }
+
+    pub(crate) fn activation_preserves_hint_geometry(
+        &self,
+        receipt: &PendingHintActivation,
+        outcome: &ActivationOutcome,
+    ) -> bool {
+        if self.shared.cancelled.load(Ordering::Acquire) {
+            return false;
+        }
         let Ok(ready) = self.shared.ready_activation.lock() else {
             return false;
         };
@@ -1028,13 +1128,20 @@ impl ContextAdmissionAdapter {
                 && ready.fence.nonce == receipt.nonce
                 && ready.target_path == receipt.target_path
                 && &ready.outcome == outcome
-                && grant.revocation == receipt.revocation
-                && grant.receipt_origin == receipt.origin
-                && receipt
-                    .context
-                    .as_ref()
-                    .is_none_or(|context| &grant.target_activation.context == context)
                 && self.activation_outcome_is_current(outcome)
+        })
+    }
+
+    pub(crate) fn activation_preserves_literal_input(
+        &self,
+        receipt: &PendingLiteralInputReceipt,
+        outcome: &ActivationOutcome,
+    ) -> bool {
+        let Ok(ready) = self.shared.ready_activation.lock() else {
+            return false;
+        };
+        ready.as_ref().is_some_and(|ready| {
+            receipt.matches_ready(ready, outcome) && self.activation_outcome_is_current(outcome)
         })
     }
 
@@ -1092,6 +1199,50 @@ impl ContextAdmissionAdapter {
                     && current.focus_out_position.as_ref() == Some(&stamp.position)
             })
         })
+    }
+
+    /// Cancel the old composition after its authenticated blur without erasing
+    /// later received lifecycle metadata. Such metadata grants no word or edit;
+    /// the successor still needs its actual context receipt and marker.
+    pub(crate) fn retire_owned_preedit_after_focus_out(
+        &self,
+        owner: &EngineOwner,
+        stamp: &ObservedCallback,
+    ) -> bool {
+        let ticket = match &stamp.disposition {
+            IngressDisposition::FocusOut {
+                owner: observed_owner,
+                ticket,
+            } if observed_owner == owner => *ticket,
+            _ => return false,
+        };
+        let Ok(mut reducer) = self.shared.reducer.lock() else {
+            return false;
+        };
+        if !reducer.is_current_owner(owner)
+            || !reducer.ticket.as_ref().is_some_and(|current| {
+                current.id == ticket
+                    && current.status == TicketStatus::Pending
+                    && current.source_owner == *owner
+                    && current.source_seal.is_none()
+                    && current.focus_out_position.as_ref() == Some(&stamp.position)
+            })
+        {
+            return false;
+        }
+        let retained_acquisition = reducer
+            .pending_transfer_target()
+            .is_some_and(|target| reducer.discard_pending_target_word(&target));
+        if !retained_acquisition {
+            reducer.malformed_or_unobserved_lifecycle();
+        }
+        // Generic unknown-input revocation still clears the stamp store. Here
+        // the exact old FocusOut is already admitted; preserve later received
+        // FocusIn/Disable records so existing source-free acquisition can run.
+        drop(reducer);
+        self.refresh_acquisition_fence_ready();
+        self.shared.changed.notify(usize::MAX);
+        true
     }
 
     pub(crate) fn focus_out_retired_by_later_ingress(
@@ -1255,14 +1406,42 @@ impl ContextAdmissionAdapter {
         target_path: EnginePath,
         focus_position: Sequence,
     ) -> Result<(), AdapterError> {
-        let deadline = self.activation_deadline();
+        self.start_compatibility_activation_worker(
+            target_path,
+            focus_position,
+            std::future::ready(None),
+            false,
+        )
+    }
+
+    // Begin the request before platform timing work can yield: literal ingress
+    // must belong to this acquisition from its first key. The existing worker
+    // still owns the deadline, ordered marker, reducer and expiry checks.
+    pub(crate) fn start_compatibility_activation_with_deadline(
+        &self,
+        target_path: EnginePath,
+        focus_position: Sequence,
+        deadline: impl Future<Output = Option<Instant>> + Send + 'static,
+    ) -> Result<(), AdapterError> {
+        self.start_compatibility_activation_worker(target_path, focus_position, deadline, true)
+    }
+
+    fn start_compatibility_activation_worker(
+        &self,
+        target_path: EnginePath,
+        focus_position: Sequence,
+        deadline: impl Future<Output = Option<Instant>> + Send + 'static,
+        require_current_focus: bool,
+    ) -> Result<(), AdapterError> {
+        let default_deadline = self.activation_deadline();
         let nonce = self.next_nonce();
-        let request = self.begin_activation_request(
+        let request = self.begin_activation_request_for_focus(
             target_path.clone(),
             nonce,
             ReceiptOrigin::CompatibilityProperty,
             focus_position,
             None,
+            require_current_focus,
         )?;
         let adapter = self.clone();
         self.shared
@@ -1270,6 +1449,7 @@ impl ContextAdmissionAdapter {
             .executor()
             .spawn(
                 async move {
+                    let deadline = deadline.await.unwrap_or(default_deadline);
                     if let Ok(fence) = adapter
                         .finish_compatibility_activation(
                             target_path.clone(),
@@ -1620,6 +1800,7 @@ impl ContextAdmissionAdapter {
             .ok()?
             .as_ref()
             .filter(|ready| &ready.target_path == target_path)
+            .filter(|ready| self.ready_literal_callbacks_completed(ready))
             .map(|ready| ready.outcome.clone())
     }
 
@@ -1649,8 +1830,10 @@ impl ContextAdmissionAdapter {
         }
         let reducer = self.shared.reducer.lock().ok()?;
         let token = ready.outcome.token();
-        (token.matches_owner(&ready.owner) && reducer.revalidate(&token))
-            .then(|| ready.outcome.clone())
+        (token.matches_owner(&ready.owner)
+            && reducer.revalidate(&token)
+            && self.ready_literal_callbacks_completed(ready))
+        .then(|| ready.outcome.clone())
     }
 
     pub(crate) fn acknowledge_activation(&self, outcome: &ActivationOutcome) -> bool {
@@ -1678,58 +1861,139 @@ impl ContextAdmissionAdapter {
         true
     }
 
+    pub(crate) fn acknowledge_activation_with_literal_input(
+        &self,
+        outcome: &ActivationOutcome,
+        receipt: &PendingLiteralInputReceipt,
+        literal_tail: &str,
+        tail_epoch: u64,
+        content_type: (u32, u32),
+    ) -> Option<(WordScope, AdmissionToken)> {
+        if self.shared.cancelled.load(Ordering::Acquire) {
+            return None;
+        }
+        // Preserve Ready -> reducer order and validate the original grant.
+        // A newer unrelated current token cannot replace this acquisition.
+        let mut ready = self.shared.ready_activation.lock().ok()?;
+        let mut reducer = self.shared.reducer.lock().ok()?;
+        if !receipt.matches_ready(ready.as_ref()?, outcome) || !reducer.revalidate(&outcome.token())
+        {
+            return None;
+        }
+        let ActivationOutcome::SourceFree(grant) = outcome else {
+            return None;
+        };
+        let settled = reducer.settle_source_free_literal_input(
+            grant,
+            tail_epoch,
+            literal_tail,
+            content_type,
+        )?;
+        *ready = None;
+        drop(reducer);
+        drop(ready);
+        self.refresh_acquisition_fence_ready();
+        Some(settled)
+    }
+
     pub(crate) async fn begin_bridge_fence(&self) -> Result<PendingFence, AdapterError> {
         let deadline = self.bridge_deadline();
-        let nonce = self.next_nonce();
-        trace::record_admission_timing("bridge_begin", None, nonce.0, Some(deadline));
-        let sent = OwnedValue::from(nonce.0);
-        let reply = before_deadline(
-            self.shared.connection.call_method(
-                Some(IBUS_NAME),
-                IBUS_PATH,
-                Some(IBUS_INTERFACE),
-                "Ping",
-                &sent,
-            ),
-            deadline,
-        )
-        .await?;
-        trace::record_admission_timing("bridge_ping_complete", None, nonce.0, Some(deadline));
-        let echoed = reply
-            .body()
-            .deserialize::<OwnedValue>()
-            .map_err(|_| AdapterError::Denied)?;
-        if echoed != sent {
-            return Err(AdapterError::Denied);
+        loop {
+            let nonce = self.next_nonce();
+            trace::record_admission_timing("bridge_begin", None, nonce.0, Some(deadline));
+            let sent = OwnedValue::from(nonce.0);
+            let reply = before_deadline(
+                self.shared.connection.call_method(
+                    Some(IBUS_NAME),
+                    IBUS_PATH,
+                    Some(IBUS_INTERFACE),
+                    "Ping",
+                    &sent,
+                ),
+                deadline,
+            )
+            .await?;
+            trace::record_admission_timing("bridge_ping_complete", None, nonce.0, Some(deadline));
+            let echoed = reply
+                .body()
+                .deserialize::<OwnedValue>()
+                .map_err(|_| AdapterError::Denied)?;
+            if echoed != sent {
+                return Err(AdapterError::Denied);
+            }
+            match self.arm_fence(PendingFenceState {
+                nonce,
+                deadline,
+                kind: FenceKind::Bridge {
+                    ping_position: reply.recv_position(),
+                },
+                ready_token: None,
+                marker_observed: false,
+                ready: false,
+            }) {
+                Ok(()) => {}
+                Err(AdapterError::Busy) => {
+                    // A selected engine may still be publishing its activation.
+                    // Keep the original bridge budget and wait on its existing
+                    // event. The next iteration needs a fresh Ping: this reply
+                    // preceded completion of the activation fence.
+                    self.wait_for_pending_activation(deadline).await?;
+                    continue;
+                }
+                Err(error) => return Err(error),
+            }
+            if before_deadline(
+                self.shared.connection.emit_signal(
+                    None::<()>,
+                    MARKER_PATH,
+                    MARKER_INTERFACE,
+                    MARKER_MEMBER,
+                    &nonce.0,
+                ),
+                deadline,
+            )
+            .await
+            .is_err()
+            {
+                self.clear_fence(nonce);
+                return Err(AdapterError::Timeout);
+            }
+            trace::record_admission_timing("bridge_marker_emitted", None, nonce.0, Some(deadline));
+            return Ok(PendingFence { nonce, deadline });
         }
-        self.arm_fence(PendingFenceState {
-            nonce,
-            deadline,
-            kind: FenceKind::Bridge {
-                ping_position: reply.recv_position(),
-            },
-            ready_token: None,
-            marker_observed: false,
-            ready: false,
-        })?;
-        if before_deadline(
-            self.shared.connection.emit_signal(
-                None::<()>,
-                MARKER_PATH,
-                MARKER_INTERFACE,
-                MARKER_MEMBER,
-                &nonce.0,
-            ),
-            deadline,
-        )
-        .await
-        .is_err()
-        {
-            self.clear_fence(nonce);
-            return Err(AdapterError::Timeout);
+    }
+
+    async fn wait_for_pending_activation(&self, deadline: Instant) -> Result<(), AdapterError> {
+        loop {
+            // Listen before inspecting the slot so publication cannot be lost.
+            let changed = self.shared.changed.listen();
+            if self.shared.cancelled.load(Ordering::Acquire) {
+                return Err(AdapterError::Cancelled);
+            }
+            if Instant::now() >= deadline {
+                return Err(AdapterError::Timeout);
+            }
+            {
+                let slot = self
+                    .shared
+                    .pending
+                    .lock()
+                    .map_err(|_| AdapterError::Denied)?;
+                match slot.as_ref().map(|pending| &pending.kind) {
+                    None => return Ok(()),
+                    Some(FenceKind::Bridge { .. }) => return Err(AdapterError::Busy),
+                    Some(FenceKind::Acquisition { .. }) => {}
+                }
+            }
+            before_deadline(
+                async {
+                    changed.await;
+                    Ok(())
+                },
+                deadline,
+            )
+            .await?;
         }
-        trace::record_admission_timing("bridge_marker_emitted", None, nonce.0, Some(deadline));
-        Ok(PendingFence { nonce, deadline })
     }
 
     pub(crate) fn finish_bridge_fence(
@@ -1787,6 +2051,10 @@ impl ContextAdmissionAdapter {
             .is_ok_and(|mut reducer| reducer.settle_bridge_output(token, settled))
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "forward one existing observation explicitly to its sole reducer publisher"
+    )]
     pub(crate) fn publish_exact_manual_snapshot(
         &self,
         token: &AdmissionToken,
@@ -1795,6 +2063,7 @@ impl ContextAdmissionAdapter {
         observed_external_prefix: Option<String>,
         observation_revision: u64,
         expires_at: Instant,
+        provenance: ExactManualSourceProvenance,
     ) -> bool {
         self.shared.reducer.lock().is_ok_and(|mut reducer| {
             reducer.publish_exact_manual_snapshot(
@@ -1804,6 +2073,7 @@ impl ContextAdmissionAdapter {
                 observed_external_prefix,
                 observation_revision,
                 expires_at,
+                provenance,
             )
         })
     }
@@ -2085,6 +2355,25 @@ impl ContextAdmissionAdapter {
         focus_position: Sequence,
         native_context_hint: Option<&ContextKey>,
     ) -> Result<RequestGeneration, AdapterError> {
+        self.begin_activation_request_for_focus(
+            target_path,
+            nonce,
+            origin,
+            focus_position,
+            native_context_hint,
+            false,
+        )
+    }
+
+    fn begin_activation_request_for_focus(
+        &self,
+        target_path: EnginePath,
+        nonce: BarrierNonce,
+        origin: ReceiptOrigin,
+        focus_position: Sequence,
+        native_context_hint: Option<&ContextKey>,
+        require_current_focus: bool,
+    ) -> Result<RequestGeneration, AdapterError> {
         // Different-context native enrichment can revoke its request before
         // the old marker arrives. Retire only that stale acquisition through
         // the existing publication boundary before testing slot occupancy.
@@ -2114,24 +2403,6 @@ impl ContextAdmissionAdapter {
                 return Err(AdapterError::Denied);
             }
         };
-        if publication.is_some() {
-            drop(publication);
-            if let Some(target) = trace_target.as_deref() {
-                trace::record_native_activation(trace::NativeActivationTrace {
-                    stage: "begin",
-                    outcome: "busy",
-                    target_path: target,
-                    request_generation: None,
-                    nonce: nonce.0,
-                    context_path: None,
-                    owner_generation: None,
-                    revocation: None,
-                    profile: None,
-                    route: Some("pending_occupied"),
-                });
-            }
-            return Err(AdapterError::Busy);
-        }
         let mut reducer = match self.shared.reducer.lock() {
             Ok(reducer) => reducer,
             Err(error) => {
@@ -2154,6 +2425,35 @@ impl ContextAdmissionAdapter {
                 return Err(AdapterError::Denied);
             }
         };
+        if require_current_focus
+            && !self
+                .shared
+                .stamps
+                .is_current_focus(target_path.as_str(), &focus_position)
+        {
+            trace::record(
+                r#"{"kind":"ibus_context_admission","stage":"activation_focus","status":"superseded_ingress"}"#,
+            );
+            return Err(AdapterError::SupersededFocus);
+        }
+        if publication.is_some() {
+            drop(publication);
+            if let Some(target) = trace_target.as_deref() {
+                trace::record_native_activation(trace::NativeActivationTrace {
+                    stage: "begin",
+                    outcome: "busy",
+                    target_path: target,
+                    request_generation: None,
+                    nonce: nonce.0,
+                    context_path: None,
+                    owner_generation: None,
+                    revocation: None,
+                    profile: None,
+                    route: Some("pending_occupied"),
+                });
+            }
+            return Err(AdapterError::Busy);
+        }
         let has_transfer = reducer.ticket.as_ref().is_some_and(|ticket| {
             ticket.status == TicketStatus::Pending
                 && ticket.target_path.as_ref() == Some(&target_path)
@@ -2658,6 +2958,9 @@ impl ContextAdmissionAdapter {
         }) {
             return None;
         }
+        if !self.ready_literal_callbacks_completed(ready.as_ref()?) {
+            return None;
+        }
         let taken = ready.take().expect("matching ready activation");
         drop(ready);
         self.clear_fence(taken.fence.nonce);
@@ -3000,6 +3303,7 @@ impl ContextAdmissionObserver {
             // Native pending-literal stamps were already published while the
             // reducer lock prevented Ready from overtaking their provenance.
             if !matches!(stamp.disposition, IngressDisposition::PendingLiteral(_))
+                && !matches!(member, "FocusIn" | "FocusInId" | "FocusOut" | "FocusOutId")
                 && !self.shared.stamps.publish(stamp)
             {
                 self.fail_closed();
@@ -3229,6 +3533,61 @@ impl ContextAdmissionObserver {
             return Ok(IngressDisposition::Passive);
         }
 
+        if matches!(member, "FocusIn" | "FocusInId" | "FocusOut" | "FocusOutId") {
+            let disposition = (|| -> Result<IngressDisposition, AdapterError> {
+                if matches!(member, "FocusIn" | "FocusInId") {
+                    return Ok(IngressDisposition::Passive);
+                }
+                let Some(owner) = path_owner else {
+                    let target = EnginePath::new(path).ok_or(AdapterError::Denied)?;
+                    let pending_target = reducer.request.as_ref().and_then(|request| match request
+                        .target
+                    {
+                        RequestTarget::Transfer(_) => reducer.pending_transfer_target(),
+                        RequestTarget::SourceFree => reducer
+                            .source_free
+                            .as_ref()
+                            .map(|activation| activation.target_path.clone()),
+                    });
+                    if pending_target.as_ref() == Some(&target) {
+                        reducer.malformed_or_unobserved_lifecycle();
+                    }
+                    return Ok(IngressDisposition::StaleContext);
+                };
+                if member == "FocusOutId" {
+                    let context_path = message
+                        .body()
+                        .deserialize::<String>()
+                        .map_err(|_| AdapterError::Denied)?;
+                    if reducer
+                        .activation()
+                        .is_none_or(|activation| activation.context.path.as_str() != context_path)
+                    {
+                        return Ok(IngressDisposition::StaleContext);
+                    }
+                }
+                match reducer.focus_out(&owner, stamp.position) {
+                    Some(ticket) => Ok(IngressDisposition::FocusOut { owner, ticket }),
+                    None => {
+                        // A repeated/revoked handoff is a context refusal, not
+                        // a broken metadata connection. Keep observing future
+                        // focus while granting no transfer of the old word.
+                        reducer.malformed_or_unobserved_lifecycle();
+                        Ok(IngressDisposition::Revocation { owner })
+                    }
+                }
+            })()?;
+            // Publish focus provenance under the same reducer lock used by
+            // request creation. Reuse the bounded stamp store; no second
+            // lifecycle owner, cache, generation or queue is introduced.
+            let mut focus_stamp = stamp.clone();
+            focus_stamp.disposition = disposition.clone();
+            if !self.shared.stamps.publish(focus_stamp) {
+                return Err(AdapterError::Denied);
+            }
+            return Ok(disposition);
+        }
+
         match member {
             "ProcessKeyEvent" | "ProcessKeyEventAtomicV1" => {
                 let legacy_key = if member == "ProcessKeyEvent" {
@@ -3356,46 +3715,6 @@ impl ContextAdmissionObserver {
                             IngressDisposition::Passive
                         },
                     )
-                }
-            }
-            "FocusOut" | "FocusOutId" => {
-                let Some(owner) = path_owner else {
-                    let target = EnginePath::new(path).ok_or(AdapterError::Denied)?;
-                    let pending_target = reducer.request.as_ref().and_then(|request| match request
-                        .target
-                    {
-                        RequestTarget::Transfer(_) => reducer.pending_transfer_target(),
-                        RequestTarget::SourceFree => reducer
-                            .source_free
-                            .as_ref()
-                            .map(|activation| activation.target_path.clone()),
-                    });
-                    if pending_target.as_ref() == Some(&target) {
-                        reducer.malformed_or_unobserved_lifecycle();
-                    }
-                    return Ok(IngressDisposition::StaleContext);
-                };
-                if member == "FocusOutId" {
-                    let context_path = message
-                        .body()
-                        .deserialize::<String>()
-                        .map_err(|_| AdapterError::Denied)?;
-                    if reducer
-                        .activation()
-                        .is_none_or(|activation| activation.context.path.as_str() != context_path)
-                    {
-                        return Ok(IngressDisposition::StaleContext);
-                    }
-                }
-                match reducer.focus_out(&owner, stamp.position) {
-                    Some(ticket) => Ok(IngressDisposition::FocusOut { owner, ticket }),
-                    None => {
-                        // A repeated/revoked handoff is a context refusal, not
-                        // a broken metadata connection. Keep observing future
-                        // focus while granting no transfer of the old word.
-                        reducer.malformed_or_unobserved_lifecycle();
-                        Ok(IngressDisposition::Revocation { owner })
-                    }
                 }
             }
             "Disable" => {

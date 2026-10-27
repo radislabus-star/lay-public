@@ -31,14 +31,18 @@ const TERMINAL_FLAG: u16 = 1;
 const PACKED_U24_MAX: u32 = (1 << 24) - 1;
 const PACKED_U15_MAX: u16 = (1 << 15) - 1;
 const NORMALIZATION_SEMANTICS_VERSION: u32 = 1;
+#[cfg(test)]
 const MAX_SIDECAR_BYTES: usize = 32 * 1024 * 1024;
+#[cfg(test)]
 const MAX_LOADER_METADATA_BYTES: usize = 4 * 1024 * 1024;
 #[cfg(test)]
 const MAX_QUERY_SCRATCH_BYTES: usize = 512 * 1024;
 const MAX_QUERY_SYMBOLS: usize = 96;
 const MAX_LEVENSHTEIN_RADIUS: u8 = 3;
 const MAX_BAND_CELLS: usize = MAX_LEVENSHTEIN_RADIUS as usize * 2 + 1;
+#[cfg(test)]
 const DEAD_DLA_STATE: u16 = u16::MAX;
+#[cfg(test)]
 const DLA_HASH_BUCKET_BYTES: usize = 24;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -450,6 +454,7 @@ fn compile_sidecar(package: &RuntimeL2Package, identity: V13Identity) -> Result<
     encode_sidecar(builder.finish()?, identity)
 }
 
+#[cfg(test)]
 fn compile_test_sidecar(surfaces: &[String]) -> Result<(Vec<u8>, V13Identity), String> {
     let mut builder = MinimalDafsaBuilder::new();
     for surface in surfaces {
@@ -736,6 +741,7 @@ impl V13DafsaView {
             .collect()
     }
 
+    #[cfg(test)]
     fn exact_form_ref(&self, symbols: &[u32]) -> Result<Option<u32>, String> {
         let mut state_id = self.root_state;
         let mut rank = 0_u32;
@@ -767,10 +773,12 @@ impl V13DafsaView {
         self.bytes.len()
     }
 
+    #[cfg(test)]
     fn mmap_backed(&self) -> bool {
         self.bytes.is_mapped()
     }
 
+    #[cfg(test)]
     fn owned_metadata_bytes(&self) -> usize {
         std::mem::size_of::<Self>()
     }
@@ -796,18 +804,21 @@ impl SearchBudget {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(test)]
 enum SearchCompleteness {
     CertifiedExhaustive,
     Unresolved(&'static str),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
+#[cfg(test)]
 struct V13TypedPeak {
     form_ref: u32,
     certificate_keys: Vec<String>,
 }
 
 #[derive(Clone, Debug)]
+#[cfg(test)]
 struct SearchResult {
     retrieved_form_refs: Vec<u32>,
     peaks: Vec<V13TypedPeak>,
@@ -1054,6 +1065,7 @@ fn hex_digest(value: [u8; 32]) -> String {
 }
 
 #[derive(Clone, Copy)]
+#[cfg(test)]
 enum SearchKernel {
     Dla,
     BandedOracle,
@@ -1067,6 +1079,7 @@ trait LevenshteinRow: Sized {
     fn terminal_distance(&self, query_len: usize, radius: u8) -> u8;
 }
 
+#[cfg(test)]
 struct SearchNode<Row> {
     state_id: u32,
     rank_prefix: u32,
@@ -1082,6 +1095,7 @@ struct BandedLevenshteinRow {
 }
 
 impl BandedLevenshteinRow {
+    #[cfg(test)]
     fn identity_key(self) -> u64 {
         let mut key =
             u64::from(self.depth) | (u64::from(self.start) << 8) | (u64::from(self.len) << 16);
@@ -1167,6 +1181,7 @@ impl LevenshteinRow for BandedLevenshteinRow {
     }
 }
 
+#[cfg(test)]
 struct DlaBuildFailure {
     reason: &'static str,
     maximum_scratch_bytes: usize,
@@ -1175,6 +1190,7 @@ struct DlaBuildFailure {
     elapsed_us: u64,
 }
 
+#[cfg(test)]
 struct QueryLocalDla {
     transitions: Vec<u16>,
     terminal_distances: Vec<u8>,
@@ -1185,6 +1201,7 @@ struct QueryLocalDla {
     build_elapsed_us: u64,
 }
 
+#[cfg(test)]
 impl QueryLocalDla {
     fn build(
         index: &V13DafsaView,
@@ -1363,6 +1380,7 @@ impl QueryLocalDla {
     }
 }
 
+#[cfg(test)]
 fn dla_builder_scratch_bytes(
     rows: &Vec<BandedLevenshteinRow>,
     state_ids: &HashMap<u64, u16>,
@@ -1379,6 +1397,7 @@ fn dla_builder_scratch_bytes(
         + terminal_capacity * std::mem::size_of::<u8>()
 }
 
+#[cfg(test)]
 trait TraversalKernel {
     type State: Copy;
 
@@ -1400,14 +1419,17 @@ trait TraversalKernel {
     fn resident_scratch_bytes(&self) -> usize;
 }
 
+#[cfg(test)]
 struct RowTraversalKernel<Row>(std::marker::PhantomData<Row>);
 
+#[cfg(test)]
 impl<Row> Default for RowTraversalKernel<Row> {
     fn default() -> Self {
         Self(std::marker::PhantomData)
     }
 }
 
+#[cfg(test)]
 impl<Row: LevenshteinRow + Copy> TraversalKernel for RowTraversalKernel<Row> {
     type State = Row;
 
@@ -1444,8 +1466,10 @@ impl<Row: LevenshteinRow + Copy> TraversalKernel for RowTraversalKernel<Row> {
     }
 }
 
+#[cfg(test)]
 struct DlaTraversalKernel<'a>(&'a QueryLocalDla);
 
+#[cfg(test)]
 impl TraversalKernel for DlaTraversalKernel<'_> {
     type State = u16;
 
@@ -1482,11 +1506,13 @@ impl TraversalKernel for DlaTraversalKernel<'_> {
 }
 
 #[derive(Clone, Copy)]
+#[cfg(test)]
 struct FullLevenshteinRow {
     cells: [u8; MAX_QUERY_SYMBOLS + 1],
     len: u8,
 }
 
+#[cfg(test)]
 impl LevenshteinRow for FullLevenshteinRow {
     fn initial(query_len: usize, _radius: u8) -> Self {
         let mut cells = [0_u8; MAX_QUERY_SYMBOLS + 1];
@@ -1519,6 +1545,7 @@ impl LevenshteinRow for FullLevenshteinRow {
     }
 }
 
+#[cfg(test)]
 fn search_typed_peaks(
     index: &V13DafsaView,
     package: &RuntimeL2Package,
@@ -1528,6 +1555,7 @@ fn search_typed_peaks(
     search_typed_peaks_with_kernel(index, package, observed, budget, false, SearchKernel::Dla)
 }
 
+#[cfg(test)]
 fn search_typed_peaks_with_schedule(
     index: &V13DafsaView,
     package: &RuntimeL2Package,
@@ -1545,6 +1573,7 @@ fn search_typed_peaks_with_schedule(
     )
 }
 
+#[cfg(test)]
 fn search_typed_peaks_banded_oracle(
     index: &V13DafsaView,
     package: &RuntimeL2Package,
@@ -1561,6 +1590,7 @@ fn search_typed_peaks_banded_oracle(
     )
 }
 
+#[cfg(test)]
 fn search_typed_peaks_full_row(
     index: &V13DafsaView,
     package: &RuntimeL2Package,
@@ -1577,6 +1607,7 @@ fn search_typed_peaks_full_row(
     )
 }
 
+#[cfg(test)]
 fn search_typed_peaks_with_kernel(
     index: &V13DafsaView,
     package: &RuntimeL2Package,
@@ -1692,6 +1723,7 @@ fn search_typed_peaks_with_kernel(
     })
 }
 
+#[cfg(test)]
 struct LaneOutcome {
     form_refs: Vec<u32>,
     expanded: usize,
@@ -1704,6 +1736,7 @@ struct LaneOutcome {
     intersection_elapsed_us: u64,
 }
 
+#[cfg(test)]
 impl LaneOutcome {
     fn unresolved(reason: &'static str, maximum_scratch: usize) -> Self {
         Self {
@@ -1730,6 +1763,7 @@ fn validate_lane(lane: &Phase7dRetrievalLane) -> Option<&'static str> {
     }
 }
 
+#[cfg(test)]
 fn enumerate_dla_lane(
     index: &V13DafsaView,
     lane: &Phase7dRetrievalLane,
@@ -1786,6 +1820,7 @@ fn enumerate_dla_lane(
     Ok(outcome)
 }
 
+#[cfg(test)]
 fn enumerate_row_lane<Row: LevenshteinRow + Copy>(
     index: &V13DafsaView,
     lane: &Phase7dRetrievalLane,
@@ -1806,6 +1841,7 @@ fn enumerate_row_lane<Row: LevenshteinRow + Copy>(
     )
 }
 
+#[cfg(test)]
 fn enumerate_lane_with_kernel<Kernel: TraversalKernel>(
     index: &V13DafsaView,
     lane: &Phase7dRetrievalLane,
@@ -1933,6 +1969,7 @@ fn enumerate_lane_with_kernel<Kernel: TraversalKernel>(
     })
 }
 
+#[cfg(test)]
 fn search_child<Kernel: TraversalKernel>(
     parent: &SearchNode<Kernel::State>,
     query: &[u32],
@@ -1950,6 +1987,7 @@ fn search_child<Kernel: TraversalKernel>(
         }))
 }
 
+#[cfg(test)]
 fn levenshtein_row(previous: &[u8], query: &[u32], symbol: u32) -> [u8; MAX_QUERY_SYMBOLS + 1] {
     let mut row = [u8::MAX; MAX_QUERY_SYMBOLS + 1];
     row[0] = previous[0].saturating_add(1);
@@ -1963,6 +2001,7 @@ fn levenshtein_row(previous: &[u8], query: &[u32], symbol: u32) -> [u8; MAX_QUER
     row
 }
 
+#[cfg(test)]
 fn search_scratch_bytes<Row>(
     stack: &Vec<SearchNode<Row>>,
     terminals: &Vec<u32>,

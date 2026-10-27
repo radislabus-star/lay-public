@@ -1,0 +1,73 @@
+{
+  "at": "2026-10-22T12:53:20.557606+00:00",
+  "status": "SOURCE_471_PASS_NATIVE_V94_6_OF_7_FAIL_LIVENESS_REVIEW_PENDING",
+  "owner": "existing ContextAdmissionReducer, paired ExactReplay and EngineOutput; no new owner or client bypass",
+  "problem": "Trailing native replay Space can make sentence-clipped clients stop reporting the complete replacement source. Dispatch count is not client proof.",
+  "decision": "Retain only the existing exact plan final synthetic Space when its validated source provenance is ObservedWordAndLocalSpace and the plan has exactly one trailing ASCII Space. ClientSnapshot replay retains its native delivery contract. Once the actual current complete pre-Space word is observed under the paired lease and lexical successor token, commit that single Space through existing output. The explicit reducer transition records a new source-only boundary; generic bridge settlement keeps its lineage guard.",
+  "prerequisite": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v77/independent-audit.json",
+    "native_actual_word": "ghbdtn",
+    "caret": 6,
+    "source_ack": false,
+    "result_ack": false
+  },
+  "constraints": [
+    "No literal word, suffix, client-name or test-specific runtime branch",
+    "No fabricated SSI or result ACK, pending visible result or positive learning",
+    "No timer, polling, extra key or inferred drained flag",
+    "A genuine exact whole-word snapshot already received after the final native letter is eligible; do not require a new revision from IBus cached-identical SSI",
+    "Hold paired press/release exactly once; retain original expiry, owner/path/layout/focus/epoch and current lexical token",
+    "Carry existing validated source provenance in the paired replay scope; never infer client identity or capabilities from an application name",
+    "While held, retain only the proved field identity and current personalization policy; mirrored native text remains unavailable as an edit source",
+    "Partial matching snapshot has no output. New input, mismatch, selection, focus/layout/owner/lifecycle/epoch/privacy/pair invalidation cancels without late output",
+    "One RequireSurroundingText at hold entry; source-only boundary after successful Space output, no general autocorrection on replay",
+    "Ordinary native replay without eligible source provenance and held Shift behavior keep existing contract",
+    "An actionable held Space cancels on any non-end caret or selection before the generic inert historical-prefix predicate; a later exact snapshot cannot revive it."
+  ],
+  "source_red_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/writer-held-boundary-v78-red/result.json",
+  "harness2": {
+    "task_id": "20261022T103628Z-e7cc3589",
+    "scope": "conditional design review before native prerequisite; implementation still unreviewed",
+    "score": 8
+  },
+  "runtime_authority_changed": false,
+  "publication": "NOT_REQUESTED",
+  "affected_source": {
+    "pass": 471,
+    "fail": 0,
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/writer-held-boundary-v94-affected/result.json"
+  },
+  "implementation_harness2": {
+    "task_id": "20261022T115225Z-f7d6b553",
+    "status": "ok",
+    "scope": "frozen v83; B1/B2 and additional caret finding independently fixed in current v94; final follow-up pending",
+    "score": 6,
+    "verdict": "REQUEST_CHANGES",
+    "report": "/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T115225Z-f7d6b553/report.json",
+    "failed_calls": 0,
+    "fallback_stages": []
+  },
+  "native_v92": {
+    "status": "PASS",
+    "rows": 7,
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v92-native/result.json",
+    "engine_sha256": "457c02b4f9707a85415138ac550574720d49a424dae9e6b0707727198946100b",
+    "installed_after": "v64 restored; PID3926674",
+    "visual_matrix": "NOT_TESTED",
+    "full_client_profiles": "NOT_TESTED"
+  },
+  "open_review_followup": "Bounded final source review of current token/field/provenance/caret changes; request-drop and successor-owner coverage gaps remain to assess.",
+  "caret_red_green": {
+    "red": "/home/e/projects/lay-development-runner/kde-install-control-20261020/writer-held-boundary-v93b-caret-red/result.json",
+    "green": "/home/e/projects/lay-development-runner/kde-install-control-20261020/writer-held-boundary-v94-held-green/result.json"
+  },
+  "native_v94": {
+    "status": "FAIL",
+    "pass": 6,
+    "fail": 1,
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v94-native/result.json",
+    "audit": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-held-boundary-v94-native/liveness-audit.json",
+    "restored_engine_pid": 3998187,
+    "runtime_adopted": false
+  }
+}

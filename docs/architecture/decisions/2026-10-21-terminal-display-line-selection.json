@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "SOURCE_PROOF_PASS_NATIVE_AFTER_SPACE_PASS_ACTIVE_BRIDGE_FAILURE_OPEN",
+  "invariants": [
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "delivery_routes_changed": false,
+  "runtime_authority_changed": true,
+  "decision": "Interpret surrounding cursor/anchor selection metadata in the domain of the already selected executor. A qualified TerminalErase target observes a terminal display line, not an editable-document selection. Reuse the same existing target decision before structural verification and execution; retain all observed text/cursor contradiction evidence. ExactSurroundingText, CommitOnly, unsupported and atomic contexts retain editable-selection semantics.",
+  "reason": "The installed Konsole 21.12.3 returns its decoded display line and cursor column, but does not implement ImAnchorPosition. After the engine handoff the unchanged seven-character tail arrives with cursor7/anchor0. The first flip succeeds; the second is rejected as stale_surrounding_text solely because the anchor is interpreted as an editable selection. Native trace and a production-entrypoint RED establish this boundary defect.",
+  "primary_source": "https://raw.githubusercontent.com/KDE/konsole/v21.12.3/src/terminalDisplay/TerminalDisplay.cpp",
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "verification": "Source candidate-v3: 200/200 affected checks, JS14/14, Python2/2, architecture PASS. Native candidate-v4: both terminals five after-Space toggles PASS; active-word return fails before execution because current qualification is late. Separate ordering decision records that first failure.",
+  "consequences": "No change to the structural verifier, snapshot bytes, general selection predicate, edit plan, epoch/field/owner qualification, sensitive-content checks, exact-refresh contract, output route, or postcondition evidence. A contradictory terminal tail still rejects with no output. Revoked terminal qualification cannot reuse the old authority or relax an editable selection. No application-name runtime branch or manufactured observation.",
+  "not_tested": "Current implementation still needs focused execution negatives, affected source scope, independent Harness2 review and native Konsole/Kitty checks. Browser typed-prefix underline remains a separate FAIL; historical source stack overflow and complete browser matrices remain open."
+}

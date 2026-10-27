@@ -37,6 +37,7 @@ pub(crate) fn context_mode(context: &str) -> LocalContextMode {
     }
 }
 
+#[cfg(test)]
 pub(crate) fn context_evidence_keys(context: &str) -> Vec<u32> {
     context_evidence_lanes(context)
         .into_iter()

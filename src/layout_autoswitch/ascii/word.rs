@@ -3,9 +3,9 @@ use crate::russian_lexicon::russian_tiny_dictionary;
 use crate::word_reader::split_word_punctuation;
 
 use super::super::english::is_known_english_layout_autoswitch_word;
-use super::candidate::{
-    ascii_to_russian_layout_candidate, exact_ascii_to_russian_layout_candidate,
-};
+use super::candidate::ascii_to_russian_layout_candidate;
+#[cfg(test)]
+use super::candidate::exact_ascii_to_russian_layout_candidate;
 use super::punctuation::correct_word_preserving_trailing_punctuation;
 use super::symbols::{
     has_ascii_shift_letter_signal, is_blocked_ascii_layout_token, is_protected_ascii_layout_token,
@@ -103,6 +103,7 @@ pub(crate) fn correct_wrong_layout_ascii_word(token: &str) -> Option<String> {
     }
 }
 
+#[cfg(test)]
 pub(crate) fn correct_exact_wrong_layout_ascii_word(token: &str) -> Option<String> {
     if is_blocked_ascii_layout_token(token) {
         return None;

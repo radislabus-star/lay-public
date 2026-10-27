@@ -1,0 +1,68 @@
+{
+  "version": "1.0.100",
+  "published": {
+    "tag_name": "v1.0.100",
+    "html_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.100",
+    "published_at": "2026-10-26T18:13:48Z",
+    "target_commitish": "main",
+    "draft": false,
+    "prerelease": false
+  },
+  "source_ci_tag_equivalence": {
+    "functional_commit": "2725bcf449000fbbce71770d4bbe7293ce4ad3ed",
+    "tag_commit": "36fd0e7a89910de59b1c99d9d9428f273b00af5f",
+    "changed": [
+      "docs/architecture/owned-preedit-blur-receive-order-2026-10-26.md",
+      "docs/development/lay2-handoff.md",
+      "docs/development/six-release-debt-plan-2026-10-25.md",
+      "docs/release-1.0.100.md",
+      "tech_debt/evidence/release-1.0.100-native.json",
+      "tech_debt/evidence/release-1.0.100-verification.json",
+      "tech_debt/kde-native-receipts-followup-2026-10-24.md",
+      "tech_debt/wezterm-native-preedit-followup-2026-10-26.md"
+    ],
+    "critical_production_and_build_trees_equal": true,
+    "at_utc": "2026-10-26T18:15:14.494531+00:00"
+  },
+  "local": {
+    "at_utc": "2026-10-26T18:35:26.205638+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.100\nстабильный релиз: 1.0.100\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+    "stderr": ""
+  },
+  "remote": {
+    "at_utc": "2026-10-26T18:15:16.676175+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.100\nстабильный релиз: 1.0.100\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+    "stderr": ""
+  },
+  "earlier_local_busy": {
+    "at_utc": "2026-10-26T18:15:15.657313+00:00",
+    "exit_code": 75,
+    "stdout": "",
+    "stderr": "Другое обновление Lay уже выполняется.\n"
+  },
+  "local_actual_automatic_completion": {
+    "at_utc": "2026-10-26T18:35:26.205638+00:00",
+    "properties": [
+      "ActiveState=inactive",
+      "SubState=dead",
+      "Result=success",
+      "ExecMainCode=1",
+      "ExecMainStatus=0",
+      "MemoryPeak=3939831808",
+      "CPUUsageNSec=756785946000",
+      "MemoryHigh=4294967296",
+      "MemoryMax=4294967296"
+    ],
+    "tail": [
+      "IME clients configured. New Kitty commands and menu launches use IBus; existing windows stay open. Other session defaults apply at next login.",
+      "✓ файлы Lay обновлены; настройка устройств и IBus сохранена",
+      "✓ установлен стабильный Lay 1.0.100",
+      "Активный IME продолжит текущую сессию ввода; глобальный IBus не перезапускался.",
+      "Finished lay-auto-update.service - Update Lay from the latest stable public release.",
+      "lay-auto-update.service: Consumed 12min 36.785s CPU time over 13min 18.507s wall clock time, 3.6G memory peak."
+    ]
+  },
+  "manual_local_installation": false
+}

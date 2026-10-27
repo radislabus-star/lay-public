@@ -53,3 +53,14 @@ decision до реализации. Нет установки/релиза по 
 Если V1 не даёт практической ценности на актуальных клиентах, оценить закрытие
 самого fallback route с явной совместимостью, а не строить новый протокол ради
 редкой legacy ветки. Пока production permission для этой задачи не выдан.
+
+
+## Release102 reconciliation —2026-10-26
+
+2026-10-26 release102 reconciliation: no V1 protocol change is made by the
+confirmed lifecycle repair. The measured current browser cases use exact V2;
+this is not evidence that generic V1 is unreachable for every supported backend.
+The six-release order authorizes continued work, but does not supply the missing
+synthetic-event completion proof. Preserve DECISION_REQUIRED and compatibility;
+no TTL/parity heuristic or second fallback owner is introduced. The historical
+line about absent production permission does not revoke the later user order.

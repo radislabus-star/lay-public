@@ -1,0 +1,56 @@
+{
+  "date": "2026-10-22",
+  "status": "FOCUSED_SOURCE_VERIFIED_STATIC_REVIEW_ACCEPTED_NOT_A_CLIENT_FIX",
+  "scope": "User-approved separate KDE directory; GNOME behavior frozen; then Chrome only, other clients sequentially",
+  "directory": "src/bin/lay_ibus_engine/kde/",
+  "change": [
+    "Relocate the existing terminal window qualification and layout synchronization files without changing their algorithms or Rust module identities",
+    "Add a KDE presentation boundary that reuses the existing text builders; use it only in the selected KDE branches of the existing publisher",
+    "Retain the direct non-KDE calls and all GNOME source bytes",
+    "Add a client adapter only for an established presentation requirement, reusing solved mechanisms before implementing another one",
+    "Move the existing focused-window KWin read body into the selected KDE adapter; preserve common parsing and all non-KDE branches"
+  ],
+  "authority": "Existing ContextAdmissionReducer, WindowInteraction, DecisionCore, verifier and authorized edit executor unchanged",
+  "unchanged": [
+    "GNOME modules",
+    "text and text/attrs builders",
+    "candidate decisions",
+    "word ownership",
+    "edit authorization",
+    "delivery transports",
+    "learning",
+    "installed runtime"
+  ],
+  "verification": [
+    "Compare relocated production/test bytes, permitting the test include update and exact relocation of the common focused-window KWin read body",
+    "Verify no GNOME file, text builder, context authority or execution source changed within this bounded step",
+    "Compile remotely under the existing resource and Cargo guards; execute the exact existing KDE layout, presentation and dispatch test identities",
+    "Review the frozen bounded diff through Harness2 lay2 gpt-6.1-sol/xhigh and independently inspect its findings",
+    "Refresh the canonical architecture graph remotely and record its receipt separately"
+  ],
+  "native_scope": "NOT_TESTED: no running engine replacement or client matrix; this is a behavior-preserving relocation",
+  "retained_failure": "The earlier 478-test native-range candidate aborted in pending_transfer_focus_in_then_focus_in_id_enriches_one_prearm_request with stack overflow; this change does not repair or reclassify it",
+  "source_result": {
+    "passed": 29,
+    "total": 29,
+    "wall_seconds": 14.254,
+    "native": "NOT_TESTED",
+    "artifact_sha256": "321bab3ea9ce5b30b6f584152d93e398eac8d32844808b7fce54889dd7adb471",
+    "source_identity": "06d65ce4d85028a7764c323df2567528dd591f925d5b621e2cfd436cad91f217"
+  },
+  "graph_result": {
+    "status": "PASS",
+    "scope": "remote source",
+    "wall_seconds": 51.226,
+    "receipt_sha256": "b820d7c09664cae6e3644cfd3ed798e90af93c00e96048f2a79da46104376bb7"
+  },
+  "harness_task": "20261022T170428Z-3a440f56",
+  "review_result": {
+    "score": 9,
+    "scope": "Frozen static relocation review; subsequent exact KWin helper extraction independently checked",
+    "calls": 8,
+    "failed_calls": 0,
+    "fallbacks": 0,
+    "acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/kde-module-boundary-v109/acceptance.json"
+  }
+}

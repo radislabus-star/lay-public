@@ -1,0 +1,35 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Retain explicit source-observation provenance through the existing manual-source reducer receipt; never treat a locally committed boundary as target SSI or delivery ACK.",
+  "reason": "Causal remote RED loses the real pre-Space external prefix at authenticated engine handoff. Native reverse replay remains blocked without final actual SSI.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/late_native_replay_refresh.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_owned_source.rs",
+    "src/bin/lay_ibus_engine/engine/state_groups.rs",
+    "src/bin/lay_ibus_engine/ibus_interface.rs",
+    "src/bin/lay_ibus_engine/protocol/state.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "12focused/464fixedPASS; architecture/diffPASS. Post-request timeout RED closed by existing reducer cancellation independent of buffer emptiness. Harness2 task20261022T040352Z-3055d027 running, prior blocked selected review rejected. Native v61 NOT_TESTED.",
+  "not_tested": "Changed-byte native clients, full browser/GNOME/release/updater not tested.",
+  "runtime_authority_changed": false,
+  "consequences": "Use existing reducer source prefix and700ms manual queue. Ordinary-client read starts only from actual whole prior source or whole replacement word without boundary, with complete paired current replay. Missing/intermediate SSI cannot admit an immediate gesture. Exact-refresh sentinel branch unchanged. Only final exact SSI releases existing edit path; no synthetic ACK/SSI, key metadata, new owner/queue/timer or client-specific route. Any existing queued manual-source read cancellation must revoke the existing reducer word regardless of buffer emptiness, so an expired same-gesture poll cannot regain authority.",
+  "status": "SOURCE_464_PASS_REVIEW_ACCEPTED_NATIVE_INVERSE_FAIL",
+  "latest_native_evidence": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/libreoffice-no-capitalization-v61/result.json",
+  "latest_native_verified_at": "2026-10-22T04:39:00.577165+00:00"
+}

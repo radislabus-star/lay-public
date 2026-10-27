@@ -1,0 +1,56 @@
+{
+  "schema": "lay.release-updater.v1",
+  "version": "1.0.99",
+  "at_utc": "2026-10-26T15:42:08.245938+00:00",
+  "status": "PASS_INSTALLED_RELEASE_DISCOVERY_BOTH_HOSTS",
+  "local": {
+    "entry": "/home/ubu/.local/bin/lay-update --check",
+    "at_utc": "2026-10-26T15:39:56.527888+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.98\nстабильный релиз: 1.0.99\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.98 → 1.0.99\n",
+    "stderr": ""
+  },
+  "remote": {
+    "host": "192.168.3.94",
+    "entry": "/home/e/.local/bin/lay-update --check",
+    "at_utc": "2026-10-26T15:39:56.838439+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.98\nстабильный релиз: 1.0.99\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.98 → 1.0.99\n",
+    "stderr": ""
+  },
+  "manual_local_install": false,
+  "automatic_install": "NOT_PROVED; old active run timed out, actual final compiler budget PASS is separate",
+  "local_version_readback": {
+    "unit": "ActiveState=failed\nResult=timeout\nExecMainStartTimestamp=Mon 2026-10-26 16:10:16 +03\nExecMainExitTimestamp=Mon 2026-10-26 17:40:16 +03\n",
+    "installed_version": "lay 1.0.98",
+    "manual_install": false
+  },
+  "publication": {
+    "isDraft": false,
+    "isPrerelease": false,
+    "publishedAt": "2026-10-26T15:39:23Z",
+    "tagName": "v1.0.99",
+    "targetCommitish": "main",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.99"
+  },
+  "tag_ci_equivalence": {
+    "functional_ci_commit": "bb6dc5b60442e6a5ff636c3a9a050b9b1657f4dd",
+    "tag_candidate": "0ed833b22a11295cf16959b7f45cf206898cd405",
+    "evidence_only_paths": [
+      "docs/architecture/stable-auto-update-2026-10-19.md",
+      "docs/development/lay2-handoff.md",
+      "docs/development/six-release-debt-plan-2026-10-25.md",
+      "docs/release-1.0.99.md",
+      "tech_debt/auto-update-build-memory-budget-2026-10-26.md",
+      "tech_debt/evidence/release-1.0.99-verification.json",
+      "tech_debt/ubuntu-26-04-polkit-package-compatibility.md"
+    ],
+    "production_tree_identical": true
+  },
+  "issue70": {
+    "state": "CLOSED",
+    "closedAt": "2026-10-26T15:40:35Z",
+    "url": "https://github.com/radislabus-star/lay-public/issues/70",
+    "reply": "https://github.com/radislabus-star/lay-public/issues/70#issuecomment-6420231601"
+  }
+}

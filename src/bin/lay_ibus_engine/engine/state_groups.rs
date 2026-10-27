@@ -14,10 +14,23 @@ use super::types::{
 };
 
 #[derive(Clone)]
+pub(crate) struct StockObservedBoundarySource {
+    pub(crate) focus_serial: u64,
+    pub(crate) runtime_owner_lease_identity: u64,
+    pub(crate) tail_epoch: u64,
+    pub(crate) observation_revision: u64,
+    pub(crate) tail: String,
+    pub(crate) observed_external_prefix: Option<String>,
+}
+
+#[derive(Clone)]
 pub(crate) struct CommittedTailState {
     pub(crate) buffer: String,
     pub(crate) epoch: u64,
     pub(crate) last_commit_at: Option<Instant>,
+    /// Exact pre-boundary client text followed by our successful local Space.
+    /// Source for the existing manual handoff only, never a delivery receipt.
+    pub(crate) observed_boundary_source: Option<StockObservedBoundarySource>,
     pub(crate) last_input_at: Option<Instant>,
     pub(crate) recent_replace: Option<RecentCommittedTailReplace>,
     pub(crate) pending_visible_postcondition: Option<PendingVisiblePostcondition>,
@@ -31,6 +44,7 @@ impl CommittedTailState {
             buffer,
             epoch,
             last_commit_at: None,
+            observed_boundary_source: None,
             last_input_at: None,
             recent_replace: None,
             pending_visible_postcondition: None,
@@ -38,6 +52,15 @@ impl CommittedTailState {
             autocorrect_suppression: None,
         }
     }
+}
+
+#[derive(Clone)]
+pub(crate) struct PendingActivationLiteralInput {
+    pub(crate) receipt: crate::context_admission::PendingLiteralInputReceipt,
+    pub(crate) focus_serial: u64,
+    /// Some only while the entire bounded tail consists of uninterrupted,
+    /// authenticated local input beginning with this acquisition's first key.
+    pub(crate) observed_tail_epoch: Option<u64>,
 }
 
 #[derive(Clone, Default)]
@@ -49,8 +72,7 @@ pub(crate) struct CompositionState {
     pub(crate) legacy_word_preedit_active: bool,
     /// Already-consumed literal input, bound to its still-pending acquisition
     /// and local focus serial. This is preservation evidence, not edit authority.
-    pub(crate) pending_activation_preedit:
-        Option<(crate::context_admission::PendingLiteralInputReceipt, u64)>,
+    pub(crate) pending_activation_preedit: Option<PendingActivationLiteralInput>,
     /// Exact observed start transferred before this uncommitted word's first
     /// key clears the surrounding snapshot. It grants append-only acceptance
     /// only in the same current owner and uninterrupted local input chain.

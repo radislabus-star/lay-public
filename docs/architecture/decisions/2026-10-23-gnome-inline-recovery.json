@@ -1,0 +1,21 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Restore previous inline completion presentation for the resolved GNOME backend before a separate Firefox repair and desktop isolation.",
+  "reason": "The shared auxiliary publisher introduced in 1.0.91 changed GNOME Kitty, WeChat and other clients. The user requested a narrow rollback and explicitly accepted its documented Firefox limitation.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/preedit.rs", "src/bin/lay_ibus_engine/preedit/tests.rs"],
+  "supersedes": "GNOME presentation scope only of 2026-10-18-separate-legacy-ibus-hint-from-document-composition; non-GNOME auxiliary publication and Atomic V1 are unchanged.",
+  "source_head": "5b3c6c5d92ca8d27ac59d2422b64b3e3d04950ae",
+  "user_authorization": "Да возвращай и потом отдельно решай проблему с с известным ограничением Firefox и потом уже разделяй KDE и GNOME разводи их",
+  "consequences": {
+    "implementation": "Use the existing resolved LayoutBackend and existing publish_preedit_payload fallback in one function. No new presentation module, delivery route, owner, executor, timer or queue.",
+    "authority": "Candidate selection, Tab verification, buffers, correction, ownership and Atomic V1 are unchanged. Display alone does not grant edit authority.",
+    "known_limitation": "Firefox may save a hint-bearing composition and finalize it on blur despite an empty reset response. The approved recovery temporarily reintroduces that known client limitation for GNOME; this is not a Firefox safety fix.",
+    "tests": "Bind auxiliary safety/failure regressions explicitly to KDE rather than environment-dependent auto selection. Add explicit GNOME inline publication coverage without claiming client blur conservation.",
+    "rollout": "Remote-only guarded compilation, exact artifact hash, installed-engine backup, then restart Lay through the existing helper. Preserve remote KDE and active applications.",
+    "next": "Repair the first failed Firefox transition separately, then isolate desktop-specific presentation code."
+  },
+  "verification": "Harness2 lay2 task 20261023T112703Z-6f2c6591 reviewed the unchanged production rollback proposal: static 6/10, eight calls, zero failures. Later source, installed-byte and client evidence belong in the presentation document.",
+  "not_tested": "Changed-byte display, Tab, blur/focus conservation, stale auxiliary handover and native latency remain NOT_TESTED at decision time.",
+  "runtime_authority_changed": false
+}

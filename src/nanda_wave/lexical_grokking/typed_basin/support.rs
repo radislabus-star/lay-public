@@ -15,8 +15,47 @@ pub(in crate::nanda_wave::lexical_grokking) struct ExactSupportField {
 
 #[derive(Clone, Copy, Debug, Default)]
 pub(in crate::nanda_wave::lexical_grokking) struct ExactSupportMetrics {
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(in crate::nanda_wave::lexical_grokking) centers_decoded: usize,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(in crate::nanda_wave::lexical_grokking) corpus_surface_mismatches: usize,
+    #[cfg_attr(
+        all(
+            not(test),
+            any(
+                not(feature = "research-tools"),
+                all(feature = "research-tools", not(feature = "lexical-compiler"))
+            )
+        ),
+        expect(
+            dead_code,
+            reason = "Retained shared proof and diagnostic carrier; see build-boundary decision 2026-10-26"
+        )
+    )]
     pub(in crate::nanda_wave::lexical_grokking) encoded_atom_occurrences: u64,
     pub(in crate::nanda_wave::lexical_grokking) stored_saturated_atoms: usize,
     pub(in crate::nanda_wave::lexical_grokking) exact_overflow_atoms: usize,
@@ -34,6 +73,7 @@ struct SupportShard {
 }
 
 impl ExactSupportField {
+    #[cfg(any(test, feature = "lexical-compiler"))]
     pub(in crate::nanda_wave::lexical_grokking) fn rebuild(
         package: &LexicalGrokkingPackage,
         expected_surfaces: &[String],

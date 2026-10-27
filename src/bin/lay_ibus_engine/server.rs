@@ -232,6 +232,23 @@ pub(crate) async fn run(args: &Args) -> zbus::Result<()> {
     };
     super::space_autocorrect_prefetch::initialize();
     complete_startup_warmup(startup_config.nanda_autocorrect)?;
+    let session_connection = connection::Builder::session()?
+        .serve_at(
+            BUS_PATH,
+            LayImeBridge {
+                ibus_connection: ibus_connection.clone(),
+                shared: Arc::clone(&shared),
+                context_admission_required: true,
+                admission: admission.clone(),
+            },
+        )?
+        .name(BUS_NAME)?
+        .allow_name_replacements(true)
+        .replace_existing_names(true)
+        .build()
+        .await?;
+    shared.lock().expect("lay ime state poisoned").hint_view =
+        Some(super::hint_view::HintViewBus::new(session_connection));
     ibus_connection
         .object_server()
         .at(
@@ -245,22 +262,6 @@ pub(crate) async fn run(args: &Args) -> zbus::Result<()> {
         )
         .await?;
     ibus_connection.request_name(IBUS_ENGINE_NAME).await?;
-
-    let _session_connection = connection::Builder::session()?
-        .serve_at(
-            BUS_PATH,
-            LayImeBridge {
-                ibus_connection,
-                shared,
-                context_admission_required: true,
-                admission,
-            },
-        )?
-        .name(BUS_NAME)?
-        .allow_name_replacements(true)
-        .replace_existing_names(true)
-        .build()
-        .await?;
 
     std::future::pending::<()>().await;
     Ok(())

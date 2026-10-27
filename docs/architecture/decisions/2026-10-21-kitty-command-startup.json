@@ -1,0 +1,59 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Configure ordinary Kitty PATH launches through the existing client-setup helper, alongside its desktop-entry and next-login defaults.",
+  "status": "SCOPED_STARTUP_REPAIR_INSTALLED_NATIVE_SCOPE_ACCEPTED",
+  "invariants": [
+    "C01",
+    "C03",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/lay-ime-client-setup.py",
+    "tests/test_ime_client_setup.py"
+  ],
+  "source_checkout": "/home/ubu/projects/lay-browser-final-fixes-20261018",
+  "source_head": "2ec7392a4437586865f8dc4d951b4f71ff04dcb4",
+  "first_failed_transition": "The user's Plasma-launched /home/e/.local/bin/kitty lacks GLFW_IM_MODULE and never connects as an IBus client. The same installed engine succeeds when Kitty is launched by the existing desktop Exec with GLFW_IM_MODULE=ibus.",
+  "measured_baseline": "ordinary-launch-v23/native-ab: direct command hint/Tab FAIL (literal tab), active Double Shift FAIL, after-Space Double Shift FAIL; installed desktop command hint/Tab and both conversion directions PASS. Source causal regression: 4 new failures among 14 tests on the unchanged helper.",
+  "alternatives": [
+    {
+      "option": "Refresh only the desktop entry",
+      "score": 4,
+      "reason": "Already implemented and insufficient: plain commands and existing taskbar launchers bypass it."
+    },
+    {
+      "option": "Depend only on next-login environment defaults",
+      "score": 6,
+      "reason": "Already retained, but cannot repair ordinary launches from the current Plasma process without logging out or restarting it."
+    },
+    {
+      "option": "Add a reversible owned user command launcher",
+      "score": 9,
+      "reason": "Default only an unset GLFW_IM_MODULE, retain the actual executable, arguments, explicit IME choices and original symlink; existing menu and input routes stay unchanged."
+    }
+  ],
+  "consequences": {
+    "owner": "Existing installer/client setup helper and Kitty's existing IBus client. No runtime input owner or delivery mechanism is added.",
+    "scope": "An absent ~/.local/bin/kitty or its existing executable symlink may become an owned launcher. An unowned regular command is preserved and reported before setup writes. Remove restores the exact prior symlink or removes only an unchanged owned launcher.",
+    "existing_processes": "A running Kitty cannot acquire a startup environment retroactively; leave user windows open. Demonstrate the corrected ordinary launch in a new window, without IBus/daemon/Plasma restart.",
+    "privacy": "No application text, keyboard events or credentials enter startup state.",
+    "rollback": "Use the existing helper's --remove; later user changes to the command are preserved. No core binary replacement is required."
+  },
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020/ordinary-launch-v23",
+  "not_tested": "Full matrix, GNOME, Wayland and physical HID. Chrome omnibox has a separately reproduced after-Space Double Shift FAIL; no Chrome/core change in this repair.",
+  "runtime_authority_changed": false,
+  "final_source_tests": "19/19 remote guarded PASS; initial 4/14 RED, review 4/18 RED and final PATH two-subcase RED retained.",
+  "installed_helper_sha256": "a28591596696ed4e07c4b1487999cb71b23ead7da0c50d6387cb90d78be83ddc",
+  "installed_wrapper_sha256": "984a84c73535d27ebf818ccf1deaab6595edd16d006abeff18bd4084b95a0bf1",
+  "native_result": "Ordinary command (no injected GLFW_IM_MODULE) hint/Tab PASS, active+Space rapid five 10/10 targets PASS, next-letter PASS, held Shift RU/US both sides 4/4 PASS, opaque white complete suffix visual capture PASS. RU punctuation FAIL remains, causality unproved. Earlier missing-rect capture remains separate FAIL.",
+  "deployment_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/ordinary-launch-v23/deployment-final/result.json",
+  "user_window": "New ordinary Kitty pid561418 on :71, GLFW_IM_MODULE=ibus; old pid432607 remains open without startup repair. No text injected into user review window.",
+  "harness2": {
+    "task_id": "20261021T183803Z-de6d1dd7",
+    "status": "USED",
+    "review_score": 8,
+    "independent_acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/kitty-command-final-review-v23/independent-acceptance.json",
+    "scope": "Static startup review only; sole demonstrated PATH false-success finding fixed and independently tested after review."
+  }
+}

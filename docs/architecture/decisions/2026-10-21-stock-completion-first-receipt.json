@@ -1,0 +1,81 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "SOURCE_GREEN_NATIVE_BOUNDED_PASS",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "first_failed_transition": "The stock client supplies no precomposition surrounding observation. A real authorized Tab completion emits one owned word and ASCII Space; the first client receipt reports that entire word and NBSP. No observed-start witness exists, so the full-field expectation is absent and the subsequent delegated VisibleTailV4 is unknown-context.",
+  "native_evidence": "/home/e/projects/lay-development-runner/kde-install-control-20261020/firefox-iframe-completion-trace-v17/summary.json",
+  "causal_red": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-completion-space-v17c-red/result.json: actual legacy keys, stock caps41, no initial callback, completion-ready candidate, actual Tab CommitText, then first callback. Exactly one test reaches and fails the owned-tail ASCII/NBSP assertion. Earlier v17/v17b fixture setup failures retained and excluded.",
+  "alternatives": [
+    {
+      "score": 9,
+      "selected": true,
+      "option": "Reuse the exact full-field postcondition as a conditional expectation for an entirely owned authorized single-word completion when both initial snapshot and start witness are absent. Only a later exact whole-field receipt can confirm it."
+    },
+    {
+      "score": 5,
+      "selected": false,
+      "option": "Request a new surrounding observation before every completion.",
+      "reason_not_selected": "Stock clients need not supply one; this adds latency and cannot repair the already completed first callback."
+    },
+    {
+      "score": 1,
+      "selected": false,
+      "option": "Normalize arbitrary whitespace or accept an unobserved field prefix by suffix match.",
+      "reason_not_selected": "Would weaken unchanged-prefix and field/caret evidence."
+    }
+  ],
+  "decision": "For a stock managed-preedit client with no exact refresh, no initial snapshot AND no start witness, capture an expectation only for an exact already AuthorizedEdit from the whole live owned composition to a single word plus one Space. Require current context token, managed mode, supported preedit/surrounding, exact owned tail equal to composition, end cursor, non-sensitive/unsealed/non-atomic state. The expectation is the emitted text as the ENTIRE hypothetical field. It is not an observed empty-field witness and grants no pre-dispatch edit or learning authority. Existing known-start expectations still require their unchanged complete field prefix; a stale or partial known witness never falls back. Reuse existing exact final-Space-to-NBSP acknowledgement with owner/epoch/deadline/caret/selection gates and existing ManualToggleV3/VisibleTailV4 verification. Ordinary UserInput and all output routes unchanged.",
+  "verification": "262/262 isolated affected source checks PASS; installed scoped KDE development engine882385ae. Actual normal-profile Firefox iframe-rich and Chrome text each PASS: native prefix, visible hint screenshot, real Tab, exact completion, DoubleShift both directions and next-letter decoder. This does not accept visual presentation or full browser matrix.",
+  "source_verification": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-completion-space-v17c-green/result.json",
+    "passed": 262,
+    "executed": 262,
+    "test_artifact_sha256": "4041b945407ab517cc0a984fe62844fd5608dab27722dfb072fc1219b2574dd0",
+    "isolated": true,
+    "scope": "Source-only. Valid causal stock-client RED plus14 other owned-space receipt identities and affected prior controls. Native acceptance is separately bounded below."
+  },
+  "native_verification": {
+    "at": "2026-10-21T17:29:19.515707+00:00",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-completion-space-browser-native-v17/summary.json",
+    "engine_sha256": "882385aeec5233cb721998a22e22fb3f8177bf21b021061a17cce14c999d2f45",
+    "engine_pid": 249471,
+    "source_closure": {
+      "files": 1257,
+      "sha256": "75470100e8aef679d1c7b7f6d2e897f637de881b3ac45d8f324f6ff39b1011c8"
+    },
+    "browser_functional_cases": {
+      "PASS": 2,
+      "FAIL": 0,
+      "BLOCKED": 0
+    },
+    "terminal_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/stock-completion-terminals-v18/summary.json",
+    "terminal_hint_tab_roundtrip_cases": 2,
+    "terminal_rapid_transitions_pass": 20,
+    "ordinary_shift_pass": 8,
+    "terminal_visual_scope": "Both current captures show ordinary unmarked typed prefix and complete opaque white/black suffix; Kitty absence in older v16 capture remains historical, not retroactively passed.",
+    "restoration": "engine/daemon/config/mode/layout unchanged or restored; scoped development engine only; protected8 unchanged on deployment"
+  },
+  "not_tested": "Full browser matrix, GNOME, private/fullscreen and release gate not rerun. Current Chrome prefix underline FAIL and Firefox iframe hidden prefix FAIL. Prior fast after-Space browser burst failures retained. RU remote punctuation2FAIL baseline; Lay causality not established.",
+  "review": {
+    "task_id": "20261021T171945Z-cece8c8c",
+    "status": "ACCEPTED_BOUNDED_STATIC_REVIEW",
+    "scope": "Frozen v17 only, not v21 ordinary-Space extension; no native acceptance inferred. Later native v17 receipts independently observed; proof gaps retained.",
+    "score": 9,
+    "calls_ok": 8,
+    "calls_total": 8,
+    "fallbacks": [],
+    "acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/stock-completion-review-v17/independent-acceptance.json"
+  }
+}

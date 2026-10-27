@@ -3,7 +3,61 @@ use lay::config::LayConfig;
 use std::sync::{Arc, Mutex};
 
 #[test]
-fn legacy_unaccepted_completion_is_never_document_composition() {
+fn gnome_completion_uses_previous_inline_presentation_without_accepting_text() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    for legacy_transport in [false, true] {
+        for (typed, attributes) in [
+            ("", vec![(2, 0x888888, 0, 5), (1, 1, 0, 5)]),
+            ("про", vec![(1, 0, 0, 3), (2, 0x888888, 3, 8), (1, 1, 3, 8)]),
+        ] {
+            let mut engine = LayIbusEngine::new(
+                "/test".into(),
+                Arc::new(Mutex::new(Default::default())),
+                true,
+                true,
+                LayConfig {
+                    layout_backend: "gnome".into(),
+                    ..LayConfig::default()
+                },
+            );
+            engine.composition.buffer = typed.into();
+            engine.composition.cursor = typed.chars().count();
+            engine.committed_tail.buffer = "про".into();
+            engine.composition.preedit_candidates = vec!["верка".into()];
+            engine.composition.preedit_replacement_targets = vec![None];
+            let mut observed = TestEngineOutput {
+                legacy_transport,
+                ..Default::default()
+            };
+            zbus::block_on(
+                engine.publish_selected_precognition_candidate(&mut EngineOutput::test(
+                    &mut observed,
+                )),
+            )
+            .unwrap();
+
+            assert_eq!(
+                observed.preedit_updates.last(),
+                Some(&(
+                    format!("{typed}верка"),
+                    typed.chars().count() as u32,
+                    true,
+                    PREEDIT_MODE_CLEAR,
+                )),
+            );
+            assert!(observed.auxiliary_updates.is_empty());
+            assert_eq!(observed.preedit_attribute_updates, vec![attributes]);
+            assert_eq!(engine.composition.buffer, typed);
+            assert_eq!(engine.committed_tail.buffer, "про");
+            assert!(observed.committed_texts.is_empty());
+            assert!(observed.surrounding_deletes.is_empty());
+        }
+    }
+}
+
+#[test]
+fn kde_legacy_unaccepted_completion_is_never_document_composition() {
     use crate::output::{EngineOutput, TestEngineOutput};
 
     // A client may confirm its last preedit on blur even after an empty Reset
@@ -14,7 +68,10 @@ fn legacy_unaccepted_completion_is_never_document_composition() {
             Arc::new(Mutex::new(Default::default())),
             true,
             true,
-            LayConfig::default(),
+            LayConfig {
+                layout_backend: "kde".into(),
+                ..LayConfig::default()
+            },
         );
         engine.composition.buffer = typed.into();
         engine.composition.cursor = cursor;
@@ -52,7 +109,7 @@ fn legacy_unaccepted_completion_is_never_document_composition() {
         assert_eq!(
             observed.auxiliary_attribute_updates,
             if cursor == typed.chars().count() {
-                vec![vec![(2, 0x888888, 0, 5)]]
+                vec![vec![(2, 0x000000, 0, 5), (3, 0xffffff, 0, 5), (1, 0, 0, 5)]]
             } else {
                 Vec::new()
             }
@@ -76,6 +133,103 @@ fn legacy_unaccepted_completion_is_never_document_composition() {
 }
 
 #[test]
+fn inline_terminal_geometry_refresh_never_exposes_text_or_clears_owned_composition() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+    use crate::window_interaction::IBUS_INPUT_PURPOSE_TERMINAL;
+
+    for (terminal, owned, visible, atomic, hint, expected_hide) in [
+        (true, "", false, false, "верка", true),
+        (false, "", false, false, "верка", false),
+        (true, "про", false, false, "верка", false),
+        (true, "", true, false, "верка", false),
+        (true, "", false, true, "верка", false),
+        (true, "", false, false, "", false),
+    ] {
+        let mut engine = LayIbusEngine::new(
+            "/test".into(),
+            Arc::new(Mutex::new(Default::default())),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        engine.context_admission_required = false;
+        engine.client_context.content_purpose = if terminal {
+            IBUS_INPUT_PURPOSE_TERMINAL
+        } else {
+            0
+        };
+        engine.atomic.active = atomic;
+        engine.composition.buffer = owned.into();
+        engine.composition.preedit_visible = visible;
+        engine.committed_tail.buffer = "про".into();
+        engine.composition.preedit_candidates = vec!["верка".into()];
+        engine.composition.preedit_replacement_targets = vec![None];
+        engine.remember_hint_geometry(10, 20, 9, 18);
+        let mut observed = TestEngineOutput {
+            legacy_transport: true,
+            ..Default::default()
+        };
+        zbus::block_on(
+            engine.prepare_inline_terminal_hint(&mut EngineOutput::test(&mut observed), hint),
+        )
+        .unwrap();
+        assert_eq!(
+            engine.client_context.hint_cursor_geometry.is_none(),
+            expected_hide
+        );
+        assert_eq!(
+            observed.effects,
+            if expected_hide {
+                vec!["hide-preedit"]
+            } else {
+                Vec::new()
+            }
+        );
+        assert!(observed.preedit_updates.is_empty());
+        assert!(observed.committed_texts.is_empty());
+        assert!(observed.surrounding_deletes.is_empty());
+        assert_eq!(engine.composition.buffer, owned);
+        assert_eq!(engine.composition.preedit_visible, visible);
+        assert_eq!(engine.committed_tail.buffer, "про");
+        assert_eq!(engine.composition.preedit_candidates, ["верка"]);
+    }
+}
+
+#[test]
+fn inline_geometry_dispatch_failure_retires_tab_candidate_without_document_edits() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    let mut engine = LayIbusEngine::new(
+        "/test".into(),
+        Arc::new(Mutex::new(Default::default())),
+        true,
+        true,
+        LayConfig::default(),
+    );
+    engine.committed_tail.buffer = "про".into();
+    engine.composition.auxiliary_visible = true;
+    engine.composition.preedit_candidates = vec!["верка".into()];
+    engine.composition.preedit_replacement_targets = vec![None];
+    assert!(engine.selected_precognition_suffix().is_some());
+    assert!(engine
+        .finish_inline_hint_publication(Err(zbus::fdo::Error::Failed("dispatch closed".into())))
+        .is_err());
+    assert!(engine.selected_precognition_suffix().is_none());
+    assert!(
+        engine.composition.auxiliary_visible,
+        "hide must remain retryable"
+    );
+    let mut observed = TestEngineOutput::default();
+    assert!(!zbus::block_on(
+        engine.accept_completion(&mut EngineOutput::test(&mut observed), true)
+    )
+    .unwrap());
+    assert_eq!(engine.committed_tail.buffer, "про");
+    assert!(observed.committed_texts.is_empty());
+    assert!(observed.surrounding_deletes.is_empty());
+}
+
+#[test]
 fn legacy_auxiliary_failure_retires_candidates_and_keeps_clear_retry() {
     use crate::output::{EngineOutput, TestEngineOutput};
     for prior_visible in [false, true] {
@@ -84,7 +238,10 @@ fn legacy_auxiliary_failure_retires_candidates_and_keeps_clear_retry() {
             Arc::new(Mutex::new(Default::default())),
             true,
             true,
-            LayConfig::default(),
+            LayConfig {
+                layout_backend: "kde".into(),
+                ..LayConfig::default()
+            },
         );
         engine.committed_tail.buffer = "про".into();
         engine.composition.auxiliary_visible = prior_visible;
@@ -127,7 +284,10 @@ fn legacy_background_display_failure_cannot_authorize_old_or_new_candidates() {
                     Arc::new(Mutex::new(Default::default())),
                     true,
                     true,
-                    LayConfig::default(),
+                    LayConfig {
+                        layout_backend: "kde".into(),
+                        ..LayConfig::default()
+                    },
                 );
                 engine.composition.buffer = typed.into();
                 engine.composition.cursor = typed.chars().count();
@@ -286,7 +446,10 @@ fn legacy_auxiliary_pending_surface_remains_inert_and_retires_without_an_edit() 
         Arc::new(Mutex::new(Default::default())),
         true,
         true,
-        LayConfig::default(),
+        LayConfig {
+            layout_backend: "kde".into(),
+            ..LayConfig::default()
+        },
     );
     for ch in "пров".chars() {
         engine.push_tail_char(ch);
@@ -393,16 +556,26 @@ fn inactive_handled_release_selector_cannot_track_an_unpublished_prediction() {
 }
 
 #[test]
-fn published_preedit_suggestion_style_respects_owned_buffer_and_not_caret() {
+fn kde_published_preedit_suggestion_style_respects_owned_buffer_and_not_caret() {
     use crate::output::{EngineOutput, TestEngineOutput};
 
     for (buffer, payload, cursor, expected) in [
-        ("", "очему", 0, vec![(2, 0x888888, 0, 5), (1, 1, 0, 5)]),
+        (
+            "",
+            "очему",
+            0,
+            vec![(2, 0x000000, 0, 5), (3, 0xffffff, 0, 5), (1, 0, 0, 5)],
+        ),
         (
             "по",
             "почему",
             2,
-            vec![(1, 0, 0, 2), (2, 0x888888, 2, 6), (1, 1, 2, 6)],
+            vec![
+                (1, 0, 0, 2),
+                (2, 0x000000, 2, 6),
+                (3, 0xffffff, 2, 6),
+                (1, 0, 2, 6),
+            ],
         ),
         ("проверка", "проверка", 2, vec![(1, 0, 0, 8)]),
         ("1", "1", 1, vec![(1, 0, 0, 1)]),
@@ -413,7 +586,10 @@ fn published_preedit_suggestion_style_respects_owned_buffer_and_not_caret() {
             Arc::new(Mutex::new(Default::default())),
             true,
             true,
-            LayConfig::default(),
+            LayConfig {
+                layout_backend: "kde".into(),
+                ..LayConfig::default()
+            },
         );
         engine.composition.buffer = buffer.to_string();
         engine.composition.cursor = cursor as usize;

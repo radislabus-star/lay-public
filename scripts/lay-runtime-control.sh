@@ -6,6 +6,13 @@ LAY_DBUS_DEST="org.gnome.Shell"
 LAY_DBUS_PATH="/io/github/radislabus_star/LayDaemon"
 LAY_DBUS_IFACE="io.github.radislabus_star.LayDaemon"
 
+user_systemctl() {
+    # A remote desktop can have its own session bus. Only service-manager
+    # commands use the user's systemd bus; IBus/KDE keep the desktop bus.
+    local manager_bus="unix:path=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus"
+    DBUS_SESSION_BUS_ADDRESS="$manager_bus" systemctl --user "$@"
+}
+
 hydrate_desktop_env() {
     if [ -z "${XDG_RUNTIME_DIR:-}" ]; then
         export XDG_RUNTIME_DIR="/run/user/$(id -u)"
@@ -15,7 +22,7 @@ hydrate_desktop_env() {
     fi
 
     local manager_env key value
-    manager_env="$(systemctl --user show-environment 2>/dev/null || true)"
+    manager_env="$(user_systemctl show-environment 2>/dev/null || true)"
     for key in DISPLAY WAYLAND_DISPLAY XAUTHORITY; do
         if [ -n "${!key:-}" ]; then
             continue
@@ -260,7 +267,7 @@ start_ime() {
     sync_ibus_engine "$safe_xkb" || return 1
     sleep 0.10
 
-    systemctl --user stop lay-ibus-engine.service >/dev/null 2>&1 || true
+    user_systemctl stop lay-ibus-engine.service >/dev/null 2>&1 || true
     stop_lay_ibus_engine
     wait_lay_ibus_engine_stopped || return 1
 
@@ -279,7 +286,7 @@ start_ime() {
 
 stop_ime() {
     select_xkb
-    systemctl --user stop lay-ibus-engine.service >/dev/null 2>&1 || true
+    user_systemctl stop lay-ibus-engine.service >/dev/null 2>&1 || true
     stop_lay_ibus_engine
     select_xkb
 }
@@ -305,16 +312,16 @@ apply_channel() {
 
 case "${1:-status}" in
     start)
-        systemctl --user start lay-daemon.service
+        user_systemctl start lay-daemon.service
         apply_channel "$(text_backend)"
         ;;
     stop)
-        systemctl --user stop lay-daemon.service || true
+        user_systemctl stop lay-daemon.service || true
         stop_ime
         ;;
     restart)
-        if systemctl --user is-active --quiet lay-daemon.service; then
-            systemctl --user restart lay-daemon.service
+        if user_systemctl is-active --quiet lay-daemon.service; then
+            user_systemctl restart lay-daemon.service
             apply_channel "$(text_backend)"
         else
             stop_ime
@@ -322,10 +329,13 @@ case "${1:-status}" in
         ;;
     daemon-start|daemon-stop|daemon-restart)
         # Explicit daemon controls must not cycle IBus or change input sources.
-        systemctl --user "${1#daemon-}" lay-daemon.service
+        user_systemctl "${1#daemon-}" lay-daemon.service
+        ;;
+    daemon-is-active)
+        user_systemctl is-active --quiet lay-daemon.service
         ;;
     channel)
-        if systemctl --user is-active --quiet lay-daemon.service; then
+        if user_systemctl is-active --quiet lay-daemon.service; then
             apply_channel "${2:-$(text_backend)}"
         else
             stop_ime
@@ -333,7 +343,7 @@ case "${1:-status}" in
         ;;
     status)
         printf 'daemon='
-        systemctl --user is-active lay-daemon.service || true
+        user_systemctl is-active lay-daemon.service || true
         printf 'ime_processes='
         pgrep -c -x lay-ibus-engine || true
         printf 'gnome_layout='
@@ -342,7 +352,7 @@ case "${1:-status}" in
         timeout 1s ibus engine || true
         ;;
     *)
-        echo "usage: lay-runtime-control {daemon-start|daemon-stop|daemon-restart|start|stop|restart|channel [ime|uinput|auto]|status}" >&2
+        echo "usage: lay-runtime-control {daemon-start|daemon-stop|daemon-restart|daemon-is-active|start|stop|restart|channel [ime|uinput|auto]|status}" >&2
         exit 2
         ;;
 esac

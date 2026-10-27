@@ -557,6 +557,7 @@ impl TypingMemoryEvent {
         )
     }
 
+    #[cfg(test)]
     pub(crate) fn edited_ime(
         context_tail: &str,
         typed_prefix: &str,
@@ -679,6 +680,7 @@ impl TypingMemoryEvent {
     }
 }
 
+#[cfg(test)]
 pub(crate) fn completion_edit_geometry_is_linked(
     typed_prefix: &str,
     suggested_text: &str,
@@ -842,6 +844,7 @@ pub(crate) fn changed_target_indexes(from_words: &[String], to_words: &[String])
 /// The unchanged phrase prefix belongs to L3 context, not to the L4 operator
 /// identity. Boundary transitions keep every changed target token, so a split
 /// cannot collapse back to a last-word lookup.
+#[cfg(test)]
 pub(crate) fn transition_target_text(from: &str, to: &str) -> String {
     let from_words = normalized_words(from);
     let to_words = normalized_words(to);

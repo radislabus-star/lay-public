@@ -202,6 +202,7 @@ pub(crate) fn with_default_memory<T>(read: impl FnOnce(&ContextPhasePackage) -> 
     read(memory.package())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn reload_default_memory() -> io::Result<serde_json::Value> {
     let manifest_path = default_manifest_path();
     let memory = if manifest_path.is_file() {
@@ -214,6 +215,7 @@ pub(crate) fn reload_default_memory() -> io::Result<serde_json::Value> {
     Ok(report)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn default_memory_runtime_status_json() -> serde_json::Value {
     default_runtime().status_json("snapshot", None)
 }

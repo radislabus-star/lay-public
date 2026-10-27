@@ -1,0 +1,30 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Preserve an exact real pre-Space stock-word observation across one successful local ASCII Space for the existing manual source handoff only.",
+  "reason": "Remote LibreOffice observes letters, then CommitText of Space clears the prior snapshot; no later SSI arrives before Double Shift. KnownStart survives, but the existing exact handoff readout rejects the source solely because this stock client supplied earlier callbacks. Valid causal RED stock-local-boundary-v60-red-r4 reproduces unknown-context with a known word and no replay wait. Earlier r0-r3 fixtures did not prove this product failure: physical codes were initially decoded in US mode, then an incorrect post-commit snapshot assertion failed.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_owned_source.rs",
+    "src/bin/lay_ibus_engine/composition_commit.rs",
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/engine/state_groups.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "v60a rejected460/461; v60b focused4/4 and related462/462 source/architecture/build PASS. Frozen Harness2 task20261022T014733Z-2b7280e4 degraded8calls/1timeout/c1fallback, bounded8/10 independently checked. Remote v60b82d751b1 installed engine-only. Native LO5/6 strict PASS; ordinary non-Lay capitalization control PASS; controlled first closed toggle180.165ms PASS, reverse closed toggle FAIL. Kitty controls PASS; Chrome Tab PASS but prefix presentation FAIL. Receipt paths are in owning-document entry.",
+  "not_tested": "Full browser/GNOME/physical-evdev matrix, full replay/soft-reset interleaving proof and publication/updater not tested. Changed-byte native acceptance remains incomplete; reverse-after-replay and Chrome prefix underline are FAIL.",
+  "runtime_authority_changed": true,
+  "consequences": "An inert record in existing committed-tail state binds exact tail, existing tail epoch, focus serial, runtime owner lease and actual observation revision. Created only from exact unselected boundary-bounded real current text, published only after successful Space CommitText, invalidated by new input/observation/revocation/field close and checked against current KnownStart/admission. Existing opaque-client behavior and actual-snapshot routes remain. No new owner, generation, timer, queue, cache, delivery route, synthetic snapshot or client ACK. Replay suppression/quarantine remains required; source evidence cannot acknowledge native delivery. The first pre-Space scope may be UnknownStart: capture only retains real exact client text under a live matching token, while post-Space source readout still requires KnownStart. Carry the already-current inert source across the existing authenticated identical-tail manual handoff epoch only; unrelated epoch changes refuse it.",
+  "status": "V60B_SOURCE_REVIEW_ACCEPTED_INSTALLED_NATIVE_PARTIAL_REVERSE_FAIL"
+}

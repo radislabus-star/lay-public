@@ -7,7 +7,9 @@ use std::time::{Duration, Instant};
 
 use event_listener::{Event, EventListener};
 
-use super::{ConnectionGeneration, HeaderKey, IngressStamp, OwnerGeneration};
+use super::{
+    ConnectionGeneration, HeaderKey, IngressStamp, OwnerGeneration, PendingLiteralInputReceipt,
+};
 
 pub(crate) const CALLBACK_RENDEZVOUS_BUDGET: Duration = Duration::from_micros(1_000);
 const DEFAULT_STAMP_CAPACITY: usize = 128;
@@ -51,6 +53,11 @@ enum CallbackRecord<P> {
 }
 
 impl<P> CallbackRecord<P> {
+    fn is_pending_literal(&self) -> bool {
+        matches!(self, Self::Observed(stamp)
+            if matches!(stamp.disposition, super::IngressDisposition::PendingLiteral(_)))
+    }
+
     fn header(&self) -> &HeaderKey {
         match self {
             Self::Observed(stamp) => &stamp.header,
@@ -123,11 +130,23 @@ where
                     .any(|existing| existing.header() == &stamp.header)
             {
                 state.revocation = next_generation(state.revocation);
-                state.stamps.clear();
+                // Publication failure is followed by observer termination.
+                // Until then, missing metadata must not look like completion.
+                state.stamps.retain(CallbackRecord::is_pending_literal);
                 (false, true)
             } else {
                 if state.stamps.len() == self.capacity {
-                    state.stamps.pop_front();
+                    // An unfinished literal is a Ready obligation, not a
+                    // disposable rendezvous cache entry. Exhaustion follows
+                    // the observer's existing fail-closed publication path.
+                    let Some(index) = state
+                        .stamps
+                        .iter()
+                        .position(|record| !record.is_pending_literal())
+                    else {
+                        return false;
+                    };
+                    state.stamps.remove(index);
                     state.eviction = next_generation(state.eviction);
                 }
                 state.stamps.push_back(CallbackRecord::Observed(stamp));
@@ -138,6 +157,49 @@ where
             self.changed.notify(usize::MAX);
         }
         accepted
+    }
+
+    /// Ready installation may not overtake callbacks already observed for its
+    /// acquisition. These stamps are provenance only, never word authority.
+    pub(crate) fn pending_literal_callbacks_completed(
+        &self,
+        matches: impl Fn(&PendingLiteralInputReceipt) -> bool,
+    ) -> bool {
+        self.state.lock().is_ok_and(|state| {
+            !state.terminated
+                && !state.stamps.iter().any(|record| {
+                    matches!(record, CallbackRecord::Observed(stamp)
+                        if matches!(&stamp.disposition,
+                            super::IngressDisposition::PendingLiteral(receipt) if matches(receipt)))
+                })
+        })
+    }
+
+    /// Retire only this completed literal callback; do not manufacture an owned
+    /// callback or retain a second completion ledger.
+    pub(crate) fn complete_pending_literal(
+        &self,
+        header: &HeaderKey,
+        receipt: &PendingLiteralInputReceipt,
+    ) -> bool {
+        let Ok(mut state) = self.state.lock() else {
+            return false;
+        };
+        if state.terminated || header.connection != state.connection {
+            return false;
+        }
+        let Some(index) = state.stamps.iter().position(|record| {
+            matches!(record, CallbackRecord::Observed(stamp)
+                if &stamp.header == header
+                    && matches!(&stamp.disposition,
+                        super::IngressDisposition::PendingLiteral(recorded) if recorded == receipt))
+        }) else {
+            return false;
+        };
+        state.stamps.remove(index);
+        drop(state);
+        self.changed.notify(usize::MAX);
+        true
     }
 
     /// Complete only a callback whose ingress is still absent. An existing
@@ -162,11 +224,9 @@ where
         }
         if state.stamps.len() == self.capacity {
             // Do not spend another unobserved completion merely to record one.
-            let Some(index) = state
-                .stamps
-                .iter()
-                .position(|record| matches!(record, CallbackRecord::Observed(_)))
-            else {
+            let Some(index) = state.stamps.iter().position(|record| {
+                matches!(record, CallbackRecord::Observed(_)) && !record.is_pending_literal()
+            }) else {
                 return false;
             };
             state.stamps.remove(index);
@@ -210,6 +270,36 @@ where
             connection: state.connection,
             owner: state.owner,
             revocation: state.revocation,
+        })
+    }
+
+    /// Read existing, bounded ingress metadata only. A delayed FocusIn cannot
+    /// become current again after a newer focus event entered this connection.
+    /// The caller holds the reducer lock, as does focus-stamp publication, so
+    /// this refusal and request creation cannot straddle a FocusOut ingress.
+    pub(crate) fn is_current_focus(&self, path: &str, position: &P) -> bool
+    where
+        P: Ord,
+    {
+        let Ok(state) = self.state.lock() else {
+            return false;
+        };
+        if state.terminated
+            || !state.stamps.iter().any(|record| {
+                matches!(record, CallbackRecord::Observed(stamp)
+                    if stamp.position == *position
+                        && stamp.header.path == path
+                        && matches!(stamp.header.member.as_str(), "FocusIn" | "FocusInId"))
+            })
+        {
+            return false;
+        }
+        !state.stamps.iter().any(|record| {
+            matches!(record, CallbackRecord::Observed(stamp)
+                if stamp.position > *position
+                    && (matches!(stamp.header.member.as_str(), "FocusIn" | "FocusInId")
+                        || stamp.header.path == path
+                            && matches!(stamp.header.member.as_str(), "FocusOut" | "FocusOutId")))
         })
     }
 

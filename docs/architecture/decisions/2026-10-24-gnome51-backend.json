@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Resolve GNOME's existing virtual keyboard seat through the stage context on Shell 51, retaining the old Clutter entrypoint only on older supported versions.",
+  "reason": "Issue 63 reproduces a loader failure because GNOME 51 removed Clutter.get_default_backend. Its porting guide documents global.stage.context.get_backend as replacement.",
+  "invariants": ["C01", "C03", "C07", "C10"],
+  "protected_paths": ["extension/lay@radislabus-star.github.io/dbus_service.js"],
+  "verification": "Actual bridge enable/disable under old/new/both/missing API boundaries; recent-action orientation compatibility. No alternate delivery route or keyboard owner is introduced.",
+  "not_tested": "A physical GNOME 51 session is not available at decision time; its native behavior remains untested.",
+  "runtime_authority_changed": false
+}

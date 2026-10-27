@@ -96,7 +96,7 @@ impl LayIbusEngine {
             None
         };
         if !self.context_word_is_known()
-            && !(self.context_observed_suffix_is_current()
+            && !(self.context_observed_suffix_readout_is_current()
                 && (self.composition.preedit_visible || self.composition.auxiliary_visible)
                 && self.selected_precognition_replacement().is_none())
             && !self.context_owns_active_preedit_append_completion()
@@ -202,6 +202,7 @@ impl LayIbusEngine {
         if !ch.is_whitespace() {
             self.rebind_managed_word_start_before_first_commit();
         }
+        let observed_boundary_source = self.capture_stock_observed_boundary_source(ch);
         let diagnostic_started = trace::diagnostics_enabled_cached().then(Instant::now);
         self.trace_client_output_metadata(
             "commit",
@@ -230,6 +231,7 @@ impl LayIbusEngine {
         self.remember_handled_press(keycode, true);
         self.committed_tail.last_commit_at = Some(Instant::now());
         self.push_tail_char(ch);
+        self.committed_tail.observed_boundary_source = observed_boundary_source;
         self.client_context.managed_commit_snapshot_floor = (!ch.is_whitespace()).then_some(
             super::window_interaction::ManagedCommitSnapshotFloor {
                 focus_serial: self.client_context.focus_serial,
@@ -279,7 +281,9 @@ impl LayIbusEngine {
     ) -> fdo::Result<()> {
         self.observe_native_restoration_letter(ch);
         self.push_tail_char(ch);
-        let frame = self.capture_input_frame_identity();
+        let frame = self
+            .capture_input_frame_identity()
+            .or_else(|| self.capture_observed_suffix_display_frame());
         // The same observation closes an ordinary Legacy Space boundary.
         // Its local tail is not a client receipt or an owned text append.
         if ch.is_whitespace() {
@@ -363,9 +367,12 @@ impl LayIbusEngine {
             trace::record(r#"{"kind":"ibus_active_composition_authorized_text_mismatch"}"#);
             return Ok(());
         }
-        let owned_space_snapshot = matches!(&authority, ActiveCompositionAuthority::UserInput)
-            .then(|| self.owned_preedit_space_commit_snapshot(&text))
-            .flatten();
+        let verified_edit = match &authority {
+            ActiveCompositionAuthority::UserInput => None,
+            ActiveCompositionAuthority::VerifiedEdit(edit) => Some(edit.as_ref()),
+        };
+        let owned_space_expectation =
+            self.owned_preedit_space_commit_expectation(&text, verified_edit);
         let output_started_at = Instant::now();
         if let Err(error) = emitter.commit_text(make_ibus_text(text.clone())).await {
             let _ = self.update_composition_preedit(emitter).await;
@@ -392,7 +399,7 @@ impl LayIbusEngine {
         if protect_current_word {
             self.arm_current_word_autocorrect_suppression();
         }
-        if let Some(expected) = owned_space_snapshot {
+        if let Some(expected) = owned_space_expectation {
             self.arm_owned_preedit_space_visible_postcondition(Instant::now(), expected);
         } else {
             self.arm_visible_postcondition(Instant::now());

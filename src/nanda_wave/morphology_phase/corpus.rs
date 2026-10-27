@@ -3,6 +3,7 @@ use std::collections::{BTreeMap, BTreeSet};
 use super::{parse_features, MorphBinding16};
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct MorphExample {
     pub(super) lemma_id: u32,
     pub(super) surface: String,
@@ -11,6 +12,7 @@ pub(super) struct MorphExample {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) struct MorphCorpus {
     pub(super) bindings: Vec<MorphBinding16>,
     pub(super) surfaces: Vec<String>,
@@ -20,6 +22,7 @@ pub(super) struct MorphCorpus {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 struct FormRow {
     lemma: String,
     surface: String,
@@ -27,6 +30,7 @@ struct FormRow {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 struct ExampleRow {
     lemma: Option<String>,
     surface: String,
@@ -34,6 +38,7 @@ struct ExampleRow {
     context: String,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(super) fn parse_corpus(text: &str) -> Result<MorphCorpus, String> {
     let mut forms = Vec::new();
     let mut train_rows = Vec::new();
@@ -176,6 +181,7 @@ pub(super) fn parse_corpus(text: &str) -> Result<MorphCorpus, String> {
     })
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn resolve_examples(
     examples: Vec<ExampleRow>,
     lemma_ids: &BTreeMap<String, u32>,
@@ -233,10 +239,12 @@ fn resolve_examples(
         .collect()
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn normalize(value: &str) -> String {
     value.trim().to_lowercase()
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn normalize_context(context: &str, line_number: usize) -> Result<String, String> {
     let normalized = normalize(context);
     if normalized

@@ -36,7 +36,7 @@ pub(crate) fn component_xml(exec_path: &str) -> String {
   </engines>
 </component>
 "#,
-        env!("CARGO_PKG_VERSION")
+        super::args::DISPLAY_VERSION
     )
 }
 

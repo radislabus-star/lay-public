@@ -1,0 +1,18 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-20",
+  "status": "SOURCE_SHORT_PASS_NATIVE_PENDING",
+  "decision": "Bind a cursor observation received during acquisition to that existing request generation, barrier nonce and target engine. After the exact still-current Ready grant is installed, retain that display rectangle under the installed token and focus serial. A different request, revoked grant or changed focus must not inherit it.",
+  "reason": "The fresh native user Kitty recheck user-kitty-native-v3 has a positive completion and successful Tab dispatch but rect=null after switching from Konsole. Konsole wire-v1 also receives valid SetCursorLocation before acquisition completes. Current geometry stores the pre-install serial/token; install_context_activation advances the serial, so optional clients that cache their unchanged cursor position need not send it again.",
+  "invariants": ["C01", "C03", "C06", "C08", "C10"],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "alternatives": [
+    {"option": "Wait, poll or ask the client repeatedly for coordinates", "score": 2, "reason": "Optional notifications need not recur; a retry adds timing and cannot prove the field."},
+    {"option": "Reuse a rectangle merely because the engine path matches", "score": 1, "reason": "The same engine serves different fields and windows."},
+    {"option": "Retain only the existing exact pending acquisition's display rectangle", "score": 9, "reason": "Reuses the reducer's request and Ready identity; no additional owner, timer or input acknowledgement."}
+  ],
+  "consequences": "Coordinates remain read-only presentation. The receipt cannot authorize keys, deletion, completion, KnownStart, source transfer or client acknowledgement. No delivery route, client classifier, timeout or verifier changes. The known producer-lag/compositor correlation gap remains OPEN, as do Chrome/Konsole typed-prefix styling failures.",
+  "verification": "Two valid RED regressions retained in run-3b4t73j7 prove loss of pre-install geometry. Its third failure was an invalid FocusOut fixture assumption, replaced with real adapter revocation. konsole-fast-v4 passes all five geometry controls using the real adapter/engine: before Ready, after Ready, revoked Ready, replaced request and local focus replacement. All 26 selected correctness controls pass. Receipt: /home/e/projects/lay-development-runner/kde-install-control-20261020/konsole-fast-v4/result.json. Changed-byte native focus-switch acceptance remains NOT_TESTED; known PTY producer-lag is not closed.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

@@ -87,6 +87,7 @@ impl PhaseCenter {
         }
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     pub(crate) fn write_compact(&self, target: &mut Vec<u8>) {
         if let Some(compact) = self.compact_center.as_ref() {
             target.extend_from_slice(&compact.bytes[compact.offset..compact.offset + 128]);

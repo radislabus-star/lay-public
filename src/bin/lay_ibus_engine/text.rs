@@ -4,19 +4,24 @@ use zbus::zvariant::{Structure, Value};
 
 #[path = "text/attrs.rs"]
 mod attrs;
+pub(crate) use attrs::HintStyle;
 
 pub(crate) fn make_ibus_text(text: String) -> Value<'static> {
     ibus_text(text, attrs::empty())
 }
 
-pub(crate) fn make_hint_ibus_text(text: String) -> Value<'static> {
+pub(crate) fn make_hint_ibus_text(text: String, style: HintStyle) -> Value<'static> {
     let chars = text.chars().count() as u32;
-    ibus_text(text, attrs::hint(chars))
+    ibus_text(text, attrs::hint(chars, style))
 }
 
-pub(crate) fn make_preedit_ibus_text(text: String, suggestion_start: u32) -> Value<'static> {
+pub(crate) fn make_preedit_ibus_text(
+    text: String,
+    suggestion_start: u32,
+    style: HintStyle,
+) -> Value<'static> {
     let chars = text.chars().count() as u32;
-    ibus_text(text, attrs::preedit(chars, suggestion_start))
+    ibus_text(text, attrs::preedit(chars, suggestion_start, style))
 }
 
 #[cfg(test)]
@@ -97,6 +102,16 @@ fn ibus_text(text: String, attrs: Vec<Value<'static>>) -> Value<'static> {
 mod tests {
     use super::*;
 
+    // These existing payload fixtures describe the KDE style. The common
+    // serializer has no default desktop; GNOME parity lives in display/tests.
+    fn make_hint_ibus_text(text: String) -> Value<'static> {
+        super::make_hint_ibus_text(text, crate::kde::display::HINT_STYLE)
+    }
+
+    fn make_preedit_ibus_text(text: String, start: u32) -> Value<'static> {
+        super::make_preedit_ibus_text(text, start, crate::kde::display::HINT_STYLE)
+    }
+
     #[test]
     fn input_mode_property_has_ibus_wire_shape_and_two_letter_symbol() {
         for (is_ru, expected) in [(true, "RU"), (false, "EN")] {
@@ -151,7 +166,7 @@ mod tests {
     fn auxiliary_hint_styles_unicode_scalars_without_styling_document_text() {
         assert_eq!(
             preedit_attribute_geometry(&make_hint_ibus_text("а𐐀б".into())),
-            vec![(2, 0x888888, 0, 3)]
+            vec![(2, 0x000000, 0, 3), (3, 0xffffff, 0, 3), (1, 0, 0, 3)]
         );
         assert!(preedit_attribute_geometry(&make_hint_ibus_text(String::new())).is_empty());
         assert!(preedit_attribute_geometry(&make_ibus_text("а𐐀б".into())).is_empty());
@@ -179,7 +194,7 @@ mod tests {
                 .iter()
                 .map(attribute_geometry)
                 .collect::<Vec<_>>(),
-            [(2, 0x888888, 0, 4), (1, 1, 0, 4)]
+            [(2, 0x000000, 0, 4), (3, 0xffffff, 0, 4), (1, 0, 0, 4)]
         );
     }
 
@@ -189,12 +204,22 @@ mod tests {
             (
                 "почему",
                 2,
-                vec![(1, 0, 0, 2), (2, 0x888888, 2, 6), (1, 1, 2, 6)],
+                vec![
+                    (1, 0, 0, 2),
+                    (2, 0x000000, 2, 6),
+                    (3, 0xffffff, 2, 6),
+                    (1, 0, 2, 6),
+                ],
             ),
             (
                 "a𐐀бв",
                 2,
-                vec![(1, 0, 0, 2), (2, 0x888888, 2, 4), (1, 1, 2, 4)],
+                vec![
+                    (1, 0, 0, 2),
+                    (2, 0x000000, 2, 4),
+                    (3, 0xffffff, 2, 4),
+                    (1, 0, 2, 4),
+                ],
             ),
             ("проверка", 8, vec![(1, 0, 0, 8)]),
             ("проверка", u32::MAX, vec![(1, 0, 0, 8)]),

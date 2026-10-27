@@ -1,8 +1,13 @@
 use crate::stable_hash::mix64_golden;
+#[cfg(any(test, feature = "research-tools"))]
 use serde::Serialize;
+#[cfg(any(test, feature = "research-tools"))]
 use std::collections::{BTreeMap, BTreeSet};
+#[cfg(any(test, feature = "research-tools"))]
 use std::io;
+#[cfg(any(test, feature = "research-tools"))]
 use std::path::Path;
+#[cfg(any(test, feature = "research-tools"))]
 use std::sync::Arc;
 
 const SENTENCE_ANCHOR: &str = "__lay_l3_sentence_v1";
@@ -110,6 +115,7 @@ pub(crate) struct SentenceCandidateProjection {
 }
 
 #[derive(Clone, Debug)]
+#[cfg(any(test, feature = "research-tools"))]
 struct SentenceProofCase {
     split: String,
     class: String,
@@ -119,6 +125,7 @@ struct SentenceProofCase {
 }
 
 #[derive(Clone, Debug, Default, Serialize)]
+#[cfg(any(test, feature = "research-tools"))]
 struct SentenceClassProof {
     cases: usize,
     target_lattice: usize,
@@ -132,12 +139,14 @@ struct SentenceClassProof {
 }
 
 #[derive(Clone, Copy, Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 struct SentenceCaseOutcome {
     expected_target: bool,
     passed: bool,
 }
 
 #[derive(Debug, Default)]
+#[cfg(any(test, feature = "research-tools"))]
 struct SentenceProofEvaluation {
     classes: BTreeMap<String, SentenceClassProof>,
     failures: Vec<serde_json::Value>,
@@ -145,6 +154,7 @@ struct SentenceProofEvaluation {
     false_authority: usize,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn compile_supervised_relation_delta(
     projection_base: &super::ContextPhasePackage,
     scenes: &[String],
@@ -236,6 +246,7 @@ pub(crate) fn compile_supervised_relation_delta(
     Ok((package, report))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn project_supervised_tail_relation(
     surface: &str,
     target: &str,
@@ -284,6 +295,7 @@ fn project_supervised_tail_relation(
     ))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn build_and_prove_sentence_context_path(
     cases_path: &Path,
     output_package: &Path,
@@ -397,6 +409,7 @@ pub(crate) fn build_and_prove_sentence_context_path(
     }))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn prove_sentence_context_delta_path(
     manifest_path: &Path,
     delta_path: &Path,
@@ -496,6 +509,7 @@ pub(crate) fn prove_sentence_context_delta_path(
     Ok(report)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn evaluate_heldout(
     package: &super::ContextPhasePackage,
     heldout: &[&SentenceProofCase],
@@ -601,6 +615,7 @@ fn evaluate_heldout(
     evaluation
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn sentence_gate(classes: &BTreeMap<String, SentenceClassProof>) -> bool {
     !classes.is_empty()
         && classes.values().all(|proof| {
@@ -1169,6 +1184,7 @@ fn token_role(token: &str) -> u16 {
     (mix64_golden(script | (length << 4) | (functional << 8)) & 0xffff) as u16
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn parse_cases(text: &str) -> io::Result<Vec<SentenceProofCase>> {
     let mut cases = Vec::new();
     for (line_number, line) in text.lines().enumerate() {
@@ -1212,6 +1228,7 @@ fn parse_cases(text: &str) -> io::Result<Vec<SentenceProofCase>> {
     Ok(cases)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn ratio_ppm(numerator: usize, denominator: usize) -> u32 {
     if denominator == 0 {
         return 1_000_000;
@@ -1219,6 +1236,7 @@ fn ratio_ppm(numerator: usize, denominator: usize) -> u32 {
     ((numerator as u64 * 1_000_000) / denominator as u64).min(u64::from(u32::MAX)) as u32
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn push_failure(
     failures: &mut Vec<serde_json::Value>,
     case: &SentenceProofCase,

@@ -1,0 +1,87 @@
+{
+  "schema": "lay.release104.updater.v1",
+  "recorded_at": "2026-10-27T11:28:34.189257+00:00",
+  "status": "PASS_STABLE_DISCOVERY_BOTH_INSTALLED_ENTRYPOINTS",
+  "tag": "v1.0.104",
+  "release_commit": "b1232f1ab51864f952567b630d76e14a9ab23e9c",
+  "published_at": "2026-10-27T11:24:32Z",
+  "release_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.104",
+  "draft": false,
+  "prerelease": false,
+  "functional_ci": {
+    "recorded_at": "2026-10-27T11:24:26.449848+00:00",
+    "functional_commit": "835c0058bd443ef02b82cbf787395aafe82e6d10",
+    "release_commit": "b1232f1ab51864f952567b630d76e14a9ab23e9c",
+    "metadata_only_delta": [
+      "VERSIONING.md",
+      "extension/lay@radislabus-star.github.io/metadata.json",
+      "extension/lay@radislabus-star.github.io/tray_support.js"
+    ],
+    "runtime_source_unchanged": true,
+    "status": "PASS",
+    "checks": [
+      {
+        "name": "Public installer regressions",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148703010"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148702851"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220967/job/122148702708"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "conclusion": "success",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/40492220973/job/122148702572"
+      }
+    ]
+  },
+  "local": {
+    "command": "/home/ubu/.local/bin/lay-update --check",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.103\nстабильный релиз: 1.0.104\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.103 → 1.0.104\n",
+    "menu_source": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+    "resolved_updater": "/home/ubu/.local/lib/lay/update.sh",
+    "updater_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+    "runtime_inventory": {
+      "recorded_at": "2026-10-27T11:26:59.211080+00:00",
+      "installed_version": "lay 1.0.103",
+      "updater_source": "/home/ubu/.local/lib/lay/update.sh",
+      "updater_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "loaded": {
+        "pid": 3037150,
+        "version": "lay-ibus-engine 1.0.96",
+        "sha256": "1095c2648bb59e2f4363a3f58394013e6b6598eb9d8678f5b0fb98a01cd90ebc"
+      },
+      "read_only": true,
+      "runtime_installed_or_restarted": false
+    }
+  },
+  "remote": {
+    "command": "ssh e@192.168.3.94 /home/e/.local/bin/lay-update --check",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.104\nстабильный релиз: 1.0.104\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+    "menu_source": "/home/e/.cache/lay/kde-live-20261019/source/scripts/lay-kde-tray.py",
+    "menu_invocation": [
+      "/home/e/.local/bin/lay-update",
+      "--menu"
+    ],
+    "resolved_updater": "/home/e/.local/lib/lay/update.sh",
+    "updater_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+    "loaded_engine_pid": 2122913,
+    "loaded_engine_version": "1.0.104",
+    "loaded_engine_sha256": "138d936899f383937bf4868eeffa275d86fe7cf2f2f3779ffb03046b725f16b0"
+  },
+  "applied_locally": false,
+  "applied_remotely_by_updater": false,
+  "remote_existing_preview_installed_and_native_tested": true,
+  "source_runtime_unchanged_after_acceptance": true,
+  "updater_or_global_ibus_changed": false,
+  "scope": "Actual stable discovery through installed menu-owned scripts; no claim of applying this tag through updater. Prior103 actual-apply proof remains separate. After update finish input, toggle Lay enabled off/on to load the new active IME."
+}

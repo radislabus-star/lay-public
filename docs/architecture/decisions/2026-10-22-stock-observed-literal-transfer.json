@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Finish only the existing live literal preedit through ActiveCompositionCommit::plain when an actual stock surrounding projection proves that client observation is available; never treat that projection as a post-commit ACK.",
+  "reason": "Actual LibreOffice first key precedes the first Engine SSI. v55 source gate missed this order; prefix remained underlined. A later missing snapshot does not erase the existing callback capability fact.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/managed.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/td125_legacy_preedit_tests.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/activation_preedit.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs"
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "Causal5/5; postgraph affected457/457 PASS; compiler-artifact engine6d51bef5 installed engine-only. Harness2 complete8OK/0failure/fallback, bounded8/10 independently reviewed. Qualified LibreOffice4PASS/2FAIL; Kitty and Chrome Tab controls PASS. Native presentation remains partial; no matrix promotion. See owning CURRENT entry and exact receipts.",
+  "not_tested": "Chrome ordinary-prefix solution, full browser matrix, GNOME, brief initial preedit styling.",
+  "runtime_authority_changed": false,
+  "consequences": "Existing owner and literal-commit executor only. Guard actual matching unselected current projection, live owner, nonterminal/nonatomic/nonexact stock mode and caret at end. Preserve stale-source/privacy/refusal/failure guards, snapshot clearing, managed freshness floors. No candidate/replacement/hint acceptance, feedback, learning, model/package, queue, deadline or new transport. Alternatives and second-order risks in owning preflight. Actual adapter shows display-only prediction may still be pending at the callback. Literal transfer requires the existing matching live AdmissionToken/WordScope, exact owned literal projection and published end caret, then cancels old prediction via its existing lifecycle. It does not call or weaken manual/completion guards, accept a candidate or promote UnknownStart to KnownStart. Pending prediction cannot veto finishing only actual user input. The helper requests no layout change; the existing plain-commit executor retains profile/layout reconciliation if required.",
+  "status": "SOURCE_PASS_INSTALLED_NATIVE_PARTIAL",
+  "recorded_at": "2026-10-22T00:16:59.030581+00:00"
+}

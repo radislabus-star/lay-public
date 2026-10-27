@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-26-inflight-native-replay-progress",
+  "date": "2026-10-26",
+  "status": "SOURCE_AND_BUILD_GREEN_NATIVE_AND_CI_PENDING",
+  "owning_document": "docs/architecture/inflight-native-replay-progress-2026-10-26.md",
+  "invariants": [
+    "C03",
+    "C05",
+    "C07",
+    "C08"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/inflight_replay_progress.rs"
+  ],
+  "decision": "Reuse existing adjacent actual growth predicate for current paired in-flight replay, bounded by observed replacement key count; retain only inert unconfirmed lineage until exact final client receipt. No routes, deadlines, verifier, KnownStart promotion or new runtime owners.",
+  "reason": "Native98 row52 and exact sourceRED demonstrate that genuine growing SSI with lagging caret loses its source before replay completion.",
+  "verification": "Final exact2test original-production RED at intended lineage assertion; candidate both PASS, all4new adverse schedules and existing controls unchanged. All3517 correctness/package and11perf, strictlints, bothMSRV, all10optimized binaries PASS; source/modes equal1287files44c0764c2f8931c06d8b91460608334ed16aac0c61ea0dbc7f1ac7fc49f034d4. Native100/CI pending; old98 control BLOCKED before input.",
+  "not_tested": "Candidate not installed; native matrix, GNOME, Wayland, physical keyboard not tested.",
+  "runtime_authority_changed": false,
+  "runtime_behavior_changed": true,
+  "existing_authority": "ContextAdmissionReducer -> WindowInteraction exact paired replay -> actual exact final SSI -> existing manual delegation/verifier",
+  "rollback": "Revert this single observation-retention change; preserve released97/98/99 source and installed models/learning.",
+  "recorded_at_utc": "2026-10-26T15:35:09.301039+00:00"
+}

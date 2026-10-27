@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Confine observed literal-prefix commits to KDE through the existing resolved desktop presentation boundary; preserve previous GNOME, X11 and Niri preedit acquisition and retention.",
+  "reason": "The full release gate exposes 15 existing failures because KDE stock-prefix behavior was applied globally in managed.rs. Changing owned fixtures into different protocols did not address that mechanism and is rejected.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/managed.rs", "src/bin/lay_ibus_engine/window_interaction/observation.rs"],
+  "verification": "Existing pair/modifier tests remain unchanged; four-desktop key/SSI effects and existing exact manual receipt positive/revocation tests verify dispatch and first-observation order.",
+  "not_tested": "Changed-byte native clients remain untested at decision time.",
+  "source_head": "a8fbda3c",
+  "user_authorization": "Fix all build/test failures and all three public issues, test the complete project and publish the next release.",
+  "consequences": {
+    "implementation": "One presentation-policy predicate takes the already resolved LayoutBackend. The existing managed owner uses it for observed-prefix acquisition and literal composition retirement. No second desktop detector, edit owner, output route or client exception.",
+    "authority": "All current text, token, ownership, expiry, verifier and capability-change revocations remain unchanged. Default non-KDE stock acquisition still requires its previous Ready token when there is no observation.",
+    "tests": "Keep existing pair and modifier tests unchanged. Add actual key plus surrounding-observation effects for GNOME, KDE, X11 and Niri. Bind the existing KDE stock tests explicitly to KDE.",
+    "rollback": "The presentation predicate and its three managed call sites; retain the separately proven first-observation receipt-order fix. No installed runtime changed at decision time."
+  },
+  "runtime_authority_changed": false,
+  "native_verification": "NOT_TESTED at decision time"
+}

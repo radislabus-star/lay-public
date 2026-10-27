@@ -9,7 +9,7 @@ TimeoutStartSec=90min
 Nice=15
 IOSchedulingClass=idle
 CPUQuota=100%
-MemoryHigh=3G
+# The compiler can exceed 3GiB. Early reclaim stalls it below the hard budget.
 MemoryMax=4G
 MemorySwapMax=256M
 Environment=CARGO_BUILD_JOBS=1

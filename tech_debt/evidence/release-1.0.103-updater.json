@@ -1,0 +1,133 @@
+{
+  "schema": "lay.release-updater.v1",
+  "version": "1.0.103",
+  "tag_commit": "a256811fdbe96ea66124d2b655b7a1fa3ebfa83e",
+  "published_at": "2026-10-27T03:18:57Z",
+  "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.103",
+  "local_discovery": {
+    "at": "2026-10-27T03:24:44.096901+00:00",
+    "updater": "/home/ubu/.local/bin/lay-update",
+    "exit": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.101\nстабильный релиз: 1.0.103\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.101 → 1.0.103\n",
+    "stderr": "",
+    "manual_install_or_restart": false
+  },
+  "remote_discovery": {
+    "at": "2026-10-27T03:24:44.356212+00:00",
+    "updater": "/home/e/.local/bin/lay-update",
+    "exit": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.103\nстабильный релиз: 1.0.103\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+    "stderr": ""
+  },
+  "official_automatic": {
+    "status": "AUTOMATIC_OFFICIAL_APPLY_VERIFIED",
+    "source": {
+      "commit": "a256811fdbe96ea66124d2b655b7a1fa3ebfa83e",
+      "version": "1.0.103",
+      "installer_sha256": "8010c7cd27e0431ae385a5ac4e03c7fd924260577486fb46452e4e9599494145",
+      "unit_sha256": "57df42c4f87cbad6717fdf90dbc07fd1853addb6e658134f68a0d252e3557692",
+      "functional_graph_commit": "05213990f9bc921a1d7d12023395a1a378fab129"
+    },
+    "baseline": "all10 actual C102 files restored with existing install owner",
+    "transport": "official production API/repository defaults; isolated data/cache only",
+    "independent_clean_build": false,
+    "cached_source": "05213990f9bc921a1d7d12023395a1a378fab129",
+    "loaded_daemon_kde_environment_verified": true,
+    "after_unit": {
+      "MainPID": "0",
+      "Result": "success",
+      "ExecMainStatus": "0",
+      "MemoryHigh": "infinity",
+      "MemoryMax": "4294967296",
+      "ActiveState": "inactive",
+      "DropInPaths": "/run/user/1000/systemd/user/lay-auto-update.service.d/90-lay-official-acceptance-20261027.conf",
+      "UnitFileState": "static",
+      "InvocationID": "fa61a255bf204797a838b0b72c09ab7a"
+    },
+    "installed_artifacts": {
+      "lay-l11-restore": {
+        "sha256": "bcd1f753cde5a87a60b538b56fa221afb54789fd5c502a16d7bfd194c4fd683b",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-l11-restore",
+        "installed": "/home/e/.local/lib/lay/bin/lay-l1.1-restore"
+      },
+      "lay-nanda-wave-eval": {
+        "sha256": "9f04ec39f9b577e39e24d3f8f3d0e9fe71fdd3e6e5b3aeb2920646266996aec3",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-nanda-wave-eval",
+        "installed": "/home/e/.local/lib/lay/bin/lay-nanda-wave-eval"
+      },
+      "lay-daemon": {
+        "sha256": "e309c465937e53904b4c5923d97fd9b078d8312ae3fe14526b3470094e9afd0a",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-daemon",
+        "installed": "/home/e/.local/lib/lay/bin/lay-daemon"
+      },
+      "lay-test-input": {
+        "sha256": "e7a6df013099aef60c399adda34f6de9dd389736a3d9b3b927e85fde16774e18",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-test-input",
+        "installed": "/home/e/.local/lib/lay/bin/lay-test-input"
+      },
+      "lay-ngram-corpus": {
+        "sha256": "d2ef517799dfda1b94415a77bb36f55911be2f62b6d46784ec46dba22bc01920",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-ngram-corpus",
+        "installed": "/home/e/.local/lib/lay/bin/lay-ngram-corpus"
+      },
+      "lay-l11-serve": {
+        "sha256": "6caab53ae34699318a8ce5b7a0eb777143299209958efe2df3c3d49b635b70ab",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-l11-serve",
+        "installed": "/home/e/.local/lib/lay/bin/lay-l1.1-serve"
+      },
+      "lay": {
+        "sha256": "eab0ae41cce780b4b520d798011ad64d83d74a4876e2dcb01f925cecdf2805ff",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay",
+        "installed": "/home/e/.local/lib/lay/bin/lay"
+      },
+      "lay-memory-report": {
+        "sha256": "c5e8fb02bf8a9dd2cb981872544ad1f0817ecab684243c34a3ba11a532198f0f",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-memory-report",
+        "installed": "/home/e/.local/lib/lay/bin/lay-memory-report"
+      },
+      "lay-nanda-wave-train": {
+        "sha256": "b68ec08c522cbd98b598a66101be84dc38cfc501f5417600d6f36eb4b19376e0",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-nanda-wave-train",
+        "installed": "/home/e/.local/lib/lay/bin/lay-nanda-wave-train"
+      },
+      "lay-ibus-engine": {
+        "sha256": "575c1d387b26d13f02c4cb45e3b0fa357821b5c28d4ee2aae6b7adbb8e5163f5",
+        "executable": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release103-automatic-staged-v2/data/lay/update-source/target/release/lay-ibus-engine",
+        "installed": "/home/e/.local/lib/lay/bin/lay-ibus-engine"
+      }
+    },
+    "loaded_daemon_pid": 700851,
+    "loaded_ime": {
+      "pid": 37302,
+      "sha256": "28d672b97a6f49be785c6775145a744db5e367cc88f05717603c0ed0dcd76f67",
+      "version": "1.0.102 retained deliberately"
+    },
+    "config_unchanged": true,
+    "timer_choice_unchanged": true,
+    "invocation": "fa61a255bf204797a838b0b72c09ab7a",
+    "elapsed_s": 19.04062043200247,
+    "test_environment_dropin_removed": true
+  },
+  "retained_fixture_admission_failure_and_correction": {
+    "status": "TEST_FIXTURE_ENVIRONMENT_RESTORED",
+    "first_official_attempt": "PRECONDITION_FAILED before any replacement/baseline restore; DISPLAY71 but inherited GNOME and no private config",
+    "before": {
+      "daemon_pid": "666559",
+      "desktop": "ubuntu:GNOME",
+      "config": null
+    },
+    "after": {
+      "daemon_pid": "697813",
+      "desktop": "KDE",
+      "config": "/home/e/.cache/lay/kde-live-20261019/config/lay/config.json"
+    },
+    "unit_dropin_before_sha256": "6ede76f887ede22a2c197bcf1e274fab24b091de8807084b30b6841c57573723",
+    "unit_dropin_after_sha256": "3cb003047ca921364d1c4a526bbae8903860955563b224faafe60171a6f366d1",
+    "production_source_changed": false,
+    "global_manager_environment_changed": false,
+    "ibus_restarted": false,
+    "manual_local_install_or_restart": false
+  },
+  "native_scope": "No103 physical matrix; reused102 raw native counts remain297P63F80B/440. First staged proof did not establish post-restart desktop environment; the separate official proof now explicitly verifies it.",
+  "local_gnome_manual_install_or_restart": false
+}

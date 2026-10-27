@@ -1,0 +1,59 @@
+{
+  "status": "SOURCE_INVARIANT_PROVEN_NATIVE_AGGREGATE_REGRESSED",
+  "latest_native_result": {
+    "runtime_sha256": "6e45a482b4439f84e81aa28d14823f1b034a93c3340a55900e44d23b1d1196d2",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-space-word-proof-full-20261024/result.json",
+    "counts": {"PASS": 157, "FAIL": 22, "BLOCKED": 41, "NOT_TESTED": 0},
+    "versus_previous_dfa": {"PASS_to_FAIL": 15, "FAIL_to_PASS": 12, "PASS_to_BLOCKED": 3},
+    "source_native_controls": "47 PASS; same 15 baseline failures and TD121 coverage error",
+    "verdict": "Not accepted. Source scheduling invariant is proven; client aggregate improvement is not established. First missing managed key in one manual failure follows native_no_desktop; retain guards and diagnose the actual provider error."
+  },
+  "owner": "KDE Chrome native_document actual-read adapter; existing Space worker/authority contracts unchanged",
+  "affected_invariants": [
+    "C03",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "baseline_runtime_sha256": "8d99bb1bcc869c00761e95c516657d68ece1398b9235b192434d264939fcbe02",
+  "first_failed_transition": "After a managed CommitText, the synchronous key path lacks a current Space frame. A later actual native field observation satisfies the canonical revision-bound complete-word proof, but refresh_native_document_precognition enters suffix-display recovery and never schedules Space preparation. The first-word EN/RU receipt has worker_generation0. The paired-boundary class also contains stale leases, not yet attributed to this same omission.",
+  "decision": "At the existing KDE native refresh point, ask capture_space_autocorrect_frame_identity for a current canonical frame and schedule_space_autocorrect_prefetch if it exists. Reuse the shared worker deduplication, budgets, ranker and final edit verifier. Keep UnknownStart as UnknownStart. No synthetic IBus capability or extra permission/queue/cache is introduced.",
+  "alternatives": [
+    {
+      "name": "Publish the actual-read frame to the existing worker",
+      "score_1_to_10": 9,
+      "reason": "Small KDE-only producer fix; existing frame validity and worker ownership remain authoritative."
+    },
+    {
+      "name": "Increase Space wait budget without scheduling missing work",
+      "score_1_to_10": 2,
+      "reason": "Cannot fix a request with worker_generation0 and introduces latency."
+    },
+    {
+      "name": "Promote UnknownStart or reuse a manual-only exception",
+      "score_1_to_10": 1,
+      "reason": "Weakens independent authority and is rejected."
+    }
+  ],
+  "verification": "Positive current actual receipt schedules work without editing or changing token/scope/epoch; stale text/revision/selection/focus/lease/layout, privacy, GNOME, wrong word boundaries and disabled assistance do not. RED on existing source, then GREEN and unchanged baseline named failures. After install, same frozen r18 functional/native cases and separate omnibox controls.",
+  "source_receipt": "/home/e/projects/lay-development-runner/run-kWdQMd/tests/logs/bin-lay-ibus-engine.log",
+  "installed": false,
+  "published": false,
+  "runtime_authority_changed": false,
+  "at": "2026-10-23T22:12:05.278755+00:00",
+  "measured_red": "The positive fixture already captures a canonical revision-bound Space frame and remains UnknownStart. Existing native refresh leaves worker_generation unchanged and fails fresh native receipt did not queue Space work. Twelve negative-source/authority controls pass. Source618passed/16failed:only the new positive regression is added to15 baseline named failures.",
+  "green_source_receipt": "/home/e/projects/lay-development-runner/run-HTssSt/tests/logs/bin-lay-ibus-engine.log",
+  "measured_green": "43/43 native-document tests PASS, including positive handoff and 12 negative-source/authority controls. Total619passed/15baseline named failures/442filtered; TD121 coverage/stack error unchanged. Runtime not yet changed.",
+  "omnibox_baseline_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-omnibox-baseline-20261024/result.json",
+  "omnibox_baseline_scope": "One new owned ordinary Chrome window on installed8d99, upper address bar, same field, first and second prefix. Own fresh suffix erka inside native field for both, Tab exact final text;116.152/125.352ms hint and46.679msTab. This does not establish styling or intermittent absence closure.",
+  "refinement": {
+    "status": "GREEN_SOURCE_NATIVE_PENDING",
+    "red_receipt": "/home/e/projects/lay-development-runner/run-2VIaLv/tests/logs/bin-lay-ibus-engine.log",
+    "measured_red": "Independent canonical current-word frame exists with older-separator presentation difference and manual whole-prefix permission false; native refresh queues no work. Same-text hypothesis was not a bug:managed commit already clears cached snapshot;fixture corrected, existing behavior protected.",
+    "decision": "Retain native current-document/unsealed/empty-composition guard, schedule only the existing canonical Space frame before manual whole-prefix display guard. No change to manual/whole-pair permission or any edit verifier.",
+    "runtime_changed": false,
+    "green_receipt": "/home/e/projects/lay-development-runner/run-KlCYnz/tests/logs/bin-lay-ibus-engine.log",
+    "measured_green": "47/47native controlsPASS,623P15baselineF442filtered,sameTD121coverageerror. Same-text receipt regression protects existing behavior without runtime cache change."
+  }
+}

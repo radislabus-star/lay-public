@@ -20,7 +20,21 @@ use crate::typing_transition::target_evidence::{
 pub(super) enum TargetNamespaceSettlementV1 {
     Incomplete(IncompletenessReasonV1),
     CompleteExactGrounding,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     CompleteTargetAbsent,
+    #[cfg_attr(
+        not(test),
+        expect(
+            dead_code,
+            reason = "Retained compatibility taxonomy; see build-boundary decision 2026-10-26"
+        )
+    )]
     CompleteUnsupportedIdentity,
 }
 

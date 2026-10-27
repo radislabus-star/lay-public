@@ -292,3 +292,15 @@ clean8/8; пользовательские две ошибки при80ms обе
 Текущая установка и физическая приёмка описаны в начале задачи; остаточные
 механизмы рождения/удержания и достаточности evidence остаются общим долгом.
 На переходах между этапами показывать актуальную карту разработки деревом.
+
+
+## Release102 reconciliation —2026-10-26
+
+2026-10-26 release102 reconciliation: Target1.0.67 below is historical,
+not a current release requirement or a completed quality gate. The authoritative
+quality checkout is /home/ubu/projects/lay-syntax-agreement-20260929, observed
+HEAD0e8ca41644c13901961b2726953ffa53f15395be; current roadmap entry is
+USER_REQUESTED_RANKER_RELEASE_PREPARATION with quality NOT_PASS. Preserve that
+roadmap's R1/R2 admission and every per-class conjunctive quality gate. This
+runtime/build release performs no fit, research-checkout mutation, model
+promotion or general restoration claim. ACTIVE_QUALITY remains open.

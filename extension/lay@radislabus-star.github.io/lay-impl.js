@@ -52,7 +52,7 @@ import {
 } from './tray_support.js';
 
 // An already-loaded pre-1.0.92 entrypoint stages only the original four modules.
-const {ImeHintStyle} = await importImeHintStyle(import.meta.url);
+const {ImeHintStyle, InlineHintView} = await importImeHintStyle(import.meta.url);
 
 function persistentSwitchItem(label, active, params = {}) {
     const item = new PopupMenu.PopupSwitchMenuItem(label, active, params);
@@ -475,6 +475,7 @@ export class LayImpl {
 
     enable() {
         this._hintStyle = new ImeHintStyle(getIBusManager());
+        this._inlineHint = new InlineHintView({Gio, GLib, St, Main, display: global.display});
         this._service = new LayDaemonService();
         this._service.enable();
         this._indicator = new LayIndicator(this._service);
@@ -482,6 +483,7 @@ export class LayImpl {
     }
 
     disable() {
+        this._inlineHint?.destroy(); this._inlineHint = null;
         this._hintStyle?.destroy(); this._hintStyle = null;
         this._indicator?.destroy(); this._indicator = null;
         this._service?.disable();   this._service   = null;

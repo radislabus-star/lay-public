@@ -1,0 +1,18 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "recorded_at": "2026-10-21T22:43:41Z",
+  "status": "DIAGNOSTIC_ONLY_NO_RUNTIME_CHANGE",
+  "decision": "Probe actual focused editable-field observations before choosing an ordinary-prefix presentation change. Do not implement an attribute-only workaround or turn unaccepted hints into document composition.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C08", "C10"],
+  "current_owner": "ContextAdmissionReducer and WindowInteraction; the read-only hint view has no text authority",
+  "first_failed_transition": "The owned typed prefix is published as native preedit. Chrome 155.0.8059.84 converts an explicit UNDERLINE_NONE span to a thin composition underline and adds a full composition underline when no spans exist. Its GTK context does not implement surrounding-text retrieval. LibreOffice's existing process uses the GTK3 VCL plugin; its actual observation behavior has not been measured yet.",
+  "alternatives": [
+    {"option": "Remove prefix UNDERLINE_NONE only", "score": 2, "reason": "Chrome supplies the same full-prefix default underline when no remaining span exists. This cannot establish plain-prefix acceptance."},
+    {"option": "Publish prefix and unaccepted hint as one native preedit", "score": 3, "reason": "A client-forced commit may insert the hint. This violates the existing split between display and acceptance. Do not weaken its guard tests."},
+    {"option": "Use ordinary committed input only where a fresh actual client snapshot supports the existing contracts", "score": 8, "reason": "This preserves one owner and existing edit/output paths. First prove a usable observation source, field identity, sensitivity and stale-result rejection. Existing opaque-client policy stays unchanged until that evidence exists."}
+  ],
+  "owning_document": "docs/architecture/ime-inline-hint-preflight-2026-10-20.md",
+  "verification": "Pending bounded remote-only native observation probe and Harness2 design review. No build, installation or new edit authority is authorized by a probe result alone.",
+  "runtime_authority_changed": false,
+  "not_tested": "Ordinary-prefix rendering in Chrome/LibreOffice, browser inverse replay, a production accessibility source, GNOME and full matrices remain unaccepted. Kitty is user-confirmed working in this session and must be preserved."
+}

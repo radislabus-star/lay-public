@@ -1,0 +1,83 @@
+{
+  "status": "SOURCE_472_PASS_NATIVE_WRITER_7_PASS_REVIEW_8_BOUNDED_NOT_ADOPTED",
+  "supersedes_delivery_hypothesis": "2026-10-22-observed-replay-boundary.json",
+  "affected_invariants": [
+    "C01",
+    "C02",
+    "C04",
+    "C05",
+    "C10"
+  ],
+  "owner": "Existing paired ExactReplay, ContextAdmissionReducer and EngineOutput",
+  "first_failed_transition": "Retaining final Space while awaiting whole-word SSI can suppress the client event that advances the observation; RequireSurroundingText only sets a libibus flag.",
+  "measured_failure": "writer-held-boundary-v94-native: 6 PASS, 1 FAIL; conversion four has only partial SSI before the final Space; no dispatch before cancellation.",
+  "decision": "Experiment with exactly the existing authorized final Space through ForwardKeyEvent at its original callback. Consume the original pair; keep all preceding native delivery unchanged. One request and one forwarded press/release; no CommitText of this Space and no retry after an indeterminate output. Dispatch alone exposes no source. Source-only settlement additionally requires the genuine exact whole-word snapshot, current lexical/source tokens, paired field/layout/focus/epoch/privacy and the existing reducer boundary guard. This is a candidate contract whose client ordering and boundary correspondence must be measured before acceptance.",
+  "implementation_bound": "Only the existing ObservedWordAndLocalSpace replay with exactly one final ASCII Space; no client-name or literal-word condition. Full-snapshot native replay and ordinary held Shift retain their contracts.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/protocol/state.rs",
+    "src/bin/lay_ibus_engine/tail_memory/held_replay_boundary.rs",
+    "src/bin/lay_ibus_engine/ibus_interface.rs",
+    "src/bin/lay_ibus_engine/output.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/held_replay_boundary.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_owned_source.rs"
+  ],
+  "harness2_design_task": "20261022T125330Z-dca62ad9",
+  "harness2_scope": "20261022T125330Z-dca62ad9 completed ok, 8 calls, no failures/fallback, inputs/source unchanged. v94 design-only review; not v98 implementation approval.",
+  "required_checks": [
+    "Causal RED with partial SSI and flag-only request, no unsolicited whole-word receipt",
+    "Exactly one retained key pair; no CommitText, source, ACK or learning from dispatch alone",
+    "Genuine complete word permits only source-boundary settlement, no replacement-result ACK",
+    "Request/press/release failure, dropped future, owner invalidation and late receipts cannot publish or retry",
+    "Existing affected source set; graph/source/compiler linkage",
+    "Bounded unchanged native Writer run with actual GTK ordering, five closed conversions and restoration"
+  ],
+  "not_tested": [
+    "Universal ordering or repeat reliability beyond the five observed Writer boundary pairs",
+    "Successor installed before old callback cleanup; original release and repeated dispatch after injected failure",
+    "Visual matrix",
+    "GNOME",
+    "Full client matrix",
+    "Release/updater"
+  ],
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false,
+  "delivery_and_source_checks": "Outstanding callback uses existing reducer revalidate(token) for its delivery lease. Later actual-word source settlement retains exact_replay_source_token(token, epoch); dispatch never supplies a source or result ACK.",
+  "source_test_migrations": [
+    "stock_native_replay_never_injects_hybrid_final_literal: strict exact final key pair only for live press; invalidations and original release emit no keys or CommitText",
+    "stock_held_native_replay_preserves_field_identity_without_text_authority: exact final pair at original press; actual whole-word callback emits no text; all field/privacy/source/ACK guards retained"
+  ],
+  "current_verification": "v98 affected472/472PASS; graph/source linkage PASS; compiled candidate linked; own Writer7/7PASS and observed GTK boundary order5/5PASS; restored baseline; final Harness2 review8/10 has no blocking findings, independently accepted only for this bounded evidence; candidate not adopted",
+  "harness2_final_review": {
+    "task_id": "20261022T134131Z-5580fa6d",
+    "report": "/home/ubu/.local/state/harness2-codex/projects/lay2/tasks/20261022T134131Z-5580fa6d/report.json",
+    "status": "ok",
+    "calls": 8,
+    "failed_calls": 0,
+    "score_1_to_10": 8,
+    "blocking_findings": [],
+    "independent_acceptance": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-final-review/acceptance.json",
+    "scope": "Seven frozen input hashes and nine source origin hashes independently matched before this document update. Remote baseline, candidate and config bytes rechecked 2026-10-22T14:20:17.413158+00:00. No runtime adoption, general client acceptance or publication. Frozen review input remains unchanged."
+  },
+  "source_proof": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-affected/result.json",
+  "graph_proof": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-graph/result.json",
+  "compiled_proof": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-build/result.json",
+    "engine_sha256": "56e7ac524b4228cfbc7a8f789655215ca8b79beee8935fa81004d90535ed44c4",
+    "wall_seconds": 70.596
+  },
+  "native_proof": {
+    "receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-native/result.json",
+    "rows_passed": 7,
+    "rows_total": 7,
+    "ordering_receipt": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/writer-forward-boundary-v98-native/ordering-audit.json",
+    "observed_boundary_pairs": 5,
+    "median_ms": 148.489,
+    "max_ms": 219.919,
+    "latency_samples": 9,
+    "scope": "One owned LibreOffice Writer run; unchanged key timing; no global ordering or repeat reliability claim",
+    "restored_engine_pid": 4140889,
+    "restoration_checks_passed": 9,
+    "runtime_adopted": false
+  }
+}

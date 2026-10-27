@@ -1,0 +1,47 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-21",
+  "status": "REJECTED_NO_NATIVE_BENEFIT_ORIGINAL_RESTORED",
+  "reason": "A bounded native Chrome after-Space five-toggle trace retains all five targets but exceeds the next-gesture deadline. The metadata-only D-Bus profile shows repeated fresh KWin checks and an 80.17 ms layout-list outlier; key deletion/insertion also includes serial X11 round trips. These are measured contributors, not proof that frame batching alone repairs the failure.",
+  "decision": "Keep the existing output executor, pacing, focus checks, generation claim, and same-connection server fence. Validate ownership once for each finite key frame and send its down/up events inside that fence. Preserve bookkeeping for every successful wire write even when a subsequent write or fence release fails. Do not cache authority or hold a server fence over waits, event drainage, external processes, or IME settlement.",
+  "alternatives": [
+    {
+      "option": "Reduce the post-delete settle delay",
+      "score": 1,
+      "reason": "The retained 2026-10-15 4/8 ms experiments already lost baseline native PASS. Do not repeat the rejected change."
+    },
+    {
+      "option": "Reuse cached focus or device authority",
+      "score": 1,
+      "reason": "Would open stale-focus or reusable numeric-device-ID races."
+    },
+    {
+      "option": "One generation fence for one finite key frame",
+      "score": 8,
+      "reason": "Removes repeated validation round trips within a frame while retaining current ownership and delivery contracts; native timing benefit is still unproven."
+    }
+  ],
+  "invariants": [
+    "C01",
+    "C04",
+    "C05"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/native_input/x11.rs",
+    "src/bin/lay_daemon/native_input/replay_master.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "evidence_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+  "measured_baseline": "bridge-v7b-browser-double-shift-v9: each browser 10 active-word PASS and 10 after-Space FAIL. bridge-v7b-space-dbus-profile-v10: five exact Chrome targets, late observations, no runtime/config mutation, restoration checks true.",
+  "verification": "Candidate 0941177b: 52 affected source checks PASS, including 26 dedicated owned-Xvfb controls; 1257 canonical source bytes/modes matched local and remote. Native normal-mode browser bursts remain 10 PASS / 10 FAIL in each browser, exactly the baseline case counts. Chrome measured after-Space target median 183.0 -> 183.6 ms, p95 283.6 -> 301.0 ms (45 targets each); this single bounded comparison establishes no useful improvement. Firefox missing targets make its latency subsets incomparable. GTK/Qt 25/25 PASS; terminal 20/20 toggle transitions, hint/Tab 2/2 and ordinary held Shift 8/8 PASS. Russian punctuation 2/2 FAIL remains. Candidate source-v11/v11b setup failures are retained, not product RED. Corrected source-v11c is PASS.",
+  "rollback": "2026-10-21T16:16:20.097689+00:00: original daemon 1802bb5e restored as PID49153, current engine5934db2f/PID4076822 unchanged. Protected processes, config, unit, layout and mode verified unchanged/restored. Local and remote x11.rs restored byte-for-byte to SHA574183123ce271324e1a397d0f48baead4533368d864b8a8e678b2b9fa0029ea; the rejected batching change is not retained.",
+  "receipts": [
+    "x11-frame-fence-source-v11c/result.json",
+    "x11-frame-v11-browser-double-shift/summary.json",
+    "x11-frame-v11-short-native/summary.json",
+    "x11-frame-fence-rollback-v11/result.json"
+  ],
+  "review": "Harness2 first task20261021T155646Z-81acd72b timed out and is not approval. Narrowed frozen task20261021T160217Z-07b2a168 completed8/8 calls OK, no fallbacks, static score8/10 and no concrete findings with proof gaps. Independent five-file input and output hashes: /home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/x11-frame-fence-v11b/independent-acceptance.json. The candidate remains rejected by native comparison and removed.",
+  "not_tested": "No full browser, private/fullscreen, GNOME, USB, or release acceptance. No source test or final matching string substitutes for all five correctly timed native targets. Chrome prefix underline and Firefox iframe presentation/Tab remain unaccepted. The retired candidate is not installed or released."
+}

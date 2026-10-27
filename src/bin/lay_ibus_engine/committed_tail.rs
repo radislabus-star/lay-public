@@ -12,7 +12,9 @@ use super::space_autocorrect_prefetch::{
 use super::state::CommittedTailReplaceRequest;
 use super::text::make_ibus_text;
 use super::trace::{self, SpaceCorrectionLeaseOutcome};
-use super::window_interaction::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
+use super::window_interaction::{
+    ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure, TextTargetEditRoute,
+};
 use lay::manual_toggle::{plan_manual_toggle, ManualToggleRequest, VisibleTail};
 use lay::text_edit::{VisibleTailSnapshot, VisibleTailSource};
 
@@ -100,7 +102,8 @@ impl LayIbusEngine {
                     .managed_word_start
                     .as_ref()
                     .is_some_and(|witness| witness.identity == witness_identity)
-                && self.managed_word_start_is_current()
+                && (self.managed_word_start_is_current()
+                    || self.native_word_preparation_edit_is_current())
                 && self.input_frame_authority_matches(expected)
                 && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
         } else if let Some(revision) = expected.space_autocorrect_surrounding_revision {
@@ -120,7 +123,10 @@ impl LayIbusEngine {
                 && self.input_frame_authority_matches(expected)
                 && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
         } else {
-            expected.display_suffix_token.is_none() && self.input_frame_identity_matches(expected)
+            expected.display_suffix_token.is_none()
+                && self.context_word_is_known()
+                && self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
         }
     }
 
@@ -129,6 +135,14 @@ impl LayIbusEngine {
         expected: &InputFrameIdentity,
     ) -> bool {
         self.space_autocorrect_identity_matches(expected)
+            || (expected.space_autocorrect_managed_start_identity.is_some()
+                && self.native_word_preparation_identity()
+                    == expected.space_autocorrect_managed_start_identity
+                && expected.display_suffix_token.is_none()
+                && expected.space_autocorrect_suffix_token.is_none()
+                && expected.space_autocorrect_surrounding_revision.is_none()
+                && self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected))
             || (expected.space_autocorrect_suffix_token.is_some()
                 && expected.space_autocorrect_surrounding_revision.is_none()
                 && expected.space_autocorrect_managed_start_identity.is_none()
@@ -141,6 +155,12 @@ impl LayIbusEngine {
         &self,
         identity: &InputFrameIdentity,
     ) -> SpaceAutocorrectLookupReceipt {
+        // A fresh field receipt can first seal this word during Space. The
+        // existing producer deduplicates current work and prepares warm exact
+        // layout synchronously, before the unchanged bounded lookup.
+        if self.has_unfinished_us_managed_input() {
+            self.schedule_space_autocorrect_prefetch(identity);
+        }
         let budget = self
             .context_callback_entered
             .map_or(Duration::from_micros(3_500), |entered| {
@@ -371,7 +391,8 @@ impl LayIbusEngine {
         let proved_managed_external_snapshot = pair_scope
             .as_ref()
             .and_then(|scope| match &scope.provenance {
-                super::engine::SpaceBoundaryPairProvenance::Client { .. } => {
+                super::engine::SpaceBoundaryPairProvenance::Client { .. }
+                | super::engine::SpaceBoundaryPairProvenance::NativePrepared { .. } => {
                     self.space_pair_client_snapshot(scope)
                 }
                 _ => None,
@@ -1007,7 +1028,8 @@ impl LayIbusEngine {
             return Ok((None, ExecutionReceipt::Rejected));
         };
         if emitter.is_legacy()
-            && self.client_context.surrounding_text_supported
+            && self.text_target_edit_route(plan.backspaces)
+                == TextTargetEditRoute::ExactSurroundingText
             && self.client_context.surrounding_text_snapshot.is_none()
         {
             self.layout_gesture.pending_manual_toggle = !self.layout_gesture.pending_manual_toggle;
@@ -1468,11 +1490,15 @@ mod tests {
         assert!(engine.bind_focus_path());
         let expired = ExactManualToggleSuppression {
             source_token: None,
+            source_provenance: None,
             path: engine.path.clone(),
             epoch: 7,
             expires_at: Instant::now() - Duration::from_millis(1),
             owner_lease_identity: engine.client_context.runtime_owner_lease_identity,
+            delivery_lease_identity: None,
             target_layout_is_ru: engine.layout_gesture.layout_is_ru,
+            native_press_count: 0,
+            held_boundary: None,
             original_tail: "x".to_string(),
             original_suffix: "x".to_string(),
             unchanged_prefix: String::new(),

@@ -1,0 +1,15 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "date": "2026-10-23",
+  "status": "ACCEPTED_WORKFLOW_CHANGE_RUNTIME_UNCHANGED",
+  "decision": "Remove Harness2 from the Lay working process and supersede its mandatory-use instructions. Continue source analysis, implementation and verification directly in the current session.",
+  "reason": "The user explicitly ordered removal of Harness from this Lay work. Earlier instructions requiring Harness2, doctor or the lay2 adapter are revoked for Lay.",
+  "invariants": ["C01", "C03", "C05", "C10"],
+  "protected_paths": ["AGENTS.md"],
+  "owning_document": "AGENTS.md",
+  "verification": "Inspect the updated AGENTS.md, current handoff and active presentation plan for the revoked requirement; parse this decision and check the document diff. Check exact lay2 adapter/worker processes without launching Harness. This is documentation/workflow verification only.",
+  "not_tested": "No source tests, builds, native input, installations, releases or service restarts are needed for this workflow-only change. Existing source failures and client coverage remain unchanged.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "consequences": "Remove the named tool dependency while preserving all existing architecture, verification and resource contracts. Keep historical reports as evidence. Do not uninstall shared tools, delete other projects, alter Codex transport or restart Lay. Accepted GNOME and remote KDE runtimes are unchanged."
+}

@@ -1,0 +1,18 @@
+{
+  "schema": "lay.release-updater-check.v1",
+  "version": "1.0.97",
+  "at_utc": "2026-10-25T23:33:52Z",
+  "local": {
+    "entry": "/home/ubu/.local/bin/lay-update --check",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.96\nстабильный релиз: 1.0.97\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.96 → 1.0.97\n"
+  },
+  "remote": {
+    "host": "192.168.3.94",
+    "entry": "/home/e/.local/bin/lay-update --check",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.97\nстабильный релиз: 1.0.97\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n"
+  },
+  "manual_local_install": false,
+  "source_tests_repeated_for_documentation": false
+}

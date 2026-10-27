@@ -1,0 +1,3847 @@
+{
+  "schema": "lay.release-native-check.v1",
+  "version": "1.0.96",
+  "platform": "private KDE/X11, RFB input; physical evdev NOT_TESTED",
+  "browsers": {
+    "chrome": {
+      "counts": {
+        "PASS": 168,
+        "FAIL": 10,
+        "BLOCKED": 42,
+        "NOT_TESTED": 0
+      },
+      "expected_rows": 220,
+      "by_plan": {
+        "consecutive-two": {
+          "PASS": 51,
+          "BLOCKED": 9
+        },
+        "moved-boundary": {
+          "FAIL": 7,
+          "PASS": 1,
+          "BLOCKED": 2
+        },
+        "rapid-five": {
+          "PASS": 52,
+          "BLOCKED": 8
+        },
+        "roundtrip": {
+          "PASS": 51,
+          "BLOCKED": 9
+        },
+        "space-en-ru": {
+          "FAIL": 3,
+          "PASS": 5,
+          "BLOCKED": 2
+        },
+        "tab": {
+          "PASS": 8,
+          "BLOCKED": 2
+        },
+        "typo-undo": {
+          "BLOCKED": 10
+        }
+      },
+      "latency": {
+        "scope": "successful rows only; from second Shift release to exact DOM target; single-poll includes observer overhead; burst uses mapped DOM event clock",
+        "single_double_shift_poll": {
+          "samples": 204,
+          "median_ms": 58.03,
+          "p95_ms": 64.49,
+          "max_ms": 83.84,
+          "zero_clamped_samples": 0
+        },
+        "rapid_five_dom_events": {
+          "samples": 260,
+          "median_ms": 44.62,
+          "p95_ms": 55.01,
+          "max_ms": 77.9,
+          "zero_clamped_samples": 0
+        },
+        "tab_poll": {
+          "samples": 8,
+          "median_ms": 17.04,
+          "p95_ms": 19.18,
+          "max_ms": 19.18,
+          "zero_clamped_samples": 0
+        },
+        "max_burst_clock_uncertainty_ms": 2.928
+      },
+      "versions": [
+        "155.0.8059.84"
+      ],
+      "held_keys_after": [],
+      "cases": [
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "tab",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "tab",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "tab",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "PASS"
+        }
+      ]
+    },
+    "firefox": {
+      "counts": {
+        "PASS": 81,
+        "FAIL": 103,
+        "BLOCKED": 36,
+        "NOT_TESTED": 0
+      },
+      "expected_rows": 220,
+      "by_plan": {
+        "consecutive-two": {
+          "PASS": 51,
+          "FAIL": 3,
+          "BLOCKED": 6
+        },
+        "moved-boundary": {
+          "PASS": 4,
+          "BLOCKED": 2,
+          "FAIL": 4
+        },
+        "rapid-five": {
+          "FAIL": 52,
+          "BLOCKED": 8
+        },
+        "roundtrip": {
+          "PASS": 18,
+          "FAIL": 36,
+          "BLOCKED": 6
+        },
+        "space-en-ru": {
+          "PASS": 8,
+          "BLOCKED": 2
+        },
+        "tab": {
+          "FAIL": 8,
+          "BLOCKED": 2
+        },
+        "typo-undo": {
+          "BLOCKED": 10
+        }
+      },
+      "latency": {
+        "scope": "successful rows only; from second Shift release to exact DOM target; single-poll includes observer overhead; burst uses mapped DOM event clock",
+        "single_double_shift_poll": {
+          "samples": 138,
+          "median_ms": 148.82,
+          "p95_ms": 190.27,
+          "max_ms": 205.43,
+          "zero_clamped_samples": 0
+        },
+        "rapid_five_dom_events": null,
+        "tab_poll": null,
+        "max_burst_clock_uncertainty_ms": null
+      },
+      "versions": [
+        "158.0.1"
+      ],
+      "held_keys_after": [],
+      "cases": [
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn",
+              "привет",
+              "ghbdtn",
+              "привет",
+              "ghbdtn"
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "привте "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "tab",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn "
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "tab",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn",
+              "привет",
+              "ghbdtn",
+              "привет",
+              "ghbdtn"
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn "
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn",
+              "привет",
+              "ghbdtn",
+              "привет",
+              "ghbdtn"
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn "
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn",
+              "привет",
+              "ghbdtn",
+              "привет",
+              "ghbdtn"
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "space-en-ru",
+          "word": "functional",
+          "status": "PASS"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "typo-undo",
+          "word": "functional",
+          "status": "BLOCKED",
+          "failure": "TD137: native inverse uses shared learning; blocked before input"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "moved-boundary",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "должны быть ",
+            "actual": "должн ыбыть "
+          }
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "tab",
+          "word": "functional",
+          "status": "FAIL",
+          "failure": {
+            "expected": "проверка ",
+            "actual": "ghjdthrf "
+          }
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет",
+            "actual": "ghbdtn"
+          }
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn "
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn",
+              "привет",
+              "ghbdtn",
+              "привет",
+              "ghbdtn"
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "private",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn "
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "BLOCKED",
+          "failure": "native/DOM text disagreement"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "BLOCKED",
+          "failure": "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "textarea",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn",
+              "привет",
+              "ghbdtn",
+              "привет",
+              "ghbdtn"
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn "
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": [
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn ",
+              "привет ",
+              "ghbdtn "
+            ],
+            "actual": null
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn ",
+            "actual": "привет "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "active",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "active",
+          "status": "FAIL",
+          "failure": {
+            "expected": "ghbdtn",
+            "actual": "привет"
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "consecutive-two",
+          "word": "space",
+          "status": "PASS"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": "привет ",
+            "actual": "ghbdtn "
+          }
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "rapid-five",
+          "word": "space",
+          "status": "FAIL",
+          "failure": {
+            "expected": null,
+            "actual": null
+          }
+        }
+      ]
+    }
+  },
+  "gnome51_orangepi_native": "NOT_TESTED",
+  "scope": "fixed220 browser controls; bounded GTK/Qt/terminal smoke, not complete KDE compatibility",
+  "gtk_qt": {
+    "PASS": 25,
+    "FAIL": 0,
+    "scope": "five native fixture fields; roundtrip active/Space, five rapid gestures, genuine hint+Tab, moved boundary; visual preedit strings observed, not full selection/caret protocol"
+  },
+  "terminals": {
+    "raw": {
+      "PASS": 20,
+      "FAIL": 2
+    },
+    "scope": "Kitty/Konsole each3 completion/Space controls,6 Shift controls,2 five-gesture controls; terminal five waits for target between gestures",
+    "punctuation_control": "same RU punctuation failure with ordinary xkb source, without Lay engine; immutable raw FAIL retained",
+    "visual_suffix_review": "Kitty and Konsole: typed prefix plain, only proposed suffix has white background"
+  },
+  "issue47": {
+    "PASS": 12,
+    "FAIL": 0,
+    "BLOCKED": 0
+  }
+}

@@ -189,7 +189,10 @@ const DBUS_PATH = '/io/github/radislabus_star/LayDaemon';
 
 export class LayDaemonService {
     enable() {
-        const seat = Clutter.get_default_backend().get_default_seat();
+        // GNOME 51 removed Clutter.get_default_backend(). Older supported
+        // Shells retain that entrypoint; both resolve the existing virtual seat.
+        const backend = global.stage?.context?.get_backend?.() ?? Clutter.get_default_backend?.();
+        const seat = backend.get_default_seat();
         this._vdev = seat.create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
         this._dbus = Gio.DBusExportedObject.wrapJSObject(DBUS_XML, this);
         this._dbus.export(Gio.DBus.session, DBUS_PATH);

@@ -350,6 +350,7 @@ pub(super) struct EventEnvelopeV1 {
     pub(super) canonical_event_bytes: Vec<u8>,
 }
 
+#[cfg(test)]
 pub(super) fn sort_and_deduplicate_events(events: &mut Vec<EventEnvelopeV1>) {
     events.sort_by(|left, right| {
         left.split
@@ -603,6 +604,7 @@ impl VerifiedSpoolShardWriterV1 {
     }
 }
 
+#[cfg(test)]
 pub(super) fn read_verified_spool_shard(path: &Path) -> Result<Vec<SpoolRecordV1>, String> {
     let mut reader = VerifiedSpoolShardReaderV1::open(path)?;
     let mut records = Vec::new();

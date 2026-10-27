@@ -1,0 +1,45 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Admit existing one-letter Russian function-word targets in the existing warm exact US-to-Russian closed Space certificate; preserve Russian-to-English and all delivery/ownership/verifier contracts. Honor existing physical Russian-letter keys at either word edge, with full canonical Cyrillic target membership.",
+  "reason": "User requests short Russian function words including в,на,и. Integrated baseline proves на already works and one-letter d/b fail before target lookup due the certificate minimum length. Full packaged preposition proof additionally reproduces ,tp -> без loss at the ASCII edge check; use the existing physical-letter surface rather than literal edge cases.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/exact_layout_authority.rs",
+    "src/lexicon.rs",
+    "src/ime_correction.rs",
+    "tests/td113_hybrid_source_contract.rs"
+  ],
+  "runtime_authority_changed": false,
+  "verification": "Require old integrated RED for d/b, known-class-only admission with current exact terminal and unchanged English/user protection; whole source/build gates and independent installed native result. No literal sample conditions or new delivery route.",
+  "not_tested": "At this decision checkpoint the 7 focused groups pass. Full source/release gates, installation and native acceptance remain pending; later measurements belong to the owning document.",
+  "owning_document": "docs/architecture/short-function-layout-2026-10-27.md",
+  "predecessor": {
+    "manifest": "tech_debt/evidence/td113-implementation-preflight-v4.json",
+    "manifest_sha256": "1c05cbed41785db7a5dae3e31f7d5e1b2d3c5dde17c312f20dfc0a8ce3b12c44",
+    "baseline_id": "exact-authority",
+    "path": "src/exact_layout_authority.rs",
+    "mode": "0664",
+    "size_bytes": 19091,
+    "sha256": "3fcc4ef59763afc02c5feee4bc9428501c10bf4eef991ab13f1b19dbfec81110"
+  },
+  "successor": {
+    "path": "src/exact_layout_authority.rs",
+    "sha256": "88ef7a7345d938533dc4679f08e076fa34b6e027e873196d64c3c8b9f92ba9c5",
+    "mode": "0664"
+  },
+  "source_review": {
+    "verdict": "PASS_ROOT_STATIC_AND_FOCUSED",
+    "reviewer": "/root",
+    "independent_agent": false,
+    "focused_groups_pass": 7,
+    "receipt": "CROOT/short-function-layout-green7/result.json",
+    "scope": "Only existing US-to-RU certificate eligibility and existing startup-owned lexical class; no reverse-policy, verifier, owner or output-route change."
+  },
+  "guard_change": "Retain immutable TD-113 predecessor manifest and all other artifact checks. Register this explicitly pinned exact-authority successor and decision hash; preserve executable and special-mode bits. No blanket bypass or baseline rewrite."
+}

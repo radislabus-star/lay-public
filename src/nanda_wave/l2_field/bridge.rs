@@ -235,6 +235,7 @@ fn boundary_text_candidates(original: &str) -> Vec<UnifiedCorrectionCandidate> {
     .collect()
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn cold_probe_surfaces(context_prefix: &str, damaged_surface: &str) -> Vec<String> {
     let original = if context_prefix.trim().is_empty() {
         damaged_surface.to_string()
@@ -1524,6 +1525,7 @@ fn store_prepared_field(
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn standalone_surface_field_readout(
     original: &str,
     settle_winner: bool,

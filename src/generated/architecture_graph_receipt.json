@@ -6,9 +6,9 @@
         "src/typing_transition/decision.rs:L103:.evaluate_candidates()",
         "src/typing_transition/decision.rs:L61:TransitionDecisionCore",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L166:.select_ime_readout()",
-        "src/typing_transition/live_candidate.rs:L84:TransitionDecisionCore",
-        "src/typing_transition/live_candidate.rs:L85:.select_live_completions()"
+        "src/typing_transition/live_candidate.rs:L106:TransitionDecisionCore",
+        "src/typing_transition/live_candidate.rs:L107:.select_live_completions()",
+        "src/typing_transition/live_candidate.rs:L188:.select_ime_readout()"
       ],
       "id": "decision-authority",
       "status": "PASS",
@@ -60,9 +60,9 @@
     },
     {
       "evidence": [
-        "src/bin/lay_ibus_engine/engine/types.rs:L458:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L5923:.arm_visible_postcondition_from_surrounding_dispatch()",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L5993:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/engine/types.rs:L466:PendingSystemOutcomeFeedback",
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6529:.arm_visible_postcondition_from_surrounding_dispatch()",
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6604:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:69614",
-        "graph_nodes:26701"
+        "graph_links:71844",
+        "graph_nodes:27899"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -118,16 +118,16 @@
   ],
   "duplicate_symbols": {
     "normalize_surface()": [
-      "src/nanda_wave/l2_field/compositional.rs:L1811:normalize_surface()",
+      "src/nanda_wave/l2_field/compositional.rs:L1818:normalize_surface()",
       "src/nanda_wave/lexical_grokking/composite.rs:L442:normalize_surface()",
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "9d339ebb0cc88d26b7a7837c117b3a0a5fc628a43cc77958279b3d51363f6af9",
-  "graph_fingerprint": "c40adb1608ac0185dfe95a4ea1f8c8cf1a122c43b82452cecc0e110a8bfa5454",
-  "graph_links": 69614,
-  "graph_nodes": 26701,
+  "graph_binding_fingerprint": "20b9d846454426e984c74d7c01684c74af51d33f2513aeaeff9aa7ed8ee7d8b6",
+  "graph_fingerprint": "1635c05bc387924917d1041f6d66a547e62916df939fa32ba743494f8d837541",
+  "graph_links": 71844,
+  "graph_nodes": 27899,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "e2395c37c2c48f5a613571f04d35b66f4968c9b2a683fbbc181a68625891ebb2",
+  "source_fingerprint": "bc922adfc429a1d7e63a4f88810695a7dbd6c6874fdcc611f334d3a48384cb28",
   "verdict": "PASS"
 }

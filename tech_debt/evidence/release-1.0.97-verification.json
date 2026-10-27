@@ -1,0 +1,665 @@
+{
+  "schema": "lay.release-verification.v1",
+  "version": "1.0.97",
+  "state": "PUBLISHED_SCOPED_FIX_WITH_NATIVE_RESIDUALS",
+  "source": {
+    "files": 1285,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "b8582cfeb51c7928c71c9f997729b8c04a25064bd56efcf82eddd27e27340e63"
+  },
+  "source_origin_head": "07867bf6683f7fa673e530281a0c72b2e55f6b88",
+  "source_note": "Remote git_head is disposable snapshot metadata. Canonical file/mode SHA matches local commitable source.",
+  "source_tests": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 447.38299784064293,
+      "package": 50.31901968433522
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 152.52149544120766,
+      "bin:lay-debug-actions": 0.010789124062284827,
+      "bin:lay-ibus-engine": 145.8886683343444,
+      "bin:lay-l11-serve": 0.012274514185264707,
+      "bin:lay-memory-report": 0.008741883095353842,
+      "bin:lay-nanda-dataset": 0.029923883033916354,
+      "bin:lay-nanda-wave-eval": 1.3021047520451248,
+      "bin:lay-nanda-wave-train": 1.1671991280745715,
+      "bin:lay-test-input": 0.0084363860078156,
+      "bin:lay_output_transaction_microproof": 0.011254192097112536,
+      "lib:lay": 125.26921854820102,
+      "test:correction_gate_metrics": 2.0623692478984594,
+      "test:decoder_alternating_stress": 1.2460927481297404,
+      "test:decoder_transition_regression": 2.212603240972385,
+      "test:ibus_wire_compat": 0.007330050924792886,
+      "test:ime_space_boundary_contract": 0.007826801855117083,
+      "test:input_gate_operator_contract": 0.007622824050486088,
+      "test:input_gate_space_contract": 8.206144479801878,
+      "test:l3_context_feedback_overlay_contract": 1.3595519019290805,
+      "test:l3_context_metrics_contract": 0.008131793001666665,
+      "test:l3_online_resource_contract": 0.007142311194911599,
+      "test:l4_feedback_memory_contract": 0.00957751995883882,
+      "test:live_candidate_gate_metrics": 3.3284853659570217,
+      "test:protected_words_runtime": 1.738445270108059,
+      "test:restore_word_cli": 5.803808433003724,
+      "test:space_boundary_shift_mechanism": 4.937877404969186,
+      "test:td113_hybrid_source_contract": 0.038150391075760126,
+      "test:text_edit_gate_contract": 0.12474002595990896,
+      "test:text_mutation_monopoly_contract": 0.1518013938330114,
+      "test:tray_ui_contract": 0.016507384832948446,
+      "test:typing_assist_alternating_stress": 3.261937726987526,
+      "test:typing_assist_mixed_corpus": 34.10800068709068,
+      "test:typing_assist_short_alternating": 2.8011829170864075,
+      "test:typing_transition_authority_contract": 0.026581418002024293
+    },
+    "elapsed_seconds": 498.3144530460704,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "selected": 3512,
+    "selected_by_lane": {
+      "correctness": 3476,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "performance": {
+    "elapsed_seconds": {
+      "bin:lay-daemon::typing_assist_runtime::candidate::decoder::tests::startup_warmup_removes_first_boundary_decision_stall": 2.639642238151282,
+      "bin:lay-daemon::typing_assist_worker::tests::submit_never_runs_boundary_decision_on_key_thread": 0.07070185989141464,
+      "bin:lay-ibus-engine::preedit::tests::cold_english_wave_memory_does_not_block_precognition": 0.37348032486625016,
+      "bin:lay-ibus-engine::preedit::tests::precognition_candidate_generation_stays_under_budget": 1.083708061138168,
+      "bin:lay-ibus-engine::space_autocorrect_prefetch::proof::v27_component_latency_denominators": 3.1341109371278435,
+      "lib:lay::correction_core::tests::live_canonical_l2_field_stays_under_latency_budget": 9.170818981947377,
+      "lib:lay::exact_layout_authority::proof::v27_exact_en_guard_controlled_resource_budget": 0.6960438820533454,
+      "lib:lay::nanda_wave::candidate_gate::tests::live_gate_short_prefixes_stay_under_hot_readout_budget": 0.4366452300455421,
+      "lib:lay::nanda_wave::candidate_gate::tests::unique_prefix_cache_misses_stay_under_hot_readout_budget": 0.4492756989784539,
+      "lib:lay::nanda_wave::context_phase::tests::compiled_hot_context_readout_stays_inside_microsecond_budget": 0.8837708989158273,
+      "lib:lay::nanda_wave::context_phase::tests::compiled_sentence_context_readout_stays_inside_preedit_budget": 3.6945747130084783
+    },
+    "failed": 0,
+    "failures": [],
+    "passed": 11,
+    "schema": "lay.test-performance-run.v1",
+    "tests": 11,
+    "verdict": "PASS"
+  },
+  "python": {
+    "executed": 417,
+    "skipped": 10,
+    "status": "PASS"
+  },
+  "gates": [
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/budget-before.log",
+      "name": "budget-before",
+      "seconds": 0.061083168955519795,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/fmt.log",
+      "name": "fmt",
+      "seconds": 3.4389633641112596,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/graph.log",
+      "name": "graph",
+      "seconds": 52.61981071787886,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/canon.log",
+      "name": "canon",
+      "seconds": 0.13823229004628956,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/python.log",
+      "name": "python",
+      "seconds": 26.308523544110358,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/public.log",
+      "name": "public",
+      "seconds": 10.333505828864872,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/install.log",
+      "name": "install",
+      "seconds": 0.2772753939498216,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/node.log",
+      "name": "node",
+      "seconds": 0.12078282609581947,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/audit50.log",
+      "name": "audit50",
+      "seconds": 23.88527269102633,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/lints.log",
+      "name": "lints",
+      "seconds": 96.74413010501303,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/msrv.log",
+      "name": "msrv",
+      "seconds": 20.717204807093367,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/msrv-lexical.log",
+      "name": "msrv-lexical",
+      "seconds": 21.62059680186212,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/source.log",
+      "name": "source",
+      "seconds": 523.3133241899777,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/performance.log",
+      "name": "performance",
+      "seconds": 23.419057111954316,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/release.log",
+      "name": "release",
+      "seconds": 73.6442449230235,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/artifacts.log",
+      "name": "artifacts",
+      "seconds": 0.27450577402487397,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/budget-after.log",
+      "name": "budget-after",
+      "seconds": 0.05497692804783583,
+      "status": "PASS"
+    }
+  ],
+  "artifacts": {
+    "lay": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay",
+      "sha256": "a2b9c4b18f9013240a449c15b0bd5bd06aba608f99b6e76de6b9b7d4f5b0854d"
+    },
+    "lay-daemon": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-daemon",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-daemon",
+      "sha256": "f28d145f5ae366307ae4ae06ab8752ce0db93396c68bca335cadd7714e6c406e"
+    },
+    "lay-ibus-engine": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-ibus-engine",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-ibus-engine",
+      "sha256": "611a4b935b73e0f75734105cbcda4f2c2f671f8458f933c427c3905dab4bf9e6"
+    },
+    "lay-l11-restore": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-l11-restore",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-l11-restore",
+      "sha256": "c7033e0020c6740d026670be6a881d7ba63a90dad85bd34f301acbabde37d166"
+    },
+    "lay-l11-serve": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-l11-serve",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-l11-serve",
+      "sha256": "a57a529b20a16526b1e5c2a8edcb9f755bd0d097a5dbc6cb9bfc62c2a79b56f0"
+    },
+    "lay-memory-report": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-memory-report",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-memory-report",
+      "sha256": "8d8863b1c7c9bdc4e29021e00ff73954f7595b5ecc2fc775c86b6b35ae1767d1"
+    },
+    "lay-nanda-wave-eval": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-nanda-wave-eval",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-nanda-wave-eval",
+      "sha256": "75c5459c31291648950a8bd720962a6125b6d8563871cdf2eba5212c0f762094"
+    },
+    "lay-nanda-wave-train": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-nanda-wave-train",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-nanda-wave-train",
+      "sha256": "ffde9877a0c4925b0a6d28f82fffc6914b5d0f0eec71d283ece01ea4e3728ed5"
+    },
+    "lay-ngram-corpus": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-ngram-corpus",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-ngram-corpus",
+      "sha256": "4ff9a34642e530ad1a36dbfebed0f6cfcfa84a57caea1be8793b565d2f259ef3"
+    },
+    "lay-test-input": {
+      "compiler_executable": "/home/e/projects/lay-development-runner/candidate-target-cache-20261023/release/lay-test-input",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      },
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/binaries/lay-test-input",
+      "sha256": "ba1c64a99570099a04ae4e347ce632cef0d67269642fd7c58e7d62a78c0b5a0a"
+    }
+  },
+  "deployment": {
+    "status": "PRIVATE97_INSTALLED_NATIVE_NOT_TESTED",
+    "version": "1.0.97",
+    "source": {
+      "files": 1285,
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "sha256": "b8582cfeb51c7928c71c9f997729b8c04a25064bd56efcf82eddd27e27340e63"
+    },
+    "build_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release97-full-gates/result.json",
+    "engine_pid": 2959534,
+    "daemon_pid": 2959629,
+    "tray_pid": 2959646,
+    "engine_sha256": "611a4b935b73e0f75734105cbcda4f2c2f671f8458f933c427c3905dab4bf9e6",
+    "daemon_sha256": "f28d145f5ae366307ae4ae06ab8752ce0db93396c68bca335cadd7714e6c406e",
+    "versions": {
+      "lay": "lay 1.0.97",
+      "lay-daemon": "lay-daemon 1.0.97",
+      "lay-ibus-engine": "lay-ibus-engine 1.0.97"
+    },
+    "installed_artifacts": 10,
+    "activation_sha256": "611a4b935b73e0f75734105cbcda4f2c2f671f8458f933c427c3905dab4bf9e6",
+    "config_unchanged": true,
+    "tray_sha256": "3f936370408e513b9ed764f087713a04e9521d9b31e475f5d53267c05be04e10",
+    "protected_processes_unchanged": 7,
+    "ibus_not_restarted": true,
+    "desktop_not_restarted": true,
+    "models_not_provisioned": true,
+    "input_status": {
+      "input_device": 5,
+      "master_keyboard": 3,
+      "ready": true,
+      "transport": "x11-xinput2"
+    },
+    "time": "2026-10-25T22:22:29.446079+00:00"
+  },
+  "native": {
+    "frozen_actor_sha256": "17dc93b5f2769d5dde62bfe8f5a539fb68af40744139e823c5f18a848b4ce7e6",
+    "unchanged_rich_witness": {
+      "counts": {
+        "PASS": 1,
+        "FAIL": 0,
+        "BLOCKED": 0,
+        "NOT_TESTED": 0
+      },
+      "row": {
+        "window": "normal",
+        "field": "rich",
+        "name": "roundtrip",
+        "word": "space",
+        "start": 1164546.019984788,
+        "native_setup": {
+          "application_pid": 2962922,
+          "owner": ":1.5870",
+          "path": "/org/a11y/atspi/accessible/1",
+          "rect": [
+            183,
+            587,
+            550,
+            40
+          ],
+          "showing": true,
+          "focused": true,
+          "stable_ms": 100.29703401960433,
+          "setup_budget_ms": 750,
+          "observer": "production private a11y bus; exact native field text and screen geometry"
+        },
+        "native_ready_after_clear": {
+          "application_pid": 2962922,
+          "owner": ":1.5870",
+          "path": "/org/a11y/atspi/accessible/1",
+          "rect": [
+            183,
+            587,
+            550,
+            40
+          ],
+          "showing": true,
+          "focused": true,
+          "stable_ms": 109.95703306980431,
+          "setup_budget_ms": 750,
+          "observer": "production private a11y bus; exact native field text and screen geometry"
+        },
+        "latencies_ms": [
+          167.78777400031686,
+          175.9674351196736
+        ],
+        "status": "PASS",
+        "actual": {
+          "caret": 7,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1,
+            "innerHeight": 761,
+            "innerWidth": 1490,
+            "outerHeight": 856,
+            "outerWidth": 1500,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 61.61666488647461,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 3231,
+          "raw_text": "привет ",
+          "rect": {
+            "x": 452.75,
+            "y": 516.7166748046875
+          },
+          "rendered_text": null,
+          "rich": true,
+          "screen": {
+            "x": 5,
+            "y": 95
+          },
+          "selection": false,
+          "text": "привет "
+        },
+        "native_trace": "row-1-native-trace.jsonl",
+        "native_trace_complete": true,
+        "elapsed_ms": 2353.6602640524507
+      }
+    },
+    "full_firefox": {
+      "counts": {
+        "PASS": 110,
+        "FAIL": 72,
+        "BLOCKED": 38,
+        "NOT_TESTED": 0
+      },
+      "total": 220,
+      "scope": "final97 KDE/X11 system IBus1.5.26; frozen r18 default TCP/cadence/assertions unchanged",
+      "remote_receipt": "release97-firefox-final-full/firefox/result.json",
+      "latency": {
+        "samples": 224,
+        "rows_with_samples": 75,
+        "rows_total": 220,
+        "median_ms": 162.97968477010727,
+        "p95_ms": 261.56289456412196,
+        "max_ms": 285.6935183517635,
+        "scope": "frozen r18 measured target observations only; failing/missing gestures are not latency samples"
+      },
+      "transitions_from_96": {
+        "PASS->PASS": 69,
+        "PASS->FAIL": 11,
+        "FAIL->FAIL": 61,
+        "FAIL->PASS": 41,
+        "BLOCKED->BLOCKED": 36,
+        "PASS->BLOCKED": 1,
+        "FAIL->BLOCKED": 1
+      }
+    },
+    "chrome": "final97 full result retained in full_chrome; old96 baseline retained separately",
+    "protocol_comparison": {
+      "status": "NOT_ACCEPTED_AS_DEPENDENCY_FIX",
+      "lay_bytes_unchanged": true,
+      "modern_ibus_version": "1.5.34",
+      "modern_counts": {
+        "PASS": 117,
+        "FAIL": 66,
+        "BLOCKED": 37,
+        "NOT_TESTED": 0
+      },
+      "original_counts": {
+        "PASS": 110,
+        "FAIL": 72,
+        "BLOCKED": 38,
+        "NOT_TESTED": 0
+      },
+      "transitions": {
+        "PASS->PASS": 100,
+        "FAIL->PASS": 16,
+        "FAIL->FAIL": 56,
+        "BLOCKED->BLOCKED": 37,
+        "PASS->FAIL": 10,
+        "BLOCKED->PASS": 1
+      },
+      "modern_latency": {
+        "samples": 280,
+        "rows_with_samples": 88,
+        "rows_total": 220,
+        "median_ms": 163.06220763362944,
+        "p95_ms": 246.1725629400462,
+        "max_ms": 297.30224260129035,
+        "scope": "frozen r18 native key-release to observed target; measured samples only; missing/failing gestures excluded, not a speed promotion"
+      },
+      "fresh_system_ibus_controls": [
+        {
+          "label": "text-active",
+          "counts": {
+            "PASS": 1,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "NOT_TESTED": 0
+          },
+          "exit": 0
+        },
+        {
+          "label": "url-active",
+          "counts": {
+            "PASS": 1,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "NOT_TESTED": 0
+          },
+          "exit": 0
+        },
+        {
+          "label": "rich-space",
+          "counts": {
+            "PASS": 1,
+            "FAIL": 0,
+            "BLOCKED": 0,
+            "NOT_TESTED": 0
+          },
+          "exit": 0
+        }
+      ],
+      "conclusion": "FocusInId observed on modern protocol, but fresh1.5.26 controls also pass and ten old PASS become FAIL. Version alone is not established cause. System IBus restored. Private helper not shipped.",
+      "remote_receipt": "ibus-protocol-comparison/native-comparison-registry/result.json"
+    },
+    "full_chrome": {
+      "counts": {
+        "PASS": 170,
+        "FAIL": 8,
+        "BLOCKED": 42,
+        "NOT_TESTED": 0
+      },
+      "total": 220,
+      "latency": {
+        "samples": 371,
+        "rows_with_samples": 112,
+        "rows_total": 220,
+        "median_ms": 47.022705199196935,
+        "p95_ms": 62.176152132451534,
+        "max_ms": 89.79784208349884,
+        "scope": "frozen r18 measured target observations only; failing/missing gestures are not latency samples"
+      },
+      "transitions_from_96": {
+        "PASS->PASS": 166,
+        "FAIL->FAIL": 7,
+        "BLOCKED->BLOCKED": 41,
+        "PASS->FAIL": 1,
+        "FAIL->PASS": 3,
+        "BLOCKED->PASS": 1,
+        "PASS->BLOCKED": 1
+      },
+      "scope": "final97 KDE/X11 system IBus1.5.26; frozen r18 default TCP/cadence/assertions unchanged",
+      "remote_receipt": "release97-chrome-final-full/chrome/result.json"
+    },
+    "combined_final97_original_stack": {
+      "PASS": 280,
+      "FAIL": 80,
+      "BLOCKED": 80,
+      "NOT_TESTED": 0,
+      "total": 440,
+      "scope": "full same-final97-byte Firefox and Chrome grids, system IBus1.5.26; separate native runs, all original verdicts retained"
+    }
+  },
+  "public": {
+    "status": "PUBLISHED_STABLE",
+    "tag": "v1.0.97",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.97",
+    "published_at": "2026-10-25T23:33:05Z",
+    "tag_object": "7759fcaca97f1029159fa156310dca984e3577f1",
+    "tag_commit": "f53bf27ab59fe6193613a324aafe296f8e791fe4",
+    "functional_commit": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
+  },
+  "local_gnome": "No manual installation/restart, last observed CLI/extension96",
+  "authority_change": {
+    "owners_unchanged": true,
+    "delivery_routes_unchanged": true,
+    "admission_changed": "Existing KDE native-erasure receipt now covers a verified return to the preceding closed word and exactly one owned separator presentation; contradictory full receipts revoke the candidate.",
+    "gnome_admission_extension": false
+  },
+  "models_or_learning_reset": false,
+  "security": {
+    "status": "PASS",
+    "tool": "cargo-audit 0.22.2",
+    "database": {
+      "advisory-count": 1352,
+      "last-commit": "21d909e4c8bd4e14c7aea58bf980c881a0053ab1",
+      "last-updated": "2026-10-24T10:30:13+02:00"
+    },
+    "vulnerabilities": 0,
+    "warning_counts": {
+      "unmaintained": 2,
+      "yanked": 1
+    }
+  },
+  "deployment_current_after_protocol_comparison": {
+    "ibus_pid": 3168326,
+    "engine_pid": 3168368,
+    "engine_sha256": "611a4b935b73e0f75734105cbcda4f2c2f671f8458f933c427c3905dab4bf9e6",
+    "daemon_pid": 3168498,
+    "system_ibus": true,
+    "note": "intentional private test-bus restart; original deployment remains historical hash proof; no local GNOME change"
+  },
+  "ci": {
+    "source_commit": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34",
+    "CI": {
+      "run": 40243726181,
+      "state": "SUCCESS",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/40243726181",
+      "head_sha": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
+    },
+    "Security": {
+      "run": 40243726160,
+      "state": "SUCCESS",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/40243726160",
+      "head_sha": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
+    }
+  },
+  "updater_verification": {
+    "receipt": "tech_debt/evidence/release-1.0.97-updater.json",
+    "local_installed": "1.0.96",
+    "local_live_check": "offers1.0.97",
+    "remote_installed": "1.0.97",
+    "remote_live_check": "current",
+    "manual_local_install": false
+  }
+}

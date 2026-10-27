@@ -44,6 +44,7 @@ const VISUAL_B_DEFAULT_DATA: &str = include_str!("../data/lexicon/visual_b_defau
 const VISUAL_B_AFTER_ASCII_DATA: &str = include_str!("../data/lexicon/visual_b_after_ascii.txt");
 
 static USER_PROTECTED_ASCII_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
+static RU_ONE_LETTER_FUNCTION_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
 static USER_PROTECTED_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
 static RU_LIVE_PROTECTED_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
 static COMMON_EN_TECHNICAL_WORDS: OnceLock<HashSet<String>> = OnceLock::new();
@@ -124,6 +125,20 @@ pub fn is_common_en_guard_prefix(word: &str) -> bool {
 
 pub fn is_ru_one_letter_function_word(word: &str) -> bool {
     ru_one_letter_function_words().contains(word)
+}
+
+pub(crate) fn is_ru_one_letter_function_word_if_warm(word: &str) -> Option<bool> {
+    Some(RU_ONE_LETTER_FUNCTION_WORDS.get()?.contains(word))
+}
+
+pub(crate) fn warm_up_exact_ru_function_class() -> (u64, usize) {
+    let words = ru_one_letter_function_words();
+    let resident_bytes = words
+        .iter()
+        .map(String::capacity)
+        .sum::<usize>()
+        .saturating_add(words.len().saturating_mul(std::mem::size_of::<String>()));
+    (fingerprint_word_sets(&[words]), resident_bytes)
 }
 
 pub fn is_ru_single_letter_pronoun(word: &str) -> bool {
@@ -348,8 +363,7 @@ fn common_en_guard_prefixes() -> &'static HashSet<String> {
 }
 
 fn ru_one_letter_function_words() -> &'static HashSet<String> {
-    static WORDS: OnceLock<HashSet<String>> = OnceLock::new();
-    WORDS.get_or_init(|| parse_word_data(RU_ONE_LETTER_FUNCTION_DATA))
+    RU_ONE_LETTER_FUNCTION_WORDS.get_or_init(|| parse_word_data(RU_ONE_LETTER_FUNCTION_DATA))
 }
 
 fn ru_single_letter_pronouns() -> &'static HashSet<String> {

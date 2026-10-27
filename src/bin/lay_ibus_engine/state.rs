@@ -632,6 +632,8 @@ impl LayIbusEngine {
                                     == Some(lay::text_edit::TransitionProof::UndoRecord)
                         })
                 });
+        let text_target_decision = self.text_target_decision(backspaces);
+        let output_profile = text_target_decision.route;
         let external_snapshot = self
             .client_context
             .surrounding_text_snapshot
@@ -666,15 +668,17 @@ impl LayIbusEngine {
             boundary_elided_external_snapshot,
             causal_precondition_external_snapshot.as_deref(),
         ) {
+            let editable_selection =
+                observation.has_selection && output_profile.external_selection_is_editable();
             visible_state = if observation.trailing_boundary_elided {
                 visible_state.with_boundary_elided_external_tail_before_cursor(
                     observation.tail_before_cursor,
-                    observation.has_selection,
+                    editable_selection,
                 )
             } else {
                 visible_state.with_external_tail_before_cursor(
                     observation.tail_before_cursor,
-                    observation.has_selection,
+                    editable_selection,
                 )
             };
         }
@@ -768,9 +772,11 @@ impl LayIbusEngine {
             );
             return Ok(false);
         }
-        let surrounding_postcondition_available = self.client_context.surrounding_text_supported;
-        let text_target_decision = self.text_target_decision(backspaces);
-        let output_profile = text_target_decision.route;
+        // An advertised capability is not a postcondition channel for the
+        // separately qualified native terminal executor. Waiting for a
+        // snapshot here would strand both layout sync and the next toggle.
+        let surrounding_postcondition_available =
+            self.client_context.surrounding_text_supported && !output_profile.uses_terminal_erase();
         if !output_profile.can_execute() {
             self.trace_committed_tail_replace_guard(
                 source,
@@ -793,8 +799,10 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let text = authorized_plan.insert.clone();
-        let exact_final_snapshot = if output_profile == TextTargetEditRoute::ExactSurroundingText
-            && emitter.is_legacy()
+        let exact_final_snapshot = if matches!(
+            output_profile,
+            TextTargetEditRoute::ExactSurroundingText | TextTargetEditRoute::NativeRangeCommit
+        ) && emitter.is_legacy()
             && authorized_plan.move_left == 0
             && authorized_plan.move_right == 0
             && authorized_plan.backspaces > 0
@@ -818,6 +826,14 @@ impl LayIbusEngine {
         } else {
             None
         };
+        let native_source = (output_profile == TextTargetEditRoute::NativeRangeCommit)
+            .then(|| external_snapshot.cloned())
+            .flatten();
+        if output_profile == TextTargetEditRoute::NativeRangeCommit
+            && (native_source.is_none() || exact_final_snapshot.is_none())
+        {
+            return Ok(false);
+        }
         let now = Instant::now();
         self.committed_tail.last_commit_at = Some(now);
         self.publish_active_path_preserve_handoff(now + Duration::from_millis(700));
@@ -834,6 +850,8 @@ impl LayIbusEngine {
         let clear_us = clear_started.elapsed().as_micros();
         let output_route = if proved_managed_external_snapshot.is_some() {
             "managed_word_start_delete_commit"
+        } else if output_profile == TextTargetEditRoute::NativeRangeCommit {
+            "native_exact_range_commit"
         } else if exact_final_snapshot.is_some() {
             "surrounding_text_immediate_delete_commit"
         } else {
@@ -849,6 +867,23 @@ impl LayIbusEngine {
         let commit_text = if output_profile.uses_terminal_erase() {
             // The request covers the logical old token; execute only the verified physical edit.
             terminal_erase_prefix(physical_backspaces) + &text
+        } else if output_profile == TextTargetEditRoute::NativeRangeCommit {
+            let selected_at = Instant::now();
+            // This is one phase of the verifier-issued AuthorizedEdit above.
+            // Even a rejected/failed selection can have changed the client.
+            self.select_native_document_range(
+                native_source.as_ref().expect("native source checked above"),
+                physical_backspaces,
+            )
+            .await
+            .map_err(|reason| {
+                LocalExecutionFailure::new(
+                    LocalEffectProgress::CursorOrPreedit,
+                    fdo::Error::Failed(reason.into()),
+                )
+            })?;
+            delete_us = selected_at.elapsed().as_micros();
+            text.clone()
         } else {
             forward_cursor_steps(emitter, KEY_LEFT, authorized_plan.move_left)
                 .await
@@ -1206,6 +1241,80 @@ mod tests {
             true,
             LayConfig::default(),
         )
+    }
+
+    #[test]
+    fn qualified_terminal_autocorrect_and_undo_do_not_wait_for_display_line_outcome() {
+        for caps in [9, 41] {
+            for legacy_transport in [false, true] {
+                for fail_commit in [false, true] {
+                    let mut engine = engine();
+                    engine.config.auto_switch_layout = true;
+                    engine.layout_gesture.layout_is_ru = false;
+                    engine.set_client_capabilities(caps);
+                    engine.client_context.cursor_cell_width = 8;
+                    engine.client_context.focus_receipt = Some("terminal-field".into());
+                    assert!(engine.finish_terminal_focus_probe(Some("terminal-field"), true));
+                    engine.committed_tail.buffer = "ghbdtn ".into();
+                    if caps == 41 {
+                        engine.client_context.surrounding_text_snapshot =
+                            Some(SurroundingTextSnapshot::new("ghbdtn ".into(), 7, 0));
+                    }
+                    let mut output = TestEngineOutput {
+                        legacy_transport,
+                        fail_commit,
+                        ..Default::default()
+                    };
+                    let result = zbus::block_on(
+                        engine.replace_committed_tail(
+                            &mut EngineOutput::test(&mut output),
+                            CommittedTailReplaceRequest::ime_autocorrect(7, "привет ".into())
+                                .with_outcome_feedback(PendingSystemOutcomeFeedback {
+                                    original: "ghbdtn ".into(),
+                                    replacement: "привет ".into(),
+                                    source: VisibleTailSource::ImeCommittedTail,
+                                    kind: SystemOutcomeKind::LayoutProjection,
+                                }),
+                        ),
+                    );
+                    assert!(output.surrounding_deletes.is_empty());
+                    assert!(engine
+                        .committed_tail
+                        .pending_visible_postcondition
+                        .is_none());
+                    assert!(engine.committed_tail.pending_completion_learning.is_none());
+                    // TestEngineOutput retains the attempted payload even
+                    // when CommitText fails; emission is not an outcome.
+                    assert_eq!(output.committed_texts, ["\u{7f}".repeat(7) + "привет "]);
+                    if fail_commit {
+                        assert!(result.is_err());
+                        assert_eq!(engine.committed_tail.buffer, "ghbdtn ");
+                        assert!(!engine.layout_gesture.layout_is_ru);
+                        continue;
+                    }
+                    assert!(result.unwrap());
+                    assert_eq!(engine.committed_tail.buffer, "привет ");
+                    assert!(engine.layout_gesture.layout_is_ru);
+                    if caps == 41 {
+                        engine.client_context.surrounding_text_snapshot =
+                            Some(SurroundingTextSnapshot::new("привет ".into(), 7, 0));
+                    }
+                    assert!(zbus::block_on(engine.replace_committed_tail(
+                        &mut EngineOutput::test(&mut output),
+                        CommittedTailReplaceRequest::ime_auto_undo(7, "ghbdtn ".into()),
+                    ))
+                    .unwrap());
+                    assert_eq!(output.committed_texts[1], "\u{7f}".repeat(7) + "ghbdtn ");
+                    assert_eq!(engine.committed_tail.buffer, "ghbdtn ");
+                    assert!(engine
+                        .committed_tail
+                        .pending_visible_postcondition
+                        .is_none());
+                    assert!(engine.committed_tail.pending_completion_learning.is_none());
+                    assert!(!engine.layout_gesture.layout_is_ru);
+                }
+            }
+        }
     }
 
     #[test]

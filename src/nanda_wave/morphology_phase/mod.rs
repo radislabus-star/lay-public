@@ -1,4 +1,6 @@
+#[cfg(any(test, feature = "research-tools"))]
 mod corpus;
+#[cfg(any(test, feature = "research-tools"))]
 mod field;
 #[cfg(any(test, feature = "research-tools"))]
 mod proof;
@@ -6,7 +8,9 @@ mod proof;
 #[cfg(any(test, feature = "research-tools"))]
 pub use proof::{run_embedded_russian_morphology_proof, run_russian_morphology_proof_path};
 
+#[cfg(any(test, feature = "research-tools"))]
 const PHASE_CELLS: usize = 60;
+#[cfg(any(test, feature = "research-tools"))]
 const MAX_SUBCENTERS: usize = 4;
 
 pub(crate) const POS_NOUN: u32 = 1 << 0;
@@ -61,6 +65,7 @@ const FORM_KIND_B: u32 = 1 << 31;
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[cfg(any(test, feature = "research-tools"))]
 struct MorphBinding16 {
     form_center_id: u32,
     lemma_center_id: u32,
@@ -72,12 +77,14 @@ struct MorphBinding16 {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
+#[cfg(any(test, feature = "research-tools"))]
 struct MorphPhaseCenter64 {
     cells: [i8; PHASE_CELLS],
     support: u16,
     mass: u16,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl Default for MorphPhaseCenter64 {
     fn default() -> Self {
         Self {
@@ -375,6 +382,7 @@ fn valid_feature_shape(features: u32) -> bool {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn feature_name(features: u32) -> &'static str {
     match (features & CASE_MASK, features & NUMBER_MASK) {
         (CASE_NOMINATIVE, NUMBER_SINGULAR) => "nominative_singular",

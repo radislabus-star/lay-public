@@ -88,7 +88,7 @@ install_packages() {
 base_packages_for_pm() {
     pm="$1"
     case "$pm" in
-        apt) echo "curl ca-certificates jq libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi gir1.2-gtk-3.0 policykit-1 x11-xkb-utils" ;;
+        apt) echo "curl ca-certificates jq libxcb1 libxcb-shape0 libxcb-xfixes0 wl-clipboard xclip ibus gir1.2-ibus-1.0 python3-gi gir1.2-gtk-3.0 pkexec polkitd x11-xkb-utils" ;;
         pacman) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python-gobject gtk3 polkit xorg-xkbcomp" ;;
         rpm-ostree|dnf|yum) echo "curl ca-certificates jq libxcb wl-clipboard xclip ibus python3-gobject gtk3 polkit xkbcomp" ;;
         *) echo "" ;;
@@ -131,10 +131,8 @@ elif [ "$#" -gt 0 ]; then
 fi
 
 echo "=== проверка cargo ==="
-if ! command -v cargo >/dev/null; then
-    if [ -f "$HOME/.cargo/env" ]; then
-        . "$HOME/.cargo/env"
-    fi
+if [ -f "$HOME/.cargo/env" ]; then
+    . "$HOME/.cargo/env"
 fi
 if ! command -v cargo >/dev/null; then
     echo "rust не установлен. Поставь:" >&2
@@ -186,6 +184,12 @@ fi
 fi
 
 echo ""
+mkdir -p "$HOME/.config/systemd/user"
+cp "$DIR/systemd/lay-auto-update.service" "$HOME/.config/systemd/user/"
+cp "$DIR/systemd/lay-auto-update.timer" "$HOME/.config/systemd/user/"
+systemctl --user daemon-reload
+# Preserve the user's choice. Only the menu's explicit action enables the timer.
+
 echo "=== canonical L2 model ==="
 LAY_L2_PACKAGE_SOURCE="$(scripts/resolve-l2-package.sh)"
 export LAY_L2_PACKAGE_SOURCE
@@ -251,11 +255,13 @@ sed "s|/home/ubu|$HOME|g" "$DIR/extension/lay-settings.desktop" \
 update-desktop-database "$HOME/.local/share/applications" >/dev/null 2>&1 || true
 echo "✓ settings launcher: ~/.local/share/applications/io.github.radislabus_star.LaySettings.desktop"
 
-mkdir -p "$HOME/.config/systemd/user"
-cp "$DIR/systemd/lay-auto-update.service" "$HOME/.config/systemd/user/"
-cp "$DIR/systemd/lay-auto-update.timer" "$HOME/.config/systemd/user/"
-systemctl --user daemon-reload
-# Preserve the user's choice. Only the menu's explicit action enables the timer.
+
+echo "=== службы графической сессии Lay ==="
+if [ "$UPDATE_EXISTING" = 1 ]; then
+    bash "$DIR/scripts/install-session-services.sh" --update
+else
+    bash "$DIR/scripts/install-session-services.sh" --fresh
+fi
 
 if [ "$UPDATE_EXISTING" = 0 ]; then
 echo ""
@@ -277,14 +283,10 @@ echo "  Для подсказок и Tab используется IBus. Друг
 echo ""
 echo "=== systemd unit для lay-daemon ==="
 mkdir -p ~/.config/systemd/user
-cp "$DIR/systemd/lay-daemon.service" ~/.config/systemd/user/lay-daemon.service
-cp "$DIR/systemd/lay-l3-online.service" ~/.config/systemd/user/lay-l3-online.service
 cp "$DIR/systemd/lay-kde-tray.service" ~/.config/systemd/user/lay-kde-tray.service
 cp "$DIR/systemd/lay-host-vm-guard.service" ~/.config/systemd/user/lay-host-vm-guard.service
 systemctl --user daemon-reload
 systemctl --user disable --now lay-ibus-engine.service >/dev/null 2>&1 || true
-systemctl --user enable lay-daemon
-systemctl --user enable lay-l3-online
 echo "✓ lay-daemon.service установлен и включён"
 echo "✓ lay-l3-online.service установлен и включён"
 echo "✓ старый lay-ibus-engine.service отключён; IME запускает IBus"

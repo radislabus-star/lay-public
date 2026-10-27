@@ -1,0 +1,61 @@
+{
+  "default_qt6": {
+    "PASS": 0,
+    "FAIL": 0,
+    "BLOCKED": 15,
+    "scope": "initial three processes crashed before final per-case receipts; do not substitute isolated first PASS"
+  },
+  "core_x11_supplementary": {
+    "counts": {
+      "PASS": 9,
+      "FAIL": 6,
+      "BLOCKED": 0
+    },
+    "fields": [
+      {
+        "kind": "qt-line",
+        "counts": {
+          "PASS": 3,
+          "FAIL": 2,
+          "BLOCKED": 0
+        }
+      },
+      {
+        "kind": "qt-rich",
+        "counts": {
+          "PASS": 3,
+          "FAIL": 2,
+          "BLOCKED": 0
+        }
+      },
+      {
+        "kind": "qt-plain",
+        "counts": {
+          "PASS": 3,
+          "FAIL": 2,
+          "BLOCKED": 0
+        }
+      }
+    ],
+    "scope": "fixture-only QT_XCB_NO_XI2=1; not default-client acceptance",
+    "timing_successful_rows": {
+      "samples": 27,
+      "median_ms": 12.54417491145432,
+      "p95_ms": 192.0701030176133,
+      "max_ms": 193.71743500232697
+    },
+    "mixed_case_limit": "All three fail source setup before first toggle: requested uppercase first letter was not established by the legacy keysym-only injector; not evidence of post-toggle case mutation. Raw FAIL retained.",
+    "context_rapid_limit": "line sees five complete targets but some late; rich/plain miss final target and retain full source word; reported single-letter loss not reproduced by this cohort."
+  },
+  "product_code_changed": false,
+  "runtime_unchanged": true,
+  "letter_loss_status": "NOT_REPRODUCED on this supplementary fixture; actual main WeChat editor not exercised",
+  "crash_cause_boundary": "Qt6 xi2SetupDevices SIGSEGV from GDB; association to ephemeral replay-master hierarchy plausible from actual source, direct transport-only reproduction remains unproven",
+  "source_files": [
+    "src/bin/lay_daemon/native_input/replay_master.rs:153",
+    "src/bin/lay_daemon/native_input/replay_master.rs:344",
+    "src/bin/lay_daemon/native_input/x11.rs:562",
+    "src/bin/lay_daemon/native_input/x11.rs:667"
+  ],
+  "constraints": "Existing architecture decision requires ephemeral master to preserve Chrome ordinary input; do not retain it persistently as a blind fix."
+}

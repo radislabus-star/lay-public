@@ -11,6 +11,7 @@ use super::{TextTargetAuthority, WindowInteraction, WindowRejectReason};
 pub(crate) enum TextTargetEditRoute {
     CommitOnly,
     ExactSurroundingText,
+    NativeRangeCommit,
     TerminalErase,
     Unsupported,
 }
@@ -19,6 +20,7 @@ pub(crate) enum TextTargetEditRoute {
 pub(crate) enum TextTargetDecisionReason {
     AppendNeedsNoDelete,
     SurroundingTextDelete,
+    QualifiedNativeRange,
     ProvenTerminalErase,
     MissingProvenDelete,
 }
@@ -28,6 +30,7 @@ impl TextTargetDecisionReason {
         match self {
             Self::AppendNeedsNoDelete => "append_needs_no_delete_capability",
             Self::SurroundingTextDelete => "surrounding_text_delete_capability",
+            Self::QualifiedNativeRange => "current_native_document_range",
             Self::ProvenTerminalErase => "proven_terminal_erase_capability",
             Self::MissingProvenDelete => "missing_proven_delete_capability",
         }
@@ -38,6 +41,7 @@ impl TextTargetDecisionReason {
 pub(crate) struct TextTargetCapabilityFacts {
     pub(crate) backspaces: u32,
     pub(crate) surrounding_text_supported: bool,
+    pub(crate) native_range_supported: bool,
     pub(crate) terminal_erase_supported: bool,
 }
 
@@ -53,6 +57,12 @@ impl TextTargetDecision {
             return Self {
                 route: TextTargetEditRoute::CommitOnly,
                 reason: TextTargetDecisionReason::AppendNeedsNoDelete,
+            };
+        }
+        if facts.native_range_supported {
+            return Self {
+                route: TextTargetEditRoute::NativeRangeCommit,
+                reason: TextTargetDecisionReason::QualifiedNativeRange,
             };
         }
         if facts.surrounding_text_supported {
@@ -84,6 +94,7 @@ impl TextTargetEditRoute {
         TextTargetDecision::from_facts(TextTargetCapabilityFacts {
             backspaces,
             surrounding_text_supported,
+            native_range_supported: false,
             terminal_erase_supported,
         })
         .route
@@ -93,6 +104,7 @@ impl TextTargetEditRoute {
         match self {
             Self::CommitOnly => "commit",
             Self::ExactSurroundingText => "surrounding_text_delete_commit",
+            Self::NativeRangeCommit => "native_exact_range_commit",
             Self::TerminalErase => "terminal_erase_commit",
             Self::Unsupported => "no_proven_delete_backend",
         }
@@ -100,6 +112,13 @@ impl TextTargetEditRoute {
 
     pub(crate) fn uses_terminal_erase(self) -> bool {
         matches!(self, Self::TerminalErase)
+    }
+
+    pub(crate) fn external_selection_is_editable(self) -> bool {
+        // The qualified PTY executor observes a terminal display line. Its
+        // cursor/anchor metadata is not an editable-document selection.
+        // Keep the text/cursor as contradiction evidence in either domain.
+        !self.uses_terminal_erase()
     }
 
     pub(crate) fn can_execute(self) -> bool {
@@ -303,23 +322,58 @@ impl LayImeBridge {
         let observed_exact_suffix = engine.context_observed_suffix_exact_manual_handoff_allowed();
         let reset_rereceipt = engine.context_reset_rereceipt_exact_manual_handoff_allowed();
         let exact_manual_snapshot = engine.exact_snapshot_manual_source_is_current();
-        if !self.shared_active_path_matches(&path)
-            || !self.bridge_token_is_live(&engine, token.as_ref())
-            || engine.completed_native_replay_awaits_exact_receipt()
+        let bridge_live = self.shared_active_path_matches(&path)
+            && self.bridge_token_is_live(&engine, token.as_ref());
+        let held_boundary_pending = engine.held_replay_boundary_awaits_source();
+        let replay_pending =
+            held_boundary_pending || engine.completed_native_replay_awaits_exact_receipt();
+        let focus_receipt = if self.context_admission_required {
+            token
+                .as_ref()
+                .map(AdmissionToken::exact_field_receipt)
+                .unwrap_or_default()
+        } else {
+            engine
+                .client_context
+                .focus_receipt
+                .clone()
+                .unwrap_or_default()
+        };
+        if !bridge_live
+            || replay_pending
             || !(word_is_known
                 || bounded_unknown_suffix
                 || observed_exact_suffix
                 || reset_rereceipt
                 || exact_manual_snapshot)
         {
+            // Pending native delivery with a complete current paired proof
+            // retains field identity and its actual privacy policy for
+            // settlement, never a text receipt or learning acknowledgement.
+            // Returning an empty identity would cancel the replay before the
+            // actual client observation can arrive.
+            let pending_identity_proven = bridge_live
+                && replay_pending
+                && (held_boundary_pending
+                    || engine
+                        .completed_exact_replay_boundary_provenance()
+                        .is_some()
+                    || engine.exact_replay_reset_provenance(true).is_some());
+            let pending_personalization =
+                pending_identity_proven && engine.content_allows_personalization();
+            let pending_focus_receipt = if pending_identity_proven {
+                focus_receipt
+            } else {
+                String::new()
+            };
             return Ok((
                 "passive:unknown-context".to_string(),
                 String::new(),
                 engine.layout_gesture.layout_is_ru,
                 engine.committed_tail.epoch,
                 path,
-                String::new(),
-                false,
+                pending_focus_receipt,
+                pending_personalization,
             ));
         }
         engine.refresh_empty_tail_from_handoff();
@@ -347,18 +401,6 @@ impl LayImeBridge {
             &engine.composition.buffer,
             &engine.committed_tail.buffer,
         );
-        let focus_receipt = if self.context_admission_required {
-            token
-                .as_ref()
-                .map(AdmissionToken::exact_field_receipt)
-                .unwrap_or_default()
-        } else {
-            engine
-                .client_context
-                .focus_receipt
-                .clone()
-                .unwrap_or_default()
-        };
         Ok((
             source.bridge_state().to_string(),
             text,
@@ -690,7 +732,23 @@ impl LayImeBridge {
                 r#"{"kind":"ibus_manual_toggle_refresh","stage":"exact_ready_for_same_gesture"}"#,
             );
         }
+        // A layout handoff can deliver cursor geometry before admission Ready.
+        // Qualify the current field before testing UnknownStart eligibility;
+        // otherwise an active terminal word is rejected before its probe runs.
+        engine.refresh_terminal_focus_if_ready().await;
+        {
+            let mut output = EngineOutput::legacy(emitter);
+            if !WindowInteraction::refresh_native_document(&mut engine, &mut output).await? {
+                return Ok(ImeManualToggleOutcome::NotHandled);
+            }
+        }
+        // Preserve the ordinary reset-computation path. Completed replay is
+        // quarantined from that path and starts a stock refresh only from a
+        // validated prior full surface, under the existing gesture deadline.
         let reset_snapshot_pending = engine.context_reset_rereceipt_manual_wait_allowed()
+            && (engine.context_reset_rereceipt_computation_allowed()
+                || engine.client_context.exact_surrounding_refresh_available
+                || engine.layout_gesture.pending_manual_refresh_at.is_some())
             && engine.client_context.surrounding_text_supported
             && engine.client_context.surrounding_text_snapshot.is_none();
         let mut manual_toggle_allowed = !engine.completed_native_replay_awaits_exact_receipt()
@@ -776,9 +834,6 @@ impl LayImeBridge {
             return Ok(ImeManualToggleOutcome::NotHandled);
         }
         engine.refresh_empty_tail_from_handoff();
-        // A layout handoff can deliver cursor geometry before admission Ready.
-        // Qualify the current field before selecting the existing manual owner.
-        engine.refresh_terminal_focus_if_ready().await;
         let target_authority = WindowInteraction::admit_manual_toggle(&engine);
         if matches!(
             target_authority,
@@ -882,7 +937,9 @@ impl LayIbusEngine {
         // that do not expose SurroundingText (notably Kitty).
         let terminal_erase_supported = self.terminal_committed_tail_executor_available();
         if committed_tail_chars > 0
-            && (self.client_context.surrounding_text_supported || terminal_erase_supported)
+            && (self.client_context.surrounding_text_supported
+                || terminal_erase_supported
+                || self.native_document_is_current())
         {
             return ManualToggleAuthority::ImeCommittedTail;
         }
@@ -894,7 +951,14 @@ impl LayIbusEngine {
     pub(crate) fn text_target_decision(&self, backspaces: u32) -> TextTargetDecision {
         TextTargetDecision::from_facts(TextTargetCapabilityFacts {
             backspaces,
-            surrounding_text_supported: self.client_context.surrounding_text_supported,
+            // A qualified native terminal can advertise SurroundingText without
+            // implementing it. Keep its existing executor consistent with its
+            // ordinary input mode. An explicit exact-refresh contract prevents
+            // native qualification and retains the surrounding-text route.
+            surrounding_text_supported: self.client_context.surrounding_text_supported
+                && !self.uses_native_terminal_input()
+                && self.client_context.native_document_binding.is_none(),
+            native_range_supported: self.native_document_is_current(),
             terminal_erase_supported: self.has_proven_terminal_input()
                 && self.client_context.cursor_cell_width > 0,
         })
@@ -918,6 +982,9 @@ impl WindowInteraction {
         match engine.manual_toggle_authority() {
             ManualToggleAuthority::ImeActiveComposition => {
                 TextTargetAuthority::ActiveCompositionOwned
+            }
+            ManualToggleAuthority::ImeCommittedTail if engine.native_document_is_current() => {
+                TextTargetAuthority::LocalNativeRangeCommit
             }
             ManualToggleAuthority::ImeCommittedTail
                 if engine.terminal_committed_tail_executor_available() =>
@@ -945,6 +1012,7 @@ impl WindowInteraction {
             return TextTargetAuthority::Reject(WindowRejectReason::SelectionPresent);
         }
         match engine.text_target_edit_route(backspaces) {
+            TextTargetEditRoute::NativeRangeCommit => TextTargetAuthority::LocalNativeRangeCommit,
             TextTargetEditRoute::ExactSurroundingText | TextTargetEditRoute::CommitOnly => {
                 TextTargetAuthority::LocalSurroundingDeleteCommit
             }

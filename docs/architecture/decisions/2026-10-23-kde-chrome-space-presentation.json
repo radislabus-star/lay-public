@@ -1,0 +1,23 @@
+{
+  "status": "SOURCE_EXPERIMENT_PENDING_VERIFICATION_AND_NATIVE_INSTALL",
+  "owner": "KDE native-document transport/presentation adapter; existing common tail owner, managed-word readout and final verifier",
+  "affected_invariants": ["C05", "C07", "C08", "C09", "C10"],
+  "first_failed_transitions": [
+    "Same-field rich second-word fixture: VisibleTailV4 retains U+00A0 in the older separator, while DOM and production AT-SPI GetText both return U+0020 after typing the next word. Current-word text, caret, native peer and character geometry agree. Native hint eligibility wrongly demands full old-tail manual-edit agreement, suppressing rect and append despite the existing fresh managed-word witness.",
+    "Closed rich layout edit dispatches a target ending in ASCII Space. Production native GetText returns the same target with final NBSP. The existing raw full-snapshot result comparison correctly refuses that unacknowledged presentation; layout settlement and the following gesture/decoder stall. The common tail owner already supports acknowledging its newly emitted final Space as NBSP."
+  ],
+  "decision": [
+    "Use native binding validity plus the existing exact_managed_surrounding_word_is_current contract for display/explicit append. Hint geometry may use this readout contract or the existing full-tail manual contract. Keep native_manual_word_is_current and all whole-word/correction permissions unchanged; never rewrite an older separator to manufacture agreement.",
+    "A small KDE native_document/client_presentation module recognizes only an already pending native LayoutProjection result, current owner/epoch/field and exact full field/caret/selection equality except its final newly emitted ASCII Space becoming NBSP. Reuse acknowledge_owned_space_tail to retain shared/local ownership state; update only that result's acknowledged presentation and run the unchanged canonical final verifier. Preserve original expiry, source, feedback and scope. No general Unicode/whitespace normalization or output fallback."
+  ],
+  "alternatives": [
+    {"name": "Existing current-word readout plus existing owned-Space receipt", "score_1_to_10": 9, "reason": "Matches the measured client behavior, preserves separate append/manual authority and reuses current owners."},
+    {"name": "Normalize every field/tail whitespace comparison", "score_1_to_10": 2, "reason": "Would hide unrelated document changes and affect common safety checks."},
+    {"name": "Add a parallel Chrome tail or bypass the result verifier", "score_1_to_10": 1, "reason": "Would duplicate runtime authority and conceal unobserved output."}
+  ],
+  "receipts": ["chrome-941-first-second-word-r4-diagnostic-20261023/result.json", "chrome-941-first-second-word-r4-diagnostic-20261023/a11y-calls.log", "chrome-941-intermediate-selection-smoke-20261023/chrome/native-a11y-*.log"],
+  "verification": "Source controls cover readout without whole-word promotion; a single owned output slot with preserved left/right context; rejection of unrelated text, selection, caret, epoch, field, focus, lease, layout, privacy, sealed/GNOME context, feedback kind and shared state changes. Repeat unchanged r18 and cold/same-field4 before broader Chrome qualification and user acceptance.",
+  "runtime_authority_changed": false,
+  "installed": false,
+  "published": false
+}

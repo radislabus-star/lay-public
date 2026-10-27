@@ -1,0 +1,10 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Deduplicate borrowed English dictionary tokens before allocating the existing immutable exact-word bank.",
+  "reason": "The fixed resource proof exceeded its unchanged 15 MiB incremental RSS limit by 60 KiB. The old merge allocates overlapping dictionary entries before deduplication.",
+  "invariants": ["C01", "C03", "C06", "C07", "C10"],
+  "protected_paths": ["src/word_recognizer/lexicon.rs"],
+  "verification": "Complete installed-bank byte/order/fingerprint parity against the previous construction; protected/case/punctuation controls; same eleven performance tests and full source gates. Keep every memory/latency threshold unchanged.",
+  "not_tested": "Allocation savings and changed-byte native clients remain unmeasured at decision time.",
+  "runtime_authority_changed": false
+}

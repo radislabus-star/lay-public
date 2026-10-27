@@ -14,6 +14,18 @@ pub(crate) struct LayImeBridge {
 
 #[interface(name = "io.github.radislabus_star.LayIme")]
 impl LayImeBridge {
+    /// Read-only display material, never a field or application receipt.
+    #[zbus(name = "InlineHintSnapshotV1")]
+    fn inline_hint_snapshot_v1(&self) -> String {
+        self.shared
+            .lock()
+            .expect("lay ime state poisoned")
+            .hint_view
+            .as_ref()
+            .map(|view| view.snapshot())
+            .unwrap_or_default()
+    }
+
     #[zbus(name = "ObservedIbusEngine")]
     pub(crate) async fn observed_ibus_engine(&self) -> fdo::Result<String> {
         super::observed_ibus_engine::read(&self.ibus_connection).await

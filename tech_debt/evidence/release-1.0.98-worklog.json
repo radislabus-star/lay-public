@@ -1,0 +1,633 @@
+{
+  "schema": "lay.debt-release-worklog.v1",
+  "version": "1.0.98",
+  "state": "PUBLISHED_VERIFIED_SOURCE_BUILD_CI_DISCOVERY_NATIVE_RESIDUAL_OPEN",
+  "stable": "1.0.97",
+  "origin_head": "d35bee538bf8d1ed2e2b5d27bff51664573ed2e3",
+  "baseline": {
+    "firefox": {
+      "PASS": 110,
+      "FAIL": 72,
+      "BLOCKED": 38,
+      "total": 220
+    },
+    "chrome": {
+      "PASS": 170,
+      "FAIL": 8,
+      "BLOCKED": 42,
+      "total": 220
+    }
+  },
+  "first_losses": {
+    "stale_prefix_lease": 2,
+    "not_ready": 1,
+    "terminal_verifier_refusal": 4,
+    "phone_no_space_lookup_yet_unexplained": 1
+  },
+  "native_prefix_probe": {
+    "status": "1FAIL of1; desired preparation extension only, not promoted",
+    "receipt": "/home/ubu/.cache/lay/development/release-1.0.98-20261025/red-owned-native-prefix-formatted/RESULT.json",
+    "source_archive": "/home/ubu/.cache/lay/development/release-1.0.98-20261025/probes/native-word-preparation-probe.rs",
+    "no_ignored_test_or_baseline_change": true
+  },
+  "transport_ABA": {
+    "default_a": {
+      "PASS": 15,
+      "FAIL": 3,
+      "BLOCKED": 2
+    },
+    "nodelay": {
+      "PASS": 16,
+      "FAIL": 2,
+      "BLOCKED": 2
+    },
+    "default_b": {
+      "PASS": 16,
+      "FAIL": 2,
+      "BLOCKED": 2
+    },
+    "scope": "smoke20 unchanged r18 and97 bytes; not full native acceptance",
+    "verdict": "transport-only repair rejected; iframe-rich pair fails3/3"
+  },
+  "model_readout": {
+    "status": "ready",
+    "forms": 1875032,
+    "lemmas": 93672,
+    "morph_bindings": 3255785,
+    "storage": "compact_v2_mmap_view",
+    "separate_L1_L2_report": "ENOENT; dependency not identified, not proof of missing L2",
+    "training": false
+  },
+  "diagnostic_patch": {
+    "files": [
+      "src/ime_correction.rs"
+    ],
+    "effect": "Temporary gate Result API was rejected by immutable TD113 contract and fully removed. Exact HEAD gate/export bytes restored; only KDE debug prefix-refusal trace remains.",
+    "runtime_bug_fixed": false,
+    "routes_or_eligibility_changed": false
+  },
+  "source_tests": {
+    "verdict": "PASS",
+    "tests": {
+      "selected": 1089,
+      "executed": 1089,
+      "passed": 1089,
+      "failed": 0
+    },
+    "receipt": "/home/e/projects/lay-development-runner/run-gsSyqq/RESULT.json",
+    "scope": "full IME only, not all Lay"
+  },
+  "graph": {
+    "local_verdict": "WATCH",
+    "unchanged_daemon_sinks": 3,
+    "facts": "Accepted AuthorizedEdit ID is relative src_...; refreshed cached graph ID is absolute home_e_...; signatures still AuthorizedEdit. No guard edited.",
+    "remote_generation": "running with same previously successful canonical generator"
+  },
+  "build": {
+    "state": "PRIVATE_CANDIDATE_BUILD_VERIFIED",
+    "receipt": "CROOT/release98-owned-prefix-b-build/result.json",
+    "source_closure": "15862371268afd7c414c5e565ff0afb999420910621bb4fe130ce50bbb14e14b",
+    "artifacts": 10,
+    "architecture": "PASS"
+  },
+  "native98": {
+    "receipt": "CROOT/release98-diagnostic-a-native/result.json",
+    "actor_sha256": "17dc93b5f2769d5dde62bfe8f5a539fb68af40744139e823c5f18a848b4ce7e6",
+    "counts": {
+      "PASS": 15,
+      "FAIL": 3,
+      "BLOCKED": 2,
+      "NOT_TESTED": 0
+    },
+    "scope": "Chrome frozen r18 smoke20 only, not full acceptance",
+    "trace_complete": false,
+    "per_case_traces_complete": true,
+    "losses": [
+      "text Space stale_lease",
+      "text pair final Space stale_lease",
+      "iframe-rich Space stale_lease"
+    ],
+    "iframe_pair": "PASS; background prefix refusal is not a final failure"
+  },
+  "local_gnome": "No manual install/restart; release97 remains available via updater",
+  "next": "Finish required full gates; match current loaded B bytes to final compiled artifacts; full frozen r18 Chrome, diagnose actual residuals; publish98/updater only with honest scope; then99-102.",
+  "diagnostic98_deployment": {
+    "version": "1.0.98",
+    "source_closure": "1852f10e7bc94856db843d50b2a0ae77d325981eeb0e7e3497d04cde34a87709",
+    "ime_pid": 3617078,
+    "daemon_pid": 3617128,
+    "tray_pid": 3617134,
+    "ime_sha256": "a4a9005af5a7b24dd1e177091df4b1a614831b7b228c75098c5a008d4f2025bd",
+    "build": "CROOT/release98-diagnostic-a3-build/result.json",
+    "deployment": "CROOT/release98-diagnostic-b-deployment/result.json",
+    "scope": "diagnostic only, no functional fix"
+  },
+  "source_candidate": {
+    "origin": "data-only reuse of existing ManagedWordStartWitness, native adapter validates existing binding owner; no new owner/cache/queue/route",
+    "red": "run-X2wnvZ:1/1 FAIL",
+    "v1": "run-bCxFbD:1085/1088 PASS; new2FAIL from requiring old snapshot after owned commit; unrelated c20 literal proposal failed0vs1 retained",
+    "v2": "run-0MDMHg:1/1FAIL, actual chain Some(6), native None because snapshot intentionally cleared after CommitText",
+    "v3": "Exact run-zHY98C1/1PASS; full run-H8NVzr1088/1088PASS including all old guards and c20 unchanged. Prior c20 failure retained, no budget changed."
+  },
+  "updated_at": "2026-10-26T14:43:02.995933+00:00",
+  "candidate_b": {
+    "ime_pid": 3810595,
+    "daemon_pid": 3810630,
+    "tray_pid": 3810637,
+    "ime_sha256": "0b63f8d9080d5b1ea1e2050f140c1838a8c580b0de3e1aca5e23b842442f3de3",
+    "native_smoke": {
+      "PASS": 17,
+      "FAIL": 1,
+      "BLOCKED": 2,
+      "NOT_TESTED": 0
+    },
+    "pass": [
+      "text Space layout",
+      "text moved-boundary",
+      "iframe-rich Space layout"
+    ],
+    "remaining": "iframe-rich moved-boundary: prefetch_not_ready plus prepared candidates without pair scope",
+    "evidence": "CROOT/release98-owned-prefix-b-native/result.json",
+    "actual_native_prefix_retention": "observed4chars/prepared5chars, edit_authority false; character-count trace retained",
+    "stable_improvement": "not claimed before fixed full grid"
+  },
+  "full_gates": {
+    "attempt1": "CROOT/release98-full-gates:graphPASS,canonFAIL missing new protected-path decision; no runtime/test weakening",
+    "decision": "docs/architecture/decisions/2026-10-26-kde-native-owned-space-preparation.json",
+    "attempt2": "CROOT/release98-full-gates-r2 RUNNING, exec23918; exactly3 added test identities, all old lanes/known failures unchanged"
+  },
+  "final_c": {
+    "source_closure": "14af075c4ee05b8041a9ba794fe98d4cf862eeea628d1d17ae9c73406b6ca655",
+    "ime_sha256": "7b6f07010ef58d3c98c80b121b353de108e3a5d62084867e4e9d49dbcd00790b",
+    "source_tests": 3515,
+    "performance_tests": 11,
+    "compiler_artifacts": 10,
+    "proof": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release98-full-gates-r3/result.json",
+    "deployment": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release98-final-deployment/result.json",
+    "engine_pid": 744266,
+    "gate_diagnostics_restored_to_frozen_head": true,
+    "local_source_parity": "/home/ubu/.cache/lay/development/release-1.0.98-20261025/local-final-source-parity.json"
+  },
+  "final_chrome": {
+    "counts": {
+      "PASS": 174,
+      "FAIL": 3,
+      "BLOCKED": 43,
+      "NOT_TESTED": 0
+    },
+    "comparison": {
+      "transitions": {
+        "PASS->PASS": 168,
+        "FAIL->PASS": 6,
+        "BLOCKED->BLOCKED": 42,
+        "FAIL->FAIL": 2,
+        "PASS->FAIL": 1,
+        "PASS->BLOCKED": 1
+      },
+      "changes": [
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "space-en-ru",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "text",
+          "name": "moved-boundary",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "search",
+          "name": "space-en-ru",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "space-en-ru",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "moved-boundary",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "moved-boundary",
+          "word": "functional",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 129005.20000004768, 'raw_text': 'должн ыбыть ', 'rect': {'x': 1038.3235168457031, 'y': 399.8970642089844}, 'rendered_text': None, 'rich': True, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'должн ыбыть '}}"
+        },
+        {
+          "window": "normal",
+          "field": "iframe-rich",
+          "name": "moved-boundary",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "PASS",
+          "after": "BLOCKED",
+          "error": "native/DOM text disagreement"
+        }
+      ],
+      "latency": {
+        "samples": 365,
+        "rows_with_samples": 110,
+        "total_rows": 220,
+        "median_ms": 46.64459475316107,
+        "p95_nearest_rank_ms": 62.896735267713666,
+        "max_ms": 84.1229259967804
+      }
+    },
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release98-final-native-chrome/result.json",
+    "all_rows": 220,
+    "remaining_failures": [
+      "normal/textarea/moved-boundary: native_document_changed then stale lease",
+      "normal/rich/moved-boundary: verifier rejected uneditable prefix",
+      "normal/plain/moved-boundary: actual native snapshot10chars vs expected11chars; stale_surrounding_text"
+    ],
+    "global_trace_complete": false,
+    "failed_row_traces_complete": true
+  },
+  "final_firefox": {
+    "state": "COMPLETE_WITH_FAILURES",
+    "counts": {
+      "PASS": 121,
+      "FAIL": 63,
+      "BLOCKED": 36,
+      "NOT_TESTED": 0
+    },
+    "comparison": {
+      "transitions": {
+        "PASS->PASS": 100,
+        "FAIL->FAIL": 51,
+        "BLOCKED->BLOCKED": 35,
+        "FAIL->PASS": 20,
+        "BLOCKED->PASS": 1,
+        "PASS->FAIL": 10,
+        "BLOCKED->FAIL": 2,
+        "FAIL->BLOCKED": 1
+      },
+      "changes": [
+        {
+          "window": "normal",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "email",
+          "name": "consecutive-two",
+          "word": "active",
+          "before": "BLOCKED",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 84698, 'raw_text': 'ghbdtn', 'rect': {'x': 1037.25, 'y': 418.3333129882813}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn'}}"
+        },
+        {
+          "window": "normal",
+          "field": "textarea",
+          "name": "moved-boundary",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "rich",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 125423, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "plain",
+          "name": "space-en-ru",
+          "word": "functional",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "normal",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "private",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 10902, 'raw_text': 'ghbdtn ', 'rect': {'x': 452.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn '}}"
+        },
+        {
+          "window": "private",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "private",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 38056, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+        },
+        {
+          "window": "private",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "BLOCKED",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 61169, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 418.3333129882813}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет', 'caret_observer': 'owned native AT-SPI field'}}"
+        },
+        {
+          "window": "private",
+          "field": "rich",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 97015, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "private",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 102966, 'raw_text': 'привет\\xa0', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет '}}"
+        },
+        {
+          "window": "private",
+          "field": "iframe-input",
+          "name": "consecutive-two",
+          "word": "space",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 6929, 'raw_text': 'ghbdtn', 'rect': {'x': 507.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'ghbdtn'}}"
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "text",
+          "name": "consecutive-two",
+          "word": "space",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 12755, 'raw_text': 'привет ', 'rect': {'x': 507.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'привет '}}"
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "search",
+          "name": "roundtrip",
+          "word": "space",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "url",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "tel",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "BLOCKED",
+          "error": "native/DOM text disagreement"
+        },
+        {
+          "window": "fullscreen",
+          "field": "email",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "BLOCKED",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 62564, 'raw_text': 'привет', 'rect': {'x': 507.75, 'y': 479.9500122070313}, 'rendered_text': None, 'rich': False, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'привет', 'caret_observer': 'owned native AT-SPI field'}}"
+        },
+        {
+          "window": "fullscreen",
+          "field": "plain",
+          "name": "consecutive-two",
+          "word": "space",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 102580, 'raw_text': 'ghbdtn\\xa0', 'rect': {'x': 1092.25, 'y': 578.3333129882812}, 'rendered_text': None, 'rich': True, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'ghbdtn '}}"
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-input",
+          "name": "rapid-five",
+          "word": "active",
+          "before": "FAIL",
+          "after": "PASS",
+          "error": null
+        },
+        {
+          "window": "fullscreen",
+          "field": "iframe-rich",
+          "name": "roundtrip",
+          "word": "active",
+          "before": "PASS",
+          "after": "FAIL",
+          "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 126201, 'raw_text': 'привет', 'rect': {'x': 1091.5, 'y': 670.5833129882812}, 'rendered_text': None, 'rich': True, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'привет'}}"
+        }
+      ],
+      "latency": {
+        "samples": 240,
+        "rows_with_samples": 82,
+        "total_rows": 220,
+        "median_ms": 163.28461549710482,
+        "p95_nearest_rank_ms": 233.15234808251262,
+        "max_ms": 295.31551944091916
+      }
+    },
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release98-final-native-firefox/result.json"
+  },
+  "next_stage": {
+    "public_issue": 70,
+    "task": "tech_debt/ubuntu-26-04-polkit-package-compatibility.md",
+    "shared_native": "same-byte Firefox63FAIL/Chrome3FAIL remain; per-case raw receipts and losses retained"
+  },
+  "public": {
+    "tag_name": "v1.0.98",
+    "published_at": "2026-10-26T14:25:12Z",
+    "html_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.98",
+    "target_commitish": "main",
+    "draft": false,
+    "prerelease": false
+  },
+  "ci": "40292706780/40292706831 SUCCESS on5052c3df",
+  "updater_evidence": "tech_debt/evidence/release-1.0.98-updater.json"
+}

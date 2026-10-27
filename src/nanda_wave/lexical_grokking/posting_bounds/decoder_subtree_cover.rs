@@ -442,6 +442,7 @@ impl DecoderTopology {
         &self.start_nodes[start..end]
     }
 
+    #[cfg(any(test, not(feature = "lexical-compiler")))]
     fn token_cardinality(&self, token: CoverToken) -> Result<usize, String> {
         match token.kind {
             TOKEN_SUBTREE => self

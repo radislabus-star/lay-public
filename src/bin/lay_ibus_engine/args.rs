@@ -1,9 +1,12 @@
 use clap::Parser;
 
+// CLI, component XML and tray share the package release version.
+pub(crate) const DISPLAY_VERSION: &str = env!("CARGO_PKG_VERSION");
+
 #[derive(Parser, Debug)]
 #[command(
     name = "lay-ibus-engine",
-    version,
+    version = DISPLAY_VERSION,
     about = "Rust IBus text-edit bridge for lay"
 )]
 pub(crate) struct Args {

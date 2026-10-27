@@ -13,6 +13,22 @@
 - CLAUDE.md, GEMINI.md and .github/copilot-instructions.md point here and to the
   same canon. Keep one contract rather than model-specific architectural rules.
 
+## Desktop integration consistency — 2026-10-21
+
+- Resolve the desktop through the existing `active_layout_backend` mechanism.
+  Keep KDE-specific integration in KDE modules and GNOME-specific integration
+  in GNOME modules behind an explicit common dispatch boundary. Do not add a
+  second detector or silently fall back to another desktop's integration.
+- Share correction decisions, word/context ownership, edit verification and
+  typed execution contracts. A desktop module supplies platform observations
+  and operations; it does not create its own mutation authority or delivery path.
+- Keep callers, errors, tests and owning documents consistent with the module
+  boundary. Avoid a single desktop god-component: use small files by responsibility.
+- Verify mechanical relocation separately from behavior changes. Preserve
+  existing delivery routes during relocation and record unchanged or untested
+  scope explicitly. An ordinary held Shift must remain ordinary uppercase input;
+  it is a separate acceptance control from the daemon-owned Double Shift gesture.
+
 ## Accepted development simplification — 2026-09-07
 
 - The user subsequently prioritized TD-124 maintenance tooling before further
@@ -27,6 +43,9 @@
   smallest justified change, rerun that scenario and its affected contracts,
   obtain independent review, and execute the mandatory release gates. A helper
   or atomic-path PASS cannot establish legacy-client or physical-input PASS.
+- Resolve an installed Cargo binary from its `compiler-artifact.executable`
+  record, never a fixed target directory. Match its bytes to the running process;
+  source tests from another target cache do not identify the release artifact.
 - Reproduce concurrent failures with controlled event order and bounded waits
   using existing production reducers/adapters. Distinguish key-before-ready
   from key-after-ready. Do not substitute sleeps, retries-until-green, or a
@@ -65,6 +84,16 @@
   Consequence analysis is ordinary owning-document text. Do not restart global
   IBus, change engine names or migrate user input sources without explicit
   separate user approval; accepting simplification is not that approval.
+
+## Direct Lay workflow — 2026-10-23
+
+- The user removed Harness2 from Lay. Work directly in the current session;
+  do not invoke `harness2-codex`, its doctor, or the Harness2 lay2 handoff.
+  Earlier use requirements in handoffs, task history or recalled memory are
+  superseded by this explicit instruction.
+- Keep existing architecture, source-review, resource, release and physical
+  client-verification requirements. Source evidence is not live acceptance.
+  Historical Harness2 reports remain evidence only, never a required next step.
 
 ## Automated checks and compact evidence
 
@@ -156,6 +185,14 @@ Rules:
 - Check current usage with `scripts/cargo-guard.sh --status` before and after an unusually broad build.
 
 ## Accepted-version publication
+
+- User requirement, 2026-10-24: before publishing a new functional version,
+  actually build the complete installed binary set through
+  `scripts/build-release-binaries.sh` with its locked dependencies and feature
+  profile, and retain the successful build receipt. Passing source tests or
+  compilation of only test targets is insufficient. Verify CI, security and
+  stable updater discovery as part of release completion. This does not
+  authorize replacing the user's running installation during publication.
 
 - Before finishing every release or updater/menu change, verify the actual
   installed menu updater entrypoint, its resolved source and the latest stable
@@ -292,10 +329,21 @@ Rules:
   the user's ordinary menu launch or an already running terminal process.
 
 - Entered text must retain ordinary styling in every application and system.
-  Only the unaccepted suggestion may be muted gray or translucent. Whole-word
+  The unaccepted suggestion uses opaque black text on white, per the latest user preference. Whole-word
   selection, reverse video or underline is a presentation FAIL, even when
   correction, Tab and Double Shift pass.
 - Keep visual acceptance separate from functional counts. Inspect the real
   typed-prefix and hint rendering; emitted IBus attributes are source evidence
   only. The owning document is
   `docs/architecture/ime-hint-presentation-2026-10-19.md`.
+
+## Regular upstream pull-request review
+
+- During active Lay work, inspect https://github.com/radislabus-star/lay-public/pulls
+  at task start, before each push/release and at handoff. Recheck after a
+  substantive milestone in a long session. Record the actual check time and
+  unresolved PRs in the current handoff; continue the active bug fix.
+- Use current GitHub API/CLI results for state; a cached page is not a fresh
+  check. Report proposals separately from accepted or merged changes.
+- This rule authorizes read-only triage, not automatic merging, closing,
+  dependency upgrades or messages to contributors.

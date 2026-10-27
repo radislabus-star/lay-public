@@ -41,6 +41,7 @@ impl std::fmt::Display for ReadError {
 #[derive(Clone, Debug)]
 struct RawWindow {
     uuid: String,
+    pid: u32,
     app: String,
     class: String,
     title: String,
@@ -153,10 +154,15 @@ struct Ingress(Mailbox);
 
 #[zbus::interface(name = "io.github.radislabus_star.LayDaemon.KWinFocus")]
 impl Ingress {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "flat D-Bus signature must match the installed KWin sender"
+    )]
     fn observe(
         &self,
         request: String,
         uuid: String,
+        pid: i32,
         app: String,
         class: String,
         title: String,
@@ -165,11 +171,17 @@ impl Ingress {
         let Some(sender) = header.sender() else {
             return false;
         };
+        // KWin callDBus serializes its JavaScript Number PID as D-Bus int32.
+        // Check the wire value before storing the canonical unsigned identity.
+        let Ok(pid) = u32::try_from(pid) else {
+            return false;
+        };
         self.0.deliver(
             sender.as_str(),
             &request,
             RawWindow {
                 uuid,
+                pid,
                 app,
                 class,
                 title,
@@ -194,6 +206,14 @@ struct Client {
 }
 
 pub(super) fn read() -> Result<Observation, ReadError> {
+    read_with_deadline(Instant::now() + READ_BUDGET, true)
+}
+
+/// Canonical provider with the caller's I/O deadline and cleanup policy.
+pub(super) fn read_with_deadline(
+    deadline: Instant,
+    extra_cleanup_budget: bool,
+) -> Result<Observation, ReadError> {
     let mut client = match CLIENT
         .get_or_init(|| Mutex::new(Client::default()))
         .try_lock()
@@ -204,7 +224,9 @@ pub(super) fn read() -> Result<Observation, ReadError> {
             return Err(ReadError::Unavailable(error.to_string()));
         }
     };
-    client.read().map_err(ReadError::Unavailable)
+    client
+        .read(deadline, extra_cleanup_budget)
+        .map_err(ReadError::Unavailable)
 }
 
 #[cfg(test)]
@@ -217,14 +239,22 @@ pub(super) fn with_occupied_provider_for_test(f: impl FnOnce()) {
 }
 
 impl Client {
-    fn read(&mut self) -> Result<Observation, String> {
-        let deadline = Instant::now() + READ_BUDGET;
+    fn read(
+        &mut self,
+        deadline: Instant,
+        extra_cleanup_budget: bool,
+    ) -> Result<Observation, String> {
         let result = self.read_until(deadline);
         self.mailbox.clear();
         if result.is_err() {
             // Do not load another script until the one cleanup obligation is discharged.
             if let Some(conn) = self.connection.clone() {
-                let _ = self.cleanup_on(&conn, Instant::now() + CLEANUP_BUDGET);
+                let cleanup_deadline = if extra_cleanup_budget {
+                    Instant::now() + CLEANUP_BUDGET
+                } else {
+                    deadline
+                };
+                let _ = self.cleanup_on(&conn, cleanup_deadline);
             }
             // A fresh connection/lifetime is required after every failed observation.
             self.connection = None;
@@ -401,7 +431,7 @@ fn serial() -> Result<u64, String> {
 fn observation(bus: &str, owner: &str, lifetime: u64, window: RawWindow) -> Observation {
     Observation {
         identity: format!("kde-window:{bus}:{owner}:{lifetime}:{}", window.uuid),
-        info: serde_json::json!({ "appId": window.app, "wmClass": window.class, "title": window.title }).to_string(),
+        info: serde_json::json!({ "appId": window.app, "wmClass": window.class, "title": window.title, "pid": window.pid }).to_string(),
     }
 }
 

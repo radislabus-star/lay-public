@@ -132,6 +132,7 @@ pub(crate) struct L2CorrectionPeakCandidate {
 }
 
 impl L2ImeWordCandidate {
+    #[cfg(test)]
     pub(crate) fn common_target_evidence(
         &self,
     ) -> crate::typing_transition::target_evidence::TargetEvidenceSetV1 {
@@ -282,6 +283,7 @@ pub fn run_l2_with_options(
     run_l2_refined_with_feedback(original, l1, options, &L3Feedback::default())
 }
 
+#[cfg(test)]
 pub(crate) fn hot_layout_candidate(original: &str) -> Option<WordCandidate> {
     hot_layout_candidate_with_noisy_projection(original, true)
 }
@@ -293,6 +295,7 @@ pub(crate) fn l2_settle_english_surface(surface: &str) -> Option<String> {
     layout_adapter::settle_english_word_center(surface)
 }
 
+#[cfg(test)]
 pub(crate) fn hot_layout_candidate_with_noisy_projection(
     original: &str,
     allow_noisy_projection: bool,

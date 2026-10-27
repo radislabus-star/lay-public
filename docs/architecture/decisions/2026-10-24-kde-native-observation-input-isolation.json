@@ -1,0 +1,82 @@
+{
+  "status": "NATIVE_FULL_REJECTED_GUARD_DIAGNOSTIC_INSTALLED",
+  "guard_diagnostic": {
+    "pid": 2911086,
+    "sha256": "d9ed79c6a37a082b94f751f02c2a35c2df3400bbc962e65e2a84098c548aff77",
+    "installed_at": "2026-10-24T01:53:17.966320+00:00",
+    "source": "run-0uAfsx/localrun-uo6qy460;49native+1desktop PASS,626P/15oldF,sameTD121 error",
+    "effect": "Metadata only;same short-circuit evaluation order,query count and decision.",
+    "native_selection": "44 diagnostic rows:Search/Rich across3modes,unchanged r18 case bodies/cadence;not full220",
+    "actor_sha256": "d28155fa2d3b7a9fc165433b5333cf74fddb14a0884c50dbb20bfa8ca07c5dc6",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-transient-gate-diagnostic-selected-20261024",
+    "native_status": "RUNNING"
+  },
+  "native_full": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-input-isolation-full-20261024/result.json",
+    "counts": {"PASS": 153, "FAIL": 25, "BLOCKED": 42, "NOT_TESTED": 0},
+    "elapsed_seconds": 448.674,
+    "versus_6e45": {"FAIL_to_PASS": 13, "PASS_to_FAIL": 16, "BLOCKED_to_PASS": 1, "PASS_to_BLOCKED": 2},
+    "verdict": "Rejected. All14 remaining manual failures still show a5-character model for6-character document. The flat source helper did not reproduce the actual refusing key-callback path. Trace the exact failed retention gate before changing authority."
+  },
+  "installed_runtime": {
+    "pid": 2749711,
+    "sha256": "ad5e9debdef716518e513f6d33a463f9c071c3070e45a5a3a7591d5ca48e463a",
+    "time": "2026-10-24T01:10:14.050514+00:00",
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-input-isolation-deployment-20261024/result.json",
+    "protected_processes_unchanged": 20,
+    "daemon_and_ibus_restarted": false
+  },
+  "native_short": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-input-isolation-smoke-20261024/result.json",
+    "counts": {"PASS": 14, "FAIL": 4, "BLOCKED": 2, "NOT_TESTED": 0},
+    "elapsed_seconds": 46.595,
+    "causal_proof": "WITHDRAWN as same-callback proof. Two successful rows contain adjacent UnknownObject/managed CommitText records, but full native failures still lose letters. These observations do not certify the actual failed key entrypoint.",
+    "limits": "KWin availability is not repaired. Text moved-boundary FAIL->PASS and text Tab PASS->FAIL versus prior short20. No overall acceptance; unchanged frozen full220 running."
+  },
+  "green_source": {
+    "remote": "/home/e/projects/lay-development-runner/run-aEBiNt/tests",
+    "local": "/home/ubu/.cache/lay/development/run-1k5v07l1/RESULT.json",
+    "counts": "626 PASS / 15 unchanged baseline FAIL; same TD121 coverage error",
+    "native_document_controls": "49 PASS, including the two RED failures",
+    "desktop_facade_control": "unavailable_observation_keeps_the_option_contract PASS",
+    "scope_check": "800 Rust files compared with installed42ab request; only kde/desktop.rs, kde/native_document.rs and kde/native_document/tests.rs differ"
+  },
+  "red_source": {
+    "remote": "/home/e/projects/lay-development-runner/run-J6gkKn/tests",
+    "local": "/home/ubu/.cache/lay/development/run-1b6lydbo/RESULT.json",
+    "counts": "623 PASS / 17 FAIL; two expected new failures, same pre-existing coverage error",
+    "first_assertions": ["native_document_transient_read_clears_edit_proof_and_actual_read_recovers", "native_document_unobserved_desktop_keeps_literal_keys_without_edit_permission"]
+  },
+  "owner": "Existing canonical IBus admission and KDE native-document observation adapter",
+  "affected_invariants": ["C03", "C06", "C07", "C08", "C10"],
+  "baseline_runtime_sha256": "42aba9cdf6c582eb568824c4f23083e1c6652b9905cd20ae39f4fdfd8eaf0916",
+  "first_failed_transition": "A canonically admitted ordinary key reaches KDE native-document refresh. An unavailable KWin script object is flattened to native_no_desktop; native_observation_failed revokes the tracked word and the key passes to Chrome without the managed receipt. Chrome contains the full word but later manual correction correctly refuses its incomplete model. One full row proves the order; diagnostic short20 identifies UnknownObject /1 three times.",
+  "measured_receipts": [
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-space-word-proof-full-20261024/chrome/row-2-native-trace.jsonl",
+    "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-focus-diagnostic-smoke-20261024/diagnostic-summary.json"
+  ],
+  "platform": {
+    "kwin": "5.24.7-0ubuntu0.2",
+    "qt_dbus": "5.15.3+dfsg-2ubuntu0.2",
+    "upstream_source": "https://github.com/KDE/kwin/blob/v5.24.7/src/scripting/scripting.cpp",
+    "upstream_facts": "loadScript uses scripts.size() for the object ID; unloadScript uses deleteLater().",
+    "hypothesis_only": "Overlapping short-lived scripts may cause an object-ID collision. Actual overlap has not been independently captured; Busy was not observed in the short20 diagnostic."
+  },
+  "decision": "Distinguish absence of a KWin observation from a successful contradictory window/field observation. In KDE only, reuse the existing transient-document policy for native_desktop_unobserved: require the same live canonical token, word scope and notification owner; discard the document snapshot and all resulting edit/display proof; retain only the ordinary admitted key path and transport subscription. A new complete authenticated document must restore edit evidence. Common dispatch, correction, verifier and text executors remain unchanged.",
+  "boundary": "No fresh observation grants no native edit route. Preserve UnknownStart and key provenance. Changed focus, lease, layout, active engine, admission, scope, privacy, atomic operation, handoff or desktop rejects retention. Successfully observed wrong window/application/field and selection still revoke. The old Option-returning KDE facade keeps its result contract for common callers.",
+  "literal_delivery_effect": "The existing commit_managed_passthrough_char path can now finish a canonically admitted ordinary key after an unavailable KWin observation. Previously that failure delegated the key without recording its managed receipt. No new text executor or synthetic event is added; unknown native evidence still cannot authorize correction.",
+  "alternatives": [
+    {"option": "Isolate admitted literal input from unavailable optional native observations", "score": 9, "selected": true},
+    {"option": "Introduce cross-process KWin script lifecycle coordination", "score": 5, "selected": false, "reason": "Separate larger lifecycle project; adds coordination and does not itself establish literal-input resilience."},
+    {"option": "Increase deadlines or retry missing script objects", "score": 1, "selected": false, "reason": "Does not repair the missing object or authority separation; no new retry or deadline."}
+  ],
+  "required_proof": [
+    "RED existing transient-read test plus a real managed CommitText continuation with no edit/delete/forward authority until an exact new snapshot",
+    "Negative current-owner guards, unchanged hard identity/selection failures, no GNOME effect",
+    "Focused source denominator and unchanged pre-existing failures/coverage gap reported separately",
+    "Identified installed bytes; same frozen native actor and cadence, short diagnostic first, full220 if justified by the functional change"
+  ],
+  "runtime_authority_changed": false,
+  "native_acceptance": "FAIL; native full rejected, exact retention gate diagnostic pending",
+  "publication": "Not authorized; private KDE 1.0.94.1 only"
+}

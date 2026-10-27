@@ -1,6 +1,9 @@
 mod authority;
+mod desktop;
 mod execution;
 mod native_cursor_edit;
+#[path = "../kde/native_document.rs"]
+mod native_document;
 mod observation;
 #[cfg(test)]
 mod tests;
@@ -11,6 +14,7 @@ pub(crate) use authority::{
     TextTargetCapabilityFacts, TextTargetDecision, TextTargetDecisionReason,
 };
 pub(crate) use execution::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
+pub(crate) use native_document::NativeDocumentBinding;
 pub(crate) use observation::{
     ClientContextState, ManagedCommitSnapshotFloor, ManagedWordStartWitness,
     NativeReplayProgressReceipt, PendingContextResetRereceipt, SurroundingTextSnapshot,
@@ -40,6 +44,7 @@ pub(crate) enum TextTargetAuthority {
     DelegateExactImeTail,
     LocalTerminalErase,
     LocalSurroundingDeleteCommit,
+    LocalNativeRangeCommit,
     DelegateDaemonBuffer,
     ActiveCompositionOwned,
     AtomicOwned,
@@ -48,6 +53,7 @@ pub(crate) enum TextTargetAuthority {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub(crate) enum OutcomeProof {
+    ObservedSourceBoundary,
     ExistingPostconditionConfirmed,
     ExistingPostconditionPending,
     ExistingPostconditionMismatch,

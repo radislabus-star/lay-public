@@ -220,6 +220,11 @@ pub(crate) struct TestEngineOutput {
     pub(crate) pause_before_commit: bool,
     pub(crate) pause_before_preedit: bool,
     pub(crate) pause_after_input_mode: bool,
+    pub(crate) forwarded_keys: Vec<(u32, u32, u32)>,
+    pub(crate) fail_require_surrounding: bool,
+    pub(crate) pause_before_require_surrounding: bool,
+    pub(crate) fail_forward_at: Option<usize>,
+    pub(crate) pause_before_forward_at: Option<usize>,
 }
 
 impl<'a, 'e> EngineOutput<'a, 'e> {
@@ -358,8 +363,18 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             }
             #[cfg(test)]
             Self::Test(output) => {
+                if output.pause_before_require_surrounding {
+                    output.pause_before_require_surrounding = false;
+                    futures_lite::future::yield_now().await;
+                }
                 output.effects.push("require-surrounding");
-                Ok(())
+                if output.fail_require_surrounding {
+                    Err(fdo::Error::Failed(
+                        "injected surrounding request failure".into(),
+                    ))
+                } else {
+                    Ok(())
+                }
             }
         }
     }
@@ -503,8 +518,18 @@ impl<'a, 'e> EngineOutput<'a, 'e> {
             }
             #[cfg(test)]
             Self::Test(output) => {
+                let index = output.forwarded_keys.len() + 1;
+                if output.pause_before_forward_at == Some(index) {
+                    output.pause_before_forward_at = None;
+                    futures_lite::future::yield_now().await;
+                }
                 output.effects.push("forward-key");
-                Ok(())
+                output.forwarded_keys.push((keyval, keycode, state));
+                if output.fail_forward_at == Some(index) {
+                    Err(fdo::Error::Failed("injected key forwarding failure".into()))
+                } else {
+                    Ok(())
+                }
             }
         }
     }

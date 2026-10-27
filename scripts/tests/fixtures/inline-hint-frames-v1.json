@@ -1,0 +1,18 @@
+[
+  {"owner": ":1.7"},
+  {"frame": {"version":1,"stream":":1.7","revision":"3","owner":"/a","text":"етка","rect":[-12,19,0,20],"monospace":true}, "accepted":true,"visible":true},
+  {"frame": {"version":1,"stream":":1.7","revision":"3","owner":"/a","text":"етка","rect":[-12,19,0,20],"monospace":true}, "accepted":false},
+  {"frame": {"version":1,"stream":":1.7","revision":"2","owner":"/a","text":"","rect":null,"monospace":true}, "accepted":false},
+  {"frame": {"version":1,"stream":":1.7","revision":"4","owner":"/a","text":"","rect":null,"monospace":true}, "accepted":true,"visible":false},
+  {"frame": {"version":1,"stream":":1.8","revision":"9","owner":"/b","text":"чужое","rect":[0,0,1,20],"monospace":false}, "accepted":false},
+  {"frame": {"version":1,"stream":":1.7","revision":"6","owner":"/a","text":"hint","rect":[0,0,1,0],"monospace":false}, "accepted":false},
+  {"frame": {"version":1,"stream":":1.7","revision":"6","owner":"/a","text":"hint","rect":[0,0,1,20],"monospace":"yes"}, "accepted":false},
+  {"frame": {"version":1,"stream":":1.7","revision":"6","owner":"/a","text":"<b>","rect":[0,0,1,20],"monospace":false}, "accepted":true,"visible":true},
+  {"frame": {"version":1,"stream":":1.7","revision":"7","owner":"/a","text":"hint","rect":null,"monospace":false}, "accepted":true,"visible":false},
+  {"frame": {"version":1,"stream":":1.7","revision":"8","owner":"/a","text":"bad\ntext","rect":[0,0,1,20],"monospace":false}, "accepted":false},
+  {"frame": {"version":1,"stream":":1.7","revision":"9007199254740993","owner":"/a","text":"ёж🙃","rect":[0,0,1,20],"monospace":false}, "accepted":true,"visible":true},
+  {"frame": {"version":1,"stream":":1.7","revision":"9007199254740992","owner":"/a","text":"old","rect":[0,0,1,20],"monospace":false}, "accepted":false},
+  {"owner": ":1.8"},
+  {"frame": {"version":1,"stream":":1.7","revision":"9007199254740994","owner":"/a","text":"old","rect":[0,0,1,20],"monospace":false}, "accepted":false},
+  {"frame": {"version":1,"stream":":1.8","revision":"0","owner":"","text":"","rect":null,"monospace":false}, "accepted":true,"visible":false}
+]

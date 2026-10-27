@@ -4,12 +4,13 @@ use crate::protocol::{KEY_BACKSPACE, KEY_SPACE, KEY_TAB};
 const NATIVE_TRANSFER_BUDGET: Duration = Duration::from_secs(1);
 const OTHER_CONTEXT_PATH: &str = "/org/freedesktop/IBus/InputContext_2";
 
-async fn bounded<T>(work: impl std::future::Future<Output = T>) -> T {
-    future::race(work, async {
+fn bounded<T>(work: impl std::future::Future<Output = T>) -> impl std::future::Future<Output = T> {
+    // Match the adjacent native-focus harness: keep nested P2P/key futures
+    // off the test thread's default stack without changing the deadline.
+    future::race(Box::pin(work), async {
         async_io::Timer::after(NATIVE_TRANSFER_BUDGET).await;
         panic!("bounded native-transfer P2P choreography timed out")
     })
-    .await
 }
 
 async fn establish_known_source(
@@ -1091,30 +1092,32 @@ async fn pending_cross_profile_word_loss_case(
 #[test]
 fn td121_pending_cross_profile_reset_or_content_type_retains_source_free_unknown_request() {
     zbus::block_on(bounded(async {
-        pending_cross_profile_word_loss_case(
-            PendingCrossProfileWordLoss::Reset,
-            PendingCrossProfileEvidence::Matching,
-            7_800,
-        )
-        .await;
-        pending_cross_profile_word_loss_case(
-            PendingCrossProfileWordLoss::ContentType,
-            PendingCrossProfileEvidence::Matching,
-            7_900,
-        )
-        .await;
-        pending_cross_profile_word_loss_case(
-            PendingCrossProfileWordLoss::Reset,
-            PendingCrossProfileEvidence::MismatchedLay,
-            8_000,
-        )
-        .await;
-        pending_cross_profile_word_loss_case(
-            PendingCrossProfileWordLoss::ContentType,
-            PendingCrossProfileEvidence::Foreign,
-            8_100,
-        )
-        .await;
+        // Reuse one async child state for the same four ordered cases. Four
+        // distinct await sites retain four large fixture states in debug builds.
+        for (loss, evidence, serial) in [
+            (
+                PendingCrossProfileWordLoss::Reset,
+                PendingCrossProfileEvidence::Matching,
+                7_800,
+            ),
+            (
+                PendingCrossProfileWordLoss::ContentType,
+                PendingCrossProfileEvidence::Matching,
+                7_900,
+            ),
+            (
+                PendingCrossProfileWordLoss::Reset,
+                PendingCrossProfileEvidence::MismatchedLay,
+                8_000,
+            ),
+            (
+                PendingCrossProfileWordLoss::ContentType,
+                PendingCrossProfileEvidence::Foreign,
+                8_100,
+            ),
+        ] {
+            pending_cross_profile_word_loss_case(loss, evidence, serial).await;
+        }
     }));
 }
 

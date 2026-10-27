@@ -294,6 +294,7 @@ impl GeometryTraversalStateV1 {
         Ok(())
     }
 
+    #[cfg(test)]
     pub(super) fn reset_generated(&mut self) {
         self.character.reset_generated();
         self.keyboard.reset_generated();
@@ -999,6 +1000,7 @@ impl AtomAccumulatorV1 {
         self.keyboard.reset_generated();
     }
 
+    #[cfg(test)]
     fn reset_generated(&mut self) {
         self.character.reset_generated();
         self.keyboard.reset_generated();

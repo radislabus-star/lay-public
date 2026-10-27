@@ -10,6 +10,7 @@ mod encoder;
 mod format;
 #[cfg(any(test, feature = "research-tools"))]
 mod incremental;
+#[cfg(any(test, feature = "research-tools"))]
 mod merge;
 mod model;
 #[cfg(any(test, feature = "research-tools"))]
@@ -51,4 +52,5 @@ pub(crate) const MAX_PAIR_PROFILES: usize = 4096;
 pub(crate) const MAX_CENTERS_PER_BANK: usize = 4;
 pub(crate) const MAX_HARD_CENTERS_PER_BANK: usize = 2;
 pub(crate) const MAX_AMBIGUITY_CENTERS_PER_BANK: usize = 4;
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) const SPLIT_COHERENCE: f32 = 0.72;

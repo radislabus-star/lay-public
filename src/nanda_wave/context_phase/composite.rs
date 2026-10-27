@@ -1,9 +1,15 @@
 use std::fs;
-use std::io::{self, Write};
+use std::io;
+#[cfg(any(test, feature = "research-tools"))]
+use std::io::Write;
+#[cfg(any(test, feature = "research-tools"))]
 use std::os::fd::AsRawFd;
+#[cfg(any(test, feature = "research-tools"))]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
+#[cfg(any(test, feature = "research-tools"))]
+use std::time::SystemTime;
+use std::time::UNIX_EPOCH;
 
 use serde::{Deserialize, Serialize};
 
@@ -133,6 +139,7 @@ impl L3CompositeMemory {
         &self.package
     }
 
+    #[cfg(any(test, feature = "research-tools"))]
     pub(crate) fn compose_delta_path(&self, path: &Path) -> io::Result<ContextPhasePackage> {
         let delta = read_package(path)?;
         if delta.signature_schema != self.package.signature_schema {
@@ -339,6 +346,7 @@ pub(crate) fn read_manifest(path: &Path) -> io::Result<L3CompositeManifest> {
     Ok(manifest)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn initialize_manifest(manifest_path: &Path, base_path: &Path) -> io::Result<()> {
     let root = manifest_path.parent().unwrap_or_else(|| Path::new("."));
     let resolved_base = absolute_path(base_path)?;
@@ -351,6 +359,7 @@ pub(crate) fn initialize_manifest(manifest_path: &Path, base_path: &Path) -> io:
     write_manifest(manifest_path, &manifest)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn admit_delta(
     manifest_path: &Path,
     delta_path: &Path,
@@ -360,6 +369,7 @@ pub(crate) fn admit_delta(
     admit_delta_with_full_proof(manifest_path, delta_path, proof_receipt, None, scope)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn admit_delta_with_full_proof(
     manifest_path: &Path,
     delta_path: &Path,
@@ -417,6 +427,7 @@ pub(crate) fn admit_delta_with_full_proof(
     }))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn compact_manifest(
     manifest_path: &Path,
     output_base: &Path,
@@ -448,6 +459,7 @@ pub(crate) fn compact_manifest(
     }))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn snapshot_manifest(
     manifest_path: &Path,
     output_base: &Path,
@@ -466,6 +478,7 @@ pub(crate) fn snapshot_manifest(
     }))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn snapshot_manifest_with_delta(
     manifest_path: &Path,
     delta_path: &Path,
@@ -487,11 +500,13 @@ pub(crate) fn snapshot_manifest_with_delta(
     }))
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_manifest(path: &Path, manifest: &L3CompositeManifest) -> io::Result<()> {
     let _lock = acquire_manifest_write_lock(path)?;
     write_manifest_unlocked(path, manifest)
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn write_manifest_unlocked(path: &Path, manifest: &L3CompositeManifest) -> io::Result<()> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
@@ -528,10 +543,12 @@ fn write_manifest_unlocked(path: &Path, manifest: &L3CompositeManifest) -> io::R
     Ok(())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 struct ManifestWriteLock {
     file: fs::File,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 impl Drop for ManifestWriteLock {
     fn drop(&mut self) {
         unsafe {
@@ -540,6 +557,7 @@ impl Drop for ManifestWriteLock {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn acquire_manifest_write_lock(path: &Path) -> io::Result<ManifestWriteLock> {
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
@@ -576,12 +594,14 @@ fn resolve(root: &Path, path: &Path) -> PathBuf {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn path_for_manifest(root: &Path, path: &Path) -> PathBuf {
     path.strip_prefix(root)
         .map(Path::to_path_buf)
         .unwrap_or_else(|_| path.to_path_buf())
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn absolute_path(path: &Path) -> io::Result<PathBuf> {
     if path.is_absolute() {
         Ok(path.to_path_buf())
@@ -590,6 +610,7 @@ fn absolute_path(path: &Path) -> io::Result<PathBuf> {
     }
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 fn unix_time_ms() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)

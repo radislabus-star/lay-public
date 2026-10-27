@@ -1,0 +1,287 @@
+{
+  "schema": "lay.debt-release-worklog.v1",
+  "version": "1.0.97",
+  "state": "RELEASED_SCOPED_FIX_REMAINING_NATIVE_DEBT_OPEN",
+  "public_stable": "1.0.97",
+  "native_installed": "final97 ten hash-verified artifacts; system IBus1.5.26 restored after private comparison; IME3168368 daemon3168498",
+  "baseline_native": {
+    "firefox": {
+      "PASS": 81,
+      "FAIL": 103,
+      "BLOCKED": 36,
+      "total": 220
+    },
+    "chrome": {
+      "PASS": 168,
+      "FAIL": 10,
+      "BLOCKED": 42,
+      "total": 220
+    }
+  },
+  "source_experiments": [
+    {
+      "stage": "red-closed-erasure-v2",
+      "verdict": "FAIL",
+      "tests": {
+        "executed": 1086,
+        "failed": 1,
+        "passed": 1085,
+        "selected": 1086
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/red-closed-erasure-v2/RESULT.json"
+    },
+    {
+      "stage": "green-closed-erasure-negative",
+      "verdict": "PASS",
+      "tests": {
+        "executed": 1086,
+        "failed": 0,
+        "passed": 1086,
+        "selected": 1086
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/green-closed-erasure-negative/RESULT.json"
+    },
+    {
+      "stage": "red-no-append-reset",
+      "verdict": "FAIL",
+      "tests": {
+        "executed": 1086,
+        "failed": 1,
+        "passed": 1085,
+        "selected": 1086
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/red-no-append-reset/RESULT.json"
+    },
+    {
+      "stage": "green-no-append-reset",
+      "verdict": "FAIL",
+      "tests": {
+        "executed": 1086,
+        "failed": 1,
+        "passed": 1085,
+        "selected": 1086
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/green-no-append-reset/RESULT.json"
+    },
+    {
+      "stage": "exact-no-append-reset-v2",
+      "verdict": "FAIL",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/exact-no-append-reset-v2/RESULT.json"
+    },
+    {
+      "stage": "exact-closed-word-continuation",
+      "verdict": "FAIL",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/exact-closed-word-continuation/RESULT.json"
+    },
+    {
+      "stage": "exact-continuation-observation",
+      "verdict": "FAIL",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/exact-continuation-observation/RESULT.json"
+    },
+    {
+      "stage": "exact-owned-commit-source",
+      "verdict": "FAIL",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/exact-owned-commit-source/RESULT.json"
+    },
+    {
+      "stage": "exact-erasure-transition-facts",
+      "verdict": "FAIL",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/exact-erasure-transition-facts/RESULT.json"
+    },
+    {
+      "stage": "exact-matched-erasure-reset",
+      "verdict": "PASS",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/exact-matched-erasure-reset/RESULT.json"
+    },
+    {
+      "stage": "exact-rich-boundary-red",
+      "verdict": "PASS",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "combinations": 96,
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/exact-rich-boundary-red/RESULT.json",
+      "interpretation": "The NBSP-only hypothesis is not reproduced. No normalization repair justified."
+    },
+    {
+      "stage": "red-late-separator-presentation",
+      "verdict": "FAIL",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/red-late-separator-presentation/RESULT.json",
+      "interpretation": "Late separator presentation missing"
+    },
+    {
+      "stage": "green-late-separator-presentation",
+      "verdict": "FAIL",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 0,
+        "failed": 1
+      },
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/green-late-separator-presentation/RESULT.json",
+      "interpretation": "New wrong-prefix negative finds generic suffix continuation bypass; preserve FAIL"
+    },
+    {
+      "stage": "green-whole-erasure-presentation",
+      "verdict": "PASS",
+      "tests": {
+        "selected": 1,
+        "executed": 1,
+        "passed": 1,
+        "failed": 0
+      },
+      "combinations": 320,
+      "receipt": "/home/ubu/.cache/lay/development/release-1.0.97-20261025/green-whole-erasure-presentation/RESULT.json"
+    }
+  ],
+  "current_design": "KDE existing managed-commit/Reset native-erasure flow, exactly one observed owned separator presentation, whole actual erasure image required; contradictory seed discarded before suffix fallback. Exact320 GREEN; full release gates active; final bytes not installed.",
+  "rejected": "ObservedWord persistent variant; synthetic append Reset with equal predecessor/current tokens. Neither deployed.",
+  "local_gnome": "Installed CLI and extension metadata verified1.0.96, no manual install/restart.",
+  "candidate_b": {
+    "source_run": "run-rOn6Pm",
+    "source_tests": {
+      "passed": 1086,
+      "failed": 0
+    },
+    "build_seconds": 73.776,
+    "source_closure_sha256": "a0cde87728327be0418597e9a125b1b5203f9490f5a9f0cbaee373e434096708",
+    "remote_root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+    "short_native": {
+      "passed": [
+        "text:tab:functional",
+        "text:roundtrip:space",
+        "text:consecutive-two:space"
+      ],
+      "failed": [
+        "text:rapid-five:space",
+        "text:rapid-five:active"
+      ]
+    },
+    "diagnostics": "One verbose burst5 recognized but late; one ptrace burst PASS. Timing diagnostics, not acceptance. No production daemon patch.",
+    "full_native": {
+      "firefox": {
+        "PASS": 106,
+        "FAIL": 76,
+        "BLOCKED": 38,
+        "NOT_TESTED": 0,
+        "total": 220
+      },
+      "receipt": "release97-firefox-full-b/firefox/result.json",
+      "same_case_identities": true,
+      "transitions_from_96": {
+        "PASS_to_PASS": 71,
+        "FAIL_to_FAIL": 66,
+        "FAIL_to_PASS": 35,
+        "BLOCKED_to_BLOCKED": 36,
+        "PASS_to_FAIL": 10,
+        "FAIL_to_BLOCKED": 2
+      },
+      "accepted": false
+    }
+  },
+  "candidate_c": {
+    "source_tests": {
+      "passed": 1086,
+      "failed": 0,
+      "run": "run-tjMfFU"
+    },
+    "build_seconds": 73.93197089899331,
+    "source_sha256": "0d5e450d117500baa55bc0aa210cd650d3d9a29e9387c79f7f23f0e85592fbec",
+    "native_rich_diagnostic": "FAIL; exact current source floor/reset ownership, literal tail differs at prior separator after probe append; range hypothesis rejects",
+    "nodelay_diagnostic": {
+      "actor_sha_unchanged": true,
+      "TCP_NODELAY": 1,
+      "cadence_unchanged": true,
+      "active": "PASS5 targets;8-14ms; one diagnostic only",
+      "closed": "FAIL5 targets;145-270ms, original deadlines missed"
+    },
+    "scope": "diagnostic only, no changed actor assertions or native acceptance claim"
+  },
+  "release_gates": {
+    "status": "PASS",
+    "correctness_package": 3512,
+    "performance": 11,
+    "python": 417,
+    "python_skipped": 10,
+    "msrv": "Rust1.88 both configurations",
+    "all_ten_optimized_bins": true,
+    "security": "cargo-audit0.22.2 no vulnerabilities",
+    "receipt": "release97-full-gates/result.json"
+  },
+  "final97": {
+    "source_closure_sha256": "b8582cfeb51c7928c71c9f997729b8c04a25064bd56efcf82eddd27e27340e63",
+    "rich_space_witness": "PASS",
+    "firefox_original_ibus": {
+      "PASS": 110,
+      "FAIL": 72,
+      "BLOCKED": 38,
+      "NOT_TESTED": 0,
+      "total": 220
+    },
+    "protocol_comparison": "modern117P66F37B;16F->P/10P->F; fresh old1.5.26 controls3PASS; dependency promotion rejected",
+    "authority_owners_changed": false,
+    "chrome_original_ibus": {
+      "PASS": 170,
+      "FAIL": 8,
+      "BLOCKED": 42,
+      "NOT_TESTED": 0,
+      "total": 220
+    },
+    "ci": "CI40243726181 and Security40243726160 SUCCESS on3236fe6c"
+  },
+  "publication": {
+    "status": "PUBLISHED_STABLE",
+    "tag": "v1.0.97",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.97",
+    "published_at": "2026-10-25T23:33:05Z",
+    "tag_object": "7759fcaca97f1029159fa156310dca984e3577f1",
+    "tag_commit": "f53bf27ab59fe6193613a324aafe296f8e791fe4",
+    "functional_commit": "3236fe6c3455e4b7ae9ab3d1c3aabc311faa3a34"
+  },
+  "next_stage": "1.0.98 Chrome Space correction (8 current native FAIL); Firefox shared long-sequence/rapid debt retained for stage3"
+}

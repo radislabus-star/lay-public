@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-27-authenticated-word-revocation-retirement",
+  "date": "2026-10-27",
+  "status": "SOURCE_VERIFIED_NATIVE_COMPARISON_PENDING",
+  "owning_document": "docs/architecture/authenticated-revocation-retirement-2026-10-26.md",
+  "invariants": [
+    "C03",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "decision": "In only the two authenticated revocation_matches branches, retire the already revoked old word locally without erasing later received focus witnesses. Preserve the inert focused context. Strip the old local composition and restore factory mode with the existing setter when that strip occurred. Retain normal FocusOut/Disable cleanup and all generic malformed/unobserved revocation refusals. Register one additional focused-context regression while retaining every existing test identity and lane.",
+  "reason": "The unchanged 1.0.101 handler loses an already received successor FocusIn in two controlled P2P schedules. Candidate A skipped factory-mode cleanup; candidate B discarded the still-focused field. The explicit influence map establishes the shared scope and helper side effects. The user required this map, then authorized fix/test/release if accepted.",
+  "verification": "Exact released101 handler SHA matches the RED baseline. C full source closure e72574e997f6e4494ef3647e2b2b9f43826ac2b4bd72240c37c45ede57f5cbf2:3523 correctness/package,11 performance,all10 optimized artifacts,lints and both MSRV feature routes. Existing tests/lanes remain; B3522 becomesC3523 through one focused-context test. Source manifest/known-failure closure refreshed without semantic whitelist or weaker assertions. Fresh same-condition101/C native comparison is running.",
+  "not_tested": "No reliable manual application trigger for the controlled event ordering is established. Candidate C native browser/terminal and physical GNOME acceptance are pending; existing KDE failures are not attributed to this cause. Source success does not certify loaded bytes or real-client success.",
+  "runtime_authority_changed": false,
+  "runtime_behavior_changed": true,
+  "existing_authority": "ContextAdmissionReducer and authenticated ContextAdmissionAdapter -> WindowInteraction -> unchanged AuthorizedEdit/verifier/executor",
+  "rollback": "Keep exact prior artifact snapshots and restore only the owned private test runtime if candidate acceptance fails. Preserve all A/B/C evidence. Never reset models, learning, or local GNOME runtime.",
+  "recorded_at_utc": "2026-10-26T23:20:28.190583+00:00"
+}

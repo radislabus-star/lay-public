@@ -206,5 +206,5 @@ impl Io for Session {
 }
 
 #[cfg(test)]
-#[path = "kde/tests.rs"]
+#[path = "layout_sync/tests.rs"]
 mod tests;

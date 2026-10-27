@@ -36,6 +36,48 @@ DEFAULTS: dict[str, Any] = {
 }
 
 
+class InlineHintProjection:
+    """Versioned display material; no keys, document text or acceptance API."""
+
+    def __init__(self) -> None:
+        self.owner = ""
+        self.revision = -1
+
+    def reset(self, owner: str) -> None:
+        self.owner = owner
+        self.revision = -1
+
+    def apply(self, raw: str) -> tuple[bool, dict[str, Any] | None]:
+        if not isinstance(raw, str) or len(raw) > 16_384:
+            return False, None
+        try:
+            value = json.loads(raw)
+            revision = value.get("revision")
+            if (value.get("version") != 1 or value.get("stream") != self.owner
+                    or not self.owner or not isinstance(revision, str)
+                    or not revision.isascii() or not revision.isdecimal()
+                    or len(revision) > 20):
+                return False, None
+            number = int(revision)
+            if number <= self.revision:
+                return False, None
+            text, rect = value.get("text"), value.get("rect")
+            if (not isinstance(text, str) or len(text) > 512
+                    or any(ord(c) < 32 or 127 <= ord(c) <= 159 for c in text)):
+                return False, None
+            if rect is not None and (not isinstance(rect, list) or len(rect) != 4
+                    or any(type(n) is not int for n in rect)
+                    or abs(rect[0]) > 100_000 or abs(rect[1]) > 100_000
+                    or not 0 <= rect[2] <= 4096 or not 0 < rect[3] <= 512):
+                return False, None
+            if type(value.get("monospace")) is not bool:
+                return False, None
+        except (ValueError, TypeError, AttributeError):
+            return False, None
+        self.revision = number
+        return True, value if text and rect is not None else None
+
+
 def run_cmd(args: list[str]) -> subprocess.CompletedProcess[str]:
     return subprocess.run(args, text=True, capture_output=True, check=False)
 
@@ -87,12 +129,15 @@ def save_config(cfg: dict[str, Any]) -> None:
 
 
 def lay_version() -> str:
-    result = run_cmd([str(Path.home() / ".local" / "bin" / "lay"), "--version"])
-    return (result.stdout or result.stderr).strip() or "lay"
+    result = run_cmd([str(Path.home() / ".local" / "bin" / "lay-ibus-engine"), "--version"])
+    prefix = "lay-ibus-engine "
+    if result.returncode == 0 and result.stdout.startswith(prefix):
+        return "lay " + result.stdout.removeprefix(prefix).strip()
+    return "lay (IME недоступен)"
 
 
 def daemon_active() -> bool:
-    return run_cmd(["systemctl", "--user", "is-active", "--quiet", "lay-daemon.service"]).returncode == 0
+    return runtime_control("daemon-is-active")
 
 
 def runtime_control(action: str, value: str | None = None) -> bool:
@@ -224,23 +269,99 @@ def main() -> int:
         return 0
 
     try:
-        from PyQt6.QtCore import QTimer, Qt
-        from PyQt6.QtGui import QAction, QActionGroup, QColor, QCursor, QIcon, QPainter, QPixmap
-        from PyQt6.QtWidgets import QApplication, QMenu, QMessageBox, QSystemTrayIcon
+        from PyQt6.QtCore import QObject, QPoint, QTimer, Qt, pyqtSlot
+        from PyQt6.QtDBus import QDBusConnection, QDBusInterface, QDBusPendingCallWatcher, QDBusPendingReply, QDBusServiceWatcher
+        from PyQt6.QtGui import QAction, QActionGroup, QColor, QCursor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPixmap
+        from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSystemTrayIcon
     except ImportError:
         try:
-            from PyQt5.QtCore import QTimer, Qt
-            from PyQt5.QtGui import QColor, QCursor, QIcon, QPainter, QPixmap
-            from PyQt5.QtWidgets import QAction, QActionGroup, QApplication, QMenu, QMessageBox, QSystemTrayIcon
+            from PyQt5.QtCore import QObject, QPoint, QTimer, Qt, pyqtSlot
+            from PyQt5.QtDBus import QDBusConnection, QDBusInterface, QDBusPendingCallWatcher, QDBusPendingReply, QDBusServiceWatcher
+            from PyQt5.QtGui import QColor, QCursor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPixmap
+            from PyQt5.QtWidgets import QAction, QActionGroup, QApplication, QLabel, QMenu, QMessageBox, QSystemTrayIcon
         except ImportError as exc:
             print(f"lay-kde-tray: install PyQt6 or PyQt5: {exc}", file=sys.stderr)
             return 1
+
+    class InlineHintView(QObject):
+        SERVICE = "io.github.radislabus_star.LayIme"
+        PATH = "/io/github/radislabus_star/LayIme"
+
+        def __init__(self, app: Any) -> None:
+            super().__init__(app)
+            self.app = app
+            self.projection = InlineHintProjection()
+            window = getattr(Qt, "WindowType", Qt)
+            attribute = getattr(Qt, "WidgetAttribute", Qt)
+            self.label = QLabel(None, window.ToolTip | window.FramelessWindowHint
+                                | window.WindowStaysOnTopHint | window.WindowDoesNotAcceptFocus
+                                | window.WindowTransparentForInput)
+            for name in ("WA_ShowWithoutActivating", "WA_TransparentForMouseEvents"):
+                self.label.setAttribute(getattr(attribute, name), True)
+            self.label.setFocusPolicy(getattr(Qt, "FocusPolicy", Qt).NoFocus)
+            self.label.setTextFormat(getattr(Qt, "TextFormat", Qt).PlainText)
+            self.label.setStyleSheet("color: #000000; background: #ffffff; border: none; margin: 0; padding: 0;")
+            self.bus = QDBusConnection.sessionBus()
+            self.watcher = QDBusServiceWatcher(self.SERVICE, self.bus,
+                getattr(QDBusServiceWatcher, "WatchModeFlag", QDBusServiceWatcher).WatchForOwnerChange, self)
+            self.watcher.serviceOwnerChanged.connect(self._owner_changed)
+            self.bus.connect(self.SERVICE, self.PATH, self.SERVICE, "InlineHintV1", self.receive)
+            owner = self.bus.interface().serviceOwner(self.SERVICE)
+            self._owner_changed(self.SERVICE, "", owner.value() if owner.isValid() else "")
+            app.aboutToQuit.connect(self.label.close)
+
+        def _owner_changed(self, _name: str, _old: str, owner: str) -> None:
+            self.label.hide()
+            self.projection.reset(owner)
+            if not owner:
+                return
+            interface = QDBusInterface(owner, self.PATH, self.SERVICE, self.bus, self)
+            pending = QDBusPendingCallWatcher(interface.asyncCall("InlineHintSnapshotV1"), self)
+
+            def completed(call: Any) -> None:
+                reply = QDBusPendingReply(call)
+                if owner == self.projection.owner and not reply.isError():
+                    self.receive(reply.value())
+                call.deleteLater()
+                interface.deleteLater()
+
+            pending.finished.connect(completed)
+
+        @pyqtSlot(str)
+        def receive(self, raw: str) -> None:
+            accepted, frame = self.projection.apply(raw)
+            if not accepted:
+                return
+            if frame is None:
+                self.label.hide()
+                return
+            x, y, _width, height = frame["rect"]
+            screen = self.app.screenAt(QPoint(x, y))
+            if screen is None:
+                self.label.hide()
+                return
+            font = (QFontDatabase.systemFont(getattr(QFontDatabase, "SystemFont", QFontDatabase).FixedFont)
+                    if frame["monospace"] else QFont(self.app.font()))
+            # A tall Entry may report its full area as the cursor rectangle.
+            # QLabel centers the ordinary theme font within that area.
+            if height <= QFontMetrics(font).height() * 2:
+                font.setPixelSize(max(8, int(height * 0.78)))
+            self.label.setFont(font)
+            self.label.setText(frame["text"])
+            metrics = QFontMetrics(font)
+            available = screen.geometry().right() - x + 1
+            self.label.resize(max(1, min(available, metrics.horizontalAdvance(frame["text"]) + 2)), height)
+            self.label.move(x, y)
+            # This view owns only the unaccepted suffix. Keep its complete
+            # white rectangle opaque, including on noncomposited desktops.
+            self.label.show()
 
     class LayTray:
         def __init__(self) -> None:
             self.app = QApplication(sys.argv)
             self.app.setApplicationName("lay")
             self.app.setQuitOnLastWindowClosed(False)
+            self.hint_view = InlineHintView(self.app)
             # The updater restarts this tray after installation. Its terminal
             # must survive tray destruction, including with kitty and xterm.
             self.update_process: subprocess.Popen[bytes] | None = None
@@ -252,6 +373,7 @@ def main() -> int:
             self.timer.timeout.connect(self._refresh_status)
             self.timer.start(2000)
             self._build_menu()
+            self.tray.setContextMenu(self.menu)
             self.tray.show()
 
         @staticmethod

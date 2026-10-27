@@ -1,0 +1,46 @@
+{
+  "status": "GREEN_SOURCE_NATIVE_OMNIBOX_STILL_FAIL_TRACE_PENDING",
+  "owner": "KDE Chrome native_document observer; transport subscription only",
+  "affected_invariants": [
+    "C03",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "baseline_runtime_sha256": "656f908e136787d3cb6007d5933cb3b48d0c23248d1abe9ccfea66a429f56a3e",
+  "measured_failure": "Upper actual native omnibox has prefix4, latest engine refresh has observed suffix3/tail4; own suffix erka has rect:null. Independent passive AddMatch sees final TextChanged on the exact owned field. No extra Registry registration or activation flag. Candidate native receipt chrome-941-omnibox-events-candidate-20261024.",
+  "decision": "Reuse observer::current for initial notification subscription as well as subsequent notification handling. It binds KDE, privacy, atomic state, focus, runtime lease, layout, native field and active engine. A word edit receipt may expire on an ordinary CommitText without suppressing the actual-read notification. Every resulting refresh retains the complete existing actual-read/canonical admission/verifier guards. NativeDocumentBinding::is_current remains unchanged for edits.",
+  "alternatives": [
+    {
+      "name": "Align arm with existing notification owner predicate",
+      "score_1_to_10": 9
+    },
+    {
+      "name": "Add caret notifications despite observed exact TextChanged",
+      "score_1_to_10": 3
+    },
+    {
+      "name": "Delay or poll every key without repairing arming",
+      "score_1_to_10": 2
+    },
+    {
+      "name": "Relax word/edit receipt authority",
+      "score_1_to_10": 1,
+      "verdict": "REJECTED"
+    }
+  ],
+  "verification": "RED after actual CommitText invalidates only word epoch while transport owner stays current; negative owner/focus/lease/layout/field/privacy/atomic/desktop controls; then GREEN, same old15 failures/TD121 error, installed native upper first/second/Tab and frozen functional/manual controls.",
+  "runtime_authority_changed": false,
+  "installed": true,
+  "published": false,
+  "at": "2026-10-23T23:00:51.569114+00:00",
+  "red_receipt": "/home/e/projects/lay-development-runner/run-DiUn2V/tests/logs/bin-lay-ibus-engine.log",
+  "measured_red": "619PASS/17FAIL/442filtered, same TD121 coverage error. Only two added failures: actual CommitText suppresses needed subscription despite unchanged notification owner; old edit predicate also fails the expected field-owner refusal. Edit receipt remains expired. Native current/word verifier untouched.",
+  "green_source_receipt": "/home/e/projects/lay-development-runner/run-iUXikS/tests/logs/bin-lay-ibus-engine.log",
+  "measured_green": "45/45 native controls PASS.621passed/15baseline named failures/442filtered; same TD121 coverage error. CommitText notification and changed-owner controls now pass without renewing edit authority.",
+  "installed_pid": 2272488,
+  "installed_sha256": "7201c0c4858e8a9673543a07228f41be932bf316f4b1fcbeb5f00e3856dc66fb",
+  "native_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-941-omnibox-tab-observer-arm-20261024/result.json",
+  "native_verdict": "First own suffix still has rect:null. observer_arm records current notification and edit owner both true. Word-subscription policy fix is source-proven but does not independently close this live case. Additional trace only: subscribe completion, stream termination, event delivery/refusal. No further functional edit."
+}

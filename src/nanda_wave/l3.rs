@@ -17,6 +17,7 @@ use crate::word_reader::{is_cyrillic_letters_only, last_text_word_slice};
 pub(crate) const L3_CONTEXT_FIELD_CELL: &str = "L3ContextField32";
 
 #[derive(Debug, Clone, serde::Serialize)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) struct L3ContextCandidateReadout {
     pub(crate) text: String,
     pub(crate) source: &'static str,
@@ -31,6 +32,7 @@ pub(crate) struct L3ContextCandidateReadout {
 }
 
 #[derive(Debug, Clone, serde::Serialize)]
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) struct L3ContextFieldReadout {
     pub(crate) context_tokens: usize,
     pub(crate) eligible: bool,
@@ -38,6 +40,7 @@ pub(crate) struct L3ContextFieldReadout {
     pub(crate) candidates: Vec<L3ContextCandidateReadout>,
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn l3_context_field_readout(
     original: &str,
     candidates: &[WordCandidate],

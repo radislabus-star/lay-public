@@ -1,0 +1,25 @@
+{
+  "status": "SOURCE_GREEN_EXACT_NATIVE_PAIR_PASS_FULL_CHROME_NOT_ACCEPTED",
+  "owner": "Existing ContextAdmissionReducer, ContextBridgeOutput and WindowInteraction result verifier",
+  "affected_invariants": ["C03", "C05", "C07", "C08", "C09"],
+  "first_failed_transition": "After the first native manual replacement is actually confirmed, the KDE adapter invokes the common visible-result handler outside the completed RPC's ContextBridgeOutput. The deferred layout handoff increments the engine tail epoch, but settle_context_bridge_output returns without informing admission when context_bridge_token is absent. The observed source seal then refuses unequal epochs and the new engine activates source-free, losing the word for the next gesture.",
+  "measured_evidence": "Unchanged r15 actor on installed bbc4fcfe: first привет->ghbdtn PASS46.703ms, second ghbdtn->привет FAIL. The wire proves selection registration and TextSelectionChanged now work. Trace: confirmed visible result at epoch11; source FocusOut69 sees epoch12 and tail_epoch_matches=false; lay-ime-us then publishes source_free_ready and the second RPC refuses context_authority.",
+  "decision": "At the existing KDE native-result observation point, use the existing current context output guard when a native pending result is completed outside an enclosing bridge. The common verifier still decides whether the actual result matches; its existing layout publication then settles the same epoch in admission. Preserve an already active guard. Do not relax source sealing, synthesize a transfer, promote UnknownStart, alter delivery or add an authority owner.",
+  "implementation_scope": [
+    "Only the KDE native-document adapter and its regression tests change. GNOME modules, common reducer, verifier and output routes are unchanged.",
+    "Require current native binding and live admission before creating the missing guard. Non-native pending results and enclosing bridge scopes keep the existing observation path.",
+    "Run the same common pending-result verifier once. Stale owner/epoch/field/layout/privacy observations cannot confirm a result or request a layout handoff.",
+    "No await, retry, new timer, polling or background worker is added by the guard. The existing source/selection budgets remain unchanged.",
+    "A plain structural extraction first preserves the old behavior for a causal RED test. GREEN must make the reported handoff epoch recognizable by the existing admission API without changing word completeness."
+  ],
+  "verification": "A deterministic already-dispatched native-result fixture must reproduce the unreported epoch outside a bridge, then pass both outside and inside an enclosing bridge after the correction. Retain stale-result controls and all native-document source tests. Compare the unchanged r15 physical actor on retained old/new bytes before any wider Chrome matrix. The trial stays1.0.94.1 and is not published.",
+  "baseline_receipt": "chrome-941-registration-native-pair-20261023/result.json",
+  "causal_red_receipt": "chrome-941-deferred-handoff-red-20261023/result.json",
+  "source_green": "run-Vh4xtb:29 native controls pass; same15 named failures and TD121 coverage/stack failure as baseline. Architecture/build pass; no whole-suite PASS claim.",
+  "native_pair_result": "Installed8c674d4d/PID1090108; unchanged r15 actor passes both transitions65.634/60.579ms. Exact final text/caret/no selection and restoration pass. Full r16 remains81PASS/43FAIL/96BLOCKED of220; not complete Chrome acceptance.",
+  "native_pair_receipt": "chrome-941-deferred-native-pair-20261023/result.json",
+  "causal_red_result": "One exact isolated real-reducer test fails at publication of the new epoch after the observed native result. No sleeps, forced reducer epochs, external listener, live input or runtime replacement were used. Nested-guard preservation and stale owner/field/layout/privacy controls are included for GREEN.",
+  "runtime_authority_changed": false,
+  "installed": true,
+  "published": false
+}

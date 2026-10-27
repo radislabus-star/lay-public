@@ -1979,6 +1979,7 @@ fn correction_feedback_events_from_jsonl(text: &str) -> Vec<UsageEvent> {
     events
 }
 
+#[cfg(any(test, feature = "research-tools"))]
 pub(crate) fn exact_reverted_system_apply_usage_jsonl(text: &str) -> (String, u32) {
     let mut output = String::new();
     let mut receipts = 0_u32;

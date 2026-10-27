@@ -1,0 +1,58 @@
+{
+  "recorded_at": "2026-10-21T21:58:03.870863+00:00",
+  "status": "IMPLEMENTED_SOURCE_PASS_NATIVE_PARTIAL_FAIL",
+  "invariant": "C03 inert metadata is not a word owner; C04 one gesture; C05 one authorized executor; C07 field evidence; C10 native acceptance",
+  "checkout": "/home/ubu/projects/lay-browser-final-fixes-20261018",
+  "source_head": "2ec7392a4437586865f8dc4d951b4f71ff04dcb4",
+  "installed_engine_sha256": "1ab291b15d9eab9d4175b89a868597c6a8526a2d66bdfc7adf8b6094d24749d4",
+  "first_failed_transition": "Authenticated ProcessKeyEvent after stock Reset/refocus retires the orphaned ExactReplay marker; the following replacement letters enter pending literal preedit and a later real Reset discards them",
+  "evidence": {
+    "native": "/home/e/projects/lay-development-runner/kde-install-control-20261020/pending-literal-space-diagnostic-v36/chrome-omnibox/ibus-engine.log",
+    "causal_red": "/home/ubu/.cache/lay/development/browser-final-fixes-20261018/shift-hint-20261021T1242Z/native-replay-reset-causal-v37-red.log",
+    "test": "native_replay_after_refocus_cannot_enter_preedit_before_a_late_reset",
+    "harness2_design_task": "20261021T214419Z-cb269f86",
+    "harness2_status": "USED; ok, 8 calls, 0 failed/fallback; independent frozen-design acceptance only",
+    "source_gate": "450/450 PASS; native-replay-delivery-v39c-suite.log",
+    "native_v39": "pending-literal-space-native-v39: omnibox 5/2; Firefox 21/7; Chrome 20/8; screenshots FAIL"
+  },
+  "alternatives": [
+    {
+      "name": "Retain bounded delivery classification in the existing ExactReplay descriptor",
+      "score_out_of_10": 7,
+      "reason": "Fixes the demonstrated swallowed-letter transition without a new owner, output route or revived token. Does not by itself establish inverse-toggle authority."
+    },
+    {
+      "name": "Commit pending literal preedit on Reset",
+      "score_out_of_10": 4,
+      "reason": "May preserve typed bytes, but changes literal composition settlement and still does not prove the complete word for an inverse operation."
+    },
+    {
+      "name": "Add a client receipt or new delivery route for no-surrounding-text clients",
+      "score_out_of_10": 5,
+      "reason": "Could eventually supply missing complete-word evidence, but is larger than the reproduced delivery defect. Requires separate design and physical proof."
+    }
+  ],
+  "chosen": "Extend ExactManualToggleSuppression with a native press ordinal and an optional explicitly rebound delivery lease. Keep the original armed owner lease immutable. Ready retains only the inert delivery classifier for the same exact prior delivery binding; it never transfers lexical ownership.",
+  "constraints": [
+    "Match authenticated current-path callback, exact shared descriptor, current delivery lease, expiry, target layout, command modifiers and expected key order.",
+    "A revoked delivery-only branch does not publish a lexical mirror, import a prefix, mint a token, acknowledge a literal input or admit a word.",
+    "Source-free Ready may retain only the unfinished classifier for the exact previous delivery binding; old text, source token and observed prefix remain revoked.",
+    "Cancellation remains keyed by the existing operation path and epoch; expiry, completion and invalid order retire only the matching marker.",
+    "Foreign path and lease markers remain untouched. Existing SSI progress evidence keeps its independent proof requirements.",
+    "No sleeps, retries, extra queues, application-name conditions, new executors or SafetyGate changes.",
+    "Do not claim inverse acceptance without a fresh whole-word receipt and physical observed result."
+  ],
+  "new_owner": false,
+  "delivery_routes_changed": false,
+  "runtime_changed": false,
+  "required_proof": [
+    "Recorded reset/refocus/late-reset order preserves every native replacement key and keeps the old token revoked.",
+    "Wrong path, lease, expiry, modifiers and order cannot mutate a foreign descriptor or create word authority.",
+    "Source-free Ready mid-delivery cannot turn the classifier into a word receipt.",
+    "Existing exact replay, SSI reset progress, cancellation and literal Ready proof suites remain green.",
+    "Pinned installed bytes are physically checked in Chrome, Firefox, ordinary Kitty and Konsole."
+  ],
+  "verified_at": "2026-10-21T22:22:46.914117+00:00",
+  "current_installed_engine_sha256": "f36012e4874026f390f814dac563de2802a3a1226c9651be1530f281a3c68bce",
+  "runtime_authority_changed": "Existing delivery classifier changed; no lexical authority, owner, executor or output route added"
+}

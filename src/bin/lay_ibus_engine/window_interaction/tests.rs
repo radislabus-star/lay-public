@@ -29,6 +29,7 @@ mod selector {
                 TextTargetCapabilityFacts {
                     backspaces: 0,
                     surrounding_text_supported: false,
+                    native_range_supported: false,
                     terminal_erase_supported: false,
                 },
                 TextTargetEditRoute::CommitOnly,
@@ -38,6 +39,7 @@ mod selector {
                 TextTargetCapabilityFacts {
                     backspaces: 5,
                     surrounding_text_supported: true,
+                    native_range_supported: false,
                     terminal_erase_supported: true,
                 },
                 TextTargetEditRoute::ExactSurroundingText,
@@ -47,6 +49,7 @@ mod selector {
                 TextTargetCapabilityFacts {
                     backspaces: 5,
                     surrounding_text_supported: false,
+                    native_range_supported: false,
                     terminal_erase_supported: true,
                 },
                 TextTargetEditRoute::TerminalErase,
@@ -56,6 +59,7 @@ mod selector {
                 TextTargetCapabilityFacts {
                     backspaces: 5,
                     surrounding_text_supported: false,
+                    native_range_supported: false,
                     terminal_erase_supported: false,
                 },
                 TextTargetEditRoute::Unsupported,
@@ -84,7 +88,7 @@ use crate::state::CommittedTailReplaceRequest;
 
 #[test]
 fn kitty_focus_probe_requires_exact_window_identity() {
-    use super::observation::exact_kitty_window;
+    use super::desktop::gnome::exact_kitty_window;
 
     assert!(exact_kitty_window(
         r#"{"appId":"kitty.desktop","windowId":"42","stableSequence":"7"}"#
@@ -99,12 +103,12 @@ fn kitty_focus_probe_requires_exact_window_identity() {
 
 #[test]
 fn kde_kitty_focus_probe_uses_canonical_window_and_exact_app_class() {
-    use super::observation::exact_kde_kitty_window;
+    use super::desktop::kde::exact_kde_terminal_window;
     let observation = crate::kde_focus::Observation {
         identity: "kde-window:bus:owner:1:12345678-1234-1234-1234-123456789abc".into(),
         info: r#"{"appId":"kitty","wmClass":"kitty"}"#.into(),
     };
-    assert!(exact_kde_kitty_window(&observation));
+    assert!(exact_kde_terminal_window(&observation));
     for (identity, info) in [
         ("", observation.info.as_str()),
         (
@@ -117,7 +121,7 @@ fn kde_kitty_focus_probe_uses_canonical_window_and_exact_app_class() {
         ),
         (observation.identity.as_str(), "invalid json"),
     ] {
-        assert!(!exact_kde_kitty_window(&crate::kde_focus::Observation {
+        assert!(!exact_kde_terminal_window(&crate::kde_focus::Observation {
             identity: identity.into(),
             info: info.into(),
         }));
@@ -126,7 +130,7 @@ fn kde_kitty_focus_probe_uses_canonical_window_and_exact_app_class() {
 
 #[test]
 fn kde_kitty_focus_probe_accepts_kwin_empty_desktop_file_with_exact_class() {
-    use super::observation::exact_kde_kitty_window;
+    use super::desktop::kde::exact_kde_terminal_window;
     // KWin reports an empty desktopFileName for an ordinary Kitty launch.
     // Its authenticated window UUID and resourceClass still identify the window.
     let identity = "kde-window:bus:owner:1:12345678-1234-1234-1234-123456789abc";
@@ -142,7 +146,7 @@ fn kde_kitty_focus_probe_accepts_kwin_empty_desktop_file_with_exact_class() {
         ("", r#"{"appId":"","wmClass":"kitty"}"#, false),
     ] {
         assert_eq!(
-            exact_kde_kitty_window(&crate::kde_focus::Observation {
+            exact_kde_terminal_window(&crate::kde_focus::Observation {
                 identity: window_identity.into(),
                 info: info.into(),
             }),
@@ -159,14 +163,11 @@ fn kitty_focus_probe_survives_activation_serial_but_not_focus_transfer() {
     engine.client_context.cursor_cell_width = 8;
     engine.client_context.focus_receipt = Some("kitty-context".to_string());
     let before = engine.client_context.focus_serial;
-    engine.client_context.kitty_focus_probe_serial = Some(before);
+    engine.client_context.terminal_focus_probe_serial = Some(before);
     engine.client_context.focus_serial = crate::engine::next_input_identity();
-    assert!(engine.finish_kitty_focus_probe(Some("kitty-context"), true));
+    assert!(engine.finish_terminal_focus_probe(Some("kitty-context"), true));
     assert_eq!(
-        engine
-            .client_context
-            .kitty_terminal_focus_receipt
-            .as_deref(),
+        engine.client_context.terminal_focus_receipt.as_deref(),
         Some("kitty-context")
     );
     engine.client_context.focus_serial = crate::engine::next_input_identity();
@@ -174,8 +175,276 @@ fn kitty_focus_probe_survives_activation_serial_but_not_focus_transfer() {
 
     engine.client_context.focus_receipt = Some("other-context".to_string());
     assert!(!engine.has_proven_terminal_input());
-    assert!(!engine.finish_kitty_focus_probe(Some("kitty-context"), true));
+    assert!(!engine.finish_terminal_focus_probe(Some("kitty-context"), true));
     assert!(!engine.has_proven_terminal_input());
+}
+
+#[test]
+fn kde_terminal_probe_accepts_konsole_and_rejects_conflicting_identity() {
+    use super::desktop::kde::exact_kde_terminal_window;
+    for (identity, info, expected) in [
+        (
+            "kwin:current",
+            r#"{"appId":"org.kde.konsole","wmClass":"konsole"}"#,
+            true,
+        ),
+        ("kwin:current", r#"{"appId":"","wmClass":"konsole"}"#, true),
+        (
+            "",
+            r#"{"appId":"org.kde.konsole","wmClass":"konsole"}"#,
+            false,
+        ),
+        (
+            "kwin:current",
+            r#"{"appId":"org.kde.konsole","wmClass":"chrome"}"#,
+            false,
+        ),
+        (
+            "kwin:current",
+            r#"{"appId":"chrome","wmClass":"konsole"}"#,
+            false,
+        ),
+        (
+            "kwin:current",
+            r#"{"appId":"org.kde.konsole-helper","wmClass":"konsole"}"#,
+            false,
+        ),
+    ] {
+        assert_eq!(
+            exact_kde_terminal_window(&crate::kde_focus::Observation {
+                identity: identity.into(),
+                info: info.into(),
+            }),
+            expected,
+            "{info}"
+        );
+    }
+}
+
+#[test]
+fn current_terminal_receipt_ignores_advertised_surrounding_but_keeps_exact_contract() {
+    let mut engine = engine();
+    engine.set_client_capabilities(41);
+    engine.client_context.cursor_cell_width = 8;
+    engine.client_context.focus_receipt = Some("konsole-field".into());
+    assert!(!engine.has_proven_terminal_input());
+    assert!(engine.finish_terminal_focus_probe(Some("konsole-field"), true));
+    assert!(engine.has_proven_terminal_input());
+    assert!(engine.client_context.surrounding_text_supported);
+    assert!(engine.client_context.surrounding_text_snapshot.is_none());
+    engine.client_context.exact_surrounding_refresh_available = true;
+    assert!(!engine.has_proven_terminal_input());
+    engine.client_context.exact_surrounding_refresh_available = false;
+    engine.client_context.focus_receipt = Some("other-field".into());
+    assert!(!engine.has_proven_terminal_input());
+    assert!(!engine.finish_terminal_focus_probe(Some("konsole-field"), true));
+}
+
+#[test]
+fn qualified_native_terminal_uses_existing_erase_executor_for_advertised_surrounding() {
+    for (caps, legacy_transport) in [(9, false), (41, false), (9, true), (41, true)] {
+        let mut engine = engine();
+        engine.set_client_capabilities(caps);
+        engine.client_context.cursor_cell_width = 8;
+        engine.client_context.focus_receipt = Some("current-terminal-field".into());
+        assert!(engine.finish_terminal_focus_probe(Some("current-terminal-field"), true));
+        engine.committed_tail.buffer = "ghbdtn ".into();
+        assert!(engine.uses_native_terminal_input());
+        assert!(engine.context_word_is_known());
+        assert_eq!(
+            engine.text_target_edit_route(7),
+            TextTargetEditRoute::TerminalErase,
+            "a capability bit without an implemented snapshot must not shadow the proven native executor"
+        );
+        let authority = WindowInteraction::admit_manual_toggle(&engine);
+        assert_eq!(authority, TextTargetAuthority::LocalTerminalErase);
+        let mut output = TestEngineOutput {
+            legacy_transport,
+            ..Default::default()
+        };
+        let (target, receipt) = zbus::block_on(WindowInteraction::execute_manual_toggle(
+            &mut engine,
+            authority,
+            &mut EngineOutput::test(&mut output),
+        ))
+        .unwrap();
+        assert_eq!(target, Some(true));
+        assert_eq!(receipt, ExecutionReceipt::LocalComplete);
+        assert!(output.surrounding_deletes.is_empty());
+        assert_eq!(output.committed_texts, ["\u{7f}".repeat(7) + "привет "]);
+        assert_eq!(engine.committed_tail.buffer, "привет ");
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+        if caps == 41 {
+            // Qt terminal queries describe the display line, not the PTY
+            // editor. In the physical regression ImAnchorPosition is absent
+            // and arrives as zero after the engine handoff.
+            zbus::block_on(WindowInteraction::observe_facts(
+                &mut engine,
+                WindowFactEvent::SurroundingText(Some(SurroundingTextSnapshot::new(
+                    "привет ".into(),
+                    7,
+                    0,
+                ))),
+                Some(&mut EngineOutput::test(&mut output)),
+            ))
+            .unwrap();
+        }
+        let authority = WindowInteraction::admit_manual_toggle(&engine);
+        let (target, receipt) = zbus::block_on(WindowInteraction::execute_manual_toggle(
+            &mut engine,
+            authority,
+            &mut EngineOutput::test(&mut output),
+        ))
+        .unwrap();
+        assert_eq!(target, Some(false), "caps={caps} legacy={legacy_transport} authority={authority:?} receipt={receipt:?} native={} known={}", engine.uses_native_terminal_input(), engine.context_word_is_known());
+        assert_eq!(receipt, ExecutionReceipt::LocalComplete);
+        assert_eq!(output.committed_texts[1], "\u{7f}".repeat(7) + "ghbdtn ");
+        assert_eq!(engine.committed_tail.buffer, "ghbdtn ");
+        assert!(output.surrounding_deletes.is_empty());
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .is_none());
+    }
+}
+
+#[test]
+fn qualified_terminal_display_line_still_rejects_contradictory_text() {
+    for legacy_transport in [false, true] {
+        for anchor in [0, 7] {
+            let mut engine = engine();
+            engine.set_client_capabilities(41);
+            engine.client_context.cursor_cell_width = 8;
+            engine.client_context.focus_receipt = Some("terminal-field".into());
+            assert!(engine.finish_terminal_focus_probe(Some("terminal-field"), true));
+            engine.committed_tail.buffer = "ghbdtn ".into();
+            engine.client_context.surrounding_text_snapshot =
+                Some(SurroundingTextSnapshot::new("другое ".into(), 7, anchor));
+            let mut output = TestEngineOutput {
+                legacy_transport,
+                ..Default::default()
+            };
+            let authority = WindowInteraction::admit_manual_toggle(&engine);
+            assert_eq!(authority, TextTargetAuthority::LocalTerminalErase);
+            let (target, receipt) = zbus::block_on(WindowInteraction::execute_manual_toggle(
+                &mut engine,
+                authority,
+                &mut EngineOutput::test(&mut output),
+            ))
+            .unwrap();
+            assert_eq!((target, receipt), (None, ExecutionReceipt::Rejected));
+            assert!(output.committed_texts.is_empty());
+            assert!(output.surrounding_deletes.is_empty());
+            assert_eq!(engine.committed_tail.buffer, "ghbdtn ");
+            assert!(engine
+                .committed_tail
+                .pending_visible_postcondition
+                .is_none());
+        }
+    }
+}
+
+#[test]
+fn terminal_display_metadata_cannot_reuse_revoked_executor_authority() {
+    for invalidate in [
+        "exact-contract",
+        "other-field",
+        "missing-probe",
+        "no-cell",
+        "atomic",
+        "sensitive",
+    ] {
+        let mut engine = engine();
+        engine.set_client_capabilities(41);
+        engine.client_context.cursor_cell_width = 8;
+        engine.client_context.focus_receipt = Some("terminal-field".into());
+        assert!(engine.finish_terminal_focus_probe(Some("terminal-field"), true));
+        engine.committed_tail.buffer = "ghbdtn ".into();
+        engine.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("ghbdtn ".into(), 7, 0));
+        let authority = WindowInteraction::admit_manual_toggle(&engine);
+        assert_eq!(authority, TextTargetAuthority::LocalTerminalErase);
+        match invalidate {
+            "exact-contract" => engine.client_context.exact_surrounding_refresh_available = true,
+            "other-field" => engine.client_context.focus_receipt = Some("other-field".into()),
+            "missing-probe" => engine.client_context.terminal_focus_receipt = None,
+            "no-cell" => engine.client_context.cursor_cell_width = 0,
+            "atomic" => engine.atomic.active = true,
+            "sensitive" => engine.client_context.content_purpose = IBUS_INPUT_PURPOSE_PASSWORD,
+            _ => unreachable!(),
+        }
+        let mut output = TestEngineOutput::default();
+        let (target, receipt) = zbus::block_on(WindowInteraction::execute_manual_toggle(
+            &mut engine,
+            authority,
+            &mut EngineOutput::test(&mut output),
+        ))
+        .unwrap();
+        assert_eq!(
+            (target, receipt),
+            (None, ExecutionReceipt::Rejected),
+            "{invalidate}"
+        );
+        assert!(output.committed_texts.is_empty(), "{invalidate}");
+        assert!(output.surrounding_deletes.is_empty(), "{invalidate}");
+        assert_eq!(engine.committed_tail.buffer, "ghbdtn ", "{invalidate}");
+        if !matches!(invalidate, "atomic" | "sensitive") {
+            // Even a caller entering the shared backend directly cannot
+            // reinterpret an editable-document selection as a terminal line.
+            assert!(engine
+                .text_target_edit_route(7)
+                .external_selection_is_editable());
+            assert!(
+                !zbus::block_on(engine.replace_committed_tail(
+                    &mut EngineOutput::test(&mut output),
+                    CommittedTailReplaceRequest::ime_manual_toggle(7, "привет ".into(), true),
+                ))
+                .unwrap(),
+                "{invalidate}"
+            );
+            assert!(output.committed_texts.is_empty(), "{invalidate}");
+            assert!(output.surrounding_deletes.is_empty(), "{invalidate}");
+        }
+    }
+}
+
+#[test]
+fn native_terminal_executor_selection_keeps_exact_contract_and_field_identity() {
+    for invalidate in [
+        "exact-contract",
+        "other-field",
+        "missing-probe",
+        "no-cell",
+        "atomic",
+    ] {
+        let mut engine = engine();
+        engine.set_client_capabilities(41);
+        engine.client_context.cursor_cell_width = 8;
+        engine.client_context.focus_receipt = Some("terminal-field".into());
+        assert!(engine.finish_terminal_focus_probe(Some("terminal-field"), true));
+        engine.committed_tail.buffer = "ghbdtn ".into();
+        match invalidate {
+            "exact-contract" => engine.client_context.exact_surrounding_refresh_available = true,
+            "other-field" => engine.client_context.focus_receipt = Some("other-field".into()),
+            "missing-probe" => engine.client_context.terminal_focus_receipt = None,
+            "no-cell" => engine.client_context.cursor_cell_width = 0,
+            "atomic" => engine.atomic.active = true,
+            _ => unreachable!(),
+        }
+        assert!(!engine.uses_native_terminal_input(), "{invalidate}");
+        assert_eq!(
+            engine.text_target_edit_route(7),
+            TextTargetEditRoute::ExactSurroundingText,
+            "{invalidate}"
+        );
+        assert!(
+            !engine.terminal_committed_tail_executor_available(),
+            "{invalidate}"
+        );
+    }
 }
 
 fn callback_message(member: &str) -> zbus::Message {
@@ -235,10 +504,10 @@ fn admitted_kitty_focus_probe_uses_live_field_without_legacy_focus_fallback() {
     engine.client_context.cursor_cell_width = 9;
     assert!(engine.client_context.focus_receipt.is_none());
     let receipt = engine.live_context_token().unwrap().exact_field_receipt();
-    engine.client_context.kitty_terminal_focus_receipt = Some(receipt.clone());
+    engine.client_context.terminal_focus_receipt = Some(receipt.clone());
     assert!(engine.has_proven_terminal_input());
-    engine.client_context.kitty_terminal_focus_receipt = None;
-    assert!(engine.finish_kitty_focus_probe(Some(&receipt), true));
+    engine.client_context.terminal_focus_receipt = None;
+    assert!(engine.finish_terminal_focus_probe(Some(&receipt), true));
     assert!(engine.has_proven_terminal_input());
     assert!(engine.client_context.focus_receipt.is_none());
 
@@ -247,7 +516,7 @@ fn admitted_kitty_focus_probe_uses_live_field_without_legacy_focus_fallback() {
     engine.context_token = None;
     engine.client_context.focus_receipt = Some("legacy-receipt".into());
     assert!(!engine.has_proven_terminal_input());
-    assert!(!engine.finish_kitty_focus_probe(Some(&receipt), true));
+    assert!(!engine.finish_terminal_focus_probe(Some(&receipt), true));
 }
 
 fn exact_request(engine: &LayIbusEngine, before: &str, after: &str) -> CommittedTailReplaceRequest {

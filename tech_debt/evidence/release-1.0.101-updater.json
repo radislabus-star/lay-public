@@ -1,0 +1,39 @@
+{
+  "version": "1.0.101",
+  "published": {
+    "draft": false,
+    "html_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.101",
+    "prerelease": false,
+    "published_at": "2026-10-26T20:45:25Z",
+    "tag_name": "v1.0.101",
+    "target_commitish": "main"
+  },
+  "source_ci_tag_equivalence": {
+    "functional_commit": "4c61cdb6a7e5f7344e8bc9e78ccbf5d1bbdc9c22",
+    "tag_commit": "9b83e9ee2d3efbe9bbf5e52d322633a989599b33",
+    "changed": [
+      "docs/architecture/research-build-boundaries-2026-10-26.md",
+      "docs/development/lay2-handoff.md",
+      "docs/development/six-release-debt-plan-2026-10-25.md",
+      "docs/release-1.0.101.md",
+      "tech_debt/135-research-runtime-build-boundary.md",
+      "tech_debt/build-warning-reachability-cleanup-2026-10-26.md",
+      "tech_debt/evidence/release-1.0.101-native.json",
+      "tech_debt/evidence/release-1.0.101-verification.json"
+    ],
+    "critical_production_and_build_trees_equal": true,
+    "at_utc": "2026-10-26T20:47:23.072155+00:00"
+  },
+  "local": {
+    "at_utc": "2026-10-26T20:46:16.915862+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.100\nстабильный релиз: 1.0.101\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.100 → 1.0.101\n",
+    "stderr": ""
+  },
+  "remote": {
+    "at_utc": "2026-10-26T20:46:16.983646+00:00",
+    "exit_code": 0,
+    "stdout": "=== проверка обновлений ===\nустановлено: 1.0.101\nстабильный релиз: 1.0.101\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+    "stderr": ""
+  }
+}

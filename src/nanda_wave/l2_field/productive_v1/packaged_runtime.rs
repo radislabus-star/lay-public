@@ -1050,6 +1050,7 @@ impl PackagedProductiveRuntimeV1 {
         )
     }
 
+    #[cfg(test)]
     pub(super) fn from_bytes(
         bytes: Vec<u8>,
         expected_l11_sha256: [u8; 32],
@@ -1379,6 +1380,7 @@ impl PackagedProductiveRuntimeV1 {
         Ok((bindings, diagnostics, audits))
     }
 
+    #[cfg(test)]
     pub(super) fn derive_cold_lemma_bindings_with_semantic_shadow(
         &self,
         lemma_id: u32,
@@ -2311,6 +2313,7 @@ impl PackagedProductiveRuntimeV1 {
         Ok(true)
     }
 
+    #[cfg(test)]
     fn instantiate_paradigm_surfaces(
         &self,
         paradigm_id: u32,

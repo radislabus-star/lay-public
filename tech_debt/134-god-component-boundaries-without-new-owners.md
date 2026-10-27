@@ -42,3 +42,14 @@ succession; не перетирать старые evidence hashes. Fresh source
 и independent score>=8 после каждого единственного slice; scope physical
 NOT_TESTED до отдельного exact-byte proof. Rollback — move-only revert.
 Пока не выбран обоснованный slice, task открыт и реализация не начинается.
+
+
+## Release102 reconciliation —2026-10-26
+
+2026-10-26 release102 reconciliation: the first proved loss is the same
+old-revocation branch in observe_context_focus_out and observe_context_disable.
+Reusing two existing local-cleanup helpers repairs it without a new controller,
+state owner or exported API. The characterization now includes two real
+receive/callback schedules and an unobserved-event negative control. A move-only
+slice with independent maintenance benefit is still not selected; broad
+extraction remains DEFERRED. Historical LOC values are inventory signals only.

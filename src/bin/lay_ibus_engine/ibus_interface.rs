@@ -897,10 +897,21 @@ impl LayIbusEngine {
                     self.clear_preedit(output).await?;
                     self.composition.pending_passthrough_preedit_clear = false;
                 }
-                let handled = exact_replay == ExactReplayPress::Rejected;
+                let handled = exact_replay != ExactReplayPress::Native;
                 self.remember_handled_press(keycode, handled);
+                if exact_replay == ExactReplayPress::HeldBoundary {
+                    if let Err(error) = self
+                        .dispatch_held_replay_boundary(output, keycode, state)
+                        .await
+                    {
+                        self.cancel_held_replay_boundary();
+                        return Err(error);
+                    }
+                }
                 self.trace_key(
-                    if handled {
+                    if exact_replay == ExactReplayPress::HeldBoundary {
+                        "exact_replay_held_boundary"
+                    } else if handled {
                         "exact_replay_rejected"
                     } else {
                         "exact_replay_native"

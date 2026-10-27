@@ -1,4 +1,5 @@
 """Isolated update-mode install and actual frontend command adapters."""
+import configparser
 import importlib.util
 import json
 import os
@@ -11,6 +12,20 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 UUID = "lay@radislabus-star.github.io"
+
+
+class AutoUpdateResourceTests(unittest.TestCase):
+    def test_build_can_use_its_existing_bounded_memory_budget(self):
+        unit = configparser.ConfigParser(interpolation=None, strict=False)
+        unit.read(ROOT / "systemd/lay-auto-update.service")
+        service = unit["Service"]
+        # A 3GiB soft ceiling made the actual compiler reclaim continuously
+        # while its unchanged 4GiB hard budget still had room.
+        self.assertIn(service.get("MemoryHigh", "infinity"),
+                      ("infinity", service["MemoryMax"]))
+        self.assertEqual(service["MemoryMax"], "4G")
+        self.assertEqual(service["MemorySwapMax"], "256M")
+        self.assertEqual(service["CPUQuota"], "100%")
 
 
 class UpdateInstallTests(unittest.TestCase):
@@ -41,6 +56,7 @@ class UpdateInstallTests(unittest.TestCase):
             "install-l2-lexical-phase.sh": 'echo lexical >> "$HOME/calls"',
             "install-l3-context-phase.sh": 'echo context >> "$HOME/calls"',
             "install-release-binaries.sh": 'echo binaries >> "$HOME/calls"',
+            "install-session-services.sh": 'test "$1" = --update; echo session-services >> "$HOME/calls"',
         }
         for name, body in scripts.items():
             self.shell(self.source / "scripts" / name, body)
@@ -72,7 +88,7 @@ class UpdateInstallTests(unittest.TestCase):
     def test_update_reuses_install_owners_without_initial_setup_or_learning_cleanup(self):
         result = self.install()
         self.assertEqual(0, result.returncode, result.stdout + result.stderr)
-        self.assertEqual(["resolve", "build", "transition", "lexical", "context", "binaries", "reload"],
+        self.assertEqual(["reload", "resolve", "build", "transition", "lexical", "context", "binaries", "session-services"],
                          (self.home / "calls").read_text().splitlines())
         self.assertFalse((self.home / "forbidden").exists())
         self.assertFalse((self.home / ".local/share/ibus").exists())
@@ -83,6 +99,66 @@ class UpdateInstallTests(unittest.TestCase):
         self.assertEqual(owner, (self.bin / "lay-update").resolve())
         self.assertEqual((ROOT / "update.sh").read_bytes(), owner.read_bytes())
         self.assertTrue((self.home / ".config/systemd/user/lay-auto-update.timer").exists())
+
+    def test_legacy_soft_budget_is_replaced_before_compilation(self):
+        old = self.home / '.config/systemd/user/lay-auto-update.service'
+        old.parent.mkdir(parents=True)
+        old.write_text((self.source / 'systemd/lay-auto-update.service').read_text()
+                       + '\nMemoryHigh=3G\n')
+        policy = {'MemoryHigh': '3G', 'MemoryMax': '4G',
+                  'MemorySwapMax': '256M', 'CPUQuota': '100%'}
+        (self.home / 'live-budget.json').write_text(json.dumps(policy))
+        self.shell(self.bin / 'systemctl', '''set -e
+test "$*" = "--user daemon-reload" || exit 93
+python3 - "$HOME/.config/systemd/user/lay-auto-update.service" "$HOME/live-budget.json" <<'UNIT_BUDGET_PY'
+import configparser,json,sys
+unit=configparser.ConfigParser(interpolation=None,strict=False)
+unit.read(sys.argv[1]);service=unit['Service']
+keys=('MemoryHigh','MemoryMax','MemorySwapMax','CPUQuota')
+with open(sys.argv[2],'w') as stream:
+    json.dump({key:service.get(key,'infinity') for key in keys},stream)
+UNIT_BUDGET_PY
+echo reload >> "$HOME/calls"
+''')
+        self.shell(self.source / 'scripts/build-release-binaries.sh', '''set -e
+python3 - "$HOME/live-budget.json" <<'BUILD_BUDGET_PY'
+import json,sys
+with open(sys.argv[1]) as stream:budget=json.load(stream)
+assert budget['MemoryHigh'] in ('infinity','4G'), 'legacy soft limit still active before compilation'
+assert budget['MemoryMax']=='4G'
+assert budget['MemorySwapMax']=='256M'
+assert budget['CPUQuota']=='100%'
+BUILD_BUDGET_PY
+echo build >> "$HOME/calls"
+mkdir -p target/release
+touch target/release/lay target/release/lay-daemon
+''')
+        result = self.install()
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertFalse((self.home / 'forbidden').exists())
+        self.assertEqual('{"manual_corrections": 3}', self.personal.read_text())
+        calls = (self.home / 'calls').read_text().splitlines()
+        self.assertLess(calls.index('reload'), calls.index('build'))
+
+    def test_existing_rustup_environment_precedes_system_cargo(self):
+        self.shell(self.home / ".cargo/bin/cargo", "exit 0")
+        self.shell(self.home / ".cargo/bin/rustc", "echo rustup-existing")
+        (self.home / ".cargo/env").write_text(
+            'export PATH="$HOME/.cargo/bin:$PATH"\n')
+        self.shell(self.source / "scripts/build-release-binaries.sh", '''set -e
+if [ "$(command -v cargo)" != "$HOME/.cargo/bin/cargo" ]; then
+    echo 'existing rustup environment not loaded before compiler' >&2
+    exit 92
+fi
+test "$(rustc --version)" = rustup-existing
+echo build >> "$HOME/calls"
+mkdir -p target/release
+touch target/release/lay target/release/lay-daemon
+''')
+        result = self.install()
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertFalse((self.home / "forbidden").exists())
+        self.assertEqual('{"manual_corrections": 3}', self.personal.read_text())
 
     def test_build_failure_precedes_binary_and_updater_replacement(self):
         self.shell(self.source / "scripts/build-release-binaries.sh", "exit 44")

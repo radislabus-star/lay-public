@@ -16,6 +16,8 @@ search_quiet() {
 }
 
 python3 "$ROOT/tests/test_update_menu.py"
+python3 "$ROOT/tests/test_session_services.py"
+node --test "$ROOT/scripts/tests/test_gnome_backend.mjs"
 
 echo "== Bazzite/rpm-ostree platform route =="
 platform="$(LAY_PACKAGE_MANAGER_OVERRIDE=rpm-ostree bash "$ROOT/install.sh" --check-platform)"

@@ -17,7 +17,17 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.94`
+- `1.0.104`
+
+1.0.97 preserves verified KDE closed-word replay after an ordinary new-word
+letter is erased, including one owned Space/NBSP presentation transition.
+Full source/build proofs and the limited native Firefox result are recorded in
+[release notes](docs/release-1.0.97.md); remaining client failures stay visible.
+
+1.0.96 repairs graphical-session startup and upgrade migration, GNOME 51 API
+compatibility, installer diagnostic output and locked security dependencies.
+The release gate must build every installed binary and retain exact results.
+See [release notes](docs/release-1.0.96.md).
 
 1.0.94 adds keyboardless VNC/X11 input through the existing daemon gesture
 pipeline, repairs KDE startup and controls, and restores owned hint/Tab input
@@ -337,3 +347,10 @@ The version must be updated in:
 - `Cargo.lock`
 - `extension/lay@radislabus-star.github.io/metadata.json`
 - `extension/lay@radislabus-star.github.io/tray_support.js`
+
+1.0.99 fixes apt polkit package selection and removes premature updater memory
+reclaim within its existing hard budget. See [release notes](docs/release-1.0.99.md).
+
+1.0.100 is the in-progress shared native replay observation repair.
+Exact final client receipts and the existing verifier remain mandatory;
+release acceptance and publication are pending.

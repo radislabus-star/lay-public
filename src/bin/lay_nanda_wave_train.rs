@@ -13,17 +13,26 @@ use serde::Deserialize;
 #[path = "lay_nanda_wave_train/l3_online.rs"]
 mod l3_online;
 
+#[cfg(test)]
 #[path = "../nanda_wave/lexical_phase/format.rs"]
 mod lexical_phase_format;
+#[cfg(test)]
 #[path = "../lexical_surface_atoms.rs"]
 mod lexical_surface_atoms;
+#[cfg(test)]
 #[path = "../stable_hash.rs"]
 mod stable_hash;
 
+#[cfg(test)]
 mod lexical_phase_compiler {
     include!("../nanda_wave/lexical_phase/compiler.rs");
 }
 
+#[cfg(not(test))]
+use lay::nanda_wave::lexical_phase_compiler;
+#[cfg(not(test))]
+use lay::nanda_wave::lexical_phase_compiler as format;
+#[cfg(test)]
 use lexical_phase_format as format;
 include!("lay_nanda_wave_train/lexical_phase_compile.rs");
 

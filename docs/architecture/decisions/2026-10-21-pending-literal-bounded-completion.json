@@ -1,0 +1,36 @@
+{
+  "recorded_at": "2026-10-21T21:08:33.441049+00:00",
+  "status": "SOURCE_PASS_NATIVE_PARTIAL_FAIL",
+  "invariant": "C08 matching literal callback completion before Ready; bounded stamp storage",
+  "review": "20261021T205754Z-3e9be9bf base review 7/10 requests protecting unfinished literal stamps from eviction",
+  "first_failed_transition": "bounded metadata eviction -> absent stamp incorrectly read as completed callback",
+  "chosen": "preserve unfinished PendingLiteral records during capacity eviction and invalid duplicate publication; reject publication when all slots are unfinished literals through existing observer fail-closed path",
+  "alternatives": [
+    {
+      "solution": "protect unfinished records in existing bound",
+      "score": 9
+    },
+    {
+      "solution": "new completion ledger/counter",
+      "score": 4
+    },
+    {
+      "solution": "delay Ready with a timer",
+      "score": 1
+    }
+  ],
+  "effects": {
+    "owner_changed": false,
+    "delivery_routes_changed": false,
+    "capacity_increased": false,
+    "new_state_owner": false,
+    "runtime_changed": false
+  },
+  "revoke_proof": "Existing revoke callers invalidate the reducer before stamp revocation; Ready installation revalidates that reducer token. Observer termination makes completion predicate false. Preserve this contract rather than adding a second revocation owner.",
+  "verification": "RED capacity test first; bounded store negative cases; affected context-admission suite; Harness2 second pass; engine-only remote install only after source and review; native Firefox/Chrome and ordinary Kitty/Konsole",
+  "last_verified_at": "2026-10-21T21:22:21.234437+00:00",
+  "source_result": "468/468 context-admission PASS; 8/8 targeted PASS; causal RED preserved",
+  "installed_engine_sha256": "1ab291b15d9eab9d4175b89a868597c6a8526a2d66bdfc7adf8b6094d24749d4",
+  "native_result": "Chrome omnibox5PASS/2FAIL; Firefox21/28PASS; Chrome21/28PASS; terminal hint/Tab and ten flips PASS; visual FAIL",
+  "runtime_changed": true
+}
