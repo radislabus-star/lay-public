@@ -1441,9 +1441,7 @@ fn process_pss_kib(pid: u32) -> Result<u64, String> {
 fn sha256_file(path: &Path) -> Result<[u8; 32], String> {
     let mut file =
         std::fs::File::open(path).map_err(|error| format!("{}: {error}", path.display()))?;
-    let mut digest = Sha256::new();
-    std::io::copy(&mut file, &mut digest).map_err(|error| error.to_string())?;
-    Ok(digest.finalize().into())
+    super::super::sha256_reader(&mut file).map_err(|error| error.to_string())
 }
 
 fn hex(value: [u8; 32]) -> String {

@@ -430,3 +430,16 @@ No crate split, transport adapter, new cache/thread/timer or ownership layer.
 - Browser physical matrix remains a separate next step after dependencies;
   the old historical320-row denominator is preserved, plus current additional
   consecutive-switch controls. No local GNOME install or restart.
+
+### PR66 first compilation diagnostic and bounded followup
+
+Preparation v1 stopped at one remaining test-only Sha256 io::Write usage:
+l2_field/v13_typed_peak/tests.rs::sha256_file, line1445. The initial source
+inventory missed that second helper; no check/test assertion is weakened.
+Preserve failed preparation and exact focused compiler JSON in remoteCROOT/
+dependency-pr66-compile-diagnostic-v1. The existing test helper now delegates
+only digest reading to its parent sha256_reader, keeping its original file-open
+path/error wording. No second reader implementation. Scope becomes19Rust files,
+22format calls, one production reader adaptation and this test-only reuse;
+still exactly4new tests. Remaining io::copy in posting_spool targets a File
+and is intentionally retained. Fresh source preparation is required.
