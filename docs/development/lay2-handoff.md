@@ -1,61 +1,65 @@
-# Current task — final dependency PR66
+# Current state — dependency queue merged; full browser matrix COMPLETE/FAIL
 
-User-approved65→67→64→68→66: first4 MERGED with independent full source/build
-and exact fresh CI5/5 each. Current public main ee889c28c8e27e854e6501c28f58f8fe1f0f3c09
-(PR68 merged2026-10-27T15:25:50Z). PR65merge1afcb292,67merge3b7873bf,64merge68eb82a6.
-Checkout /home/ubu/projects/lay-dependency-updates-20261027, branch
-codex/dependency-updates-20261027. Direct work; no agents/Harness2 or local
-GNOME install/restart. Source/desktop/delivery authority unchanged.
+User explicitly asked why144Chrome cases stayed untested. The approved
+dependency queue65→67→64→68→66 is FINISHED: all five PRs MERGED, each with
+full source/build and exact fresh5/5CI. PR66 merged2026-10-27T17:01:16Z
+at5e6ce41ebdb141b4c7d2370bcf2eb1036e2ac75c. Tested canonical source
+423f19ac4eb864a6c58ba7a7f66adfcf6769873e; full3541/3541,17/17gates,
+11performance,421Python10skip, all10actual release artifacts/no warnings,
+bothMSRV and offline byte parity PASS. Versioned evidence for each dependency
+is tech_debt/evidence/dependency-pr{65,67,64,68,66}-2026-10-27.json.
+SHA2 final source run-p_9kwko8, gates dependency-pr66-gates-v2; old failures
+remain preserved. Merge tree equals tested tree. No new stable release.
 
-PR68 source run-y2weaj9y and gates-v3 CROOT/dependency-pr68-gates-v1:3537Rust,
-11performance,421Python10skip,all10release,no warnings,bothMSRV,byte parity,
-17gates PASS. Closure2f495756dcb989a60ac7fda85e6163b3acdc40e11e2be3c9c50417f2b04b239a.
-Exact merge tree equals tested3e804ff7. Private IBus baseline already fails
-lifecycle0/3/manual2/3/terminal0/4. First68manual additionally timed out InputState;
-original FAIL retained. Fixed ABBA old→new→new→old each2/3 at same third assertion;
-one-off timeout not reproduced, cause/rate unproven, remains open limitation.
-Do not call full native PASS. All source/CI and private diagnostic receipts
-in tech_debt/evidence/dependency-pr68-2026-10-27.json. All68 jobs finished.
+The retained final artifacts are now installed ONLY in authorized remote
+KDE X11session:71: engine3596189, daemon3596304, tray3596310. Engine SHA
+553680de00c8a329c3864e5f1cc84ebc829df015e022e5ba5ae73933bf092d15.
+Deployment CROOT/dependency-pr66-native-deployment-v1/result.json confirms
+loaded engine/daemon identities, config preserved, original IBus component
+activation and desktop/IBus parents unchanged. Version104development snapshot.
+No local GNOME installation/restart, no agents/Harness2, no IME route changes.
 
-Current66 final metadata closure ready to freeze after exact lint-locator
-refresh. Earlier source05eb372a run-iohfvf44 PASS3541; original CI4/5FAIL due
-same3added/3removed warning byte-coordinate mismatch, no new logical warning.
-Unchanged standard writer and both hard Clippy routes PASS:117default and129
-research entries retained,3moved records each, all other fields literal exact.
-Old-source span witness from mainee889c28 matches each new source-name byte slice.
-Explicit ADR covers location-only changes. Policy's stale542/366labels corrected
-to117/129, no rule change. Graph refreshed after final doc update and safe3-file
-import. Failed gates-v1 retained; final fullsource/gates-v2/freshCI required.
+Full native controller CROOT/dependency-native-full-timed-v1 FINISHED, exec55540
+exit0 means execution COMPLETE, functional verdictFAIL. All440row identities
+and runtime/config/held-key guards verified. Chrome original160:125P4F31B0NT;
+Firefox:75P54F31B0NT. Additional60:Chrome52P0F8B;Firefox54P0F6B,0NT.
+New owning result docs/development/browser-native-matrix-2026-10-27.md and
+tech_debt/evidence/browser-native-matrix-2026-10-27.json preserve full raw
+receipt paths, checksums, exact failure IDs and speed coverage. Historical144
+Chrome NOT_TESTED now has explicit current outcomes; do not present BLOCKED
+as PASS. No production code changed for this verification.
 
-Only21Rust files:22library hash-format calls, one independent TD113 test
-formatter (23total), one bounded production reader and test-helper reuse.
-Private library sha256_hex.rs owns encoder; stable_hash.rs restored exactly
-unchanged because its test-only training-bin inclusion duplicated2tests.
-Exactly4new library tests, correctness3501→3505; package36/performance11/
-ignored41 and all old rows/targets/lanes/isolation unchanged. Known failures0.
-New explicit ADR covers protected guard-helper API and inventory bindings;
-all assertions/hash/mode pins remain unchanged. No suppressions or new cfg.
-Prep v1 missing test-only Write, v2 independent guard LowerHex, v3 duplicate
-inventory failures retained. v4 real all-target compilation/discovery/graph
-refresh PASS; safe import hash/mode/archive checks passed. Next full source
-3541 plus gates-v3/fresh CI on frozen head. Old zero-failure observation is a
-contract declaration, not fresh proof; keep unchanged and record current full
-source/CI results separately. Do not fabricate/reuse old counts as new proof.
+Next scoped work if continuing browser fixes: Chrome4confirmed failures.
+1normalrichSpacewronglayout:eligible prepared candidate but identity_mismatch
+at lease admission; exact mismatching component stillunproven.
+2normalrich/iframe-rich pair:full_no_apply at verifier on finalSpace; compare
+actualpair/provenance/NBSPslots vs passingplain without weakening guards.
+3privateemailroundtrip:second target unchanged, inspect reply/receipts.
+Native/DOM disagreement is a separate observation gap (Chrome5/Firefox3).
+Firefox54FAIL mostly50rapid-five;30late intermediate targets,20target/sequence
+assertions. Roundtrip median172ms/p95196 vsChrome59/66; no code-level latency
+cause established. No burst latch/delay or shared-route workaround.
+Current scope is remoteKDE X11/nativeRFB, not USB/evdev/Wayland/GNOME/visual
+style or every standard plan. Keep GNOME isolation and all existing owners.
+No new stable release was published; next proof/code changes need fresh scope.
 
-After66 full gates+freshCI merge, full browser FAIL investigation remains queued.
-Old full table100PASS/76FAIL/144NOT_TESTED of320 is historical, not104 evidence.
-Existing full actor adds60consecutive-two cases/browser; report original160
-and additional60 separately, never shrink manifest. Native inverse/shared-learning
-cleanup stays BLOCKED per TD137. Private proof/scoped24native do not replace matrix.
+CACHE=/home/ubu/.cache/lay/development/dependency-updates-20261027
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020
+Canonical checkout /home/ubu/projects/lay-dependency-updates-20261027, branch
+codex/dependency-updates-20261027. Worker workspace Git a8fbda3c is synthetic,
+not canonical source. Final source closurefeffb7e902480f223754c57447f68cdf1924b4af8914e9a3e3b74bd18b55cf0d,
+1290files. Proof docs metadata is uncommitted, preserve it. Only own branch
+and approved public dependency PRs; private origin/main divergent, do not touch.
 
-CACHE=/home/ubu/.cache/lay/development/dependency-updates-20261027;
-CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
-Remote owned mirror /home/e/projects/lay-development-runner/workspace has synthetic
-Git a8fbda3c, not canonical source. Full canonical delta via gates-v3 --canon-delta;
-REST PATCH base=main before pushing each PR (gh pr edit is broken). Explicit
-uploaded script files underguard, never stdin. Followup high24G/max28G; Cargo
-cache currently4,151,353,344bytes after package-only prune; retained artifacts
-outside cache. Completion sound half volume only at actual turn completion.
+Private zbus diagnostic is LIMITED, never full nativePASS: baseline already
+fails lifecycle0/3, manual2/3, terminal0/4; initial68manual admission timeout
+retained. ABBA old→new→new→old each2/3 same third assertion; one-off timeout
+not reproduced, cause/rate still unproven. No semantic guard/driver changes.
+
+Use existing remote resource guard profile under dedicated resource env;
+high24G/max28G, one heavy lease; no unguarded local builds. All Cargo via
+cargo-guard. Preserve held-key cleanup/config restoration and user sessions.
+At actual turn completion play existing codex-turn-done-sound half volume.
 
 # Current accepted release — 1.0.104 published and updater verified
 
@@ -4497,3 +4501,26 @@ preserving other backends, obtain bounded review, then reproduce Chrome second
 word on the unchanged KDE binary and fix only its first observed failed transition.
 Keep accepted GNOME runtime, unresolved Firefox limitation and historical browser
 matrix100PASS/76FAIL/0BLOCKED/144NOT_TESTED of320 separate.
+
+
+## Prepared next native matrix (not run yet)
+
+Remote current read-only inventory at CACHE/remote-native-inventory-initial.json:
+engine2122913 SHA138d936899f383937bf4868eeffa275d86fe7cf2f2f3779ffb03046b725f16b0,
+daemon2123003/tray2123021, KDE:71, OwnsActiveText=false, trace512KB. No runtime
+change. Prepared cache install-native66.py derives from accepted old installer,
+all10artifacts and strict source/build proof; UPDATE proof path from gates-v1
+(failed) to final gates-v2 before any use. Expected previous deployment is current
+short-function-freshness-preview-deployment. Preserve original IBus parentPID3168326,
+private GUI env, config/models/tray bytes; only owned engine child +Laydaemon/tray
+reload. Do not run until final full gatesPASS, exact artifact/hash checks and
+existing authorization for remote browser testing; no local GNOME action.
+Native full actor CACHE/browser-native-full-r18.py is exact parentSHA
+ a0e865d7a46d1f61aef9b9c2a92634a5ecba0dc9ca1579a10e529bb2e7b23abc.
+Controller run-native-full66.py prepared, not run; update proof path to gates-v2.
+Full manifest220/browser = original160 +60consecutive-two,3modes10fields.
+Keep frozen actor scenario bodies. It blocks native inverse(shared learning) and
+URL/email trailingSpace scenarios before input; retain BLOCKED and denominator,
+never claim these fixes. Controller exitsnonzero onfunctional FAIL/BLOCKED after
+restoringdebug/layout. A sequential master must continue both browsers while
+capturing statuses, never treat launcher0 asallPASS. No native probes yet.

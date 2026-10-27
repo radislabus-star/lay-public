@@ -1,0 +1,635 @@
+{
+  "schema": "lay.native-browser-matrix.v1",
+  "checked_at": "2026-10-27T17:27:13.030835+00:00",
+  "execution_status": "COMPLETE",
+  "functional_verdict": "FAIL",
+  "canonical_source_head": "423f19ac4eb864a6c58ba7a7f66adfcf6769873e",
+  "source": {
+    "files": 1290,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "feffb7e902480f223754c57447f68cdf1924b4af8914e9a3e3b74bd18b55cf0d"
+  },
+  "version": "1.0.104 development snapshot, not a new stable release",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "local_gnome_changed": false,
+  "scope": "private KDE X11; actual RFB input; three window modes, ten fields",
+  "physical_usb_evdev": "NOT_TESTED",
+  "visual_hint_style": "NOT_TESTED",
+  "other_standard_word_caret_selection_focus_plans": "NOT_TESTED in this fixed160+60 manifest",
+  "actor_revision": "r19-space-timing-only",
+  "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+  "parent_actor_sha256": "a0e865d7a46d1f61aef9b9c2a92634a5ecba0dc9ca1579a10e529bb2e7b23abc",
+  "observer_ast_parity_witness": "/home/ubu/.cache/lay/development/dependency-updates-20261027/native-r19-observation-validation.json",
+  "runtime_engine_sha256": "553680de00c8a329c3864e5f1cc84ebc829df015e022e5ba5ae73933bf092d15",
+  "remote_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-native-full-timed-v1/result.json",
+  "local_receipt": "/home/ubu/.cache/lay/development/dependency-updates-20261027/native-full-timed-v1/result.json",
+  "aggregate_receipt_sha256": "edc703cd33f961ac1163a23245efd4356b636b26271da9e022057987048c612e",
+  "download_manifest": "/home/ubu/.cache/lay/development/dependency-updates-20261027/native-full-timed-v1/download-manifest.json",
+  "elapsed_seconds": 881.7595992088318,
+  "browsers": [
+    {
+      "browser": "chrome",
+      "actor_status": "FAIL",
+      "groups": {
+        "original": {
+          "PASS": 125,
+          "FAIL": 4,
+          "BLOCKED": 31,
+          "NOT_TESTED": 0,
+          "total": 160
+        },
+        "additional": {
+          "PASS": 52,
+          "FAIL": 0,
+          "BLOCKED": 8,
+          "NOT_TESTED": 0,
+          "total": 60
+        }
+      },
+      "total": {
+        "PASS": 177,
+        "FAIL": 4,
+        "BLOCKED": 39,
+        "NOT_TESTED": 0
+      },
+      "rows": 220,
+      "runtime": {
+        "pid": 3596189,
+        "sha256": "553680de00c8a329c3864e5f1cc84ebc829df015e022e5ba5ae73933bf092d15"
+      },
+      "config_restored": true,
+      "held_after": [],
+      "blocked_reasons": {
+        "TD137: native inverse uses shared learning; blocked before input": 10,
+        "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input": 24,
+        "native/DOM text disagreement": 5
+      },
+      "blocked_observation_cases": [
+        "normal:email:consecutive-two:active",
+        "normal:email:roundtrip:active",
+        "normal:email:rapid-five:active",
+        "private:email:consecutive-two:active",
+        "fullscreen:email:roundtrip:active"
+      ],
+      "failures": [
+        {
+          "case_id": "normal:rich:space-en-ru:functional",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-67-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:rich:moved-boundary:functional",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-69-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:iframe-rich:moved-boundary:functional",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-99-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:email:roundtrip:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-126-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        }
+      ],
+      "roundtrip": {
+        "n": 102,
+        "median_ms": 58.94491134677082,
+        "p95_ms": 66.17438304238021,
+        "max_ms": 93.17187988199294
+      },
+      "timing_by_case_pass_rows_only": {
+        "consecutive-two:active": {
+          "n": 56,
+          "median_ms": 59.512178879231215,
+          "p95_ms": 65.37641305476427,
+          "max_ms": 67.4898091237992
+        },
+        "roundtrip:active": {
+          "n": 54,
+          "median_ms": 59.24082989804447,
+          "p95_ms": 66.17438304238021,
+          "max_ms": 93.17187988199294
+        },
+        "rapid-five:active": {
+          "n": 145,
+          "median_ms": 46.130241593346,
+          "p95_ms": 60.99709798581898,
+          "max_ms": 73.70218448340893
+        },
+        "consecutive-two:space": {
+          "n": 48,
+          "median_ms": 57.35895095858723,
+          "p95_ms": 67.05868314020336,
+          "max_ms": 88.09332898817956
+        },
+        "roundtrip:space": {
+          "n": 48,
+          "median_ms": 58.84291499387473,
+          "p95_ms": 66.69253902509809,
+          "max_ms": 89.62123794481158
+        },
+        "rapid-five:space": {
+          "n": 120,
+          "median_ms": 46.326760202646255,
+          "p95_ms": 56.93815858103335,
+          "max_ms": 75.69749560207129
+        },
+        "space-en-ru:functional": {
+          "n": 7,
+          "median_ms": 78.89870903454721,
+          "p95_ms": 113.14838705584407,
+          "max_ms": 113.14838705584407
+        },
+        "moved-boundary:functional": {
+          "n": 6,
+          "median_ms": 69.78119199629873,
+          "p95_ms": 95.65354720689356,
+          "max_ms": 95.65354720689356
+        },
+        "tab:functional": {
+          "n": 8,
+          "median_ms": 16.889686114154756,
+          "p95_ms": 20.86826995946467,
+          "max_ms": 20.86826995946467
+        }
+      },
+      "hint_publication": {
+        "n": 8,
+        "median_ms": 73.7685119966045,
+        "p95_ms": 100.3199559636414,
+        "max_ms": 100.3199559636414
+      },
+      "local_actor_receipt": "/home/ubu/.cache/lay/development/dependency-updates-20261027/native-full-timed-v1/chrome/actor.json",
+      "actor_receipt_sha256": "0115f6638da0689c3798e5e8190a1c4a22daa1b32cbbefb0cbffd4ddc4a47b77",
+      "remote_actor_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-native-full-timed-v1/chrome/chrome/result.json"
+    },
+    {
+      "browser": "firefox",
+      "actor_status": "FAIL",
+      "groups": {
+        "original": {
+          "PASS": 75,
+          "FAIL": 54,
+          "BLOCKED": 31,
+          "NOT_TESTED": 0,
+          "total": 160
+        },
+        "additional": {
+          "PASS": 54,
+          "FAIL": 0,
+          "BLOCKED": 6,
+          "NOT_TESTED": 0,
+          "total": 60
+        }
+      },
+      "total": {
+        "PASS": 129,
+        "FAIL": 54,
+        "BLOCKED": 37,
+        "NOT_TESTED": 0
+      },
+      "rows": 220,
+      "runtime": {
+        "pid": 3596189,
+        "sha256": "553680de00c8a329c3864e5f1cc84ebc829df015e022e5ba5ae73933bf092d15"
+      },
+      "config_restored": true,
+      "held_after": [],
+      "blocked_reasons": {
+        "TD137: native inverse uses shared learning; blocked before input": 10,
+        "HTML URL/email sanitizes trailing ASCII Space; exact one-space scenario unsupported before input": 24,
+        "native/DOM text disagreement": 3
+      },
+      "blocked_observation_cases": [
+        "normal:email:roundtrip:active",
+        "private:email:roundtrip:active",
+        "fullscreen:email:roundtrip:active"
+      ],
+      "failures": [
+        {
+          "case_id": "normal:text:roundtrip:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-2-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:text:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-3-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:text:rapid-five:space",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-6-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:search:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-13-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:search:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-16-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:url:rapid-five:active",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-23-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:tel:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-33-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:tel:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-36-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:email:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-43-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:textarea:rapid-five:active",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-53-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:textarea:rapid-five:space",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-56-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:rich:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-63-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:rich:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-66-native-trace-tail-incomplete.jsonl",
+          "native_trace_anchor_complete": false
+        },
+        {
+          "case_id": "normal:rich:moved-boundary:functional",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-69-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:plain:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-73-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:plain:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-76-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:plain:moved-boundary:functional",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-79-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:iframe-input:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-86-native-trace-tail-incomplete.jsonl",
+          "native_trace_anchor_complete": false
+        },
+        {
+          "case_id": "normal:iframe-rich:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-93-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:iframe-rich:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-96-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "normal:iframe-rich:moved-boundary:functional",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-99-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:text:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-103-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:text:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-106-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:search:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-112-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:tel:rapid-five:active",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-121-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:tel:rapid-five:space",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-124-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:email:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-127-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:textarea:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-133-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:textarea:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-136-native-trace-tail-incomplete.jsonl",
+          "native_trace_anchor_complete": false
+        },
+        {
+          "case_id": "private:rich:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-139-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:rich:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-142-native-trace-tail-incomplete.jsonl",
+          "native_trace_anchor_complete": false
+        },
+        {
+          "case_id": "private:plain:rapid-five:active",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-145-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:plain:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-148-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:iframe-input:rapid-five:active",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-151-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:iframe-input:rapid-five:space",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-154-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:iframe-rich:rapid-five:active",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-157-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "private:iframe-rich:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-160-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:text:rapid-five:active",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-163-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:text:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-166-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:search:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-169-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:search:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-172-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:url:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-175-native-trace-tail-incomplete.jsonl",
+          "native_trace_anchor_complete": false
+        },
+        {
+          "case_id": "fullscreen:tel:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-181-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:tel:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-184-native-trace-tail-incomplete.jsonl",
+          "native_trace_anchor_complete": false
+        },
+        {
+          "case_id": "fullscreen:email:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-187-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:textarea:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-193-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:textarea:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-196-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:rich:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-199-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:rich:rapid-five:space",
+          "classification": "missing_intermediate_targets",
+          "native_trace": "row-202-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:plain:rapid-five:active",
+          "classification": "target_or_decoder_mismatch",
+          "native_trace": "row-205-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:plain:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-208-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:iframe-input:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-214-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:iframe-rich:rapid-five:active",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-217-native-trace.jsonl",
+          "native_trace_anchor_complete": true
+        },
+        {
+          "case_id": "fullscreen:iframe-rich:rapid-five:space",
+          "classification": "late_intermediate_targets",
+          "native_trace": "row-220-native-trace-tail-incomplete.jsonl",
+          "native_trace_anchor_complete": false
+        }
+      ],
+      "roundtrip": {
+        "n": 100,
+        "median_ms": 171.61656951066107,
+        "p95_ms": 195.51924499683082,
+        "max_ms": 213.88411591760814
+      },
+      "timing_by_case_pass_rows_only": {
+        "consecutive-two:active": {
+          "n": 60,
+          "median_ms": 17.105198930948973,
+          "p95_ms": 20.17632988281548,
+          "max_ms": 172.08466096781194
+        },
+        "consecutive-two:space": {
+          "n": 48,
+          "median_ms": 174.9426225433126,
+          "p95_ms": 217.47254393994808,
+          "max_ms": 234.74810202606022
+        },
+        "roundtrip:space": {
+          "n": 48,
+          "median_ms": 176.85193149372935,
+          "p95_ms": 203.65166501142085,
+          "max_ms": 213.88411591760814
+        },
+        "space-en-ru:functional": {
+          "n": 8,
+          "median_ms": 16.936953994445503,
+          "p95_ms": 18.020324874669313,
+          "max_ms": 18.020324874669313
+        },
+        "moved-boundary:functional": {
+          "n": 5,
+          "median_ms": 17.787755001336336,
+          "p95_ms": 21.477360045537353,
+          "max_ms": 21.477360045537353
+        },
+        "tab:functional": {
+          "n": 8,
+          "median_ms": 18.268664018251002,
+          "p95_ms": 18.85277987457812,
+          "max_ms": 18.85277987457812
+        },
+        "roundtrip:active": {
+          "n": 52,
+          "median_ms": 166.00211954209954,
+          "p95_ms": 185.41226512752473,
+          "max_ms": 189.61929809302092
+        },
+        "rapid-five:active": {
+          "n": 20,
+          "median_ms": 7.948774262331426,
+          "p95_ms": 10.888034477829933,
+          "max_ms": 33.71958853676915
+        }
+      },
+      "hint_publication": {
+        "n": 8,
+        "median_ms": 20.215172437019646,
+        "p95_ms": 20.911411149427295,
+        "max_ms": 20.911411149427295
+      },
+      "local_actor_receipt": "/home/ubu/.cache/lay/development/dependency-updates-20261027/native-full-timed-v1/firefox/actor.json",
+      "actor_receipt_sha256": "fea1961aac54f1cae84569b1626bc6d9858159e490f8d0276ef28ad07dc43c96",
+      "remote_actor_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-native-full-timed-v1/firefox/firefox/result.json"
+    }
+  ],
+  "latency_scope": "PASS rows only; monotonic key release to first observed stable exact target, polling included; burst DOM clock mapping carries per-row uncertainty; failed timings not imputed",
+  "baseline_causality": "Historical320 totals use older source/protocol; this run does not prove dependency-caused improvement or regression",
+  "chrome_observed_refusals": [
+    {
+      "case_id": "normal:rich:space-en-ru:functional",
+      "first_observed_refusal": "identity_mismatch; stale correction lease; managed_fallback_commit",
+      "source": "src/bin/lay_ibus_engine/committed_tail.rs:263",
+      "root_cause": "NOT_YET_PROVEN"
+    },
+    {
+      "case_id": "normal:rich:moved-boundary:functional",
+      "first_observed_refusal": "full_no_apply stage verifier on second Space",
+      "source": "src/ime_correction.rs:454",
+      "root_cause": "NOT_YET_PROVEN"
+    },
+    {
+      "case_id": "normal:iframe-rich:moved-boundary:functional",
+      "first_observed_refusal": "full_no_apply stage verifier on second Space",
+      "source": "src/ime_correction.rs:454",
+      "root_cause": "NOT_YET_PROVEN"
+    },
+    {
+      "case_id": "private:email:roundtrip:active",
+      "first_observed_refusal": "second target remains ghbdtn instead of привет",
+      "root_cause": "NOT_YET_PROVEN"
+    }
+  ]
+}

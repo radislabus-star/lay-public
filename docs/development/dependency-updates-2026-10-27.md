@@ -29,7 +29,7 @@ The full browser failure investigation remains queued after this sequence.
 | 67 | rayon 1.10.0 → 1.12.0 | Merged3b7873bf; source/CI PASS | Stale architecture source binding; parallel-runtime contracts |
 | 64 | arboard 3.6.1 → 3.7.0 | Merged68eb82a6; source/native clipboard/CI PASS | Installer preservation failure and test inventory drift; causality unproven |
 | 68 | zbus 5.15.0 → 5.16.0 | Mergedee889c28; full source/CI PASS; private client limited | D-Bus/IBus integration and transitive zvariant update |
-| 66 | sha2 0.10.9 → 0.11.1 | Preflight written | Removed io::Write and output LowerHex implementations |
+| 66 | sha2 0.10.9 → 0.11.1 | Merged5e6ce41e; full3541/source/build/CI PASS | Bounded reader and hex API compatibility, four new tests; exact inventory/lint metadata maintained |
 
 Read-only triage receipt:
 `/home/ubu/.cache/lay/development/dependabot-pr-triage-20261027/triage-report.json`.
@@ -508,3 +508,38 @@ failure remains in CACHE/pr66-ci/failed.log. No Rust function body was changed
 for lint maintenance, no new diagnostic or suppression. Final source/build/CI
 now rerun on the consistent metadata closure. The completed3541 old source
 PASS remains separate evidence, not relabeled as the new run.
+
+### PR66 final acceptance and browser testing transition
+
+Final frozen423f19ac4eb864a6c58ba7a7f66adfcf6769873e: new source
+run-p_9kwko8 PASS3541/3541 (3505correctness +36package); gates-v2
+17/17PASS, actual10release artifacts, zero release warnings, bothMSRV,
+11performance,421Python/10existing skips, unchanged tiny offline byte parity.
+Fresh exact-head CI5/5PASS. PR66 merged2026-10-27T17:01:16Z at
+5e6ce41ebdb141b4c7d2370bcf2eb1036e2ac75c; merge tree equals verified head.
+Versioned receipt:tech_debt/evidence/dependency-pr66-2026-10-27.json.
+All five user-approved dependency PRs65,67,64,68,66 are now MERGED.
+No new stable release or local GNOME installation/restart.
+
+User explicitly reprioritized the historical Chrome144NOT_TESTED. The retained
+all-ten release artifacts were installed only in the authorized remote KDE
+session, with actual engine/daemon hashes checked, original IBus component
+activation preserved, and no global IBus/desktop restart. Deployment receipt:
+CROOT/dependency-pr66-native-deployment-v1/result.json; engine3596189,
+daemon3596304, tray3596310. Version remains104 development snapshot, not
+a new published release. Functional browser acceptance is still independent.
+
+The full unchanged case/assertion actor is running CHROME FIRST, then Firefox,
+CROOT/dependency-native-full-timed-v1. Each browser has original160 cases plus
+60consecutive-two controls. R19 adds passive Space timing only; the parent AST
+comparison is CACHE/native-r19-observation-validation.json. Native inverse
+learning cleanup remains blocked before input. Do not substitute private IBus
+smokes or source tests for the full browser outcome. Report missing cases as
+NOT_TESTED, all exact failures, latency sample counts, and untested scope.
+
+Full native followup now COMPLETE, functional FAIL: original320 rows
+200PASS/58FAIL/62BLOCKED/0NOT_TESTED, additional120 106PASS/0FAIL/14BLOCKED.
+Chrome original125/4/31/0; Firefox75/54/31/0. Results/limits and all failures
+are recorded in docs/development/browser-native-matrix-2026-10-27.md and
+tech_debt/evidence/browser-native-matrix-2026-10-27.json. This is separate
+from successful dependency compatibility gates, not a full Lay acceptance.
