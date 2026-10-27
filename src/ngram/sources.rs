@@ -29,7 +29,7 @@ pub(super) fn ru_source_fingerprint() -> String {
     } else {
         hasher.update(b"HOME\0missing\0");
     }
-    format!("{:x}", hasher.finalize())
+    crate::sha256_hex::encode(hasher.finalize().into())
 }
 
 fn fingerprint_path(hasher: &mut Sha256, path: &std::path::Path) {

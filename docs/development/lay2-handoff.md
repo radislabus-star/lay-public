@@ -1,40 +1,61 @@
-# Current task — sequential dependency PRs
+# Current task — final dependency PR66
 
-User-approved order65→67→64→68→66; first three MERGED with independent full
-source and fresh CI5/5 evidence. Active checkout /home/ubu/projects/lay-dependency-updates-20261027,
-branch codex/dependency-updates-20261027. Direct work, no agents/Harness2.
-Current public main68eb82a6ba1cdecb4582732eae16997e43c9940e (PR64 merged
-2026-10-27T14:49:01Z). PR65 merge1afcb292,67merge3b7873bf; do not repeat
-completed gates. Detailed map/preflight/results dependency-updates-2026-10-27.md,
-versioned receipts tech_debt/evidence/dependency-pr{65,67,64}-2026-10-27.json.
+User-approved65→67→64→68→66: first4 MERGED with independent full source/build
+and exact fresh CI5/5 each. Current public main ee889c28c8e27e854e6501c28f58f8fe1f0f3c09
+(PR68 merged2026-10-27T15:25:50Z). PR65merge1afcb292,67merge3b7873bf,64merge68eb82a6.
+Checkout /home/ubu/projects/lay-dependency-updates-20261027, branch
+codex/dependency-updates-20261027. Direct work; no agents/Harness2 or local
+GNOME install/restart. Source/desktop/delivery authority unchanged.
 
-PR64: head860bc1fe,source closure9b682ccb3e03ebfb8c5d8f1a8b4d63ab23e492f9b4bb5067748ff63eaca41abc;
-3537Rust/11performance/421Python10skip/all10release/zero warnings/bothMSRV/
-byte parity/17followup gates PASS. Paired private native clipboard8/8PASS
-with identical frozen xclipboard actor; exact multiline/emoji after CLI exit.
-Source run-d9qbu0l3; followup dependency-pr64-gates-v1. All64 jobs/watchers finished.
+PR68 source run-y2weaj9y and gates-v3 CROOT/dependency-pr68-gates-v1:3537Rust,
+11performance,421Python10skip,all10release,no warnings,bothMSRV,byte parity,
+17gates PASS. Closure2f495756dcb989a60ac7fda85e6163b3acdc40e11e2be3c9c50417f2b04b239a.
+Exact merge tree equals tested3e804ff7. Private IBus baseline already fails
+lifecycle0/3/manual2/3/terminal0/4. First68manual additionally timed out InputState;
+original FAIL retained. Fixed ABBA old→new→new→old each2/3 at same third assertion;
+one-off timeout not reproduced, cause/rate unproven, remains open limitation.
+Do not call full native PASS. All source/CI and private diagnostic receipts
+in tech_debt/evidence/dependency-pr68-2026-10-27.json. All68 jobs finished.
 
-Next68zbus lock-only after this preflight commit. Base REST PATCH=main before
-push must equal actual public main. No unrestricted cargo update. Full source
-then gates-v3 with --canon-delta,24G/28G. Worker synthetic a8fbda3c is not source
-history; use canonical changed/added set. No canon/driver/guard weakening.
-Private9-role IBus fixture remoteCROOT/dependency-ibus-fixture-v1 has exact
-copied models/active receipt/current64service and baseline64config. Its
-immediate lifecycle FAILED driver806 before0/3completed cases; retain as
-pre-upgrade known failure, no source workaround. Other baseline protocol lanes
-manual-toggle3/terminal-delivery4 post-exact-ready remain to qualify. Driver
-unchanged. These are not physical browser acceptance or cold quality.
+Current66 final metadata closure ready to freeze after exact lint-locator
+refresh. Earlier source05eb372a run-iohfvf44 PASS3541; original CI4/5FAIL due
+same3added/3removed warning byte-coordinate mismatch, no new logical warning.
+Unchanged standard writer and both hard Clippy routes PASS:117default and129
+research entries retained,3moved records each, all other fields literal exact.
+Old-source span witness from mainee889c28 matches each new source-name byte slice.
+Explicit ADR covers location-only changes. Policy's stale542/366labels corrected
+to117/129, no rule change. Graph refreshed after final doc update and safe3-file
+import. Failed gates-v1 retained; final fullsource/gates-v2/freshCI required.
+
+Only21Rust files:22library hash-format calls, one independent TD113 test
+formatter (23total), one bounded production reader and test-helper reuse.
+Private library sha256_hex.rs owns encoder; stable_hash.rs restored exactly
+unchanged because its test-only training-bin inclusion duplicated2tests.
+Exactly4new library tests, correctness3501→3505; package36/performance11/
+ignored41 and all old rows/targets/lanes/isolation unchanged. Known failures0.
+New explicit ADR covers protected guard-helper API and inventory bindings;
+all assertions/hash/mode pins remain unchanged. No suppressions or new cfg.
+Prep v1 missing test-only Write, v2 independent guard LowerHex, v3 duplicate
+inventory failures retained. v4 real all-target compilation/discovery/graph
+refresh PASS; safe import hash/mode/archive checks passed. Next full source
+3541 plus gates-v3/fresh CI on frozen head. Old zero-failure observation is a
+contract declaration, not fresh proof; keep unchanged and record current full
+source/CI results separately. Do not fabricate/reuse old counts as new proof.
+
+After66 full gates+freshCI merge, full browser FAIL investigation remains queued.
+Old full table100PASS/76FAIL/144NOT_TESTED of320 is historical, not104 evidence.
+Existing full actor adds60consecutive-two cases/browser; report original160
+and additional60 separately, never shrink manifest. Native inverse/shared-learning
+cleanup stays BLOCKED per TD137. Private proof/scoped24native do not replace matrix.
 
 CACHE=/home/ubu/.cache/lay/development/dependency-updates-20261027;
 CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
-Generic cache watcher watch-pr.py; exact merge merge-verified-pr.py;
-followup dependency-gates-v3.py; canon check check-canonical-delta.py.
-Resource guard explicit uploaded script files, never stdin; followup memory
-high24G/max28G. Retained stage binaries outside disposable Cargo cache.
-After68→66 API migration, full browser FAIL investigation remains queued.
-Old full table100PASS/76FAIL/144NOT_TESTED of320 is historical; do not replace
-it with source/clipboard successes or the prior focused24native cases.
-No local GNOME install/restart, global IBus change or IME delivery-route change.
+Remote owned mirror /home/e/projects/lay-development-runner/workspace has synthetic
+Git a8fbda3c, not canonical source. Full canonical delta via gates-v3 --canon-delta;
+REST PATCH base=main before pushing each PR (gh pr edit is broken). Explicit
+uploaded script files underguard, never stdin. Followup high24G/max28G; Cargo
+cache currently4,151,353,344bytes after package-only prune; retained artifacts
+outside cache. Completion sound half volume only at actual turn completion.
 
 # Current accepted release — 1.0.104 published and updater verified
 

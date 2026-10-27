@@ -617,7 +617,7 @@ fn file_sha256(path: &Path) -> io::Result<String> {
         }
         hasher.update(&buffer[..count]);
     }
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(crate::sha256_hex::encode(hasher.finalize().into()))
 }
 
 #[cfg(test)]

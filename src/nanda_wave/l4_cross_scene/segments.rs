@@ -334,7 +334,7 @@ fn payload_sha256(episode_id: &str, rows: &[serde_json::Value]) -> io::Result<St
     hasher.update(episode_id.as_bytes());
     hasher.update([0]);
     hasher.update(serde_json::to_vec(rows).map_err(io::Error::other)?);
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(crate::sha256_hex::encode(hasher.finalize().into()))
 }
 
 #[derive(Clone, Copy, Debug, Default)]

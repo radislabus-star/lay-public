@@ -25,7 +25,7 @@ fn measure_signatures<T>(read: impl FnOnce() -> T) -> (T, usize) {
 
 fn readout_digest(readouts: &[ContextPhaseReadout]) -> String {
     use sha2::{Digest, Sha256};
-    format!("{:x}", Sha256::digest(format!("{readouts:?}")))
+    crate::sha256_hex::encode(Sha256::digest(format!("{readouts:?}")).into())
 }
 
 #[test]

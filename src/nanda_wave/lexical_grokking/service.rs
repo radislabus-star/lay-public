@@ -621,7 +621,7 @@ fn ratio_strictly_above_u64(
 fn sha256_bytes(bytes: &[u8]) -> String {
     let mut hasher = Sha256::new();
     hasher.update(bytes);
-    format!("{:x}", hasher.finalize())
+    crate::sha256_hex::encode(hasher.finalize().into())
 }
 
 pub fn send_l11_service_request(

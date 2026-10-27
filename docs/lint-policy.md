@@ -36,7 +36,7 @@ Two ledgers own the feature-dependent diagnostic surfaces:
 
 They cannot be modeled as a subset relation. Enabling `research-tools` both
 adds proof/research code and consumes helpers that are unused in the default
-build. The current sealed inventories are therefore 542 default rows and 366
+build. The current sealed inventories are therefore 117 default rows and 129
 `research-tools` rows, with neither lane treated as authority for the other.
 
 Each V4 row owns its diagnostic code, exact primary source byte span, normalized

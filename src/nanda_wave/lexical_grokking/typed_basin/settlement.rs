@@ -651,7 +651,7 @@ fn candidate_fingerprint(candidates: &[GrokkingCandidate]) -> String {
         hasher.update(format!("{candidate:?}").as_bytes());
         hasher.update([0]);
     }
-    format!("{:x}", hasher.finalize())
+    crate::sha256_hex::encode(hasher.finalize().into())
 }
 
 #[cfg(any(test, feature = "lexical-compiler"))]

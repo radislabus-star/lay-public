@@ -1,0 +1,18 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Re-anchor only existing dead-code diagnostic byte coordinates after the SHA2 formatting adaptation, using the existing strict baseline writer.",
+  "reason": "Frozen05eb372a passed all3541 correctness/package tests. The lint gate rejected three default-scope warning records whose byte locations moved after equivalent hash-format changes. Their code, message, subjects, targets and multiplicity are unchanged. Follow the established2026-10-08 location-only maintenance procedure; do not suppress or admit a new logical warning. The policy description still named obsolete cardinalities542/366; synchronize only those factual labels to the measured unchanged117/129 inventories.",
+  "invariants": [
+    "C01",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/lint-baseline/dead_code.default.json",
+    "scripts/lint-baseline/dead_code.json",
+    "docs/lint-policy.md"
+  ],
+  "owning_document": "docs/development/dependency-updates-2026-10-27.md",
+  "verification": "Run scripts/check-lay-lints.sh --self-test and --write-baseline under the existing remote guard. Preserve both inventory cardinalities and every field outside byte_start/byte_end, including code, subjects, target, files and occurrence. Check each moved span against the original same source-name bytes and canonical sorting. Both hard Clippy routes and unchanged guard rules must pass. Refresh graph metadata and obtain final source/build/CI evidence; retain the earlier failed receipt. Actual writer and byte-span comparison passed:117default and129research entries, exactly3moved records per scope, zero added/removed logical items, identical original source-name bytes. Policy changes only two stale counts, not its rules.",
+  "not_tested": "A location refresh is not a new functional-quality result, installed-runtime receipt or physical-client acceptance. The preceding3541 source PASS remains separately recorded.",
+  "runtime_authority_changed": false
+}

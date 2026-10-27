@@ -231,7 +231,7 @@ fn checksum(bytes: &[u8]) -> u64 {
 }
 
 fn sha256_hex(bytes: &[u8]) -> String {
-    format!("{:x}", Sha256::digest(bytes))
+    crate::sha256_hex::encode(Sha256::digest(bytes).into())
 }
 
 fn temporary_path(output: &Path) -> PathBuf {

@@ -27,7 +27,10 @@ fn without_whitespace(source: &str) -> String {
 
 fn sha256(path: &Path) -> String {
     let bytes = std::fs::read(path).expect("protected artifact bytes");
-    format!("{:x}", Sha256::digest(bytes))
+    Sha256::digest(bytes)
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect()
 }
 
 #[test]

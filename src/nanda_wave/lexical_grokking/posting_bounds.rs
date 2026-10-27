@@ -2187,7 +2187,9 @@ pub fn prove_l1_posting_bounds(
 }
 
 fn file_sha256(path: &Path) -> io::Result<String> {
-    Ok(format!("{:x}", Sha256::digest(std::fs::read(path)?)))
+    Ok(crate::sha256_hex::encode(
+        Sha256::digest(std::fs::read(path)?).into(),
+    ))
 }
 
 fn fixed_case_manifest_sha256(cases: &[FixedHeldoutCase], requested_k: usize) -> String {
@@ -2201,7 +2203,7 @@ fn fixed_case_manifest_sha256(cases: &[FixedHeldoutCase], requested_k: usize) ->
         hasher.update(case.surface.as_bytes());
         hasher.update([0xff]);
     }
-    format!("{:x}", hasher.finalize())
+    crate::sha256_hex::encode(hasher.finalize().into())
 }
 
 fn percentile(values: &[u64], percentile: usize) -> u64 {
