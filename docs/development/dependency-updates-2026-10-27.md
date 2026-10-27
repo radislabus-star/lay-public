@@ -26,8 +26,8 @@ The full browser failure investigation remains queued after this sequence.
 | PR | Dependency | State | First known failure or required boundary |
 |---|---|---|---|
 | 65 | serde_json 1.0.151 → 1.0.154 | Merged1afcb292; source/CI PASS | Current-main integration; parser/writer contracts |
-| 67 | rayon 1.10.0 → 1.12.0 | Source verified; CI base repaired | Stale architecture source binding; parallel-runtime contracts |
-| 64 | arboard 3.6.1 → 3.7.0 | Queued | Installer preservation failure and test inventory drift; causality unproven |
+| 67 | rayon 1.10.0 → 1.12.0 | Merged3b7873bf; source/CI PASS | Stale architecture source binding; parallel-runtime contracts |
+| 64 | arboard 3.6.1 → 3.7.0 | Preflight written | Installer preservation failure and test inventory drift; causality unproven |
 | 68 | zbus 5.15.0 → 5.16.0 | Queued | D-Bus/IBus integration and transitive zvariant update |
 | 66 | sha2 0.10.9 → 0.11.1 | Queued | Removed io::Write and output LowerHex implementations |
 
@@ -194,3 +194,67 @@ active executable used the target, disposable Lay package cache was reduced
 from11871985664 to3364528128 bytes. Pass guarded workers as script files;
 stdin is not forwarded to their background command. No installed files,
 models or learning data were removed. Full native browser proof is queued.
+
+PR67 second CI passed5/5 on83b6663cd54b38c4cfe5998d86376e99ec123713,
+a metadata-only descendant with exactly the verified runtime source closure.
+Merged as3b7873bfa62a013850db12cf98a0716facc17fa7 at2026-10-27T13:55:58Z;
+merge tree equals the verified accepted head. Do not repeat67 source gates.
+
+## PR #64 preflight — before applying arboard 3.7
+
+Existing owner: `src/main.rs::read_clipboard` and `write_clipboard`, the only
+arboard call sites. No proposed consumer-code change. The old PR installer
+failure occurred in shell-only dirty-checkout preservation; its Rust job
+refused test-manifest drift. Neither demonstrates an arboard runtime defect.
+The current base already contains the corrected installer/inventory work.
+
+Options: keep3.6.1 (7/10); apply only the reviewed3.7 lockfile update (9/10);
+also adopt the new wait_once API (4/10, changes blocking behavior without a
+demonstrated need). Select the lockfile update. Compare complete package
+multisets including duplicate package names and inspect Windows-only removals.
+Do not run an unrestricted dependency update.
+
+Consequences and proof boundaries:
+
+- Clipboard construction/get_text/set_text are the existing CLI boundary.
+  Candidate generation, ranking, retained lattices, model/delta reload,
+  caches, learning/feedback, verification and IME ownership remain in their
+  current modules; arboard has no call site there. Run the fixed full proof
+  rather than treat unused-code inspection as a behavior certificate.
+- Preserve API errors, UTF-8 text, case, newlines and clipboard handover.
+  Test old and new retained CLI binaries in a fresh private Xvfb display with
+  a real GTK owner/receiver and the installed xclipboard manager. The receiver must read actual clipboard
+  text, not accept CLI exit/stdout alone. No shared clipboard/input/focus.
+- Upstream's X11 Drop implements CLIPBOARD_MANAGER/SAVE_TARGETS with a100ms
+  handover bound. Preserve it; a test needs the manager capability. Missing
+  support is not a successful persistence test. The installed xclipboard manager supplies the real handover; the receiver
+  never manufactures expected output.
+- Keep the four identical UTF-8/case/multiline/emoji cases for both binaries
+  and retain every result. This is private X11 CLI integration, not Wayland,
+  browser IME, physical input, universal clipboard persistence, or input-latency
+  proof. Record observer/process timings with their actual scope.
+- New version may change allocation/thread/drop costs. Existing performance
+  gates and bounded complete builds remain required; no new pool, cache,
+  retry, fallback, timeout, desktop dispatch or delivery path is introduced.
+- Cargo.lock changes test/build identity. Preserve source mode/hash checks,
+  both MSRV profiles, all ten actual installed-profile binaries, zero new
+  warnings, existing tests, package-byte parity and fresh CI/security.
+- Windows/macOS release changes are upstream facts, not acceptance of those
+  systems by this Linux proof. No supported-platform claim is expanded.
+- On failure keep the old lockfile/runtime and distinguish fixture/setup,
+  pre-existing behavior and a demonstrated dependency regression. Do not
+  modify source guards or clipboard routing just to obtain PASS.
+- Rollback is the single lockfile change. No compatibility adapter or new
+  long-term runtime owner is added. Retain each dependency-stage binary set
+  for later native regression attribution; installed runtime/data remain intact.
+
+Fixture qualification: retained pre-update CLI67 (arboard3.6.1) passes all4
+cases with the installed xclipboard manager, including exact multiline UTF-8
+and emoji. Both raw clipboard contents and CLI status were checked after
+process exit. A custom GTK-manager attempt and standalone private Klipper did
+not provide this handover; retain their failed/setup receipts separately.
+Standalone Klipper had no CLIPBOARD_MANAGER owner, and restored old/empty
+contents. This does not establish a regression in arboard3.7 (not applied),
+or behavior of a full Plasma session. Do not change CLI/IME delivery to fix a
+fixture capability mismatch. The candidate must use the same frozen positive
+xclipboard actor and all4 exact cases, with baseline control retained.

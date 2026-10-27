@@ -2,8 +2,8 @@
   "schema": "lay.dependency-acceptance.v1",
   "pr": 67,
   "url": "https://github.com/radislabus-star/lay-public/pull/67",
-  "checked_at": "2026-10-27T13:24:31.313452+00:00",
-  "state": "SOURCE_VERIFIED_CANON_BASE_FIXED_FRESH_CI_PENDING",
+  "checked_at": "2026-10-27T13:59:52.636427+00:00",
+  "state": "MERGED",
   "base": "1afcb2920ddf294df9463d0a82cf37a55dd5f86e",
   "functional_head": "cb789bc39ce67b0a65f14c028e14229c9a8c3b02",
   "change": {
@@ -396,5 +396,69 @@
   },
   "native_acceptance": "NOT_TESTED",
   "runtime_installed_or_restarted": false,
-  "installed_models_or_learning_changed": false
+  "installed_models_or_learning_changed": false,
+  "merge_commit": "3b7873bfa62a013850db12cf98a0716facc17fa7",
+  "merged_at": "2026-10-27T13:55:58Z",
+  "accepted_head": "83b6663cd54b38c4cfe5998d86376e99ec123713",
+  "ci": {
+    "headRefOid": "83b6663cd54b38c4cfe5998d86376e99ec123713",
+    "mergeStateStatus": "CLEAN",
+    "number": 67,
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T13:25:10Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40511795743/job/122215347675",
+        "name": "Canon links and change records",
+        "startedAt": "2026-10-27T13:24:46Z",
+        "status": "COMPLETED",
+        "workflowName": "Architecture canon"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T13:25:12Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40511795194/job/122215347007",
+        "name": "Public installer regressions",
+        "startedAt": "2026-10-27T13:24:46Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T13:28:49Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40511795485/job/122215347451",
+        "name": "RustSec vulnerabilities and unsoundness",
+        "startedAt": "2026-10-27T13:24:46Z",
+        "status": "COMPLETED",
+        "workflowName": "Security"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T13:27:14Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40511795194/job/122215347076",
+        "name": "Rust 1.88.0 MSRV",
+        "startedAt": "2026-10-27T13:24:46Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T13:52:25Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40511795194/job/122215347370",
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "startedAt": "2026-10-27T13:24:47Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ],
+    "checked_at": "2026-10-27T13:53:37.133167+00:00",
+    "verdict": "PASS"
+  },
+  "merged_tree_equals_verified_head": true,
+  "runtime_closure_unchanged_for_metadata_head": true
 }
