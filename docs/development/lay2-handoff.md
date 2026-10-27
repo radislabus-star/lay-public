@@ -7,8 +7,19 @@ Work directly without agents/Harness2 in
 local GNOME runtime. PR65 was integrated with public main85859d97 in
 merge988cfd27; only serde_json changes in the package map. Preflight and
 acceptance boundaries: `dependency-updates-2026-10-27.md` in this directory.
-Current step: remote locked verification for65, then fresh PR CI and merge.
-No dependency PR has been accepted yet. Full browser FAIL investigation is
+Current step:67 preflight, merge the existing Rayon PR, refresh the real graph
+and architecture receipt, then independent locked verification and fresh CI.
+PR65 is MERGED1afcb2920ddf294df9463d0a82cf37a55dd5f86e at2026-10-27T12:31:05Z.
+Verified head a5d063b2, closure e73e7b03798ef4ef955168d013740a558f581d3c190caf4152bc2d578607bf2d:
+3537Rust/11performance/421Python(10skip), all10actual release binaries,
+zero warnings, both MSRV profiles and package parity PASS. Fresh CI5/5 PASS;
+merged tree equals verified PR tree. Evidence dependency-pr65-2026-10-27.json.
+Original offline-cache and Python-envelope launch failures retained; no runtime
+source workaround. All worker jobs/watchers for65 finished. Source run
+run-fghjrpfp; followup dependency-pr65-gates-v2. Subsequent gate launches must
+set LAY_RESOURCE_MEMORY_HIGH=24G; the worker envelope requires24G/28G.
+Four dependency PRs remain:67,64,68,66. Do not redo completed65 verification.
+Full browser FAIL investigation is
 queued after the five dependency updates; old full-matrix numbers remain
 historical, not a measurement of1.0.104.
 
