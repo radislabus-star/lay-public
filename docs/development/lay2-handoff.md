@@ -1,3 +1,197 @@
+# Current continuation — 1.0.104 verified, publication next
+
+At 2026-10-27T10:54:46.046756+00:00. Worktree `/home/ubu/projects/lay-short-function-layout-20261027`,
+branch `codex/short-function-layout-20261027`, base public `c52d6e41`.
+Current feature: user explicitly confirms US→RU `d→в`, `yf→на`, `b→и` on Space.
+No agents/Harness². No manual local GNOME installation/restart.
+
+Frozen source closure `4b6a28cafe8f9df92c44595613f8e432b5aad0fd5364470f5b002dba7c0a7bcd`,
+1289 files; canonical/remote contents+modes equal. Final gate actually completed:
+3537/3537 Rust (3501 correctness+36 package),11/11 performance,421Python/10skip,
+all18steps/all10release binaries/no warnings/MSRV both/graph/canon/audit50/PASS.
+All ten final binary hashes equal the actual native-tested preview.
+Remote loaded engine PID2122913 SHA138d936899f383937bf4868eeffa275d86fe7cf2f2f3779ffb03046b725f16b0,
+daemon2123003/tray2123021. Native fixed24: Chrome12/12,Firefox12/12.
+Remaining v4 subsequent:yf FAIL is now PASS; actual Chrome row4 records one
+owned_append_resample then `пишу на `,caret8/no selection. Additional actual
+read uses same80ms source deadline, same field; no output retries or projected
+snapshot authority. All common delivery/owner/verifier routes preserved.
+
+Proofs: `tech_debt/evidence/release-1.0.104-verification.json` and
+`release-1.0.104-native.json`; owning map/results in
+`docs/architecture/short-function-layout-2026-10-27.md`.
+Latency n10 conversions/browser from Space RELEASE: Chrome59.6/77.2ms median/p95,
+Firefox16.8/17.4ms; includes native observation polling, not pure core/USB time.
+Cold atomic subset fixture remains OPEN P2; English bp/pf and uppercase acronym
+refusals intentionally unchanged. Full historical browser matrix was NOT rerun.
+
+NEXT: commit verified source + metadata, normal push own branch to private origin
+and fast-forward public main (fresh read stillc52d6e41; no public104tag yet).
+Never merge/overwrite divergent private origin/main. Wait exact-commit5 CI and
+security checks, publish104 stable tag/release, then execute both actually
+installed updater `--check` routes read-only. Local installed103/live96 at last
+read: do not manually restart/install it. Updater intentionally preserves active
+IME; final instructions menu restartLay after update to load new IME. Finish sound.
+
+CACHE `/home/ubu/.cache/lay/development/short-function-layout-20261027`.
+CROOT `/home/e/projects/lay-development-runner/kde-install-control-20261020`:
+`short-function-release104-final/result.json`, `short-function-space-preview-gates-v5/result.json`,
+`short-function-freshness-preview-deployment/result.json`,
+`short-function-freshness-native-v2-{chrome,firefox}/{browser}/result.json`.
+Source mirror ../workspace; targetcache ../candidate-target-cache-20261023.
+All heavy jobs are finished. Frozen graph remains unchanged after native/source
+acceptance; later entries are measured publication metadata only. Do not rerun
+builds/source/native verification or refresh compiled graph for release notes.
+Initial native freshness invocation omitted --smoke and stopped before all12
+inputs: NOT_TESTED, never PASS. Corrected native actor unchanged SHA771d7c71517609f8c368bef5bfae69bf0d52a9e29d2a1f0b5bbd0e7d2e3117b7.
+
+--- Historical checkpoints below; current state above takes precedence ---
+
+# Current continuation — 104 actual native source freshness
+
+At 2026-10-27T10:28:59.978238+00:00. Worktree/branch lay-short-function-layout-20261027 /
+codex/short-function-layout-20261027. Public stable103;104 not published.
+No agents/Harness2/manual local GNOME install or restart.
+
+Latest installed remote preview v4: engine1994876, daemon1994909,tray1994916.
+All1102 IME and all10 release binaries pass source checks, but actual native
+Chrome11/12 and Firefox12/12. Remaining subsequent:yf returns coherent old
+actual `пишу y` after own fCommitText; verifier correctly refuses replacement.
+Coherence read fix alone did not address this freshness issue. Keep failed
+receipts short-function-coherence-native-chrome/chrome/row-4-native-trace.jsonl.
+
+Minimal next change in KDE native_document.rs + preparation.rs only: one
+source-only resample for an earlier exact prefix of an unfinished owned US
+append; same pinned field and original80ms deadline, no delivery replay, fake
+observation, relaxed safety, GNOME edit or enlarged deadline. Two new pure
+regression groups include Unicode previous text/right suffix and owner/focus/
+layout/privacy/mode/epoch refusals. Focused v5:2/2PASS, source dfbfb59709.
+Earlier focused failures were test fixture missing actual observed start;
+private witness fields are deliberately not exposed or made another owner.
+
+Current remote preview-gates-v5.py running (CROOT/preview-v5.console.log),
+adds exactly2 test identities to1104 IME/3537 complete correctness. Gates
+remain DEVELOPMENT_PREVIEW_GATES_VERIFIED/publication_allowed=false.
+Install controller install-freshness-preview.py pins preceding v4 receipt
+short-function-coherence-preview-deployment and writes new
+short-function-freshness-preview-deployment. Native wrapper
+run-native-freshness-preview.py uses unchanged actor771d7c71517609f8c368bef5bfae69bf0d52a9e29d2a1f0b5bbd0e7d2e3117b7, fixed12 rows/browser/plain text/nativeRFB.
+Only after24actualPASS run full release proof on identical frozen graph/source
+and installed bytes; release104-final-v4.py is prepared BUT STILL NOT RUN and
+needs v5/source/count/native paths adjusted before use. No publication yet.
+
+All controller files CACHE=/home/ubu/.cache/lay/development/short-function-layout-20261027.
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+Mirror=/home/e/projects/lay-development-runner/workspace; targetcache../candidate-target-cache-20261023.
+Heavy work only existing remote resource/Cargo guards. Localsync script now
+includes native_document.rs+preparation.rs; finish source+mode parity after graph.
+Protected exactauthority source SHA88ef7a73 and decision hash unchanged.
+Keep OPEN cold-test subset debt, English bp/pf and acronym protection unchanged.
+Updater preserves activeIME; final user must use menu restartLay after update
+to load changed engine. Never manually restart local. Finish sound required.
+
+--- Previous checkpoint ---
+
+# Current continuation — 104 preparation fix, preview v2 running
+
+At 2026-10-27T08:58:26.732570+00:00. Worktree/branch: /home/ubu/projects/lay-short-function-layout-20261027
+codex/short-function-layout-20261027, base publicc52d6e41. Stable public remains
+103. No104 commit/push/release. No agents/Harness2/manual local installation.
+
+A-sourcea32c189f all3530+11/all10/no warnings passed, but actual native first
+Chrome d/b/,tp fail:9PASS3FAIL/12; Firefox j-comma later fails:11PASS1FAIL/12.
+This104A IS INSTALLED remotely:engine1596533/SHAa86517e127418737317ec7b7f6d6c95d8b4235625d467fa89096c870cdb532a5,
+daemon1596645,tray1596654. Native baseline102Chrome6PASS6FAIL/12 retained.
+Wrapper global trace anchor lost/rotated:tail-incomplete, not complete trace.
+Per-row traces retained and identify epoch/key/lookup; don't fake global proof.
+
+Additional minimal fix now in existing preedit.rs and committed_tail.rs:
+US-only unfinished local Space activity independent of display cache; build
+normal fingerprint; KnownStart validator compares same Space frame, preserving
+KnownStart/all ownership checks; US-only on-demand registration invokes the
+existing deduplicating/synchronous exact producer before unchanged lookup budget.
+No display/transport/native-edit/verifier/ownership reducer change. C01/2/3/7/10
+explicit decision short-function-space-preparation. Original exact-authority
+protected successor decision/hash unchanged; exactsourceSHA88ef7a73.
+
+Three engine regressions: first2RED, then2GREEN; thirdKnownStartRED2/3, then
+3GREEN. Final scope controls no local input/other factory/reverse decoder and
+distinct completion/Space fingerprints pass3/3. Remote closure BEFORE graph
+35e4e23cad7f53343a65cb296f6cb07f4cd964959fdc828d20fcdba388d37075.
+
+Current exec session82473: CROOT/short-function-space-preview-gates-v2.py,
+RUNNING under existing remote resource/Cargo guards. It writes canonical
+manifest with third newengine test, refreshes graph ONCE, runs the COMPLETE
+1100-test IME cohort, lints/MSRV and all10 release builds. Status on success
+DEVELOPMENT_PREVIEW_GATES_VERIFIED/publication_allowed=false. First filtered
+preview177 stopped176P1F (atomic expectedерка actualерить), assertion unchanged
+and cause unproven; retain this failure. No candidate was installed from it.
+Do not silently mark it fixed or change the expected suffix to obtain PASS.
+
+After preview passes: use explicit preview controller (derive existing, honest
+preview status/1100 count/required steps, not fake full release proof), pin old
+104A deployment receipt short-function-layout-private104-deployment-v2. New
+audit path short-function-space-preview-deployment. Preserve IBus3168326, full
+private KDE environment and rollback. Then same actor771d7c71517609f8c368bef5bfae69bf0d52a9e29d2a1f0b5bbd0e7d2e3117b7,
+12 rows each Chrome/Firefox/plain text/normal/native RFB, no retries.
+
+Only after actual native works: final full3533 source+11/perf/other gates,
+all10 build/hash match same preview bytes. CHECK frozen graph instead of
+regenerating again; no source drift or changed bytes after native acceptance.
+Publish104 and verify both installed lay-update --check routes. Source/lib
+function data unchanged after104A except generated graph receipt; early
+preview is not permission to publish. English overlaps bp/pf and uppercase
+acronyms stay protected; US->RU confirmed by user. Old full browser matrix
+102 remains297PASS63FAIL80BLOCKED/440, not rerun.
+
+CACHE=/home/ubu/.cache/lay/development/short-function-layout-20261027.
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+Mirror=.../workspace, targetcache=.../candidate-target-cache-20261023.
+Sync new three frontend Rust files, manifest/known/graph/source receipt back
+from remote before commit; normalize only harmless permission bits to source
+manifest when checking closure, all content must match. Local files103/live
+IME96 at last check; do not manually restart local. Finish sound hook required.
+
+--- Previous checkpoint ---
+
+# Current continuation — short Russian function words, 1.0.104 candidate
+
+At 2026-10-27T08:02:38.001769+00:00, active worktree /home/ubu/projects/lay-short-function-layout-20261027, branch
+codex/short-function-layout-20261027 from public c52d6e41. User confirmed
+US->RU only: d->в, yf->на, b->и, on Space. No RU->US widening.
+Only production owners changed: exact_layout_authority.rs and lexicon.rs;
+existing one-letter class, warm-only lookup/fingerprint and physical letter
+keys at word edges. IME delivery/frontend/desktop routes unchanged.
+Known limits preserved: English dictionary overlaps bp->из, pf->за; short
+uppercase ASCII acronyms. All data rows tested with the appropriate existing
+protection contract, none silently dropped. Exact-authority predecessor
+remains immutable; explicit new decision and strict successor guard bind
+old manifest and new source SHA88ef7a73. Root review only, no agents/Harness2.
+
+Remote CROOT/short-function-layout-final-gates-v2 is RUNNING, local exec
+session54260. Source3530/3530 PASS, fmt/protected/canon/graph/Python/public/
+install/node/audit50/lints/MSRV both features PASS. Performance/release/all10
+artifact checks pending. No104 install/commit/push/tag/release yet. Last stable
+public103. Remote installed103/daemon700851 but running IME102/PID37302.
+Local files103, actual loadedIME96/PID3037150; NO manual local restart/install.
+
+Next: finish gates, then same fixed12-row native Chrome baseline102 (before
+install), install retained104 with existing private KDE controller, then
+Chrome and Firefox12 rows each. Cache /home/ubu/.cache/lay/development/
+short-function-layout-20261027 contains prepared actor/install/wrappers.
+Remote same CROOT contains native-short-function-actor.py, install-private104.py,
+run-native-private104.py. Baseline wrapper prepared locally only. All24 final
+rows are normal browser plain text, native RFB input; do not imply full matrix.
+Need guard/mode/manifest/generated graph/source receipt sync back from remote,
+source closure parity, meaningful native proof and loaded hashes/private KDE
+env, then publish104 and both installed updater --check results. Do not reboot
+IBus/KDE/global manager or provision models. Former browser matrix remains
+102 evidence297PASS/63FAIL/80BLOCKED of440, not rerun for this feature.
+Owning doc: docs/architecture/short-function-layout-2026-10-27.md. Preserve all
+red/green1..7 and failed preflight logs. Sound hook at final.
+
+--- Prior task history; not active work ---
+
 # Current continuation — Qt6 SDK cause isolated after published103
 
 Worktree:/home/ubu/projects/lay-wechat-topology-20261027,

@@ -1,0 +1,77 @@
+{
+  "schema": "lay.release104.native-proof.v1",
+  "recorded_at": "2026-10-27T10:44:43.071949+00:00",
+  "status": "PASS_SCOPED_NATIVE24_FINAL_RELEASE_GATES_VERIFIED",
+  "version": "1.0.104",
+  "source": {
+    "files": 1289,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "4b6a28cafe8f9df92c44595613f8e432b5aad0fd5364470f5b002dba7c0a7bcd"
+  },
+  "canonical_base": "c52d6e4133cb05217d604bcddf7595595db0e964",
+  "source_mode_parity": true,
+  "actor_sha256": "771d7c71517609f8c368bef5bfae69bf0d52a9e29d2a1f0b5bbd0e7d2e3117b7",
+  "scope": "KDE private test desktop :71; native RFB keyboard/mouse; normal browser plain text; 5 conversions first/subsequent plus 2 protected English controls per browser; exact DOM text/caret/no selection and decoder control",
+  "direction": "US_TO_RUSSIAN_ONLY",
+  "results": {
+    "chrome": {
+      "PASS": 12,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT_TESTED": 0
+    },
+    "firefox": {
+      "PASS": 12,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT_TESTED": 0
+    }
+  },
+  "latency": {
+    "chrome": {
+      "samples": 10,
+      "median_ms": 59.6168345073238,
+      "p95_ms_nearest_rank": 77.23942305892706,
+      "min_ms": 41.354137007147074,
+      "max_ms": 77.23942305892706,
+      "measure": "native RFB Space release to first observed exact text/caret, subsequently stable100ms; includes observation polling and12ms post-release gap; ten conversions; excludes protected English controls"
+    },
+    "firefox": {
+      "samples": 10,
+      "median_ms": 16.81542000733316,
+      "p95_ms_nearest_rank": 17.392487032338977,
+      "min_ms": 16.42836700193584,
+      "max_ms": 17.392487032338977,
+      "measure": "native RFB Space release to first observed exact text/caret, subsequently stable100ms; includes observation polling and12ms post-release gap; ten conversions; excludes protected English controls"
+    }
+  },
+  "loaded_remote_engine": {
+    "engine_pid": 2122913,
+    "engine_sha256": "138d936899f383937bf4868eeffa275d86fe7cf2f2f3779ffb03046b725f16b0",
+    "daemon_pid": 2123003,
+    "tray_pid": 2123021
+  },
+  "runtime_authority_changed": false,
+  "local_runtime_changed": false,
+  "not_tested": [
+    "Full browser matrix",
+    "All fields/windows",
+    "Physical USB/evdev",
+    "Native GNOME acceptance",
+    "Private/fullscreen modes",
+    "Terminal acceptance for these changed bytes"
+  ],
+  "receipts": {
+    "root": "/home/e/projects/lay-development-runner/kde-install-control-20261020",
+    "preview": "short-function-space-preview-gates-v5/result.json",
+    "deployment": "short-function-freshness-preview-deployment/result.json",
+    "native": "short-function-freshness-native-v2-{browser}/{browser}/result.json"
+  },
+  "retained_nonpass": [
+    "Initial omitted --smoke invocation:0 rows/12NOT_TESTED",
+    "Previewv4 Chrome11/12; coherent prior own prefix",
+    "Earlier preview native/source failures retained in owning document",
+    "OPEN independent cold atomic fixture subset debt"
+  ],
+  "final_release_evidence": "tech_debt/evidence/release-1.0.104-verification.json"
+}

@@ -1248,12 +1248,30 @@ impl LayIbusEngine {
         self.capture_word_frame_identity()
     }
 
+    pub(super) fn has_unfinished_us_managed_input(&self) -> bool {
+        self.client_context.factory_engine_profile
+            == lay::exact_layout_authority::FactoryEngineProfile::UsQwerty
+            && !self.layout_gesture.layout_is_ru
+            && !self.atomic.active
+            && self.composition.word_input_mode == Some(crate::engine::WordInputMode::ManagedCommit)
+            && self.committed_tail.last_input_at.is_some()
+            && !self.committed_tail.buffer.ends_with(char::is_whitespace)
+    }
+
     pub(super) fn capture_space_autocorrect_frame_identity(&self) -> Option<InputFrameIdentity> {
-        if let Some(identity) = self.capture_input_frame_identity() {
-            return Some(identity);
+        let capture_space_word = || {
+            // A local unfinished US word can outlive its display cache. The
+            // complete-word permission below is still mandatory; completion
+            // frames and reverse-layout activity keep their existing rule.
+            self.capture_word_frame_identity_with_input_activity(
+                self.live_completion_input_is_active() || self.has_unfinished_us_managed_input(),
+            )
+        };
+        if self.context_word_is_known() {
+            return capture_space_word();
         }
         if let Some(witness_identity) = self.native_word_preparation_identity() {
-            let mut identity = self.capture_word_frame_identity()?;
+            let mut identity = capture_space_word()?;
             identity.space_autocorrect_managed_start_identity = Some(witness_identity);
             return Some(identity);
         }
@@ -1270,7 +1288,7 @@ impl LayIbusEngine {
         {
             return None;
         }
-        let mut identity = self.capture_word_frame_identity()?;
+        let mut identity = capture_space_word()?;
         if exact_managed_surrounding && !exact_native_suffix && !exact_marked_suffix {
             identity.space_autocorrect_surrounding_revision =
                 Some(self.client_context.surrounding_observation_revision);
@@ -1314,6 +1332,13 @@ impl LayIbusEngine {
     }
 
     fn capture_word_frame_identity(&self) -> Option<InputFrameIdentity> {
+        self.capture_word_frame_identity_with_input_activity(self.live_completion_input_is_active())
+    }
+
+    fn capture_word_frame_identity_with_input_activity(
+        &self,
+        active_input: bool,
+    ) -> Option<InputFrameIdentity> {
         let committed_tail = self.committed_tail.buffer.clone();
         let trimmed_tail = committed_tail.trim_end();
         if trimmed_tail.is_empty() {
@@ -1339,7 +1364,7 @@ impl LayIbusEngine {
             committed_tail,
             context_prefix.clone(),
             observed_token.clone(),
-            self.live_completion_input_is_active(),
+            active_input,
             self.layout_gesture.layout_is_ru,
             self.client_context.factory_engine_profile,
             self.output_capability_fingerprint(),

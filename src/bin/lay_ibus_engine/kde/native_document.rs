@@ -398,8 +398,18 @@ impl LayIbusEngine {
         &self,
     ) -> impl Future<Output = NativeResult<Observation>> + '_ {
         Box::pin(async move {
-            self.read_native_document_until(Instant::now() + OBSERVATION_BUDGET, true)
-                .await
+            let deadline = Instant::now() + OBSERVATION_BUDGET;
+            let observation = self.read_native_document_until(deadline, true).await?;
+            if self.native_us_append_observation_is_pending(&observation.snapshot) {
+                crate::trace::record(
+                    r#"{"kind":"ibus_native_document","stage":"owned_append_resample"}"#,
+                );
+                // One source-only resample, using the original deadline and
+                // pinned native field. Never replay input or grant a projected
+                // snapshot authority; a second old read still cannot edit.
+                return self.read_native_document_until(deadline, false).await;
+            }
+            Ok(observation)
         })
     }
 

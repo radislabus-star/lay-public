@@ -855,8 +855,8 @@
     "semantic_hash": "562af74b70d3d9a2ef9b8fe78fb73ccf"
   },
   "src/bin/lay_ibus_engine/committed_tail.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "84f3bd214ad6b8513f90f705a577557c",
+    "mtime": 1793092193.1587195,
+    "ast_hash": "f23e7c93eceb6115009f59655d41e537",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
@@ -910,8 +910,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/preedit.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "5f9f0a41771e8f5477ecdb7afad5ecdf",
+    "mtime": 1793092193.1587195,
+    "ast_hash": "b751766b50a6ad924342a51800f627b1",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/protocol.rs": {
@@ -1225,8 +1225,8 @@
     "semantic_hash": "e6fdbc6001da80e49fd905fe306afbac"
   },
   "src/ime_correction.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "4820cc9b03af4981fbcd0967b5362bc0",
+    "mtime": 1793087197.8481452,
+    "ast_hash": "3cc35fa5050c64af63fb7e531d6a48cd",
     "semantic_hash": ""
   },
   "src/input_gate.rs": {
@@ -1385,8 +1385,8 @@
     "semantic_hash": ""
   },
   "src/lexicon.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "0a3359bed551d6f82b7249d96aca3477",
+    "mtime": 1793087197.8481452,
+    "ast_hash": "3eb407ce1f6e87e6513f75a4b581cfb9",
     "semantic_hash": ""
   },
   "src/lexicon_tests.rs": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793068508.0,
-    "ast_hash": "490e203a8467c555e249d0eeff0e0e14",
+    "mtime": 1793094833.5540552,
+    "ast_hash": "6b8419a2ac67bd31fc6237a44f98188e",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -4825,8 +4825,8 @@
     "semantic_hash": ""
   },
   "src/exact_layout_authority.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "1e60ff72f568f443f2c8a6f05e360fb0",
+    "mtime": 1793087197.8481452,
+    "ast_hash": "fc3087926249a485b0909c52c248956a",
     "semantic_hash": ""
   },
   "src/exact_layout_authority/proof.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793068508.0,
-    "ast_hash": "248589058227294113eca7aed71e0f66",
+    "mtime": 1793096973.1321318,
+    "ast_hash": "4cd3addb38400915aff53d575b1b7781",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793068508.0,
-    "ast_hash": "d451491ed2903a080754a082a84ceb93",
+    "mtime": 1793096973.131132,
+    "ast_hash": "ba646ae35f15634291cd9acd75bc0238",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5160,8 +5160,8 @@
     "semantic_hash": ""
   },
   "tests/td113_hybrid_source_contract.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "66bc1f6bce4abf136680644e0fbe872f",
+    "mtime": 1793087201.3661664,
+    "ast_hash": "27f5421fc9640732f25e6432df862490",
     "semantic_hash": ""
   },
   "tech_debt/113-restore-hybrid-nanda-autocorrect.md": {
@@ -8230,18 +8230,18 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "3058cb609cfbf7eeee51291c90c1427a",
+    "mtime": 1793096881.7355773,
+    "ast_hash": "e960387bc44754d3ec4fb347c924198d",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document/bus.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "49be629bf6ce3bb436ae174d8dd435d7",
+    "mtime": 1793094416.929525,
+    "ast_hash": "c60429c7a4bc1023571bd7de313feab6",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document/tests.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "8ec96a3632107f012b585f4f75f79340",
+    "mtime": 1793096882.7895837,
+    "ast_hash": "14d60946a7b6ad2ac5598ec98d6fcddd",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-23-kde-chrome-native-text-notification.json": {
@@ -8255,8 +8255,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document/bus/tests.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "3845afc1b2b91239847e46fe8b31f8e7",
+    "mtime": 1793094265.660602,
+    "ast_hash": "3e92fb46473cdcaef83c38b05f43c744",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-23-kde-chrome-observation-budget.json": {
@@ -8565,8 +8565,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document/preparation.rs": {
-    "mtime": 1793068508.0,
-    "ast_hash": "f21eb055f07173f94b0fa1174d67deac",
+    "mtime": 1793096882.7765837,
+    "ast_hash": "f3d19581b4203ddb3396fa659561ae35",
     "semantic_hash": ""
   },
   "tech_debt/evidence/release-1.0.98-worklog.json": {
@@ -8787,6 +8787,31 @@
   "tech_debt/wechat-family-double-toggle-letter-loss-2026-10-27.md": {
     "mtime": 1793068508.0,
     "ast_hash": "5c992f098e081960fdeacf9dfd1323db",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-27-short-function-layout.json": {
+    "mtime": 1793087197.8481452,
+    "ast_hash": "7b579051138675fccc621bd460d0c91d",
+    "semantic_hash": ""
+  },
+  "docs/architecture/short-function-layout-2026-10-27.md": {
+    "mtime": 1793096914.0587735,
+    "ast_hash": "a926a72da92e977eaf0d7a28b5579123",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-27-short-function-space-preparation.json": {
+    "mtime": 1793092193.1587195,
+    "ast_hash": "61cae30f1f6fdc5f2f8fe4da77b9131e",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-27-kde-native-text-coherence.json": {
+    "mtime": 1793094264.6465957,
+    "ast_hash": "c5b6e230524836cc5119ae968a28528d",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-27-kde-native-append-freshness.json": {
+    "mtime": 1793096913.656771,
+    "ast_hash": "df39f28852a1b33a520dbbf32bfff782",
     "semantic_hash": ""
   }
 }

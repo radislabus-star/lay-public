@@ -123,7 +123,10 @@ impl LayIbusEngine {
                 && self.input_frame_authority_matches(expected)
                 && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
         } else {
-            expected.display_suffix_token.is_none() && self.input_frame_identity_matches(expected)
+            expected.display_suffix_token.is_none()
+                && self.context_word_is_known()
+                && self.input_frame_authority_matches(expected)
+                && self.capture_space_autocorrect_frame_identity().as_ref() == Some(expected)
         }
     }
 
@@ -152,6 +155,12 @@ impl LayIbusEngine {
         &self,
         identity: &InputFrameIdentity,
     ) -> SpaceAutocorrectLookupReceipt {
+        // A fresh field receipt can first seal this word during Space. The
+        // existing producer deduplicates current work and prepares warm exact
+        // layout synchronously, before the unchanged bounded lookup.
+        if self.has_unfinished_us_managed_input() {
+            self.schedule_space_autocorrect_prefetch(identity);
+        }
         let budget = self
             .context_callback_entered
             .map_or(Duration::from_micros(3_500), |entered| {

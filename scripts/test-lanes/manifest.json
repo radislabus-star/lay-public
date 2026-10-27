@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3487,
+    "correctness": 3501,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 480,
-    "target": 3095
+    "target": 3109
   },
   "package_fixtures": [
     {
@@ -7186,6 +7186,55 @@
       "kind": "test",
       "lane": "correctness",
       "name": "ime_correction::tests::sequential_frameless_layout_words_keep_projection_without_automatic_authority",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_function_layout_conjunction_i_after_russian_context",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_function_layout_covers_existing_class_case_and_position",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_function_layout_covers_existing_preposition_data",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_function_layout_preposition_na_at_start_and_after_context",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_function_layout_preposition_v_after_russian_context",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_function_layout_preserves_english_words_and_acronyms",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "ime_correction::tests::short_function_layout_rejects_punctuation_and_nonword_targets",
       "target": "lib:lay"
     },
     {
@@ -23943,6 +23992,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "window_interaction::native_document::bus::tests::native_document_text_acquisition_keeps_failure_boundaries",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::bus::tests::native_document_text_acquisition_resamples_one_incoherent_read",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "window_interaction::native_document::observer::tests::native_text_observer_cancellation_retires_liveness",
       "target": "bin:lay-ibus-engine"
     },
@@ -24266,6 +24329,41 @@
       "kind": "test",
       "lane": "correctness",
       "name": "window_interaction::native_document::tests::native_text_subscription_survives_a_commit_without_reusing_its_edit_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::native_us_append_observation_only_resamples_earlier_owned_prefix",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::native_us_append_observation_respects_owner_and_input_boundaries",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::short_function_space_activity_is_independent_of_display_cache",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::short_function_space_fresh_native_read_prepares_at_boundary",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::short_function_space_known_word_validator_uses_the_same_activity",
       "target": "bin:lay-ibus-engine"
     },
     {

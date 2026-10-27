@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Resample one coherent earlier owned US append snapshot once on the same KDE native Chrome field, within the original 80ms observation deadline. Keep actual observation, source verifier and all edit routes authoritative.",
+  "reason": "Preview v4 native Chrome11/12, Firefox12/12. Subsequent yf has a valid exact candidate but actual source still ends in y; final verifier correctly refuses. Coherence resampling alone does not address this coherent stale prefix.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs"
+  ],
+  "owning_document": "docs/architecture/short-function-layout-2026-10-27.md",
+  "runtime_authority_changed": false,
+  "verification": "Native v4 row4 is retained RED. Add pure prefix/suffix, selection, current-owner, privacy, decoder and epoch controls. Full IME and all release binaries before renewed unchanged native24; a second stale read must still fail authorization.",
+  "not_tested": "At decision entry pending actual source tests/builds/native acceptance. No delivery retries or enlarged timeouts."
+}

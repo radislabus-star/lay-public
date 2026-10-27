@@ -211,7 +211,13 @@ async fn snapshot(
 ) -> NativeResult<NativeSnapshot> {
     let owner = &identity.owner;
     let path = identity.field.as_str();
-    let snapshot = text_snapshot(connection, identity).await?;
+    // A pending CommitText can change the count during the first read. Sample
+    // the same field once more within the caller's original bounded future;
+    // later geometry/identity/privacy failures still refuse this observation.
+    let snapshot = match text_snapshot(connection, identity).await {
+        Err("native_document_changed") => text_snapshot(connection, identity).await?,
+        result => result?,
+    };
     let hint_rect = if with_hint_geometry {
         hint_rect(connection, identity, &snapshot).await
     } else {

@@ -1,0 +1,21 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "For UsQwerty+US only, register an already authorized current Space frame at lookup through the existing deduplicating producer. Derive locally typed unfinished US word activity independently of display cache, and validate against the same Space frame while retaining KnownStart or the existing independent complete-word proof. Ordinary construction binds the correct fingerprint. Completion/reverse-layout behavior, verifier and all delivery executors are unchanged. Both capture and registration share one unfinished-US-ManagedCommit predicate, excluding atomic and terminal passthrough; all other transport scheduling stays unchanged.",
+  "reason": "Native104A finds Chrome first d/b without a registered current Space lease and Firefox j-comma retiring its display/cache before Space. Source word eligibility is correct, but source evidence is not registered before the physical boundary.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/preedit.rs",
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs"
+  ],
+  "owning_document": "docs/architecture/short-function-layout-2026-10-27.md",
+  "runtime_authority_changed": false,
+  "verification": "First retain two engine RED tests for fresh native Space proof and display-independent unfinished-word activity. Preserve no-local-input/inactive-word refusals, scope completeness, source/caret/selection/focus/config/generation checks, original wait budget and existing exact producer/verifier/output executor. Renew affected/full release gates and same native24 rows. Keep the existing terminal_delivery_space_ready_and_refusal_outcomes_have_one_text_owner regression unchanged: first full IME1100 gate found unpaired_release resurrection (1099/1100 PASS), requiring the ManagedCommit boundary.",
+  "not_tested": "Decision checkpoint before the additional preparation edits. Native104A is 9/12 Chrome and11/12 Firefox, not accepted as complete and not published."
+}

@@ -141,6 +141,317 @@ fn managed_native_acquisition_suffix() -> LayIbusEngine {
     engine
 }
 
+fn short_function_native_word(
+    source: &str,
+    completeness: crate::context_admission::WordCompleteness,
+) -> (LayIbusEngine, NativeDocumentBinding) {
+    use crate::engine::WordInputMode;
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    lay::exact_layout_authority::warm_up_exact_layout_authority_for_ibus()
+        .expect("warm exact authority");
+    let (mut engine, binding) = observed_native_engine_with_completeness(completeness);
+    engine.config.text_backend = "ime".into();
+    engine.config.auto_replace = true;
+    engine.config.auto_switch_layout = true;
+    engine.layout_gesture.layout_is_ru = false;
+    engine.set_client_capabilities(41);
+    engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+    engine.committed_tail.buffer.clear();
+    engine.composition.preedit_fast.reset();
+    engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new(String::new(), 0, 0)));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    for ch in source.chars() {
+        zbus::block_on(engine.commit_managed_passthrough_char(
+            &mut EngineOutput::test(&mut output),
+            ch,
+            32,
+        ))
+        .unwrap();
+    }
+    let binding = binding.for_result(&engine);
+    engine.client_context.native_document_binding = Some(binding.clone());
+    (engine, binding)
+}
+
+fn pending_native_us_append() -> LayIbusEngine {
+    use crate::context_admission::WordCompleteness;
+    use crate::output::{EngineOutput, TestEngineOutput};
+    let (mut engine, binding) = short_function_native_word("y", WordCompleteness::KnownStart);
+    assert!(engine.install_native_document(Observation {
+        binding: binding.clone(),
+        snapshot: SurroundingTextSnapshot::new("y".into(), 1, 1),
+    }));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        'f',
+        32,
+    ))
+    .unwrap();
+    assert_eq!(output.committed_texts, ["f"]);
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    engine
+}
+
+#[test]
+fn native_us_append_observation_only_resamples_earlier_owned_prefix() {
+    use crate::context_admission::WordCompleteness;
+
+    let engine = pending_native_us_append();
+    let snapshot =
+        |text: &str, cursor, anchor| SurroundingTextSnapshot::new(text.into(), cursor, anchor);
+    for actual in [snapshot("", 0, 0), snapshot("y", 1, 1)] {
+        assert!(
+            engine.native_us_append_observation_is_pending(&actual),
+            "activity={} preparation={:?} chain={:?} native={} managed={} witness={:?}",
+            engine.has_unfinished_us_managed_input(),
+            engine.native_word_preparation_identity(),
+            engine.managed_word_start_preparation_identity(),
+            engine.native_document_is_current(),
+            engine.client_context.managed_input,
+            engine.client_context.managed_word_start
+        );
+    }
+    for actual in [
+        snapshot("yf", 2, 2),
+        snapshot("yx", 2, 2),
+        snapshot("z", 1, 1),
+        snapshot("y ", 1, 1),
+        snapshot("yf", 1, 1),
+        snapshot("y", 1, 0),
+    ] {
+        assert!(
+            !engine.native_us_append_observation_is_pending(&actual),
+            "{actual:?}"
+        );
+    }
+    assert!(!engine.native_word_preparation_edit_is_current());
+    assert_ne!(
+        engine.client_context.surrounding_text_snapshot,
+        engine.managed_word_start_preparation_snapshot(),
+        "classifying a stale source must not manufacture an actual receipt"
+    );
+
+    // A later word keeps both the earlier Unicode text and the right suffix.
+    // An observation before this word's boundary is not an owned append.
+    use crate::output::{EngineOutput, TestEngineOutput};
+    let (mut engine, binding) = short_function_native_word("y", WordCompleteness::KnownStart);
+    engine.committed_tail.buffer = "пишу y".into();
+    assert!(engine.install_native_document(Observation {
+        binding: binding.for_result(&engine),
+        snapshot: snapshot("😀 пишу y хвост", 8, 8),
+    }));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        'f',
+        32,
+    ))
+    .unwrap();
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    assert!(engine.native_us_append_observation_is_pending(&snapshot("😀 пишу y хвост", 8, 8)));
+    for actual in [
+        snapshot("😀 пишу хвост", 6, 6),
+        snapshot("😀 пишу yf хвост", 9, 9),
+        snapshot("😀 пишу y иной", 8, 8),
+    ] {
+        assert!(
+            !engine.native_us_append_observation_is_pending(&actual),
+            "{actual:?}"
+        );
+    }
+    assert_eq!(output.committed_texts, ["f"]);
+    assert!(output.surrounding_deletes.is_empty());
+    assert!(output.forwarded_keys.is_empty());
+}
+
+#[test]
+fn native_us_append_observation_respects_owner_and_input_boundaries() {
+    let stale = SurroundingTextSnapshot::new("y".into(), 1, 1);
+    for changed in [
+        "focus",
+        "lease",
+        "layout",
+        "gnome",
+        "ru",
+        "atomic",
+        "privacy",
+        "epoch",
+        "unmanaged",
+        "boundary",
+    ] {
+        let mut engine = pending_native_us_append();
+        assert!(engine.native_us_append_observation_is_pending(&stale));
+        match changed {
+            "focus" => engine.client_context.focus_serial += 1,
+            "lease" => engine.client_context.runtime_owner_lease_identity += 1,
+            "layout" => engine.layout_gesture.layout_generation += 1,
+            "gnome" => engine.config.layout_backend = "gnome".into(),
+            "ru" => engine.layout_gesture.layout_is_ru = true,
+            "atomic" => engine.atomic.active = true,
+            "privacy" => {
+                engine.client_context.content_purpose = super::super::IBUS_INPUT_PURPOSE_PASSWORD
+            }
+            "epoch" => engine.committed_tail.epoch += 1,
+            "unmanaged" => engine.client_context.managed_input = false,
+            "boundary" => engine.committed_tail.buffer.push(' '),
+            _ => unreachable!(),
+        }
+        assert!(
+            !engine.native_us_append_observation_is_pending(&stale),
+            "{changed}"
+        );
+    }
+}
+
+#[test]
+fn short_function_space_fresh_native_read_prepares_at_boundary() {
+    use crate::space_autocorrect_prefetch::{self, PreparedLeaseKind, SpaceAutocorrectLookup};
+    for (source, target) in [("d", "в "), ("b", "и "), ("j,", "об ")] {
+        let (mut engine, binding) = short_function_native_word(
+            source,
+            crate::context_admission::WordCompleteness::UnknownStart,
+        );
+        space_autocorrect_prefetch::invalidate_path(&engine.path);
+        let scope = engine.context_word_scope;
+        assert!(engine.install_native_document(Observation {
+            binding,
+            snapshot: SurroundingTextSnapshot::new(
+                source.into(),
+                source.chars().count() as u32,
+                source.chars().count() as u32
+            ),
+        }));
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("actual complete-word proof");
+        let lookup = engine.take_space_autocorrect_lease(&frame);
+        let SpaceAutocorrectLookup::Ready(lease) = lookup.lookup else {
+            panic!("fresh Space proof was not prepared for {source:?}");
+        };
+        assert_eq!(lease.kind, PreparedLeaseKind::ExactLayout);
+        assert_eq!(lease.decision.replacement, target);
+        assert!(lease.decision.action.allow_apply());
+        assert!(lease.exact_certificate.is_some());
+        assert_eq!(engine.context_word_scope, scope);
+        assert!(!engine.context_word_is_known());
+        space_autocorrect_prefetch::invalidate(&frame);
+    }
+}
+
+#[test]
+fn short_function_space_activity_is_independent_of_display_cache() {
+    use crate::space_autocorrect_prefetch::{self, SpaceAutocorrectLookup};
+    for source in ["d", "b", "j,"] {
+        let (mut engine, binding) = short_function_native_word(
+            source,
+            crate::context_admission::WordCompleteness::UnknownStart,
+        );
+        engine.composition.preedit_fast.reset();
+        assert!(engine.install_native_document(Observation {
+            binding,
+            snapshot: SurroundingTextSnapshot::new(
+                source.into(),
+                source.chars().count() as u32,
+                source.chars().count() as u32
+            ),
+        }));
+        assert!(engine.capture_input_frame_identity().is_none());
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("actual complete-word proof");
+        assert!(
+            frame.active_composition,
+            "unfinished owned word {source:?} lost activity with its display cache"
+        );
+        assert_eq!(frame.observed_token, source);
+        assert!(!engine.context_word_is_known());
+        let last_input = engine.committed_tail.last_input_at.take();
+        assert!(
+            !engine
+                .capture_space_autocorrect_frame_identity()
+                .expect("inert source frame")
+                .active_composition
+        );
+        engine.committed_tail.last_input_at = last_input;
+        use lay::exact_layout_authority::FactoryEngineProfile;
+        for (profile, ru) in [
+            (FactoryEngineProfile::Ru, false),
+            (FactoryEngineProfile::Unknown, false),
+            (FactoryEngineProfile::UsQwerty, true),
+        ] {
+            engine.client_context.factory_engine_profile = profile;
+            engine.layout_gesture.layout_is_ru = ru;
+            let other = engine
+                .capture_space_autocorrect_frame_identity()
+                .expect("inert source frame");
+            assert!(!other.active_composition);
+            space_autocorrect_prefetch::invalidate_path(&engine.path);
+            assert!(matches!(
+                engine.take_space_autocorrect_lease(&other).lookup,
+                SpaceAutocorrectLookup::NotReady
+            ));
+        }
+        engine.client_context.factory_engine_profile = FactoryEngineProfile::UsQwerty;
+        engine.layout_gesture.layout_is_ru = false;
+        engine.composition.word_input_mode =
+            Some(crate::engine::WordInputMode::TerminalPassthrough);
+        assert!(!engine.has_unfinished_us_managed_input());
+        engine.composition.word_input_mode = Some(crate::engine::WordInputMode::ManagedCommit);
+        engine.atomic.active = true;
+        assert!(!engine.has_unfinished_us_managed_input());
+    }
+}
+
+#[test]
+fn short_function_space_known_word_validator_uses_the_same_activity() {
+    use crate::space_autocorrect_prefetch::{self, PreparedLeaseKind, SpaceAutocorrectLookup};
+    for (source, target) in [("d", "в "), ("b", "и "), ("j,", "об ")] {
+        let (mut engine, binding) = short_function_native_word(
+            source,
+            crate::context_admission::WordCompleteness::KnownStart,
+        );
+        engine.composition.preedit_fast.reset();
+        space_autocorrect_prefetch::invalidate_path(&engine.path);
+        assert!(engine.install_native_document(Observation {
+            binding,
+            snapshot: SurroundingTextSnapshot::new(
+                source.into(),
+                source.chars().count() as u32,
+                source.chars().count() as u32
+            ),
+        }));
+        assert!(engine.context_word_is_known());
+        let frame = engine
+            .capture_space_autocorrect_frame_identity()
+            .expect("known Space frame");
+        assert!(frame.active_composition);
+        let completion = engine
+            .capture_input_frame_identity()
+            .expect("known completion frame");
+        assert!(!completion.active_composition);
+        assert_ne!(frame.frame_fingerprint, completion.frame_fingerprint);
+        let lookup = engine.take_space_autocorrect_lease(&frame);
+        let SpaceAutocorrectLookup::Ready(lease) = lookup.lookup else {
+            panic!("known Space frame rejected by its validator: {source:?}");
+        };
+        assert_eq!(lease.kind, PreparedLeaseKind::ExactLayout);
+        assert_eq!(lease.decision.replacement, target);
+        assert!(lease.decision.action.allow_apply());
+        space_autocorrect_prefetch::invalidate(&frame);
+    }
+}
+
 #[test]
 fn native_document_same_text_after_commit_observes_the_new_effect_only_once() {
     let mut engine = managed_native_acquisition_suffix_without_receipt();

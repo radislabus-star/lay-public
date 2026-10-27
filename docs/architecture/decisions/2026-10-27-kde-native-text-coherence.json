@@ -1,0 +1,19 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Resample only the first native text snapshot once after a character-count coherence mismatch, on the same pinned connection/field identity and within the existing enclosing deadline. Keep post-geometry mismatch, RPC/deadline, privacy, selection and focus refusals unchanged.",
+  "reason": "Frozen preview actual Chrome11/12,Firefox12/12: prepared yf-to-на is retained, but native_document_changed removes the actual source snapshot and final authorization correctly refuses. This is source acquisition coherence during pending CommitText, not candidate authority or delivery.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document/bus.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/bus/tests.rs"
+  ],
+  "owning_document": "docs/architecture/short-function-layout-2026-10-27.md",
+  "runtime_authority_changed": false,
+  "verification": "First deterministic real-peer RED for an append between GetText and final CharacterCount. Then stable second sample succeeds; continuous changes, field/privacy transitions and original geometry/deadline tests remain refusals. Original observation80ms/selection40ms bounds unchanged. Renew source/build and exact installed native proofs.",
+  "not_tested": "At decision entry only new peer tests were added; no new native acquisition runtime edit or installation."
+}

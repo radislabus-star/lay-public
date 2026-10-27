@@ -12,6 +12,10 @@ struct Document {
     hold_text: bool,
     geometry_calls: u32,
     private_text_reads: u32,
+    text_reads: u32,
+    changes_after_text: u32,
+    private_after_change: bool,
+    field_after_change: bool,
 }
 
 struct Text(Arc<Mutex<Document>>);
@@ -36,12 +40,25 @@ impl Text {
         if state.private {
             state.private_text_reads += 1;
         }
-        state
+        let text = state
             .text
             .chars()
             .skip(start as usize)
             .take((end - start) as usize)
-            .collect()
+            .collect();
+        state.text_reads += 1;
+        if state.changes_after_text > 0 {
+            state.changes_after_text -= 1;
+            state.text.push('а');
+            state.caret += 1;
+            if state.private_after_change {
+                state.private = true;
+            }
+            if state.field_after_change {
+                state.field = "/other".try_into().unwrap();
+            }
+        }
+        text
     }
 
     fn get_n_selections(&self) -> i32 {
@@ -117,6 +134,10 @@ fn peer() -> (
         hold_text: false,
         geometry_calls: 0,
         private_text_reads: 0,
+        text_reads: 0,
+        changes_after_text: 0,
+        private_after_change: false,
+        field_after_change: false,
     }));
     let shared = document.clone();
     let (server_socket, client_socket) = std::os::unix::net::UnixStream::pair().unwrap();
@@ -353,6 +374,53 @@ fn native_document_geometry_pending_does_not_extend_the_observation_deadline() {
     document.lock().unwrap().hold_geometry = false;
     assert_eq!(actual.err(), Some("native_deadline"));
     assert_eq!(document.lock().unwrap().geometry_calls, 1);
+}
+
+#[test]
+fn native_document_text_acquisition_resamples_one_incoherent_read() {
+    let (_server, client, identity, document) = peer();
+    document.lock().unwrap().changes_after_text = 1;
+    let actual = zbus::block_on(super::super::bounded(
+        Instant::now() + Duration::from_millis(250),
+        snapshot(&client, &identity, false),
+    ))
+    .expect("second coherent read of the same field");
+    assert_eq!(
+        actual.snapshot,
+        SurroundingTextSnapshot::new("прова".into(), 5, 5)
+    );
+    let state = document.lock().unwrap();
+    assert_eq!(state.text_reads, 2);
+    assert_eq!(state.geometry_calls, 0);
+    assert_eq!(state.private_text_reads, 0);
+}
+
+#[test]
+fn native_document_text_acquisition_keeps_failure_boundaries() {
+    for change in ["continuous", "private", "field"] {
+        let (_server, client, identity, document) = peer();
+        {
+            let mut state = document.lock().unwrap();
+            state.changes_after_text = if change == "continuous" { 3 } else { 1 };
+            state.private_after_change = change == "private";
+            state.field_after_change = change == "field";
+        }
+        let actual = zbus::block_on(super::super::bounded(
+            Instant::now() + Duration::from_millis(250),
+            snapshot(&client, &identity, false),
+        ));
+        let expected = match change {
+            "continuous" => "native_document_changed",
+            "private" => "native_private_or_terminal",
+            "field" => "native_field_changed",
+            _ => unreachable!(),
+        };
+        assert_eq!(actual.err(), Some(expected), "{change}");
+        let state = document.lock().unwrap();
+        assert_eq!(state.text_reads, if change == "private" { 1 } else { 2 });
+        assert_eq!(state.private_text_reads, 0);
+        assert_eq!(state.geometry_calls, 0);
+    }
 }
 
 #[test]
