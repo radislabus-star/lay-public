@@ -1,6 +1,6 @@
 # Потеря буквы при повторном переключении в семействе окон, как у WeChat
 
-Статус: QUEUED_AFTER_CURRENT_FIX. Приоритет: следующий запрос пользователя.
+Статус: ACTIVE_STACK_AND_NATIVE_DIAGNOSIS. Приоритет: следующий запрос пользователя.
 Дата: 2026-10-27. Делать самостоятельно, без агентов и Harness².
 
 ## Наблюдение пользователя
@@ -39,3 +39,81 @@
 Текущая очистка FocusOut/Disable не объявляется причиной этого сбоя без
 отдельного подтверждения. Карта влияния:
 `docs/development/ime-impact-map-2026-10-27.md`.
+
+
+## Начальное измерение — 2026-10-27
+
+Релиз102 завершён отдельно, опубликован04a0f65e; текущая ветка этой задачи
+codex/wechat-family-20261027 от audit0d33d9b2. Продуктовый код пока не менялся.
+
+Локальный основной процесс WeChat1018927 — /opt/wechat/wechat. В его ELF нет
+динамической зависимости libQt, но есть QIBusInputContext, QXcbIntegration,
+QTextEdit/QPlainTextEdit/QInputMethodEvent и строка Qt6.6.; это свидетельство
+встроенного Qt6.6. Вспомогательный WeChatAppEx использует GTK3/IBus; его стек
+не доказывает тип главного поля сообщения. Само поле сообщения не исследовано.
+Главный процесс запущен в GNOME/XWayland с QT_IM_MODULE=ibus и XMODIFIERS=@im=ibus.
+Реально загруженный локальный IME3037150 имеет SHA1095c2648bb59e2f4363a3f58394013e6b6598eb9d8678f5b0fb98a01cd90ebc
+(старые96bytes); установленный CLI на момент discovery показывает101. Не
+приписывать наблюдение пользователя новой102 без проверки. Локальные окна,
+сообщения, ввод и службы не изменялись.
+
+Существующий native-fields-final.py использует PyQt5/Qt5.15.6; его PASS не
+сертифицирует Qt6. Подготовлена отдельная venv на удалённой машине:
+/home/e/.cache/lay/test-qt66-20261027, runtimeQt6.6.2,PyQt6.6.1,sip13.6.0.
+Пакеты из PyPI, системный Qt и IME-маршрут не изменены; gi берётся из существующих
+system-site-packages. Версии Qt6.6.2 и PyQt6.6.1 доступны в официальном PyPI.
+Это стандартные Qt6 editors, не копия закрытой реализации WeChat.
+
+Протокол CACHE/qt66-baseline-protocol.json:3поля ×5случаев =15; нативный RFB,
+до/послеSpace,5жестов,второе слово,регистр,следующая буква. Legacy input helper
+переиспользован; observer только записывает реальные QInputMethodEvent до/после
+вызова super. Каждый rapid target должен быть замечен до следующего жеста.
+Первый запуск: все3процесса SIGSEGV без конечного result.json;15случаевBLOCKED,
+не PASS и не доказанный LayFAIL. Все проверки restoration совпали: engine bytes,
+config, source/engine mode, KDE layout. Qt-only,Gdk-before,Gdk-after startup
+без показа/ввода завершаются0. Изолированный первый qt-rich roundtrip-active
+под faulthandler проходит1/1; он не заменяет первоначальный15-case BLOCKED.
+Следующий ограниченный шаг: один полный исходный rich-field порядок5случаев
+под faulthandler, чтобы найти первое место падения. Не повторять до зелёного.
+
+CACHE=/home/ubu/.cache/lay/development/wechat-family-20261027.
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+Actor native-qt66-double-shift-20261027.py SHAeaf8ece63fb2831bf8a1ae77e7d5611d5821a0108d40aedde1c4336d6dc45e9e.
+RemoteC IME37302/28d672b9;daemon37416. Протоколы/исходные логи сохраняются.
+
+
+## Граница установленного сбоя и дополнительный control
+
+GDB полного rich-порядка подтвердил SIGSEGV в Qt6 C++ функции
+QXcbConnection::xi2SetupDevices, вызванной handleXcbEvent/processXcbEvents;
+это не стек Rust-процесса. Qt6.6.2/6.6.3 исходник этой функции побайтно совпал.
+Из исходников Lay видно activate/deactivate текущего ReplayMaster и RemoveMaster
+после thaw, но прямая транспортная причинная проба пока не сделана. Не выдавать
+это за доказанную причину сообщения пользователя о съеденной букве.
+
+Дополнительный ЗАРАНЕЕ объявленный control с QT_XCB_NO_XI2=1 только в новом Qt
+процессе:9PASS/6FAIL из15, исходный default15BLOCKED сохранён. Во всех3полях
+roundtrip-active/space и rapid-five проходят. context-rapid-five:line замечает
+все5целевых слов, но часть после следующего старта;rich/plain не достигают
+последнего target, сохраняя полное исходное слово. Односимвольное сокращение
+после законченного преобразования этим cohort не воспроизведено.
+Mixedcase3FAIL возникают до первого toggle: keysym-only legacy injector не
+установил ожидаемую заглавную букву. Не приписывать это post-toggle потере
+регистра; rawFAIL сохранены. Для проверки этой цели надо применять существующий
+физический Shift-инжектор из ordinaryShift controls, а не править decoder.
+27latency samples по успешным строкам control:median12.544мс,p95192.070мс,
+max193.717мс. Это не сравнение производительности defaultQt6/WeChat.
+
+Транспортный владелец: native_input/replay_master.rs activate153,deactivate344;
+x11.rs activate_replay562,retirement667. Архитектурное решение
+2026-10-20-remote-x11-replay-master-lifetime.json требует временного устройства:
+постоянное extra-master уже ломало обычный Chrome input. Запрещён слепой возврат
+к persistent-master или обход пути ради Qt6PASS. IME/daemon код, байты и desktop
+остались прежними. Фактический GNOME WeChat editor новой102 не проверен.
+
+Итог: NOT_REPRODUCED_FOR_LETTER_LOSS; DEFAULT_QT6_SDK_CRASH_OPEN;
+SECOND_WORD_RAPID_OPEN; no product fix/release claimed. Следующее доказательство
+для SDK-дефекта: transport-only Add/Remove reproduction на том же Qt6, затем
+карта решения с учётом доказанного Chrome idle-master ограничения. Для буквы —
+контроль точного редактора/исходного текста и реально загруженной новой версии.
+CACHE/characterization-summary.json содержит отдельные counts/limits/пути.

@@ -1,25 +1,25 @@
-# GitHub Actions: предупреждение о 90% включённого хранилища
+# GitHub Actions storage follow-up
 
-Статус: QUEUED_AFTER_CURRENT_FIX_AND_WECHAT_FAMILY. Пользователь явно попросил
-«с этим тоже потом разберись запиши себе»; текущую правку не прерывать.
+Status: ACCOUNT_INVENTORY_RECORDED_PRIVATELY. User requested a deferred review
+of the account storage alert. Detailed billing and other private repository
+metadata are kept outside this public source tree.
 
-Данные из пересланного пользователем письма, пока не проверены в live billing:
-аккаунт radislabus-star, использовано 0.45 GB из 0.5 GB (90%), сброс периода
-указан на 2026-11-01 через 6 дней. Не выдавать этот снимок за текущее показание.
+Current checks found no Actions artifacts in either Lay repository. The public
+CI uses a separate Rust cache and does not upload artifact payloads. No Lay
+runtime, workflow, paid budget, authentication scope or release asset changed.
+No current unique failure evidence from other projects was deleted.
 
-## Разбор
+Next work belongs to the project that owns the large fresh failure artifacts:
+review its upload payload and evidence owner, preserve verified replacements
+for necessary unique material, then reduce future accumulation and remove only
+an authorized set. Do not modify an independent project's branch/workflow from
+the Lay checkout. Current stored bytes and accrued monthly billing differ;
+cache has its own allowance. Billing API visibility is not yet established.
 
-1. Проверить действующее потребление и правила тарификации по официальной
-   документации GitHub; отдельно различить artifacts, caches и журналы.
-2. Получить инвентарь по репозиториям: размер, возраст, workflow/run, срок
-   хранения, связь с опубликованным релизом и наличие проверенной копии.
-3. Сначала убрать только воспроизводимые/дублирующиеся промежуточные данные.
-   Не удалять единственные доказательства приёмки и артефакты релизов.
-4. Сократить накопление в существующих workflow минимальной настройкой
-   retention/upload; не менять runtime Lay, тестовые допуски или результаты.
-5. Проверить эффект и записать точные изменения, оставшиеся данные и лимит.
-   Не покупать план и не увеличивать платный бюджет по одной просьбе о разборе.
+Private account inventory/report location is recorded in the session's local
+handoff and user-requested memory note. This is a record of the follow-up,
+not a storage cleanup or billing-PASS claim.
 
-Приёмка: измеренное уменьшение либо обоснованное объяснение источника учёта;
-дальнейшее хранение ограничено, релизы/уникальная история и воспроизводимость
-сохранены. Сверить, что новая политика не лишает PR/release необходимых проверок.
+Primary references:
+https://docs.github.com/en/billing/concepts/product-billing/github-actions
+https://docs.github.com/en/rest/billing/usage

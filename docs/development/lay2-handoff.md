@@ -1,3 +1,46 @@
+## Next original stage6; scoped102 published, diagnostics retained — 2026-10-27T01:04:38.701607+00:00
+
+Current checkout /home/ubu/projects/lay-wechat-family-20261027,
+branch codex/wechat-family-20261027 from0d33d9b2. Only documentation/evidence
+changed; no runtime edit, local GUI interaction, agents or Harness2.
+
+102 publication/update discovery complete (04a0f65e tag, audit0d33d9b2).
+Native source counts remain FF125P58F37B/220,Chrome172P5F43B/220,297P63F80B/440.
+All3523+11/all10 and functional305CI pass; all residuals OPEN, not regression-free.
+Current remoteKDE engine37302/28d672b9,daemon37416;rootIBus3168326 untouched.
+No active native/heavy job. LocalGNOME loadedIME3037150/1095c264 remains96bytes;
+installedCLI101 at discovery snapshot. Never call fileversion loadedversion.
+
+WeChat-family task INVESTIGATED_NOT_FIXED. Main binary has staticQt6.6 signatures,
+IBus env, no actual message/editor interaction. Old Qt tests were Qt5.15.
+Separate Qt6.6.2venv onremote; new15-case default cohort BLOCKED by Qt C++ SIGSEGV
+in xi2SetupDevices. Isolated first active roundtripPASS; core-X11 Qt-client-only
+control9P6F/15 does not replace defaultBLOCKED. Secondwordrapid fails; mixedcase
+fails source setup with keysym-only injector. Reported oneletterloss NOT_REPRODUCED.
+A blind persistent ReplayMaster violates existing2026-10-20 decision and previously
+broke Chrome. Keep next transport-only reproduction and GUI-source example OPEN;
+no new delivery route or speculative shared fix. Evidence in task/route-map and
+CACHE=/home/ubu/.cache/lay/development/wechat-family-20261027. All27 receipts saved.
+
+Actions requested follow-up inventoried at00:57:57UTC. No artifacts in either
+Lay repo. Source of large account artifacts belongs to another active private
+project; fresh unique evidence, authentication scopes and financial settings
+were preserved. Detailed private report/inventory live outside this public
+checkout: /home/ubu/.cache/lay/development/actions-storage-20261027/{followup.md,inventory.json}.
+Do not publish its private repo metadata or edit that independent project here.
+
+Proceed original stage6 installer bootstrap103, already mapped in
+ docs/architecture/auto-update-build-bootstrap-2026-10-27.md and CACHE103.
+Minimal existing unit-copy+daemonreload move before compilation; RED1/GREEN1 and
+live64MiB unit control already recorded; no new policy helper. Hard4G/CPU1/swap256M
+preserved. Actual remote automatic102->103 completion still REQUIRED; not a check,
+mock or manual installation. Test privateKDE process env only; manager defaults
+GNOME10.0, do not import globals. Installed versus loadedIME stays separate.
+No current product change for this stage yet. Publicmain audit0d33d9b2; private
+origin/main47fe54e6 independent/divergent and MUST remain untouched.
+
+Historical entries follow; old jobIDs/active states are not current.
+
 ## Release102 complete; next WeChat-family letter loss — 2026-10-27T00:25:52.775756+00:00
 
 Stable v1.0.102 published2026-10-27T00:23:46Z at04a0f65e0a4e22e317a350652cc7638c23849680.

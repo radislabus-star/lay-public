@@ -6523,3 +6523,28 @@ suite: 611/611 PASS, receipt
 Runtime authority did not change. Broad gate, installed Firefox behavior,
 other windows, hardware Shift, and applied-autocorrection undo remain
 untested on these new bytes.
+
+
+## Qt6 transport qualification — 2026-10-27
+
+No runtime authority or delivery route changed. On exact102 C, the new Qt6.6.2
+native fixture's default XI2 processes crash in QXcbConnection::xi2SetupDevices
+(GDB), preventing a complete15-case receipt. Constructors and isolated initial
+active roundtrip pass. An extra client-only QT_XCB_NO_XI2 control yields9P6F/15,
+not default Qt6 or actual WeChat acceptance. Three failures concern rapid second
+word targets; three mixed-case setup failures do not establish original capital
+source before toggling. Reported completed-toggle letter loss is not reproduced.
+
+ReplayMaster owns X-server resources only: activate/deactivate in
+src/bin/lay_daemon/native_input/replay_master.rs; x11.rs freezes, replays, settles,
+thaws then retires. Association of its hierarchy retirement with the Qt6 crash
+is supported by the SDK stack and source, but a transport-only causal control
+is still required. Do not bypass the existing ephemeral-master decision: a
+persistent extra master previously broke Chrome ordinary input. No changes to
+IME owner, verifier, evdev, styling, layout synchronization or user GNOME occur.
+
+Raw evidence, protocol/SHA and limitations:
+tech_debt/wechat-family-double-toggle-letter-loss-2026-10-27.md and
+tech_debt/evidence/qt6-native-characterization-2026-10-27.json.
+GNOME main WeChat uses its bundled Qt6.6/IBus, while the observed local loadedIME
+still has accepted old96bytes; no new-version actual editor claim is made.
