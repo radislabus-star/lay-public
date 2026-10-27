@@ -1,23 +1,28 @@
-# Current continuation — 1.0.103 publication
+# Current continuation — 1.0.103 published and updater verified
 
-Source:/home/ubu/projects/lay-update-bootstrap-20261027; functional153adad4,
-graph05213990. Full3523+11/Python421(10skip)/all10/no warnings/all5CI PASS.
-Actual staged102->103 automatic PASS679.60s,232 compiler entries, same-PID
-3G->max refresh,4G/1CPU/256M unchanged, all10 actual Cargo hashes verified.
-CROOT/release103-automatic-staged-v2/result.json. Its test drop-in is removed.
-Daemon666559 uses103; IME37302/28d672b9 remains102 deliberately.
+Source:/home/ubu/projects/lay-update-bootstrap-20261027. Stable103 published
+2026-10-27T03:18:57Z/taga256811f, functional153adad4/graph05213990, PR72FF.
+All3523+11/Python421(10skip)/all10/no warnings/all5CI PASS.
+Actual staged automatic679.60s and separate official GitHub automatic19.04s
+(cached build) PASS/all10 hashes. Both actual updater checks PASS: local files
+101 offered103; remote files103current. No manual localGNOME install/restart.
 
-Publish103 from these verified bytes/metadata, then run the separately prepared
-actual OFFICIAL GitHub automatic protocol from real102 files and the same
-staged build cache. Script CACHE103/run-automatic-official.py is prepared,
-not yet deployed/run. Stage transport used loopback metadata/local bare source;
-do not call it official API proof. Both installed updater discovery checks
-follow publication. No new source/native gate for docs-only publication.
+Important retained gap/correction: first staged proof did not verify the new
+daemon's desktop env; it inheritedGNOME from the shared manager behind partial
+privateKDE drop-ins. First official protocol stopped at this PRECONDITION,
+BEFORE any file replacement. Complete per-unit KDE env restored from accepted
+IME/tray; globalmanager unchanged. Official proof now asserts AFTER-restart
+KDE environment. Daemon700851/103 correctprivateKDE; IME37302/28d672b9 remains
+102 deliberately; tray37423 unchanged. Full details: owner doc and updaterJSON.
 
-Publicmain870698c6 at this entry; privateorigin/main independent/do not merge.
-WeChat-family letter loss OPEN/not reproduced; no input path patch.
-Actions storage recorded privately/no other-project deletion. No agents,
-Harness2 or manual localGNOME install/restart. Play finish sound at final.
+Original six publication groups are recorded with all limits; native297P63F80B
+/440 and historical losses remain OPEN, not newly rerun for installer103.
+Next substantive input issue: WeChat-family repeated-toggle letter loss still
+NOT_REPRODUCED/OPEN; Qt6 default SDK crash characterized, no speculative
+transport change. See tech_debt/wechat-family-double-toggle-letter-loss-2026-10-27.md.
+Actions storage latest user follow-up recorded privately; no other-project
+artifacts deleted. No agents/Harness2. Keep independent privateorigin/main
+47fe54e6 separate. Play finish sound at final turn.
 
 --- Previous handoff history ---
 

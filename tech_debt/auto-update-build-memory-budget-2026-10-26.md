@@ -1,7 +1,8 @@
 # Automatic update build: premature memory reclaim
 
-PriorityP0; DONE_SCOPED_RESOURCE_CONTRACT_RELEASED_1.0.99.
-Automatic end-to-end installation remains NOT_PROVED.
+PriorityP0; DONE_BOOTSTRAP_AND_OFFICIAL_AUTOMATIC_APPLY_1.0.103.
+Original scoped resource contract shipped1.0.99; its old incomplete evidence
+is retained below. Final103 closes the bootstrap and official apply proof.
 Measured first failure: a source build exceeds the unit's3GiB MemoryHigh
 while staying under its4GiB MemoryMax; millions of high events and28% full
 memory pressure stall the compiler and keep update.lock busy for over an hour.
@@ -53,3 +54,13 @@ Owning proof: docs/architecture/auto-update-build-bootstrap-2026-10-27.md and
 tech_debt/evidence/release-1.0.103-verification.json. Official production GitHub
 automatic apply/discovery remains PENDING publication; staged transport is not
 that receipt. Earlier99 timing/timeout/NOT_PROVED history is retained above.
+
+Final103 published at2026-10-27T03:18:57Z/taga256811f. Official default
+GitHub102->103 automatic applyPASS19.0406s using the staged build cache;
+all10 exact artifacts/loadeddaemon/KDEenvironment/config/timer verified.
+The retained first official precondition failure exposed an incomplete private
+KDE service fixture; it was corrected only in that per-unit test environment
+and the post-restart environment assertion was strengthened. This did not
+alter product source or waive native failures. Both installed --check PASS:
+local101->103 offered, remote103current. No local manual install/restart.
+See release-1.0.103-updater.json; no new all-window acceptance claim.

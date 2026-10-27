@@ -11,4 +11,4 @@ Lay 1.0.103 исправляет запуск сборки при автообн
 Текущий процесс IME сохраняет сессию ввода. Новых заявлений о совместимости всех окон этот установочный выпуск не добавляет; известные ограничения браузеров и семейства Qt остаются в списке задач.
 
 Evidence: `tech_debt/evidence/release-1.0.103-verification.json`.
-Official GitHub automatic acceptance and both installed update-discovery checks: PENDING publication.
+Official GitHub automatic apply PASS19.04s using the existing build cache; allten hashes and the restarted daemon's KDE environment verified. Both installed --check PASS: local101->103 offered, remote103current. The first official precondition failure/corrected private test environment is retained in `tech_debt/evidence/release-1.0.103-updater.json`. Installed files/daemon103; currentIME102 retained. No manual localGNOME install/restart.

@@ -135,3 +135,39 @@ The release-metadata API/local-bare transport were staged; official production
 GitHub API/fetch acceptance stays PENDING until publication. No new physical
 window, terminal, model-quality or localGNOME acceptance follows from this
 installation test. See tech_debt/evidence/release-1.0.103-verification.json.
+
+## Official GitHub apply and fixture-admission correction
+
+Published stablev1.0.103 at2026-10-27T03:18:57Z, taga256811f. Allfive required
+checks passed on functional153adad4/graph05213990; publication docs did not
+change its1289-file source closure. PR72 merged by normal fast-forward.
+
+The first official protocol stopped BEFORE baseline restoration/replacement:
+its startup assertion found daemonPID666559 with DISPLAY71 but inherited
+GNOME desktop and no private config. The partial test-only99 environment
+drop-in had set display/bus/auth but omitted desktop/data/config. Thus the
+earlier staged proof establishes build/install artifacts, NOT post-restart
+KDE environment. Preserve this gap; do not call it native compatibility PASS.
+CROOT/release103-kde-service-fixture-admission/result.json records its correction.
+
+Restored complete environment only in the owned private KDE daemon drop-in
+from the accepted running IME/tray. Global manager environment, localGNOME,
+source runtime logic and IBus roots were not changed. Daemon697813 was
+verifiedKDE/privateconfig, then the official protocol added a strict AFTER-
+restart environment check. This was a test-configuration correction before
+product input, not a change of a functional verdict or input route.
+
+CROOT/release103-automatic-official/result.json: actual official default
+GitHub API/repository102->103 automatic apply PASS19.0406s. The baseline
+was allten real retained102 binaries installed by the existing installation
+owner, not a version mock. The earlier same-path103 artifact cache was reused:
+this19s is delivery/cached install time, NOT independent cold compilation or
+input latency. Allten fresh Cargo records match both installed and staged
+SHA256; daemon700851 uses103 and its fullKDE environment is explicitly
+verified. IME37302/SHA28d672b9 remains102, config/timer choice unchanged,
+only owned test environment overrides removed. Private models remain isolated.
+
+Both actual installed updater checks exit0 against official latest API:
+local files101 offered103; remote files103 current. No manual localGNOME
+installation/restart. Evidence: tech_debt/evidence/release-1.0.103-updater.json.
+Bootstrap/official delivery task DONE; Qt6/WeChat/native losses remain OPEN.

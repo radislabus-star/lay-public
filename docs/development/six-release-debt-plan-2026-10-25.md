@@ -22,7 +22,7 @@ client effects, BLOCKED prerequisites and NOT_TESTED coverage.
 | 3 | 1.0.100 | Shared long-sequence lifecycle/rapid gestures, remaining inline presentation, terminals and native coverage | RELEASED 2026-10-26T18:13:48Z,36fd0e7a; two lifecycle repairs;3519source/11performance/all10build/CI PASS;302P57F81B with12oldPASS losses. Both updater checks PASS; actual local automatic100 completed. Residuals OPEN |
 | 4 | 1.0.101 | Build warnings: measured reachability and minimal research/runtime boundaries | RELEASED 2026-10-26T20:45:25Z,9b83e9ee;3519+11PASS,all10/zero install warnings,CI+SecuritySUCCESS; both installed updater checksPASS. Native residuals OPEN |
 | 5 | 1.0.102 | Remaining core/structure tasks: reconcile TD-122/123/132/134 against current proofs, repair demonstrated mechanisms | RELEASED2026-10-27T00:23:46Z,04a0f65e: exact lifecycle repair;3523+11/all10/functionalCI PASS; native297P63F80B/440,9losses/8gains OPEN. Both installed updater discoveryPASS; native acceptance not regression-free |
-| 6 | 1.0.103 | Old automatic-updater build bootstrap; reconcile remaining source/build/updater evidence | READY_FOR_PUBLICATION: both bootstrap regressionsRED, final3523+11/all10/zero warnings/CI PASS; actual staged automatic102->103 PASS679.60s/all10 hashes. Official transport follows publication; Qt6/native residuals OPEN |
+| 6 | 1.0.103 | Old automatic-updater build bootstrap; reconcile remaining source/build/updater evidence | RELEASED2026-10-27T03:18:57Z,a256811f: final3523+11/all10/zero warnings/all5CI PASS; staged actual automatic679.60s plus official GitHub cached apply19.04s/all10/KDEenvironment PASS; both updater checksPASS. Qt6/native residuals OPEN |
 
 ## Stage 1 baseline and next action
 
@@ -124,3 +124,10 @@ inspect the actual installed fetch/build/unit lifecycle, reproduce the first
 failed transition if still reachable, use an existing bounded own-unit repair
 if required, and obtain a real remote automatic update completion receipt.
 No manual local GNOME install/restart or inferred success from discovery.
+
+Stage6 final103 closes the original six-group publication sequence (plus the
+separate installer99 blocker). It does not close every physical FAIL or deferred
+research/extraction task. Exact official transport, fixture-admission failure
+and correction, build/cache timing scopes and installed-versus-loaded identities
+are recorded in release-1.0.103-updater.json. WeChat-family letter loss remains
+not reproduced; no speculative input-route patch was published.
