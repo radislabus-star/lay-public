@@ -7,12 +7,22 @@ Work directly without agents/Harness2 in
 local GNOME runtime. PR65 was integrated with public main85859d97 in
 merge988cfd27; only serde_json changes in the package map. Preflight and
 acceptance boundaries: `dependency-updates-2026-10-27.md` in this directory.
-Current step:67 integrated; exact package/pin update only. Real graph and
-receipt refreshed on the remote worker; full locked verification and fresh
-CI next. Self-test source run run-tme_uyws; graph metadata result
-/home/ubu/.cache/lay/development/dependency-updates-20261027/pr67-graph-result.json.
-Before full build, prune only the disposable lay package cache after checking
-retained65 artifact hashes and absence of live executables in that target.
+Current step:67 source PASS, second fresh CI event next; first CI4/5 with
+canon refusal caused by stale GitHub PR base8687eea0 (18October), while
+actual merge parent is1afcb292. REST PATCH base=main repaired stored base.
+Worker actual canonical diff check PASS, negative protected-edit control
+still refused; no rule/workflow/legacy decision changed. Use actual canonical
+diff inputs, not worker synthetic Git history, for PR change-review evidence.
+Functional head cb789bc3; closure39975b2b9ed1797d21d19c4546ad589175a5314cf8ad5e30ee6555fd2b1350a8.
+3537Rust/11performance/421Python10skip/all10release/zero warnings/bothMSRV/
+package parity PASS. Source run run-7enc6623; extra dependency-pr67-gates-v1.
+All worker jobs finished; old CI watch91067 finished FAIL4/5, do not resume it.
+New documentation-only commit will trigger correct-base CI, with unchanged
+runtime closure and reusable source/build proof. Before later PR pushes,
+REST PATCH base=main and verify base equals actual current public main.
+Pass guarded workers by file; stdin is not forwarded. Verified disposable
+Lay-package prune8.3GiB complete; retained10 hashes/live targetexe0 checked.
+Evidence dependency-pr67-2026-10-27.json; next64,68,66 after67 merge.
 PR65 is MERGED1afcb2920ddf294df9463d0a82cf37a55dd5f86e at2026-10-27T12:31:05Z.
 Verified head a5d063b2, closure e73e7b03798ef4ef955168d013740a558f581d3c190caf4152bc2d578607bf2d:
 3537Rust/11performance/421Python(10skip), all10actual release binaries,

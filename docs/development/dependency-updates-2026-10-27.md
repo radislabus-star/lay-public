@@ -26,7 +26,7 @@ The full browser failure investigation remains queued after this sequence.
 | PR | Dependency | State | First known failure or required boundary |
 |---|---|---|---|
 | 65 | serde_json 1.0.151 → 1.0.154 | Merged1afcb292; source/CI PASS | Current-main integration; parser/writer contracts |
-| 67 | rayon 1.10.0 → 1.12.0 | Graph refreshed; verifying | Stale architecture source binding; parallel-runtime contracts |
+| 67 | rayon 1.10.0 → 1.12.0 | Source verified; CI base repaired | Stale architecture source binding; parallel-runtime contracts |
 | 64 | arboard 3.6.1 → 3.7.0 | Queued | Installer preservation failure and test inventory drift; causality unproven |
 | 68 | zbus 5.15.0 → 5.16.0 | Queued | D-Bus/IBus integration and transitive zvariant update |
 | 66 | sha2 0.10.9 → 0.11.1 | Queued | Removed io::Write and output LowerHex implementations |
@@ -163,3 +163,34 @@ refreshed the graph/binding/generated receipt and passed its unchanged guard.
 Only graph metadata and the generated receipt were imported, after verifying
 all original canonical snapshot hashes/modes. Rust behavior source untouched.
 Dependency fetch is complete before the offline full Rust lane.
+
+### PR67 source result and CI metadata correction
+
+Head cb789bc39ce67b0a65f14c028e14229c9a8c3b02, source closure
+39975b2b9ed1797d21d19c4546ad589175a5314cf8ad5e30ee6555fd2b1350a8:
+3537Rust,11performance,421Python/10existing skips, Node/public/install,
+lint/architecture/audit/bothMSRV profiles and all10release binaries PASS.
+No release compiler warnings; offline package bytes equal baseline.
+
+First fresh CI passed4/5; canon failed because GitHub's stored PR base was
+8687eea0 from18October, although the actual merge ref used main1afcb292.
+That incorrect comparison treated already accepted historical decisions as
+new PR records. REST PATCH base=main updated the stored base to1afcb292.
+No old decision, checker, workflow or runtime source was changed for this fix.
+The unchanged checker was independently executed on the remote worker with
+exact canonical changed/added path sets: PASS, zero protected changes. A
+negative control still rejects a protected edit without a new decision.
+The earlier worker --baseHEAD check uses synthetic metadata history and is
+not sufficient PR-delta evidence; use the explicit canonical delta receipt.
+
+This documentation/evidence commit leaves the complete runtime source closure
+unchanged; reuse the3537/11/build proof and obtain a new CI event with the
+correct base. Before later PR pushes, align base metadata through REST and
+verify it against current main. The installed gh pr edit command fails on a
+retired Projects-classic GraphQL field; no gh/system upgrade was needed.
+
+After retaining/hash-checking all10 prior release binaries and proving no
+active executable used the target, disposable Lay package cache was reduced
+from11871985664 to3364528128 bytes. Pass guarded workers as script files;
+stdin is not forwarded to their background command. No installed files,
+models or learning data were removed. Full native browser proof is queued.
