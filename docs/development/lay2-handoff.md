@@ -1,3 +1,17 @@
+# Current task — sequential dependency PRs
+
+The user approved #65 → #67 → #64 → #68 → #66 on 2026-10-27.
+Work directly without agents/Harness2 in
+`/home/ubu/projects/lay-dependency-updates-20261027`, branch
+`codex/dependency-updates-20261027`. Preserve the other dirty worktree and
+local GNOME runtime. PR65 was integrated with public main85859d97 in
+merge988cfd27; only serde_json changes in the package map. Preflight and
+acceptance boundaries: `dependency-updates-2026-10-27.md` in this directory.
+Current step: remote locked verification for65, then fresh PR CI and merge.
+No dependency PR has been accepted yet. Full browser FAIL investigation is
+queued after the five dependency updates; old full-matrix numbers remain
+historical, not a measurement of1.0.104.
+
 # Current accepted release — 1.0.104 published and updater verified
 
 At 2026-10-27T11:28:34.189257+00:00. Current task COMPLETE: user-confirmed US→RU short function words
