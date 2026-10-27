@@ -1039,12 +1039,23 @@ fn sha256_hex(bytes: &[u8]) -> String {
 }
 
 fn sha256_file(path: &std::path::Path) -> Result<[u8; 32], String> {
+    let mut file = std::fs::File::open(path).map_err(|error| error.to_string())?;
+    sha256_reader(&mut file).map_err(|error| error.to_string())
+}
+
+fn sha256_reader(reader: &mut impl std::io::Read) -> std::io::Result<[u8; 32]> {
     use sha2::Digest;
 
-    let mut file = std::fs::File::open(path).map_err(|error| error.to_string())?;
     let mut hasher = sha2::Sha256::new();
-    std::io::copy(&mut file, &mut hasher).map_err(|error| error.to_string())?;
-    Ok(hasher.finalize().into())
+    let mut buffer = [0_u8; 8192];
+    loop {
+        match reader.read(&mut buffer) {
+            Ok(0) => return Ok(hasher.finalize().into()),
+            Ok(count) => hasher.update(&buffer[..count]),
+            Err(error) if error.kind() == std::io::ErrorKind::Interrupted => continue,
+            Err(error) => return Err(error),
+        }
+    }
 }
 
 fn hex_sha256(value: [u8; 32]) -> String {
@@ -1591,5 +1602,60 @@ mod productive_runtime_cache_tests {
         assert!(first_loaded);
         assert!(!second_loaded);
         assert_eq!(attempts.load(Ordering::SeqCst), 1);
+    }
+}
+
+#[cfg(test)]
+mod sha256_tests {
+    use super::sha256_reader;
+    use sha2::{Digest, Sha256};
+    use std::io::{self, Cursor, Read};
+
+    #[test]
+    fn streamed_sha256_handles_short_reads_and_interrupted() {
+        struct ShortReader<'a> {
+            inner: Cursor<&'a [u8]>,
+            reads: usize,
+        }
+        impl Read for ShortReader<'_> {
+            fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+                self.reads += 1;
+                if self.reads % 3 == 1 {
+                    return Err(io::Error::from(io::ErrorKind::Interrupted));
+                }
+                let count = buffer.len().min(31);
+                self.inner.read(&mut buffer[..count])
+            }
+        }
+        let data: Vec<u8> = (0..32771).map(|index| (index % 251) as u8).collect();
+        for length in [0, 1, 8191, 8192, 8193, data.len()] {
+            let input = &data[..length];
+            let expected: [u8; 32] = Sha256::digest(input).into();
+            assert_eq!(sha256_reader(&mut Cursor::new(input)).unwrap(), expected);
+            assert_eq!(
+                sha256_reader(&mut ShortReader { inner: Cursor::new(input), reads: 0 }).unwrap(),
+                expected
+            );
+        }
+    }
+
+    #[test]
+    fn streamed_sha256_propagates_read_errors() {
+        struct FailingReader<'a>(Cursor<&'a [u8]>);
+        impl Read for FailingReader<'_> {
+            fn read(&mut self, buffer: &mut [u8]) -> io::Result<usize> {
+                if self.0.position() < self.0.get_ref().len() as u64 {
+                    self.0.read(buffer)
+                } else {
+                    Err(io::Error::new(io::ErrorKind::PermissionDenied, "injected read failure"))
+                }
+            }
+        }
+        let data = [17_u8; 16384];
+        for input in [&data[..0], &data[..]] {
+            let error = sha256_reader(&mut FailingReader(Cursor::new(input))).unwrap_err();
+            assert_eq!(error.kind(), io::ErrorKind::PermissionDenied);
+            assert_eq!(error.to_string(), "injected read failure");
+        }
     }
 }

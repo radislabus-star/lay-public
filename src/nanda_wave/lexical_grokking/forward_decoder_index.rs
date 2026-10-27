@@ -257,7 +257,7 @@ impl ForwardDecoderIndex {
         }
         hash_u32_slice(&mut hasher, &self.terminal_offsets);
         hash_u32_slice(&mut hasher, &self.terminals);
-        format!("{:x}", hasher.finalize())
+        crate::stable_hash::encode_sha256_hex(hasher.finalize().into())
     }
 }
 
@@ -403,7 +403,7 @@ pub(super) fn file_sha256(path: &Path) -> io::Result<String> {
         }
         hasher.update(&buffer[..read]);
     }
-    Ok(format!("{:x}", hasher.finalize()))
+    Ok(crate::stable_hash::encode_sha256_hex(hasher.finalize().into()))
 }
 
 #[cfg(any(test, feature = "lexical-compiler"))]

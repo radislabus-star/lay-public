@@ -385,7 +385,7 @@ impl ModalResidualProjection {
                 atoms_per_shard: ATOMS_PER_SHARD,
                 shard_count,
                 zstd_level: ZSTD_LEVEL,
-                residual_payload_sha256: format!("{:x}", hasher.finalize()),
+                residual_payload_sha256: crate::stable_hash::encode_sha256_hex(hasher.finalize().into()),
                 state_partition_omissions: 0,
                 state_partition_duplicates: 0,
                 residual_bound_violations: 0,
