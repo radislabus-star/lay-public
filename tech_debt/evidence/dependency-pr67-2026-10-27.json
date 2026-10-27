@@ -1,0 +1,400 @@
+{
+  "schema": "lay.dependency-acceptance.v1",
+  "pr": 67,
+  "url": "https://github.com/radislabus-star/lay-public/pull/67",
+  "checked_at": "2026-10-27T13:24:31.313452+00:00",
+  "state": "SOURCE_VERIFIED_CANON_BASE_FIXED_FRESH_CI_PENDING",
+  "base": "1afcb2920ddf294df9463d0a82cf37a55dd5f86e",
+  "functional_head": "cb789bc39ce67b0a65f14c028e14229c9a8c3b02",
+  "change": {
+    "rayon": {
+      "from": "1.10.0",
+      "to": "1.12.0"
+    },
+    "other_packages_changed": false,
+    "rust_behavior_source_changed": false,
+    "architecture_metadata_refreshed": true
+  },
+  "source": {
+    "files": 1289,
+    "sha256": "39975b2b9ed1797d21d19c4546ad589175a5314cf8ad5e30ee6555fd2b1350a8"
+  },
+  "worker_metadata_git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+  "worker_git_head_is_source_commit": false,
+  "archive_sha256": "fde66eff70edaba104dd36c9897e8833c692aae5507070bd5081e18faf8f624f",
+  "lock_sha256": "e21ff412704e364132206bccd9c60b98d3fce414afc0f1b75fbd4cfcf164e83d",
+  "tests": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 445.04777066782117,
+      "package": 49.78496747184545
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 153.67029931093566,
+      "bin:lay-debug-actions": 0.010703532956540585,
+      "bin:lay-ibus-engine": 142.92536884872243,
+      "bin:lay-l11-serve": 0.012697945116087794,
+      "bin:lay-memory-report": 0.009641814045608044,
+      "bin:lay-nanda-dataset": 0.032713863998651505,
+      "bin:lay-nanda-wave-eval": 1.3021221519447863,
+      "bin:lay-nanda-wave-train": 1.1759694539941847,
+      "bin:lay-test-input": 0.008802433032542467,
+      "bin:lay_output_transaction_microproof": 0.012588221114128828,
+      "lib:lay": 124.823914966546,
+      "test:correction_gate_metrics": 2.02113236207515,
+      "test:decoder_alternating_stress": 1.2614894839935005,
+      "test:decoder_transition_regression": 2.1835385588929057,
+      "test:ibus_wire_compat": 0.007735915947705507,
+      "test:ime_space_boundary_contract": 0.00800976506434381,
+      "test:input_gate_operator_contract": 0.009940044023096561,
+      "test:input_gate_space_contract": 8.139684960711747,
+      "test:l3_context_feedback_overlay_contract": 1.3812525907997042,
+      "test:l3_context_metrics_contract": 0.007486941991373897,
+      "test:l3_online_resource_contract": 0.007042490877211094,
+      "test:l4_feedback_memory_contract": 0.008966227993369102,
+      "test:live_candidate_gate_metrics": 3.3514242209494114,
+      "test:protected_words_runtime": 1.7042746231891215,
+      "test:restore_word_cli": 5.719357128953561,
+      "test:space_boundary_shift_mechanism": 4.9933040658943355,
+      "test:td113_hybrid_source_contract": 0.03564443998038769,
+      "test:text_edit_gate_contract": 0.11790352407842875,
+      "test:text_mutation_monopoly_contract": 0.12957612797617912,
+      "test:tray_ui_contract": 0.015470810933038592,
+      "test:typing_assist_alternating_stress": 3.258071222808212,
+      "test:typing_assist_mixed_corpus": 33.67467799410224,
+      "test:typing_assist_short_alternating": 2.785844427999109,
+      "test:typing_transition_authority_contract": 0.02608766802586615
+    },
+    "elapsed_seconds": 495.44015764282085,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "selected": 3537,
+    "selected_by_lane": {
+      "correctness": 3501,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "source_gate_result": "development/run-7enc6623/RESULT.json",
+  "additional_gate_result": "development/dependency-updates-20261027/pr67-gates-v1-result.json",
+  "steps": [
+    {
+      "name": "budget-before",
+      "status": "PASS",
+      "seconds": 0.045682495925575495
+    },
+    {
+      "name": "graph",
+      "status": "PASS",
+      "seconds": 17.895210852846503
+    },
+    {
+      "name": "canon",
+      "status": "PASS",
+      "seconds": 0.14731459482572973
+    },
+    {
+      "name": "python",
+      "status": "PASS",
+      "seconds": 26.82263980503194
+    },
+    {
+      "name": "public",
+      "status": "PASS",
+      "seconds": 10.188302422175184
+    },
+    {
+      "name": "install",
+      "status": "PASS",
+      "seconds": 0.32291975198313594
+    },
+    {
+      "name": "node",
+      "status": "PASS",
+      "seconds": 0.1314787429291755
+    },
+    {
+      "name": "audit50",
+      "status": "PASS",
+      "seconds": 24.162796488963068
+    },
+    {
+      "name": "lints",
+      "status": "PASS",
+      "seconds": 95.8970139787998
+    },
+    {
+      "name": "msrv",
+      "status": "PASS",
+      "seconds": 20.58185016992502
+    },
+    {
+      "name": "msrv-lexical",
+      "status": "PASS",
+      "seconds": 21.612522115930915
+    },
+    {
+      "name": "performance",
+      "status": "PASS",
+      "seconds": 60.62394445692189
+    },
+    {
+      "name": "resolved-features",
+      "status": "PASS",
+      "seconds": 0.23461899906396866
+    },
+    {
+      "name": "release",
+      "status": "PASS",
+      "seconds": 217.273084172979
+    },
+    {
+      "name": "artifacts",
+      "status": "PASS",
+      "seconds": 0.26381234102882445
+    },
+    {
+      "name": "package-parity",
+      "status": "PASS",
+      "seconds": 0.0019386629574000835
+    },
+    {
+      "name": "budget-after",
+      "status": "PASS",
+      "seconds": 0.05981461796909571
+    }
+  ],
+  "canon_actual_delta": {
+    "status": "PASS",
+    "errors": [],
+    "base_sha": "1afcb2920ddf294df9463d0a82cf37a55dd5f86e",
+    "head_sha": "cb789bc39ce67b0a65f14c028e14229c9a8c3b02",
+    "changed": [
+      "Cargo.lock",
+      "Cargo.toml",
+      "docs/development/dependency-updates-2026-10-27.md",
+      "docs/development/lay2-handoff.md",
+      "graphify-out/.graphify_labels.json",
+      "graphify-out/GRAPH_REPORT.md",
+      "graphify-out/graph.json",
+      "graphify-out/manifest.json",
+      "graphify-out/source_graph_binding.json",
+      "src/generated/architecture_graph_receipt.json",
+      "tech_debt/evidence/dependency-pr65-2026-10-27.json"
+    ],
+    "added": [
+      "tech_debt/evidence/dependency-pr65-2026-10-27.json"
+    ],
+    "protected_changes": [],
+    "negative_control": "protected change without new decision is rejected",
+    "checker_sha256": "9333f0071bd6125d985cc1a562c0fbde46c0b7574553e474add0005ec09c9445",
+    "delta_sha256": "82f28d283461257bf24a67412dbfdaf8d9018a433f9878d3a4077f694c2ad923",
+    "runtime_behavior": "NOT_TESTED",
+    "rules_changed": false
+  },
+  "canon_old_worker_scope": "--base HEAD used worker metadata history; actual PR-delta check above is authoritative for the change review",
+  "previous_ci": {
+    "headRefOid": "cb789bc39ce67b0a65f14c028e14229c9a8c3b02",
+    "mergeStateStatus": "UNSTABLE",
+    "number": 67,
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T12:41:22Z",
+        "conclusion": "FAILURE",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40505682336/job/122194267097",
+        "name": "Canon links and change records",
+        "startedAt": "2026-10-27T12:40:58Z",
+        "status": "COMPLETED",
+        "workflowName": "Architecture canon"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T12:41:25Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40505682279/job/122194266879",
+        "name": "Public installer regressions",
+        "startedAt": "2026-10-27T12:40:58Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T12:44:07Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40505682215/job/122194267108",
+        "name": "RustSec vulnerabilities and unsoundness",
+        "startedAt": "2026-10-27T12:40:58Z",
+        "status": "COMPLETED",
+        "workflowName": "Security"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T12:43:35Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40505682279/job/122194267313",
+        "name": "Rust 1.88.0 MSRV",
+        "startedAt": "2026-10-27T12:40:58Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T13:09:17Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40505682279/job/122194267206",
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "startedAt": "2026-10-27T12:40:58Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ],
+    "checked_at": "2026-10-27T13:09:26.585929+00:00"
+  },
+  "previous_ci_failure": {
+    "kind": "stale GitHub PR base metadata",
+    "old_base": "8687eea0c16eedf16c39be02be80889610ebc20f",
+    "actual_merge_base": "1afcb2920ddf294df9463d0a82cf37a55dd5f86e",
+    "fixed_by": "REST PATCH pull/67 base=main; source/guards/historical decisions unchanged"
+  },
+  "artifacts": {
+    "lay": {
+      "sha256": "4af8b2aa29ca628ed05165218d9dba7bafa1b9ebf9b7275ff0ddd40df53f24aa",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-daemon": {
+      "sha256": "6f87c3ce3c82ffdde7a687ff8a17821838d699aa5b6448f8594381b282a401af",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ibus-engine": {
+      "sha256": "87791b3ccf9b351f473377fad52fbfb131ba51605c374fe557938d636d862d1d",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-restore": {
+      "sha256": "5dcf77a93ea4477943d1fae538e2f9fbc8efbeb0c2f8cb8a737f9b342fe698e0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-serve": {
+      "sha256": "06ea0255b59b70f73baf3b2b912cb3cbaa752be5dda1360f767967fb4cddcfc1",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-memory-report": {
+      "sha256": "b69aef7bfa37568dc035d2c2f599b921a84d7fb23a88f8ab21810c5fdce09956",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-eval": {
+      "sha256": "c7705a28f365e70a6721b790dd60aa8a160c6d75ed07117b083f8b8dfed32f29",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-train": {
+      "sha256": "efb5df4cd8c62f658a207ad450d97de8f21c0bfbb134bebf1d51ea31e46c441d",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ngram-corpus": {
+      "sha256": "27595bec68072b07919e3f43c173a285545cc7055f5fee84c0cb54662feaacc9",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-test-input": {
+      "sha256": "bb0817e0f63d462351ba960282f12b369942c6758bad0989c3286d0095ab4493",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    }
+  },
+  "package_parity": {
+    "equal": true,
+    "installed_models_changed": false,
+    "scope": "tiny offline format fixture, not package quality",
+    "sha256": "196dfed2249758b2645874e75244a9c4d2684e9e9b569019d7af04109b2a8924"
+  },
+  "followup_cgroup": {
+    "cpu.max": "2000000 100000",
+    "memory.high": "25769803776",
+    "memory.max": "30064771072",
+    "memory.swap.max": "1073741824",
+    "pids.max": "512"
+  },
+  "release_compiler_warnings": 0,
+  "performance": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "verdict": "PASS"
+  },
+  "cache_prune": {
+    "before_bytes": 11871985664,
+    "after_bytes": 3364528128,
+    "retained_binaries_verified": 10,
+    "active_target_executables": 0,
+    "package_only": "lay"
+  },
+  "native_acceptance": "NOT_TESTED",
+  "runtime_installed_or_restarted": false,
+  "installed_models_or_learning_changed": false
+}
