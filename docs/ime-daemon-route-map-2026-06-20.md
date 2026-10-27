@@ -6548,3 +6548,20 @@ tech_debt/wechat-family-double-toggle-letter-loss-2026-10-27.md and
 tech_debt/evidence/qt6-native-characterization-2026-10-27.json.
 GNOME main WeChat uses its bundled Qt6.6/IBus, while the observed local loadedIME
 still has accepted old96bytes; no new-version actual editor claim is made.
+
+### Qt6 SDK causal control, isolated displays —2026-10-27
+
+The previously missing transport-only control is now measured: two fresh idle
+SDK processes exit0; both pureQt andQt+Gdk Add/Remove controls exit139 after
+first successful RemoveMaster on their own Xvfb servers. No Lay process,
+keystroke or IME edit participates there. One instrumented pureQt reproduction
+has the same QXcbConnection::xi2SetupDevices frame. RuntimeQt6.6.2, binding
+buildQt6.6.1; Gdk is not required. Official6.6.2/6.8.0 function bodies match;
+newer-version runtime behavior has not been tested. Receipt:
+tech_debt/evidence/qt6-transport-only-2026-10-27.json.
+
+This establishes an independent SDK failure relevant to default native-fixture
+qualification. It does not establish the user's exact completed-toggle letter
+loss or the actual WeChat editor's class/version from embedded ELF strings.
+No source, input authority, delivery route, persistent-master decision, running
+IME/desktop or browser matrix changed. Preserve the earlier BLOCKED/FAIL rows.

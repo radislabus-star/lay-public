@@ -1,3 +1,27 @@
+# Current continuation — Qt6 SDK cause isolated after published103
+
+Worktree:/home/ubu/projects/lay-wechat-topology-20261027,
+branchcodex/wechat-topology-20261027 frombcb575c9. Product source unchanged.
+103 stablea256811f/public03:18:57UTC; source/all10/CI + staged automatic679.60s
+and official automatic19.04s(cached)/both installed --check PASS.
+Remote daemon700851/103 correctprivateKDE,IME37302/28d672b9 still102.
+
+New bounded evidence: two fresh Xvfb idle SDK controls pass; pureQt and
+Qt+Gdk Add/Remove controls SIGSEGV139 after first successful RemoveMaster.
+Independent one GDB run:QXcbConnection::xi2SetupDevices. No Lay process, text
+input or production runtime edit on those Xservers. RuntimeQt6.6.2 vs binding
+header6.6.1. Function bodiesofficial6.6.2/6.8.0 identical; no newSDK-runtime
+fix proof. RawCROOT/qt66-transport-only-20261027; CACHEwechat/transport-only.
+
+Actual WeChat completed-toggle letter loss remains NOT_REPRODUCED; do not
+claim SDK crash proves it or blindly restore persistent replay master (known
+Chrome failure). Next: exact editor/loaded-version case and shortened result,
+then minimal mapped fix. Source routes and browser297P63F80B/440 unchanged.
+Actions-storage follow-up recorded privately; no artifacts deleted. No agents/
+Harness2/manual localGNOME installs or restarts. Sound hook at final.
+
+--- Published103 handoff ---
+
 # Current continuation — 1.0.103 published and updater verified
 
 Source:/home/ubu/projects/lay-update-bootstrap-20261027. Stable103 published

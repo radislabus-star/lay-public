@@ -1,0 +1,49 @@
+{
+  "schema": "lay.qt6-transport-only.v1",
+  "scope": "four isolated fresh Xvfb SDK controls; no Lay process, no keystroke or IME edit, no native acceptance claim",
+  "rows": [
+    {
+      "name": "pure-idle",
+      "exit": 0,
+      "seconds": 0.4193692950066179,
+      "complete": true,
+      "events": 2,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/qt66-transport-only-20261027/pure-idle.log"
+    },
+    {
+      "name": "mixed-idle",
+      "exit": 0,
+      "seconds": 0.416622034041211,
+      "complete": true,
+      "events": 2,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/qt66-transport-only-20261027/mixed-idle.log"
+    },
+    {
+      "name": "pure-topology",
+      "exit": 139,
+      "seconds": 0.515686189988628,
+      "complete": false,
+      "events": 4,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/qt66-transport-only-20261027/pure-topology.log"
+    },
+    {
+      "name": "mixed-topology",
+      "exit": 139,
+      "seconds": 0.5664810680318624,
+      "complete": false,
+      "events": 4,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/qt66-transport-only-20261027/mixed-topology.log"
+    }
+  ],
+  "runtime_qt": "6.6.2",
+  "binding_build_qt": "6.6.1",
+  "first_failed_transition": "SDK xi2SetupDevices after successful first xinput RemoveMaster; no Lay process or text key events on the isolated X server",
+  "gdb_symbol": "QXcbConnection::xi2SetupDevices()",
+  "raw_receipts_remote": "/home/e/projects/lay-development-runner/kde-install-control-20261020/qt66-transport-only-20261027",
+  "raw_receipts_local": "/home/ubu/.cache/lay/development/wechat-family-20261027/transport-only",
+  "probe_sha256": "7fca40ef2bcc42e085f5bf6373fb857d96d8fa64fb410fab1d2b4f3a8b75fdaf",
+  "product_code_changed": false,
+  "delivery_routes_changed": false,
+  "wechat_actual_letter_loss": "NOT_REPRODUCED; independent SDK control does not prove its cause",
+  "native_matrix_changed": false
+}
