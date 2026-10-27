@@ -98,3 +98,11 @@ Elapsed881.76seconds. Execution COMPLETE is separate from functional FAIL.
 Historical100PASS/76FAIL/144NOT_TESTED of320 is preserved in old evidence;
 it is not a matched baseline and no improvement/regression is attributed to
 the dependency queue from these unmatched totals.
+
+Existing opt-in trace further localizes both Chrome pair failures:
+`ibus_space_projection_refused: replacement_changes_uneditable_prefix`.
+The candidate reaches projection, but no authorized two-word action returns.
+This does not yet distinguish absent editable_pair from a rejected exact pair
+plan; no root cause is assigned to NBSP, dictionaries or the delivery route.
+Production input code remains unchanged. This evidence is sufficient to select
+the next narrow proof, not to weaken the prefix or verifier protection.

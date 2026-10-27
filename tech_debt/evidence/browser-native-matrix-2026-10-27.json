@@ -618,13 +618,17 @@
       "case_id": "normal:rich:moved-boundary:functional",
       "first_observed_refusal": "full_no_apply stage verifier on second Space",
       "source": "src/ime_correction.rs:454",
-      "root_cause": "NOT_YET_PROVEN"
+      "root_cause": "NOT_YET_PROVEN",
+      "projection_refusal": "replacement_changes_uneditable_prefix",
+      "inference_limit": "Trace does not distinguish missing pair scope from a rejected exact pair plan; inspect before changing admission."
     },
     {
       "case_id": "normal:iframe-rich:moved-boundary:functional",
       "first_observed_refusal": "full_no_apply stage verifier on second Space",
       "source": "src/ime_correction.rs:454",
-      "root_cause": "NOT_YET_PROVEN"
+      "root_cause": "NOT_YET_PROVEN",
+      "projection_refusal": "replacement_changes_uneditable_prefix",
+      "inference_limit": "Trace does not distinguish missing pair scope from a rejected exact pair plan; inspect before changing admission."
     },
     {
       "case_id": "private:email:roundtrip:active",

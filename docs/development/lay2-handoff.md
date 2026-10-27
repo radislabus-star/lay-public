@@ -34,6 +34,8 @@ Next scoped work if continuing browser fixes: Chrome4confirmed failures.
 at lease admission; exact mismatching component stillunproven.
 2normalrich/iframe-rich pair:full_no_apply at verifier on finalSpace; compare
 actualpair/provenance/NBSPslots vs passingplain without weakening guards.
+Existing projection trace saysreplacement_changes_uneditable_prefix; it does
+not distinguish missingpair from a rejected exactpair plan. Do not guess.
 3privateemailroundtrip:second target unchanged, inspect reply/receipts.
 Native/DOM disagreement is a separate observation gap (Chrome5/Firefox3).
 Firefox54FAIL mostly50rapid-five;30late intermediate targets,20target/sequence
@@ -48,7 +50,7 @@ CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020
 Canonical checkout /home/ubu/projects/lay-dependency-updates-20261027, branch
 codex/dependency-updates-20261027. Worker workspace Git a8fbda3c is synthetic,
 not canonical source. Final source closurefeffb7e902480f223754c57447f68cdf1924b4af8914e9a3e3b74bd18b55cf0d,
-1290files. Proof docs metadata is uncommitted, preserve it. Only own branch
+1290files. Evidence is versioned; inspect current git status before any further work. Only own branch
 and approved public dependency PRs; private origin/main divergent, do not touch.
 
 Private zbus diagnostic is LIMITED, never full nativePASS: baseline already
