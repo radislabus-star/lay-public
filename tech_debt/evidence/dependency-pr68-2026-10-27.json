@@ -1,0 +1,626 @@
+{
+  "schema": "lay.dependency-acceptance.v1",
+  "pr": 68,
+  "url": "https://github.com/radislabus-star/lay-public/pull/68",
+  "checked_at": "2026-10-27T15:28:13.034662+00:00",
+  "state": "MERGED",
+  "base": "68eb82a6ba1cdecb4582732eae16997e43c9940e",
+  "functional_head": "3e804ff7f5f9f2e74826c48108217104f105ef4f",
+  "merge": {
+    "mergeCommit": {
+      "oid": "ee889c28c8e27e854e6501c28f58f8fe1f0f3c09"
+    },
+    "mergedAt": "2026-10-27T15:25:50Z",
+    "number": 68,
+    "state": "MERGED",
+    "url": "https://github.com/radislabus-star/lay-public/pull/68"
+  },
+  "change": {
+    "zbus": {
+      "from": "5.15.0",
+      "to": "5.16.0"
+    },
+    "transitive_changes": [
+      "zbus_macros5.16.0",
+      "zvariant5.15.1",
+      "zvariant_derive5.15.1",
+      "zvariant_utils3.5.0+4.2.0",
+      "zcheapstr1.1.0"
+    ],
+    "vendored_zbus_names": "4.3.2 retained",
+    "rust_behavior_source_changed": false
+  },
+  "source": {
+    "files": 1289,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "2f495756dcb989a60ac7fda85e6163b3acdc40e11e2be3c9c50417f2b04b239a"
+  },
+  "archive_sha256": "9209eebd67c515740c5b8e9fd202821b83dbdb6d11985973aef98029ee071a6f",
+  "lock_sha256": "ec1c2a30acec045f97b686de214e3ac7956305618e2306d258f44628c8ce76b2",
+  "worker_git_head_is_source_commit": false,
+  "tests": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 446.63877598545514,
+      "package": 49.88037491962314
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 151.94386762869544,
+      "bin:lay-debug-actions": 0.009947584010660648,
+      "bin:lay-ibus-engine": 145.8782757089939,
+      "bin:lay-l11-serve": 0.014304821845144033,
+      "bin:lay-memory-report": 0.009210736956447363,
+      "bin:lay-nanda-dataset": 0.03204881399869919,
+      "bin:lay-nanda-wave-eval": 1.296952033881098,
+      "bin:lay-nanda-wave-train": 1.1736449799500406,
+      "bin:lay-test-input": 0.009432952152565122,
+      "bin:lay_output_transaction_microproof": 0.01222193893045187,
+      "lib:lay": 124.98154436168261,
+      "test:correction_gate_metrics": 2.0312842100393027,
+      "test:decoder_alternating_stress": 1.2563400331418961,
+      "test:decoder_transition_regression": 2.1572475938592106,
+      "test:ibus_wire_compat": 0.008649331983178854,
+      "test:ime_space_boundary_contract": 0.008615697035565972,
+      "test:input_gate_operator_contract": 0.010687158210203052,
+      "test:input_gate_space_contract": 8.35144589911215,
+      "test:l3_context_feedback_overlay_contract": 1.3880691297817975,
+      "test:l3_context_metrics_contract": 0.007909464882686734,
+      "test:l3_online_resource_contract": 0.007207724964246154,
+      "test:l4_feedback_memory_contract": 0.009650216903537512,
+      "test:live_candidate_gate_metrics": 3.371574091957882,
+      "test:protected_words_runtime": 1.7005495668854564,
+      "test:restore_word_cli": 5.648411212023348,
+      "test:space_boundary_shift_mechanism": 4.960314746014774,
+      "test:td113_hybrid_source_contract": 0.03453584318049252,
+      "test:text_edit_gate_contract": 0.11601118301041424,
+      "test:text_mutation_monopoly_contract": 0.1592905621509999,
+      "test:tray_ui_contract": 0.017331840004771948,
+      "test:typing_assist_alternating_stress": 3.2467070759739727,
+      "test:typing_assist_mixed_corpus": 33.83921978180297,
+      "test:typing_assist_short_alternating": 2.801078120013699,
+      "test:typing_transition_authority_contract": 0.025568861048668623
+    },
+    "elapsed_seconds": 497.118872490013,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "selected": 3537,
+    "selected_by_lane": {
+      "correctness": 3501,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "source_gate_result": "development/run-y2weaj9y/RESULT.json",
+  "additional_gate_result": "development/dependency-updates-20261027/pr68-gates-v1-result.json",
+  "steps": [
+    {
+      "name": "budget-before",
+      "status": "PASS",
+      "seconds": 0.08133673598058522
+    },
+    {
+      "name": "graph",
+      "status": "PASS",
+      "seconds": 17.897322866134346
+    },
+    {
+      "name": "canon",
+      "status": "PASS",
+      "seconds": 0.21290566097013652
+    },
+    {
+      "name": "python",
+      "status": "PASS",
+      "seconds": 26.803445156197995
+    },
+    {
+      "name": "public",
+      "status": "PASS",
+      "seconds": 10.545566856861115
+    },
+    {
+      "name": "install",
+      "status": "PASS",
+      "seconds": 0.3364394251257181
+    },
+    {
+      "name": "node",
+      "status": "PASS",
+      "seconds": 0.11410992802120745
+    },
+    {
+      "name": "audit50",
+      "status": "PASS",
+      "seconds": 24.29220490390435
+    },
+    {
+      "name": "lints",
+      "status": "PASS",
+      "seconds": 98.66203257907182
+    },
+    {
+      "name": "msrv",
+      "status": "PASS",
+      "seconds": 27.97524935309775
+    },
+    {
+      "name": "msrv-lexical",
+      "status": "PASS",
+      "seconds": 21.319316555047408
+    },
+    {
+      "name": "performance",
+      "status": "PASS",
+      "seconds": 23.296049755997956
+    },
+    {
+      "name": "resolved-features",
+      "status": "PASS",
+      "seconds": 0.2613705180119723
+    },
+    {
+      "name": "release",
+      "status": "PASS",
+      "seconds": 229.38933484186418
+    },
+    {
+      "name": "artifacts",
+      "status": "PASS",
+      "seconds": 0.3137171978596598
+    },
+    {
+      "name": "package-parity",
+      "status": "PASS",
+      "seconds": 0.002432420151308179
+    },
+    {
+      "name": "budget-after",
+      "status": "PASS",
+      "seconds": 0.08401321712881327
+    }
+  ],
+  "canon_actual_delta": {
+    "added": [
+      "tech_debt/evidence/dependency-pr64-2026-10-27.json"
+    ],
+    "base_sha": "68eb82a6ba1cdecb4582732eae16997e43c9940e",
+    "changed": [
+      "Cargo.lock",
+      "docs/development/dependency-updates-2026-10-27.md",
+      "docs/development/lay2-handoff.md",
+      "tech_debt/evidence/dependency-pr64-2026-10-27.json"
+    ],
+    "checker_sha256": "9333f0071bd6125d985cc1a562c0fbde46c0b7574553e474add0005ec09c9445",
+    "delta_sha256": "09105d8f2fd8fc2d7e5bace28363722c8592b0037bf3c0408ef0a8b7ad08e32c",
+    "errors": [],
+    "head_sha": "3e804ff7f5f9f2e74826c48108217104f105ef4f",
+    "negative_control": "protected change without new decision is rejected",
+    "protected_changes": [],
+    "rules_changed": false,
+    "runtime_behavior": "NOT_TESTED",
+    "status": "PASS"
+  },
+  "ci": {
+    "headRefOid": "3e804ff7f5f9f2e74826c48108217104f105ef4f",
+    "mergeStateStatus": "CLEAN",
+    "number": 68,
+    "statusCheckRollup": [
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:53:04Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40525365159/job/122263358519",
+        "name": "Canon links and change records",
+        "startedAt": "2026-10-27T14:52:38Z",
+        "status": "COMPLETED",
+        "workflowName": "Architecture canon"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:53:09Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40525365203/job/122263360029",
+        "name": "Public installer regressions",
+        "startedAt": "2026-10-27T14:52:39Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:57:08Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40525365161/job/122263358454",
+        "name": "RustSec vulnerabilities and unsoundness",
+        "startedAt": "2026-10-27T14:52:39Z",
+        "status": "COMPLETED",
+        "workflowName": "Security"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T14:54:41Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40525365203/job/122263360212",
+        "name": "Rust 1.88.0 MSRV",
+        "startedAt": "2026-10-27T14:52:39Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      },
+      {
+        "__typename": "CheckRun",
+        "completedAt": "2026-10-27T15:24:32Z",
+        "conclusion": "SUCCESS",
+        "detailsUrl": "https://github.com/radislabus-star/lay-public/actions/runs/40525365203/job/122263359586",
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "startedAt": "2026-10-27T14:52:38Z",
+        "status": "COMPLETED",
+        "workflowName": "CI"
+      }
+    ],
+    "checked_at": "2026-10-27T15:25:12.934974+00:00",
+    "verdict": "PASS"
+  },
+  "artifacts": {
+    "lay": {
+      "sha256": "72b74860d06cd00a1d3a12be7fe4df813b02b5f2fce2e32621b79ebb5b42b78d",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-daemon": {
+      "sha256": "89c3df77270e7774c31e15501b552bf94a75318020c17b9126c385f5a8ef845b",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ibus-engine": {
+      "sha256": "dcace602e5bb96042eb165b77ab3ede8ab97d95fc96ad06ea1fd9d0326a86b98",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-restore": {
+      "sha256": "47325f5b12328acc9f6d7edbdf1ef6d01c5db8d4a9464915557f718887617977",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-serve": {
+      "sha256": "51dfff2ca162d09f6c4343ff1c5264331290d0b538eb2d38def520aa70fa8963",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-memory-report": {
+      "sha256": "e10544336c2c41b70e70fac1b9be627d422edbe5c842b377d3f4e9135aec3321",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-eval": {
+      "sha256": "9902e5f697af747699b5ed4bcca0ee511540979bfa4e17fb07cdedd792d84b23",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-train": {
+      "sha256": "85557fe5c35194408c855d1a218f8f9f8b6b0b23a5c3d5c20af7ae4446ccb8da",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ngram-corpus": {
+      "sha256": "194bba7c478380f8c71aa440df6ed2deae84d3fb0a13b46e7642d40663d65c14",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-test-input": {
+      "sha256": "e019cfc799b117f0179ebc5267d5a12b020d5309e7cc246132048d40873decb0",
+      "profile": {
+        "debug_assertions": false,
+        "debuginfo": 0,
+        "opt_level": "3",
+        "overflow_checks": false,
+        "test": false
+      }
+    }
+  },
+  "release_compiler_warnings": 0,
+  "performance": {
+    "tests": 11,
+    "passed": 11,
+    "failed": 0,
+    "verdict": "PASS"
+  },
+  "python": {
+    "tests": 421,
+    "failed": 0,
+    "skipped": 10
+  },
+  "package_parity": {
+    "equal": true,
+    "installed_models_changed": false,
+    "scope": "tiny offline format fixture, not package quality",
+    "sha256": "196dfed2249758b2645874e75244a9c4d2684e9e9b569019d7af04109b2a8924"
+  },
+  "followup_cgroup": {
+    "cpu.max": "2000000 100000",
+    "memory.high": "25769803776",
+    "memory.max": "30064771072",
+    "memory.swap.max": "1073741824",
+    "pids.max": "512"
+  },
+  "private_ibus_first_comparison": {
+    "scope": "same immutable V3 driver/private IBus; lifecycle immediate, other lanes post-exact-ready",
+    "driver_sha256": "0518d043d23bf8e931569a316d52306105cd6bbff6085ce53c2a8a7fcc93035f",
+    "dependency_manifest_sha256": "d20d916aae80c8b3d0f31cbaa0d3d98f7de6a16883480290eef64c9f75dbe9db",
+    "status": "DIFFERENCE_REQUIRES_REVIEW",
+    "rows": [
+      {
+        "lane": "lifecycle",
+        "baseline": {
+          "status": "FAILED",
+          "planned": 3,
+          "completed": 0,
+          "cases": [],
+          "first_failed_driver_line": "806",
+          "error": "AssertionError: ",
+          "counts": {
+            "PASS": 0,
+            "FAIL": 1,
+            "NOT_TESTED": 2
+          },
+          "candidate_sha256": "db175f118547ef5b38858375dd8d8b6c13f938f01cfb68c6951c68ef372dade3",
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-ibus-baseline64-lifecycle-v1/receipt.json",
+          "receipt_sha256": "fbdc566e5a9684656f2fd0b169f68f87887d3d5acb9c72882c9e2de59d95f1d0"
+        },
+        "candidate": {
+          "status": "FAILED",
+          "planned": 3,
+          "completed": 0,
+          "cases": [],
+          "first_failed_driver_line": "806",
+          "error": "AssertionError: ",
+          "counts": {
+            "PASS": 0,
+            "FAIL": 1,
+            "NOT_TESTED": 2
+          },
+          "candidate_sha256": "dcace602e5bb96042eb165b77ab3ede8ab97d95fc96ad06ea1fd9d0326a86b98",
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-ibus-candidate68-lifecycle-v1/receipt.json",
+          "receipt_sha256": "5ced148b6971780ba63e6ad83ddb5e7bbbba0654f55c69792dca3741a48d6219"
+        },
+        "same_observed_prefix_and_first_failure": true
+      },
+      {
+        "lane": "manual-toggle",
+        "baseline": {
+          "status": "FAILED",
+          "planned": 3,
+          "completed": 2,
+          "cases": [
+            {
+              "case": "terminal_manual_toggle_word",
+              "status": "PASS_MANUAL_TOGGLE"
+            },
+            {
+              "case": "terminal_manual_toggle_boundary",
+              "status": "PASS_MANUAL_TOGGLE"
+            }
+          ],
+          "first_failed_driver_line": "385",
+          "error": "AssertionError: ('passive:unknown-context', '', True, 57, '/io/github/radislabus_star/LayIme/engine/lay_ime_ru/19', '')",
+          "counts": {
+            "PASS": 2,
+            "FAIL": 1,
+            "NOT_TESTED": 0
+          },
+          "candidate_sha256": "db175f118547ef5b38858375dd8d8b6c13f938f01cfb68c6951c68ef372dade3",
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-ibus-baseline64-protocol-v1-manual-toggle/receipt.json",
+          "receipt_sha256": "6d3367f525dbba13eb45537ffbf201fb4de725cb6ed389fcb9555c029dbeda15"
+        },
+        "candidate": {
+          "status": "FAILED",
+          "planned": 3,
+          "completed": 0,
+          "cases": [],
+          "first_failed_driver_line": "196",
+          "error": "Error: g-dbus-error-quark: GDBus.Error:org.freedesktop.DBus.Error.Failed: context admission deadline expired (0)",
+          "counts": {
+            "PASS": 0,
+            "FAIL": 1,
+            "NOT_TESTED": 2
+          },
+          "candidate_sha256": "dcace602e5bb96042eb165b77ab3ede8ab97d95fc96ad06ea1fd9d0326a86b98",
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-ibus-candidate68-protocol-v1-manual-toggle/receipt.json",
+          "receipt_sha256": "036d3fa2f737c9621ea366112e65dd52b49b9a26be9284444063aed7cdd87a8a"
+        },
+        "same_observed_prefix_and_first_failure": false
+      },
+      {
+        "lane": "terminal-delivery",
+        "baseline": {
+          "status": "FAILED",
+          "planned": 4,
+          "completed": 0,
+          "cases": [],
+          "first_failed_driver_line": "955",
+          "error": "AssertionError: published correction must consume Space",
+          "counts": {
+            "PASS": 0,
+            "FAIL": 1,
+            "NOT_TESTED": 3
+          },
+          "candidate_sha256": "db175f118547ef5b38858375dd8d8b6c13f938f01cfb68c6951c68ef372dade3",
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-ibus-baseline64-protocol-v1-terminal-delivery/receipt.json",
+          "receipt_sha256": "ec82c96937e729e497dc04d2f8ab89a0e1b348a2836004735f4bcdebe9104a85"
+        },
+        "candidate": {
+          "status": "FAILED",
+          "planned": 4,
+          "completed": 0,
+          "cases": [],
+          "first_failed_driver_line": "955",
+          "error": "AssertionError: published correction must consume Space",
+          "counts": {
+            "PASS": 0,
+            "FAIL": 1,
+            "NOT_TESTED": 3
+          },
+          "candidate_sha256": "dcace602e5bb96042eb165b77ab3ede8ab97d95fc96ad06ea1fd9d0326a86b98",
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-ibus-candidate68-protocol-v1-terminal-delivery/receipt.json",
+          "receipt_sha256": "01e3585d7277b900521e5c40e6ec2b10d4dea2f0fc56f5823b32d209c98d8351"
+        },
+        "same_observed_prefix_and_first_failure": true
+      }
+    ],
+    "all_scenarios_passed": false,
+    "gui": "NOT_TESTED",
+    "installed_runtime_changed": false
+  },
+  "private_ibus_abba": {
+    "scope": "four fresh unchanged manual-toggle runs, ABBA; original failures retained",
+    "rows": [
+      {
+        "index": 1,
+        "role": "baseline64",
+        "returncode": 1,
+        "status": "FAILED",
+        "planned": 3,
+        "completed": 2,
+        "cases": [
+          {
+            "case": "terminal_manual_toggle_word",
+            "status": "PASS_MANUAL_TOGGLE"
+          },
+          {
+            "case": "terminal_manual_toggle_boundary",
+            "status": "PASS_MANUAL_TOGGLE"
+          }
+        ],
+        "first_failed_driver_line": "385",
+        "error": "AssertionError: ('passive:unknown-context', '', True, 57, '/io/github/radislabus_star/LayIme/engine/lay_ime_ru/19', '')",
+        "candidate_sha256": "db175f118547ef5b38858375dd8d8b6c13f938f01cfb68c6951c68ef372dade3",
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-pr68-manual-abba-v1-1-baseline64/receipt.json"
+      },
+      {
+        "index": 2,
+        "role": "candidate68",
+        "returncode": 1,
+        "status": "FAILED",
+        "planned": 3,
+        "completed": 2,
+        "cases": [
+          {
+            "case": "terminal_manual_toggle_word",
+            "status": "PASS_MANUAL_TOGGLE"
+          },
+          {
+            "case": "terminal_manual_toggle_boundary",
+            "status": "PASS_MANUAL_TOGGLE"
+          }
+        ],
+        "first_failed_driver_line": "385",
+        "error": "AssertionError: ('passive:unknown-context', '', True, 56, '/io/github/radislabus_star/LayIme/engine/lay_ime_ru/19', '')",
+        "candidate_sha256": "dcace602e5bb96042eb165b77ab3ede8ab97d95fc96ad06ea1fd9d0326a86b98",
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-pr68-manual-abba-v1-2-candidate68/receipt.json"
+      },
+      {
+        "index": 3,
+        "role": "candidate68",
+        "returncode": 1,
+        "status": "FAILED",
+        "planned": 3,
+        "completed": 2,
+        "cases": [
+          {
+            "case": "terminal_manual_toggle_word",
+            "status": "PASS_MANUAL_TOGGLE"
+          },
+          {
+            "case": "terminal_manual_toggle_boundary",
+            "status": "PASS_MANUAL_TOGGLE"
+          }
+        ],
+        "first_failed_driver_line": "385",
+        "error": "AssertionError: ('passive:unknown-context', '', True, 56, '/io/github/radislabus_star/LayIme/engine/lay_ime_ru/19', '')",
+        "candidate_sha256": "dcace602e5bb96042eb165b77ab3ede8ab97d95fc96ad06ea1fd9d0326a86b98",
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-pr68-manual-abba-v1-3-candidate68/receipt.json"
+      },
+      {
+        "index": 4,
+        "role": "baseline64",
+        "returncode": 1,
+        "status": "FAILED",
+        "planned": 3,
+        "completed": 2,
+        "cases": [
+          {
+            "case": "terminal_manual_toggle_word",
+            "status": "PASS_MANUAL_TOGGLE"
+          },
+          {
+            "case": "terminal_manual_toggle_boundary",
+            "status": "PASS_MANUAL_TOGGLE"
+          }
+        ],
+        "first_failed_driver_line": "385",
+        "error": "AssertionError: ('passive:unknown-context', '', True, 57, '/io/github/radislabus_star/LayIme/engine/lay_ime_ru/19', '')",
+        "candidate_sha256": "db175f118547ef5b38858375dd8d8b6c13f938f01cfb68c6951c68ef372dade3",
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/dependency-pr68-manual-abba-v1-4-baseline64/receipt.json"
+      }
+    ],
+    "driver_or_deadline_changes": false,
+    "gui": "NOT_TESTED"
+  },
+  "private_ibus_verdict": "LIMITED; original failures and one non-reproduced diagnostic deadline refusal retained; complete native PASS not established",
+  "private_ibus_acceptance_note": "Additional private IBus/GNU Readline diagnostics are limited evidence, not a complete native PASS. Baseline64 already fails lifecycle before case1, manual-toggle at case3 and terminal delivery at case1. The first candidate68 manual run also had one bounded admission-read timeout; its original FAIL is retained. Four fresh unchanged ABBA manual runs each passed the same first two cases (eight complete toggles each) and failed the same third assertion, without changing driver, input, deadlines or assertions. A stable dependency-specific regression was not reproduced; the one-off timeout remains an open diagnostic limitation. Source/CI proof and these incomplete private-client results are separate. No installed runtime, browser or physical-keyboard acceptance is claimed.\n",
+  "browser_physical_acceptance": "NOT_TESTED",
+  "runtime_authority_changed": false,
+  "installed_runtime_changed": false,
+  "merge_tree_equals_verified_head": true
+}

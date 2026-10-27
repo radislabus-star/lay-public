@@ -28,8 +28,8 @@ The full browser failure investigation remains queued after this sequence.
 | 65 | serde_json 1.0.151 → 1.0.154 | Merged1afcb292; source/CI PASS | Current-main integration; parser/writer contracts |
 | 67 | rayon 1.10.0 → 1.12.0 | Merged3b7873bf; source/CI PASS | Stale architecture source binding; parallel-runtime contracts |
 | 64 | arboard 3.6.1 → 3.7.0 | Merged68eb82a6; source/native clipboard/CI PASS | Installer preservation failure and test inventory drift; causality unproven |
-| 68 | zbus 5.15.0 → 5.16.0 | Preflight written | D-Bus/IBus integration and transitive zvariant update |
-| 66 | sha2 0.10.9 → 0.11.1 | Queued | Removed io::Write and output LowerHex implementations |
+| 68 | zbus 5.15.0 → 5.16.0 | Mergedee889c28; full source/CI PASS; private client limited | D-Bus/IBus integration and transitive zvariant update |
+| 66 | sha2 0.10.9 → 0.11.1 | Preflight written | Removed io::Write and output LowerHex implementations |
 
 Read-only triage receipt:
 `/home/ubu/.cache/lay/development/dependabot-pr-triage-20261027/triage-report.json`.
@@ -336,3 +336,97 @@ Consequences and checks:
 - All source, package, installer, lints, graph, audit and fresh CI/security gates
   remain required. Rollback is the reviewed lockfile closure; no installed
   runtime or data is changed by the dependency merge.
+
+### PR68 accepted source result and private-client limitations
+
+Mergedee889c28c8e27e854e6501c28f58f8fe1f0f3c09 at2026-10-27T15:25:50Z.
+Frozen head3e804ff7f5f9f2e74826c48108217104f105ef4f; source closure
+2f495756dcb989a60ac7fda85e6163b3acdc40e11e2be3c9c50417f2b04b239a,
+1289files. Full3537Rust/11performance/421Python10skip/17followup gates,
+all10actual release binaries/zero warnings/both MSRV/byte parity PASS.
+Fresh exact-head CI5/5PASS; exact merge tree verified. Lock-only package closure
+matches preflight; pinned vendored names and all delivery/desktop owners unchanged.
+
+Private-client diagnostics are NOT a complete native PASS. Baseline64 already
+fails lifecycle at driver806 before case1, manual-toggle at385 after2cases,
+and terminal-delivery at955 before case1. Candidate68 matches lifecycle and
+terminal, but its first manual run failed earlier with one InputState admission
+timeout at196. Preserve original DIFFERENCE_REQUIRES_REVIEW receipt. One fixed
+ABBA followup, old→new→new→old, each a fresh unmodified driver/manifest/config/
+post-exact-ready schedule, gives the same2/3completed cases and same third
+assertion at385 in all4runs. Each first2cases performs8complete manual toggles.
+The timeout did not repeat, but its cause and rate are not established; do not
+call it fixed, a proven old defect, or a passing original run. Unknown remaining
+cases stay untested. Stable dependency-specific behavior regression was not
+reproduced. Acceptance is API/full-source/build/CI compatibility plus limited
+actual private transport observations; source tests include genuine zbus peers.
+The bounded safe RPC refusal remains an open diagnostic limitation for later
+client work, not a reason to alter admission, deadlines or shared routing here.
+No installed/native-browser/physical acceptance claim or runtime installation.
+
+Source run run-y2weaj9y; followup dependency-pr68-gates-v1. Versioned evidence:
+tech_debt/evidence/dependency-pr68-2026-10-27.json. All original failed receipts,
+four ABBA receipts and exact binary/driver/model identities are retained. After
+proof, guarded package-only disposable cache prune7,595,110,400→4,151,353,344bytes;
+retained binaries verified and no live target executable. No model/data cleanup.
+
+## PR #66 preflight — before applying SHA-256 API migration
+
+PR68 was accepted as ee889c28c8e27e854e6501c28f58f8fe1f0f3c09. This preflight is recorded before applying the SHA2 source/lockfile change.
+Actual change: sha2 0.10.9→0.11.1 and reviewed digest/block-buffer/crypto-common/
+cpufeatures/hybrid-array closure, Cargo.toml sha2=0.11. Upstream rust-version1.88
+matches Lay. The dependency removes std::io::Write on Sha256 and LowerHex on
+its output. The old PR compilation errors are genuine API incompatibility,
+not an IME failure. Existing unique mix64 owners/signatures/bodies stay intact.
+
+Owners/map:22 SHA256 format expressions in the current AST/text inventory,
+including3inside serde_json::json! token trees; one io::copy in
+nanda_wave/l2_field/mod.rs::sha256_file. Each format expression currently
+serializes exactly32 digest bytes. Existing neighbors already encode bytes
+as lowercase two-digit hex. Never rewrite integer {:x} formatting.
+
+Options: hold0.10 (7/10); duplicate byte formatter22times (6/10); add another
+encoding/io adapter dependency (5/10); one pure existing stable_hash helper
+plus bounded reader at the current file owner (9/10). Select the last.
+No crate split, transport adapter, new cache/thread/timer or ownership layer.
+
+- One encode_sha256_hex([u8;32]) helper allocates one64-byte String; ASCII nibble
+  conversion preserves lower-case64-digit width and leading zeroes. Its22
+  callers pass the output as32bytes; algorithm, domain separators, frame order,
+  package IDs, data layout, feedback identities and caches retain their bytes.
+- sha256_file stays at its current owner and keeps opening/error conversion.
+  The local generic reader hashes in8KiB chunks, accepts short reads, retries
+  Interrupted and propagates all other I/O errors without returning a partial
+  digest. No full-file read, no file-cache/metadata/TOCTOU behavior change.
+- Add4meaningful Rust contract tests: all byte values/leading zeroes against
+  independent standard integer formatting; official empty/abc SHA256 vectors;
+  multi-block/empty/boundary short reads with interruptions against one-shot;
+  fatal read errors before/after partial data. No ignored tests or expected
+  failures are added. Preserve every previous test row and lane/isolator/kind.
+- Discover the actual compiled inventory with the existing guarded tool. Only
+  the4declared test identities may be added. A new explicit ADR covers protected
+  manifest/zero-failure binding changes; no discovery/guard assertion changes.
+  An old zero-failure declaration is not proof of the new source: fresh full
+  correctness/package and performance receipts provide that proof separately.
+- Hash consumers include runtime diagnostics, package loading, source integrity,
+  serialized spool/proof records and cache identities. Byte parity is mandatory:
+  full fixed package/learning tests, unchanged tiny package bytes, same known
+  SHA vectors, existing tests for model/delta reload and error propagation.
+  Installed models, training and shared feedback remain untouched.
+- C02/C03/C04/C05: no candidate/ranker/retention/DecisionCore/reducer/verifier/
+  executor/desktop/route changes. No new mutation authority. This upgrade must
+  not reassign ownership or change refusal behavior to compensate for an API error.
+- Resource/latency effects: bounded8KiB stack instead of io::copy buffer, one
+  bounded64byte result allocation. Existing11performance cases, both MSRV
+  profiles, all10actual release binaries/zero warnings and12GiB Cargo budget
+  remain gates. Make no speed or universal workload claims from inspection.
+- Refresh graph/receipt only through the current AST wrapper; canon rules and
+  unique mix64 owners must pass. Run Python/tool/installer/Node/lints/audit and
+  fresh exact-head CI/security. Source, compiler-artifact and file/mode closure
+  must bind accepted bytes; no source-only receipt becomes browser acceptance.
+- Rollback is this isolated version/API/test adaptation. Do not blanket-suppress
+  warnings, modify semantic expectations, ignore failures, change deadlines or
+  rewrite delivery. Keep the earlier dependency-stage binaries for attribution.
+- Browser physical matrix remains a separate next step after dependencies;
+  the old historical320-row denominator is preserved, plus current additional
+  consecutive-switch controls. No local GNOME install or restart.
