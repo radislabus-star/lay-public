@@ -7,8 +7,12 @@ Work directly without agents/Harness2 in
 local GNOME runtime. PR65 was integrated with public main85859d97 in
 merge988cfd27; only serde_json changes in the package map. Preflight and
 acceptance boundaries: `dependency-updates-2026-10-27.md` in this directory.
-Current step:67 preflight, merge the existing Rayon PR, refresh the real graph
-and architecture receipt, then independent locked verification and fresh CI.
+Current step:67 integrated; exact package/pin update only. Real graph and
+receipt refreshed on the remote worker; full locked verification and fresh
+CI next. Self-test source run run-tme_uyws; graph metadata result
+/home/ubu/.cache/lay/development/dependency-updates-20261027/pr67-graph-result.json.
+Before full build, prune only the disposable lay package cache after checking
+retained65 artifact hashes and absence of live executables in that target.
 PR65 is MERGED1afcb2920ddf294df9463d0a82cf37a55dd5f86e at2026-10-27T12:31:05Z.
 Verified head a5d063b2, closure e73e7b03798ef4ef955168d013740a558f581d3c190caf4152bc2d578607bf2d:
 3537Rust/11performance/421Python(10skip), all10actual release binaries,

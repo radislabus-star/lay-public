@@ -26,7 +26,7 @@ The full browser failure investigation remains queued after this sequence.
 | PR | Dependency | State | First known failure or required boundary |
 |---|---|---|---|
 | 65 | serde_json 1.0.151 → 1.0.154 | Merged1afcb292; source/CI PASS | Current-main integration; parser/writer contracts |
-| 67 | rayon 1.10.0 → 1.12.0 | Preflight written | Stale architecture source binding; parallel-runtime contracts |
+| 67 | rayon 1.10.0 → 1.12.0 | Graph refreshed; verifying | Stale architecture source binding; parallel-runtime contracts |
 | 64 | arboard 3.6.1 → 3.7.0 | Queued | Installer preservation failure and test inventory drift; causality unproven |
 | 68 | zbus 5.15.0 → 5.16.0 | Queued | D-Bus/IBus integration and transitive zvariant update |
 | 66 | sha2 0.10.9 → 0.11.1 | Queued | Removed io::Write and output LowerHex implementations |
@@ -155,3 +155,11 @@ Python/Node, lint/canon/architecture/audit, two MSRV profiles, complete installe
 release binary set, offline package parity and five fresh PR checks.
 Confirm actual counts and exact changed package set; planned counts are not
 test results. No additional fit, training, global IBus restart or field input.
+
+PR67 integration changes exactly the Rayon package1.10.0→1.12.0 and its
+existing exact manifest pin. The versioned remote self-test entrypoint prepared
+the owned mirror; the existing update-architecture-graph.sh wrapper then
+refreshed the graph/binding/generated receipt and passed its unchanged guard.
+Only graph metadata and the generated receipt were imported, after verifying
+all original canonical snapshot hashes/modes. Rust behavior source untouched.
+Dependency fetch is complete before the offline full Rust lane.
