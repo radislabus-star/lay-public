@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "42909c2bc6ab81fea6a3395c2bb249f1c800ed4da3aba0612f219b31cad9e89d",
-  "manifest_fingerprint": "77c8a9abde4701be2c84753448b6edd22e46b2a7daa5520d446d19cf3753dfee",
+  "graph_fingerprint": "3dbd21a3391123b5651b8953fcb76faa41264caa38ab265302c5a2291b961b57",
+  "manifest_fingerprint": "4fbc11bdea890fb9ff1830227a9bf3825d3d35d5bf151829f7655976d3fa1e19",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -47,7 +47,8 @@
     "src/bin/lay_daemon/layout_controller/gnome_dbus.rs": "796e0bc95ed25d634e435369648ba09f03dc180b8ebb4552e1d959aa5557e32f",
     "src/bin/lay_daemon/layout_controller/gnome_dbus_tests.rs": "853047ac68e885f5163c795194157bf05e7721fd5d248bda576096ac99e6dfd1",
     "src/bin/lay_daemon/layout_controller/ibus_bridge.rs": "223c341d3fc6d68b3b224e5cf683091db509038269fe7bd6a19be65166a069ce",
-    "src/bin/lay_daemon/layout_controller/ime_bridge.rs": "67172a4f1c0aacff64da77bb964aacb34a71cce27405e775ff9a007229d69f26",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs": "241a7cd32ccea106c25932fb89e8712e4e7f8b21598e204cae2fabc4f6184987",
+    "src/bin/lay_daemon/layout_controller/ime_bridge/settlement.rs": "f01e791303a0e8f4a4680b2c317feb8355a76b271532145fac202a45cc6877e3",
     "src/bin/lay_daemon/layout_controller/ime_manual_toggle.rs": "b7c1269d3555344535ff205de10a435fbc0a1952537e530dcedde042cfc2a425",
     "src/bin/lay_daemon/layout_controller/kde_exact.rs": "bfa5a31fd3885e8b337db7f81591a71d9d3ed94fa19ffb38fb94c9da2bb375db",
     "src/bin/lay_daemon/layout_controller/kde_exact/tests.rs": "37acfc75c34fa59cf8a1d79a630301bbbb76dd383b52cc257a9b900359c6f6db",

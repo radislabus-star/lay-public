@@ -1,3 +1,9 @@
+#[path = "ime_bridge/settlement.rs"]
+mod settlement;
+#[cfg(test)]
+use settlement::committed_tail_is_settled;
+pub(super) use settlement::wait_for_committed_tail_settlement;
+
 use lay::manual_toggle::{
     plan_manual_toggle, ImeManualToggleOutcome, ManualTogglePlan, ManualToggleRequest,
     ManualToggleRoute, VisibleTail,
@@ -14,7 +20,6 @@ use super::gnome_dbus::dbus_connection;
 const IME_DBUS_DEST: &str = "io.github.radislabus_star.LayIme";
 const IME_DBUS_PATH: &str = "/io/github/radislabus_star/LayIme";
 const IME_DBUS_INTERFACE: &str = "io.github.radislabus_star.LayIme";
-const QUEUED_MANUAL_TOGGLE_SETTLEMENT_MAX: Duration = Duration::from_millis(80);
 
 pub(crate) fn await_same_gesture_exact_receipt(
     mut request: impl FnMut() -> Result<ImeManualToggleOutcome, String>,
@@ -72,6 +77,9 @@ impl ImeDelegatedTailLease {
         reply: VisibleTailV4Reply,
         expected: bool,
     ) -> Result<VisibleTailV3Reply, String> {
+        if reply.4.is_empty() || reply.5.is_empty() {
+            return Err("exact IME tail field identity is unavailable".to_string());
+        }
         if reply.6 != expected || self.personalization != Some(expected) {
             return Err("exact IME tail retention policy changed".to_string());
         }
@@ -286,62 +294,6 @@ fn committed_tail_replay_from_readout(
     })?;
     replay.lease.personalization = permission;
     Ok(replay)
-}
-
-pub(super) fn wait_for_committed_tail_settlement(
-    expected_tail: &str,
-    expected_layout_is_ru: bool,
-    lease: &ImeDelegatedTailLease,
-    target_path: Option<&str>,
-    mut verify_focus: impl FnMut() -> Result<(), String>,
-) -> Result<(), String> {
-    if expected_tail.is_empty() {
-        return Err("queued manual toggle has no expected visible tail".to_string());
-    }
-    let deadline = Instant::now() + QUEUED_MANUAL_TOGGLE_SETTLEMENT_MAX;
-    let mut target_path = target_path.map(str::to_owned);
-    loop {
-        verify_focus()?;
-        let reply = lease.current_v3_reply()?;
-        // The controlled layout handoff may select a different engine path.
-        // Once observed, that path and the original exact field stay bound
-        // through settlement. A matching suffix in another field is no receipt.
-        let path = target_path.get_or_insert_with(|| reply.4.clone());
-        if reply.4.is_empty()
-            || reply.4 != *path
-            || lease.exact_focus_receipt.as_deref() != Some(reply.5.as_str())
-            || reply.3 < lease.expected_epoch()
-        {
-            return Err("exact IME tail settlement identity changed".to_string());
-        }
-        if committed_tail_is_settled(&reply, expected_tail, expected_layout_is_ru, lease, path) {
-            verify_focus()?;
-            return Ok(());
-        }
-        if Instant::now() >= deadline {
-            return Err(format!(
-                "queued manual toggle timed out waiting for exact committed tail: expected_chars={} expected_layout_is_ru={expected_layout_is_ru} last_source={} last_epoch={}",
-                expected_tail.chars().count(), reply.0, reply.3
-            ));
-        }
-        std::thread::yield_now();
-    }
-}
-
-fn committed_tail_is_settled(
-    reply: &VisibleTailV3Reply,
-    expected_tail: &str,
-    expected_layout_is_ru: bool,
-    lease: &ImeDelegatedTailLease,
-    target_path: &str,
-) -> bool {
-    VisibleTailSource::from_bridge_state(&reply.0) == Some(VisibleTailSource::ImeCommittedTail)
-        && !target_path.is_empty()
-        && reply.4 == target_path
-        && lease.exact_focus_receipt.as_deref() == Some(reply.5.as_str())
-        && reply.3 > lease.expected_epoch()
-        && reply.2 == expected_layout_is_ru
-        && reply.1.ends_with(expected_tail)
 }
 
 #[derive(Debug)]
@@ -938,6 +890,53 @@ mod delegated_tail_tests {
                     assert!(!error.contains(sentinel));
                 }
             }
+        }
+    }
+
+    #[test]
+    fn unavailable_field_is_not_reported_as_an_observed_privacy_change() {
+        for expected in [false, true] {
+            let replay = committed_tail_replay_from_readout(
+                reply_v3("passive:committed-tail", "abc", 19, "/engine/us", "field-a"),
+                Some(expected),
+            )
+            .expect("identified source");
+            for (path, field) in [("", "field-a"), ("/engine/us", ""), ("", "")] {
+                let readout = (
+                    "passive:unknown-context".into(),
+                    String::new(),
+                    false,
+                    19,
+                    path.into(),
+                    field.into(),
+                    false,
+                );
+                assert_eq!(
+                    replay.lease.bound_v4_reply(readout, expected).unwrap_err(),
+                    "exact IME tail field identity is unavailable"
+                );
+            }
+            let mut identified = (
+                "passive:committed-tail".into(),
+                "abc".into(),
+                false,
+                19,
+                "/engine/us".into(),
+                "field-a".into(),
+                expected,
+            );
+            assert!(replay
+                .lease
+                .bound_v4_reply(identified.clone(), expected)
+                .is_ok());
+            identified.6 = !expected;
+            assert_eq!(
+                replay
+                    .lease
+                    .bound_v4_reply(identified, expected)
+                    .unwrap_err(),
+                "exact IME tail retention policy changed"
+            );
         }
     }
 

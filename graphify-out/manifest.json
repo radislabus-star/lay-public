@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793162681.8585234,
-    "ast_hash": "f6f21914a6156213c881945512727fe1",
+    "mtime": 1793166551.8712726,
+    "ast_hash": "54d0b2b79deb3d5a71c0bacf47bdada8",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793162681.8585234,
-    "ast_hash": "afd846c12def4d9a50a3657f8724acd8",
+    "mtime": 1793166551.8712726,
+    "ast_hash": "4b2b78ac0f5c54f4ab2c801b059e2c2f",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -355,8 +355,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/ime_bridge.rs": {
-    "mtime": 1793101955.9926517,
-    "ast_hash": "cfca15e9b10bdfcf07aca399df6c0728",
+    "mtime": 1793166552.2792752,
+    "ast_hash": "7bca83e860c843a0a37082d3766cfc7d",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/tests.rs": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793162681.8585234,
-    "ast_hash": "7b364cd380ed211d81b771ff6dc97944",
+    "mtime": 1793166551.8712726,
+    "ast_hash": "4428c390b1acc0f9ecfdcabe71302add",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793162681.8945236,
-    "ast_hash": "00b2faa1f000473d05fddb354d040a2f",
+    "mtime": 1793162933.9278598,
+    "ast_hash": "eec835e32fe7ba0d0540fac228fe7287",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793162711.9096854,
-    "ast_hash": "0f252c27217b4a8795a4c4546923aa3c",
+    "mtime": 1793166593.8725362,
+    "ast_hash": "76c161c13706beaedd5c470855420096",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793162711.8986855,
-    "ast_hash": "6ef0d987b2cafe1901020baeb56828aa",
+    "mtime": 1793166593.861536,
+    "ast_hash": "6c80eea7c43add2b83d3a9cf7613df8b",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -7690,7 +7690,7 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793162681.8585234,
+    "mtime": 1793162344.2691777,
     "ast_hash": "a6efee2a290c2e8399ff5152ee74675e",
     "semantic_hash": ""
   },
@@ -8195,7 +8195,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/display/mod.rs": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793156773.529292,
     "ast_hash": "4447a65f2e3d0348fc2869f74108fadc",
     "semantic_hash": ""
   },
@@ -8210,12 +8210,12 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/mod.rs": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793156773.5293944,
     "ast_hash": "8220987f5e5b17c8a153d8810185702c",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/README.md": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793162512.849521,
     "ast_hash": "0cd4c9a4d44b0c47b4a9acd96dc3559f",
     "semantic_hash": ""
   },
@@ -8225,7 +8225,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document.rs": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793156773.5296469,
     "ast_hash": "1ef5b113e76c79e7451bfb8b134e8399",
     "semantic_hash": ""
   },
@@ -8235,7 +8235,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document/tests.rs": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793162045.5949461,
     "ast_hash": "a5cd18f6e06dae9c1287f7a1efeeae22",
     "semantic_hash": ""
   },
@@ -8560,7 +8560,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document/preparation.rs": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793162512.8490958,
     "ast_hash": "094ee05cf4e663a66557f1292d5f822e",
     "semantic_hash": ""
   },
@@ -8960,8 +8960,8 @@
     "semantic_hash": ""
   },
   "docs/development/isolated-release-series-2026-10-28.md": {
-    "mtime": 1793156236.953159,
-    "ast_hash": "22e284eee69246a6a7a0891e052626de",
+    "mtime": 1793158157.494087,
+    "ast_hash": "48fd3f5db1f2d3da049fa7a1d3d43bad",
     "semantic_hash": ""
   },
   "docs/development/kde-native-pair-readiness-plan-2026-10-28.md": {
@@ -8990,27 +8990,27 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.106-kde-preparation-isolation.md": {
-    "mtime": 1793156236.952879,
-    "ast_hash": "f0d14b6898d75eea2f90f4d442a3f0bc",
+    "mtime": 1793158157.4938745,
+    "ast_hash": "c8933b5774d11bc17c700734d74c1b67",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-kde-chrome-client-policy-isolation.json": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793158022.6621583,
     "ast_hash": "90c2db5faba3555149ae8cc40b48a637",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/chrome.rs": {
-    "mtime": 1793162681.8955235,
+    "mtime": 1793156773.529209,
     "ast_hash": "91345887f95ce9c41fca833a15b5daeb",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.107-chrome-client-isolation.md": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793162512.849431,
     "ast_hash": "581d8bf8ac10557e349c0b3849efd9bb",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-kde-native-key-scope-read-resample.json": {
-    "mtime": 1793162681.8945236,
+    "mtime": 1793162512.8492846,
     "ast_hash": "a26687b72d20f649e8bf2e726d0313ca",
     "semantic_hash": ""
   },
@@ -9020,8 +9020,28 @@
     "semantic_hash": ""
   },
   "tech_debt/evidence/release-1.0.106-verification.json": {
-    "mtime": 1793156236.9527109,
-    "ast_hash": "78f7923ca731ac28d87d756cd7ad3f9b",
+    "mtime": 1793158157.4936001,
+    "ast_hash": "ebe0e17ce6b0c29229dc34335a9006b3",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-28-exact-tail-settlement-isolation.json": {
+    "mtime": 1793166551.8712726,
+    "ast_hash": "ef34d379fbd8375d35e31af3fe987431",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/layout_controller/ime_bridge/settlement.rs": {
+    "mtime": 1793166551.8712726,
+    "ast_hash": "9da310d843390aed51465aee99ebf08d",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.106-updater.json": {
+    "mtime": 1793158157.4937537,
+    "ast_hash": "d76d3f9dd72c5bc714f6ad552457ffd7",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.108-exact-tail-settlement-isolation.md": {
+    "mtime": 1793166551.8712726,
+    "ast_hash": "9b866b4b18b1c69d457a37ca65257666",
     "semantic_hash": ""
   }
 }

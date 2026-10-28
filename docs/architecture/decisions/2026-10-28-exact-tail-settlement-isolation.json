@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-exact-tail-settlement-isolation",
+  "decision": "Extract the existing exact-tail settlement loop into its own module; classify missing V4 field identity before privacy comparison without granting any additional authority.",
+  "reason": "One bridge file combines transport, lease validation, settlement and many tests. Fresh native Firefox diagnostics conflate an unbound readout with a retention policy change, obscuring the first failed transition.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge/settlement.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/generated/architecture_graph_receipt.json"
+  ],
+  "verification": "Semantic RED/GREEN for unavailable identity versus real privacy change; unchanged original settlement code and test identities; canonical source/release gates and ten binaries; native Firefox cumulative20 and Chrome controls with original assertions/cadence.",
+  "not_tested": "This is not closure of Firefox rapid-five latency, Chrome upper omnibox, all windows, local GNOME, Wayland or physical USB input.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

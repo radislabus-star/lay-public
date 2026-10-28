@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3514,
+    "correctness": 3515,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 480,
-    "target": 3122
+    "target": 3123
   },
   "package_fixtures": [
     {
@@ -8271,6 +8271,13 @@
       "kind": "test",
       "lane": "correctness",
       "name": "layout_controller::ime_bridge::delegated_tail_tests::stale_wrong_source_or_wrong_length_tail_is_fail_closed",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_controller::ime_bridge::delegated_tail_tests::unavailable_field_is_not_reported_as_an_observed_privacy_change",
       "target": "bin:lay-daemon"
     },
     {
