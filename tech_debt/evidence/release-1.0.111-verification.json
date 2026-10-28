@@ -1,7 +1,7 @@
 {
   "schema": "lay.release111.verification.v1",
   "recorded_at": "2026-10-28T09:30:07.099424+00:00",
-  "status": "SOURCE_VERIFIED_NATIVE_FAILURES_RECORDED_PUBLICATION_PENDING",
+  "status": "STABLE_PUBLISHED_WITH_RECORDED_NATIVE_FAILURES",
   "version": "1.0.111",
   "canonical_base": "4b629cfe1966755de8d32d6c36c893e45c35c0eb",
   "source": {
@@ -1718,5 +1718,263 @@
   ],
   "local_install_or_restart": false,
   "source_or_model_training": false,
-  "publication": "PENDING"
+  "publication": {
+    "status": "STABLE_PUBLISHED",
+    "version": "1.0.111",
+    "canonical_commit": "22e9fead9744918b99c175454362d9e705caf608",
+    "tag": "v1.0.111",
+    "tag_object": "3ea958d43733fc7cc8d0a25b6b95428e1c82bd9f",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.111",
+    "published_at": "2026-10-28T10:00:55Z",
+    "draft": false,
+    "prerelease": false,
+    "assets": [],
+    "ci": [
+      {
+        "name": "Public installer regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40665030990/job/122737258304"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40665030990/job/122737258219"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40665030896/job/122737258206"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40665030990/job/122737257853"
+      }
+    ],
+    "updater": "PASS"
+  },
+  "updater": {
+    "status": "PASS",
+    "published_version": "1.0.111",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.107",
+        "stable": "1.0.111",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.107\nстабильный релиз: 1.0.111\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.107 → 1.0.111\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.111",
+        "stable": "1.0.111",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.111\nстабильный релиз: 1.0.111\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-28T10:00:58.394196+00:00"
+  },
+  "terminal_timing_by_action": {
+    "scope": "successful observed terminalRFB→PTY; polling/gesture included; no pure core or all-client latency claim",
+    "stats": {
+      "kitty": {
+        "double_shift": {
+          "n": 14,
+          "median_ms": 20.563312922604382,
+          "p95_ms": 26.720413006842136,
+          "max_ms": 26.720413006842136
+        },
+        "tab_single_observation_ms": [
+          7.7132838778197765
+        ],
+        "space_correction": "NOT_TIMED_BY_TERMINAL_ACTOR"
+      },
+      "konsole": {
+        "double_shift": {
+          "n": 14,
+          "median_ms": 20.95673664007336,
+          "p95_ms": 25.41127591393888,
+          "max_ms": 25.41127591393888
+        },
+        "tab_single_observation_ms": [
+          2.8839160222560167
+        ],
+        "space_correction": "NOT_TIMED_BY_TERMINAL_ACTOR"
+      },
+      "gnome-terminal": {
+        "double_shift": {
+          "n": 14,
+          "median_ms": 20.798356039449573,
+          "p95_ms": 26.187733048573136,
+          "max_ms": 26.187733048573136
+        },
+        "tab_single_observation_ms": [
+          2.2400678135454655
+        ],
+        "space_correction": "NOT_TIMED_BY_TERMINAL_ACTOR"
+      }
+    }
+  },
+  "browser_timing_by_action": {
+    "firefox": {
+      "successful_rows_only": {
+        "consecutive-two:active": {
+          "n": 0,
+          "status": "NOT_MEASURED"
+        },
+        "roundtrip:active": {
+          "n": 52,
+          "median_ms": 174.48712955228984,
+          "p95_ms": 198.05929600261152,
+          "max_ms": 221.52789612300694
+        },
+        "consecutive-two:space": {
+          "n": 0,
+          "status": "NOT_MEASURED"
+        },
+        "roundtrip:space": {
+          "n": 48,
+          "median_ms": 178.32123499829322,
+          "p95_ms": 207.12057198397815,
+          "max_ms": 275.75524314306676
+        },
+        "space-en-ru:functional": {
+          "n": 8,
+          "median_ms": 16.738262958824635,
+          "p95_ms": 17.229350982233882,
+          "max_ms": 17.229350982233882
+        },
+        "moved-boundary:functional": {
+          "n": 5,
+          "median_ms": 17.65240984968841,
+          "p95_ms": 19.44303698837757,
+          "max_ms": 19.44303698837757
+        },
+        "tab:functional": {
+          "n": 8,
+          "median_ms": 18.083247123286128,
+          "p95_ms": 20.604115910828114,
+          "max_ms": 20.604115910828114
+        },
+        "rapid-five:active": {
+          "n": 10,
+          "median_ms": 7.291475310921669,
+          "p95_ms": 9.94542078115046,
+          "max_ms": 9.94542078115046
+        }
+      },
+      "coverage": {
+        "consecutive-two:active:PASS": 29,
+        "roundtrip:active:PASS": 26,
+        "rapid-five:active:FAIL": 26,
+        "consecutive-two:space:PASS": 23,
+        "roundtrip:space:PASS": 24,
+        "rapid-five:space:FAIL": 24,
+        "space-en-ru:functional:PASS": 8,
+        "typo-undo:functional:BLOCKED": 10,
+        "moved-boundary:functional:PASS": 5,
+        "tab:functional:PASS": 8,
+        "consecutive-two:space:BLOCKED": 6,
+        "roundtrip:space:BLOCKED": 6,
+        "rapid-five:space:BLOCKED": 6,
+        "space-en-ru:functional:BLOCKED": 2,
+        "moved-boundary:functional:BLOCKED": 2,
+        "tab:functional:BLOCKED": 2,
+        "roundtrip:active:BLOCKED": 2,
+        "rapid-five:active:BLOCKED": 2,
+        "rapid-five:active:PASS": 2,
+        "moved-boundary:functional:FAIL": 3,
+        "consecutive-two:space:FAIL": 1,
+        "roundtrip:active:FAIL": 2,
+        "consecutive-two:active:BLOCKED": 1
+      },
+      "scope": "fixed native actor release→stable observedtarget; polling/DOMclock uncertainty included; FAIL/BLOCKED remain in coverage, no end-to-end reliability claim"
+    },
+    "chrome": {
+      "successful_rows_only": {
+        "consecutive-two:active": {
+          "n": 0,
+          "status": "NOT_MEASURED"
+        },
+        "roundtrip:active": {
+          "n": 56,
+          "median_ms": 58.13117802608758,
+          "p95_ms": 67.73386592976749,
+          "max_ms": 80.53578599356115
+        },
+        "rapid-five:active": {
+          "n": 140,
+          "median_ms": 45.75407854281366,
+          "p95_ms": 56.85593863017857,
+          "max_ms": 67.34370347112417
+        },
+        "consecutive-two:space": {
+          "n": 0,
+          "status": "NOT_MEASURED"
+        },
+        "roundtrip:space": {
+          "n": 48,
+          "median_ms": 57.387857930734754,
+          "p95_ms": 64.34751790948212,
+          "max_ms": 86.61215612664819
+        },
+        "rapid-five:space": {
+          "n": 120,
+          "median_ms": 46.02975444868207,
+          "p95_ms": 59.63456886820495,
+          "max_ms": 72.60879687964916
+        },
+        "space-en-ru:functional": {
+          "n": 7,
+          "median_ms": 73.70758894830942,
+          "p95_ms": 122.75584903545678,
+          "max_ms": 122.75584903545678
+        },
+        "moved-boundary:functional": {
+          "n": 8,
+          "median_ms": 108.69210597593337,
+          "p95_ms": 135.0107139442116,
+          "max_ms": 135.0107139442116
+        },
+        "tab:functional": {
+          "n": 8,
+          "median_ms": 16.754255047999322,
+          "p95_ms": 18.678031861782074,
+          "max_ms": 18.678031861782074
+        }
+      },
+      "coverage": {
+        "consecutive-two:active:PASS": 27,
+        "roundtrip:active:PASS": 28,
+        "rapid-five:active:PASS": 28,
+        "consecutive-two:space:PASS": 24,
+        "roundtrip:space:PASS": 24,
+        "rapid-five:space:PASS": 24,
+        "space-en-ru:functional:PASS": 7,
+        "typo-undo:functional:BLOCKED": 10,
+        "moved-boundary:functional:PASS": 8,
+        "tab:functional:PASS": 8,
+        "consecutive-two:space:BLOCKED": 6,
+        "roundtrip:space:BLOCKED": 6,
+        "rapid-five:space:BLOCKED": 6,
+        "space-en-ru:functional:BLOCKED": 2,
+        "moved-boundary:functional:BLOCKED": 2,
+        "tab:functional:BLOCKED": 2,
+        "space-en-ru:functional:FAIL": 1,
+        "consecutive-two:active:BLOCKED": 3,
+        "roundtrip:active:BLOCKED": 2,
+        "rapid-five:active:BLOCKED": 2
+      },
+      "scope": "fixed native actor release→stable observedtarget; polling/DOMclock uncertainty included; FAIL/BLOCKED remain in coverage, no end-to-end reliability claim"
+    }
+  }
 }

@@ -1,12 +1,12 @@
-# Lay — seven-release series, current handoff 2026-10-28
+# Lay — seven-release series COMPLETE, handoff 2026-10-28
 
-User requires seven meaningful releases105–111, tested/pushed/published autonomously; no questions, Harness2 or subagents. No manual local GNOME install/restart/input. Work directly in the accepted checkout, all builds/tests/graph refresh/native input remote under existing guards. Keep C01–C10 and common correction/ownership/verifier/executor. Preserve every FAIL/BLOCKED/NOT_TESTED.
+User seven-release request105–111 is COMPLETE: all seven stable published, four CI checks and local/remote updaters verified for each. No Harness2 or subagents used. No manual local GNOME install/restart/input. Work directly in the accepted checkout, all builds/tests/graph refresh/native input remote under existing guards. Keep C01–C10 and common correction/ownership/verifier/executor. Preserve every FAIL/BLOCKED/NOT_TESTED.
 
 Canonical checkout `/home/ubu/projects/lay-dependency-updates-20261027`, branch `codex/browser-matrix-repair-20261027`. Private origin/main is divergent future113: never force/rebase/push it. Push only the workbranch and fast-forward public/main. Public repository radislabus-star/lay-public.
 
 ## Publication state
 
-105–110 stable published, exact four publicCI checks and real local/remote updater checks verified for each.105=4ebd03f3,106=f88c4ba9,107=e178be59,108=058a247f,109=96a98674,110=4b629cfe1966755de8d32d6c36c893e45c35c0eb.111source/tooling/native verification completed, commit/publicCI/stablepublication next. Do not end before stable111and updater verification; no empty tag.
+105–111 stable published with four public CI and actual updater checks verified for each. 105=4ebd03f3,106=f88c4ba9,107=e178be59,108=058a247f,109=96a98674,110=4b629cfe1966755de8d32d6c36c893e45c35c0eb,111=22e9fead9744918b99c175454362d9e705caf608. Stable111 published 2026-10-28T10:00:55Z. Publicmain/tag111 source22e9fead; workbranch may have a later publication-record-only commit. No runtime difference or empty tags.
 
 105 repairs observed-boundary pair/NotReady preparation;106 moves KDE preparation;107 isolates Chrome qualification and current-token read resampling;108 separates shared reply settlement and incomplete identity refusal;109 moves existing KDE terminal/focus policy;110 fixes actual VTE purpose10+advertised surrounding admission and relocates unchanged Chrome presentation.111 adds source-scope enforcement and existing-executor component recipes, with no runtimeRust change from110.
 
@@ -28,12 +28,12 @@ Visual separate:Konsole/VTEpre-TabframesPASS(ordinaryprefix,whiteending). Kittyo
 
 External SSH command ended143 duringcombinednativephase, but originalremotechildjobscompleted all440. Recoveredaggregatev2 validates originalcomplete manifests,loadedSHA,configrestoredto deploymenthash andzeroheldkeys; no input repeated. Outerphaseaggregate missing remains recorded. Fullbrowserelapsed872.71s. Do not rerun completed native proof just for a clean outer exit.
 
-## Evidence and final steps
+## Final evidence and continuation boundary
 
-CACHE=/home/ubu/.cache/lay/development/browser-matrix-repair-20261027. CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020. Owningdocs release-1.0.110-kde-vte-and-chrome-presentation.md and release-1.0.111-component-scope-guard.md; versionedevidence tech_debt/evidence/release-1.0.110-verification.json and111. Rawgates111gates-v1, deployment-v1, components-v1, unit-v2, full-native-v1 and native-acceptance-v2 preserved. All source/native verification finished; next only review/commit exact111bytes, sourceidentity proof, push, publicCI, tag/release/updater, finalmetadata.
+CACHE=/home/ubu/.cache/lay/development/browser-matrix-repair-20261027; CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020. Versioned tech_debt/evidence/release-1.0.111-verification.json contains source,gates,CI,updater,raw receipt links,all57browser FAIL identities and Kitty visual FAIL. Owning110/111docs retain both the rejected first VTE candidate and actual purpose-policy repair. Original completed native proofs are valid despite SSH143; no input repeated.
 
-1.Commit111source, compare full committed blobs/executablebits to requestsourceSHA with CACHE/verify-committed-source.py; additionallybind frozenCIworkflow/scopeconfig/ADR/entrydocs to requesthashes.
-2.Checkcurrentpublicpulls, pushprivateworkbranch/publicmain withoutforce. Start CACHE/wait-publish-verified-release.py 1.0.111 ACTUAL_FULL_COMMIT v1.0.110. Notes CACHE/release-1.0.111-notes.md are ready and disclose all native/visual failures.
-3.WaitfourCIchecksSUCCESS, publishstable111, actual local/remote lay-update --check; NEVER manuallyapplylocalupdate. Recordpublication/updater metadata, pushdoc-onlyprivatecommit, finaltag/APIverification and half-volumecompletionhook.
+Sourcecommit22e9fead blobs/executable bits match the frozen1300-file sourcebfc; six additional CI/scope/ADR/instruction files match request hashes. Publictag/stableAPI111 and actual updaters verified; local manual install/restart never called. Remote installed111 engine3228031 SHA159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5. Publication-only metadata must not reopen tests/build/install/restart/native input. User receives local update via menu/autoupdater; final updater observed local107 and remote111.
 
-No more source changes, tests/builds/installations/restarts/native repeats required for this metadata/publication stage unless new evidence fails. Followups are per-client Firefox rapid replay/boundary,ChromeTelSpace policy/admission andKittymissinggeometry; map first failedtransition before a new scopedfix. Source implementation of field scope is scripts/field_integration_scope.py; component checks scripts/check-lay-component.sh. Common reducers/verifier/executor stay shared. Currentpulls/issues lastchecked empty on2026-10-28; refresh beforefinalpush/handoff.
+The seven-release task is finished. Remaining per-client work is NOT claimed fixed: Firefox50rapid-five+3boundary+2roundtrip+1consecutive case,ChromeTelSpace case,Kitty missing hint geometry. For a new fix map the first failed transition, declare baseline/components/exact shared seams/newADR in active scope before code; use existing canonical recipes and full affected proof. No global rendering fallback, parallel owner/verifier/executor, desktop environment changes or shared-learning cleanup.
+
+Final upstream refresh is stored in CACHE/release111-final-upstream.json. All three entry/architecture/development reminders are in this checkout; old dirty /home/ubu/projects/lay is NOT this source.
