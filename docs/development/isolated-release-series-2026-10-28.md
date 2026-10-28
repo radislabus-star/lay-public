@@ -92,3 +92,5 @@ Release gates запущены; установка ждёт их успеха. �
 107 V3: подтверждённая C05 гонка закрыта минимальным read predicate в KDE preparation,85/85 RED/GREEN-набор; full3550/3550 и18gates PASS,10artifacts/0warnings. Новые байты установлены только удалённо. Native5/5 прежнего FAIL PASS, неизменённый Chrome220 выполняется; публикация107 пока не выполнена.
 
 107 V3 native: Chrome220179/0/41/0, Search regression5/5PASS. Верхний omnibox сохраняет прежний отдельный FAIL первого hint (1FAIL,2NOT_TESTED); не объявлен закрытым. Fresh Firefox220 выполняется для108.107готовится кCI/публикации с явными ограничениями.
+
+107 опубликована 2026-10-28T06:00:18Z наe178be59,4/4CI SUCCESS и оба действующих updaterchecks PASS.108 после свежего Firefox baseline отделяет exact-tail settlement и исправляет классификацию отсутствующей identity; скоростьFirefox не объявлена исправленной.109терминалы/KDEfocus,110clientpresentation/nativeeditors,111scopeguard остаются в работе.
