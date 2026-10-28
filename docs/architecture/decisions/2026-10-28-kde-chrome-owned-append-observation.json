@@ -1,0 +1,18 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-chrome-owned-append-observation",
+  "decision": "Isolate the existing KDE Chrome source-read coordinator in kde/chrome/observation.rs and allow actual owned-prefix observations to converge within the original deadline before preparation consumes the result.",
+  "reason": "The recorded Chrome tel Space failure returns a second still-older five-character actual snapshot after a six-character managed commit; the common identity verifier correctly refuses correction.",
+  "invariants": ["C01", "C03", "C05", "C07", "C08", "C10"],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs",
+    "src/bin/lay_ibus_engine/kde/chrome/observation.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "verification": "Map before runtime edits; causal old-coordinator RED, byte-identical extraction proof, short deterministic GREEN with deadline and authority negatives, canonical KDE Chrome component recipe, short installed Chrome reproduction and then Chrome-only long native proof.",
+  "not_tested": "No new Firefox, terminal, GNOME, Wayland or physical USB acceptance is implied. The source reader, common admission/frame identity/verifier/executor and presentation stay unchanged; installed/runtime claims require separate actual artifacts and native evidence.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

@@ -1,0 +1,585 @@
+{
+  "schema": "lay.scoped-client-fix-verification.v1",
+  "recorded_at": "2026-10-28T11:08:01.267233+00:00",
+  "status": "SELECTED_FIX_VERIFIED_WITH_RECORDED_COVERAGE_GAPS",
+  "task": "ONE_KDE_CHROME_OWNED_APPEND_OBSERVATION",
+  "owning_map": "docs/development/kde-chrome-owned-append-map-2026-10-28.md",
+  "canonical_base": "32d073687ae8d631042ba127148dcaf492a394d1",
+  "source": {
+    "git_head": "32d073687ae8d631042ba127148dcaf492a394d1",
+    "files": 1301,
+    "sha256": "2ce6b24786bab558599a46345c9ec3583f419847420a1f37ebf5a08e93933c5e"
+  },
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "runtime_files": [
+    "src/bin/lay_ibus_engine/kde/chrome/observation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs"
+  ],
+  "mechanical_extraction": {
+    "body_byte_equal": true,
+    "normalized_body_sha256": "12eec6ab9d6514a8f34500c2c54fb60200b74db788a7317cf2ff152d76cbb1dd",
+    "parent_seam_exact": true
+  },
+  "causal_red": {
+    "selected": 3,
+    "passed": 2,
+    "failures": [
+      {
+        "target": "bin:lay-ibus-engine",
+        "test": "window_interaction::native_document::tests::native_owned_append_resamples_after_key_scope_settlement",
+        "failure_block": "thread 'window_interaction::native_document::tests::native_owned_append_resamples_after_key_scope_settlement' (9) panicked at src/bin/lay_ibus_engine/window_interaction/../kde/native_document/tests.rs:808:9:\nassertion `left == right` failed: resample an older owned prefix after key settlement\n  left: 2\n right: 3\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace"
+      }
+    ],
+    "seconds": 34.300925238989294
+  },
+  "short_source": {
+    "selected": 3,
+    "passed": 3,
+    "seconds": 15.671023119008169
+  },
+  "component": {
+    "component": "kde-chrome",
+    "selected": 75,
+    "passed": 75,
+    "failed": 0,
+    "elapsed_seconds": 19.90148470015265
+  },
+  "full_source": {
+    "verdict": "PASS",
+    "selected": 3555,
+    "correctness": 3519,
+    "package": 36,
+    "ime_included": 1117,
+    "semantic_failures": 0,
+    "infrastructure_failures": 0,
+    "ignored_not_run": 41,
+    "performance_not_run": 11,
+    "local_receipt": "/home/ubu/.cache/lay/development/run-n2we7ij5/RESULT.json",
+    "remote_receipt": "/home/e/projects/lay-development-runner/run-vkUi8t/tests/SUMMARY.json",
+    "archive_sha256": "78cb881d05cb14c26fffde3a3e43ba329f035369fd00581defac682b28cd0e2c",
+    "sealed_scope_changes": 15,
+    "scope_base": "32d073687ae8d631042ba127148dcaf492a394d1"
+  },
+  "build": {
+    "status": "PASS",
+    "warnings": 0,
+    "seconds": 217.97713121492416,
+    "sha256": "8b84bf5b6c569550af8e4061ea4cca83e74382d243ae693aeb243a1e22a035d3",
+    "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-deployment-v1/candidate-engine"
+  },
+  "installed_runtime": {
+    "status": "PASS",
+    "engine_pid": 3556137,
+    "engine_sha256": "8b84bf5b6c569550af8e4061ea4cca83e74382d243ae693aeb243a1e22a035d3",
+    "config_sha256": "6e62eab3c278c733fedb47e45ef6306105a3700222cf9f7a4e5bff4bd92264d1",
+    "protected_processes_unchanged": true,
+    "full_native_rows": 220,
+    "held_keys": [],
+    "config_restored": true
+  },
+  "publication": {
+    "base_version": "1.0.111",
+    "unpublished_candidate": true,
+    "new_release": false,
+    "local_manual_install": false
+  },
+  "native_short": {
+    "status": "PASS",
+    "selected": 8,
+    "passed": 8,
+    "cases": [
+      {
+        "name": "tel-space",
+        "selector": "tel:space-en-ru:functional",
+        "extra_control": false,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 7,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 2222.899999856949,
+          "raw_text": "привет ",
+          "rect": {
+            "x": 1038.3235168457031,
+            "y": 259.41175842285156
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "привет "
+        },
+        "error": null,
+        "latencies_ms": [
+          89.32978101074696
+        ],
+        "held_shift_ms": null,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v1/tel-space/chrome/result.json"
+      },
+      {
+        "name": "text-space",
+        "selector": "text:space-en-ru:functional",
+        "extra_control": false,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 7,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 2223.4000000953674,
+          "raw_text": "привет ",
+          "rect": {
+            "x": 455.3235321044922,
+            "y": 191.64706420898438
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "привет "
+        },
+        "error": null,
+        "latencies_ms": [
+          38.55129308067262
+        ],
+        "held_shift_ms": null,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v1/text-space/chrome/result.json"
+      },
+      {
+        "name": "tel-two-active",
+        "selector": "tel:consecutive-two:active",
+        "extra_control": false,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 6,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 2680.699999809265,
+          "raw_text": "привет",
+          "rect": {
+            "x": 1038.3235168457031,
+            "y": 259.41175842285156
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "привет"
+        },
+        "error": null,
+        "latencies_ms": [],
+        "held_shift_ms": null,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v1/tel-two-active/chrome/result.json"
+      },
+      {
+        "name": "tel-two-space",
+        "selector": "tel:consecutive-two:space",
+        "extra_control": false,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 7,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 2739.100000143051,
+          "raw_text": "привет ",
+          "rect": {
+            "x": 1038.3235168457031,
+            "y": 259.41175842285156
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "привет "
+        },
+        "error": null,
+        "latencies_ms": [],
+        "held_shift_ms": null,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v1/tel-two-space/chrome/result.json"
+      },
+      {
+        "name": "tel-pair",
+        "selector": "tel:moved-boundary:functional",
+        "extra_control": false,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 12,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 2374.7000000476837,
+          "raw_text": "должны быть ",
+          "rect": {
+            "x": 1038.3235168457031,
+            "y": 259.41175842285156
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "должны быть "
+        },
+        "error": null,
+        "latencies_ms": [
+          84.70086008310318
+        ],
+        "held_shift_ms": null,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v1/tel-pair/chrome/result.json"
+      },
+      {
+        "name": "tel-tab",
+        "selector": "tel:tab:functional",
+        "extra_control": false,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 9,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 3055.7999999523163,
+          "raw_text": "проверка ",
+          "rect": {
+            "x": 1038.3235168457031,
+            "y": 259.41175842285156
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "проверка "
+        },
+        "error": null,
+        "latencies_ms": [
+          16.03743201121688
+        ],
+        "held_shift_ms": null,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v1/tel-tab/chrome/result.json"
+      },
+      {
+        "name": "phone-number",
+        "selector": "tel:phone-digits:functional",
+        "extra_control": true,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 18,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 2438.2000000476837,
+          "raw_text": "+7 (912) 345-67-89",
+          "rect": {
+            "x": 1038.3235168457031,
+            "y": 259.41175842285156
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "+7 (912) 345-67-89"
+        },
+        "error": null,
+        "latencies_ms": [
+          130.87309384718537
+        ],
+        "held_shift_ms": null,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v2/phone-number/chrome/result.json"
+      },
+      {
+        "name": "held-shift",
+        "selector": "text:held-shift:functional",
+        "extra_control": true,
+        "exit": 0,
+        "status": "PASS",
+        "actual": {
+          "caret": 5,
+          "dom_html": null,
+          "focused": true,
+          "geometry": {
+            "dpr": 1.0625,
+            "innerHeight": 664,
+            "innerWidth": 1494,
+            "outerHeight": 811,
+            "outerWidth": 1501,
+            "screenX": 0,
+            "screenY": 0,
+            "scrollY": 0,
+            "viewport": {
+              "scale": 1,
+              "x": 0,
+              "y": 0
+            }
+          },
+          "now": 2230.7999999523163,
+          "raw_text": "HELlo",
+          "rect": {
+            "x": 455.3235321044922,
+            "y": 191.64706420898438
+          },
+          "rendered_text": null,
+          "rich": false,
+          "screen": {
+            "x": 3.5,
+            "y": 147
+          },
+          "selection": false,
+          "text": "HELlo"
+        },
+        "error": null,
+        "latencies_ms": [
+          20.655449014157057
+        ],
+        "held_shift_ms": 313.36806202307343,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-short-native-v2/held-shift/chrome/result.json"
+      }
+    ],
+    "reused_original_cases": 6,
+    "extra_control_fixture_correction": "v1 phone input sent keyval61 before Lay; expected plus requires physical Shift+Equals; original FAIL preserved"
+  },
+  "native_chrome": {
+    "baseline": {
+      "PASS": 178,
+      "FAIL": 1,
+      "BLOCKED": 41,
+      "NOT_TESTED": 0
+    },
+    "current": {
+      "PASS": 179,
+      "FAIL": 0,
+      "BLOCKED": 41,
+      "NOT_TESTED": 0
+    },
+    "cases": 220,
+    "case_changes": [
+      {
+        "case": [
+          "normal",
+          "tel",
+          "space-en-ru",
+          "functional"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "case": [
+          "private",
+          "email",
+          "roundtrip",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "BLOCKED",
+        "error": "native/DOM text disagreement"
+      },
+      {
+        "case": [
+          "fullscreen",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "BLOCKED",
+        "after": "PASS",
+        "error": null
+      }
+    ],
+    "new_functional_failures": [],
+    "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "elapsed_seconds": 420.97247648239136,
+    "config_restored": true,
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/chrome-owned-append-full-native-v1/chrome/result.json"
+  },
+  "timing": {
+    "scope": "PASS rows only; native RFB release to first stable observed target; polling/DOM-clock uncertainty included",
+    "by_action": {
+      "consecutive-two:active": {
+        "n": 0
+      },
+      "roundtrip:active": {
+        "n": 54,
+        "median_ms": 58.43093490693718,
+        "p95_ms": 65.50215813331306,
+        "max_ms": 80.41341206990182
+      },
+      "rapid-five:active": {
+        "n": 145,
+        "median_ms": 46.31350585259497,
+        "p95_ms": 59.561676578596234,
+        "max_ms": 65.32648159191012
+      },
+      "consecutive-two:space": {
+        "n": 0
+      },
+      "roundtrip:space": {
+        "n": 48,
+        "median_ms": 56.71393754892051,
+        "p95_ms": 64.68880316242576,
+        "max_ms": 88.07940105907619
+      },
+      "rapid-five:space": {
+        "n": 120,
+        "median_ms": 46.02973745204508,
+        "p95_ms": 62.14948697015643,
+        "max_ms": 72.90469226427376
+      },
+      "space-en-ru:functional": {
+        "n": 8,
+        "median_ms": 88.91959441825747,
+        "p95_ms": 115.96328997984529,
+        "max_ms": 115.96328997984529
+      },
+      "moved-boundary:functional": {
+        "n": 8,
+        "median_ms": 116.02059658616781,
+        "p95_ms": 155.54541000165045,
+        "max_ms": 155.54541000165045
+      },
+      "tab:functional": {
+        "n": 8,
+        "median_ms": 17.336350516416132,
+        "p95_ms": 22.56206120364368,
+        "max_ms": 22.56206120364368
+      }
+    },
+    "improved_target_ms": 87.19823998399079,
+    "speedup_claimed": false
+  },
+  "limitations": [
+    "One private email roundtrip case changed PASS to BLOCKED(native/DOM text disagreement); one fullscreen email rapid-five changed BLOCKED to PASS. Aggregate41blocked does not mean unchanged identities.",
+    "Firefox, terminal, GNOME, Wayland and physical USB native acceptance was not re-run or newly certified.",
+    "Initial extra phone fixture FAIL is retained; it delivered IBuskeyval61 instead of plus. Corrected physical Shift+Equals uses the existing stock terminal method; expected text and Lay code unchanged.",
+    "Full development correctness/package PASS is not full release acceptance; no new stable release was requested."
+  ]
+}

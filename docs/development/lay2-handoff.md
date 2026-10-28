@@ -1,4 +1,55 @@
-# Lay — seven-release series COMPLETE, handoff 2026-10-28
+# Lay — one KDE Chrome observation fix COMPLETE, handoff 2026-10-28
+
+## Current task after the completed seven releases
+
+User explicitly narrowed work to ONE improvement, dependency map before code,
+isolate by responsibility, short tests before long. Owning map/preflight:
+`docs/development/kde-chrome-owned-append-map-2026-10-28.md`. Baseline
+`32d073687ae8d631042ba127148dcaf492a394d1`. Scope is KDE Chrome older-owned-prefix
+observation on Space, demonstrated normal/tel `ghbdtn ` failure; other failures
+are not tasks in this run. New ADR and active scope name the exact extraction
+seam, tests and inventory. No Harness or subagents.
+
+Existing read coordinator moved to `kde/chrome/observation.rs`; initial function
+body mechanically equal SHA12eec6ab9d6514a8f34500c2c54fb60200b74db788a7317cf2ff152d76cbb1dd.
+RED three source cases:2PASS/1expectedFAIL (two pending reads returned too early).
+GREEN3/3. Only functional change is actual pending-prefix reads within the same
+80ms deadline, 1ms async yield, unchanged source-error/identity/authority fences.
+Source after graph update:2ce6b24786bab558599a46345c9ec3583f419847420a1f37ebf5a08e93933c5e,
+1301files. Component75/75, fmt and graph/architecturePASS. No shared verifier,
+executor, model, presentation, GNOME/terminal/focus code change.
+
+Remote candidate loaded in place of engine only:PID3556137,
+SHA8b84bf5b6c569550af8e4061ea4cca83e74382d243ae693aeb243a1e22a035d3.
+CLI version remains111; this is explicitly an unpublished candidate, not a new
+stable release. Daemon3228075/tray3228081, private IBus parent3168326 unchanged;
+no daemon/tray/global IBus/local GNOME restart. Backups/build/rollback receipt:
+CROOT/chrome-owned-append-deployment-v1. Exact live config hash6e62eab3c278c733fedb47e45ef6306105a3700222cf9f7a4e5bff4bd92264d1.
+
+Short native: immutable r19 six Chrome casesPASS (tel/text Space, tel consecutive
+two active/Space, moved pair and Tab). Additional number control initiallyFAIL:
+the RFB fixture delivered IBuskeyval61 '=' before Lay instead of '+'. Original
+FAIL retained. Fixture corrected to explicit physical Shift+Equals, reusing
+release109-stock-shift-v3.py's established method; expected phone text unchanged.
+The corrected number and held-Shift controlsPASS in fresh short-native-v2;
+six originalPASS reused with unchanged candidate/source:8/8PASS. Long immutable
+r19 Chrome-only220 COMPLETE:179PASS0FAIL41BLOCKED,NOT_TESTED0. The original
+normal/tel/space-en-ru FAIL becomesPASS (87.20ms). No new functionalFAIL.
+Per-case comparison also records two coverage movements:private/email/roundtrip
+active PASS→BLOCKED(native/DOM disagreement),fullscreen/email/rapid-five active
+BLOCKED→PASS. Never say all blocked identities or all prior PASS were unchanged.
+Config restored, loaded engine before/after identical, zero held keys.
+Broader official source check alsoPASS:3555/3555 (3519correctness+36package),
+including1117IME. Localrun-n2we7ij5/remoterun-vkUi8t; fmt/toolingPASS,
+0semantic/infra failures,41ignored and11performance notrun by these lanes.
+Final runtime independently verified unchanged after this check. The selected
+ONE fix is COMPLETE; do not open another client fix automatically. No new
+release/publication/local install is part of this task. Owning machine-readable
+record:docs/development/kde-chrome-owned-append-2026-10-28-verification.json.
+Current cache prefix chrome-owned-append-*, CACHE/CROOT below. No publication
+or local manual update is requested by this one-task instruction.
+
+## Previous seven-release series — COMPLETE
 
 User seven-release request105–111 is COMPLETE: all seven stable published, four CI checks and local/remote updaters verified for each. No Harness2 or subagents used. No manual local GNOME install/restart/input. Work directly in the accepted checkout, all builds/tests/graph refresh/native input remote under existing guards. Keep C01–C10 and common correction/ownership/verifier/executor. Preserve every FAIL/BLOCKED/NOT_TESTED.
 

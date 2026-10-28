@@ -4,6 +4,8 @@
 //! desktop adapter, transition verifier and local executor retain authority.
 #[path = "native_document/bus.rs"]
 mod bus;
+#[path = "chrome/observation.rs"]
+mod client_observation;
 #[path = "chrome/presentation.rs"]
 mod client_presentation;
 #[path = "native_document/observer.rs"]
@@ -18,6 +20,7 @@ use super::desktop::FocusedWindow;
 use super::SurroundingTextSnapshot;
 use crate::context_admission::AdmissionToken;
 use crate::engine::LayIbusEngine;
+use client_observation::read_with_owned_append_resampling;
 use std::future::{poll_fn, Future};
 use std::task::Poll;
 use std::time::{Duration, Instant};
@@ -208,37 +211,6 @@ pub(super) fn bounded<T>(
         })
         .await
     }
-}
-
-/// Existing read coordination only: no snapshot installation or text output.
-async fn read_with_one_owned_append_resample<R, F, P>(
-    deadline: Instant,
-    mut read: R,
-    is_pending: P,
-    resample_changed: bool,
-) -> NativeResult<Observation>
-where
-    R: FnMut(Instant, bool) -> F,
-    F: Future<Output = NativeResult<Observation>>,
-    P: Fn(&SurroundingTextSnapshot) -> bool,
-{
-    let observation = read(deadline, true).await;
-    let resample = match &observation {
-        Ok(observation) => is_pending(&observation.snapshot),
-        Err("native_document_changed") => resample_changed,
-        Err(_) => false,
-    };
-    if resample {
-        crate::trace::record(
-            serde_json::json!({
-                "kind": "ibus_native_document", "stage": "owned_append_resample",
-                "reason": observation.as_ref().err().copied().unwrap_or("older_owned_prefix"),
-            })
-            .to_string(),
-        );
-        return read(deadline, false).await;
-    }
-    observation
 }
 
 /// Native coordinates are Unicode scalars, never byte or UTF-16 offsets.
@@ -446,9 +418,9 @@ impl LayIbusEngine {
     ) -> impl Future<Output = NativeResult<Observation>> + '_ {
         Box::pin(async move {
             let deadline = Instant::now() + OBSERVATION_BUDGET;
-            // Both attempts retain the original deadline and field checks;
+            // All source reads retain the original deadline and field checks;
             // projected append data never becomes an actual source receipt.
-            read_with_one_owned_append_resample(
+            read_with_owned_append_resampling(
                 deadline,
                 |deadline, geometry| self.read_native_document_until(deadline, geometry),
                 |snapshot| self.native_owned_append_observation_is_pending(snapshot),

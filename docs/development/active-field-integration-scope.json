@@ -1,18 +1,14 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "4b629cfe1966755de8d32d6c36c893e45c35c0eb",
+  "base": "32d073687ae8d631042ba127148dcaf492a394d1",
   "components": [
-    "tooling"
+    "kde-chrome"
   ],
   "shared_paths": [
-    "scripts/dev-check.py",
-    "scripts/check-lay-tests.sh",
-    ".github/workflows/ci.yml",
-    "scripts/check-lay-component.sh",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs",
     "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json",
-    "tech_debt/evidence/release-1.0.110-verification.json",
-    "tech_debt/evidence/release-1.0.111-verification.json"
+    "scripts/test-lanes/known_failures.json"
   ],
-  "decision": "docs/architecture/decisions/2026-10-28-field-integration-scope-guard.json"
+  "decision": "docs/architecture/decisions/2026-10-28-kde-chrome-owned-append-observation.json"
 }

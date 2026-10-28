@@ -25,7 +25,7 @@ fn native_owned_append_resamples_one_incoherent_read_without_extending_deadline(
     ]));
     let seen = RefCell::new(Vec::new());
     let deadline = Instant::now() + OBSERVATION_BUDGET;
-    let result = zbus::block_on(read_with_one_owned_append_resample(
+    let result = zbus::block_on(read_with_owned_append_resampling(
         deadline,
         |actual_deadline, geometry| {
             seen.borrow_mut().push((actual_deadline, geometry));
@@ -58,7 +58,7 @@ fn native_owned_append_resamples_one_incoherent_read_without_extending_deadline(
 }
 
 #[test]
-fn native_owned_append_resample_stops_on_other_errors_and_after_one_resample() {
+fn native_owned_append_resample_stops_on_source_errors_and_original_deadline() {
     use std::cell::RefCell;
     use std::collections::VecDeque;
     let deadline = Instant::now() + OBSERVATION_BUDGET;
@@ -74,7 +74,7 @@ fn native_owned_append_resample_stops_on_other_errors_and_after_one_resample() {
         let seen = RefCell::new(Vec::new());
         let attempts: RefCell<VecDeque<NativeResult<Observation>>> =
             RefCell::new(VecDeque::from([Err(first), Err("native_document_changed")]));
-        let result = zbus::block_on(read_with_one_owned_append_resample(
+        let result = zbus::block_on(read_with_owned_append_resampling(
             deadline,
             |actual_deadline, geometry| {
                 seen.borrow_mut().push((actual_deadline, geometry));
@@ -102,8 +102,9 @@ fn native_owned_append_resample_stops_on_other_errors_and_after_one_resample() {
     }
     let (engine, binding) = observed_native_engine();
     for pending in [false, true] {
+        let deadline = Instant::now() + Duration::from_millis(8);
         let seen = RefCell::new(Vec::new());
-        let result = zbus::block_on(read_with_one_owned_append_resample(
+        let result = zbus::block_on(read_with_owned_append_resampling(
             deadline,
             |actual_deadline, geometry| {
                 seen.borrow_mut().push((actual_deadline, geometry));
@@ -115,16 +116,62 @@ fn native_owned_append_resample_stops_on_other_errors_and_after_one_resample() {
             |_| pending,
             false,
         ));
-        assert!(result.is_ok());
-        assert_eq!(
-            *seen.borrow(),
-            if pending {
-                vec![(deadline, true), (deadline, false)]
-            } else {
-                vec![(deadline, true)]
-            }
-        );
+        if pending {
+            assert!(matches!(result, Err("native_deadline")));
+            assert!(!seen.borrow().is_empty());
+        } else {
+            assert!(result.is_ok());
+            assert_eq!(*seen.borrow(), [(deadline, true)]);
+        }
+        assert!(seen.borrow().iter().all(|(actual, _)| *actual == deadline));
+        assert!(seen.borrow()[0].1);
+        assert!(seen.borrow().iter().skip(1).all(|(_, geometry)| !geometry));
     }
+    // A refused source cannot be retried after an earlier pending observation.
+    for refusal in [
+        "native_no_admission",
+        "native_selection_present",
+        "native_private_or_terminal",
+        "native_focused_target_changed",
+        "native_document_changed",
+    ] {
+        let deadline = Instant::now() + OBSERVATION_BUDGET;
+        let seen = std::cell::Cell::new(0);
+        let result = zbus::block_on(read_with_owned_append_resampling(
+            deadline,
+            |actual, geometry| {
+                let attempt = seen.get();
+                seen.set(attempt + 1);
+                assert_eq!(actual, deadline);
+                assert_eq!(geometry, attempt == 0);
+                std::future::ready(if attempt == 0 {
+                    Ok(Observation {
+                        binding: binding.clone(),
+                        snapshot: SurroundingTextSnapshot::new("пров".into(), 4, 4),
+                    })
+                } else {
+                    Err(refusal)
+                })
+            },
+            |_| true,
+            true,
+        ));
+        assert!(matches!(result, Err(reason) if reason == refusal));
+        assert_eq!(seen.get(), 2);
+    }
+    let expired = Instant::now();
+    let reads = std::cell::Cell::new(0);
+    let result = zbus::block_on(read_with_owned_append_resampling(
+        expired,
+        |_, _| {
+            reads.set(reads.get() + 1);
+            std::future::ready(Err("native_document_changed"))
+        },
+        |_| true,
+        true,
+    ));
+    assert!(matches!(result, Err("native_deadline")));
+    assert_eq!(reads.get(), 0);
     assert!(engine.native_document_is_current());
 }
 
@@ -767,7 +814,12 @@ fn settled_native_us_append(
 fn native_owned_append_resamples_after_key_scope_settlement() {
     use std::cell::{Cell, RefCell};
 
-    for (prefix, letter) in [("y", 'f'), ("abcde", 'f')] {
+    for (prefix, letter, pending_reads) in [
+        ("y", 'f', 1),
+        ("abcde", 'f', 1),
+        ("y", 'f', 2),
+        ("abcde", 'f', 2),
+    ] {
         let (mut engine, frame) = settled_native_us_append(prefix, letter);
         let before = engine.client_context.surrounding_text_snapshot.clone();
         let mut fresh_binding = engine
@@ -783,13 +835,17 @@ fn native_owned_append_resamples_after_key_scope_settlement() {
         let calls = Cell::new(0);
         let coordinates = RefCell::new(Vec::new());
         let deadline = Instant::now() + OBSERVATION_BUDGET;
-        let result = zbus::block_on(read_with_one_owned_append_resample(
+        let result = zbus::block_on(read_with_owned_append_resampling(
             deadline,
             |seen_deadline, geometry| {
                 let call = calls.get();
                 calls.set(call + 1);
                 coordinates.borrow_mut().push((seen_deadline, geometry));
-                let text = if call == 0 { prefix } else { &complete };
+                let text = if call < pending_reads {
+                    prefix
+                } else {
+                    &complete
+                };
                 let cursor = text.chars().count() as u32;
                 std::future::ready(Ok(Observation {
                     binding: fresh_binding.clone(),
@@ -802,12 +858,14 @@ fn native_owned_append_resamples_after_key_scope_settlement() {
         .unwrap();
         assert_eq!(
             calls.get(),
-            2,
+            pending_reads + 1,
             "resample an older owned prefix after key settlement"
         );
         assert_eq!(
             &*coordinates.borrow(),
-            &[(deadline, true), (deadline, false)]
+            &(0..=pending_reads)
+                .map(|attempt| (deadline, attempt == 0))
+                .collect::<Vec<_>>()
         );
         assert_eq!(result.snapshot.text, complete);
         assert_eq!(engine.client_context.surrounding_text_snapshot, before);
