@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3515,
+    "correctness": 3519,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 480,
-    "target": 3123
+    "target": 3127
   },
   "package_fixtures": [
     {
@@ -6458,6 +6458,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "engine::tests::ime_backend_enables_live_composition_without_precognition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "engine::tests::kde_terminal_purpose_keeps_exact_refresh_atomic_and_content_fences",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "engine::tests::kde_terminal_purpose_with_advertised_surrounding_requires_current_field_proof",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -23951,6 +23965,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "window_interaction::authority::tests::manual_toggle_projects_only_the_actual_execution_disposition",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::desktop::kde::terminal::tests::gtk_vte_qualification_accepts_coherent_terminal_metadata",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::desktop::kde::terminal::tests::gtk_vte_qualification_keeps_other_clients_and_empty_receipts_closed",
       "target": "bin:lay-ibus-engine"
     },
     {

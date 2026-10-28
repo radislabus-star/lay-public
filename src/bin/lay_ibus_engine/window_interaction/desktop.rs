@@ -53,6 +53,17 @@ pub(super) async fn focused_window_is_native_terminal(
     }
 }
 
+pub(super) fn native_terminal_focus_purpose_supported(
+    backend: lay::desktop::LayoutBackend,
+    purpose: u32,
+) -> bool {
+    use lay::desktop::LayoutBackend;
+    match backend {
+        LayoutBackend::Kde => kde::native_terminal_focus_purpose_supported(purpose),
+        LayoutBackend::Gnome | LayoutBackend::Niri | LayoutBackend::X11 => purpose == 0,
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::FocusedWindow;

@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-chrome-presentation-module",
+  "decision": "Relocate the existing Chrome-only native presentation implementation into kde/chrome/presentation.rs with its original Rust namespace/private parent.",
+  "reason": "Chrome separator/presentation quirks must be editable independently from generic native observation transport and GNOME presentation.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/client_presentation.rs",
+    "src/bin/lay_ibus_engine/kde/chrome/presentation.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/generated/architecture_graph_receipt.json"
+  ],
+  "verification": "Exact moved file/body equality except its documentation header if needed; unchanged test identities; source/release gates and Chrome controls. Functional VTE extension is separately declared in its owning decision.",
+  "not_tested": "Mechanical relocation does not close Chrome omnibox geometry or certify every client. GNOME integration and common formatting stay unchanged.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "authority_scope": "No authority or delivery behavior change in this mechanical move."
+}

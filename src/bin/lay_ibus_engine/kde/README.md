@@ -52,3 +52,14 @@ snapshot; a read request never rebinds that edit receipt or installs projection.
 `desktop.rs` facade preserves the selected-desktop API and test identities;
 the common terminal receipt and executor remain unchanged. No terminal name
 adds authority, and an unavailable KDE probe never invokes GNOME.
+
+`chrome/presentation.rs` owns the existing Chrome-only native separator and
+presentation acknowledgements. Its original private Rust parent and facade
+remain `window_interaction::native_document`; the file is compiled once.
+A Chrome presentation edit no longer shares its source file with observation
+transport. Common formatting and GNOME presentation remain separate.
+
+GTK/VTE GNOME Terminal on KDE qualifies through `terminal.rs` with the exact
+observed canonical window class and coherent desktop identity. This selects
+the existing current-field terminal input contract; it does not provide a
+source snapshot or edit authority. GNOME Desktop dispatch is unchanged.

@@ -55,3 +55,15 @@ Remaining110/111 detailed cacheplan: CACHE/remaining-isolation-implementation-pl
 ## Current milestone —109 published,110 checking
 
 109 stable tagv1.0.109 is published from96a98674,4/4CI and actual local/remote updater checks PASS. Remote installed109, local107 at check (auto-update remains enabled; no manual local apply).110 full source3553/3553 PASS,1115IME; localrun-dv5qe6cg/remoterun-hN7w0z. Gatev1 retained a controller metadata KeyError head_sha; fixed only its delta schema in v2, four exact-snapshot successful gates reused, no source/test change.110gatesv2 running, native installation/33terminal+25GTKQt+Chrome/Firefox controls pending.111scope/component tool implementation is an unapplied draft in cache; never confuse it with110testedsource. Upstream public pulls/issues checked2026-10-28, both empty. Continue through111; no stop here.
+
+## Current110 causal repair — before final installation
+
+110first fa9dsource3553PASS/gatesv2PASS installed2916635 butVTEunchanged3P8F. GTKQt25/25,Chrome3/3,Firefox20=13P5F2B. Raw native-phase-v1 aggregate version typo109 is rejected as version evidence; deployment-v1 identifies110exactSHA. Two debug continuity diagnostics refused because production log compacts at500KiB; surviving callbacks are PARTIAL, not complete event trace. Actual caps41/purpose10/cell9 contradict common purpose0-only probe and purpose10-only-without-surrounding admission.
+
+110revisedpreflight/newADR2026-10-28-kde-vte-terminal-purpose-policy beforecode. KDEpurpose0/10policy viaexistingdesktopdispatch; common engine/observation callthe same inert predicate, GNOME/Niri/X11retainpurpose0; currentfield/focus/atomic/exactrefresh/geometry/owner/verifier/executor unchanged. RED28/29→GREEN29/29. Preparedsourceb583823efd9792e47e30bdf99669978b725cc1576718b680c222eb754c53dc8e,1294files,3555total/1117IME. Fullsource session85203 localrun-we3_u304/remoterun-Ahs5Rg running. Nextgates CACHE/release110-gates-v3-launch.sh, then native-phase-v2 (installer/deployment-v2) only afterallgates. Allcontrollersstaged; delta validhead_sha/base_sha fromactualrequest. DoNOTrerunoldv1/v2gatesorclaimVTEfixedbeforefreshnative.
+
+111drafttools inCACHE/release111-draft remainUNAPPLIED. Isolated14newtestsREDoldentrypoint2fail→GREEN14PASS; draftreview addsno-Gitfixturecompatibilityandblocksunknownsrc.md; unit-v2includesoldtest_dev_check, stagedbutnotrun. Rununit-v2underremoteleaseafter110fullsource, then110gates. Laterapply111onlyafter110sourcecommit, fillreal110baselineSHA, copyproofADR/scope/docsfirst, thencode+version111. Full1113555/1117, fivecomponentrecipes,finalFirefox220+Chrome220+terminals/editorcontrols,publicCI/updaterstillrequired.
+
+##110 ready for public CI
+
+Final110b583source3555/1117/18gates/10bins0warnings allPASS. Installeddeployment-v2 onremote;VTE11/11 nowPASS alongsideKitty11/Konsole11,GTKQt25,Chrome3. Firefox20=14P4F2B retained. All three actualhintimages visuallyPASS. Committestedsource andpushbothworkbranch/publicmain; startwait-publish110(previous109). Thenapply111draft withactual110commitbaseline and finishall7. Source evidence/versioned110report is ready.

@@ -5035,13 +5035,20 @@ fn observed_tail_append_effect(before: &str, after: &str) -> Option<(u32, u32, O
 mod tests;
 
 impl LayIbusEngine {
+    pub(crate) fn native_terminal_focus_purpose_supported(&self) -> bool {
+        super::desktop::native_terminal_focus_purpose_supported(
+            self.config.active_layout_backend(),
+            self.client_context.content_purpose,
+        )
+    }
+
     pub(crate) async fn refresh_terminal_focus_if_ready(&mut self) {
         let focus_serial = self.client_context.focus_serial;
         let focus_receipt = self.terminal_input_focus_receipt();
         if !(5..=32).contains(&self.client_context.cursor_cell_width)
             || !self.client_context.preedit_text_supported
             || self.client_context.exact_surrounding_refresh_available
-            || self.client_context.content_purpose != 0
+            || !self.native_terminal_focus_purpose_supported()
             || focus_receipt.is_none()
             || self.client_context.terminal_focus_receipt.as_deref() == focus_receipt.as_deref()
             || self.client_context.terminal_focus_probe_serial == Some(focus_serial)

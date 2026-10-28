@@ -4,7 +4,7 @@
 //! desktop adapter, transition verifier and local executor retain authority.
 #[path = "native_document/bus.rs"]
 mod bus;
-#[path = "native_document/client_presentation.rs"]
+#[path = "chrome/presentation.rs"]
 mod client_presentation;
 #[path = "native_document/observer.rs"]
 mod observer;

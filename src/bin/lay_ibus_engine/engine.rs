@@ -99,7 +99,7 @@ impl LayIbusEngine {
         // it supplies neither surrounding text nor permission to edit a tail.
         (!self.client_context.surrounding_text_supported
             && self.client_context.content_purpose == IBUS_INPUT_PURPOSE_TERMINAL)
-            || (self.client_context.content_purpose == 0
+            || (self.native_terminal_focus_purpose_supported()
                 && self.client_context.preedit_text_supported
                 && !self.client_context.exact_surrounding_refresh_available
                 && self.client_context.cursor_cell_width >= 5
@@ -522,6 +522,64 @@ mod tests {
             engine.manual_toggle_authority(),
             ManualToggleAuthority::DaemonWordBuffer
         );
+    }
+
+    #[test]
+    fn kde_terminal_purpose_with_advertised_surrounding_requires_current_field_proof() {
+        for backend in ["kde", "gnome", "niri", "x11"] {
+            let mut engine = engine(LayConfig {
+                layout_backend: backend.into(),
+                ..LayConfig::default()
+            });
+            engine.set_client_capabilities(41);
+            engine.set_content_type_state(IBUS_INPUT_PURPOSE_TERMINAL, 0);
+            engine.client_context.cursor_cell_width = 9;
+            engine.client_context.focus_receipt = Some("current-terminal-field".into());
+            assert!(!engine.uses_native_terminal_input());
+            assert!(engine.finish_terminal_focus_probe(Some("current-terminal-field"), true));
+            assert_eq!(
+                engine.uses_native_terminal_input(),
+                backend == "kde",
+                "{backend}"
+            );
+            engine.client_context.focus_receipt = Some("other-field".into());
+            assert!(
+                !engine.uses_native_terminal_input(),
+                "{backend}: stale focus"
+            );
+        }
+    }
+
+    #[test]
+    fn kde_terminal_purpose_keeps_exact_refresh_atomic_and_content_fences() {
+        for invalidate in [
+            "missing-proof",
+            "exact-refresh",
+            "atomic",
+            "no-preedit",
+            "password",
+            "small-cursor",
+        ] {
+            let mut engine = engine(LayConfig {
+                layout_backend: "kde".into(),
+                ..LayConfig::default()
+            });
+            engine.set_client_capabilities(41);
+            engine.set_content_type_state(IBUS_INPUT_PURPOSE_TERMINAL, 0);
+            engine.client_context.cursor_cell_width = 9;
+            engine.client_context.focus_receipt = Some("current-terminal-field".into());
+            assert!(engine.finish_terminal_focus_probe(Some("current-terminal-field"), true));
+            match invalidate {
+                "missing-proof" => engine.client_context.terminal_focus_receipt = None,
+                "exact-refresh" => engine.client_context.exact_surrounding_refresh_available = true,
+                "atomic" => engine.atomic.active = true,
+                "no-preedit" => engine.client_context.preedit_text_supported = false,
+                "password" => engine.client_context.content_purpose = 8,
+                "small-cursor" => engine.client_context.cursor_cell_width = 4,
+                _ => unreachable!(),
+            }
+            assert!(!engine.uses_native_terminal_input(), "{invalidate}");
+        }
     }
 
     #[test]

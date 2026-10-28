@@ -1,0 +1,29 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-vte-terminal-purpose-policy",
+  "decision": "Dispatch terminal-focus content-purpose eligibility through the existing desktop boundary; KDE permits actual terminal purpose10 plus default0, all other backends preserve old default0.",
+  "reason": "Native VTE advertises surrounding caps41 and purpose10, which bypass both existing native-terminal admission branches before exact KDE qualification.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/engine.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/window_interaction/desktop.rs",
+    "src/bin/lay_ibus_engine/kde/desktop.rs",
+    "src/bin/lay_ibus_engine/kde/terminal.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/generated/architecture_graph_receipt.json"
+  ],
+  "verification": "Inode/prefix-bound native callback trace; real engine RED/GREEN with KDE purpose10/caps41 and unchanged GNOME policy plus ownership/privacy/field negatives; full source/release gates and same default-profile terminal33/GTKQt25/Chrome controls.",
+  "not_tested": "Earlier VTE3PASS8FAIL remains rejected baseline until new installed-byte proof. No generic terminal/Wayland/physical USB/all-client or GNOME Desktop physical acceptance claim.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": true,
+  "authority_scope": "Only the existing current-field native terminal input contract becomes eligible for KDE purpose10 after exact terminal qualification. Common owner/verifier/executor and actual delivery transports remain the same."
+}

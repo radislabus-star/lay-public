@@ -3,6 +3,7 @@ mod terminal;
 #[cfg(test)]
 pub(in crate::window_interaction) use terminal::exact_kde_terminal_window;
 pub(super) use terminal::focused_window_is_native_terminal;
+pub(super) use terminal::native_terminal_focus_purpose_supported;
 
 use crate::trace;
 

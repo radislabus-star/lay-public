@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-gtk-vte-terminal-qualification",
+  "decision": "Qualify the observed GTK/VTE GNOME Terminal metadata for the existing current-field KDE terminal contract, preserving all common admission/source/privacy/edit guards.",
+  "reason": "Actual ordinary GTK/VTE client retains letters in preedit; current KDE exact terminal classification rejects its authenticated app/class observation. Kitty andKonsole already use the existing terminal contract successfully.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/terminal.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/generated/architecture_graph_receipt.json"
+  ],
+  "verification": "Semantic RED/GREEN coherent client and mismatched metadata/empty identity negatives; preserve every old canonical test; full source/release gates and native ordinary terminal33 cases with same input/assertions plus GTK/Qt/browser controls.",
+  "not_tested": "Until native verification, classification is a causal hypothesis. No universal terminal/editor/GNOME Desktop/Wayland/physical USB acceptance and no Firefox rapid/omnibox fix claim.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": true,
+  "authority_scope": "Only one additional KDE client becomes eligible for the existing exact current-field terminal input contract; no central owner/verifier/executor or model authority changes."
+}
