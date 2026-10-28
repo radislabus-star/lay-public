@@ -1,0 +1,36 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-field-integration-scope-guard",
+  "decision": "Enforce the predeclared complete canonical source scope before the existing remote snapshot; verify its sealed file ledger remotely; add component recipes using the existing test executor.",
+  "reason": "Client isolation currently relies on manual reminders and remote synthetic Git cannot certify the canonical diff.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/dev-check.py",
+    "scripts/check-lay-tests.sh",
+    ".github/workflows/ci.yml",
+    "scripts/check-lay-component.sh",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "AGENTS.md",
+    "DEVELOPMENT.md",
+    "docs/architecture/field-integration-isolation-2026-10-28.md",
+    "scripts/field_integration_scope.py",
+    "scripts/check-field-integration-scope.py",
+    "scripts/check-lay-component.py",
+    "tests/test_field_integration_scope.py",
+    "tests/test_component_checks.py",
+    "src/generated/architecture_graph_receipt.json",
+    "tech_debt/evidence/release-1.0.110-verification.json",
+    "tech_debt/evidence/release-1.0.111-verification.json"
+  ],
+  "verification": "Real Git scope/snapshot negative controls and old-entrypoint RED/new-entrypoint GREEN; exact nonzero canonical component recipes; unchanged full release gates and final native matrices.",
+  "not_tested": "This accidental-edit guard is not server branch protection or a hostile-agent sandbox. A source component PASS is not physical client acceptance. No runtime correction, desktop/provider, owner or text transport changes.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

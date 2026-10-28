@@ -18,13 +18,17 @@ import tempfile
 import time
 
 ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT / "scripts") not in sys.path:
+    sys.path.insert(0, str(ROOT / "scripts"))
+from field_integration_scope import build_receipt, verify_snapshot_receipt
 CONFIG = Path.home() / ".config/lay/development.json"
 SAFE_REMOTE = re.compile(r"[A-Za-z0-9_][A-Za-z0-9_.@-]*\Z")
 SAFE_PATH = re.compile(r"/[A-Za-z0-9_./-]+\Z")
 SNAPSHOT_EXCLUDES = ("graphify-out/memory/", "graphify-out/reflections/")
 SELF_TESTS = ["tests.test_dev_check", "tests.test_focused_lanes",
               "tests.test_ime_client_harness", "tests.test_test_lanes",
-              "tests.test_resource_guard"]
+              "tests.test_resource_guard", "tests.test_field_integration_scope",
+              "tests.test_component_checks"]
 
 
 def git(*args: str, root: Path = ROOT) -> str:
@@ -109,6 +113,7 @@ def snapshot(root: Path, archive: Path, selected: dict) -> dict:
             raise ValueError("planning inputs changed before/during snapshot; replan before executing")
 
     assert_plan_current()
+    field_scope = build_receipt(root, selected["source_head"], changed_paths)
     names = file_list(root)
     rows = []
     with tarfile.open(archive, "w") as bundle:
@@ -131,8 +136,12 @@ def snapshot(root: Path, archive: Path, selected: dict) -> dict:
                                           for row in rows):
             raise ValueError("source changed during snapshot; do not execute this archive")
         assert_plan_current()
-    return {"schema": "lay.development-snapshot.v1", "source_head": selected["source_head"],
-            "archive_sha256": digest(archive), "files": rows, "plan": selected}
+    provenance = {"schema": "lay.development-snapshot.v1", "source_head": selected["source_head"],
+                  "archive_sha256": digest(archive), "files": rows, "plan": selected}
+    if field_scope is not None:
+        provenance["field_integration_scope"] = field_scope
+    verify_snapshot_receipt(provenance, root)
+    return provenance
 
 
 def load_config(path: Path) -> dict:
@@ -282,6 +291,7 @@ def worker(request_path: Path) -> int:
         path = ROOT / row["path"]
         if digest(path) != row["sha256"] or path.stat().st_mode & 0o777 != row["mode"]:
             raise ValueError(f"remote snapshot drift: {row['path']}")
+    verify_snapshot_receipt(req, ROOT)
     prepare_workspace(req, request_path)
     with (run / "EXECUTION_STARTED").open("x") as stream:
         stream.write("single execution; a failed run is never retried in place\n")

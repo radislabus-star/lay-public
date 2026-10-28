@@ -1,0 +1,1722 @@
+{
+  "schema": "lay.release111.verification.v1",
+  "recorded_at": "2026-10-28T09:30:07.099424+00:00",
+  "status": "SOURCE_VERIFIED_NATIVE_FAILURES_RECORDED_PUBLICATION_PENDING",
+  "version": "1.0.111",
+  "canonical_base": "4b629cfe1966755de8d32d6c36c893e45c35c0eb",
+  "source": {
+    "files": 1300,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "bfc7270982b8f71a90020c60ca4650040215fb84e3a56ce616f8e187229c52e2"
+  },
+  "correctness_and_package": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 454.73083441355266,
+      "package": 49.627618693280965
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 152.79793961090036,
+      "bin:lay-debug-actions": 0.009651534957811236,
+      "bin:lay-ibus-engine": 152.41619041142985,
+      "bin:lay-l11-serve": 0.013974633999168873,
+      "bin:lay-memory-report": 0.006872420897707343,
+      "bin:lay-nanda-dataset": 0.023067486938089132,
+      "bin:lay-nanda-wave-eval": 1.3049949039705098,
+      "bin:lay-nanda-wave-train": 1.2749502682127059,
+      "bin:lay-test-input": 0.006482925033196807,
+      "bin:lay_output_transaction_microproof": 0.01227923994883895,
+      "lib:lay": 125.89384382567368,
+      "test:correction_gate_metrics": 2.0252837848383933,
+      "test:decoder_alternating_stress": 1.2827821851242334,
+      "test:decoder_transition_regression": 2.1511131550651044,
+      "test:ibus_wire_compat": 0.011306507978588343,
+      "test:ime_space_boundary_contract": 0.010283204028382897,
+      "test:input_gate_operator_contract": 0.012066123075783253,
+      "test:input_gate_space_contract": 8.108002520166337,
+      "test:l3_context_feedback_overlay_contract": 1.3986983040813357,
+      "test:l3_context_metrics_contract": 0.008554514963179827,
+      "test:l3_online_resource_contract": 0.006286377785727382,
+      "test:l4_feedback_memory_contract": 0.010616709012538195,
+      "test:live_candidate_gate_metrics": 3.292743996018544,
+      "test:protected_words_runtime": 1.6771071690600365,
+      "test:restore_word_cli": 5.672925662947819,
+      "test:space_boundary_shift_mechanism": 4.984566324856132,
+      "test:td113_hybrid_source_contract": 0.034969324013218284,
+      "test:text_edit_gate_contract": 0.11814407794736326,
+      "test:text_mutation_monopoly_contract": 0.15762406680732965,
+      "test:tray_ui_contract": 0.015912699978798628,
+      "test:typing_assist_alternating_stress": 3.303171023959294,
+      "test:typing_assist_mixed_corpus": 33.44487810297869,
+      "test:typing_assist_short_alternating": 2.8480562451295555,
+      "test:typing_transition_authority_contract": 0.023113765055313706
+    },
+    "elapsed_seconds": 505.0739020369947,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "scope": "complete canonical correctness and package lanes; native evidence required separately",
+    "selected": 3555,
+    "selected_by_lane": {
+      "correctness": 3519,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "ime_correctness": 1117,
+  "ignored_tests_not_run": 41,
+  "performance_lane": 11,
+  "steps": [
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/budget-before.log",
+      "name": "budget-before",
+      "seconds": 0.1168193849734962,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/fmt.log",
+      "name": "fmt",
+      "seconds": 3.5352717658970505,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/protected-gate-preflight.log",
+      "name": "protected-gate-preflight",
+      "seconds": 21.6523402268067,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/graph.log",
+      "name": "graph",
+      "seconds": 18.022938824957237,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/canon.log",
+      "name": "canon",
+      "seconds": 0.22062440495938063,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "name": "source",
+      "reused_exact_snapshot": "/home/e/projects/lay-development-runner/run-HbHRYB/RESULT.json",
+      "seconds": 505.0739020369947,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/python.log",
+      "name": "python",
+      "seconds": 27.753718559164554,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/public.log",
+      "name": "public",
+      "seconds": 10.559518069960177,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/install.log",
+      "name": "install",
+      "seconds": 0.3120909440331161,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/node.log",
+      "name": "node",
+      "seconds": 0.11973270890302956,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/audit50.log",
+      "name": "audit50",
+      "seconds": 24.502351879840717,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/lints.log",
+      "name": "lints",
+      "seconds": 95.70599393290468,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/performance.log",
+      "name": "performance",
+      "seconds": 23.550653527025133,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/msrv.log",
+      "name": "msrv",
+      "seconds": 19.942773015936837,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/msrv-lexical.log",
+      "name": "msrv-lexical",
+      "seconds": 21.625168288126588,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/release.log",
+      "name": "release",
+      "seconds": 220.06355597800575,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/artifacts.log",
+      "name": "artifacts",
+      "seconds": 0.3180416910909116,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/budget-after.log",
+      "name": "budget-after",
+      "seconds": 0.12163165700621903,
+      "status": "PASS"
+    }
+  ],
+  "release_compiler_warnings": 0,
+  "artifact_sha256": {
+    "lay": "013676a02c7fe87c8d0c1822e2d935801d84f5b3ce3c64b4491ba27aa00b65bc",
+    "lay-daemon": "eb6098b445c48ae5a681fb8b1d33051e28a5da3646d90baa4cd47b09a7228de5",
+    "lay-ibus-engine": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5",
+    "lay-l11-restore": "05c4b41f967995f8375b5ab7ac5a1638dbd6ce1d9e64d0715ecd2e3341ea9447",
+    "lay-l11-serve": "c228312e0983db3fb8ce44af1bd2a1642a1ccda4cdeb9dc7a12dc9bed8415508",
+    "lay-memory-report": "1105386f812f1102fff1c9400a8c115f2db1c5fdd20304cae3990d4fba9d75d2",
+    "lay-nanda-wave-eval": "ffc69f8899850044efa5ceccdc08d061dd7420cff4380e0dec03bbc7a822798a",
+    "lay-nanda-wave-train": "b969f62c79ab879b436c0505a38d7ec886e5c11b34b8fbeca066c50c3602b759",
+    "lay-ngram-corpus": "7657e00e7c9be14dabb8c842fd549273b96ef0c15997738f1f0005b865488e91",
+    "lay-test-input": "5e89ba9b05aeb3b8c84bda30959bfdfcc18ed1a8a14957c7f89c7d8d56f18702"
+  },
+  "scope_receipt": {
+    "base": "4b629cfe1966755de8d32d6c36c893e45c35c0eb",
+    "changes": [
+      {
+        "category": "shared",
+        "mode": 436,
+        "path": ".github/workflows/ci.yml",
+        "sha256": "fe234a707ecad7587f78b90b785fb3a6f92d4bc9c0145a4f5252c209bac2596c"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "AGENTS.md",
+        "sha256": "2a5dd1581ca18c0063dad9539d9cfc66b594d17fb93ded532257ca111ad5dc5e"
+      },
+      {
+        "category": "version-metadata",
+        "mode": 436,
+        "path": "Cargo.lock",
+        "sha256": "53356a443418be63d3a2642a9fe528966ee7f3a463d131bfafe1805471568260"
+      },
+      {
+        "category": "version-metadata",
+        "mode": 436,
+        "path": "Cargo.toml",
+        "sha256": "f4b73422f819b04af05e9c2716174b58abae9385cb7a0bf7fb66e97222cfcb12"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "DEVELOPMENT.md",
+        "sha256": "33e50d2825d260459b65f30e0ad556ab442a98972abe27ffc6b5efe30d0b7761"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "VERSIONING.md",
+        "sha256": "714c34e35275339cf65909a23b62896837b906af1c44a492d5c0be9cd29751c0"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "docs/architecture/decisions/2026-10-28-field-integration-scope-guard.json",
+        "sha256": "d2e77e43a7687b33a560e2ece7c879812a3429b2243041fedac4c262b3f39452"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "docs/architecture/field-integration-isolation-2026-10-28.md",
+        "sha256": "427a486ed1b64903acd780140f65fbb41e56b70c4c3f2071fd60dc5af39f58cd"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "docs/development/active-field-integration-scope.json",
+        "sha256": "5ed94ffb30f52d5ff527b08e328258d959c752794825a50adf12276d38b88952"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "docs/development/release-1.0.111-component-scope-guard.md",
+        "sha256": "f9df67d7df5ea1874a8c581a67838d040bc99aae24429309d21a39f189733c37"
+      },
+      {
+        "category": "version-metadata",
+        "mode": 436,
+        "path": "extension/lay@radislabus-star.github.io/metadata.json",
+        "sha256": "58c6d30ed475f61a1aa0d2b06c612e8890e6010bae6fca9e07dd9089fc85651a"
+      },
+      {
+        "category": "version-metadata",
+        "mode": 436,
+        "path": "extension/lay@radislabus-star.github.io/tray_support.js",
+        "sha256": "0d6c4bee323c4eee4d47ee56949773f64fea88ae6cca0024d4610a227fc09167"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "graphify-out/.graphify_labels.json",
+        "sha256": "e893d6cde44d52d11caecba66de39d84fc6483fbeea46c0f593bc21adc6098fa"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "graphify-out/GRAPH_REPORT.md",
+        "sha256": "21a1ff9293692810496f2010c97dbabb6265252a0ab087f901d50f567eec82e6"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "graphify-out/graph.json",
+        "sha256": "9f30d2fef4b4a51ab0f46f7b9f5cf87ff02a6417347a38b01183f5c8293f88dc"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "graphify-out/manifest.json",
+        "sha256": "2daeb1896357014a7c28f90bd027c191c1872b273b54dd1edbff441d1e1a0812"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "graphify-out/source_graph_binding.json",
+        "sha256": "341d72ccd8a36eec3512edc082d2a70b2a87b7fc9db646ced15b388ed28a1cef"
+      },
+      {
+        "category": "tooling",
+        "mode": 436,
+        "path": "scripts/check-field-integration-scope.py",
+        "sha256": "a3a3e75da0749e54bd8822c2e92d4b02ae08472fdc95a9456f8365b56db2704e"
+      },
+      {
+        "category": "tooling",
+        "mode": 436,
+        "path": "scripts/check-lay-component.py",
+        "sha256": "588be6d7b78d82073d9ad881510b991426b4515490004b987ceadee86f8fc963"
+      },
+      {
+        "category": "tooling",
+        "mode": 493,
+        "path": "scripts/check-lay-component.sh",
+        "sha256": "d69c6ec5c0e52fb225e7c896d8d36430c3f2a37bad60fa9a2f11d719bdadb418"
+      },
+      {
+        "category": "shared",
+        "mode": 509,
+        "path": "scripts/check-lay-tests.sh",
+        "sha256": "d5e9ab645fb872772dfce966a364d99e7ac602398b784d89ecd4771cea822494"
+      },
+      {
+        "category": "shared",
+        "mode": 436,
+        "path": "scripts/dev-check.py",
+        "sha256": "831e9cdae7742aa5f0b242d7d27aea564c3734982a53b0f1dcf77ab334007bbb"
+      },
+      {
+        "category": "tooling",
+        "mode": 436,
+        "path": "scripts/field_integration_scope.py",
+        "sha256": "87e9dd159ea5580e7795cde91eb3d1c9b88a887a952e93426f4507630f5cdbb6"
+      },
+      {
+        "category": "documentation",
+        "mode": 436,
+        "path": "src/generated/architecture_graph_receipt.json",
+        "sha256": "b74d81ebd984689f7e924280768fda90fd0b9f5d8957ba70674e5aa1819804bc"
+      },
+      {
+        "category": "tooling",
+        "mode": 436,
+        "path": "tests/test_component_checks.py",
+        "sha256": "ba4836e90a5d422b0ee9afe6e1f155944cb48922c106f0756ae0133969bee041"
+      },
+      {
+        "category": "tooling",
+        "mode": 436,
+        "path": "tests/test_field_integration_scope.py",
+        "sha256": "eefb120d5ea7ac7dc56042c50615dd20a3c6f9f7120a9f018be40fe46feebee1"
+      }
+    ],
+    "contract_sha256": "5ed94ffb30f52d5ff527b08e328258d959c752794825a50adf12276d38b88952",
+    "schema": "lay.field-integration-scope-receipt.v1",
+    "source_head": "4b629cfe1966755de8d32d6c36c893e45c35c0eb"
+  },
+  "frozen_contract_files": {
+    ".github/workflows/ci.yml": "fe234a707ecad7587f78b90b785fb3a6f92d4bc9c0145a4f5252c209bac2596c",
+    "docs/development/active-field-integration-scope.json": "5ed94ffb30f52d5ff527b08e328258d959c752794825a50adf12276d38b88952",
+    "docs/architecture/decisions/2026-10-28-field-integration-scope-guard.json": "d2e77e43a7687b33a560e2ece7c879812a3429b2243041fedac4c262b3f39452"
+  },
+  "runtime_rust_files_unchanged_from_110": true,
+  "reviewed_scope": {
+    "runtime_authority_changed": false,
+    "delivery_routes_changed": false,
+    "version_labels_only": true,
+    "common_owner_reducer_verifier_executor_unchanged": true
+  },
+  "tooling_regression": {
+    "status": "PASS",
+    "old_entrypoint_red_exit": 1,
+    "new_entrypoint_green_exit": 0,
+    "red_log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-unit-v2/red.log",
+    "green_log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-unit-v2/green.log",
+    "scope": "real Git source scope and snapshot wiring; component selection/executor negative controls; no runtime input"
+  },
+  "component_checks": {
+    "status": "PASS",
+    "source": {
+      "files": 1300,
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "sha256": "bfc7270982b8f71a90020c60ca4650040215fb84e3a56ce616f8e187229c52e2"
+    },
+    "components": [
+      {
+        "component": "kde-chrome",
+        "exit": 0,
+        "verdict": "PASS",
+        "selected": 75,
+        "executed": 75,
+        "passed": 75,
+        "failed": 0,
+        "seconds": 5.279534408124164,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-components-v1/kde-chrome/SUMMARY.json"
+      },
+      {
+        "component": "kde-terminal",
+        "exit": 0,
+        "verdict": "PASS",
+        "selected": 100,
+        "executed": 100,
+        "passed": 100,
+        "failed": 0,
+        "seconds": 33.29633851908147,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-components-v1/kde-terminal/SUMMARY.json"
+      },
+      {
+        "component": "kde-focus",
+        "exit": 0,
+        "verdict": "PASS",
+        "selected": 8,
+        "executed": 8,
+        "passed": 8,
+        "failed": 0,
+        "seconds": 0.7099842780735344,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-components-v1/kde-focus/SUMMARY.json"
+      },
+      {
+        "component": "shared-replay",
+        "exit": 0,
+        "verdict": "PASS",
+        "selected": 16,
+        "executed": 16,
+        "passed": 16,
+        "failed": 0,
+        "seconds": 0.7648010049015284,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-components-v1/shared-replay/SUMMARY.json"
+      },
+      {
+        "component": "gnome",
+        "exit": 0,
+        "verdict": "PASS",
+        "selected": 9,
+        "executed": 9,
+        "passed": 9,
+        "failed": 0,
+        "seconds": 0.7446396509185433,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-components-v1/gnome/SUMMARY.json"
+      }
+    ],
+    "scope": "five canonical hermetic source recipes; overlapping tests, not additive full-suite count; no runtime/native acceptance"
+  },
+  "installed_runtime": {
+    "status": "PAIR_REFLOW_INSTALLED_NATIVE_NOT_TESTED",
+    "version": "1.0.111",
+    "publication_allowed": false,
+    "source": {
+      "files": 1300,
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "sha256": "bfc7270982b8f71a90020c60ca4650040215fb84e3a56ce616f8e187229c52e2"
+    },
+    "build_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-gates-v1/result.json",
+    "engine_pid": 3228031,
+    "daemon_pid": 3228075,
+    "tray_pid": 3228081,
+    "engine_sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5",
+    "daemon_sha256": "eb6098b445c48ae5a681fb8b1d33051e28a5da3646d90baa4cd47b09a7228de5",
+    "versions": {
+      "lay": "lay 1.0.111",
+      "lay-daemon": "lay-daemon 1.0.111",
+      "lay-ibus-engine": "lay-ibus-engine 1.0.111"
+    },
+    "installed_artifacts": 10,
+    "activation_sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5",
+    "config_unchanged": true,
+    "tray_sha256": "3f936370408e513b9ed764f087713a04e9521d9b31e475f5d53267c05be04e10",
+    "protected_processes_unchanged": 10,
+    "ibus_not_restarted": true,
+    "desktop_not_restarted": true,
+    "models_not_provisioned": true,
+    "input_status": {
+      "input_device": 5,
+      "master_keyboard": 3,
+      "ready": true,
+      "transport": "x11-xinput2"
+    },
+    "time": "2026-10-28T09:05:44.573895+00:00"
+  },
+  "native_acceptance": {
+    "status": "COMPLETE_WITH_KNOWN_FUNCTIONAL_FAILURES",
+    "version": "1.0.111",
+    "source": {
+      "files": 1300,
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "sha256": "bfc7270982b8f71a90020c60ca4650040215fb84e3a56ce616f8e187229c52e2"
+    },
+    "engine_pid": 3228031,
+    "engine_sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5",
+    "daemon_sha256": "eb6098b445c48ae5a681fb8b1d33051e28a5da3646d90baa4cd47b09a7228de5",
+    "terminals": {
+      "kitty": {
+        "PASS": 11,
+        "FAIL": 0
+      },
+      "konsole": {
+        "PASS": 11,
+        "FAIL": 0
+      },
+      "gnome-terminal": {
+        "PASS": 11,
+        "FAIL": 0
+      }
+    },
+    "native_fields": [
+      {
+        "kind": "gtk-entry",
+        "PASS": 5,
+        "FAIL": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-native-fields-v1-gtk-entry/result.json"
+      },
+      {
+        "kind": "gtk-text",
+        "PASS": 5,
+        "FAIL": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-native-fields-v1-gtk-text/result.json"
+      },
+      {
+        "kind": "qt-line",
+        "PASS": 5,
+        "FAIL": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-native-fields-v1-qt-line/result.json"
+      },
+      {
+        "kind": "qt-plain",
+        "PASS": 5,
+        "FAIL": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-native-fields-v1-qt-plain/result.json"
+      },
+      {
+        "kind": "qt-rich",
+        "PASS": 5,
+        "FAIL": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-native-fields-v1-qt-rich/result.json"
+      }
+    ],
+    "browsers": {
+      "firefox": {
+        "PASS": 125,
+        "FAIL": 56,
+        "BLOCKED": 39,
+        "NOT_TESTED": 0
+      },
+      "chrome": {
+        "PASS": 178,
+        "FAIL": 1,
+        "BLOCKED": 41,
+        "NOT_TESTED": 0
+      }
+    },
+    "full_browser_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-full-native-v1/result.json",
+    "config_restored_to_deployment_hash": true,
+    "held_keys": [],
+    "recovery": {
+      "original_transport_exit": 143,
+      "outer_phase_aggregate": "MISSING",
+      "child_browser_job_completed_after_transport_exit": true,
+      "child_full_elapsed_seconds": 872.7139520645142,
+      "repeated_input": false,
+      "scope": "aggregate independently validates complete original child receipts; no test/status/cadence/source change"
+    },
+    "local_gnome": "NOT_TESTED",
+    "physical_usb_evdev": "NOT_TESTED",
+    "scope": "actual installed111privateKDEX11; source and native failure counts separate; terminal visual verdicts recorded separately"
+  },
+  "full_browser_matrix": {
+    "execution_status": "COMPLETE",
+    "rows": [
+      {
+        "browser": "firefox",
+        "launcher_exit": 1,
+        "actor_status": "FAIL",
+        "groups": {
+          "original": {
+            "PASS": 73,
+            "FAIL": 55,
+            "BLOCKED": 32,
+            "NOT_TESTED": 0,
+            "total": 160
+          },
+          "additional": {
+            "PASS": 52,
+            "FAIL": 1,
+            "BLOCKED": 7,
+            "NOT_TESTED": 0,
+            "total": 60
+          }
+        },
+        "observed_rows": 220,
+        "timing_pass_rows_only": {
+          "consecutive-two:active": {
+            "n": 58,
+            "median_ms": 17.088633496314287,
+            "p95_ms": 26.28549304790795,
+            "max_ms": 194.0374281257391
+          },
+          "roundtrip:active": {
+            "n": 52,
+            "median_ms": 174.48712955228984,
+            "p95_ms": 198.05929600261152,
+            "max_ms": 221.52789612300694
+          },
+          "consecutive-two:space": {
+            "n": 46,
+            "median_ms": 181.91997741814703,
+            "p95_ms": 210.50397004000843,
+            "max_ms": 227.47193183749914
+          },
+          "roundtrip:space": {
+            "n": 48,
+            "median_ms": 178.32123499829322,
+            "p95_ms": 207.12057198397815,
+            "max_ms": 275.75524314306676
+          },
+          "space-en-ru:functional": {
+            "n": 8,
+            "median_ms": 16.738262958824635,
+            "p95_ms": 17.229350982233882,
+            "max_ms": 17.229350982233882
+          },
+          "moved-boundary:functional": {
+            "n": 5,
+            "median_ms": 17.65240984968841,
+            "p95_ms": 19.44303698837757,
+            "max_ms": 19.44303698837757
+          },
+          "tab:functional": {
+            "n": 8,
+            "median_ms": 18.083247123286128,
+            "p95_ms": 20.604115910828114,
+            "max_ms": 20.604115910828114
+          },
+          "rapid-five:active": {
+            "n": 10,
+            "median_ms": 7.291475310921669,
+            "p95_ms": 9.94542078115046,
+            "max_ms": 9.94542078115046
+          }
+        },
+        "hint_publication": {
+          "n": 8,
+          "median_ms": 21.197642432525754,
+          "p95_ms": 23.47579412162304,
+          "max_ms": 23.47579412162304
+        },
+        "timing_coverage": {
+          "consecutive-two:active:PASS": 29,
+          "roundtrip:active:PASS": 26,
+          "rapid-five:active:FAIL": 26,
+          "consecutive-two:space:PASS": 23,
+          "roundtrip:space:PASS": 24,
+          "rapid-five:space:FAIL": 24,
+          "space-en-ru:functional:PASS": 8,
+          "typo-undo:functional:BLOCKED": 10,
+          "moved-boundary:functional:PASS": 5,
+          "tab:functional:PASS": 8,
+          "consecutive-two:space:BLOCKED": 6,
+          "roundtrip:space:BLOCKED": 6,
+          "rapid-five:space:BLOCKED": 6,
+          "space-en-ru:functional:BLOCKED": 2,
+          "moved-boundary:functional:BLOCKED": 2,
+          "tab:functional:BLOCKED": 2,
+          "roundtrip:active:BLOCKED": 2,
+          "rapid-five:active:BLOCKED": 2,
+          "rapid-five:active:PASS": 2,
+          "moved-boundary:functional:FAIL": 3,
+          "consecutive-two:space:FAIL": 1,
+          "roundtrip:active:FAIL": 2,
+          "consecutive-two:active:BLOCKED": 1
+        },
+        "latency_scope": "monotonic release to first stable target; rapid-five DOM clock mapping has per-row uncertainty; polling included",
+        "failures": [
+          {
+            "window": "normal",
+            "field": "text",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 6314, 'text': 'привет'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 6371, 'text': 'привет'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 6481, 'text': 'приве'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 6483, 'text': 'приве'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 6485, 'text': 'прив'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 6485, 'text': 'прив'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 6489, 'text': 'при'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 6490, 'text': 'при'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 6494, 'text': 'пр'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 6494, 'text': 'пр'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 6497, 'text': 'п'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 6497, 'text': 'п'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': '', 't': 6503, 'text': ''}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 6503, 'text': ''}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 6528, 'text': 'g'}, {'id': 'text', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 6528, 'text': 'g'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 6531, 'text': 'gh'}, {'id': 'text', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 6531, 'text': 'gh'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 6535, 'text': 'ghb'}, {'id': 'text', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 6536, 'text': 'ghb'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 6537, 'text': 'ghbd'}, {'id': 'text', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 6537, 'text': 'ghbd'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 6540, 'text': 'ghbdt'}, {'id': 'text', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 6540, 'text': 'ghbdt'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 6541, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 6542, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 6556, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 6584, 'text': 'ghbdtn'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 6687, 'text': 'ghbdt'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 6687, 'text': 'ghbdt'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 6690, 'text': 'ghbd'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 6690, 'text': 'ghbd'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 6696, 'text': 'ghb'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'ghb', 't': 6696, 'text': 'ghb'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 6696, 'text': 'gh'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'gh', 't': 6696, 'text': 'gh'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 6699, 'text': 'g'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'g', 't': 6699, 'text': 'g'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': '', 't': 6703, 'text': ''}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 6704, 'text': ''}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 6728, 'text': 'п'}, {'id': 'text', 'key': 'п', 'kind': 'keyup', 'raw_text': 'п', 't': 6728, 'text': 'п'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 6730, 'text': 'пр'}, {'id': 'text', 'key': 'р', 'kind': 'keyup', 'raw_text': 'пр', 't': 6730, 'text': 'пр'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 6733, 'text': 'при'}, {'id': 'text', 'key': 'и', 'kind': 'keyup', 'raw_text': 'при', 't': 6734, 'text': 'при'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 6738, 'text': 'прив'}, {'id': 'text', 'key': 'в', 'kind': 'keyup', 'raw_text': 'прив', 't': 6739, 'text': 'прив'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 6740, 'text': 'приве'}, {'id': 'text', 'key': 'е', 'kind': 'keyup', 'raw_text': 'приве', 't': 6741, 'text': 'приве'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'привет', 't': 6742, 'text': 'привет'}, {'id': 'text', 'key': 'т', 'kind': 'keyup', 'raw_text': 'привет', 't': 6742, 'text': 'привет'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 6756, 'text': 'привет'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 6794, 'text': 'привет'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 6987, 'text': 'приве'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 6987, 'text': 'приве'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 6993, 'text': 'прив'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 6993, 'text': 'прив'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 6993, 'text': 'при'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 6993, 'text': 'при'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 6996, 'text': 'пр'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 6996, 'text': 'пр'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 6998, 'text': 'п'}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 6998, 'text': 'п'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': '', 't': 7002, 'text': ''}, {'id': 'text', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 7002, 'text': ''}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 7031, 'text': 'g'}, {'id': 'text', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 7031, 'text': 'g'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 7033, 'text': 'gh'}, {'id': 'text', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 7034, 'text': 'gh'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 7039, 'text': 'ghb'}, {'id': 'text', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 7039, 'text': 'ghb'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 7043, 'text': 'ghbd'}, {'id': 'text', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 7043, 'text': 'ghbd'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 7044, 'text': 'ghbdt'}, {'id': 'text', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 7044, 'text': 'ghbdt'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 7048, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 7048, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 7062, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 7062, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 7156, 'text': 'ghbdtn'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 7214, 'text': 'ghbdtn'}]}"
+          },
+          {
+            "window": "normal",
+            "field": "text",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376018.75035914, 'next_gesture_start': 1376018.728602813}, {'target': 1, 'observed': 1376018.97935914, 'next_gesture_start': 1376018.939952694}, {'target': 2, 'observed': 1376019.28635914, 'next_gesture_start': 1376019.152022176}, {'target': 3, 'observed': 1376019.45135914, 'next_gesture_start': 1376019.359684178}], 'clock_mapping_uncertainty_ms': 1.8285440746694803}"
+          },
+          {
+            "window": "normal",
+            "field": "search",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376030.9008647306, 'next_gesture_start': 1376030.879719729}, {'target': 1, 'observed': 1376031.1128647306, 'next_gesture_start': 1376031.092287814}, {'target': 2, 'observed': 1376031.4148647306, 'next_gesture_start': 1376031.301348245}, {'target': 3, 'observed': 1376031.5688647307, 'next_gesture_start': 1376031.510788114}], 'clock_mapping_uncertainty_ms': 1.9157904898747802}"
+          },
+          {
+            "window": "normal",
+            "field": "search",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 35804, 'raw_text': 'привет ', 'rect': {'x': 1037.25, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет '}}"
+          },
+          {
+            "window": "normal",
+            "field": "url",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376051.8740593675, 'next_gesture_start': 1376051.847525281}, {'target': 1, 'observed': 1376052.0750593676, 'next_gesture_start': 1376052.058820409}, {'target': 2, 'observed': 1376052.2800593674, 'next_gesture_start': 1376052.266388032}, {'target': 3, 'observed': 1376052.5150593675, 'next_gesture_start': 1376052.479228158}], 'clock_mapping_uncertainty_ms': 9.036502568051219}"
+          },
+          {
+            "window": "normal",
+            "field": "tel",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376058.7602429292, 'next_gesture_start': 1376058.722857567}, {'target': 1, 'observed': 1376058.9682429293, 'next_gesture_start': 1376058.936335433}, {'target': 2, 'observed': 1376059.2482429293, 'next_gesture_start': 1376059.144440809}, {'target': 3, 'observed': 1376059.4282429293, 'next_gesture_start': 1376059.35509332}], 'clock_mapping_uncertainty_ms': 1.5948364743962884}"
+          },
+          {
+            "window": "normal",
+            "field": "tel",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'expected': ['ghbdtn ', 'привет ', 'ghbdtn ', 'привет ', 'ghbdtn '], 'observed': [{'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 60496, 'text': 'привет '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 60557, 'text': 'привет '}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'привет', 't': 60632, 'text': 'привет'}, {'id': 'tel', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'привет', 't': 60632, 'text': 'привет'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 60635, 'text': 'приве'}, {'id': 'tel', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 60635, 'text': 'приве'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 60640, 'text': 'прив'}, {'id': 'tel', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 60640, 'text': 'прив'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 60640, 'text': 'при'}, {'id': 'tel', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 60640, 'text': 'при'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 60642, 'text': 'пр'}, {'id': 'tel', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 60642, 'text': 'пр'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 60645, 'text': 'п'}, {'id': 'tel', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 60645, 'text': 'п'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': '', 't': 60647, 'text': ''}, {'id': 'tel', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 60647, 'text': ''}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 60676, 'text': 'g'}, {'id': 'tel', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 60677, 'text': 'g'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 60680, 'text': 'gh'}, {'id': 'tel', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 60680, 'text': 'gh'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 60681, 'text': 'ghb'}, {'id': 'tel', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 60681, 'text': 'ghb'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 60685, 'text': 'ghbd'}, {'id': 'tel', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 60685, 'text': 'ghbd'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 60687, 'text': 'ghbdt'}, {'id': 'tel', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 60687, 'text': 'ghbdt'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 60690, 'text': 'ghbdtn'}, {'id': 'tel', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 60690, 'text': 'ghbdtn'}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn ', 't': 60692, 'text': 'ghbdtn '}, {'id': 'tel', 'key': ' ', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 60693, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 60707, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 60768, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 60923, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 60976, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 61150, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 61204, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 61361, 'text': 'ghbdtn '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 61419, 'text': 'ghbdtn '}]}"
+          },
+          {
+            "window": "normal",
+            "field": "textarea",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376089.4912282971, 'next_gesture_start': 1376089.492358112}, {'target': 1, 'observed': 1376089.753228297, 'next_gesture_start': 1376089.702647922}, {'target': 2, 'observed': 1376089.935228297, 'next_gesture_start': 1376089.924782493}, {'target': 3, 'observed': 1376090.135228297, 'next_gesture_start': 1376090.136420622}], 'clock_mapping_uncertainty_ms': 1.3377480208873749}"
+          },
+          {
+            "window": "normal",
+            "field": "rich",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376101.6358900575, 'next_gesture_start': 1376101.607605104}, {'target': 1, 'observed': 1376101.8348900576, 'next_gesture_start': 1376101.815090724}, {'target': 3, 'observed': 1376102.2878900575, 'next_gesture_start': 1376102.264362188}], 'clock_mapping_uncertainty_ms': 1.5144695062190294}"
+          },
+          {
+            "window": "normal",
+            "field": "rich",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376108.9745078478, 'next_gesture_start': 1376108.95422197}, {'target': 2, 'observed': 1376109.4105078478, 'next_gesture_start': 1376109.393525501}, {'target': 3, 'observed': 1376109.6225078478, 'next_gesture_start': 1376109.605530793}], 'clock_mapping_uncertainty_ms': 1.2464000610634685}"
+          },
+          {
+            "window": "normal",
+            "field": "rich",
+            "name": "moved-boundary",
+            "word": "functional",
+            "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 109584, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x': 452.75, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+          },
+          {
+            "window": "normal",
+            "field": "plain",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376122.7534400905, 'next_gesture_start': 1376122.734200404}, {'target': 1, 'observed': 1376122.9634400904, 'next_gesture_start': 1376122.951884166}, {'target': 2, 'observed': 1376123.2514400906, 'next_gesture_start': 1376123.159299934}, {'target': 3, 'observed': 1376123.4044400905, 'next_gesture_start': 1376123.367924757}], 'clock_mapping_uncertainty_ms': 1.5589646063745022}"
+          },
+          {
+            "window": "normal",
+            "field": "plain",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376129.955490123, 'next_gesture_start': 1376129.919821935}, {'target': 1, 'observed': 1376130.147490123, 'next_gesture_start': 1376130.127499141}, {'target': 2, 'observed': 1376130.370490123, 'next_gesture_start': 1376130.36325199}, {'target': 3, 'observed': 1376130.594490123, 'next_gesture_start': 1376130.572934795}], 'clock_mapping_uncertainty_ms': 2.31175497174263}"
+          },
+          {
+            "window": "normal",
+            "field": "plain",
+            "name": "moved-boundary",
+            "word": "functional",
+            "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 130504, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x': 1037.25, 'y': 516.7166748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+          },
+          {
+            "window": "normal",
+            "field": "iframe-input",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376143.726635376, 'next_gesture_start': 1376143.691506985}, {'target': 1, 'observed': 1376143.931635376, 'next_gesture_start': 1376143.899321486}, {'target': 2, 'observed': 1376144.235635376, 'next_gesture_start': 1376144.108194578}, {'target': 3, 'observed': 1376144.361635376, 'next_gesture_start': 1376144.31904829}], 'clock_mapping_uncertainty_ms': 1.4157090336084366}"
+          },
+          {
+            "window": "normal",
+            "field": "iframe-input",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376150.9361752556, 'next_gesture_start': 1376150.924494803}, {'target': 1, 'observed': 1376151.1491752556, 'next_gesture_start': 1376151.13829176}, {'target': 2, 'observed': 1376151.3891752556, 'next_gesture_start': 1376151.376803467}], 'clock_mapping_uncertainty_ms': 1.1857764329761267}"
+          },
+          {
+            "window": "normal",
+            "field": "iframe-rich",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 160638, 'raw_text': 'привет', 'rect': {'x': 1036.5, 'y': 608.9666748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+          },
+          {
+            "window": "normal",
+            "field": "iframe-rich",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376171.9375025511, 'next_gesture_start': 1376171.89740249}, {'target': 1, 'observed': 1376172.128502551, 'next_gesture_start': 1376172.105051641}, {'target': 3, 'observed': 1376172.601502551, 'next_gesture_start': 1376172.565413797}], 'clock_mapping_uncertainty_ms': 1.928498037159443}"
+          },
+          {
+            "window": "normal",
+            "field": "iframe-rich",
+            "name": "moved-boundary",
+            "word": "functional",
+            "error": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 172574, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x': 1036.5, 'y': 608.9666748046875}, 'rendered_text': None, 'rich': True, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'должн ыбыть '}}"
+          },
+          {
+            "window": "private",
+            "field": "text",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 9244, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+          },
+          {
+            "window": "private",
+            "field": "text",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376198.033256809, 'next_gesture_start': 1376197.988918796}, {'target': 2, 'observed': 1376198.4472568089, 'next_gesture_start': 1376198.432325079}, {'target': 3, 'observed': 1376198.671256809, 'next_gesture_start': 1376198.642260391}], 'clock_mapping_uncertainty_ms': 2.141264034435153}"
+          },
+          {
+            "window": "private",
+            "field": "search",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 24762, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+          },
+          {
+            "window": "private",
+            "field": "search",
+            "name": "consecutive-two",
+            "word": "space",
+            "error": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 28355, 'raw_text': 'ghbdtn ', 'rect': {'x': 1037.25, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn '}}"
+          },
+          {
+            "window": "private",
+            "field": "search",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376215.067787547, 'next_gesture_start': 1376215.054834408}, {'target': 2, 'observed': 1376215.545787547, 'next_gesture_start': 1376215.504531008}, {'target': 3, 'observed': 1376215.798787547, 'next_gesture_start': 1376215.715772964}], 'clock_mapping_uncertainty_ms': 2.205312019214034}"
+          },
+          {
+            "window": "private",
+            "field": "url",
+            "name": "roundtrip",
+            "word": "active",
+            "error": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 39175, 'raw_text': 'ghbdtn', 'rect': {'x': 452.75, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn'}}"
+          },
+          {
+            "window": "private",
+            "field": "url",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376223.3579664344, 'next_gesture_start': 1376223.340142081}, {'target': 1, 'observed': 1376223.5809664344, 'next_gesture_start': 1376223.551720112}, {'target': 2, 'observed': 1376223.8969664345, 'next_gesture_start': 1376223.758277233}, {'target': 3, 'observed': 1376224.0699664345, 'next_gesture_start': 1376223.968811257}], 'clock_mapping_uncertainty_ms': 1.7245884519070387}"
+          },
+          {
+            "window": "private",
+            "field": "tel",
+            "name": "roundtrip",
+            "word": "active",
+            "error": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 47393, 'raw_text': 'ghbdtn', 'rect': {'x': 1037.25, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'ghbdtn'}}"
+          },
+          {
+            "window": "private",
+            "field": "tel",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376231.5390146126, 'next_gesture_start': 1376231.507125489}, {'target': 2, 'observed': 1376231.9550146125, 'next_gesture_start': 1376231.942627478}], 'clock_mapping_uncertainty_ms': 1.2987945228815079}"
+          },
+          {
+            "window": "private",
+            "field": "tel",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 58705, 'raw_text': 'привет ', 'rect': {'x': 1037.25, 'y': 380.5}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет '}}"
+          },
+          {
+            "window": "private",
+            "field": "textarea",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 72730, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 418.3333129882813}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет'}}"
+          },
+          {
+            "window": "private",
+            "field": "textarea",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 81768, 'raw_text': 'привет ', 'rect': {'x': 1037.25, 'y': 418.3333129882813}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет '}}"
+          },
+          {
+            "window": "private",
+            "field": "rich",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 86934, 'text': 'привет'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 86994, 'text': 'привет'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 87062, 'text': 'приве'}, {'id': 'rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 87063, 'text': 'приве'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 87067, 'text': 'прив'}, {'id': 'rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 87067, 'text': 'прив'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 87069, 'text': 'при'}, {'id': 'rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 87069, 'text': 'при'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 87070, 'text': 'пр'}, {'id': 'rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 87070, 'text': 'пр'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 87073, 'text': 'п'}, {'id': 'rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 87073, 'text': 'п'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': '', 't': 87077, 'text': ''}, {'id': 'rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 87077, 'text': ''}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 87107, 'text': 'g'}, {'id': 'rich', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 87107, 'text': 'g'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 87111, 'text': 'gh'}, {'id': 'rich', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 87111, 'text': 'gh'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 87114, 'text': 'ghb'}, {'id': 'rich', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 87115, 'text': 'ghb'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 87119, 'text': 'ghbd'}, {'id': 'rich', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 87119, 'text': 'ghbd'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 87121, 'text': 'ghbdt'}, {'id': 'rich', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 87121, 'text': 'ghbdt'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 87123, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87123, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87150, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87209, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87368, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87424, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87597, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87656, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87810, 'text': 'ghbdtn'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 87868, 'text': 'ghbdtn'}]}"
+          },
+          {
+            "window": "private",
+            "field": "rich",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376277.0418663865, 'next_gesture_start': 1376276.999423934}, {'target': 1, 'observed': 1376277.2168663866, 'next_gesture_start': 1376277.210708556}, {'target': 2, 'observed': 1376277.4568663866, 'next_gesture_start': 1376277.450869969}, {'target': 3, 'observed': 1376277.6888663864, 'next_gesture_start': 1376277.66136521}], 'clock_mapping_uncertainty_ms': 2.000142587348819}"
+          },
+          {
+            "window": "private",
+            "field": "plain",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376283.7937380674, 'next_gesture_start': 1376283.788622553}, {'target': 1, 'observed': 1376284.0207380673, 'next_gesture_start': 1376283.999006908}, {'target': 2, 'observed': 1376284.2177380673, 'next_gesture_start': 1376284.210327194}, {'target': 3, 'observed': 1376284.4327380673, 'next_gesture_start': 1376284.425465666}], 'clock_mapping_uncertainty_ms': 2.368399524129927}"
+          },
+          {
+            "window": "private",
+            "field": "plain",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376291.101544995, 'next_gesture_start': 1376291.097735099}, {'target': 1, 'observed': 1376291.3545449951, 'next_gesture_start': 1376291.307724719}, {'target': 2, 'observed': 1376291.583544995, 'next_gesture_start': 1376291.535565801}, {'target': 3, 'observed': 1376291.832544995, 'next_gesture_start': 1376291.744038797}], 'clock_mapping_uncertainty_ms': 1.9926950335502625}"
+          },
+          {
+            "window": "private",
+            "field": "iframe-input",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376297.8711472326, 'next_gesture_start': 1376297.851391897}, {'target': 1, 'observed': 1376298.0881472325, 'next_gesture_start': 1376298.061383543}, {'target': 2, 'observed': 1376298.2841472325, 'next_gesture_start': 1376298.269297593}, {'target': 3, 'observed': 1376298.5151472325, 'next_gesture_start': 1376298.47940858}], 'clock_mapping_uncertainty_ms': 1.3419775059446692}"
+          },
+          {
+            "window": "private",
+            "field": "iframe-input",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'expected': ['ghbdtn ', 'привет ', 'ghbdtn ', 'привет ', 'ghbdtn '], 'observed': [{'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 122113, 'text': 'привет '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 122169, 'text': 'привет '}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'привет', 't': 122279, 'text': 'привет'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'привет', 't': 122280, 'text': 'привет'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 122283, 'text': 'приве'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 122283, 'text': 'приве'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 122290, 'text': 'прив'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 122290, 'text': 'прив'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 122290, 'text': 'при'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 122291, 'text': 'при'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 122293, 'text': 'пр'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 122293, 'text': 'пр'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 122297, 'text': 'п'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 122297, 'text': 'п'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': '', 't': 122299, 'text': ''}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 122299, 'text': ''}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 122321, 'text': 'g'}, {'id': 'iframe-input', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 122321, 'text': 'g'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 122322, 'text': 'gh'}, {'id': 'iframe-input', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 122323, 'text': 'gh'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 122324, 'text': 'ghb'}, {'id': 'iframe-input', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 122324, 'text': 'ghb'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 122327, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 122327, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 122329, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 122330, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 122332, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 122333, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn ', 't': 122334, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': ' ', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 122334, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 122352, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 122375, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 122466, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 122466, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 122470, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 122470, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 122474, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 122474, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 122475, 'text': 'ghb'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'ghb', 't': 122475, 'text': 'ghb'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 122477, 'text': 'gh'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'gh', 't': 122477, 'text': 'gh'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 122480, 'text': 'g'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'g', 't': 122480, 'text': 'g'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': '', 't': 122486, 'text': ''}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 122486, 'text': ''}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 122508, 'text': 'п'}, {'id': 'iframe-input', 'key': 'п', 'kind': 'keyup', 'raw_text': 'п', 't': 122509, 'text': 'п'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 122511, 'text': 'пр'}, {'id': 'iframe-input', 'key': 'р', 'kind': 'keyup', 'raw_text': 'пр', 't': 122511, 'text': 'пр'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 122513, 'text': 'при'}, {'id': 'iframe-input', 'key': 'и', 'kind': 'keyup', 'raw_text': 'при', 't': 122514, 'text': 'при'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 122517, 'text': 'прив'}, {'id': 'iframe-input', 'key': 'в', 'kind': 'keyup', 'raw_text': 'прив', 't': 122517, 'text': 'прив'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 122520, 'text': 'приве'}, {'id': 'iframe-input', 'key': 'е', 'kind': 'keyup', 'raw_text': 'приве', 't': 122520, 'text': 'приве'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'привет', 't': 122523, 'text': 'привет'}, {'id': 'iframe-input', 'key': 'т', 'kind': 'keyup', 'raw_text': 'привет', 't': 122523, 'text': 'привет'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'привет ', 't': 122525, 'text': 'привет '}, {'id': 'iframe-input', 'key': ' ', 'kind': 'keyup', 'raw_text': 'привет ', 't': 122525, 'text': 'привет '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 122539, 'text': 'привет '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 122587, 'text': 'привет '}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'привет', 't': 122699, 'text': 'привет'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'привет', 't': 122700, 'text': 'привет'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 122703, 'text': 'приве'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 122703, 'text': 'приве'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 122709, 'text': 'прив'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 122709, 'text': 'прив'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 122712, 'text': 'при'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 122712, 'text': 'при'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 122716, 'text': 'пр'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 122716, 'text': 'пр'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 122718, 'text': 'п'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 122718, 'text': 'п'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': '', 't': 122744, 'text': ''}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 122744, 'text': ''}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 122765, 'text': 'g'}, {'id': 'iframe-input', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 122765, 'text': 'g'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 122767, 'text': 'gh'}, {'id': 'iframe-input', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 122767, 'text': 'gh'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 122770, 'text': 'ghb'}, {'id': 'iframe-input', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 122770, 'text': 'ghb'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 122773, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 122773, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 122775, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 122775, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 122781, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 122781, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn ', 't': 122782, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': ' ', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 122782, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 122797, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 122818, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 122977, 'text': 'ghbdtn '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn ', 't': 123034, 'text': 'ghbdtn '}]}"
+          },
+          {
+            "window": "private",
+            "field": "iframe-rich",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376311.5981971645, 'next_gesture_start': 1376311.583060629}, {'target': 1, 'observed': 1376311.8121971644, 'next_gesture_start': 1376311.801416844}, {'target': 2, 'observed': 1376312.0311971644, 'next_gesture_start': 1376312.025500991}, {'target': 3, 'observed': 1376312.2601971645, 'next_gesture_start': 1376312.237845201}], 'clock_mapping_uncertainty_ms': 1.3056604657322168}"
+          },
+          {
+            "window": "private",
+            "field": "iframe-rich",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'expected': ['ghbdtn ', 'привет ', 'ghbdtn ', 'привет ', 'ghbdtn '], 'observed': [{'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет\\xa0', 't': 135933, 'text': 'привет '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет\\xa0', 't': 135991, 'text': 'привет '}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'привет', 't': 136093, 'text': 'привет'}, {'id': 'iframe-rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'привет', 't': 136093, 'text': 'привет'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 136097, 'text': 'приве'}, {'id': 'iframe-rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 136098, 'text': 'приве'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 136107, 'text': 'прив'}, {'id': 'iframe-rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 136107, 'text': 'прив'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 136107, 'text': 'при'}, {'id': 'iframe-rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 136107, 'text': 'при'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 136111, 'text': 'пр'}, {'id': 'iframe-rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 136111, 'text': 'пр'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 136116, 'text': 'п'}, {'id': 'iframe-rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 136116, 'text': 'п'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': '', 't': 136120, 'text': ''}, {'id': 'iframe-rich', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 136121, 'text': ''}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 136146, 'text': 'g'}, {'id': 'iframe-rich', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 136146, 'text': 'g'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 136149, 'text': 'gh'}, {'id': 'iframe-rich', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 136149, 'text': 'gh'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 136151, 'text': 'ghb'}, {'id': 'iframe-rich', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 136152, 'text': 'ghb'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 136154, 'text': 'ghbd'}, {'id': 'iframe-rich', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 136155, 'text': 'ghbd'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 136158, 'text': 'ghbdt'}, {'id': 'iframe-rich', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 136158, 'text': 'ghbdt'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 136162, 'text': 'ghbdtn'}, {'id': 'iframe-rich', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 136162, 'text': 'ghbdtn'}, {'id': 'iframe-rich', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn\\xa0', 't': 136166, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': ' ', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136166, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136185, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136203, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136358, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136414, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136566, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136624, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136782, 'text': 'ghbdtn '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn\\xa0', 't': 136839, 'text': 'ghbdtn '}]}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "text",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376329.2784250465, 'next_gesture_start': 1376329.246768689}, {'target': 1, 'observed': 1376329.4714250464, 'next_gesture_start': 1376329.45649675}, {'target': 2, 'observed': 1376329.8374250464, 'next_gesture_start': 1376329.670429716}, {'target': 3, 'observed': 1376330.0054250464, 'next_gesture_start': 1376329.88169974}], 'clock_mapping_uncertainty_ms': 1.3702934375032783}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "text",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376336.6529280315, 'next_gesture_start': 1376336.654539367}, {'target': 1, 'observed': 1376336.8869280315, 'next_gesture_start': 1376336.866517692}, {'target': 2, 'observed': 1376337.2159280316, 'next_gesture_start': 1376337.076352406}, {'target': 3, 'observed': 1376337.3949280316, 'next_gesture_start': 1376337.286231299}], 'clock_mapping_uncertainty_ms': 2.020402578637004}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "search",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 1, 'observed': 1376343.7244301816, 'next_gesture_start': 1376343.697997486}, {'target': 2, 'observed': 1376343.9614301817, 'next_gesture_start': 1376343.928461953}, {'target': 3, 'observed': 1376344.1604301818, 'next_gesture_start': 1376344.139639281}], 'clock_mapping_uncertainty_ms': 1.6071934951469302}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "search",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376350.7785844873, 'next_gesture_start': 1376350.743257316}, {'target': 2, 'observed': 1376351.1865844873, 'next_gesture_start': 1376351.161646102}], 'clock_mapping_uncertainty_ms': 1.112354570068419}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "url",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376357.5430561656, 'next_gesture_start': 1376357.534970291}, {'target': 2, 'observed': 1376358.0140561655, 'next_gesture_start': 1376357.973965326}, {'target': 3, 'observed': 1376358.2890561654, 'next_gesture_start': 1376358.184075244}], 'clock_mapping_uncertainty_ms': 2.004486508667469}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "tel",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376364.4396951979, 'next_gesture_start': 1376364.403424731}, {'target': 1, 'observed': 1376364.629695198, 'next_gesture_start': 1376364.611542056}, {'target': 2, 'observed': 1376364.849695198, 'next_gesture_start': 1376364.847551049}, {'target': 3, 'observed': 1376365.094695198, 'next_gesture_start': 1376365.060244767}], 'clock_mapping_uncertainty_ms': 1.6663770657032728}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "tel",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 52258, 'raw_text': 'привет ', 'rect': {'x': 1092.25, 'y': 382.7000122070313}, 'rendered_text': None, 'rich': False, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'привет '}}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "textarea",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376385.003676125, 'next_gesture_start': 1376384.985304876}, {'target': 2, 'observed': 1376385.4656761251, 'next_gesture_start': 1376385.430933657}, {'target': 3, 'observed': 1376385.7226761251, 'next_gesture_start': 1376385.641091224}], 'clock_mapping_uncertainty_ms': 1.9004619680345058}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "textarea",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376392.461218534, 'next_gesture_start': 1376392.424973021}, {'target': 1, 'observed': 1376392.678218534, 'next_gesture_start': 1376392.637125282}, {'target': 2, 'observed': 1376392.889218534, 'next_gesture_start': 1376392.878417014}, {'target': 3, 'observed': 1376393.108218534, 'next_gesture_start': 1376393.090506067}], 'clock_mapping_uncertainty_ms': 1.575205009430647}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "rich",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376399.4295941289, 'next_gesture_start': 1376399.385772069}, {'target': 1, 'observed': 1376399.617594129, 'next_gesture_start': 1376399.59807418}, {'target': 2, 'observed': 1376399.840594129, 'next_gesture_start': 1376399.834869452}, {'target': 3, 'observed': 1376400.127594129, 'next_gesture_start': 1376400.045778116}], 'clock_mapping_uncertainty_ms': 1.626433921046555}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "rich",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376406.7002850075, 'next_gesture_start': 1376406.693050616}, {'target': 1, 'observed': 1376406.9222850075, 'next_gesture_start': 1376406.913977475}, {'target': 2, 'observed': 1376407.2952850075, 'next_gesture_start': 1376407.122888947}, {'target': 3, 'observed': 1376407.4912850074, 'next_gesture_start': 1376407.342130781}], 'clock_mapping_uncertainty_ms': 1.9184384727850556}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "plain",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376413.5416359897, 'next_gesture_start': 1376413.539531872}, {'target': 1, 'observed': 1376413.7746359897, 'next_gesture_start': 1376413.749270339}, {'target': 2, 'observed': 1376413.9896359895, 'next_gesture_start': 1376413.991271963}, {'target': 3, 'observed': 1376414.2176359897, 'next_gesture_start': 1376414.205497526}], 'clock_mapping_uncertainty_ms': 2.099279430694878}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "plain",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376420.984159336, 'next_gesture_start': 1376420.98324555}, {'target': 1, 'observed': 1376421.218159336, 'next_gesture_start': 1376421.194939316}, {'target': 2, 'observed': 1376421.461159336, 'next_gesture_start': 1376421.424244969}, {'target': 3, 'observed': 1376421.654159336, 'next_gesture_start': 1376421.635617931}], 'clock_mapping_uncertainty_ms': 1.1681289179250598}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "iframe-input",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 105392, 'text': 'привет'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 105452, 'text': 'привет'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 105572, 'text': 'приве'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'приве', 't': 105572, 'text': 'приве'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'прив', 't': 105572, 'text': 'прив'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'прив', 't': 105572, 'text': 'прив'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'при', 't': 105572, 'text': 'при'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'при', 't': 105572, 'text': 'при'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'пр', 't': 105573, 'text': 'пр'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'пр', 't': 105573, 'text': 'пр'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'п', 't': 105573, 'text': 'п'}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': 'п', 't': 105573, 'text': 'п'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': '', 't': 105573, 'text': ''}, {'id': 'iframe-input', 'key': 'Backspace', 'kind': 'keyup', 'raw_text': '', 't': 105573, 'text': ''}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'g', 't': 105599, 'text': 'g'}, {'id': 'iframe-input', 'key': 'g', 'kind': 'keyup', 'raw_text': 'g', 't': 105600, 'text': 'g'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'gh', 't': 105603, 'text': 'gh'}, {'id': 'iframe-input', 'key': 'h', 'kind': 'keyup', 'raw_text': 'gh', 't': 105604, 'text': 'gh'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghb', 't': 105604, 'text': 'ghb'}, {'id': 'iframe-input', 'key': 'b', 'kind': 'keyup', 'raw_text': 'ghb', 't': 105604, 'text': 'ghb'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbd', 't': 105605, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': 'd', 'kind': 'keyup', 'raw_text': 'ghbd', 't': 105605, 'text': 'ghbd'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdt', 't': 105609, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': 't', 'kind': 'keyup', 'raw_text': 'ghbdt', 't': 105611, 'text': 'ghbdt'}, {'id': 'iframe-input', 'key': None, 'kind': 'input', 'raw_text': 'ghbdtn', 't': 105611, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'n', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 105611, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 105616, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 105656, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 105814, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 105874, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 106021, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 106079, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 106234, 'text': 'ghbdtn'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'ghbdtn', 't': 106294, 'text': 'ghbdtn'}]}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "iframe-input",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376434.8750131156, 'next_gesture_start': 1376434.868319018}, {'target': 1, 'observed': 1376435.1120131155, 'next_gesture_start': 1376435.078386367}, {'target': 2, 'observed': 1376435.4150131154, 'next_gesture_start': 1376435.288741388}, {'target': 3, 'observed': 1376435.5970131154, 'next_gesture_start': 1376435.499855027}], 'clock_mapping_uncertainty_ms': 2.174592576920986}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "iframe-rich",
+            "name": "rapid-five",
+            "word": "active",
+            "error": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 122262, 'raw_text': 'привет', 'rect': {'x': 1091.5, 'y': 670.5833129882812}, 'rendered_text': None, 'rich': True, 'screen': {'x': 0, 'y': 0}, 'selection': False, 'text': 'привет'}}"
+          },
+          {
+            "window": "fullscreen",
+            "field": "iframe-rich",
+            "name": "rapid-five",
+            "word": "space",
+            "error": "{'late_targets': [{'target': 0, 'observed': 1376450.5701704684, 'next_gesture_start': 1376450.538659905}, {'target': 1, 'observed': 1376450.7561704684, 'next_gesture_start': 1376450.752278563}, {'target': 2, 'observed': 1376450.9951704685, 'next_gesture_start': 1376450.984720094}, {'target': 3, 'observed': 1376451.2381704685, 'next_gesture_start': 1376451.199099947}], 'clock_mapping_uncertainty_ms': 1.4908744487911463}"
+          }
+        ],
+        "actor_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-full-native-v1/firefox/firefox/result.json",
+        "complete": true,
+        "config_restored": true,
+        "runtime_before": {
+          "pid": 3228031,
+          "sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5"
+        },
+        "runtime_after": {
+          "pid": 3228031,
+          "sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5"
+        }
+      },
+      {
+        "browser": "chrome",
+        "launcher_exit": 1,
+        "actor_status": "FAIL",
+        "groups": {
+          "original": {
+            "PASS": 127,
+            "FAIL": 1,
+            "BLOCKED": 32,
+            "NOT_TESTED": 0,
+            "total": 160
+          },
+          "additional": {
+            "PASS": 51,
+            "FAIL": 0,
+            "BLOCKED": 9,
+            "NOT_TESTED": 0,
+            "total": 60
+          }
+        },
+        "observed_rows": 220,
+        "timing_pass_rows_only": {
+          "consecutive-two:active": {
+            "n": 54,
+            "median_ms": 58.63765347748995,
+            "p95_ms": 65.69096399471164,
+            "max_ms": 70.69913996383548
+          },
+          "roundtrip:active": {
+            "n": 56,
+            "median_ms": 58.13117802608758,
+            "p95_ms": 67.73386592976749,
+            "max_ms": 80.53578599356115
+          },
+          "rapid-five:active": {
+            "n": 140,
+            "median_ms": 45.75407854281366,
+            "p95_ms": 56.85593863017857,
+            "max_ms": 67.34370347112417
+          },
+          "consecutive-two:space": {
+            "n": 48,
+            "median_ms": 58.29033104237169,
+            "p95_ms": 64.13870304822922,
+            "max_ms": 93.77415711060166
+          },
+          "roundtrip:space": {
+            "n": 48,
+            "median_ms": 57.387857930734754,
+            "p95_ms": 64.34751790948212,
+            "max_ms": 86.61215612664819
+          },
+          "rapid-five:space": {
+            "n": 120,
+            "median_ms": 46.02975444868207,
+            "p95_ms": 59.63456886820495,
+            "max_ms": 72.60879687964916
+          },
+          "space-en-ru:functional": {
+            "n": 7,
+            "median_ms": 73.70758894830942,
+            "p95_ms": 122.75584903545678,
+            "max_ms": 122.75584903545678
+          },
+          "moved-boundary:functional": {
+            "n": 8,
+            "median_ms": 108.69210597593337,
+            "p95_ms": 135.0107139442116,
+            "max_ms": 135.0107139442116
+          },
+          "tab:functional": {
+            "n": 8,
+            "median_ms": 16.754255047999322,
+            "p95_ms": 18.678031861782074,
+            "max_ms": 18.678031861782074
+          }
+        },
+        "hint_publication": {
+          "n": 8,
+          "median_ms": 74.0932849003002,
+          "p95_ms": 101.89014300704002,
+          "max_ms": 101.89014300704002
+        },
+        "timing_coverage": {
+          "consecutive-two:active:PASS": 27,
+          "roundtrip:active:PASS": 28,
+          "rapid-five:active:PASS": 28,
+          "consecutive-two:space:PASS": 24,
+          "roundtrip:space:PASS": 24,
+          "rapid-five:space:PASS": 24,
+          "space-en-ru:functional:PASS": 7,
+          "typo-undo:functional:BLOCKED": 10,
+          "moved-boundary:functional:PASS": 8,
+          "tab:functional:PASS": 8,
+          "consecutive-two:space:BLOCKED": 6,
+          "roundtrip:space:BLOCKED": 6,
+          "rapid-five:space:BLOCKED": 6,
+          "space-en-ru:functional:BLOCKED": 2,
+          "moved-boundary:functional:BLOCKED": 2,
+          "tab:functional:BLOCKED": 2,
+          "space-en-ru:functional:FAIL": 1,
+          "consecutive-two:active:BLOCKED": 3,
+          "roundtrip:active:BLOCKED": 2,
+          "rapid-five:active:BLOCKED": 2
+        },
+        "latency_scope": "monotonic release to first stable target; rapid-five DOM clock mapping has per-row uncertainty; polling included",
+        "failures": [
+          {
+            "window": "normal",
+            "field": "tel",
+            "name": "space-en-ru",
+            "word": "functional",
+            "error": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 63155.39999985695, 'raw_text': 'ghbdtn ', 'rect': {'x': 1038.3235168457031, 'y': 259.41175842285156}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'ghbdtn '}}"
+          }
+        ],
+        "actor_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release111-full-native-v1/chrome/chrome/result.json",
+        "complete": true,
+        "config_restored": true,
+        "runtime_before": {
+          "pid": 3228031,
+          "sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5"
+        },
+        "runtime_after": {
+          "pid": 3228031,
+          "sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5"
+        }
+      }
+    ],
+    "started": 1793178471.5815935,
+    "original_manifest_per_browser": 160,
+    "additional_consecutive_two_per_browser": 60,
+    "physical_usb_evdev": "NOT_TESTED",
+    "scope": "private KDE X11; actual RFB input; three window modes, ten fields",
+    "canonical_source_head": "4b629cfe1966755de8d32d6c36c893e45c35c0eb",
+    "source": {
+      "files": 1300,
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "sha256": "bfc7270982b8f71a90020c60ca4650040215fb84e3a56ce616f8e187229c52e2"
+    },
+    "engine_sha256": "159435bd88be77b5aa0ffef217d64b168785f7190da46dec6f43b9543d1a09a5",
+    "observer_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "functional_verdict": "FAIL",
+    "elapsed_seconds": 872.7139520645142
+  },
+  "browser_failure_classes": {
+    "firefox": {
+      "rapid-five": 50,
+      "moved-boundary": 3,
+      "consecutive-two": 1,
+      "roundtrip": 2
+    },
+    "chrome": {
+      "space-en-ru": 1
+    }
+  },
+  "browser_failures": {
+    "firefox": [
+      {
+        "window": "normal",
+        "field": "text",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 6314, 'text': 'привет'}, {'id': 'text', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 6371, 'text': 'привет'}, {'id': 'text', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't': 6"
+      },
+      {
+        "window": "normal",
+        "field": "text",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376018.75035914, 'next_gesture_start': 1376018.728602813}, {'target': 1, 'observed': 1376018.97935914, 'next_gesture_start': 1376018.939952694}, {'target': 2, 'observed': 1376019.28635914, 'next_gesture_start': 1376019.152022176}, {'target': 3, 'observed': 1376019.45135914, 'next_gesture_start': 1376019."
+      },
+      {
+        "window": "normal",
+        "field": "search",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376030.9008647306, 'next_gesture_start': 1376030.879719729}, {'target': 1, 'observed': 1376031.1128647306, 'next_gesture_start': 1376031.092287814}, {'target': 2, 'observed': 1376031.4148647306, 'next_gesture_start': 1376031.301348245}, {'target': 3, 'observed': 1376031.5688647307, 'next_gesture_start': "
+      },
+      {
+        "window": "normal",
+        "field": "search",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 35804, 'raw_text': 'привет ', 'rect': {'x': 1037.25, 'y': 285.45001220703"
+      },
+      {
+        "window": "normal",
+        "field": "url",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376051.8740593675, 'next_gesture_start': 1376051.847525281}, {'target': 1, 'observed': 1376052.0750593676, 'next_gesture_start': 1376052.058820409}, {'target': 2, 'observed': 1376052.2800593674, 'next_gesture_start': 1376052.266388032}, {'target': 3, 'observed': 1376052.5150593675, 'next_gesture_start': "
+      },
+      {
+        "window": "normal",
+        "field": "tel",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376058.7602429292, 'next_gesture_start': 1376058.722857567}, {'target': 1, 'observed': 1376058.9682429293, 'next_gesture_start': 1376058.936335433}, {'target': 2, 'observed': 1376059.2482429293, 'next_gesture_start': 1376059.144440809}, {'target': 3, 'observed': 1376059.4282429293, 'next_gesture_start': "
+      },
+      {
+        "window": "normal",
+        "field": "tel",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'expected': ['ghbdtn ', 'привет ', 'ghbdtn ', 'привет ', 'ghbdtn '], 'observed': [{'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 60496, 'text': 'привет '}, {'id': 'tel', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 60557, 'text': 'привет '}, {'id': 'tel', 'key': None, 'kind': 'input', 'raw_text': 'привет"
+      },
+      {
+        "window": "normal",
+        "field": "textarea",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376089.4912282971, 'next_gesture_start': 1376089.492358112}, {'target': 1, 'observed': 1376089.753228297, 'next_gesture_start': 1376089.702647922}, {'target': 2, 'observed': 1376089.935228297, 'next_gesture_start': 1376089.924782493}, {'target': 3, 'observed': 1376090.135228297, 'next_gesture_start': 137"
+      },
+      {
+        "window": "normal",
+        "field": "rich",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376101.6358900575, 'next_gesture_start': 1376101.607605104}, {'target': 1, 'observed': 1376101.8348900576, 'next_gesture_start': 1376101.815090724}, {'target': 3, 'observed': 1376102.2878900575, 'next_gesture_start': 1376102.264362188}], 'clock_mapping_uncertainty_ms': 1.5144695062190294}"
+      },
+      {
+        "window": "normal",
+        "field": "rich",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376108.9745078478, 'next_gesture_start': 1376108.95422197}, {'target': 2, 'observed': 1376109.4105078478, 'next_gesture_start': 1376109.393525501}, {'target': 3, 'observed': 1376109.6225078478, 'next_gesture_start': 1376109.605530793}], 'clock_mapping_uncertainty_ms': 1.2464000610634685}"
+      },
+      {
+        "window": "normal",
+        "field": "rich",
+        "name": "moved-boundary",
+        "word": "functional",
+        "error_excerpt": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 109584, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x'"
+      },
+      {
+        "window": "normal",
+        "field": "plain",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376122.7534400905, 'next_gesture_start': 1376122.734200404}, {'target': 1, 'observed': 1376122.9634400904, 'next_gesture_start': 1376122.951884166}, {'target': 2, 'observed': 1376123.2514400906, 'next_gesture_start': 1376123.159299934}, {'target': 3, 'observed': 1376123.4044400905, 'next_gesture_start': "
+      },
+      {
+        "window": "normal",
+        "field": "plain",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376129.955490123, 'next_gesture_start': 1376129.919821935}, {'target': 1, 'observed': 1376130.147490123, 'next_gesture_start': 1376130.127499141}, {'target': 2, 'observed': 1376130.370490123, 'next_gesture_start': 1376130.36325199}, {'target': 3, 'observed': 1376130.594490123, 'next_gesture_start': 13761"
+      },
+      {
+        "window": "normal",
+        "field": "plain",
+        "name": "moved-boundary",
+        "word": "functional",
+        "error_excerpt": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 130504, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x'"
+      },
+      {
+        "window": "normal",
+        "field": "iframe-input",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376143.726635376, 'next_gesture_start': 1376143.691506985}, {'target': 1, 'observed': 1376143.931635376, 'next_gesture_start': 1376143.899321486}, {'target': 2, 'observed': 1376144.235635376, 'next_gesture_start': 1376144.108194578}, {'target': 3, 'observed': 1376144.361635376, 'next_gesture_start': 1376"
+      },
+      {
+        "window": "normal",
+        "field": "iframe-input",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376150.9361752556, 'next_gesture_start': 1376150.924494803}, {'target': 1, 'observed': 1376151.1491752556, 'next_gesture_start': 1376151.13829176}, {'target': 2, 'observed': 1376151.3891752556, 'next_gesture_start': 1376151.376803467}], 'clock_mapping_uncertainty_ms': 1.1857764329761267}"
+      },
+      {
+        "window": "normal",
+        "field": "iframe-rich",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 160638, 'raw_text': 'привет', 'rect': {'x': 1036.5, 'y': 6"
+      },
+      {
+        "window": "normal",
+        "field": "iframe-rich",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376171.9375025511, 'next_gesture_start': 1376171.89740249}, {'target': 1, 'observed': 1376172.128502551, 'next_gesture_start': 1376172.105051641}, {'target': 3, 'observed': 1376172.601502551, 'next_gesture_start': 1376172.565413797}], 'clock_mapping_uncertainty_ms': 1.928498037159443}"
+      },
+      {
+        "window": "normal",
+        "field": "iframe-rich",
+        "name": "moved-boundary",
+        "word": "functional",
+        "error_excerpt": "{'expected': 'должны быть ', 'actual': {'caret': 12, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 172574, 'raw_text': 'должн ыбыть\\xa0', 'rect': {'x'"
+      },
+      {
+        "window": "private",
+        "field": "text",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 9244, 'raw_text': 'привет', 'rect': {'x': 452.75, 'y': 285.45001220703125}"
+      },
+      {
+        "window": "private",
+        "field": "text",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376198.033256809, 'next_gesture_start': 1376197.988918796}, {'target': 2, 'observed': 1376198.4472568089, 'next_gesture_start': 1376198.432325079}, {'target': 3, 'observed': 1376198.671256809, 'next_gesture_start': 1376198.642260391}], 'clock_mapping_uncertainty_ms': 2.141264034435153}"
+      },
+      {
+        "window": "private",
+        "field": "search",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 24762, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 285.4500122070312"
+      },
+      {
+        "window": "private",
+        "field": "search",
+        "name": "consecutive-two",
+        "word": "space",
+        "error_excerpt": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 28355, 'raw_text': 'ghbdtn ', 'rect': {'x': 1037.25, 'y': 285.45001220703"
+      },
+      {
+        "window": "private",
+        "field": "search",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376215.067787547, 'next_gesture_start': 1376215.054834408}, {'target': 2, 'observed': 1376215.545787547, 'next_gesture_start': 1376215.504531008}, {'target': 3, 'observed': 1376215.798787547, 'next_gesture_start': 1376215.715772964}], 'clock_mapping_uncertainty_ms': 2.205312019214034}"
+      },
+      {
+        "window": "private",
+        "field": "url",
+        "name": "roundtrip",
+        "word": "active",
+        "error_excerpt": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 39175, 'raw_text': 'ghbdtn', 'rect': {'x': 452.75, 'y': 38"
+      },
+      {
+        "window": "private",
+        "field": "url",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376223.3579664344, 'next_gesture_start': 1376223.340142081}, {'target': 1, 'observed': 1376223.5809664344, 'next_gesture_start': 1376223.551720112}, {'target': 2, 'observed': 1376223.8969664345, 'next_gesture_start': 1376223.758277233}, {'target': 3, 'observed': 1376224.0699664345, 'next_gesture_start': "
+      },
+      {
+        "window": "private",
+        "field": "tel",
+        "name": "roundtrip",
+        "word": "active",
+        "error_excerpt": "{'expected': 'привет', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 47393, 'raw_text': 'ghbdtn', 'rect': {'x': 1037.25, 'y': 3"
+      },
+      {
+        "window": "private",
+        "field": "tel",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376231.5390146126, 'next_gesture_start': 1376231.507125489}, {'target': 2, 'observed': 1376231.9550146125, 'next_gesture_start': 1376231.942627478}], 'clock_mapping_uncertainty_ms': 1.2987945228815079}"
+      },
+      {
+        "window": "private",
+        "field": "tel",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 2.200000047683716, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 58705, 'raw_text': 'привет ', 'rect': {'x': 1037.25, 'y':"
+      },
+      {
+        "window": "private",
+        "field": "textarea",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 72730, 'raw_text': 'привет', 'rect': {'x': 1037.25, 'y': 4"
+      },
+      {
+        "window": "private",
+        "field": "textarea",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 61.61666488647461, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 81768, 'raw_text': 'привет ', 'rect': {'x': 1037.25, 'y':"
+      },
+      {
+        "window": "private",
+        "field": "rich",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 86934, 'text': 'привет'}, {'id': 'rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 86994, 'text': 'привет'}, {'id': 'rich', 'key': None, 'kind': 'input', 'raw_text': 'приве', 't':"
+      },
+      {
+        "window": "private",
+        "field": "rich",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376277.0418663865, 'next_gesture_start': 1376276.999423934}, {'target': 1, 'observed': 1376277.2168663866, 'next_gesture_start': 1376277.210708556}, {'target': 2, 'observed': 1376277.4568663866, 'next_gesture_start': 1376277.450869969}, {'target': 3, 'observed': 1376277.6888663864, 'next_gesture_start': "
+      },
+      {
+        "window": "private",
+        "field": "plain",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376283.7937380674, 'next_gesture_start': 1376283.788622553}, {'target': 1, 'observed': 1376284.0207380673, 'next_gesture_start': 1376283.999006908}, {'target': 2, 'observed': 1376284.2177380673, 'next_gesture_start': 1376284.210327194}, {'target': 3, 'observed': 1376284.4327380673, 'next_gesture_start': "
+      },
+      {
+        "window": "private",
+        "field": "plain",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376291.101544995, 'next_gesture_start': 1376291.097735099}, {'target': 1, 'observed': 1376291.3545449951, 'next_gesture_start': 1376291.307724719}, {'target': 2, 'observed': 1376291.583544995, 'next_gesture_start': 1376291.535565801}, {'target': 3, 'observed': 1376291.832544995, 'next_gesture_start': 137"
+      },
+      {
+        "window": "private",
+        "field": "iframe-input",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376297.8711472326, 'next_gesture_start': 1376297.851391897}, {'target': 1, 'observed': 1376298.0881472325, 'next_gesture_start': 1376298.061383543}, {'target': 2, 'observed': 1376298.2841472325, 'next_gesture_start': 1376298.269297593}, {'target': 3, 'observed': 1376298.5151472325, 'next_gesture_start': "
+      },
+      {
+        "window": "private",
+        "field": "iframe-input",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'expected': ['ghbdtn ', 'привет ', 'ghbdtn ', 'привет ', 'ghbdtn '], 'observed': [{'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 122113, 'text': 'привет '}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет ', 't': 122169, 'text': 'привет '}, {'id': 'iframe-input', 'key': None, 'kind':"
+      },
+      {
+        "window": "private",
+        "field": "iframe-rich",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376311.5981971645, 'next_gesture_start': 1376311.583060629}, {'target': 1, 'observed': 1376311.8121971644, 'next_gesture_start': 1376311.801416844}, {'target': 2, 'observed': 1376312.0311971644, 'next_gesture_start': 1376312.025500991}, {'target': 3, 'observed': 1376312.2601971645, 'next_gesture_start': "
+      },
+      {
+        "window": "private",
+        "field": "iframe-rich",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'expected': ['ghbdtn ', 'привет ', 'ghbdtn ', 'привет ', 'ghbdtn '], 'observed': [{'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет\\xa0', 't': 135933, 'text': 'привет '}, {'id': 'iframe-rich', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет\\xa0', 't': 135991, 'text': 'привет '}, {'id': 'iframe-rich', 'key': None, 'kin"
+      },
+      {
+        "window": "fullscreen",
+        "field": "text",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376329.2784250465, 'next_gesture_start': 1376329.246768689}, {'target': 1, 'observed': 1376329.4714250464, 'next_gesture_start': 1376329.45649675}, {'target': 2, 'observed': 1376329.8374250464, 'next_gesture_start': 1376329.670429716}, {'target': 3, 'observed': 1376330.0054250464, 'next_gesture_start': 1"
+      },
+      {
+        "window": "fullscreen",
+        "field": "text",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376336.6529280315, 'next_gesture_start': 1376336.654539367}, {'target': 1, 'observed': 1376336.8869280315, 'next_gesture_start': 1376336.866517692}, {'target': 2, 'observed': 1376337.2159280316, 'next_gesture_start': 1376337.076352406}, {'target': 3, 'observed': 1376337.3949280316, 'next_gesture_start': "
+      },
+      {
+        "window": "fullscreen",
+        "field": "search",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 1, 'observed': 1376343.7244301816, 'next_gesture_start': 1376343.697997486}, {'target': 2, 'observed': 1376343.9614301817, 'next_gesture_start': 1376343.928461953}, {'target': 3, 'observed': 1376344.1604301818, 'next_gesture_start': 1376344.139639281}], 'clock_mapping_uncertainty_ms': 1.6071934951469302}"
+      },
+      {
+        "window": "fullscreen",
+        "field": "search",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376350.7785844873, 'next_gesture_start': 1376350.743257316}, {'target': 2, 'observed': 1376351.1865844873, 'next_gesture_start': 1376351.161646102}], 'clock_mapping_uncertainty_ms': 1.112354570068419}"
+      },
+      {
+        "window": "fullscreen",
+        "field": "url",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376357.5430561656, 'next_gesture_start': 1376357.534970291}, {'target': 2, 'observed': 1376358.0140561655, 'next_gesture_start': 1376357.973965326}, {'target': 3, 'observed': 1376358.2890561654, 'next_gesture_start': 1376358.184075244}], 'clock_mapping_uncertainty_ms': 2.004486508667469}"
+      },
+      {
+        "window": "fullscreen",
+        "field": "tel",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376364.4396951979, 'next_gesture_start': 1376364.403424731}, {'target': 1, 'observed': 1376364.629695198, 'next_gesture_start': 1376364.611542056}, {'target': 2, 'observed': 1376364.849695198, 'next_gesture_start': 1376364.847551049}, {'target': 3, 'observed': 1376365.094695198, 'next_gesture_start': 137"
+      },
+      {
+        "window": "fullscreen",
+        "field": "tel",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 52258, 'raw_text': 'привет ', 'rect': {'x': 1092.25, 'y': 382.70001220703"
+      },
+      {
+        "window": "fullscreen",
+        "field": "textarea",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376385.003676125, 'next_gesture_start': 1376384.985304876}, {'target': 2, 'observed': 1376385.4656761251, 'next_gesture_start': 1376385.430933657}, {'target': 3, 'observed': 1376385.7226761251, 'next_gesture_start': 1376385.641091224}], 'clock_mapping_uncertainty_ms': 1.9004619680345058}"
+      },
+      {
+        "window": "fullscreen",
+        "field": "textarea",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376392.461218534, 'next_gesture_start': 1376392.424973021}, {'target': 1, 'observed': 1376392.678218534, 'next_gesture_start': 1376392.637125282}, {'target': 2, 'observed': 1376392.889218534, 'next_gesture_start': 1376392.878417014}, {'target': 3, 'observed': 1376393.108218534, 'next_gesture_start': 1376"
+      },
+      {
+        "window": "fullscreen",
+        "field": "rich",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376399.4295941289, 'next_gesture_start': 1376399.385772069}, {'target': 1, 'observed': 1376399.617594129, 'next_gesture_start': 1376399.59807418}, {'target': 2, 'observed': 1376399.840594129, 'next_gesture_start': 1376399.834869452}, {'target': 3, 'observed': 1376400.127594129, 'next_gesture_start': 1376"
+      },
+      {
+        "window": "fullscreen",
+        "field": "rich",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376406.7002850075, 'next_gesture_start': 1376406.693050616}, {'target': 1, 'observed': 1376406.9222850075, 'next_gesture_start': 1376406.913977475}, {'target': 2, 'observed': 1376407.2952850075, 'next_gesture_start': 1376407.122888947}, {'target': 3, 'observed': 1376407.4912850074, 'next_gesture_start': "
+      },
+      {
+        "window": "fullscreen",
+        "field": "plain",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376413.5416359897, 'next_gesture_start': 1376413.539531872}, {'target': 1, 'observed': 1376413.7746359897, 'next_gesture_start': 1376413.749270339}, {'target': 2, 'observed': 1376413.9896359895, 'next_gesture_start': 1376413.991271963}, {'target': 3, 'observed': 1376414.2176359897, 'next_gesture_start': "
+      },
+      {
+        "window": "fullscreen",
+        "field": "plain",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376420.984159336, 'next_gesture_start': 1376420.98324555}, {'target': 1, 'observed': 1376421.218159336, 'next_gesture_start': 1376421.194939316}, {'target': 2, 'observed': 1376421.461159336, 'next_gesture_start': 1376421.424244969}, {'target': 3, 'observed': 1376421.654159336, 'next_gesture_start': 13764"
+      },
+      {
+        "window": "fullscreen",
+        "field": "iframe-input",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': ['ghbdtn', 'привет', 'ghbdtn', 'привет', 'ghbdtn'], 'observed': [{'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 105392, 'text': 'привет'}, {'id': 'iframe-input', 'key': 'Shift', 'kind': 'keyup', 'raw_text': 'привет', 't': 105452, 'text': 'привет'}, {'id': 'iframe-input', 'key': None, 'kind': 'input',"
+      },
+      {
+        "window": "fullscreen",
+        "field": "iframe-input",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376434.8750131156, 'next_gesture_start': 1376434.868319018}, {'target': 1, 'observed': 1376435.1120131155, 'next_gesture_start': 1376435.078386367}, {'target': 2, 'observed': 1376435.4150131154, 'next_gesture_start': 1376435.288741388}, {'target': 3, 'observed': 1376435.5970131154, 'next_gesture_start': "
+      },
+      {
+        "window": "fullscreen",
+        "field": "iframe-rich",
+        "name": "rapid-five",
+        "word": "active",
+        "error_excerpt": "{'expected': 'ghbdtn', 'actual': {'caret': 6, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 900, 'innerWidth': 1600, 'outerHeight': 900, 'outerWidth': 1600, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 122262, 'raw_text': 'привет', 'rect': {'x': 1091.5, 'y': 670.5833129882812"
+      },
+      {
+        "window": "fullscreen",
+        "field": "iframe-rich",
+        "name": "rapid-five",
+        "word": "space",
+        "error_excerpt": "{'late_targets': [{'target': 0, 'observed': 1376450.5701704684, 'next_gesture_start': 1376450.538659905}, {'target': 1, 'observed': 1376450.7561704684, 'next_gesture_start': 1376450.752278563}, {'target': 2, 'observed': 1376450.9951704685, 'next_gesture_start': 1376450.984720094}, {'target': 3, 'observed': 1376451.2381704685, 'next_gesture_start': "
+      }
+    ],
+    "chrome": [
+      {
+        "window": "normal",
+        "field": "tel",
+        "name": "space-en-ru",
+        "word": "functional",
+        "error_excerpt": "{'expected': 'привет ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 63155.39999985695, 'raw_text': 'ghbdtn ', 'rect': {'x': 1038.3235168"
+      }
+    ]
+  },
+  "terminal_timing": {
+    "scope": "successful ordinary terminal RFB release to PTY observed target; actor polling/gesture included, not pure engine latency",
+    "stats": {
+      "kitty": {
+        "n": 15,
+        "median_ms": 20.273871952667832,
+        "p95_ms": 26.720413006842136,
+        "max_ms": 26.720413006842136
+      },
+      "konsole": {
+        "n": 15,
+        "median_ms": 20.825467072427273,
+        "p95_ms": 25.41127591393888,
+        "max_ms": 25.41127591393888
+      },
+      "gnome-terminal": {
+        "n": 15,
+        "median_ms": 20.277857081964612,
+        "p95_ms": 26.187733048573136,
+        "max_ms": 26.187733048573136
+      }
+    },
+    "counts": {
+      "kitty": {
+        "PASS": 11
+      },
+      "konsole": {
+        "PASS": 11
+      },
+      "gnome-terminal": {
+        "PASS": 11
+      }
+    }
+  },
+  "terminal_visual": {
+    "kitty": {
+      "status": "FAIL",
+      "observed": "typed prefix visible; own suffix absent in captured pre-Tab frame; snapshot text=ерка,rect=null",
+      "screenshot": "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/release111-kitty-hint.png",
+      "functional_tab": "PASS",
+      "source_attribution": "not established; no runtime Rust changes in111"
+    },
+    "konsole": {
+      "status": "PASS",
+      "observed": "ordinary prefix; black-on-white suffix"
+    },
+    "gnome-terminal": {
+      "status": "PASS",
+      "observed": "ordinary prefix; black-on-white suffix"
+    },
+    "scope": "one pre-Tab capture per ordinary launcher; separate from functional33cases; no all-client styling claim"
+  },
+  "limitations": [
+    "Native browser440=303PASS57FAIL80BLOCKED; no browser improvement claim",
+    "Firefox50rapid-five,3moved-boundary,2roundtrip,1consecutive-twoFAIL;Chrome normal/tel/space-en-ruFAIL",
+    "Kitty hint visibility failed one capture despite functionalTab success",
+    "GNOME Desktop,Wayland,physicalUSB and actualChromeomnibox not newly certified"
+  ],
+  "local_install_or_restart": false,
+  "source_or_model_training": false,
+  "publication": "PENDING"
+}

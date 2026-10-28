@@ -23,7 +23,9 @@ case "$action" in
       tests.test_focused_lanes \
       tests.test_dev_check \
       tests.test_ime_client_harness \
-      tests.test_resource_guard
+      tests.test_resource_guard \
+      tests.test_field_integration_scope \
+      tests.test_component_checks
     ;;
   live)
     if [[ "${LAY_RUNTIME_SMOKE_MANAGED_DESKTOP:-0}" != "1" ]]; then

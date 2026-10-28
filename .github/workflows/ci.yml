@@ -83,6 +83,9 @@ jobs:
       - name: cargo fmt
         run: cargo fmt --all --check
 
+      - name: Declared field integration scope
+        run: python3 scripts/check-field-integration-scope.py --fetch-base
+
       - name: architecture guard
         run: bash scripts/check-architecture.sh
 

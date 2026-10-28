@@ -209,3 +209,40 @@ authorized keyboard-safe service procedure.
 The separate `LAY_IME_DEBUG` recorder experiment was shelved before compilation
 or installation. Those variables are not implemented in the current source.
 Process liveness or an enabled log is not proof of functioning input admission.
+
+## Enforced field scope and component checks (1.0.111)
+
+Before editing a new task, update [the active scope](docs/development/active-field-integration-scope.json)
+with a full immutable baseline commit, the affected components and exact shared
+paths covered by a new architecture decision. Run
+`python3 scripts/check-field-integration-scope.py`; unknown runtime paths and
+cross-client edits fail closed. Cargo/extension own-version changes are compared
+with all other bytes preserved; dependencies, tray code and executable modes do
+not become harmless metadata. Canon guards remain mandatory.
+
+The ordinary `dev-check.py check` validates the complete canonical diff before
+transport. Its existing frozen request carries a scope receipt, file hashes,
+modes and deletion markers. The remote worker checks that ledger; its disposable
+Git HEAD is not the canonical baseline. CI uses the same CLI with the explicit
+`--fetch-base` option to obtain a missing shallow baseline; a failed fetch fails
+the check. This detects accidental scope violations, not a hostile editor who
+can change both code and checks. It neither inspects nor changes installed
+runtime configuration, services or launch environments.
+
+Small source loops, executed on the remote development worker under the existing
+resource guard, are now available:
+
+```sh
+scripts/check-lay-component.sh kde-chrome --results-dir /absolute/fresh/chrome-result
+scripts/check-lay-component.sh kde-terminal --results-dir /absolute/fresh/terminal-result
+scripts/check-lay-component.sh kde-focus --results-dir /absolute/fresh/focus-result
+scripts/check-lay-component.sh shared-replay --results-dir /absolute/fresh/replay-result
+scripts/check-lay-component.sh gnome --results-dir /absolute/fresh/gnome-result
+```
+
+Use `--list` for exact canonical identities without execution. Each selector must
+be nonempty; discovery must exactly match the canonical target inventory. These
+recipes reuse `cargo_discovery`, `artifact_map` and hermetic `run_target`, include
+shared contracts where necessary, and never report an empty run as PASS. Unknown
+closure, shared work and releases still require existing full gates. A source
+recipe does not establish visual, installed-byte or native-input acceptance.

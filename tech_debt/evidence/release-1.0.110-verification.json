@@ -1,7 +1,7 @@
 {
   "schema": "lay.release110.verification.v1",
   "recorded_at": "2026-10-28T08:34:56.591694+00:00",
-  "status": "VERIFIED_SOURCE_AND_SCOPED_NATIVE_PUBLICATION_PENDING",
+  "status": "STABLE_PUBLISHED_UPDATER_VERIFIED",
   "version": "1.0.110",
   "canonical_base": "0ef3b0b90dafd1fc92a8f3908f935f6f4127c184",
   "source": {
@@ -578,5 +578,70 @@
     "Firefox20 still14PASS4FAIL2BLOCKED; no new full browser matrix yet",
     "GNOME Desktop/Wayland/physicalUSB/realChromeomnibox not newly certified",
     "No source/model training or shared-learning cleanup"
-  ]
+  ],
+  "publication": {
+    "status": "STABLE_PUBLISHED",
+    "version": "1.0.110",
+    "canonical_commit": "4b629cfe1966755de8d32d6c36c893e45c35c0eb",
+    "tag": "v1.0.110",
+    "tag_object": "5a95184f1942b834783636f6e067c55b7bc394b1",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.110",
+    "published_at": "2026-10-28T08:52:29Z",
+    "draft": false,
+    "prerelease": false,
+    "assets": [],
+    "ci": [
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40657960937/job/122713526910"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40657960937/job/122713526822"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40657960930/job/122713526715"
+      },
+      {
+        "name": "Public installer regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40657960937/job/122713526473"
+      }
+    ],
+    "updater": "PASS"
+  },
+  "updater": {
+    "status": "PASS",
+    "published_version": "1.0.110",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.107",
+        "stable": "1.0.110",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.107\nстабильный релиз: 1.0.110\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.107 → 1.0.110\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.110",
+        "stable": "1.0.110",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.110\nстабильный релиз: 1.0.110\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-28T08:52:32.263869+00:00"
+  }
 }

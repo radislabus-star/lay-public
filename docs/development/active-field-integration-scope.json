@@ -1,0 +1,18 @@
+{
+  "schema": "lay.field-integration-scope.v1",
+  "base": "4b629cfe1966755de8d32d6c36c893e45c35c0eb",
+  "components": [
+    "tooling"
+  ],
+  "shared_paths": [
+    "scripts/dev-check.py",
+    "scripts/check-lay-tests.sh",
+    ".github/workflows/ci.yml",
+    "scripts/check-lay-component.sh",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "tech_debt/evidence/release-1.0.110-verification.json",
+    "tech_debt/evidence/release-1.0.111-verification.json"
+  ],
+  "decision": "docs/architecture/decisions/2026-10-28-field-integration-scope-guard.json"
+}

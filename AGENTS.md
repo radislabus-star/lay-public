@@ -39,6 +39,15 @@
   diff against the declared scope, including shared files and runtime config.
   A source PASS does not establish unchanged field behavior or native acceptance.
 
+- Enforce the declared source boundary with
+  `python3 scripts/check-field-integration-scope.py`. Before each new integration
+  task, set the immutable baseline, components and exact shared seams in
+  `docs/development/active-field-integration-scope.json` and its new owning ADR.
+  `dev-check.py` seals this check into its existing snapshot; the remote worker
+  verifies that receipt against the frozen files, never synthetic remote HEAD.
+  Use `scripts/check-lay-component.sh <component>` for a small canonical source
+  check; it does not replace full gates or physical client acceptance.
+
 ## Desktop integration consistency — 2026-10-21
 
 - Resolve the desktop through the existing `active_layout_backend` mechanism.
