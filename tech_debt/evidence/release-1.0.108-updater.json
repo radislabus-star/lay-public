@@ -1,0 +1,26 @@
+{
+  "status": "PASS",
+  "published_version": "1.0.108",
+  "checks": {
+    "local": {
+      "exit": 0,
+      "installed": "1.0.107",
+      "stable": "1.0.108",
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.107\nстабильный релиз: 1.0.108\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.107 → 1.0.108\n",
+      "stderr": "",
+      "mode": "--check",
+      "apply": false
+    },
+    "remote": {
+      "exit": 0,
+      "installed": "1.0.108",
+      "stable": "1.0.108",
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.108\nстабильный релиз: 1.0.108\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+      "stderr": "",
+      "mode": "--check",
+      "apply": false
+    }
+  },
+  "local_install_or_restart": false,
+  "checked_at": "2026-10-28T06:52:57.962905+00:00"
+}

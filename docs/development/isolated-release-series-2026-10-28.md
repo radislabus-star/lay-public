@@ -94,3 +94,5 @@ Release gates запущены; установка ждёт их успеха. �
 107 V3 native: Chrome220179/0/41/0, Search regression5/5PASS. Верхний omnibox сохраняет прежний отдельный FAIL первого hint (1FAIL,2NOT_TESTED); не объявлен закрытым. Fresh Firefox220 выполняется для108.107готовится кCI/публикации с явными ограничениями.
 
 107 опубликована 2026-10-28T06:00:18Z наe178be59,4/4CI SUCCESS и оба действующих updaterchecks PASS.108 после свежего Firefox baseline отделяет exact-tail settlement и исправляет классификацию отсутствующей identity; скоростьFirefox не объявлена исправленной.109терминалы/KDEfocus,110clientpresentation/nativeeditors,111scopeguard остаются в работе.
+
+108stable published 2026-10-28T06:52:55Z at058a247f,4/4CI and bothupdaters verified. Local installed107 (automatic user update), remote108; no manual local apply.109source six-definition KDE terminal/focus policy isolation3551/3551PASS;18gates running; ordinary-launcher terminal controls prepared with original inputs/assertions.110/111 remain required.

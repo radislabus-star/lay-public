@@ -1,7 +1,7 @@
 {
   "schema": "lay.release108.verification.v1",
-  "recorded_at": "2026-10-28T06:23:04.442993+00:00",
-  "status": "SOURCE_ARTIFACTS_VERIFIED_CHROME_CONTROLS_PASS_FIREFOX_FAIL_RETAINED_NOT_PUBLISHED",
+  "recorded_at": "2026-10-28T06:57:54.422711+00:00",
+  "status": "STABLE_PUBLISHED_UPDATER_VERIFIED_FIREFOX_FAIL_RETAINED",
   "version": "1.0.108",
   "canonical_base": "e178be59563fdce592921402ce9e6634e9b2e9c7",
   "source": {
@@ -471,5 +471,108 @@
   "runtime_authority_changed": false,
   "delivery_routes_changed": false,
   "local_install_or_restart": false,
-  "publication": "NOT_PUBLISHED"
+  "publication": {
+    "status": "STABLE_PUBLISHED",
+    "version": "1.0.108",
+    "canonical_commit": "058a247f0200ad6139fcb2a70abd186f05d1ebff",
+    "tag": "v1.0.108",
+    "tag_object": "c42f0a583e6c8638b18ff5d616274a152973ffc3",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.108",
+    "published_at": "2026-10-28T06:52:55Z",
+    "draft": false,
+    "prerelease": false,
+    "assets": [],
+    "ci": [
+      {
+        "name": "Public installer regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737642/job/122667609616"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737642/job/122667609481"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737601/job/122667609290"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737642/job/122667609216"
+      }
+    ],
+    "updater": "PASS"
+  },
+  "updater": {
+    "status": "PASS",
+    "published_version": "1.0.108",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.107",
+        "stable": "1.0.108",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.107\nстабильный релиз: 1.0.108\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.107 → 1.0.108\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.108",
+        "stable": "1.0.108",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.108\nстабильный релиз: 1.0.108\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-28T06:52:57.962905+00:00"
+  },
+  "ci": [
+    {
+      "name": "Public installer regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737642/job/122667609616"
+    },
+    {
+      "name": "Rust 1.88.0 MSRV",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737642/job/122667609481"
+    },
+    {
+      "name": "RustSec vulnerabilities and unsoundness",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737601/job/122667609290"
+    },
+    {
+      "name": "Rust 1.97.1, tray, and extension checks",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40643737642/job/122667609216"
+    }
+  ],
+  "canonical_commit": "058a247f0200ad6139fcb2a70abd186f05d1ebff",
+  "canonical_committed_source": {
+    "canonical_commit": "058a247f0200ad6139fcb2a70abd186f05d1ebff",
+    "source_files": 1291,
+    "extra_metadata_files": 4,
+    "tested_request": "/home/ubu/.cache/lay/development/run-060t8122/request.json",
+    "tested_worktree_source_sha256": "b31a47181e330d17f46ff2fa95b9a83df9184d72ced4923d86b0d5fa4cf7297f",
+    "git_mode_source_sha256": "36eca2cf5ddaf3e7c21a3e3c3716c312e06b9292874234272300a493f470e248",
+    "all_contents_equal": true,
+    "all_executable_bits_equal": true,
+    "group_write_bit_difference_count": 1295,
+    "method": "Committed blobs/executable bits match tested request. Git normalizes group-write permissions. No build/test/runtime effect."
+  }
 }
