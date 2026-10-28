@@ -1,7 +1,7 @@
 {
   "schema": "lay.release109.verification.v1",
   "recorded_at": "2026-10-28T07:19:06.939172+00:00",
-  "status": "SOURCE_ARTIFACTS_VERIFIED_KITTY_KONSOLE_PASS_VTE_FAIL_RETAINED_NOT_PUBLISHED",
+  "status": "STABLE_PUBLISHED_UPDATER_VERIFIED",
   "version": "1.0.109",
   "canonical_base": "058a247f0200ad6139fcb2a70abd186f05d1ebff",
   "source": {
@@ -1126,5 +1126,69 @@
   "runtime_authority_changed": false,
   "delivery_routes_changed": false,
   "local_install_or_restart": false,
-  "publication": "NOT_PUBLISHED"
+  "publication": {
+    "status": "STABLE_PUBLISHED",
+    "version": "1.0.109",
+    "canonical_commit": "96a98674f488a40615e2d4a4d7d98c1b85e219a9",
+    "tag": "v1.0.109",
+    "tag_object": "c5a8f171b9cabc19830fd1f56585e49619d8b759",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.109",
+    "published_at": "2026-10-28T07:50:07Z",
+    "draft": false,
+    "prerelease": false,
+    "assets": [],
+    "ci": [
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40649625432/job/122686400689"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40649625535/job/122686400544"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40649625535/job/122686400374"
+      },
+      {
+        "name": "Public installer regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40649625535/job/122686400066"
+      }
+    ],
+    "updater": "PASS"
+  },
+  "updater": {
+    "status": "PASS",
+    "published_version": "1.0.109",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.107",
+        "stable": "1.0.109",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.107\nстабильный релиз: 1.0.109\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.107 → 1.0.109\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.109",
+        "stable": "1.0.109",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.109\nстабильный релиз: 1.0.109\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-28T07:50:10.110885+00:00"
+  }
 }

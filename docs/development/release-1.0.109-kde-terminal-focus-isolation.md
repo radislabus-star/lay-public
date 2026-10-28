@@ -33,3 +33,5 @@ Old RU punctuation fixture had the identical !,Ж()_ mismatch without IBus. Actu
 Captured before-Tab images show own white continuation ерка next to plain prefix for allthree apps. That does not close VTE functionality:its active letters stay in preedit, PTY receives them only on Tab/Space, next-letter/pair/active-five contracts fail. Passive EXISTING canonical KWin callbacks identify VTE app_id empty,wm_class gnome-terminal. No global activation environment change is justified:IME is connected and Tab commits the expected word.110 will map the isolated qualification extension before code.
 
 Publication pending immutable commitCI and updater verification; current109 is a mechanical isolation release with explicit unsupported VTE/Firefox scope.
+
+Stable v1.0.109 published at 2026-10-28T07:50:07Z from96a98674f488a40615e2d4a4d7d98c1b85e219a9. Four GitHub checks SUCCESS; local/remote real updater checks verified stable109. Local installed107 was not manually changed; remote installed109 exact artifact. Publication/updater receipts are copied into tech_debt/evidence/release-1.0.109-verification.json. No functional verification reopened for this metadata update.
