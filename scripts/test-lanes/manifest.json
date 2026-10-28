@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3512,
+    "correctness": 3514,
     "ignored": 41,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 480,
-    "target": 3120
+    "target": 3122
   },
   "package_fixtures": [
     {
@@ -7423,7 +7423,7 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "kde::display::chrome::tests::native_prefix_scope_preserves_other_kde_clients",
+      "name": "kde::chrome::tests::native_prefix_scope_preserves_other_kde_clients",
       "target": "bin:lay-ibus-engine"
     },
     {
@@ -24321,7 +24321,21 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "window_interaction::native_document::tests::native_owned_append_resamples_after_key_scope_settlement",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "window_interaction::native_document::tests::native_owned_append_resamples_one_incoherent_read_without_extending_deadline",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::native_owned_append_settled_read_permission_preserves_edit_and_owner_fences",
       "target": "bin:lay-ibus-engine"
     },
     {

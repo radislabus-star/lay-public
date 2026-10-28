@@ -47,40 +47,71 @@ Checkout `/home/ubu/projects/lay-dependency-updates-20261027`, ветка
 Git blobs/executable bits совпадают с tested request; writable group bit
 Git нормализует. Не называть полные filesystem modes коммитными режимами Git.
 
-## Сейчас:107, НЕ опубликована
+## Сейчас:107, НЕ опубликована; C05 read-resample repair
 
-Разрешённый preflight: `docs/development/release-1.0.107-chrome-client-isolation.md`.
-Код проверки процесса Chrome перенесён из kde/display/chrome.rs в kde/chrome.rs;
-два namespace вызова обновлены, тела и условия/бюджеты прежние. GNOME не тронут.
-Один test namespace перенесён без изменения тела/категории; остальные identities
-сохранены. Не ослаблять manifest ради переименования.
+Механическая изоляция: Chrome process policy из kde/display/chrome.rs в
+kde/chrome.rs; тела/100ms budget/guards прежние,1test namespace migration.
+107 source ff9ca136... прошла3548 source tests,18gates,10artifacts.
+Full source local run-lag441hb / remote run-1dSrwv. GatesV2 PASS с явным
+ADR doc-overlay (manifest/known_failures должны быть в protected_paths).
 
-Source `ff9ca136f7ea8668cbc062a4acbf1a1600943c76c8c96a3b502b45610ae3257d`.
-Полный source 3548/3548 PASS: local `run-lag441hb`, remote `run-1dSrwv`.
-Manifest: 3512 correctness, 36 package, 11 performance, 41 ignored. IME1111.
-Сейчас guarded gates: `isolated-release107-gates-v2`, exec session18575.
-V1 отказал из-за отсутствия manifest/known_failures в protected_paths решения.
-Preflight уже разрешал ровно одну namespace migration; в ADR это дополнено.
-В V2 ровно один doc overlay, замороженный full request и source неизменны.
-V1/prepare V1 отказы сохранены. Не повторять3548 только ради doc исправления.
+Установлена107 V1: engine1871589, daemon1871710, tray1871720. Полный
+неизменённый Chrome220:178PASS1FAIL41BLOCKED0NOT_TESTED. Провал normal/search
+space-en-ru, row17: ghbdtn остался послеSpace. Релиз не пушить/публиковать
+до исправления. Nativephase остановилась до omnibox/Firefox; они не проверены.
+Raw CACHE/release107-chrome-actor-v1.json, release107-chrome-row17-v1.jsonl.
 
-После gates: импортировать только разрешённые metadata с проверкой SHA/mode,
-запустить `isolated-release107-native-phase-v1.py` под remote guard. Он делает:
-1. установку10 retained artifacts с PID/hash проверкой;
-2. неизменённый полный Chrome220, требуя0 FAIL и0 NOT_TESTED;
-3. существующий chrome-omnibox-native-capabilities-20261024.py: три реальных
-   проверки верхней адресной строки (hint1, hint2, Tab2), без Enter;
-4. полный Firefox220 как свежую baseline для108, с явным сохранением FAIL.
+Причина: решение eligible/apply готово645us, epoch272, generation5. Native read
+видит5из6 букв; owned_append_resample НЕ вызван. Final identity/edit guard
+правильно отказывает,0replacement. Read eligibility использует строгий старый
+native binding token; ordinary callback settlement уже продвинул word token.
+Для чтения нужно сохранить same field/focus/lease/layout transport и проверить
+текущий token; edit receipt остаётся строго привязан к старому actual observation.
+Не менять committed_tail/managed/preedit, C03/C07, timers, executor илиGNOME.
+Не обобщать pair-only post-Space action: найден более узкий KDE read-only fix.
 
-Полный actor заморожен: dependency-browser-native-full-r19.py, SHA
-`360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913`.
-Не менять утверждения, 120 мс cadence, порядок жестов и deadline ради PASS.
-Верхняя адресная строка отличается от HTML URL-поля. Firefox baseline не
-считается успешной приёмкой Firefox; использовать её для первого общего механизма.
-После приёмки107 — commit/push/CI/stable/updater, затем108–111 по roadmap.
-Подготовка следующей версии может перекрывать внешнюю GitHub CI предыдущей;
-remote heavy/input actor один. Принятые commit/source/artifacts каждого шага
-неизменны; stable-публикации по порядку и только после собственного CI.
+Preflight/decision:
+- docs/development/release-1.0.107-chrome-client-isolation.md
+- docs/architecture/decisions/2026-10-28-kde-native-key-scope-read-resample.json
+Дополнительные runtime/test paths только kde/native_document/preparation.rs
+и tests.rs, плюс manifest/knownfail для2новых semantic tests.
+
+TDD V1 RED83/85: одна zero-character fixture была неприменима до целевого
+действия, это не полный causal proof. Исправлено до настоящего observed-owned
+prefix длиной1или5 + собственная следующая буква; missing witness — negative.
+TDD V2 causal RED83/85: все83прежниеPASS, оба новыхFAIL; reader1 вместо2 и
+false resample permission после production WordScope settlement.
+Raw isolated-release107-key-scope-unit-v2-red/result.json, source1c3d0907...
+
+GREEN V3 завершён:85/85PASS; raw isolated-release107-key-scope-unit-v3-green/result.json.
+ изменён AST-ом ровно один KDE read predicate.
+Он использует binding.observation_owner_is_current_for_token(self,currentToken)
+с прежними coordinate/privacy/selection/exact-refresh/handoff и managed-witness
+проверками. Старый native_word_preparation_identity/edit predicate НЕ менялся.
+Source-only resample по-прежнему максимум2, тот же Instant/80ms, без sleeps.
+Проверяет85 точных identities: oldNative + pair + C03fence +2новых.
+Не печатать весь result.changed: там большие исходники; импорт SHA/mode
+только разрешённых файлов.
+
+Manifest обновлён:3514correctness+36package=3550,1113IME,11performance,41ignored; knownfail0. Graph AST обновлён; canon preflightPASS доfullsource.
+Сейчас official full3550, execsession97281; local run-0dgci0vd.
+Source708926cec7f4600a831580464ef75679242eb359b9d72c20a2480b058e3f2e7c.
+ПослеPASS новые gates/installer/controller/full-native V3 ужезагружены.
+GatesV3 ожидают3550/1113 и текущий frozenrequest. Не запускать V1/V2драйверы.
+Использовать новые versioned пути V3, старыеFF9failedproof не перетирать.
+Новыйinstall должен ожидать previous isolated-release107-deployment-v1 и
+новыйSHA/PID; версияостаётся107, tagещёсвободен.
+
+Затем неизменённый Chrome220 и существующий реальный omnibox3. У обычного
+Chrome profile SingletonLock pid262925 мёртв: сначала обычный запуск подguard
+через реальный desktoplauncher, не сбрасыватьпрофиль. Не запускать отдельное
+окно покаактивен другойnativeactor. Далее свежий Firefox220 baseline для108.
+
+Actor dependency-browser-native-full-r19.py SHA
+360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913.
+Cadence120ms и критерии не менять. Верхнийomnibox отличаетсяотHTMLURL.
+После107 acceptance commit/push/CI/stable/updater; затем108–111. Один remote
+heavy/inputactor; следующиеsource checks могутперекрывать внешнююGitHubCI.
 
 ## Remote и инструменты
 
@@ -91,8 +122,8 @@ RFB localhost5905; GUI env брать из текущего daemon `/proc/<pid>/
 Manager env GNOME :10 не использовать и не импортировать глобально.
 Защищённый IBus parent3168326 / lay-release97-restored-system-ibus.service,
 activation binary `/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine`.
-Сейчас установлен106: engine1691255, daemon1691376, tray1691382; SHA engine
-`3c8d65db3667570246a4fe4736a2a0f2bae62f87e82f811bfec777f9b1dd5c21`.
+Сейчас установлен107 V1: engine1871589, daemon1871710, tray1871720; SHA engine
+`d472b8e35a3fe7dba8ea931f6f447ed218e6f5aba51897bd77d690ce50aa685b`. Следующая установка после новых gates заменит эти bytes.
 
 Guard: source dedicated-resource.env, memory high24G/max28G,20CPU,swap1G,
 one exclusive heavy lease; CARGO_TARGET_DIR=candidate-target-cache-20261023.

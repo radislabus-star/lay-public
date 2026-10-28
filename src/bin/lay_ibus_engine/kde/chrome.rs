@@ -1,4 +1,4 @@
-//! Chrome presentation eligibility; this never grants text-edit authority.
+//! Chrome process qualification and activation budget; no presentation or edit authority.
 use std::path::Path;
 use std::time::{Duration, Instant};
 

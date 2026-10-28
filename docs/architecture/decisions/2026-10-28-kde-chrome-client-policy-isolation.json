@@ -1,0 +1,47 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Separate existing KDE Chrome process qualification from presentation into kde/chrome.rs, keeping exact predicates,100ms budget, call order and all common authority/output contracts.",
+  "reason": "kde/display/chrome.rs currently owns process eligibility instead of rendering. Isolate client qualification so styling changes cannot silently edit that policy; no new functional defect or transport is asserted.",
+  "verification": "Preserve exact function bodies and one-to-one test namespace migration, all other test identities/classes. Required full source/release gates,10artifact build/installation proof, unchanged fullChrome220 and short Firefox controls.",
+  "not_tested": "All implementation/source/native/CI/updater results are pending. Local GNOME remains untouched; no universal client acceptance.",
+  "invariants": [
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/chrome.rs",
+    "src/bin/lay_ibus_engine/kde/display/chrome.rs",
+    "src/bin/lay_ibus_engine/kde/display/mod.rs",
+    "src/bin/lay_ibus_engine/kde/mod.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "baseline_commit": "f88c4ba932206dd96bc04158778109f63606d250",
+  "recorded_at": "2026-10-28T02:59:58.779352+00:00",
+  "alternatives": [
+    {
+      "name": "Move existing client policy with unchanged bodies",
+      "score": 9,
+      "selected": true
+    },
+    {
+      "name": "Leave process qualification under display",
+      "score": 4,
+      "selected": false
+    },
+    {
+      "name": "Add client strategy/transport registry",
+      "score": 2,
+      "selected": false
+    }
+  ],
+  "owning_document": "docs/development/release-1.0.107-chrome-client-isolation.md",
+  "test_manifest_change": "The owning preflight already allows exactly one namespace migration with unchanged body/category/negative conditions, no added/removed semantic tests and no known failures. The manifest and its SHA change together for that move; no failure is waived."
+}

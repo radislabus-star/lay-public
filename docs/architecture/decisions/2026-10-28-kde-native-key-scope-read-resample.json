@@ -1,0 +1,66 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Use the already validated current key-scope token for read-only native append resample eligibility, while retaining the original strict native binding token for edit authority. Reuse the existing single resample and original80ms deadline.",
+  "reason": "Installed107 fullChrome220=178PASS1FAIL41BLOCKED. Row17 normal/search/space-en-ru prepares an eligible decision in645us at epoch272; native read returns only5 of6 chars, no owned_append_resample marker, then final identity guard correctly refuses before mutation. Ordinary callback settlement advances the word token; the old read eligibility calls native_word_preparation_identity, which authenticates the prior token. Existing fixtures omitted callback settlement. Controlled RED/GREEN must confirm this causal gap before promotion.",
+  "verification": "Add regression using production WordScope append settlement and existing reducer fixture publisher; controlled source returns older owned prefix then complete source. Old code must skip the resample; new code must perform exactly2 reads with identical original deadline, no source installation until the actual result is installed, and preserve strict edit refusal before it. Preserve owner/focus/layout/privacy/selection/backend/epoch negatives. All previous identities/classes retained except the separately declared Chrome namespace move. Then full source/release gates and unchanged nativeChrome220 plus real omnibox/Firefox controls.",
+  "not_tested": "New107 bytes not built/installed/native tested yet. Failed107V1 remains178PASS1FAIL41BLOCKED; GNOME/Wayland/USB acceptance not asserted.",
+  "invariants": [
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "new_physical_delivery_route_added": false,
+  "recorded_at": "2026-10-28T04:20:44.763290+00:00",
+  "baseline_source_sha256": "ff9ca136f7ea8668cbc062a4acbf1a1600943c76c8c96a3b502b45610ae3257d",
+  "owning_document": "docs/development/release-1.0.107-chrome-client-isolation.md",
+  "alternatives": [
+    {
+      "name": "Reuse source-only resample under the current validated key token and existing owned append witness",
+      "score": 9,
+      "selected": true,
+      "reason": "Two KDE runtime/test files, no common authority/verifier/executor change, existing2-read/80ms limits."
+    },
+    {
+      "name": "Generalize pair-only post-Space action protocol to single words",
+      "score": 6,
+      "selected": false,
+      "reason": "Would expand common C07 boundary action contracts; not needed if the existing source resample was skipped by a stale receipt."
+    },
+    {
+      "name": "Increase waits or add fixed sleeps",
+      "score": 2,
+      "selected": false,
+      "reason": "The resample eligibility is false; changing timing does not repair its ownership test."
+    },
+    {
+      "name": "Accept a stale identity or projected source for editing",
+      "score": 1,
+      "selected": false,
+      "reason": "Violates existing source/edit authority and is not authorized."
+    }
+  ],
+  "controlled_verification": {
+    "status": "PASS",
+    "causal_red": "V2 83/85, reader1 instead2 after observed key-scope publication",
+    "green": "V3 85/85, both new tests and all83prior pass",
+    "raw_red": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release107-key-scope-unit-v2-red/result.json",
+    "raw_green": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release107-key-scope-unit-v3-green/result.json",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1290,
+      "sha256": "1937bad2d9b73eb41ea01ce097d1b08ef95b5302dbae03a06a828cb14089a78a"
+    },
+    "scope": "Real WordScope append operation plus existing test reducer publisher and controlled transport snapshots. Does not certify installed native behavior."
+  }
+}

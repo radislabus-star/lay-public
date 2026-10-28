@@ -702,6 +702,183 @@ fn pending_native_us_append() -> LayIbusEngine {
     engine
 }
 
+fn settle_native_append_scope(engine: &mut LayIbusEngine, retained: u32, appended: u32) {
+    let scope = engine.context_word_scope.as_mut().unwrap();
+    scope.observe_tail_append_span(retained, appended);
+    let admission = engine.context_admission.as_ref().unwrap();
+    assert!(admission.test_set_word_scope(
+        engine.context_owner.as_ref().unwrap(),
+        engine.committed_tail.epoch,
+        scope,
+    ));
+    engine.context_token = admission.current_token();
+}
+
+fn settled_native_us_append(
+    prefix: &str,
+    letter: char,
+) -> (LayIbusEngine, crate::engine::InputFrameIdentity) {
+    use crate::context_admission::WordCompleteness;
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    let (mut engine, mut binding) =
+        short_function_native_word(prefix, WordCompleteness::UnknownStart);
+    let prefix_chars = prefix.chars().count() as u32;
+    settle_native_append_scope(&mut engine, prefix_chars, prefix_chars);
+    binding.token = engine.context_token.clone().unwrap();
+    assert!(engine.install_native_document(Observation {
+        binding: binding.for_result(&engine),
+        snapshot: SurroundingTextSnapshot::new(prefix.into(), prefix_chars, prefix_chars),
+    }));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        letter,
+        32,
+    ))
+    .unwrap();
+    assert_eq!(output.committed_texts, [letter.to_string()]);
+    let frame = engine
+        .capture_space_autocorrect_frame_identity()
+        .expect("current owned append computation before callback settlement");
+    settle_native_append_scope(&mut engine, prefix_chars + 1, 1);
+    assert_ne!(
+        engine.context_token.as_ref(),
+        Some(
+            &engine
+                .client_context
+                .native_document_binding
+                .as_ref()
+                .unwrap()
+                .token
+        ),
+    );
+    assert!(engine.input_frame_authority_matches(&frame));
+    assert!(engine.managed_word_start_preparation_identity().is_some());
+    assert!(engine.native_word_preparation_identity().is_none());
+    assert!(!engine.native_word_preparation_edit_is_current());
+    (engine, frame)
+}
+
+#[test]
+fn native_owned_append_resamples_after_key_scope_settlement() {
+    use std::cell::{Cell, RefCell};
+
+    for (prefix, letter) in [("y", 'f'), ("abcde", 'f')] {
+        let (mut engine, frame) = settled_native_us_append(prefix, letter);
+        let before = engine.client_context.surrounding_text_snapshot.clone();
+        let mut fresh_binding = engine
+            .client_context
+            .native_document_binding
+            .as_ref()
+            .unwrap()
+            .for_result(&engine);
+        // Transport fixture: the production reader binds each actual result to
+        // the current admitted key token, independently of the prior binding.
+        fresh_binding.token = engine.context_token.clone().unwrap();
+        let complete = format!("{prefix}{letter}");
+        let calls = Cell::new(0);
+        let coordinates = RefCell::new(Vec::new());
+        let deadline = Instant::now() + OBSERVATION_BUDGET;
+        let result = zbus::block_on(read_with_one_owned_append_resample(
+            deadline,
+            |seen_deadline, geometry| {
+                let call = calls.get();
+                calls.set(call + 1);
+                coordinates.borrow_mut().push((seen_deadline, geometry));
+                let text = if call == 0 { prefix } else { &complete };
+                let cursor = text.chars().count() as u32;
+                std::future::ready(Ok(Observation {
+                    binding: fresh_binding.clone(),
+                    snapshot: SurroundingTextSnapshot::new(text.into(), cursor, cursor),
+                }))
+            },
+            |snapshot| engine.native_owned_append_observation_is_pending(snapshot),
+            engine.native_owned_append_preparation_is_current(),
+        ))
+        .unwrap();
+        assert_eq!(
+            calls.get(),
+            2,
+            "resample an older owned prefix after key settlement"
+        );
+        assert_eq!(
+            &*coordinates.borrow(),
+            &[(deadline, true), (deadline, false)]
+        );
+        assert_eq!(result.snapshot.text, complete);
+        assert_eq!(engine.client_context.surrounding_text_snapshot, before);
+        assert!(!engine.native_word_preparation_edit_is_current());
+        assert!(engine.install_native_document(result));
+        assert!(engine.native_word_preparation_edit_is_current());
+        assert_eq!(
+            engine.capture_space_autocorrect_frame_identity().as_ref(),
+            Some(&frame)
+        );
+    }
+}
+
+#[test]
+fn native_owned_append_settled_read_permission_preserves_edit_and_owner_fences() {
+    for changed in [
+        "focus",
+        "lease",
+        "layout",
+        "gnome",
+        "ru",
+        "atomic",
+        "privacy",
+        "epoch",
+        "unmanaged",
+        "boundary",
+        "selection",
+        "exact_refresh",
+        "handoff",
+        "token",
+        "binding",
+        "witness",
+    ] {
+        let (mut engine, _) = settled_native_us_append("y", 'f');
+        assert!(engine.native_owned_append_preparation_is_current());
+        assert!(!engine.native_word_preparation_edit_is_current());
+        match changed {
+            "focus" => engine.client_context.focus_serial += 1,
+            "lease" => engine.client_context.runtime_owner_lease_identity += 1,
+            "layout" => engine.layout_gesture.layout_generation += 1,
+            "gnome" => engine.config.layout_backend = "gnome".into(),
+            "ru" => engine.layout_gesture.layout_is_ru = true,
+            "atomic" => engine.atomic.active = true,
+            "privacy" => {
+                engine.client_context.content_purpose = super::super::IBUS_INPUT_PURPOSE_PASSWORD
+            }
+            "epoch" => engine.committed_tail.epoch += 1,
+            "unmanaged" => engine.client_context.managed_input = false,
+            "boundary" => engine.committed_tail.buffer.push(' '),
+            "selection" => {
+                engine.client_context.surrounding_text_snapshot =
+                    Some(SurroundingTextSnapshot::new("y".into(), 1, 0))
+            }
+            "exact_refresh" => engine.client_context.exact_surrounding_refresh_available = true,
+            "handoff" => engine.context_handoff_sealed = true,
+            "token" => engine.context_token = None,
+            "binding" => engine.client_context.native_document_binding = None,
+            "witness" => engine.client_context.managed_word_start = None,
+            _ => unreachable!(),
+        }
+        assert!(
+            !engine.native_owned_append_preparation_is_current(),
+            "{changed}"
+        );
+        assert!(
+            !engine.native_word_preparation_edit_is_current(),
+            "{changed}"
+        );
+    }
+}
+
 #[test]
 fn native_us_append_observation_only_resamples_earlier_owned_prefix() {
     use crate::context_admission::WordCompleteness;

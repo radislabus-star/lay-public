@@ -49,7 +49,7 @@ impl LayIbusEngine {
         // They never substitute for the IBus context/marker admission proof.
         let focused =
             super::desktop::focused_window_until(backend, Instant::now() + IO_BUDGET).await?;
-        crate::kde::display::chrome::activation_deadline(focused.pid, Instant::now())
+        crate::kde::chrome::activation_deadline(focused.pid, Instant::now())
     }
 }
 
@@ -483,7 +483,7 @@ impl LayIbusEngine {
             .ok_or("native_no_admission")?;
         bounded(deadline, async {
             let desktop = super::desktop::kde::observe_focused_window_until(deadline)?;
-            if !crate::kde::display::chrome::supports_native_prefix(desktop.pid) {
+            if !crate::kde::chrome::supports_native_prefix(desktop.pid) {
                 return Err("native_not_chrome");
             }
             // Keep native transport frames out of enclosing key/focus futures.

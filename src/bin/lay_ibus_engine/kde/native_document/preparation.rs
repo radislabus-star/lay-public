@@ -63,6 +63,15 @@ impl LayIbusEngine {
 
     /// Current owned appends can permit one more source read, never an edit.
     pub(super) fn native_owned_append_preparation_is_current(&self) -> bool {
+        let Some(binding) = self.client_context.native_document_binding.as_ref() else {
+            return false;
+        };
+        let Some(token) = self.context_token.as_ref() else {
+            return false;
+        };
+        // Normal key settlement retires the prior word token. The same field
+        // transport can request another actual read under the current token;
+        // the original edit receipt below remains strict and is never rebound.
         (self.has_unfinished_us_managed_input()
             || self
                 .capture_space_boundary_pair_scope()
@@ -72,7 +81,15 @@ impl LayIbusEngine {
                         crate::engine::SpaceBoundaryPairProvenance::NativePrepared { .. }
                     )
                 }))
-            && self.native_word_preparation_identity().is_some()
+            && binding.observation_owner_is_current_for_token(self, token)
+            && !self.context_handoff_sealed
+            && !self.client_context.exact_surrounding_refresh_available
+            && !self
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(|snapshot| snapshot.has_selection())
+            && self.managed_word_start_preparation_identity().is_some()
     }
 
     /// A coherent native read may still precede our latest CommitText. Only
