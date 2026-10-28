@@ -1,7 +1,7 @@
 {
   "schema": "lay.release106.verification.v1",
-  "recorded_at": "2026-10-28T02:57:16.952337+00:00",
-  "status": "SOURCE_RELEASE_GATES_AND_NATIVE_CONTROLS_PASS_CI_PUBLICATION_PENDING",
+  "recorded_at": "2026-10-28T03:29:17.493322+00:00",
+  "status": "STABLE_PUBLISHED_UPDATER_VERIFIED_NATIVE_CONTROLS_PASS",
   "version": "1.0.106",
   "canonical_base": "4ebd03f3566a981a9be384a67e1a7b1013b84ff4",
   "source": {
@@ -403,7 +403,82 @@
   "runtime_authority_changed": false,
   "delivery_routes_changed": false,
   "local_install_or_restart": false,
-  "ci": "PENDING",
-  "publication": "PENDING",
-  "updater": "PENDING"
+  "ci": [
+    {
+      "name": "Public installer regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40623923764/job/122604218908"
+    },
+    {
+      "name": "Rust 1.88.0 MSRV",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40623923764/job/122604218838"
+    },
+    {
+      "name": "Rust 1.97.1, tray, and extension checks",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40623923764/job/122604218672"
+    },
+    {
+      "name": "RustSec vulnerabilities and unsoundness",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40623923583/job/122604218357"
+    }
+  ],
+  "publication": {
+    "status": "STABLE_PUBLISHED",
+    "version": "1.0.106",
+    "canonical_commit": "f88c4ba932206dd96bc04158778109f63606d250",
+    "tag": "v1.0.106",
+    "tag_object": "34661e6cc1f99c351ba6ef88e241c2ca47444d54",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.106",
+    "published_at": "2026-10-28T03:26:14Z",
+    "draft": false,
+    "prerelease": false,
+    "assets": [],
+    "updater": "PASS"
+  },
+  "updater": {
+    "status": "PASS",
+    "published_version": "1.0.106",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.104",
+        "stable": "1.0.106",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.104\nстабильный релиз: 1.0.106\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.104 → 1.0.106\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.106",
+        "stable": "1.0.106",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.106\nстабильный релиз: 1.0.106\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-28T03:26:17.348949+00:00"
+  },
+  "canonical_commit": "f88c4ba932206dd96bc04158778109f63606d250",
+  "canonical_committed_source": {
+    "canonical_commit": "f88c4ba932206dd96bc04158778109f63606d250",
+    "source_files": 1290,
+    "extra_metadata_files": 4,
+    "tested_request": "/home/ubu/.cache/lay/development/run-hm92mk2e/request.json",
+    "tested_worktree_source_sha256": "df48fc2bc60209bacd646c60893df9f39f708f6a7ffbd1a619bd745cb509b5ee",
+    "git_mode_source_sha256": "27b6156365a291dd207c6747742bd69daabf055855c144baad2126812d69e71c",
+    "all_contents_equal": true,
+    "all_executable_bits_equal": true,
+    "group_write_bit_difference_count": 1294,
+    "method": "Committed blobs/executable bits match tested request. Git normalizes group-write permissions. No build/test/runtime effect."
+  }
 }

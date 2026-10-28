@@ -1,6 +1,6 @@
 # 1.0.106 — граница подготовки KDE
 
-Статус: SOURCE_AND_NATIVE_CONTROLS_PASS_CI_PENDING. Авторизованная задача интеграции,
+Статус: STABLE_PUBLISHED_UPDATER_VERIFIED. Авторизованная задача интеграции,
 механический перенос. Baseline4ebd03f3 / accepted105 source85cf6f9f.
 
 105 уже заморожена в коммите. Подготовка и source checks106 могут идти
@@ -46,6 +46,8 @@ Remote runtime106: engine1691255, daemon1691376, tray1691382. SHA engine3c8d65db
 
 Первыйcanon-gateV1 отказал из-за пропущенных мной обязательных полейADR. Поля дополнены; V2canonPASS. Исходники и замороженный full-testrequest не менялись; обновление ровно одного документа записано отдельным overlay. Старый отказ сохранён.
 
-Доказательства: tech_debt/evidence/release-1.0.106-verification.json. CI/published/updater покаPENDING.
+Доказательства: tech_debt/evidence/release-1.0.106-verification.json. CI 4/4 SUCCESS. Stable v1.0.106 опубликована 2026-10-28T03:26:14Z; updater проверен локально (104 → 106) и удалённо (106 актуальна), без установки на локальном GNOME.
 
 Space latency shortcontrols: {"n": 7, "median_ms": 86.09391702339053, "p95_ms": 108.57352009043097, "max_ms": 108.57352009043097, "scope": "RFB Space release to stable corrected native field; n7 short controls, no speedup claim"}
+
+Релиз: https://github.com/radislabus-star/lay-public/releases/tag/v1.0.106
