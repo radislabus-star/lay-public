@@ -1,0 +1,61 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Move the three existing KDE native preparation entrypoints out of common observation into kde/native_document/preparation.rs, preserving their eligibility and operation order; retain the single common word witness and tail owner.",
+  "reason": "The accepted105 repair exposed KDE-only preparation inside common observation. Keeping client preparation in its adapter permits scoped edits while common witness identity/admission/verification/execution remain one contract.",
+  "invariants": [
+    "C02",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "allowed_files": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs"
+  ],
+  "protected_mechanisms": [
+    "GNOME dispatch/rendering/configuration",
+    "common decision and reducers",
+    "manual toggle and held Shift",
+    "verifier and text executor",
+    "timeouts and observation budgets",
+    "models and learning"
+  ],
+  "alternatives": [
+    {
+      "name": "Move native preparation with existing common witness operations",
+      "score": 9,
+      "selected": true,
+      "reason": "One implementation per function; common witness fields remain private; existing reducers and native proof tests retained."
+    },
+    {
+      "name": "Duplicate ownership by desktop",
+      "score": 1,
+      "selected": false,
+      "reason": "Creates divergent authority and mutation paths."
+    },
+    {
+      "name": "Leave KDE preparation in common observation",
+      "score": 4,
+      "selected": false,
+      "reason": "Does not establish requested code boundary."
+    }
+  ],
+  "consequences": {
+    "scope": "Mechanical relocation plus immutable separator-presentation projection at the existing common witness owner. The adapter installs the projection only after existing tail acknowledgement succeeds. Existing snapshot constructors become crate-visible with unchanged bodies. No new delivery routes, owners, timers, queues or fallbacks.",
+    "verification": "All prior tests must retain identities/classifications. Review copied guards, revision/expiry identity, error exits and mutation order. Existing full source/release gates and short native Chrome controls. GNOME physical acceptance not implied; local GNOME remains untouched."
+  },
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "baseline_commit": "4ebd03f3566a981a9be384a67e1a7b1013b84ff4",
+  "recorded_at": "2026-10-28T02:28:35.683440+00:00",
+  "status": "SOURCE_AND_NATIVE_CONTROLS_PASS_CI_PENDING",
+  "execution_order": "105 accepted bytes are frozen in4ebd03f3. Independent106 source preparation/checks may overlap external105CI;106 installation/publication waits for105 stable publication+updater check.",
+  "verification": "3548/3548 correctness/package,1111IME,18releasegates,10artifacts,0warnings,MSRV1.88,offline byte parity PASS. All prior test identities retained. Seven installed nativeKDEChrome controls PASS. See tech_debt/evidence/release-1.0.106-verification.json.",
+  "not_tested": "FullChrome220 for106, physical GNOME,Wayland,USB and otherclients NOT_TESTED. CI/publication/updater pending.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs"
+  ]
+}

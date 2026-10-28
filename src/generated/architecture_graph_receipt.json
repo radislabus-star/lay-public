@@ -61,8 +61,8 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/engine/types.rs:L466:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6663:.arm_visible_postcondition_from_surrounding_dispatch()",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6738:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6574:.arm_visible_postcondition_from_surrounding_dispatch()",
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6649:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:72052",
-        "graph_nodes:28038"
+        "graph_links:72059",
+        "graph_nodes:28044"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "87ea054b18835fc13494729634d8374e4e9f8afed23e7bd8ce1f8685a8407d03",
-  "graph_fingerprint": "65439d75de15ce1f7ecefb8cb4306bbba43547f6cbc2c9785737b1a5731f5430",
-  "graph_links": 72052,
-  "graph_nodes": 28038,
+  "graph_binding_fingerprint": "a85eda0dfae47d4628fc90634a2bea278ca61595e06a1760e2f85853676dea2e",
+  "graph_fingerprint": "4df58bde96769f70e55488f1f295887326d1afed442633d4539a355e5bfca954",
+  "graph_links": 72059,
+  "graph_nodes": 28044,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "f7e6bc1e3515a4c4c7d2a7b868319af22908e4f62ea82b540e8c1aa2816caa08",
+  "source_fingerprint": "6e4e569741a51d23781701765e6b44b20feace851dae33a7199cf50bcfdb6a86",
   "verdict": "PASS"
 }

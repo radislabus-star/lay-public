@@ -160,6 +160,30 @@ impl ManagedWordStartWitness {
     pub(crate) fn anchored_token_chars(&self) -> u64 {
         self.anchored_token_chars
     }
+
+    /// Inert preparation only: preserve every identity/revision while changing
+    /// the observed presentation of the already owned separator.
+    pub(crate) fn with_observed_separator_presentation(
+        &self,
+        actual: &str,
+        token: &str,
+    ) -> Option<Self> {
+        if self.closed_word_predecessor.is_some() {
+            return None;
+        }
+        let tail = self.start_committed_tail.strip_suffix('\u{a0}')?;
+        let prefix = self.snapshot_prefix.strip_suffix('\u{a0}')?;
+        let next_tail = format!("{tail} ");
+        let next_prefix = format!("{prefix} ");
+        if actual != format!("{next_tail}{token}") {
+            return None;
+        }
+        Some(Self {
+            start_committed_tail: next_tail,
+            snapshot_prefix: next_prefix,
+            ..self.clone()
+        })
+    }
 }
 
 /// Output provenance only: never a client snapshot or an edit target.
@@ -1195,37 +1219,6 @@ impl LayIbusEngine {
         ))
     }
 
-    /// Preserve the same inert append witness after the native observer has
-    /// proved a delimiter's presentation. This never publishes an observation.
-    pub(crate) fn acknowledge_managed_word_separator_presentation(&mut self, actual: &str) -> bool {
-        if self.native_word_preparation_identity().is_none() {
-            return false;
-        }
-        let Some(witness) = self.client_context.managed_word_start.as_ref() else {
-            return false;
-        };
-        if witness.closed_word_predecessor.is_some() {
-            return false;
-        }
-        let (Some(tail), Some(prefix)) = (
-            witness.start_committed_tail.strip_suffix('\u{a0}'),
-            witness.snapshot_prefix.strip_suffix('\u{a0}'),
-        ) else {
-            return false;
-        };
-        let next_tail = format!("{tail} ");
-        let next_prefix = format!("{prefix} ");
-        if actual != format!("{next_tail}{}", self.last_tail_token_text())
-            || !self.acknowledge_tail_word_separator_presentation(actual)
-        {
-            return false;
-        }
-        let witness = self.client_context.managed_word_start.as_mut().unwrap();
-        witness.start_committed_tail = next_tail;
-        witness.snapshot_prefix = next_prefix;
-        true
-    }
-
     pub(crate) fn arm_managed_commit_reset_echo(&mut self) {
         if self.managed_word_start_is_current() {
             if let Some(witness) = self.client_context.managed_word_start.as_mut() {
@@ -1651,20 +1644,6 @@ impl LayIbusEngine {
         }
     }
 
-    /// Reuse the canonical zero-character boundary witness after native
-    /// presentation acknowledgement, without creating an input revision.
-    pub(crate) fn arm_native_observed_word_boundary(&mut self) {
-        if !self.native_document_is_current()
-            || !self.committed_tail.buffer.ends_with(char::is_whitespace)
-            || self.committed_tail.pending_visible_postcondition.is_some()
-        {
-            return;
-        }
-        if let Some(witness) = self.managed_word_start_from_current_snapshot("") {
-            self.client_context.managed_word_start = Some(witness);
-        }
-    }
-
     fn arm_managed_word_start_from_current_snapshot(&mut self) {
         if let Some(witness) =
             self.managed_word_start_from_current_snapshot(&self.last_tail_token_text())
@@ -1673,75 +1652,7 @@ impl LayIbusEngine {
         }
     }
 
-    /// A native boundary may arrive after one completed local append. Retain
-    /// that actual boundary and exact effect as inert preparation; the pending
-    /// letter is never inserted into the observed client snapshot.
-    pub(crate) fn arm_native_observed_first_append_boundary(&mut self) -> bool {
-        if !self.native_document_is_current()
-            || self.client_context.exact_surrounding_refresh_available
-            || self.composition.word_input_mode != Some(WordInputMode::ManagedCommit)
-            || self.committed_tail.pending_visible_postcondition.is_some()
-            || self.native_word_preparation_identity().is_some()
-        {
-            return false;
-        }
-        let token = self.last_tail_token_text();
-        if token.chars().count() != 1 || !token.chars().all(char::is_alphabetic) {
-            return false;
-        }
-        let Some(effect) = self.client_context.managed_commit_snapshot_floor else {
-            return false;
-        };
-        if effect.focus_serial != self.client_context.focus_serial
-            || effect.runtime_owner_lease_identity
-                != self.client_context.runtime_owner_lease_identity
-            || effect.layout_generation != self.layout_gesture.layout_generation
-            || effect.tail_epoch != self.committed_tail.epoch
-            || effect.observation_revision >= self.client_context.surrounding_observation_revision
-        {
-            return false;
-        }
-        let Some(body) = self
-            .committed_tail
-            .buffer
-            .strip_suffix(&token)
-            .and_then(|prefix| prefix.strip_suffix([' ', '\u{a0}']))
-        else {
-            return false;
-        };
-        let actual = self
-            .client_context
-            .surrounding_text_snapshot
-            .as_ref()
-            .unwrap();
-        let separator = actual
-            .cursor_pos
-            .checked_sub(1)
-            .and_then(|slot| actual.text.chars().nth(slot as usize));
-        let Some(separator @ (' ' | '\u{a0}')) = separator else {
-            return false;
-        };
-        let prefix = format!("{body}{separator}");
-        let Some(start_epoch) = effect.tail_epoch.checked_sub(1) else {
-            return false;
-        };
-        let Some(witness) =
-            self.observed_word_start_from_snapshot_tail("", false, &prefix, start_epoch)
-        else {
-            return false;
-        };
-        if !self.acknowledge_tail_word_separator_presentation(&format!("{prefix}{token}")) {
-            return false;
-        }
-        self.client_context.managed_word_start = Some(witness);
-        self.invalidate_space_autocorrect_path();
-        crate::trace::record(
-            r#"{"kind":"ibus_native_document","stage":"late_word_boundary_observed","observed_word_chars":0,"edit_authority":false}"#,
-        );
-        true
-    }
-
-    fn managed_word_start_from_current_snapshot(
+    pub(crate) fn managed_word_start_from_current_snapshot(
         &self,
         token: &str,
     ) -> Option<ManagedWordStartWitness> {
@@ -1761,7 +1672,7 @@ impl LayIbusEngine {
         )
     }
 
-    fn observed_word_start_from_snapshot_tail(
+    pub(crate) fn observed_word_start_from_snapshot_tail(
         &self,
         token: &str,
         require_exact_refresh: bool,

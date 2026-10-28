@@ -35,3 +35,7 @@ one at a time; do not add unused placeholder adapters or copy the common rules.
 
 This relocation does not fix or certify the Chrome underline bug. Compilation,
 source checks, installed bytes and physical client acceptance are separate facts.
+
+`native_document/preparation.rs` owns all three native boundary/separator
+preparation entrypoints. The common observation module retains the sole word
+witness and its inert projection/constructors; KDE never copies that owner.

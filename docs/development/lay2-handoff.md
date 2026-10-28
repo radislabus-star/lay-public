@@ -1,3 +1,20 @@
+# Текущий шаг:106 принята в ограниченном scope, CI/publication next
+
+105stable опубликована и updater проверен.106source df48fc2b,3548/3548PASS,
+18gatesPASS,10retainedreleaseartifacts,0warnings, native7/7PASS.
+Remote106engine1691255/SHA3c8d65db3667570246a4fe4736a2a0f2bae62f87e82f811bfec777f9b1dd5c21; daemon1691376,tray1691382.
+ИсходныйIBus3168326/desktop/config/models сохранены. ПолнаяChrome220106
+и физическийGNOME не проверялись. 105Chrome180P0F40B — исторический результат.
+
+106 первыйcanonотказ был толькоmissingfieldsADR; V2PASS с явным docoverlay,
+без изменения3548testedsource/request. Evidence release-1.0.106-verification.json.
+Следомcommit/push106 иGitHubCI. Затем107 — cached mechanical boundary
+KDEChromeprocesspolicy изdisplayвkde/chrome.rs,1testnamespace migration
+с тем же телом/классом; всеguards остаются. ИсточникdraftвCACHE release107-*.
+Разрешено перекрытие следующей sourceподготовки внешнейCI, frozenaccepted
+байты каждого этапа сохранять. Один remoteheavy/inputactor; никакихHarness²,
+субагентов илилокальногоGNOMEinstall/restart/tests. Всего105–111, не останавливаться.
+
 # Текущий шаг автономной серии —105 опубликована,106 проверяется
 
 Stable v1.0.105 /4ebd03f3 опубликована2026-10-28T02:40:30Z, CI4/4SUCCESS.
