@@ -378,10 +378,10 @@ fn space_pair_pending_calculation_and_actual_commit_join_once_in_either_order() 
                 },
             )
             .unwrap();
-        zbus::block_on(engine.commit_legacy_space_boundary_continuation(
-            &mut EngineOutput::test(&mut output),
-            pending,
-        ))
+        zbus::block_on(
+            engine
+                .commit_space_boundary_continuation(&mut EngineOutput::test(&mut output), pending),
+        )
         .unwrap();
         assert_eq!(output.committed_texts.last().unwrap(), "ыбыть ");
         assert!(output.surrounding_deletes.is_empty());
@@ -421,10 +421,10 @@ fn space_pair_pending_calculation_and_actual_commit_join_once_in_either_order() 
                 },
             )
             .unwrap();
-        zbus::block_on(engine.commit_legacy_space_boundary_continuation(
-            &mut EngineOutput::test(&mut output),
-            pending,
-        ))
+        zbus::block_on(
+            engine
+                .commit_space_boundary_continuation(&mut EngineOutput::test(&mut output), pending),
+        )
         .unwrap();
         observe_space_commit(&mut engine, &mut output).unwrap();
         match result {
@@ -463,10 +463,10 @@ fn space_pair_pending_calculation_and_actual_commit_join_once_in_either_order() 
                 },
             )
             .unwrap();
-        zbus::block_on(engine.commit_legacy_space_boundary_continuation(
-            &mut EngineOutput::test(&mut output),
-            pending,
-        ))
+        zbus::block_on(
+            engine
+                .commit_space_boundary_continuation(&mut EngineOutput::test(&mut output), pending),
+        )
         .unwrap();
         match violation {
             "next_key" => {

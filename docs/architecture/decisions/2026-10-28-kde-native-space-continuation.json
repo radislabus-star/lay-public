@@ -1,0 +1,24 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Extend the existing pending Space boundary protocol to a fully observed KDE native pair, keeping the existing worker, postcondition receipt, notification, ownership checks and committed-tail executor.",
+  "reason": "V8 trace confirms the pair before Space, then a 3us NotReady lookup and ordinary-boundary cancellation. The current continuation supports only OwnedPreedit although the same current native field can supply exact before/after Space snapshots.",
+  "invariants": ["C01", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/committed_tail.rs", "src/bin/lay_ibus_engine/managed.rs", "src/bin/lay_ibus_engine/kde/native_document.rs", "src/bin/lay_ibus_engine/kde/native_document/preparation.rs", "src/bin/lay_ibus_engine/kde/native_document/tests.rs", "src/bin/lay_ibus_engine/space_boundary_pair_tests.rs"],
+  "verification": "First prove a pending native pair survives the bounded lookup and joins only after the actual committed Space, in both event orders. Retain all old legacy tests and old native negatives. Require cancellation on input/focus/lease/layout/material/field changes, no duplicate word/Space/operation and no edit from a projected snapshot. Then fresh source/build gates, exact remote artifacts, seven native cases and full Chrome220.",
+  "not_tested": "Implementation and native success pending at decision time. Native unit fixtures may establish only the executor-boundary refusal without a real client; actual edit success requires native acceptance. GNOME and terminal integrations are not being migrated by this change.",
+  "user_authorization": "2026-10-28 autonomous five-to-seven releases and push, fix improvements, and separate integrations everywhere without further questions; the bounded shared extension is part of release1.0.105.",
+  "source_head": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
+  "consequences": {
+    "scope": "Only two existing shared boundary handlers and KDE native observation/preparation; tests and mechanical helper rename. No changes to verifier/executor, admission reducer, composition commit implementation, global desktop dispatch, model/packages or installed local GNOME.",
+    "candidates_and_rank": "Unchanged candidate/lattice/rank and full selected EditAction. Pending completion retains original material/frame/generation and requires the existing authorized BoundaryShift action.",
+    "authority_and_races": "Native eligibility requires current full actual unselected field and existing NativePrepared pair. Existing owner/focus/epoch/layout/config checks and the postcondition's deadline remain. Next pressed key retires the pending calculation. Observations cannot be projected into edit proof.",
+    "latency_and_resources": "Keep3500us shared callback budget and existing1500ms postcondition deadline; no new wait, timer, thread, queue or cache. Preserve one worker slot and the existing notification. Measure physical Space latency and failed coverage separately.",
+    "cache_package_learning": "Existing material generation invalidates pending decisions; package reload, lattice caches and learning semantics remain unchanged. Existing undo/feedback are recorded only after a successful observed replacement.",
+    "compatibility": "OwnedPreedit keeps its old commit behavior. Native commits only Space because its word is already in the field. Other desktops/clients do not qualify for the native branch. Mechanical helper rename preserves callers/tests.",
+    "failure_and_rollback": "Before output refusal yields ordinary existing behavior. After an unknown/partial effect no fallback mutation or requeue. Roll back the native eligibility/retention and native observation join; retain the separately proven earlier reflow fixes.",
+    "alternatives": "Earlier KDE scheduling7/10 may improve latency but does not cover arbitrary computation readiness; global wait increase3/10 affects unrelated input. Existing continuation9/10 is selected without creating another delivery route."
+  },
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "existing_protocol_applicability_extended": true
+}

@@ -1,0 +1,13 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Execute the user-authorized seven-release series with explicit per-release integration scope, stable shared ownership/verifier/executor contracts and independent desktop/client adapters.",
+  "reason": "The user explicitly authorizes autonomous fixes, publication and isolation across routes without further questions. Prior narrow scopes may be expanded only by a recorded causal map and bounded preflight, not by an unreported shared edit.",
+  "invariants": ["C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10"],
+  "protected_paths": ["docs/development/isolated-release-series-2026-10-28.md", "docs/development/kde-native-pair-readiness-plan-2026-10-28.md"],
+  "verification": "Each release must retain canonical source/build/security gates and exact installed/native/updater evidence. Mechanical relocations and behavior changes are proven separately. No false source-to-native or client-to-client acceptance claim.",
+  "not_tested": "This authorization record does not implement isolation, change runtime, publish a release or certify the current experimental V8 native6/7 candidate.",
+  "user_authorization": "2026-10-28: make five, six or seven releases, push them, find improvements and work autonomously; finally separate all routes for independent editing/testing; do not ask the user questions.",
+  "source_head": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

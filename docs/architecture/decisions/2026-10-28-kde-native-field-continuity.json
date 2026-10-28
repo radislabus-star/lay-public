@@ -1,0 +1,13 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Use the existing authenticated physical-field continuity plus unchanged focus, lease and layout only for KDE native separator/boundary data hooks after installation of a current observation.",
+  "reason": "V7 iframe1 accepts a forward provider reconnect but loses pair preparation because these new data hooks incorrectly require exact transport identity. V19RED reproduces this loss while requiring strict old-subscription retirement.",
+  "invariants": ["C01", "C03", "C05", "C06", "C07", "C08", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/kde/native_document.rs", "src/bin/lay_ibus_engine/kde/native_document/tests.rs"],
+  "verification": "V19RED51/52; require all52 native tests and old identity/negative cases, fresh1106 IME checks and existing preview gates, frozen-common source hashes, exact remote installed bytes, same seven native cases before full Chrome220.",
+  "not_tested": "Native and source outcome after this predicate change pending. Existing V7 result6PASS1FAIL and full browser baseline remain unchanged. No GNOME or whole-project acceptance claim.",
+  "user_authorization": "Continue the existing KDE/Chrome failure repair; isolate modifications and preserve configured behavior elsewhere. The current user asks whether isolation is complete: report partial isolation honestly.",
+  "source_head": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

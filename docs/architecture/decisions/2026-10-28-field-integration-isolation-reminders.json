@@ -1,0 +1,24 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Freeze configured field integration during correction-only work and require three reminders: project entry, architecture/owning modules, and before-edit/before-install scope review.",
+  "reason": "The user requires the already configured behavior inside fields to remain stable while autocorrection evolves. Shared observation/state changes must not be described as browser-local merely because the new caller is KDE/Chrome.",
+  "invariants": ["C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10"],
+  "protected_paths": [
+    "AGENTS.md",
+    "ARCHITECTURE.md",
+    "CLAUDE.md",
+    "GEMINI.md",
+    ".github/copilot-instructions.md",
+    "DEVELOPMENT.md",
+    "docs/architecture/field-integration-isolation-2026-10-28.md",
+    "src/bin/lay_ibus_engine/kde/README.md",
+    "src/bin/lay_ibus_engine/gnome/README.md"
+  ],
+  "verification": "Run the existing architecture-canon link/change-record checks and their focused Python regressions; compare hashes of already modified runtime files and protected unchanged route files before/after this documentation-only change. Verify all three reminder links and desktop README links resolve.",
+  "not_tested": "This rule change does not execute native input, accept the current experimental candidate, refactor adapters, introduce an automatic per-client scope guard, or establish unchanged GNOME/KDE behavior.",
+  "user_authorization": "2026-10-28: isolate configured field behavior from autocorrection changes; write the rule everywhere with three levels of reminders.",
+  "source_head": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "runtime_source_changed": false
+}

@@ -1,3 +1,251 @@
+# ACTIVE SERIES:105 native accepted, publication next
+
+2026-10-28T02:08:21.059088+00:00 — V11 frozen source85cf6f9f9590ca5c3c942d67202e1bff9edc3fbe70208f0f2cdb871175400f9d;3548all-source/18gates/10release artifactsPASS; installedremote105engine1437885 SHA9e0731fd2014a0c9fc2948e56ab9a58f8d8298ce066d9db1f664fea8b538717c. Native7/7PASS and fullChrome220180PASS0FAIL40BLOCKED, complete/no held keys/config restored.40BLOCKED not acceptance; Firefox remains old baseline and scheduled108. Runtime accepted for this measured scope, no more source edits105. Next commit/push public main and own origin branch (never private origin main), fresh CI, v1.0.105 stable release and actual local/remote lay-update --check. Then106: exact AST move of3KDE-only functions out of common observation; draft/AST hashes in cache. Continue105–111 without questions/agents/Harness/local GNOME changes.
+
+# ACTIVE105: KDE coherent-read fix GREEN83/83
+
+2026-10-28T01:33:38.319450+00:00 — V27 old-policy extraction81/83 RED, V28 bounded single resample83/83 GREEN. Only kde/native_document.rs, preparation.rs, tests.rs changed for this step; no route/owner/verifier changes. Newsourcebc25cddcf5663c17dd8998fc28202fdf91ef4909d9c7c66ef40ac59c1fc1939b. V10 still installed remote105, fullChrome179P1F40B (normal/text pair read incoherent at817, deletion authority correctly refused822), native7/7 delayed path passed. Next metadata (+2 tests: source3548, IME1111), full gates/build/install/native7/fullChrome220,105 publish/updater; then106–111. No active native job. No questions/agents/Harness/local GNOME changes.
+
+# ACTIVE105: fullChrome220 one coherent-read FAIL
+
+2026-10-28T01:21:17.123331+00:00 — V10 native7/7 passed genuine delayed path, full source3546/18gates/10artifacts verified, current remoteengine1190174 SHA in raw-deployment-v10. FullChrome220 COMPLETE179PASS1FAIL40BLOCKED, original126/1/33 and additional53/0/7. No105 publication. Row9 normal/text/moved-boundary: native_document_changed817, then authorized candidate821 rejected by no_proven_delete_backend822. Fix source coherence using existing one-resample mechanism, not deletion authority or projected output. New ADR2026-10-28-kde-native-coherent-read-resample lists only3KDE files. Next mechanical extraction + controlled RED, minimal read-side fix + tests, full gates/native again,105 publication/updater then106–111. Previous 61812 job finished; no native job running. No agents/Harness/local GNOME changes/questions.
+
+# ACTIVE105: fixed native7/7 PASS; fullChrome220 running
+
+2026-10-28T00:57:44.556966+00:00 — V10 source3546PASS/18gatesPASS/10artifacts installed remote; engine1190174 SHA942e5c464b2079210857e01809ebed872f9cb3bea269548b03ec43ddbf4c68aa. Native7/7 PASS including proven delayed cold first iframe (Space commit before worker ready, after-Space exact12-char range, applied=true). Space n7 median98.568ms p95155.271ms. SourceSHAd747e9e897d3a69dc1128466b923742b7de84e43cec59fda6acb3fad5273537a. FullChrome220 is the active guarded process, exec session61812, outputCROOT/browser-pair-reflow-full-native-v10/result.json; do not duplicate. Public stable104, no105 commit/push/tag yet. Next preserve full matrix/regression comparison, publication/updater105 and continue106–111 per roadmap. Route isolation106 AST map and draft in cache; no source106 edits yet. No questions/agents/Harness/local GNOME install/restart/input.
+
+# ACTIVE105: boundary-token continuity source GREEN81/81
+
+2026-10-28T00:32:56.524815+00:00 — V26 implements the recorded bounded successor comparison;81/81 subset PASS after V25 controlled79/80 RED. Native negatives cover both settled/unsettled Space and token fences. Existing reducer/revalidate/verifier/executor unchanged. OldV9 candidate105 still installed remote, native6/7; public stable104 unchanged. Next metadata preparation (+1 test, full3546), full source/gates, exact10artifact installation and native7/fullChrome220. Then105 publication and106–111; no questions/agents/Harness/local GNOME edits.
+
+# ACTIVE105: callback-settled Space regression RED
+
+2026-10-28T00:26:38.282551+00:00 — NativeV9 remains6/7, public104 unchanged. V9 all3545source/18gates and ten artifacts verified/installed remote105. V24 pre-Space echoes80/80; V25 production scope boundary + mirrored settled reducer79/80 RED reproduces the missing native token continuity. Implement the explicitly recorded pure token-successor relation and KDE-only pending use, keep existing reducer/revalidate/executor strict; then all source/build/native gates. No diagnostic candidate was installed; production matchesV9 until this implementation. Continue seven-release roadmap without questions/agents/Harness or local GNOME changes.
+
+# Autonomous series: release1.0.105 in progress
+
+2026-10-27T23:42:25.740638+00:00 — V21 controlled RED52/54, V23 native + old Space tests GREEN80/80. Source213f5875b71f13e3884192a6cbb61d531fe024ca715056aaa4e89ccaed72937c; no runtime install yet. Source labels1.0.105 prepared only; next inventory/graph sync, complete IME proof, exact remote build/install and fixed seven-case native acceptance. Follow `isolated-release-series-2026-10-28.md` through105–111 without asking the user. Do not reuse V8 acceptance for changed bytes.
+
+# ACTIVE — autonomous seven-release series authorized; start1.0.105
+
+Latest user explicitly authorized5–7 meaningful releases/push and integration
+isolation everywhere, with no questions. Chosen seven-release queue and gates:
+isolated-release-series-2026-10-28.md. This supersedes waiting for approval of
+the previously drafted shared-handler extension. Still write exact per-release
+scope/consequences first, preserve C01–C10, use existing owners/verifier/executor.
+No agents/Harness2; no local GNOME install/restart/input. Work remote and verify
+the real updater for every release. Stable currentlyv1.0.104/publicmainc794d31d;
+fresh openPRs=[];105–111publictags absent. No new release published yet.
+
+First release105: controlled NativePrepared pair Space continuation, using
+existing pending receipt/worker notification/executor. Current remoteV8 stays
+6PASS1FAIL, so no publication until new case passes and full matching proof.
+Continue independently until all seven are actually published and checked.
+
+---
+
+# HISTORICAL PLAN — Space readiness mapped; no new production change
+
+User asked what comes next. Read-only map is recorded in
+kde-native-pair-readiness-plan-2026-10-28.md. Shared callback budget is3500us
+from entry; the existing deferred boundary completion is OwnedPreedit-only.
+Compare native-only earlier scheduling7/10, reuse existing continuation9/10,
+global wait increase3/10. Recommend controlled delayed-result proof and reuse
+the existing continuation if current native ownership/Space postcondition can
+be preserved. Two common handlers managed.rs/committed_tail.rs plus KDE adapter
+may need an explicitly scoped extension; do not treat this draft as permission
+or quietly expand the prior one-KDE-file task. No implementation/build/install/
+native input in this planning turn; V8 and all physical totals stay unchanged.
+
+---
+
+# CURRENT — V20/V8 source/build PASS; native6/7, isolation still partial
+
+Installed remote V8 engine706964/daemon706997/tray707005, version1.0.104,
+source740924fc781779ff53e2653b40b6126083f792fd01d0f04a36a245d3e8022d39,
+engineSHA18d0a4b8a8c4adb719fc99fd49a03807026ee3e9e998b27c71193f842a2de5d6.
+No local GNOME install/restart, original IBus parent3168326 protected. New
+production change since frozenV7 is ONE KDE native_document.rs local hook
+predicate; shared source remains frozen, strict observation-owner predicate
+unchanged. Existing common observation/tail experimental diff still unaccepted.
+
+V19RED51/52 -> V20GREEN52/52. Official localrun-datamm40 / remoterun-xtkmph:
+1106/1106 PASS177.4s. V8all13previewgates PASS249.37s,10artifacts installed1.72s.
+Seven fixed native47.57s ->6PASS1FAIL:iframe1FAIL,iframe2–5/rich/plainPASS.
+Successful Space correction samples6:median95.79ms,p95/max129.26ms; notDoubleShift.
+Current main full matrix unchangedChrome125P4F31B,Firefox75P54F31B (160each).
+FullChrome220 remains PREPARED_NOT_STARTED because fixed7 is notallPASS.
+
+NEW remaining first transition: V8iframe1trace377 pair_in_frame/live/preparation
+alltrue,391 prepvalid/actualcursor11. At395 prefetch_not_ready,397worker5tail15
+wait3us. Space then ordinary fallback; worker cancelled405after11856us. Pair
+missing AFTER fallback is consequence, not the previous before-Space data loss.
+The shared committed_tail.rs:232 consumer and managed.rs fallback remain exactly
+unchanged. Map producer readiness/callback budget read-only before another
+production patch; do not guess a timeout or silently expand the one-KDE-file
+scope into shared consumers. This scope step is verified but end-to-end repair
+is INCOMPLETE. No new task is secretly authorized by this record.
+
+Evidence limit: V8iframe1 has zero field_receipt_rebound events. Forward
+reconnect is controlled-regression proof only; do not claim this physical trial
+exercised that branch. New native pass count did not improve beyond6/7.
+
+CACHE/reflow-v20-scope-and-native-verdict.json and raw-browser-pair-reflow-
+{gates,deployment,native,combined}-v8--result.json retain exact results.
+Versioned tech_debt/evidence/browser-kde-pair-reflow-2026-10-27.json updated with
+latest source/install/native verdict and previous V18 checkpoint retained.
+Fresh upstream PR check during this continuation: openPRs=[]; no merge/message.
+No publication or whole-desktop/client acceptance. All operations finished.
+
+---
+
+# HISTORICAL — V20 source52/52; new production change confined to one KDE file
+
+User asked whether routes are already isolated. Answer: partial adapter
+separation exists; common observation/tail/admission/execution remain shared.
+Three reminder levels are rules, not completed refactoring or a technical
+sandbox. Do not claim full isolation. Continue the existing Chrome integration
+repair while freezing other production files, including the existing shared
+experimental diff.
+
+Scoped preflight at top of browser-matrix-repair-2026-10-27.md and new ADR
+2026-10-28-kde-native-field-continuity.json. V19RED51/52 -> V20GREEN52/52.
+Production delta from frozen V7: only kde/native_document.rs's local hook
+predicate now accepts existing physical-field continuation with same focus,
+lease and layout. Global same_observation_owner and its strict subscription/
+cache reuse remain byte-identical to c794d31d. No new route/owner/deadline.
+CACHE/reflow-unit-v20.json and reflow-v20-isolation-witness.json.
+
+Remote prepare-v7 active, then import metadata, freeze owning docs/evidence,
+fresh official1106, workflowV8 gates/install/same7native; fullChrome220 only if
+all7PASS. CURRENT installed remains V7 engine562896, source2abed764, seven6P1F.
+No new GNOME/runtime configuration changes. Full browser matrix unchanged.
+
+---
+
+# CURRENT STEERING — freeze configured field behavior; three reminders recorded
+
+2026-10-28 user clarified that configured behavior inside fields must remain
+stable while autocorrection changes, and explicitly requested three levels of
+reminders. This turn changes rules/docs only; no new production implementation,
+build, install, service restart or native input. Runtime hashes are checked
+against CACHE/field-isolation-rules-before-20261028.json.
+
+The three reminders are AGENTS.md (entry), ARCHITECTURE.md C07 and
+docs/architecture/field-integration-isolation-2026-10-28.md (responsibility),
+and DEVELOPMENT.md's required before-edit/before-install scope comparison.
+CLAUDE/GEMINI/Copilot and KDE/GNOME READMEs point to the same rule. The old
+/home/ubu/projects/lay entry AGENTS also carries it. This is not an automatic
+per-client sandbox or an accepted runtime refactor.
+
+Rule verification complete: owning checkout canon links/change records PASS,
+15/15 existing canon Python regressions PASS, old entry checkout links PASS,
+all eight reminder-file links resolve,18 runtime hashes unchanged and no new
+changed Rust files. Receipt CACHE/field-isolation-rules-verification-20261028.json.
+Only the rule/documentation task is complete; native browser repair remains open.
+
+Audit against c794d31d: shared observation.rs/tail_memory.rs have functional
+preparation/accounting changes; ime_correction.rs has four diagnostic lines.
+Do not describe this existing diff as purely correction-only or purely in KDE.
+preedit.rs/committed_tail.rs/state.rs/composition_commit.rs/output.rs,
+window_interaction/execution.rs, text_edit/executor.rs and transition.rs, and
+the daemon native/replacement delivery files are byte-identical to the base.
+Unchanged delivery source does not establish unchanged whole-field behavior.
+
+CURRENT remote installed V7: engine562896/daemon562939/tray562947,
+source2abed764d738efc01e31c59c3922f2d66f5c9e8d90dbac6abc77f938d0238dd2;
+exact loaded bytes CACHE/raw-browser-pair-reflow-deployment-v7--result.json.
+Fresh1106 and13gates PASS, seven native6PASS1FAIL, not accepted/published.
+Remaining iframe1 loses preparation after an accepted forward provider-lifetime
+reconnect. The new install hooks require same_observation_owner (exact transport
+receipt), while the existing binding accepts physical-field continuity.
+Do not weaken that strict comparator globally: it protects observer subscription
+and display-cache reuse. Before a further production edit, explicitly reconcile
+the existing shared diff and the exact proposed change with authorized scope.
+
+V19RED test-only extension completed51/52, correctly detecting lost preparation
+on forward reconnect; no functional change or installation for V19. Remote
+CROOT/browser-pair-reflow-unit-v19-red/result.json, retained failure.
+Last complete main matrix remains Chrome125PASS4FAIL31BLOCKED and
+Firefox75PASS54FAIL31BLOCKED (160 each); no new full matrix during this rule task.
+
+---
+
+# HISTORICAL — exact transient-data-loss root fixed in source; V18GREEN, native pending
+
+Canonical /home/ubu/projects/lay-dependency-updates-20261027, branch
+codex/browser-matrix-repair-20261027, basec794d31d; no agents/Harness2,
+local GNOME untouched, same owners/verifier/delivery routes preserved.
+
+CURRENT installed remoteV6 engine463975/daemon464087/tray464093,
+source d06f8790. Exact hashes CACHE/raw-browser-pair-reflow-deployment-v6--result.json.
+Original IBus parent3168326 protected. V6fresh1106/all13gates/11performance/
+10binaries0warnings PASS, fixed native7 remains5PASS2FAIL (iframe3/5).
+DO NOT call sourcePASS or earlier isolatedPASS native acceptance.
+
+NEW FIRST PROVEN LOSS in V6iframe-1 rawtrace:289 validpreparation;290separator
+ACK;297nextownedletter;302native_document_changed;303existingtransient_input_gate
+allowed same owner;314next actual read preparation_chain_refusal=missing.
+KDE native_observation_failed accepted same owner but called common
+observe_document_snapshot(None), which discarded both actual snapshot AND
+inert boundary data. Preserve existing inert witness only through this already
+admitted same-owner branch, still clearing actual proofs through the ordinary
+observation and rechecking observer::current before retaining data. Every
+mutation continues requiring a new actual complete matching field.
+Another capture edge: ordinary rearm uses last_tail_token, which skips trailing
+Space; explicitly arm existing zero-character native boundary for every exact
+actual closing Space, not only NBSP acknowledgement.
+
+TDD: V16RED51/52 actual ASCII boundary absent. V17RED51/52 after ONLY capture
+fix now exposes transient loss. V18GREEN52/52:7positive orderings x4existing
+transient classes +7contradicting actual snapshots,51oldnegative states,
+all50previousnative identities retained. Tests require actualsnapshotNone,
+editrouteUnsupported/oldpairSnapshotNone while unreadable, stableowner/scope/
+epoch/witnessID, fresh full actual recovery and rejection of conflicting data.
+V18postgraph source 2abed764d738efc01e31c59c3922f2d66f5c9e8d90dbac6abc77f938d0238dd2.
+No further common guard/rebind/frame or output changes. Native debug field
+now distinguishes binding_current from document_current (snapshot present).
+
+Metadata fmt/strict unchangedinventory/graph prepare-v6 COMPLETE/PASS; six hashed files imported.
+CURRENT official1106 starts now via explicit
+/home/ubu/.cache/lay/development/dependency-updates-20261027/development.json,
+then prepared workflowV7 all13gates/install/7fixednative. Native7PASS required
+before full Chrome220; inspect any new fail's first transition. Do not stop.
+CACHE=/home/ubu/.cache/lay/development/browser-matrix-repair-20261027;
+CROOT=/home/e/projects/lay-development-runner/kde-install-control-20261020.
+V7 scripts prepared locally; need canon delta updated for NEW ADR dated10-28.
+Fullmain unchangedChrome125P4F31B/Firefox75P54F31B,160each,extras52P0F8B/
+54P0F6B,60each. Allfailed attempts retained; no publication/localinstall.
+
+---
+
+# ACTIVE — finish Chrome pair repair; keep working after source PASS
+
+Canonical checkout /home/ubu/projects/lay-dependency-updates-20261027,
+branch codex/browser-matrix-repair-20261027, basec794d31d. No agents/Harness2,
+local GNOME untouched, routes preserved. Owning plan browser-matrix-repair-2026-10-27.md.
+
+Remote installed diagnostic engine3890779/b8a463ed..., original IBus parent3168326,
+version1.0.104. Diagnostic3cases richFAIL/iframe-richFAIL/plainPASS: pair_scope_missing.
+Controlled regression proves native NBSP→ASCII after owned next letter loses pair.
+Current functional patch uninstalled,5producer files plus4diagnostic lines;
+new hook reuses current native binding, existing word-start witness and shared-tail
+owner, never resurrects an observation or changes output. Previous unnecessary
+rebind/reconcile changes RESTORED toHEAD. V1–V3failures retained. V4PASS51/51;
+V5fixture D-Bus path error51/52; V6valid fixture only52/52PASS including partial
+actual-observation and26negative controls. Exactsource/payload/result in
+/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/reflow-unit-v6.json.
+
+CURRENT: manifest exact2newrows/graph PASS; official broad source PASS3543
+in run-pna5hk7d / remote run-5mv4i3. Default-cache failure run-w5gg7avq retained;
+use --config /home/ubu/.cache/lay/development/dependency-updates-20261027/development.json.
+Additional17gates ACTIVE exec99175, CROOT/browser-pair-reflow-gates-v1.
+NEXT: finish gates, remotefunctional preview installation with loaded-byte/protected-parent verification, fixed3Chrome
+cases, fullChrome220, then remaining2Chrome failures andFirefox. Do not stop at report.
+Latest COMPLETE main matrix stillChrome125P4F31B,Firefox75P54F31B,160each;
+extraChrome52P0F8B/Firefox54P0F6B,60each. No new full totals yet.
+
+
 # Current state — dependency queue merged; full browser matrix COMPLETE/FAIL
 
 User explicitly asked why144Chrome cases stayed untested. The approved

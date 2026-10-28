@@ -1,5 +1,11 @@
 # GNOME IME integration
 
+Preserve configured field behavior under the
+[field integration contract](../../../../docs/architecture/field-integration-isolation-2026-10-28.md).
+KDE/Chrome work must preserve this integration and the existing common
+dispatch/ownership/delivery contracts. A shared helper change remains shared
+integration work; a KDE-only caller is not evidence of GNOME non-regression.
+
 - `display.rs` owns the user-accepted inline policy and GNOME hint style.
 - `desktop.rs` is the existing GNOME Shell focused-window observer, relocated
   without a new namespace or observation authority.

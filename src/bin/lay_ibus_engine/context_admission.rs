@@ -659,6 +659,22 @@ impl AdmissionToken {
         WordScope::new(self.lineage)
     }
 
+    /// Compare one canonical observed boundary without publishing authority.
+    /// Connection, revocation, owner and activation must all remain exact;
+    /// callers still need the original input effect and actual document proof.
+    pub(crate) fn is_observed_boundary_successor_of(
+        &self,
+        source: &Self,
+        boundary_revision: u64,
+        retained_boundary: u32,
+    ) -> bool {
+        let mut scope = source.word_scope();
+        scope.close_at_observed_boundary(boundary_revision, Some(retained_boundary));
+        let mut expected = source.clone();
+        expected.lineage = scope.lineage();
+        self == &expected
+    }
+
     /// Opaque field receipt for bridge-side exact-tail leases. This projects
     /// the admitted IBus context identity without storing a fallback receipt in
     /// engine frame state.

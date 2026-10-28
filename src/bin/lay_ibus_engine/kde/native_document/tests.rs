@@ -1,6 +1,134 @@
 use super::*;
 
 #[test]
+fn native_owned_append_resamples_one_incoherent_read_without_extending_deadline() {
+    let name = "window_interaction::native_document::tests::native_owned_append_resamples_one_incoherent_read_without_extending_deadline";
+    if !crate::space_boundary_pair_tests::isolated_case(name) {
+        return;
+    }
+    use std::cell::RefCell;
+    use std::collections::VecDeque;
+    let (mut engine, binding, output) = native_owned_pair_waiting_for_boundary();
+    assert!(engine.native_observation_failed("native_document_changed"));
+    assert!(!engine.native_document_is_current());
+    assert!(engine.native_owned_append_preparation_is_current());
+    let expected = engine.managed_word_start_preparation_snapshot().unwrap();
+    let token = engine.context_token.clone();
+    let scope = engine.context_word_scope;
+    let epoch = engine.committed_tail.epoch;
+    let attempts = RefCell::new(VecDeque::from([
+        Err("native_document_changed"),
+        Ok(Observation {
+            binding: binding.for_result(&engine),
+            snapshot: expected.clone(),
+        }),
+    ]));
+    let seen = RefCell::new(Vec::new());
+    let deadline = Instant::now() + OBSERVATION_BUDGET;
+    let result = zbus::block_on(read_with_one_owned_append_resample(
+        deadline,
+        |actual_deadline, geometry| {
+            seen.borrow_mut().push((actual_deadline, geometry));
+            std::future::ready(
+                attempts
+                    .borrow_mut()
+                    .pop_front()
+                    .expect("at most one source resample"),
+            )
+        },
+        |snapshot| engine.native_owned_append_observation_is_pending(snapshot),
+        engine.native_owned_append_preparation_is_current(),
+    ));
+    assert!(
+        result.is_ok(),
+        "a current owned append must reacquire a coherent source: {:?}",
+        result.err()
+    );
+    assert_eq!(result.unwrap().snapshot, expected);
+    assert_eq!(*seen.borrow(), [(deadline, true), (deadline, false)]);
+    assert!(
+        !engine.native_document_is_current(),
+        "read coordination cannot install a projected or returned observation"
+    );
+    assert_eq!(engine.context_token, token);
+    assert_eq!(engine.context_word_scope, scope);
+    assert_eq!(engine.committed_tail.epoch, epoch);
+    assert!(output.committed_texts.is_empty());
+    assert!(output.surrounding_deletes.is_empty());
+}
+
+#[test]
+fn native_owned_append_resample_stops_on_other_errors_and_after_one_resample() {
+    use std::cell::RefCell;
+    use std::collections::VecDeque;
+    let deadline = Instant::now() + OBSERVATION_BUDGET;
+    for (first, allowed, expected_calls) in [
+        ("native_document_changed", false, 1),
+        ("native_document_changed", true, 2),
+        ("native_selection_present", true, 1),
+        ("native_private_or_terminal", true, 1),
+        ("native_no_admission", true, 1),
+        ("native_deadline", true, 1),
+        ("native_focused_target_changed", true, 1),
+    ] {
+        let seen = RefCell::new(Vec::new());
+        let attempts: RefCell<VecDeque<NativeResult<Observation>>> =
+            RefCell::new(VecDeque::from([Err(first), Err("native_document_changed")]));
+        let result = zbus::block_on(read_with_one_owned_append_resample(
+            deadline,
+            |actual_deadline, geometry| {
+                seen.borrow_mut().push((actual_deadline, geometry));
+                std::future::ready(
+                    attempts
+                        .borrow_mut()
+                        .pop_front()
+                        .expect("never retry a second error"),
+                )
+            },
+            |_| false,
+            allowed,
+        ));
+        assert!(result.is_err());
+        assert_eq!(
+            seen.borrow().len(),
+            expected_calls,
+            "{first}, allowed={allowed}"
+        );
+        assert!(seen.borrow().iter().all(|(actual, _)| *actual == deadline));
+        assert!(seen.borrow()[0].1);
+        if expected_calls == 2 {
+            assert!(!seen.borrow()[1].1);
+        }
+    }
+    let (engine, binding) = observed_native_engine();
+    for pending in [false, true] {
+        let seen = RefCell::new(Vec::new());
+        let result = zbus::block_on(read_with_one_owned_append_resample(
+            deadline,
+            |actual_deadline, geometry| {
+                seen.borrow_mut().push((actual_deadline, geometry));
+                std::future::ready(Ok(Observation {
+                    binding: binding.clone(),
+                    snapshot: SurroundingTextSnapshot::new("пров".into(), 4, 4),
+                }))
+            },
+            |_| pending,
+            false,
+        ));
+        assert!(result.is_ok());
+        assert_eq!(
+            *seen.borrow(),
+            if pending {
+                vec![(deadline, true), (deadline, false)]
+            } else {
+                vec![(deadline, true)]
+            }
+        );
+    }
+    assert!(engine.native_document_is_current());
+}
+
+#[test]
 fn chrome_activation_policy_does_not_probe_gnome() {
     assert!(
         zbus::block_on(LayIbusEngine::kde_chrome_activation_deadline(
@@ -49,6 +177,13 @@ fn observed_native_engine() -> (LayIbusEngine, NativeDocumentBinding) {
 fn observed_native_engine_with_completeness(
     completeness: crate::context_admission::WordCompleteness,
 ) -> (LayIbusEngine, NativeDocumentBinding) {
+    observed_native_engine_with_component(completeness, "lay-ime-us")
+}
+
+fn observed_native_engine_with_component(
+    completeness: crate::context_admission::WordCompleteness,
+    component: &str,
+) -> (LayIbusEngine, NativeDocumentBinding) {
     use crate::context_admission::{ActivationOutcome, ContextAdmissionAdapter};
     use std::sync::{Arc, Mutex};
 
@@ -63,7 +198,7 @@ fn observed_native_engine_with_completeness(
         path.into(),
         Arc::new(Mutex::new(Default::default())),
         Some(adapter),
-        "lay-ime-us",
+        component,
         true,
         lay::config::LayConfig {
             layout_backend: "kde".into(),
@@ -177,6 +312,373 @@ fn short_function_native_word(
     (engine, binding)
 }
 
+fn native_owned_pair_waiting_for_boundary() -> (
+    LayIbusEngine,
+    NativeDocumentBinding,
+    crate::output::TestEngineOutput,
+) {
+    use crate::engine::WordInputMode;
+    use crate::output::{EngineOutput, TestEngineOutput};
+    crate::space_boundary_pair_tests::warm_pair_lexical_fixture();
+    let (mut engine, binding) = observed_native_engine_with_component(
+        crate::context_admission::WordCompleteness::UnknownStart,
+        "lay-ime-ru",
+    );
+    engine.config.text_backend = "ime".into();
+    engine.config.auto_replace = false;
+    engine.config.typing_assist = true;
+    engine.config.nanda_autocorrect = true;
+    engine.config.correction_safety = "normal".into();
+    engine.set_client_capabilities(41);
+    engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+    engine.committed_tail.buffer = "должн".into();
+    engine.client_context.native_document_binding = Some(binding.for_result(&engine));
+    engine.observe_document_snapshot(Some(SurroundingTextSnapshot::new("должн".into(), 5, 5)));
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        ' ',
+        57,
+    ))
+    .unwrap();
+    assert!(engine.install_native_document(Observation {
+        binding: binding.for_result(&engine),
+        snapshot: SurroundingTextSnapshot::new("должн ".into(), 6, 6),
+    }));
+    engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+    for ch in "ыбыть".chars() {
+        zbus::block_on(engine.commit_managed_passthrough_char(
+            &mut EngineOutput::test(&mut output),
+            ch,
+            32,
+        ))
+        .unwrap();
+    }
+    assert!(engine.install_native_document(Observation {
+        binding: binding.for_result(&engine),
+        snapshot: SurroundingTextSnapshot::new("должн ыбыть".into(), 11, 11),
+    }));
+    assert!(engine.native_word_preparation_edit_is_current());
+    let pair = engine.capture_space_boundary_pair_scope().unwrap();
+    assert_eq!(pair.text, "должн ыбыть");
+    assert!(matches!(
+        pair.provenance,
+        crate::engine::SpaceBoundaryPairProvenance::NativePrepared { .. }
+    ));
+    assert!(engine.composition.buffer.is_empty());
+    engine.config.auto_replace = true;
+    output.committed_texts.clear();
+    (engine, binding, output)
+}
+
+fn settle_native_space_scope(engine: &mut LayIbusEngine, binding: &mut NativeDocumentBinding) {
+    // Mirror ProcessKeyEvent settlement through the production scope operation
+    // and the existing fixture's reducer-state publisher.
+    let epoch = engine.committed_tail.epoch;
+    let boundary = u32::try_from(engine.committed_tail.buffer.chars().count() - 1).unwrap();
+    let scope = engine.context_word_scope.as_mut().unwrap();
+    scope.close_at_observed_boundary(epoch, Some(boundary));
+    let admission = engine.context_admission.as_ref().unwrap();
+    assert!(admission.test_set_word_scope(engine.context_owner.as_ref().unwrap(), epoch, scope));
+    engine.context_token = admission.current_token();
+    assert_ne!(engine.context_token.as_ref(), Some(&binding.token));
+    binding.token = engine.context_token.clone().unwrap();
+}
+
+#[test]
+fn native_pair_pending_work_joins_only_after_actual_space_in_either_order() {
+    let name = "window_interaction::native_document::tests::native_pair_pending_work_joins_only_after_actual_space_in_either_order";
+    if !crate::space_boundary_pair_tests::isolated_case(name) {
+        return;
+    }
+    use crate::engine::PendingSpaceBoundarySelection;
+    use crate::output::EngineOutput;
+    use crate::space_autocorrect_prefetch::proof::{
+        has_current_slot, hold_full_lease, publish_held_full_lease,
+    };
+    for (actual_first, pre_commit_echo, settled_boundary) in [
+        (false, false, false),
+        (true, false, false),
+        (false, true, false),
+        (true, true, false),
+        (false, false, true),
+        (true, false, true),
+        (false, true, true),
+        (true, true, true),
+    ] {
+        let (mut engine, mut binding, mut output) = native_owned_pair_waiting_for_boundary();
+        let frame = engine.capture_space_autocorrect_frame_identity().unwrap();
+        let lease = hold_full_lease(&frame, &engine.config);
+        assert_eq!(lease.decision.replacement, "должны быть ");
+        let lookup = engine.take_space_autocorrect_lease(&frame);
+        assert!(matches!(
+            lookup.lookup,
+            crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::NotReady
+        ));
+        assert!(
+            has_current_slot(&frame),
+            "native pending lookup must retain its current work"
+        );
+        let pending = engine
+            .prepare_space_boundary_continuation(
+                &frame,
+                PendingSpaceBoundarySelection::Computing {
+                    identity: Box::new(frame.clone()),
+                    worker_generation: lease.worker_generation,
+                },
+            )
+            .expect("the exact native pair supplies the existing continuation");
+        assert!(zbus::block_on(
+            engine
+                .commit_space_boundary_continuation(&mut EngineOutput::test(&mut output), pending,)
+        )
+        .unwrap());
+        assert_eq!(output.committed_texts, [" "]);
+        assert_eq!(engine.committed_tail.buffer, "должн ыбыть ");
+        assert!(engine.space_boundary_is_pending());
+        if settled_boundary {
+            settle_native_space_scope(&mut engine, &mut binding);
+        }
+        if pre_commit_echo {
+            assert!(engine.install_native_document(Observation {
+                binding: binding.for_result(&engine),
+                snapshot: SurroundingTextSnapshot::new("должн ыбыть".into(), 11, 11),
+            }));
+            assert!(
+                !zbus::block_on(engine.apply_space_boundary_after_client_commit(
+                    &mut EngineOutput::test(&mut output),
+                ))
+                .unwrap()
+            );
+            assert!(
+                engine.space_boundary_is_pending(),
+                "retain the pre-Space echo"
+            );
+            assert!(has_current_slot(&frame));
+        }
+        if actual_first {
+            assert!(engine.install_native_document(Observation {
+                binding: binding.for_result(&engine),
+                snapshot: SurroundingTextSnapshot::new("должн ыбыть ".into(), 12, 12),
+            }));
+        }
+        assert!(!zbus::block_on(
+            engine.apply_space_boundary_after_client_commit(&mut EngineOutput::test(&mut output),)
+        )
+        .unwrap());
+        assert!(has_current_slot(&frame));
+        assert!(publish_held_full_lease(lease));
+        if !actual_first {
+            assert!(
+                !zbus::block_on(engine.apply_space_boundary_after_client_commit(
+                    &mut EngineOutput::test(&mut output),
+                ))
+                .unwrap(),
+                "a computed action without actual Space cannot edit"
+            );
+            assert!(has_current_slot(&frame));
+            assert!(engine.install_native_document(Observation {
+                binding: binding.for_result(&engine),
+                snapshot: SurroundingTextSnapshot::new("должн ыбыть ".into(), 12, 12),
+            }));
+        }
+        // The fixture deliberately has no real native client. Reaching the
+        // existing executor consumes exactly this decision and must refuse
+        // without mutation; live acceptance proves actual range execution.
+        let receipt = engine
+            .committed_tail
+            .pending_visible_postcondition
+            .as_ref()
+            .unwrap();
+        let pending = receipt.space_boundary_commit.as_ref().unwrap();
+        assert!(engine.native_space_boundary_owner_is_current(
+            receipt.native_document.as_ref(),
+            &pending.frame
+        ));
+        assert!(engine.input_frame_authority_matches(&pending.frame));
+        assert!(pending
+            .observed_pair_commit(
+                engine
+                    .client_context
+                    .surrounding_text_snapshot
+                    .as_ref()
+                    .unwrap()
+            )
+            .is_some());
+        let _ = zbus::block_on(
+            engine.apply_space_boundary_after_client_commit(&mut EngineOutput::test(&mut output)),
+        );
+        assert!(!has_current_slot(&frame));
+        assert!(engine
+            .committed_tail
+            .pending_visible_postcondition
+            .as_ref()
+            .is_none_or(|receipt| receipt.space_boundary_commit.is_none()));
+        assert_eq!(output.committed_texts, [" "]);
+        assert!(output.surrounding_deletes.is_empty());
+        assert!(!zbus::block_on(
+            engine.apply_space_boundary_after_client_commit(&mut EngineOutput::test(&mut output),)
+        )
+        .unwrap());
+    }
+}
+
+#[test]
+fn native_pair_pending_work_is_cancelled_on_input_or_changed_authority() {
+    let name = "window_interaction::native_document::tests::native_pair_pending_work_is_cancelled_on_input_or_changed_authority";
+    if !crate::space_boundary_pair_tests::isolated_case(name) {
+        return;
+    }
+    use crate::engine::PendingSpaceBoundarySelection;
+    use crate::output::EngineOutput;
+    use crate::space_autocorrect_prefetch::proof::{
+        has_current_slot, hold_full_lease, publish_held_full_lease,
+    };
+    for settled_boundary in [false, true] {
+        for changed in [
+            "focus",
+            "lease",
+            "layout",
+            "epoch",
+            "field",
+            "text",
+            "selection",
+            "cursor",
+            "expired",
+            "material",
+            "gnome",
+            "atomic",
+            "next_key",
+            "second_boundary",
+            "input_gap_scope",
+        ] {
+            let (mut engine, mut binding, mut output) = native_owned_pair_waiting_for_boundary();
+            let frame = engine.capture_space_autocorrect_frame_identity().unwrap();
+            let lease = hold_full_lease(&frame, &engine.config);
+            let lookup = engine.take_space_autocorrect_lease(&frame);
+            assert!(matches!(
+                lookup.lookup,
+                crate::space_autocorrect_prefetch::SpaceAutocorrectLookup::NotReady
+            ));
+            assert!(has_current_slot(&frame));
+            let pending = engine
+                .prepare_space_boundary_continuation(
+                    &frame,
+                    PendingSpaceBoundarySelection::Computing {
+                        identity: Box::new(frame.clone()),
+                        worker_generation: lease.worker_generation,
+                    },
+                )
+                .unwrap();
+            assert!(zbus::block_on(engine.commit_space_boundary_continuation(
+                &mut EngineOutput::test(&mut output),
+                pending,
+            ))
+            .unwrap());
+            if settled_boundary {
+                settle_native_space_scope(&mut engine, &mut binding);
+            }
+            let mut actual = SurroundingTextSnapshot::new("должн ыбыть ".into(), 12, 12);
+            match changed {
+                "text" => actual.text = "чужой ыбыть ".into(),
+                "selection" => actual.anchor_pos = 0,
+                "cursor" => {
+                    actual.cursor_pos = 11;
+                    actual.anchor_pos = 11;
+                }
+                _ => {}
+            }
+            assert!(engine.install_native_document(Observation {
+                binding: binding.for_result(&engine),
+                snapshot: actual
+            }));
+            assert!(publish_held_full_lease(lease));
+            match changed {
+                "focus" => engine.client_context.focus_serial += 1,
+                "lease" => engine.client_context.runtime_owner_lease_identity += 1,
+                "layout" => engine.layout_gesture.layout_generation += 1,
+                "epoch" => engine.committed_tail.epoch += 1,
+                "field" => {
+                    engine
+                        .client_context
+                        .native_document_binding
+                        .as_mut()
+                        .unwrap()
+                        .identity
+                        .field = "/other".try_into().unwrap()
+                }
+                "expired" => {
+                    engine
+                        .committed_tail
+                        .pending_visible_postcondition
+                        .as_mut()
+                        .unwrap()
+                        .dispatched_at = Instant::now() - std::time::Duration::from_millis(1501)
+                }
+                "material" => {
+                    engine
+                        .committed_tail
+                        .pending_visible_postcondition
+                        .as_mut()
+                        .unwrap()
+                        .space_boundary_commit
+                        .as_mut()
+                        .unwrap()
+                        .material_generation = u64::MAX
+                }
+                "gnome" => engine.config.layout_backend = "gnome".into(),
+                "atomic" => engine.atomic.active = true,
+                "next_key" => {
+                    let _ = zbus::block_on(engine.process_pressed_key(
+                        &mut EngineOutput::test(&mut output),
+                        crate::protocol::KEY_LEFT,
+                        0,
+                        0,
+                    ));
+                }
+                "second_boundary" | "input_gap_scope" => {
+                    let epoch = engine.committed_tail.epoch;
+                    let mut scope = crate::context_admission::WordScope::new(
+                        engine.context_word_scope.as_ref().unwrap().lineage(),
+                    );
+                    if changed == "second_boundary" {
+                        scope.close_at_observed_boundary(epoch, Some(11));
+                        scope.close_at_observed_boundary(epoch, Some(11));
+                    } else {
+                        scope.revoke_for_input_gap();
+                    }
+                    let admission = engine.context_admission.as_ref().unwrap();
+                    assert!(admission.test_set_word_scope(
+                        engine.context_owner.as_ref().unwrap(),
+                        epoch,
+                        &scope
+                    ));
+                    engine.context_word_scope = Some(scope);
+                    engine.context_token = admission.current_token();
+                }
+                _ => {}
+            }
+            let _ = zbus::block_on(
+                engine
+                    .apply_space_boundary_after_client_commit(&mut EngineOutput::test(&mut output)),
+            );
+            assert!(!has_current_slot(&frame), "retire {changed}");
+            assert!(
+                output.surrounding_deletes.is_empty(),
+                "no delete for {changed}"
+            );
+            assert_eq!(
+                output.committed_texts,
+                [" "],
+                "only the original Space for {changed}"
+            );
+        }
+    }
+}
+
 fn pending_native_us_append() -> LayIbusEngine {
     use crate::context_admission::WordCompleteness;
     use crate::output::{EngineOutput, TestEngineOutput};
@@ -209,7 +711,7 @@ fn native_us_append_observation_only_resamples_earlier_owned_prefix() {
         |text: &str, cursor, anchor| SurroundingTextSnapshot::new(text.into(), cursor, anchor);
     for actual in [snapshot("", 0, 0), snapshot("y", 1, 1)] {
         assert!(
-            engine.native_us_append_observation_is_pending(&actual),
+            engine.native_owned_append_observation_is_pending(&actual),
             "activity={} preparation={:?} chain={:?} native={} managed={} witness={:?}",
             engine.has_unfinished_us_managed_input(),
             engine.native_word_preparation_identity(),
@@ -228,7 +730,7 @@ fn native_us_append_observation_only_resamples_earlier_owned_prefix() {
         snapshot("y", 1, 0),
     ] {
         assert!(
-            !engine.native_us_append_observation_is_pending(&actual),
+            !engine.native_owned_append_observation_is_pending(&actual),
             "{actual:?}"
         );
     }
@@ -259,14 +761,14 @@ fn native_us_append_observation_only_resamples_earlier_owned_prefix() {
     ))
     .unwrap();
     engine.client_context.native_document_binding = Some(binding.for_result(&engine));
-    assert!(engine.native_us_append_observation_is_pending(&snapshot("😀 пишу y хвост", 8, 8)));
+    assert!(engine.native_owned_append_observation_is_pending(&snapshot("😀 пишу y хвост", 8, 8)));
     for actual in [
         snapshot("😀 пишу хвост", 6, 6),
         snapshot("😀 пишу yf хвост", 9, 9),
         snapshot("😀 пишу y иной", 8, 8),
     ] {
         assert!(
-            !engine.native_us_append_observation_is_pending(&actual),
+            !engine.native_owned_append_observation_is_pending(&actual),
             "{actual:?}"
         );
     }
@@ -291,7 +793,7 @@ fn native_us_append_observation_respects_owner_and_input_boundaries() {
         "boundary",
     ] {
         let mut engine = pending_native_us_append();
-        assert!(engine.native_us_append_observation_is_pending(&stale));
+        assert!(engine.native_owned_append_observation_is_pending(&stale));
         match changed {
             "focus" => engine.client_context.focus_serial += 1,
             "lease" => engine.client_context.runtime_owner_lease_identity += 1,
@@ -308,7 +810,7 @@ fn native_us_append_observation_respects_owner_and_input_boundaries() {
             _ => unreachable!(),
         }
         assert!(
-            !engine.native_us_append_observation_is_pending(&stale),
+            !engine.native_owned_append_observation_is_pending(&stale),
             "{changed}"
         );
     }
@@ -1323,6 +1825,346 @@ fn native_document_owned_closing_space_keeps_scope_and_enables_the_same_manual_r
     assert!(!engine.acknowledge_native_closing_space());
 }
 
+fn native_owned_append_after_closing_space(
+    closing: char,
+    observed: bool,
+    settle_in_observer: bool,
+) -> (
+    LayIbusEngine,
+    NativeDocumentBinding,
+    crate::output::TestEngineOutput,
+) {
+    use crate::engine::WordInputMode;
+    use crate::output::{EngineOutput, TestEngineOutput};
+    let mut engine = managed_native_acquisition_suffix();
+    engine.config.auto_replace = false;
+    let binding = engine
+        .client_context
+        .native_document_binding
+        .clone()
+        .unwrap();
+    let mut output = TestEngineOutput {
+        legacy_transport: true,
+        ..Default::default()
+    };
+    zbus::block_on(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        ' ',
+        57,
+    ))
+    .unwrap();
+    if observed {
+        assert!(engine.install_native_document(Observation {
+            binding: binding.for_result(&engine),
+            snapshot: SurroundingTextSnapshot::new(format!("пров{closing}"), 5, 5),
+        }));
+        if settle_in_observer {
+            engine.observe_native_document_postcondition();
+        }
+        assert_eq!(engine.committed_tail.buffer, format!("пров{closing}"));
+        assert_eq!(
+            engine
+                .client_context
+                .managed_word_start
+                .as_ref()
+                .map(|witness| witness.anchored_token_chars()),
+            Some(0),
+            "an actual boundary must be captured before the first next-word key"
+        );
+    }
+    engine.composition.word_input_mode = Some(WordInputMode::ManagedCommit);
+    zbus::block_on(engine.commit_managed_passthrough_char(
+        &mut EngineOutput::test(&mut output),
+        'е',
+        18,
+    ))
+    .unwrap();
+    (engine, binding, output)
+}
+
+#[test]
+fn native_owned_word_separator_reflow_preserves_the_exact_pair_scope() {
+    use crate::output::EngineOutput;
+
+    for (closing, internal, partial, delayed, settle_in_observer) in [
+        (' ', ' ', false, false, true),
+        ('\u{a0}', '\u{a0}', false, false, true),
+        ('\u{a0}', ' ', false, false, true),
+        ('\u{a0}', ' ', true, false, true),
+        ('\u{a0}', ' ', true, true, true),
+        (' ', ' ', false, false, false),
+        ('\u{a0}', ' ', false, false, false),
+    ] {
+        let (mut engine, binding, mut output) =
+            native_owned_append_after_closing_space(closing, !delayed, settle_in_observer);
+        let epoch = engine.committed_tail.epoch;
+        let token = engine.context_token.clone();
+        let scope = engine.context_word_scope;
+        if partial {
+            let boundary = if delayed { closing } else { internal };
+            let actual = SurroundingTextSnapshot::new(format!("пров{boundary}"), 5, 5);
+            assert!(engine.install_native_document(Observation {
+                binding: binding.for_result(&engine),
+                snapshot: actual.clone(),
+            }));
+            engine.observe_native_document_postcondition();
+            assert_eq!(
+                engine.client_context.surrounding_text_snapshot,
+                Some(actual)
+            );
+            assert!(
+                engine.native_word_preparation_identity().is_some(),
+                "delayed={delayed} witness={:?} scope={:?} floor={:?}",
+                engine.client_context.managed_word_start,
+                engine.context_word_scope,
+                engine.client_context.managed_commit_snapshot_floor
+            );
+            assert!(!engine.native_word_preparation_edit_is_current());
+        }
+        let actual = SurroundingTextSnapshot::new(format!("пров{internal}е"), 6, 6);
+        assert!(engine.install_native_document(Observation {
+            binding: binding.for_result(&engine),
+            snapshot: actual.clone(),
+        }));
+        engine.observe_native_document_postcondition();
+        assert_eq!(output.committed_texts, [" ", "е"]);
+        assert_eq!(
+            engine.client_context.surrounding_text_snapshot,
+            Some(actual.clone())
+        );
+        assert_eq!(engine.committed_tail.epoch, epoch);
+        assert_eq!(engine.context_token, token);
+        assert_eq!(engine.context_word_scope, scope);
+        assert_eq!(
+            engine.shared.lock().unwrap().handoff_tail_buffer,
+            engine.committed_tail.buffer
+        );
+        let pair = engine.capture_space_boundary_pair_scope().unwrap_or_else(|| {
+            panic!("pair lost for {closing:?}->{internal:?}, partial={partial}: tail={:?}, snapshot={:?}", engine.committed_tail.buffer, engine.client_context.surrounding_text_snapshot)
+        });
+        assert_eq!(pair.text, format!("пров{internal}е"));
+
+        // Space can read this same field one owned letter behind. Reuse the
+        // existing source-only resample, never a projected edit permission.
+        assert!(!engine.native_owned_append_observation_is_pending(&actual));
+        zbus::block_on(engine.commit_managed_passthrough_char(
+            &mut EngineOutput::test(&mut output),
+            'щ',
+            32,
+        ))
+        .unwrap();
+        assert!(engine.capture_space_boundary_pair_scope().is_some());
+        assert!(!engine.native_word_preparation_edit_is_current());
+        assert!(engine.native_owned_append_observation_is_pending(&actual));
+        for rejected in [
+            SurroundingTextSnapshot::new(format!("пров{internal}ещ"), 7, 7),
+            SurroundingTextSnapshot::new(format!("пров{internal}е"), 6, 5),
+            SurroundingTextSnapshot::new(format!("пров{internal}е хвост"), 6, 6),
+            SurroundingTextSnapshot::new(format!("иной{internal}е"), 6, 6),
+        ] {
+            assert!(!engine.native_owned_append_observation_is_pending(&rejected));
+        }
+        assert_eq!(output.committed_texts, [" ", "е", "щ"]);
+        assert!(output.surrounding_deletes.is_empty());
+        assert!(output.forwarded_keys.is_empty());
+
+        let witness_identity = engine.native_word_preparation_identity().unwrap();
+        let pair = engine.capture_space_boundary_pair_scope().unwrap();
+        for reason in [
+            "native_document_changed",
+            "native_deadline",
+            "native_document_shape",
+            "native_desktop_unobserved",
+        ] {
+            let epoch = engine.committed_tail.epoch;
+            let token = engine.context_token.clone();
+            let scope = engine.context_word_scope;
+            assert!(engine.native_observation_failed(reason));
+            assert!(engine.client_context.surrounding_text_snapshot.is_none());
+            assert!(!engine.native_word_preparation_edit_is_current());
+            assert!(engine.space_pair_client_snapshot(&pair).is_none());
+            assert_eq!(
+                engine.text_target_edit_route(7),
+                TextTargetEditRoute::Unsupported
+            );
+            assert_eq!(
+                engine
+                    .client_context
+                    .managed_word_start
+                    .as_ref()
+                    .map(|w| w.identity),
+                Some(witness_identity),
+                "same-owner transient read lost inert append provenance: {reason}"
+            );
+            assert_eq!(engine.committed_tail.epoch, epoch);
+            assert_eq!(engine.context_token, token);
+            assert_eq!(engine.context_word_scope, scope);
+            assert!(engine.install_native_document(Observation {
+                binding: binding.for_result(&engine),
+                snapshot: SurroundingTextSnapshot::new(format!("пров{internal}ещ"), 7, 7),
+            }));
+            engine.observe_native_document_postcondition();
+            assert_eq!(
+                engine.native_word_preparation_identity(),
+                Some(witness_identity)
+            );
+            assert!(engine.native_word_preparation_edit_is_current());
+            assert_eq!(
+                engine.capture_space_boundary_pair_scope(),
+                Some(pair.clone())
+            );
+        }
+        assert!(engine.native_observation_failed("native_document_changed"));
+        assert!(engine.install_native_document(Observation {
+            binding: binding.for_result(&engine),
+            snapshot: SurroundingTextSnapshot::new(format!("иной{internal}ещ"), 7, 7),
+        }));
+        assert!(engine.native_word_preparation_identity().is_none());
+        assert!(engine.capture_space_boundary_pair_scope().is_none());
+        assert!(engine.space_pair_client_snapshot(&pair).is_none());
+        assert_eq!(output.committed_texts, [" ", "е", "щ"]);
+        assert!(output.surrounding_deletes.is_empty());
+    }
+}
+
+#[test]
+fn native_owned_word_separator_reflow_rejects_foreign_or_unproven_changes() {
+    for late in [false, true] {
+        for changed in [
+            "word",
+            "prefix",
+            "separator_position",
+            "multi_space",
+            "newline",
+            "selection",
+            "caret",
+            "invalid_caret",
+            "no_witness",
+            "no_floor",
+            "floor_epoch",
+            "floor_owner",
+            "floor_layout",
+            "future_revision",
+            "no_native_owner",
+            "field",
+            "focus",
+            "layout",
+            "shared",
+            "sensitive",
+            "sealed",
+            "composition",
+            "mode",
+            "unmanaged",
+            "pending",
+            "gnome",
+        ] {
+            // Missing prior witness is the positive late-boundary case above.
+            if late && changed == "no_witness" {
+                continue;
+            }
+            let (mut engine, mut binding, output) =
+                native_owned_append_after_closing_space('\u{a0}', !late, true);
+            let mut actual = if late {
+                SurroundingTextSnapshot::new("пров\u{a0}".into(), 5, 5)
+            } else {
+                SurroundingTextSnapshot::new("пров е".into(), 6, 6)
+            };
+            match changed {
+                "word" => actual.text = "пров ж".into(),
+                "prefix" => actual.text = "тров е".into(),
+                "separator_position" => actual.text = "про ве".into(),
+                "multi_space" => actual = SurroundingTextSnapshot::new("пров  е".into(), 7, 7),
+                "newline" => actual.text = "пров\nе".into(),
+                "selection" => actual.anchor_pos = 0,
+                "caret" => {
+                    actual.cursor_pos -= 1;
+                    actual.anchor_pos = actual.cursor_pos;
+                }
+                "invalid_caret" => {
+                    actual.cursor_pos = 99;
+                    actual.anchor_pos = 99;
+                }
+                "no_witness" => engine.client_context.managed_word_start = None,
+                "no_floor" => engine.client_context.managed_commit_snapshot_floor = None,
+                "floor_epoch" => {
+                    engine
+                        .client_context
+                        .managed_commit_snapshot_floor
+                        .as_mut()
+                        .unwrap()
+                        .tail_epoch = 0
+                }
+                "floor_owner" => {
+                    engine
+                        .client_context
+                        .managed_commit_snapshot_floor
+                        .as_mut()
+                        .unwrap()
+                        .runtime_owner_lease_identity += 1
+                }
+                "floor_layout" => {
+                    engine
+                        .client_context
+                        .managed_commit_snapshot_floor
+                        .as_mut()
+                        .unwrap()
+                        .layout_generation += 1
+                }
+                "future_revision" => {
+                    engine
+                        .client_context
+                        .managed_commit_snapshot_floor
+                        .as_mut()
+                        .unwrap()
+                        .observation_revision =
+                        engine.client_context.surrounding_observation_revision + 1
+                }
+                "no_native_owner" => engine.client_context.native_document_binding = None,
+                "field" => binding.identity.field = "/foreign_field".try_into().unwrap(),
+                "focus" => engine.client_context.focus_serial += 1,
+                "layout" => engine.layout_gesture.layout_generation += 1,
+                "shared" => engine.shared.lock().unwrap().handoff_tail_buffer = "foreign".into(),
+                "sensitive" => engine.client_context.content_purpose = 8,
+                "sealed" => engine.context_handoff_sealed = true,
+                "composition" => engine.composition.buffer = "е".into(),
+                "mode" => engine.composition.word_input_mode = None,
+                "unmanaged" => engine.client_context.managed_input = false,
+                "pending" => engine.arm_exact_visible_postcondition_from_surrounding_dispatch(
+                    Instant::now(),
+                    None,
+                    None,
+                    SurroundingTextSnapshot::new("пров\u{a0}е".into(), 6, 6),
+                ),
+                "gnome" => engine.config.layout_backend = "gnome".into(),
+                _ => unreachable!(),
+            }
+            engine.install_native_document(Observation {
+                binding: binding.for_result(&engine),
+                snapshot: actual.clone(),
+            });
+            engine.observe_native_document_postcondition();
+            let normalized = if late {
+                "пров\u{a0}е"
+            } else {
+                "пров е"
+            };
+            assert_ne!(
+                engine.committed_tail.buffer, normalized,
+                "late={late} {changed}"
+            );
+            assert!(
+                engine.capture_space_boundary_pair_scope().is_none(),
+                "{changed}"
+            );
+            assert!(
+                !engine.native_owned_append_observation_is_pending(&actual),
+                "a rejected pair cannot request a reread: late={late} {changed}"
+            );
+            assert_eq!(output.committed_texts, [" ", "е"], "{changed}");
+        }
+    }
+}
+
 #[test]
 fn native_document_owned_closing_space_rejects_other_slots_and_stale_ownership() {
     for changed in [
@@ -2119,6 +2961,53 @@ fn native_document_fresh_same_field_survives_forward_provider_reconnect() {
     assert!(output.surrounding_deletes.is_empty());
     assert!(output.forwarded_keys.is_empty());
     assert!(!engine.context_word_is_known());
+
+    // The same physical field can also normalize an already owned separator
+    // while KWin's query connection reconnects. Its input lease continues;
+    // the old transport subscription must still be retired.
+    let (mut engine, _, output) = native_owned_append_after_closing_space('\u{a0}', true, true);
+    engine
+        .client_context
+        .native_document_binding
+        .as_mut()
+        .unwrap()
+        .identity
+        .desktop
+        .identity = native_window_receipt(7, 1);
+    let witness = engine.native_word_preparation_identity().unwrap();
+    assert!(engine.native_observation_failed("native_desktop_unobserved"));
+    let token = engine.context_token.clone();
+    let scope = engine.context_word_scope;
+    let epoch = engine.committed_tail.epoch;
+    let previous = engine
+        .client_context
+        .native_document_binding
+        .clone()
+        .unwrap();
+    let mut fresh = previous.for_result(&engine);
+    fresh.identity.desktop.identity = native_window_receipt(9, 1);
+    assert!(!previous.same_observation_owner(&fresh));
+    assert!(fresh.identity.continues_from(&previous.identity));
+    assert!(engine.install_native_document(Observation {
+        binding: fresh,
+        snapshot: SurroundingTextSnapshot::new("пров е".into(), 6, 6),
+    }));
+    assert_eq!(engine.context_token, token);
+    assert_eq!(engine.context_word_scope, scope);
+    assert_eq!(engine.committed_tail.epoch, epoch);
+    assert_eq!(engine.native_word_preparation_identity(), Some(witness));
+    assert_eq!(
+        engine
+            .capture_space_boundary_pair_scope()
+            .as_ref()
+            .map(|pair| pair.text.as_str()),
+        Some("пров е")
+    );
+    assert!(engine.native_word_preparation_edit_is_current());
+    assert!(!observer::current(&engine, &previous));
+    assert_eq!(output.committed_texts, [" ", "е"]);
+    assert!(output.surrounding_deletes.is_empty());
+    assert!(output.forwarded_keys.is_empty());
 }
 
 #[test]

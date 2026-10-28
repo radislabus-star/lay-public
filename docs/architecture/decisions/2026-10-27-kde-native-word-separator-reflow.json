@@ -1,0 +1,27 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Acknowledge a proven KDE native NBSP-to-ASCII word-separator presentation change under the existing tail owner before ordinary snapshot reconciliation.",
+  "reason": "Fixed Chrome failures report missing pair scope. New controlled regression passes stable separators but fails only NBSP-to-ASCII after owned input; exact model/snapshot text diverges at one delimiter. The first bounded attempt proves actual snapshots are intentionally cleared on owned CommitText; reuse and preserve the existing same-owner native word-start witness instead of adding a cache or resurrecting a snapshot. Native preview disproved immediate first-Space receipt ordering. V7 preserves the real delayed boundary after one completed first-letter CommitText as a failing control. Reuse the same canonical witness constructor with an actual boundary plus exact one-letter floor; old callers keep their original arguments and behavior. V5 fixed trials5PASS2FAIL expose early first-Space receipts as another path. Installing an actual closing NBSP before the next key did not acknowledge its existing owned output unless the observer postcondition happened to run. V13RED51/52 proves the native install-only entry; acknowledge that same owned closing Space under unchanged observation owner immediately after publishing the actual snapshot. Keep the previous postcondition idempotent. One V5 failure already acknowledged its closing Space, so do not claim this call alone covers both; collect its pre-publication chain refusal before any further functional change.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/client_presentation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs"
+  ],
+  "owning_document": "docs/development/browser-matrix-repair-2026-10-27.md",
+  "verification": "Retain red1105/1104proof; one exact reflow regression plus negative text/owner/epoch/selection/privacy/desktop controls, all old test identities, current graph/canon, strict lints and release artifacts; fixed real Chrome reproduction then full matched native matrix. Inventory grows only by declared general-invariant tests; no old row, lane, skip or failure change. Include late first-Space-only actual receipt, retain UnknownStart and prohibit edit while local letter is not yet observed. Include install-only/key-gate closing-Space receipts and observer-received receipts separately, retaining prior52 test identities and final Space-edit guards.",
+  "not_tested": "Functional implementation and final native acceptance pending. Existing full320 table remains200PASS58FAIL62BLOCKED.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

@@ -1590,6 +1590,54 @@ impl LayIbusEngine {
         Ok(acknowledged_replay)
     }
 
+    /// A native observer proved one delimiter's presentation after an owned
+    /// append. Keep the sole shared tail owner and its input epoch unchanged.
+    pub(super) fn acknowledge_tail_word_separator_presentation(&mut self, actual: &str) -> bool {
+        if self.context_handoff_sealed
+            || self.content_is_sensitive()
+            || self.atomic.active
+            || self.committed_tail.pending_visible_postcondition.is_some()
+            || self.exact_replay_quarantine_active()
+            || self.exact_replay_tail_change_quarantined
+            || matches!(
+                self.committed_tail.autocorrect_suppression,
+                Some(AutocorrectSuppression::ExactReplay(_))
+            )
+        {
+            return false;
+        }
+        let token = self.last_tail_token_text();
+        let Some(prefix) = self
+            .committed_tail
+            .buffer
+            .strip_suffix(&token)
+            .and_then(|prefix| prefix.strip_suffix([' ', '\u{a0}']))
+        else {
+            return false;
+        };
+        let separator = actual
+            .strip_suffix(&token)
+            .and_then(|observed| observed.strip_prefix(prefix));
+        if token.is_empty() || !matches!(separator, Some(" " | "\u{a0}")) {
+            return false;
+        }
+        let Ok(mut shared) = self.shared.lock() else {
+            return false;
+        };
+        if !self.owns_shared_context_state(&shared)
+            || shared.active_path.as_deref() != Some(self.path.as_str())
+            || shared.handoff_tail_epoch != self.committed_tail.epoch
+            || shared.handoff_tail_buffer != self.committed_tail.buffer
+        {
+            return false;
+        }
+        self.committed_tail.buffer = actual.to_string();
+        shared
+            .handoff_tail_buffer
+            .clone_from(&self.committed_tail.buffer);
+        true
+    }
+
     /// Same ordinary client commit and same epoch; update only its observed
     /// pair separator presentation after the full snapshot and sealed decision
     /// have been checked by the existing continuation.

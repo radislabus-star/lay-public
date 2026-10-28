@@ -1,0 +1,63 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Reuse the existing single source-only native append resample for an incoherent count/text read caused during current owned append preparation; retain original80ms observation deadline and all field/privacy/admission checks.",
+  "reason": "V10 installed native7/7 passes including real delayed boundary, but fullChrome220=179PASS1FAIL40BLOCKED. Normal text moved-boundary row9 has a Full authorized ready candidate, then native_document_changed at817 and no_proven_delete_backend at822. text_snapshot correctly refuses a changed count; read_native_document uses ? before its existing older-owned-prefix resample, losing the chance to acquire a fresh coherent source. Do not weaken deletion authority.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs"
+  ],
+  "verification": "Mechanically extract current one-resample coordination without behavior change; controlled transport returns native_document_changed then a coherent actual snapshot, expect causal RED from current ?. Preserve existing81 tests. Then permit exactly that resample only under the existing owned append eligibility. Verify original identical deadline and geometry-free second read; all privacy/selection/admission/deadline/other errors and a second changed result stop without extra retries. No snapshot installation or output from coordination. Fresh complete source/build, exact artifacts/native7/fullChrome220 required.",
+  "not_tested": "Extraction and coherent-error resample not yet implemented; full current candidate still contains one native FAIL, publication not allowed. Two previously failing original scenarios are BLOCKED in V10 and are not counted as fixes.",
+  "user_authorization": "2026-10-28 autonomous seven-release series, improvements/isolation/push without questions; bounded KDE Chrome read-side correction under105.",
+  "source_head": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
+  "alternatives": [
+    {
+      "name": "reuse single read-side resample and original deadline",
+      "score": 9,
+      "selected": true
+    },
+    {
+      "name": "extend ready correction to projected native pending protocol",
+      "score": 7,
+      "selected": false,
+      "reason": "broader receipt/output applicability unnecessary if the existing read protocol can acquire coherent actual data"
+    },
+    {
+      "name": "increase global waits",
+      "score": 3,
+      "selected": false,
+      "reason": "does not retry an early changed-count error and affects unrelated clients"
+    }
+  ],
+  "consequences": {
+    "scope": "Only KDE native document read coordination/preparation predicate/tests. No shared reducer, input state, delivery route, correction ranking, verifier, executor, learning/model, GNOME runtime or desktop configuration change.",
+    "budget": "The first attempt and optional second attempt share the same Instant deadline from the original80ms budget; second read omits hint geometry as before. At most2 attempts total, no new timer/thread/queue or retry after an edit. No I/O in the token predicate.",
+    "authority": "Coherent snapshot validation remains unchanged. Owned append preparation only permits another actual read, never an edit or promotion of projected text. Each actual read and installation retain existing scope/peer/field/focus/privacy checks. Other errors are not retried."
+  },
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "recorded_at": "2026-10-28T01:21:17.123331+00:00",
+  "source_verification": {
+    "status": "PASS",
+    "controlled_red": "V27 mechanical old-policy extraction81/83, both new coherence tests fail at skipped second read; previous81 remainPASS",
+    "controlled_green": "V28 minimal error eligibility change83/83",
+    "raw_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-unit-v28/result.json",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1290,
+      "sha256": "bc25cddcf5663c17dd8998fc28202fdf91ef4909d9c7c66ef40ac59c1fc1939b"
+    },
+    "scope": "read coordination with real owned-preparation eligibility and controlled transport; no native acceptance claim"
+  },
+  "implementation": "Reuse one source resample on native_document_changed only while original owned append preparation remains current. Both attempts receive the identical original deadline; second omits geometry. Selection/privacy/admission/deadline/other failures are not retried, nor is a second changed result. Returned data is neither installed nor treated as mutation authority by coordination."
+}

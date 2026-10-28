@@ -385,6 +385,7 @@ fn decide_active_composition_autocorrect_with_evidence_if_current(
                             input_gate: Some(input_gate),
                         });
                     }
+                    record_kde_space_projection_refusal(request.config, "pair_plan_rejected");
                 } else {
                     record_kde_space_projection_refusal(
                         request.config,
@@ -399,6 +400,9 @@ fn decide_active_composition_autocorrect_with_evidence_if_current(
             replacement.clone()
         } else {
             let Some(stripped) = replacement.strip_prefix(&active_prefix) else {
+                if editable_pair.is_none() {
+                    record_kde_space_projection_refusal(request.config, "pair_scope_missing");
+                }
                 record_kde_space_projection_refusal(
                     request.config,
                     "replacement_changes_uneditable_prefix",

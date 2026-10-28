@@ -1,0 +1,16 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Reuse KDE Chrome's existing single source-only resample for a proven native two-word append chain, preserving its original deadline and final exact-snapshot verifier.",
+  "reason": "Five predeclared iframe trials on source66d62089 produced3PASS2FAIL. Both failures selected and authorized the pair action, then the unchanged final guard refused stale_surrounding_text: actual native text lacked the last owned letter. The existing resample predicate admits only unfinished US words. Preserve that behavior and additionally admit only a current NativePrepared pair with the same bounded owned-prefix proof. Missing managed identity on KnownStart frames is observable but is not the demonstrated final cause; do not change preedit.rs for that hypothesis.",
+  "invariants": ["C01", "C03", "C05", "C07", "C08", "C10"],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs"
+  ],
+  "owning_document": "docs/development/browser-matrix-repair-2026-10-27.md",
+  "verification": "Extend the existing pair test with one further real owned CommitText and an actual snapshot one letter behind; require RED against the unchanged predicate, then retain all52 native tests, unchanged canonical test identities, previous US and negative owner/text/selection controls. Require exact deployed bytes and the same five native iframe trials, fixed rich/plain controls, and the complete frozen browser protocol before release qualification.",
+  "not_tested": "New predicate and native acceptance pending. Five trials are diagnostics, not a replacement for the complete320-case baseline.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

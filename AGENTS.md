@@ -13,6 +13,32 @@
 - CLAUDE.md, GEMINI.md and .github/copilot-instructions.md point here and to the
   same canon. Keep one contract rather than model-specific architectural rules.
 
+## Frozen field integration — 2026-10-28
+
+- Preserve accepted field behavior while changing autocorrection: ordinary
+  typing and held Shift, focus, observation and word ownership, composition and
+  hint rendering, Tab, Space, Backspace, Double Shift, layout/decoder state and
+  text delivery. A better correction candidate does not authorize changing
+  any of these mechanisms, desktop settings, launch environment or services.
+- Before editing, declare `correction-only` or an explicitly authorized field
+  integration task, its desktop/client, baseline, allowed files and protected
+  mechanisms in the owning preflight. A shared input/state/observation helper
+  change is a shared integration change even when its new caller is KDE/Chrome.
+  A file relocation or diagnostic label does not make it correction-only.
+- Keep correction decisions, ownership, verifier and the existing executor
+  common. Use the existing desktop dispatch and client adapters. Do not copy
+  delivery routes or add a fallback/owner to obtain isolation.
+- If the fix needs a protected mechanism outside the authorized scope, stop
+  the implementation/install step, identify the first failed transition and
+  disclose the exact expansion for a separate decision. Existing authorization
+  for that exact integration task remains valid; do not ask for it again.
+- Apply all three reminders: this entry rule, the
+  [field integration contract](docs/architecture/field-integration-isolation-2026-10-28.md)
+  under C02–C08/C10 in [ARCHITECTURE.md](ARCHITECTURE.md), and the before-edit /
+  before-install checklist in [DEVELOPMENT.md](DEVELOPMENT.md). Check the actual
+  diff against the declared scope, including shared files and runtime config.
+  A source PASS does not establish unchanged field behavior or native acceptance.
+
 ## Desktop integration consistency — 2026-10-21
 
 - Resolve the desktop through the existing `active_layout_backend` mechanism.

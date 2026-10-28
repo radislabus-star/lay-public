@@ -1,0 +1,12 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Retain only existing inert native append provenance across a same-owner transient read failure, while discarding the actual snapshot and preserving the final exact-document edit verifier. Capture every actual closed-word boundary through the existing canonical witness constructor, including unchanged ASCII Space.",
+  "reason": "V6 iframe-1 records a valid late boundary and separator acknowledgement, then native_document_changed after the next owned letter. The existing transient gate explicitly accepts the same input owner, but observe_document_snapshot(None) clears the managed start witness. The next actual read reports missing, so pair input material was lost before final Space. V6 iframe-3 also observes the first Space before typing without a usable boundary witness. The current ordinary snapshot rearm uses last_tail_token (which skips trailing whitespace), while the explicit native zero-character constructor is called only for NBSP acknowledgement. Fix these two capture/retention edges without inventing observations, creating an owner or widening an edit guard.",
+  "invariants": ["C01", "C03", "C05", "C07", "C08", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/kde/native_document.rs", "src/bin/lay_ibus_engine/kde/native_document/tests.rs"],
+  "owning_document": "docs/development/browser-matrix-repair-2026-10-27.md",
+  "verification": "Controlled RED for observed ASCII boundary capture, then separate RED for loss on native_document_changed, then all52 native checks with the four already admitted transient classes, unchanged owner/scope/epoch and no edit while snapshot absent. A conflicting actual observation must retire the retained data. Keep all old test identities and negative owner/focus/layout/error controls. Fresh source/build proof and frozen seven native inputs before full Chrome220 qualification; no release from source proof alone.",
+  "not_tested": "Implementation and new native qualification pending. V6 fixed subset remains5PASS2FAIL and the full320 baseline remains200PASS58FAIL62BLOCKED.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

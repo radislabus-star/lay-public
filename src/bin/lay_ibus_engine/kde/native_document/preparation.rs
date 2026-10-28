@@ -5,17 +5,84 @@
 use crate::engine::LayIbusEngine;
 
 impl LayIbusEngine {
+    /// Only this current actual KDE field can extend the existing boundary
+    /// protocol. The already committed native word must never be republished.
+    pub(crate) fn native_space_boundary_continuation_is_current(
+        &self,
+        identity: &crate::engine::InputFrameIdentity,
+    ) -> bool {
+        self.native_document_is_current()
+            && self.native_word_preparation_edit_is_current()
+            && self.composition.buffer.is_empty()
+            && !self.composition.legacy_word_preedit_active
+            && self.composition.word_input_mode == Some(crate::engine::WordInputMode::ManagedCommit)
+            && self.input_frame_authority_matches(identity)
+            && self.capture_space_boundary_pair_scope() == identity.space_boundary_pair
+            && identity.space_boundary_pair.as_ref().is_some_and(|pair| {
+                matches!(
+                    pair.provenance,
+                    crate::engine::SpaceBoundaryPairProvenance::NativePrepared { .. }
+                )
+            })
+    }
+
+    /// Receipt ownership can remain current while its actual Space observation
+    /// is pending. A different native field cannot consume the retained work.
+    pub(crate) fn native_space_boundary_owner_is_current(
+        &self,
+        expected: Option<&super::NativeDocumentBinding>,
+        frame: &crate::engine::InputFrameIdentity,
+    ) -> bool {
+        expected.is_some_and(|expected| {
+            let Some(current) = self.context_token.as_ref() else {
+                return false;
+            };
+            let Some(boundary) = frame
+                .committed_tail
+                .strip_suffix(' ')
+                .and_then(|prefix| u32::try_from(prefix.chars().count()).ok())
+            else {
+                return false;
+            };
+            expected.tail_epoch == frame.tail_epoch
+                && self.committed_tail.epoch == frame.tail_epoch
+                && (current == &expected.token
+                    || current.is_observed_boundary_successor_of(
+                        &expected.token,
+                        frame.tail_epoch,
+                        boundary,
+                    ))
+                && expected.observation_owner_is_current_for_token(self, current)
+                && self
+                    .client_context
+                    .native_document_binding
+                    .as_ref()
+                    .is_some_and(|actual| actual.identity() == expected.identity())
+        })
+    }
+
+    /// Current owned appends can permit one more source read, never an edit.
+    pub(super) fn native_owned_append_preparation_is_current(&self) -> bool {
+        (self.has_unfinished_us_managed_input()
+            || self
+                .capture_space_boundary_pair_scope()
+                .is_some_and(|scope| {
+                    matches!(
+                        scope.provenance,
+                        crate::engine::SpaceBoundaryPairProvenance::NativePrepared { .. }
+                    )
+                }))
+            && self.native_word_preparation_identity().is_some()
+    }
+
     /// A coherent native read may still precede our latest CommitText. Only
     /// the same owned append chain can request another actual read; the
     /// projected state remains inert and is never installed as an observation.
-    pub(super) fn native_us_append_observation_is_pending(
+    pub(super) fn native_owned_append_observation_is_pending(
         &self,
         snapshot: &super::SurroundingTextSnapshot,
     ) -> bool {
-        if !self.has_unfinished_us_managed_input()
-            || self.native_word_preparation_identity().is_none()
-            || snapshot.has_selection()
-        {
+        if !self.native_owned_append_preparation_is_current() || snapshot.has_selection() {
             return false;
         }
         let Some(expected) = self.managed_word_start_preparation_snapshot() else {

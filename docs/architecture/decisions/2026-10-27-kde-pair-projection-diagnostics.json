@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Add two failure-only reasons to the existing KDE opt-in Space projection trace; no correction or delivery changes.",
+  "reason": "Complete native Chrome matrix proves two pair failures reach uneditable-prefix rejection, but missing pair scope and rejected pair plan are not distinguished. After the functional late-boundary transition succeeds in iframe, its pair still disappears. Extend only the existing KDE space_preparation trace with pair/frame/preparation booleans to locate that next producer loss. V5 retains a native failure even with closing-Space acknowledgement. Read-only debug metadata in the existing KDE separator observer records the canonical chain refusal before ordinary observation can retire it, together with current native binding, cursor and tail counts. No word text, new state, timers or permission changes. Expose only the existing read-only chain-invalid-reason query to the sibling KDE diagnostics module (visibility only; guard body and callers that decide authority remain unchanged).",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/client_presentation.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/ime_correction.rs"
+  ],
+  "owning_document": "docs/development/browser-matrix-repair-2026-10-27.md",
+  "verification": "Existing1104IME correctness tests, AST semantic-diff audit, current architecture graph/canon, strict lint and release build before a fixed Chrome diagnostic; not release acceptance.",
+  "not_tested": "No functional repair or new native PASS yet. Preserve baseline4Chrome FAIL and54Firefox FAIL until full matched evidence.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

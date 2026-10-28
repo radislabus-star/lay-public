@@ -166,13 +166,14 @@ impl LayIbusEngine {
             .map_or(Duration::from_micros(3_500), |entered| {
                 super::context_admission::remaining_space_wait_budget(entered.elapsed())
             });
-        if self.composition.legacy_word_preedit_active
+        if (self.composition.legacy_word_preedit_active
             && identity.space_boundary_pair.as_ref().is_some_and(|pair| {
                 matches!(
                     pair.provenance,
                     super::engine::SpaceBoundaryPairProvenance::OwnedPreedit { .. }
                 )
-            })
+            }))
+            || self.native_space_boundary_continuation_is_current(identity)
         {
             space_autocorrect_prefetch::take_boundary_with_budget(identity, budget)
         } else {
@@ -190,6 +191,26 @@ impl LayIbusEngine {
 
     pub(super) fn retain_space_autocorrect_across_reset(&self, identity: &InputFrameIdentity) {
         space_autocorrect_prefetch::retain_current_or_invalidate(identity);
+    }
+
+    pub(super) fn space_boundary_is_pending(&self) -> bool {
+        self.committed_tail
+            .pending_visible_postcondition
+            .as_ref()
+            .is_some_and(|receipt| receipt.space_boundary_commit.is_some())
+    }
+
+    pub(super) fn space_boundary_calculation_is_retained(&self) -> bool {
+        self.committed_tail
+            .pending_visible_postcondition
+            .as_ref()
+            .and_then(|receipt| receipt.space_boundary_commit.as_ref())
+            .is_some_and(|pending| {
+                matches!(
+                    pending.selection,
+                    super::engine::PendingSpaceBoundarySelection::Computing { .. }
+                )
+            })
     }
 
     fn admit_space_autocorrect_lease(
@@ -354,6 +375,31 @@ impl LayIbusEngine {
         if token.is_empty() {
             return Ok(false);
         }
+        if emitter.is_legacy()
+            && matches!(lookup.lookup, SpaceAutocorrectLookup::NotReady)
+            && lookup.worker_generation != 0
+            && self.native_space_boundary_continuation_is_current(identity)
+        {
+            if let Some(connection) = emitter.connection().cloned() {
+                if let Some(pending) = self.prepare_space_boundary_continuation(
+                    identity,
+                    super::engine::PendingSpaceBoundarySelection::Computing {
+                        identity: Box::new(identity.clone()),
+                        worker_generation: lookup.worker_generation,
+                    },
+                ) {
+                    if space_autocorrect_prefetch::arm_boundary_completion(
+                        identity,
+                        lookup.worker_generation,
+                        connection,
+                    ) {
+                        return self
+                            .commit_space_boundary_continuation(emitter, pending)
+                            .await;
+                    }
+                }
+            }
+        }
         let Some(admitted) = self.admit_space_autocorrect_lease(identity, lookup, total_started)
         else {
             return Ok(false);
@@ -469,18 +515,17 @@ impl LayIbusEngine {
         identity: &InputFrameIdentity,
         selection: super::engine::PendingSpaceBoundarySelection,
     ) -> Option<super::engine::PendingSpaceBoundaryCommit> {
+        let scope = identity.space_boundary_pair.as_ref()?;
+        let owned_preedit = self.composition.legacy_word_preedit_active
+            && matches!(
+                scope.provenance,
+                super::engine::SpaceBoundaryPairProvenance::OwnedPreedit { .. }
+            );
         if !self.config.auto_replace
             || !self.content_allows_text_assistance()
-            || !self.composition.legacy_word_preedit_active
+            || !(owned_preedit || self.native_space_boundary_continuation_is_current(identity))
             || !self.space_autocorrect_identity_matches(identity)
         {
-            return None;
-        }
-        let scope = identity.space_boundary_pair.as_ref()?;
-        if !matches!(
-            scope.provenance,
-            super::engine::SpaceBoundaryPairProvenance::OwnedPreedit { .. }
-        ) {
             return None;
         }
         let before_commit = self.space_pair_client_snapshot(scope)?;
@@ -516,13 +561,29 @@ impl LayIbusEngine {
             return Ok(false);
         };
         let expired = receipt.dispatched_at.elapsed() > Duration::from_millis(1500);
+        let native_document = receipt.native_document.clone();
         let Some(mut pending) = receipt.space_boundary_commit.take() else {
             return Ok(false);
         };
+        let native = pending
+            .frame
+            .space_boundary_pair
+            .as_ref()
+            .is_some_and(|pair| {
+                matches!(
+                    pair.provenance,
+                    super::engine::SpaceBoundaryPairProvenance::NativePrepared { .. }
+                )
+            });
         if expired
             || !emitter.is_legacy()
             || !self.composition.buffer.is_empty()
             || self.content_is_sensitive()
+            || (native
+                && !self.native_space_boundary_owner_is_current(
+                    native_document.as_ref(),
+                    &pending.frame,
+                ))
             || !self.input_frame_authority_matches(&pending.frame)
             || pending.material_generation != lay::nanda_wave::candidate_material_generation()
             || pending.frame.exact_authority_snapshot
@@ -541,7 +602,10 @@ impl LayIbusEngine {
             return Ok(false);
         }
         let actual = self.client_context.surrounding_text_snapshot.as_ref();
-        if actual.is_none() || actual == Some(&pending.before_commit) {
+        if actual.is_none()
+            || actual == Some(&pending.before_commit)
+            || (native && !self.native_document_is_current())
+        {
             // A pre-commit echo grants no edit authority. The same receipt may
             // still observe its exact final state within its original deadline.
             if let Some(receipt) = self.committed_tail.pending_visible_postcondition.as_mut() {
@@ -701,7 +765,7 @@ impl LayIbusEngine {
                         connection,
                     ) {
                         return self
-                            .commit_legacy_space_boundary_continuation(emitter, pending)
+                            .commit_space_boundary_continuation(emitter, pending)
                             .await;
                     }
                 }
@@ -751,7 +815,7 @@ impl LayIbusEngine {
                 return Ok(false);
             };
             let handled = self
-                .commit_legacy_space_boundary_continuation(emitter, pending)
+                .commit_space_boundary_continuation(emitter, pending)
                 .await?;
             trace::record_space_autocorrect_timing(
                 "active_pair_waiting_committed_snapshot",

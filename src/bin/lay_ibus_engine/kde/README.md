@@ -3,6 +3,12 @@
 This directory owns KDE-specific integration. Select the desktop through the
 existing `LayConfig::active_layout_backend`; never probe GNOME after a KDE error.
 
+Preserve configured field behavior under the
+[field integration contract](../../../../docs/architecture/field-integration-isolation-2026-10-28.md).
+A Chrome task must declare its exact integration scope. A change in shared
+observation/state/ownership code is shared work, even with a KDE-only caller;
+do not describe it as isolated to this folder or as correction-only.
+
 - `desktop.rs`: the existing KWin observations for terminal qualification and
   focused-window identity. The common desktop dispatcher only selects it.
 - `layout_sync.rs` and `layout_sync/tests.rs`: the existing KDE layout operation

@@ -33,6 +33,96 @@ fn header(epoch: ConnectionGeneration, serial: u32) -> HeaderKey {
 }
 
 #[test]
+fn observed_boundary_successor_preserves_all_token_identity_fences() {
+    for completeness in [WordCompleteness::KnownStart, WordCompleteness::UnknownStart] {
+        let epoch = ConnectionGeneration(11);
+        let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+            epoch,
+            GlobalEngineMode::Verified,
+            GlobalProfile::Lay(profile("lay-us")),
+        );
+        let owner = reducer
+            .establish_source(
+                engine_path("/engine/source"),
+                context(epoch, "/context"),
+                completeness,
+                6,
+            )
+            .unwrap();
+        let source = reducer.admission_token().unwrap();
+        let key = header(epoch, 77);
+        assert!(reducer.observe_key_start(&owner, key.clone(), KeyWordEffect::PossibleMutation));
+        let mut scope = source.word_scope();
+        scope.close_at_observed_boundary(7, Some(11));
+        assert!(reducer.settle_key(&owner, &key, SettledWordState::from_scope(7, &scope)));
+        let current = reducer.admission_token().unwrap();
+        assert!(!reducer.revalidate(&source));
+        assert!(reducer.revalidate(&current));
+        assert!(current.is_observed_boundary_successor_of(&source, 7, 11));
+        assert!(!source.is_observed_boundary_successor_of(&source, 7, 11));
+        assert!(!current.is_observed_boundary_successor_of(&source, 7, 10));
+
+        let mut other: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(
+            ConnectionGeneration(12),
+            GlobalEngineMode::Verified,
+            GlobalProfile::Lay(profile("lay-us")),
+        );
+        other
+            .establish_source(
+                engine_path("/engine/other"),
+                context(ConnectionGeneration(12), "/other"),
+                completeness,
+                6,
+            )
+            .unwrap();
+        let other = other.admission_token().unwrap();
+        for changed in [
+            "connection",
+            "revocation",
+            "owner",
+            "activation",
+            "generation",
+            "completeness",
+            "suffix",
+            "floor",
+            "first_word",
+        ] {
+            let mut candidate = current.clone();
+            match changed {
+                "connection" => candidate.connection = other.connection,
+                "revocation" => candidate.revocation = candidate.revocation.wrapping_add(1),
+                "owner" => candidate.owner = other.owner.clone(),
+                "activation" => candidate.activation = other.activation.clone(),
+                "generation" => {
+                    candidate.lineage.generation =
+                        LineageGeneration(next_generation(candidate.lineage.generation.0))
+                }
+                "completeness" => candidate.lineage.completeness = WordCompleteness::UnknownStart,
+                "suffix" => candidate.lineage.observed_suffix_chars = 1,
+                "floor" => candidate.lineage.observed_boundary_floor = Some(99),
+                "first_word" => candidate.lineage.observed_first_word = Some((1, 2)),
+                _ => unreachable!(),
+            }
+            assert!(
+                !candidate.is_observed_boundary_successor_of(&source, 7, 11),
+                "reject {changed}"
+            );
+        }
+        let key = header(epoch, 78);
+        assert!(reducer.observe_key_start(&owner, key.clone(), KeyWordEffect::PossibleMutation));
+        let mut scope = current.word_scope();
+        scope.close_at_observed_boundary(8, Some(12));
+        assert!(reducer.settle_key(&owner, &key, SettledWordState::from_scope(8, &scope)));
+        let twice = reducer.admission_token().unwrap();
+        assert!(!twice.is_observed_boundary_successor_of(&source, 8, 12));
+        assert!(twice.is_observed_boundary_successor_of(&current, 8, 12));
+        reducer.observed_word_reset();
+        let reset = reducer.admission_token().unwrap();
+        assert!(!reset.is_observed_boundary_successor_of(&twice, 8, 12));
+    }
+}
+
+#[test]
 fn word_reset_preserves_admitted_context_metadata_without_word_authority() {
     for content_type in [None, Some((0, 0)), Some((0, 2048)), Some((8, 0))] {
         let mut reducer: ContextAdmissionReducer<u64> = ContextAdmissionReducer::new(

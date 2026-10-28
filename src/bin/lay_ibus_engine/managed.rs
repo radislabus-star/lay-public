@@ -12,13 +12,14 @@ use super::protocol::{
 impl LayIbusEngine {
     /// The managed input owner finishes ordinary user Space before an already
     /// selected boundary action may use the existing client postcondition.
-    pub(super) async fn commit_legacy_space_boundary_continuation(
+    pub(super) async fn commit_space_boundary_continuation(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
         mut pending: super::engine::PendingSpaceBoundaryCommit,
     ) -> fdo::Result<bool> {
         if !emitter.is_legacy()
-            || !self.composition.legacy_word_preedit_active
+            || !(self.composition.legacy_word_preedit_active
+                || self.native_space_boundary_continuation_is_current(&pending.frame))
             || !self.input_frame_authority_matches(&pending.frame)
             || self.capture_space_boundary_pair_scope() != pending.frame.space_boundary_pair
             || pending.material_generation != lay::nanda_wave::candidate_material_generation()
@@ -29,11 +30,12 @@ impl LayIbusEngine {
             pending.selection,
             super::engine::PendingSpaceBoundarySelection::Computing { .. }
         ) {
-            if self.layout_gesture.layout_is_ru
-                != self
-                    .client_context
-                    .factory_engine_profile
-                    .initial_layout_is_ru()
+            if self.composition.legacy_word_preedit_active
+                && self.layout_gesture.layout_is_ru
+                    != self
+                        .client_context
+                        .factory_engine_profile
+                        .initial_layout_is_ru()
             {
                 return Ok(false);
             }
@@ -223,18 +225,7 @@ impl LayIbusEngine {
                     }
                     _ => false,
                 };
-                let calculation_retained = self
-                    .committed_tail
-                    .pending_visible_postcondition
-                    .as_ref()
-                    .and_then(|receipt| receipt.space_boundary_commit.as_ref())
-                    .is_some_and(|pending| {
-                        matches!(
-                            pending.selection,
-                            super::engine::PendingSpaceBoundarySelection::Computing { .. }
-                        )
-                    });
-                if !calculation_retained {
+                if !self.space_boundary_calculation_is_retained() {
                     if let Some(identity) = frame.as_ref() {
                         self.invalidate_space_autocorrect_lease(identity);
                     }
@@ -334,8 +325,10 @@ impl LayIbusEngine {
                         _ => false,
                     };
                     if autocorrected {
-                        if let Some(identity) = frame.as_ref() {
-                            self.invalidate_space_autocorrect_lease(identity);
+                        if !self.space_boundary_calculation_is_retained() {
+                            if let Some(identity) = frame.as_ref() {
+                                self.invalidate_space_autocorrect_lease(identity);
+                            }
                         }
                         let autocorrect_us = autocorrect_started.elapsed().as_micros();
                         super::trace::record_space_key_timing(

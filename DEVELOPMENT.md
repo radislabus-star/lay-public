@@ -3,6 +3,41 @@
 Development checks are not release acceptance. Build/test execution is remote
 only. Nothing here installs binaries, restarts the desktop or accepts TD-121.
 
+## Mandatory field-isolation preflight and completion check
+
+This is the third reminder after `AGENTS.md` and the C07 boundary in
+`ARCHITECTURE.md`. Apply the
+[field integration contract](docs/architecture/field-integration-isolation-2026-10-28.md)
+before production edits and again before validation, installation or release.
+
+Record in the current owning task, without creating another plan or owner:
+
+1. Change class: `correction-only` or the specifically authorized field
+   integration task, desktop and client. Name the first failed transition.
+2. Baseline: source commit, existing dirty changes, actual installed artifacts
+   and relevant configuration. Link the dated client evidence and distinguish
+   an accepted baseline from an experimental candidate.
+3. Exact allowed files and protected mechanisms. A correction-only task must
+   preserve ordinary field input, focus, observations/ownership, composition,
+   hint display, gestures, layout state and delivery. Changes to shared helpers
+   must be disclosed as shared integration work, regardless of caller location.
+4. Intended regression checks, affected clients, rollback boundary and existing
+   authorization. Missing coverage stays `NOT_TESTED`, `FAIL` or `BLOCKED`.
+
+At both checkpoints, use `python3 scripts/dev-check.py plan` and inspect the
+actual tracked/untracked diff against that declaration. Include configuration,
+installer, launcher, extension and service changes; a Rust-only diff is not
+enough. Include already committed branch changes when choosing the baseline.
+An undeclared protected change blocks the next implementation/install step;
+do not edit the scope record after the fact to turn it into authorization.
+
+Use the existing `scripts/check_architecture_canon.py --base <baseline>` to
+check rule-change records and links. That gate does not enforce per-client
+runtime isolation: the scope comparison above is a required review checkpoint.
+Do not describe these reminders as a sandbox or as proof of unchanged behavior.
+Keep existing source/release gates. Reuse physical evidence only while its
+relevant source, artifacts, dependencies, configuration and environment match.
+
 ## One-time machine setup
 
 Put the following in `~/.config/lay/development.json` (already configured on the

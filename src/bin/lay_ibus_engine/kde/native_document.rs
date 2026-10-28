@@ -140,19 +140,29 @@ impl NativeDocumentBinding {
     }
 
     fn observation_owner_is_current(&self, engine: &LayIbusEngine) -> bool {
+        self.observation_owner_is_current_for_token(engine, &self.token)
+    }
+
+    /// Keep the original field/focus coordinates while the pending Space
+    /// adapter separately proves its single canonical word-token transition.
+    fn observation_owner_is_current_for_token(
+        &self,
+        engine: &LayIbusEngine,
+        token: &AdmissionToken,
+    ) -> bool {
         engine.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
             && !engine.atomic.active
             && !engine.content_is_sensitive()
             && !engine.uses_native_terminal_input()
-            && engine.context_token.as_ref() == Some(&self.token)
+            && engine.context_token.as_ref() == Some(token)
             && engine
                 .context_word_scope
                 .as_ref()
-                .is_some_and(|scope| self.token.matches_word_scope(scope))
+                .is_some_and(|scope| token.matches_word_scope(scope))
             && engine
                 .context_admission
                 .as_ref()
-                .is_some_and(|a| a.revalidate(&self.token))
+                .is_some_and(|a| a.revalidate(token))
             && engine.client_context.focus_serial == self.focus_serial
             && engine.client_context.runtime_owner_lease_identity == self.owner_lease
             && engine.layout_gesture.layout_generation == self.layout_generation
@@ -198,6 +208,37 @@ pub(super) fn bounded<T>(
         })
         .await
     }
+}
+
+/// Existing read coordination only: no snapshot installation or text output.
+async fn read_with_one_owned_append_resample<R, F, P>(
+    deadline: Instant,
+    mut read: R,
+    is_pending: P,
+    resample_changed: bool,
+) -> NativeResult<Observation>
+where
+    R: FnMut(Instant, bool) -> F,
+    F: Future<Output = NativeResult<Observation>>,
+    P: Fn(&SurroundingTextSnapshot) -> bool,
+{
+    let observation = read(deadline, true).await;
+    let resample = match &observation {
+        Ok(observation) => is_pending(&observation.snapshot),
+        Err("native_document_changed") => resample_changed,
+        Err(_) => false,
+    };
+    if resample {
+        crate::trace::record(
+            serde_json::json!({
+                "kind": "ibus_native_document", "stage": "owned_append_resample",
+                "reason": observation.as_ref().err().copied().unwrap_or("older_owned_prefix"),
+            })
+            .to_string(),
+        );
+        return read(deadline, false).await;
+    }
+    observation
 }
 
 /// Native coordinates are Unicode scalars, never byte or UTF-16 offsets.
@@ -254,9 +295,15 @@ impl LayIbusEngine {
         // when display recovery below must retain an UnknownStart suffix.
         let space_frame = self.capture_space_autocorrect_frame_identity();
         if crate::trace::enabled() {
+            let prepared = self.managed_word_start_preparation_snapshot();
             crate::trace::record(serde_json::json!({
                 "kind": "ibus_native_document", "stage": "space_preparation",
                 "frame_available": space_frame.is_some(),
+                "pair_in_frame": space_frame.as_ref().is_some_and(|frame| frame.space_boundary_pair.is_some()),
+                "pair_live": self.capture_space_boundary_pair_scope().is_some(),
+                "native_preparation": self.native_word_preparation_identity().is_some(),
+                "managed_identity_in_frame": space_frame.as_ref().is_some_and(|frame| frame.space_autocorrect_managed_start_identity.is_some()),
+                "prepared_tail_matches": prepared.as_ref().map(|snapshot| snapshot.suffix_before_cursor(self.committed_tail.buffer.chars().count()).as_deref() == Some(self.committed_tail.buffer.as_str())),
                 "manual_word_current": self.native_manual_word_is_current(),
                 "actual_revision": self.client_context.surrounding_observation_revision,
                 "commit_revision": self.client_context.managed_commit_snapshot_floor.map(|floor| floor.observation_revision),
@@ -399,17 +446,15 @@ impl LayIbusEngine {
     ) -> impl Future<Output = NativeResult<Observation>> + '_ {
         Box::pin(async move {
             let deadline = Instant::now() + OBSERVATION_BUDGET;
-            let observation = self.read_native_document_until(deadline, true).await?;
-            if self.native_us_append_observation_is_pending(&observation.snapshot) {
-                crate::trace::record(
-                    r#"{"kind":"ibus_native_document","stage":"owned_append_resample"}"#,
-                );
-                // One source-only resample, using the original deadline and
-                // pinned native field. Never replay input or grant a projected
-                // snapshot authority; a second old read still cannot edit.
-                return self.read_native_document_until(deadline, false).await;
-            }
-            Ok(observation)
+            // Both attempts retain the original deadline and field checks;
+            // projected append data never becomes an actual source receipt.
+            read_with_one_owned_append_resample(
+                deadline,
+                |deadline, geometry| self.read_native_document_until(deadline, geometry),
+                |snapshot| self.native_owned_append_observation_is_pending(snapshot),
+                self.native_owned_append_preparation_is_current(),
+            )
+            .await
         })
     }
 
@@ -596,7 +641,26 @@ impl LayIbusEngine {
                 }
             }
         }
+        // Data preparation follows an already admitted physical field across
+        // a forward provider reconnect. Subscription/cache reuse above still
+        // requires the exact transport receipt through same_observation_owner.
+        let same_native_input_owner = self
+            .client_context
+            .native_document_binding
+            .as_ref()
+            .is_some_and(|previous| {
+                observation
+                    .binding
+                    .identity
+                    .continues_from(&previous.identity)
+                    && previous.focus_serial == observation.binding.focus_serial
+                    && previous.owner_lease == observation.binding.owner_lease
+                    && previous.layout_generation == observation.binding.layout_generation
+            });
         self.client_context.native_document_binding = Some(observation.binding);
+        if same_native_input_owner {
+            self.acknowledge_native_word_separator_reflow(&observation.snapshot);
+        }
         // Re-reading one current document is not another input receipt. A new
         // revision would invalidate the displayed word's pair frame and start
         // pending prediction again just before Tab. Still replace the binding
@@ -604,10 +668,18 @@ impl LayIbusEngine {
         if !unchanged_snapshot {
             self.observe_document_snapshot(Some(observation.snapshot));
         }
+        if same_native_input_owner {
+            self.acknowledge_native_closing_space();
+            self.arm_native_observed_word_boundary();
+            self.arm_native_observed_first_append_boundary();
+        }
         true
     }
 
     fn observe_native_document_postcondition(&mut self) {
+        if self.space_boundary_is_pending() {
+            return;
+        }
         self.acknowledge_native_closing_space();
         self.acknowledge_native_layout_space();
         let native_result = self
@@ -726,7 +798,19 @@ impl LayIbusEngine {
             }).to_string());
         }
         if waiting_for_observation {
+            // Keep only append provenance for this same notification owner.
+            // The ordinary observation still invalidates every actual edit
+            // proof; a new complete matching document is mandatory to edit.
+            let preparation = self.client_context.managed_word_start.clone();
             self.observe_document_snapshot(None);
+            if self
+                .client_context
+                .native_document_binding
+                .as_ref()
+                .is_some_and(|binding| observer::current(self, binding))
+            {
+                self.client_context.managed_word_start = preparation;
+            }
             return true;
         }
         self.client_context.native_document_binding = None;
@@ -860,7 +944,10 @@ impl super::WindowInteraction {
                 if !engine.install_native_document(observation) {
                     return Ok(false);
                 }
-                engine.observe_native_document_postcondition();
+                let boundary_applied = engine.apply_space_boundary_after_client_commit(output).await?;
+                if !boundary_applied {
+                    engine.observe_native_document_postcondition();
+                }
                 observer::arm(engine, output).await;
                 engine.settle_native_literal_input_mode();
                 if crate::trace::enabled() && !engine.composition.buffer.is_empty() {

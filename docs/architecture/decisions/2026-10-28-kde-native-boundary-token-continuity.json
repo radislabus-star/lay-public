@@ -1,0 +1,50 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Retain the native pending Space protocol across exactly its own canonical word-boundary settlement, using a pure token-successor relation and the fresh current native observation; do not accept a stale native word token as live.",
+  "reason": "V9 full source3545 and18gates pass, exact remote105 install, native7 gives6PASS1FAIL. Trace normal Space callback settles at430; the first pre-Space echo at435-436 consumes the pending continuation before the actual Space arrives at449-450. V24 pre-commit echo strengthening passes80/80. V25 uses the production WordScope.close_at_observed_boundary operation and existing adapter fixture to mirror the actual callback settlement;79/80 with the new continuation test failing. Native binding before Space carries the previous lineage token, while callback settlement publishes its direct successor.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission.rs",
+    "src/bin/lay_ibus_engine/context_admission/tests.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/preparation.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/tests.rs",
+    "src/bin/lay_ibus_engine/committed_tail.rs"
+  ],
+  "verification": "Controlled79/80 RED before implementation. Test the common read-only relationship through real reducer key settlement and all token identity fences; exercise both result/actual event orders, pre-Space echoes and canonical Space settlement; preserve all old native/Space negatives. Then fresh complete source, release/build gates and exact installed native7 plus Chrome220. Never substitute source PASS for native acceptance.",
+  "not_tested": "New predicate not yet implemented at decision time; native success pending. The temporary debug-only trace block was never built or installed and was removed when the source/controlled fixture isolated callback settlement.",
+  "user_authorization": "Latest2026-10-28 autonomous seven meaningful releases105–111, improvements, push and integration isolation without questions. This explicit bounded shared contract extension belongs to105.",
+  "source_head": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
+  "consequences": {
+    "common_scope": "Add one read-only AdmissionToken relation using the existing canonical WordScope boundary operation. Existing reducer settlement, revalidate and ownership publication remain unchanged. No new owner, generation, queue, timer, dispatcher, verifier or executor. Existing non-KDE callers never use the new relation.",
+    "native_scope": "Original expected native field, focus/lease/layout, tail epoch, original frame/material and expiry stay fixed. Retention may recognize only the exact same token or its single non-revoked same-connection/owner/activation canonical Space successor. No binding or projected snapshot is installed to manufacture observation authority.",
+    "edit_scope": "The existing apply function still requires a full current actual native snapshot after Space, exact complete text/caret/selection and the original selected BoundaryShift action. Fresh current admission authorizes the existing native executor; a signal or token relation alone cannot mutate.",
+    "failure": "Any other word/reset/revocation/field/focus/layout/lease/material/input change retires pending work. No retry after a partial edit. No global wait increase. No GNOME runtime/config/install/restart/input change.",
+    "rollback": "Remove only the native single-boundary relationship use and its pure helper if needed; preserve the separately tested pending-worker and earlier native pair preparation fixes."
+  },
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "existing_protocol_applicability_extended": true,
+  "recorded_at": "2026-10-28T00:26:38.282551+00:00",
+  "implementation": "Pure AdmissionToken successor comparison reuses WordScope.close_at_observed_boundary and compares the whole cloned token, retaining connection/revocation/owner/activation. Native pending code validates current token through the existing original field/focus coordinates; ordinary native is_current still validates its original exact token.",
+  "source_verification": {
+    "status": "PASS",
+    "selected": 81,
+    "raw_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-unit-v26/result.json",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1290,
+      "sha256": "3d2cede861b057407f342b4bc6035c6ad39362f47217a0570d9e3f9195e278ef"
+    },
+    "scope": "native and legacy Space subset plus new real reducer token-fence test; not native or full-release acceptance"
+  }
+}

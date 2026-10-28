@@ -1,0 +1,397 @@
+{
+  "schema": "lay.release105.verification.v1",
+  "recorded_at": "2026-10-28T02:08:21.059088+00:00",
+  "status": "LOCAL_GATES_PASS_NATIVE_TESTED_SCOPE_PASS_WITH_DECLARED_BLOCKED; CI_PUBLICATION_PENDING",
+  "version": "1.0.105",
+  "canonical_base": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
+  "source": {
+    "files": 1290,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "85cf6f9f9590ca5c3c942d67202e1bff9edc3fbe70208f0f2cdb871175400f9d"
+  },
+  "canonical_source_equal_in_content_and_modes": true,
+  "correctness_and_package": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 452.44058826752007,
+      "package": 49.68986256606877
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 150.6570840361528,
+      "bin:lay-debug-actions": 0.01117799011990428,
+      "bin:lay-ibus-engine": 151.81365513824858,
+      "bin:lay-l11-serve": 0.013879898004233837,
+      "bin:lay-memory-report": 0.009193905163556337,
+      "bin:lay-nanda-dataset": 0.031907145865261555,
+      "bin:lay-nanda-wave-eval": 1.3250239610206336,
+      "bin:lay-nanda-wave-train": 1.299715433968231,
+      "bin:lay-test-input": 0.009233265882357955,
+      "bin:lay_output_transaction_microproof": 0.013458209810778499,
+      "lib:lay": 126.03114324226044,
+      "test:correction_gate_metrics": 2.0248553960118443,
+      "test:decoder_alternating_stress": 1.2815928780473769,
+      "test:decoder_transition_regression": 2.1646685160230845,
+      "test:ibus_wire_compat": 0.008302149130031466,
+      "test:ime_space_boundary_contract": 0.008097003912553191,
+      "test:input_gate_operator_contract": 0.010275585809722543,
+      "test:input_gate_space_contract": 8.303583075292408,
+      "test:l3_context_feedback_overlay_contract": 1.377744717989117,
+      "test:l3_context_metrics_contract": 0.007996348198503256,
+      "test:l3_online_resource_contract": 0.006814078893512487,
+      "test:l4_feedback_memory_contract": 0.008997699012979865,
+      "test:live_candidate_gate_metrics": 3.324339932994917,
+      "test:protected_words_runtime": 1.6944477998185903,
+      "test:restore_word_cli": 5.742804567096755,
+      "test:space_boundary_shift_mechanism": 5.017371769063175,
+      "test:td113_hybrid_source_contract": 0.03642764198593795,
+      "test:text_edit_gate_contract": 0.128026066115126,
+      "test:text_mutation_monopoly_contract": 0.1345479388255626,
+      "test:tray_ui_contract": 0.016912015853449702,
+      "test:typing_assist_alternating_stress": 3.295127839082852,
+      "test:typing_assist_mixed_corpus": 33.488493114942685,
+      "test:typing_assist_short_alternating": 2.8096516490913928,
+      "test:typing_transition_authority_contract": 0.023900823900476098
+    },
+    "elapsed_seconds": 502.7294663731009,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "scope": "complete canonical correctness and package lanes; native evidence required separately",
+    "selected": 3548,
+    "selected_by_lane": {
+      "correctness": 3512,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "ignored_canonical_tests": 41,
+  "steps": [
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/budget-before.log",
+      "name": "budget-before",
+      "seconds": 0.08435689006000757,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/fmt.log",
+      "name": "fmt",
+      "seconds": 3.5200908980332315,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/protected-gate-preflight.log",
+      "name": "protected-gate-preflight",
+      "seconds": 5.4269331900868565,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/graph.log",
+      "name": "graph",
+      "seconds": 17.995025603100657,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/canon.log",
+      "name": "canon",
+      "seconds": 0.21950195403769612,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "name": "source",
+      "reused_exact_snapshot": "/home/e/projects/lay-development-runner/run-xXclyW/RESULT.json",
+      "seconds": 502.7294663731009,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/python.log",
+      "name": "python",
+      "seconds": 26.858091265894473,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/public.log",
+      "name": "public",
+      "seconds": 10.427459587110206,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/install.log",
+      "name": "install",
+      "seconds": 0.3630562399048358,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/node.log",
+      "name": "node",
+      "seconds": 0.12431791890412569,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/audit50.log",
+      "name": "audit50",
+      "seconds": 24.485348915914074,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/lints.log",
+      "name": "lints",
+      "seconds": 70.5629905438982,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/performance.log",
+      "name": "performance",
+      "seconds": 23.510568883037195,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/msrv.log",
+      "name": "msrv",
+      "seconds": 14.435109968064353,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/msrv-lexical.log",
+      "name": "msrv-lexical",
+      "seconds": 14.396400040015578,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/release.log",
+      "name": "release",
+      "seconds": 73.69434931711294,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/artifacts.log",
+      "name": "artifacts",
+      "seconds": 0.24679020093753934,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/budget-after.log",
+      "name": "budget-after",
+      "seconds": 0.078933424083516,
+      "status": "PASS"
+    }
+  ],
+  "artifacts_sha256": {
+    "lay": "f06cb93a64c6c7a1bb58faef4e51631dc29c315bf3bca19890feb1a59c479508",
+    "lay-daemon": "83b13705af5f554a321cc77a2c155f91b9e5ab380d8154da909b3a9bcdd9c039",
+    "lay-ibus-engine": "9e0731fd2014a0c9fc2948e56ab9a58f8d8298ce066d9db1f664fea8b538717c",
+    "lay-l11-restore": "46a29a4fcb628cbd3a7a9bc3bc619577e8f1ccc3fc78fe4f23c0d1046dea8d54",
+    "lay-l11-serve": "e69333b8dabb54d8fb11f38258af8de2516eb74283e10b0bea2cae9b84075bd6",
+    "lay-memory-report": "760e707de9804dfd23ba3e760903dae4f052ab0dd35f9c94a456d63f37e8c738",
+    "lay-nanda-wave-eval": "0f9486c70417bbce19fc4aa8920ba62998b1b04f8df6a87f30f177213439dd9a",
+    "lay-nanda-wave-train": "a408b6654bd3a60b40166b06e3296bf487745c49c81e10bcda55ee3ac4ce910a",
+    "lay-ngram-corpus": "5b29dbe900ef62482b9bcb6d5d986fce13dc5f1106a318f7458b76a027cf57d5",
+    "lay-test-input": "a69210c21e56383c72d7b1f7dda49c7f23f4f6222990b6176deba4424a4c7749"
+  },
+  "release_compiler_warnings": 0,
+  "native_evidence": {
+    "scope": "private KDE X11; actual RFB input; three window modes, ten fields",
+    "fixed7": {
+      "PASS": 7,
+      "FAIL": 0,
+      "BLOCKED": 0,
+      "NOT_TESTED": 0
+    },
+    "chrome220": {
+      "groups": {
+        "original": {
+          "PASS": 128,
+          "FAIL": 0,
+          "BLOCKED": 32,
+          "NOT_TESTED": 0,
+          "total": 160
+        },
+        "additional": {
+          "PASS": 52,
+          "FAIL": 0,
+          "BLOCKED": 8,
+          "NOT_TESTED": 0,
+          "total": 60
+        }
+      },
+      "total": {
+        "PASS": 180,
+        "FAIL": 0,
+        "BLOCKED": 40,
+        "NOT_TESTED": 0
+      },
+      "complete": true,
+      "held_after": [],
+      "config_restored": true,
+      "source": {
+        "files": 1290,
+        "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+        "sha256": "85cf6f9f9590ca5c3c942d67202e1bff9edc3fbe70208f0f2cdb871175400f9d"
+      },
+      "engine_pid": 1437885,
+      "engine_sha256": "9e0731fd2014a0c9fc2948e56ab9a58f8d8298ce066d9db1f664fea8b538717c"
+    },
+    "space_fixed7_latency": {
+      "n": 7,
+      "median_ms": 100.63644195906818,
+      "p95_ms": 147.8799961041659,
+      "max_ms": 147.8799961041659
+    },
+    "double_shift_pass_rows_only_latency": {
+      "n": 367,
+      "median_ms": 48.37643774226308,
+      "p95_ms": 62.78461706824601,
+      "max_ms": 83.4248480387032
+    },
+    "latency_scope": "monotonic release to first stable target; rapid-five DOM clock mapping has per-row uncertainty; polling included",
+    "physical_usb_evdev": "NOT_TESTED",
+    "firefox_current_snapshot": "NOT_TESTED; historical104 baseline remains separate",
+    "raw_full": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-full-native-v11/result.json",
+    "raw_native7": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-native-v11/result.json",
+    "observed_baseline_delta": {
+      "same_case_keys": 220,
+      "causal_attribution": "NOT_ESTABLISHED across different snapshots; exact observed statuses only",
+      "transitions": {
+        "BLOCKED→PASS": 1,
+        "FAIL→PASS": 3,
+        "FAIL→BLOCKED": 1,
+        "PASS→BLOCKED": 1
+      },
+      "rows": [
+        {
+          "case": [
+            "normal",
+            "email",
+            "rapid-five",
+            "active"
+          ],
+          "before": "BLOCKED",
+          "after": "PASS",
+          "reason": ""
+        },
+        {
+          "case": [
+            "normal",
+            "rich",
+            "space-en-ru",
+            "functional"
+          ],
+          "before": "FAIL",
+          "after": "PASS",
+          "reason": ""
+        },
+        {
+          "case": [
+            "normal",
+            "rich",
+            "moved-boundary",
+            "functional"
+          ],
+          "before": "FAIL",
+          "after": "PASS",
+          "reason": ""
+        },
+        {
+          "case": [
+            "normal",
+            "iframe-rich",
+            "moved-boundary",
+            "functional"
+          ],
+          "before": "FAIL",
+          "after": "PASS",
+          "reason": ""
+        },
+        {
+          "case": [
+            "private",
+            "email",
+            "roundtrip",
+            "active"
+          ],
+          "before": "FAIL",
+          "after": "BLOCKED",
+          "reason": "native/DOM text disagreement"
+        },
+        {
+          "case": [
+            "private",
+            "email",
+            "rapid-five",
+            "active"
+          ],
+          "before": "PASS",
+          "after": "BLOCKED",
+          "reason": "native/DOM text disagreement"
+        }
+      ]
+    },
+    "interpretation": "Zero FAIL in completed220;40BLOCKED are not accepted as PASS. No all-client or all-desktop acceptance claim."
+  },
+  "code_review": {
+    "kind": "implementation-owner review and independent automated gates; no independent agent review",
+    "agents_or_Harness_used": false,
+    "causal_proofs": [
+      "V21pendingRED52/54→V23GREEN80/80",
+      "V25canonicalSpaceSettlementRED79/80→V26GREEN81/81",
+      "V27coherenceRED81/83→V28GREEN83/83"
+    ],
+    "principles": "Original actual field/full snapshot/verifier/executor preserved; existing pending protocol recognizes native own-Space successor, one bounded read-side resample without projected authority."
+  },
+  "raw_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-gates-v11/result.json",
+  "raw_deployment": "/home/e/projects/lay-development-runner/kde-install-control-20261020/browser-pair-reflow-deployment-v11/result.json",
+  "installed_artifacts": 10,
+  "installed_runtime": {
+    "versions": {
+      "lay": "lay 1.0.105",
+      "lay-daemon": "lay-daemon 1.0.105",
+      "lay-ibus-engine": "lay-ibus-engine 1.0.105"
+    },
+    "engine_pid": 1437885,
+    "daemon_pid": 1437996,
+    "tray_pid": 1438002,
+    "engine_sha256": "9e0731fd2014a0c9fc2948e56ab9a58f8d8298ce066d9db1f664fea8b538717c",
+    "ibus_not_restarted": true,
+    "desktop_not_restarted": true,
+    "models_not_provisioned": true
+  },
+  "local_install_or_restart": false,
+  "field_integration_changed": true,
+  "runtime_authority_changed": true,
+  "authority_scope": "Only existing native pending pair across own verified canonical Space successor; no new owner/reducer, unchanged revalidate and edit verifier",
+  "delivery_routes_changed": false,
+  "new_physical_delivery_route_added": false,
+  "ci": {
+    "status": "PENDING"
+  },
+  "stable_updater": {
+    "status": "PENDING_AFTER_PUBLICATION"
+  },
+  "publication": {
+    "status": "NOT_PUBLISHED"
+  }
+}
