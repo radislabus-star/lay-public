@@ -1,0 +1,25 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-terminal-focus-policy-isolation",
+  "decision": "Move existing KDE terminal qualification and daemon focus policy into their own modules; preserve the common dispatcher, one state flag, API consumers and transports.",
+  "reason": "Desktop/client policy is mixed in general desktop observation and daemon focus_guard source. Explicit modules prevent a terminal qualification task from editing GNOME or shared input/execution.",
+  "invariants": [
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/kde/desktop.rs",
+    "src/bin/lay_ibus_engine/kde/terminal.rs",
+    "src/bin/lay_daemon/focus_guard.rs",
+    "src/bin/lay_daemon/kde/focus_policy.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "src/generated/architecture_graph_receipt.json"
+  ],
+  "verification": "Byte/body comparison with prior definitions, equivalent root-qualified imports, unchanged canonical test identities/categories, full source/release gates and ten binaries; ordinary-launcher terminal/native controls and short browser controls with honest results.",
+  "not_tested": "Mechanical isolation does not certify every terminal, fix Firefox latency/iframe or Chrome upper omnibox, establish local GNOME/Wayland/physical HID acceptance, or authorize a second runtime route.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

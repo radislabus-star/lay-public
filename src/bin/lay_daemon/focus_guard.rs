@@ -1,3 +1,9 @@
+#[path = "kde/focus_policy.rs"]
+mod kde;
+pub(super) use kde::{exact_kde_window_identity, kde_focus_poll_state};
+#[cfg(test)]
+use kde::{kde_window_state, unavailable_kde_focus};
+
 use crate::trigger_fsm::MultiTapPending;
 use lay::desktop::LayoutBackend;
 use std::os::fd::RawFd;
@@ -25,7 +31,6 @@ const HOST_FOCUS_IGNORE_HINTS: &[&str] = &[
     "spice clipboard",
 ];
 static FOCUS_INFO_UNAVAILABLE: AtomicBool = AtomicBool::new(false);
-static KDE_FOCUS_UNAVAILABLE: AtomicBool = AtomicBool::new(false);
 
 pub(super) struct FocusedWindowState {
     pub(super) ignored: bool,
@@ -53,12 +58,11 @@ fn poll_focused_window_state_after(
     min_interval: Duration,
 ) -> Option<FocusedWindowState> {
     let backend = active_layout_backend();
-    let min_interval =
-        if backend == LayoutBackend::Kde && KDE_FOCUS_UNAVAILABLE.load(Ordering::Relaxed) {
-            min_interval.max(Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS))
-        } else {
-            min_interval
-        };
+    let min_interval = if backend == LayoutBackend::Kde && kde::provider_unavailable() {
+        min_interval.max(Duration::from_millis(FOCUS_IGNORE_POLL_INTERVAL_MS))
+    } else {
+        min_interval
+    };
     if last_poll.elapsed() < min_interval {
         return None;
     }
@@ -154,45 +158,6 @@ fn focused_window_state() -> Option<FocusedWindowState> {
     }
 }
 
-pub(super) fn kde_focus_poll_state(
-    observation: Result<super::kde_focus::Observation, super::kde_focus::ReadError>,
-) -> Option<FocusedWindowState> {
-    match observation {
-        Ok(observation) => {
-            KDE_FOCUS_UNAVAILABLE.store(false, Ordering::Relaxed);
-            Some(kde_window_state(observation))
-        }
-        // Another keyboard's fresh request is not evidence of lost focus.
-        Err(super::kde_focus::ReadError::Busy) => None,
-        Err(super::kde_focus::ReadError::Unavailable(error)) => {
-            if !KDE_FOCUS_UNAVAILABLE.swap(true, Ordering::Relaxed) {
-                log(&format!(
-                    "⚠ KWin foreground unavailable; host input paused: {error}"
-                ));
-            }
-            Some(unavailable_kde_focus())
-        }
-    }
-}
-
-pub(super) fn unavailable_kde_focus() -> FocusedWindowState {
-    FocusedWindowState {
-        ignored: true,
-        identity: None,
-    }
-}
-
-pub(super) fn kde_window_state(observation: super::kde_focus::Observation) -> FocusedWindowState {
-    let identity = serde_json::from_str::<serde_json::Value>(&observation.info)
-        .ok()
-        .and_then(|value| value.as_object().cloned())
-        .map(|object| window_identity_with_tab_title(observation.identity, &object));
-    FocusedWindowState {
-        ignored: identity.is_none() || focused_window_json_is_ignored(&observation.info),
-        identity,
-    }
-}
-
 pub(super) fn focused_window_identity_from_json(json: &str) -> Option<String> {
     let value = serde_json::from_str::<serde_json::Value>(json).ok()?;
     let object = value.as_object()?;
@@ -237,20 +202,6 @@ pub(super) fn capture_exact_focused_window_identity() -> Result<String, String> 
         .map_err(|error| format!("exact focused-window read failed: {error}"))?;
     focused_window_identity_from_json(&json)
         .ok_or_else(|| "exact focused-window identity is unavailable".to_string())
-}
-
-pub(super) fn exact_kde_window_identity(
-    observation: Result<super::kde_focus::Observation, super::kde_focus::ReadError>,
-) -> Result<String, String> {
-    let observation =
-        observation.map_err(|error| format!("exact KWin foreground read failed: {error}"))?;
-    let state = kde_window_state(observation);
-    if state.ignored {
-        return Err("exact KWin foreground is ignored or unavailable".into());
-    }
-    state
-        .identity
-        .ok_or_else(|| "exact KWin foreground identity unavailable".into())
 }
 
 fn window_identity_with_tab_title(

@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793166551.8712726,
-    "ast_hash": "54d0b2b79deb3d5a71c0bacf47bdada8",
+    "mtime": 1793169162.3224297,
+    "ast_hash": "1345d0201350cb2df858c61d421f8d68",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793166551.8712726,
-    "ast_hash": "4b2b78ac0f5c54f4ab2c801b059e2c2f",
+    "mtime": 1793169162.3234298,
+    "ast_hash": "2837a956fdeea70f1ec18fbe55cdd1d1",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -315,8 +315,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/focus_guard.rs": {
-    "mtime": 1793101955.9907994,
-    "ast_hash": "98a713c302ae0a54ad8138ecbf2776a8",
+    "mtime": 1793169162.717434,
+    "ast_hash": "e0636a8172b32ab108d8f1cd742dd37b",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/force_layout_hotkeys.rs": {
@@ -355,7 +355,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/ime_bridge.rs": {
-    "mtime": 1793166552.2792752,
+    "mtime": 1793166716.1036437,
     "ast_hash": "7bca83e860c843a0a37082d3766cfc7d",
     "semantic_hash": ""
   },
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793166551.8712726,
-    "ast_hash": "4428c390b1acc0f9ecfdcabe71302add",
+    "mtime": 1793169162.3234298,
+    "ast_hash": "8cbb5bcfe687a68867c5500d10d4cc25",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793162933.9278598,
-    "ast_hash": "eec835e32fe7ba0d0540fac228fe7287",
+    "mtime": 1793166716.1038287,
+    "ast_hash": "b312904786d4af0aa72cd4c5421014e4",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793166593.8725362,
+    "mtime": 1793169203.997858,
     "ast_hash": "76c161c13706beaedd5c470855420096",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793166593.861536,
+    "mtime": 1793169203.9858577,
     "ast_hash": "6c80eea7c43add2b83d3a9cf7613df8b",
     "semantic_hash": ""
   },
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793162344.2691777,
-    "ast_hash": "a6efee2a290c2e8399ff5152ee74675e",
+    "mtime": 1793163405.4572086,
+    "ast_hash": "7c76de38b486e47b5c562b71ef68e19b",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -8185,8 +8185,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/desktop.rs": {
-    "mtime": 1793101983.4260166,
-    "ast_hash": "ef317f203385738f3c45dbf78993d044",
+    "mtime": 1793169163.5284424,
+    "ast_hash": "7a51a37db396f899e9b32b7bdc7b422e",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/display/common.rs": {
@@ -8215,8 +8215,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/README.md": {
-    "mtime": 1793162512.849521,
-    "ast_hash": "0cd4c9a4d44b0c47b4a9acd96dc3559f",
+    "mtime": 1793169162.3234298,
+    "ast_hash": "22ee21a71064eea43836865b896abd53",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-22-kde-chrome-plain-prefix-trial.json": {
@@ -8960,8 +8960,8 @@
     "semantic_hash": ""
   },
   "docs/development/isolated-release-series-2026-10-28.md": {
-    "mtime": 1793158157.494087,
-    "ast_hash": "48fd3f5db1f2d3da049fa7a1d3d43bad",
+    "mtime": 1793165469.8892446,
+    "ast_hash": "163f4cab42a38d6da87b12a23e497c54",
     "semantic_hash": ""
   },
   "docs/development/kde-native-pair-readiness-plan-2026-10-28.md": {
@@ -9005,8 +9005,8 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.107-chrome-client-isolation.md": {
-    "mtime": 1793162512.849431,
-    "ast_hash": "581d8bf8ac10557e349c0b3849efd9bb",
+    "mtime": 1793165469.8891304,
+    "ast_hash": "26233c461638b2eb3ace1d9443347b65",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-kde-native-key-scope-read-resample.json": {
@@ -9025,12 +9025,12 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-exact-tail-settlement-isolation.json": {
-    "mtime": 1793166551.8712726,
-    "ast_hash": "ef34d379fbd8375d35e31af3fe987431",
+    "mtime": 1793167672.6433241,
+    "ast_hash": "d49f2e08487b40a0866bfec57d3379bd",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/ime_bridge/settlement.rs": {
-    "mtime": 1793166551.8712726,
+    "mtime": 1793166462.9251723,
     "ast_hash": "9da310d843390aed51465aee99ebf08d",
     "semantic_hash": ""
   },
@@ -9040,8 +9040,38 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.108-exact-tail-settlement-isolation.md": {
-    "mtime": 1793166551.8712726,
+    "mtime": 1793166359.3835113,
     "ast_hash": "9b866b4b18b1c69d457a37ca65257666",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-28-kde-terminal-focus-policy-isolation.json": {
+    "mtime": 1793169162.3234298,
+    "ast_hash": "da5a2fee83d13898a6461b7fb2b3e7d4",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/focus_policy.rs": {
+    "mtime": 1793169162.7184339,
+    "ast_hash": "6bf771d08ebb287c719bdc4ed8b32eb0",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_ibus_engine/kde/terminal.rs": {
+    "mtime": 1793169162.3234298,
+    "ast_hash": "9e297c0e27dce19467c1a764ecf0454f",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.107-verification.json": {
+    "mtime": 1793165469.8889918,
+    "ast_hash": "e847604b53315c5c4455ce839278e6c2",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.109-kde-terminal-focus-isolation.md": {
+    "mtime": 1793169162.3224297,
+    "ast_hash": "6b57373234de6dff5ad59e7ba4b72151",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/README.md": {
+    "mtime": 1793169162.3234298,
+    "ast_hash": "71a3aed8021ac0dcb23bf1f8222a886e",
     "semantic_hash": ""
   }
 }

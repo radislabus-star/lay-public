@@ -1,0 +1,1130 @@
+{
+  "schema": "lay.release109.verification.v1",
+  "recorded_at": "2026-10-28T07:19:06.939172+00:00",
+  "status": "SOURCE_ARTIFACTS_VERIFIED_KITTY_KONSOLE_PASS_VTE_FAIL_RETAINED_NOT_PUBLISHED",
+  "version": "1.0.109",
+  "canonical_base": "058a247f0200ad6139fcb2a70abd186f05d1ebff",
+  "source": {
+    "files": 1294,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "3c5463769bafe6b0ce5adf040f07d5adeaede758787fec99fd37d0549d16de33"
+  },
+  "correctness_and_package": {
+    "elapsed_by_lane_seconds": {
+      "correctness": 456.32788885128684,
+      "package": 49.64105328009464
+    },
+    "elapsed_by_target_seconds": {
+      "bin:lay-daemon": 152.3709281280171,
+      "bin:lay-debug-actions": 0.01051673712208867,
+      "bin:lay-ibus-engine": 154.397630113177,
+      "bin:lay-l11-serve": 0.014211246045306325,
+      "bin:lay-memory-report": 0.009424019139260054,
+      "bin:lay-nanda-dataset": 0.03098696400411427,
+      "bin:lay-nanda-wave-eval": 1.2871547539252788,
+      "bin:lay-nanda-wave-train": 1.2901397577952594,
+      "bin:lay-test-input": 0.008420376107096672,
+      "bin:lay_output_transaction_microproof": 0.012549590086564422,
+      "lib:lay": 125.78016315540299,
+      "test:correction_gate_metrics": 2.0470072750467807,
+      "test:decoder_alternating_stress": 1.2776721860282123,
+      "test:decoder_transition_regression": 2.177691328106448,
+      "test:ibus_wire_compat": 0.008387814043089747,
+      "test:ime_space_boundary_contract": 0.009698795154690742,
+      "test:input_gate_operator_contract": 0.011075426125898957,
+      "test:input_gate_space_contract": 8.143882466945797,
+      "test:l3_context_feedback_overlay_contract": 1.4054682850837708,
+      "test:l3_context_metrics_contract": 0.00817419309169054,
+      "test:l3_online_resource_contract": 0.00876132003031671,
+      "test:l4_feedback_memory_contract": 0.009997649118304253,
+      "test:live_candidate_gate_metrics": 3.353949606185779,
+      "test:protected_words_runtime": 1.6835679248906672,
+      "test:restore_word_cli": 5.6651133871637285,
+      "test:space_boundary_shift_mechanism": 4.987182828830555,
+      "test:td113_hybrid_source_contract": 0.03751577693037689,
+      "test:text_edit_gate_contract": 0.1241025859490037,
+      "test:text_mutation_monopoly_contract": 0.14587416406720877,
+      "test:tray_ui_contract": 0.016209699911996722,
+      "test:typing_assist_alternating_stress": 3.331903440877795,
+      "test:typing_assist_mixed_corpus": 33.48832120397128,
+      "test:typing_assist_short_alternating": 2.789006852079183,
+      "test:typing_transition_authority_contract": 0.026253080926835537
+    },
+    "elapsed_seconds": 506.58005822403356,
+    "infrastructure_failures": 0,
+    "known_semantic_failures": 0,
+    "known_semantic_failures_by_lane": {
+      "correctness": 0,
+      "package": 0
+    },
+    "lanes": [
+      "correctness",
+      "package"
+    ],
+    "schema": "lay.test-lane-run.v1",
+    "scope": "complete canonical correctness and package lanes; native evidence required separately",
+    "selected": 3551,
+    "selected_by_lane": {
+      "correctness": 3515,
+      "package": 36
+    },
+    "verdict": "PASS"
+  },
+  "ime_correctness": 1113,
+  "ignored_tests_not_run": 41,
+  "performance_lane": "PASS,11 canonical tests",
+  "steps": [
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/budget-before.log",
+      "name": "budget-before",
+      "seconds": 0.09912537690252066,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/fmt.log",
+      "name": "fmt",
+      "seconds": 3.5142677831463516,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/protected-gate-preflight.log",
+      "name": "protected-gate-preflight",
+      "seconds": 21.842649584868923,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/graph.log",
+      "name": "graph",
+      "seconds": 17.980325697921216,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/canon.log",
+      "name": "canon",
+      "seconds": 0.221957515925169,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "name": "source",
+      "reused_exact_snapshot": "/home/e/projects/lay-development-runner/run-uywcKX/RESULT.json",
+      "seconds": 506.58005822403356,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/python.log",
+      "name": "python",
+      "seconds": 26.39289833791554,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/public.log",
+      "name": "public",
+      "seconds": 10.46177961700596,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/install.log",
+      "name": "install",
+      "seconds": 0.3510382438544184,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/node.log",
+      "name": "node",
+      "seconds": 0.12157425796613097,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/audit50.log",
+      "name": "audit50",
+      "seconds": 24.541399434907362,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/lints.log",
+      "name": "lints",
+      "seconds": 95.71197770698927,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/performance.log",
+      "name": "performance",
+      "seconds": 23.480136418016627,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/msrv.log",
+      "name": "msrv",
+      "seconds": 20.11138233402744,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/msrv-lexical.log",
+      "name": "msrv-lexical",
+      "seconds": 21.811940073035657,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/release.log",
+      "name": "release",
+      "seconds": 215.65875744400546,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/artifacts.log",
+      "name": "artifacts",
+      "seconds": 0.30372274992987514,
+      "status": "PASS"
+    },
+    {
+      "exit": 0,
+      "log": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/budget-after.log",
+      "name": "budget-after",
+      "seconds": 0.10874749883078039,
+      "status": "PASS"
+    }
+  ],
+  "artifact_sha256": {
+    "lay": "c33a81d7f251127ef240ed8e2711f2902fd773d8a284490507fa70eeb218a538",
+    "lay-daemon": "e195017004f53ce75291705d5f9806e6b07cfc0bb2b60ced4284fc431ee2fb3a",
+    "lay-ibus-engine": "29c2641dd1999f7b513cd1f94ad01b31df1145e8819b5224eaa5916ff58210bb",
+    "lay-l11-restore": "e157b77e29b479bc984ebc2d7b6bb26b585e31180778277436f9cfdfb5be23c9",
+    "lay-l11-serve": "e69333b8dabb54d8fb11f38258af8de2516eb74283e10b0bea2cae9b84075bd6",
+    "lay-memory-report": "e63507683b82b5a62f5f69df2ba96f7a416d4e4f20d3e02f4e8588624298cac7",
+    "lay-nanda-wave-eval": "4a75ced34fdebf01340d15bd47793778706383c2c806b108f1179b0509513629",
+    "lay-nanda-wave-train": "63cdb12a2de6111f9472b0ba73df688fad0fb108a86b07774eac2dc4c0bc8675",
+    "lay-ngram-corpus": "5b29dbe900ef62482b9bcb6d5d986fce13dc5f1106a318f7458b76a027cf57d5",
+    "lay-test-input": "e615f4e48bef634b2fffbcda05388618a580510adcf48a090a756343edf0302e"
+  },
+  "release_compiler_warnings": 0,
+  "mechanical_review": {
+    "functions": [
+      {
+        "function": "exact_kde_terminal_window",
+        "body_equal_after_equivalent_import_qualification": true
+      },
+      {
+        "function": "focused_window_is_native_terminal",
+        "body_equal_after_equivalent_import_qualification": true
+      },
+      {
+        "function": "kde_focus_poll_state",
+        "body_equal_after_equivalent_import_qualification": true
+      },
+      {
+        "function": "unavailable_kde_focus",
+        "body_equal_after_equivalent_import_qualification": true
+      },
+      {
+        "function": "kde_window_state",
+        "body_equal_after_equivalent_import_qualification": true
+      },
+      {
+        "function": "exact_kde_window_identity",
+        "body_equal_after_equivalent_import_qualification": true
+      }
+    ],
+    "single_original_flag": true,
+    "canonical_provider_source_unchanged": true
+  },
+  "scope_review": {
+    "runtime": [
+      "src/bin/lay_ibus_engine/kde/desktop.rs",
+      "src/bin/lay_ibus_engine/kde/terminal.rs",
+      "src/bin/lay_daemon/focus_guard.rs",
+      "src/bin/lay_daemon/kde/focus_policy.rs"
+    ],
+    "common_facade_edited": true,
+    "gnome_function_bodies_changed": false,
+    "canonical_provider_input_delivery_ownership_or_verifier_changed": false,
+    "desktop_flag_instances": 1,
+    "old_test_identities_and_categories_unchanged": true
+  },
+  "installed_runtime": {
+    "status": "PAIR_REFLOW_INSTALLED_NATIVE_NOT_TESTED",
+    "version": "1.0.109",
+    "publication_allowed": false,
+    "source": {
+      "files": 1294,
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "sha256": "3c5463769bafe6b0ce5adf040f07d5adeaede758787fec99fd37d0549d16de33"
+    },
+    "build_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-gates-v1/result.json",
+    "engine_pid": 2688935,
+    "daemon_pid": 2689127,
+    "tray_pid": 2689142,
+    "engine_sha256": "29c2641dd1999f7b513cd1f94ad01b31df1145e8819b5224eaa5916ff58210bb",
+    "daemon_sha256": "e195017004f53ce75291705d5f9806e6b07cfc0bb2b60ced4284fc431ee2fb3a",
+    "versions": {
+      "lay": "lay 1.0.109",
+      "lay-daemon": "lay-daemon 1.0.109",
+      "lay-ibus-engine": "lay-ibus-engine 1.0.109"
+    },
+    "installed_artifacts": 10,
+    "activation_sha256": "29c2641dd1999f7b513cd1f94ad01b31df1145e8819b5224eaa5916ff58210bb",
+    "config_unchanged": true,
+    "tray_sha256": "3f936370408e513b9ed764f087713a04e9521d9b31e475f5d53267c05be04e10",
+    "protected_processes_unchanged": 10,
+    "ibus_not_restarted": true,
+    "desktop_not_restarted": true,
+    "models_not_provisioned": true,
+    "input_status": {
+      "input_device": 5,
+      "master_keyboard": 3,
+      "ready": true,
+      "transport": "x11-xinput2"
+    },
+    "time": "2026-10-28T06:58:38.901375+00:00"
+  },
+  "native": {
+    "status": "NATIVE_COMPONENT_EVIDENCE_WITH_EXPLICIT_VTE_FAILURES",
+    "version": "1.0.109",
+    "families": [
+      {
+        "kind": "konsole",
+        "counts": {
+          "PASS": 11
+        },
+        "rows": [
+          {
+            "name": "double-shift-space",
+            "flips": [
+              {
+                "expected": "ghbdtn ",
+                "ms": 18.397661857306957
+              },
+              {
+                "expected": "привет ",
+                "ms": 19.973046146333218
+              }
+            ],
+            "status": "PASS",
+            "actual": {
+              "text": "привет ",
+              "at": 1368507.516772465
+            }
+          },
+          {
+            "name": "hint-tab",
+            "before_tab": {
+              "text": "пров",
+              "at": 1368508.077808333
+            },
+            "hint_snapshot": {
+              "exit_code": 0,
+              "stdout": "('{\"version\":1,\"stream\":\":1.147700\",\"revision\":\"255\",\"owner\":\"/io/github/radislabus_star/LayIme/engine/lay_ime_ru/62\",\"text\":\"ерка\",\"rect\":[285,216,8,17],\"monospace\":true}',)\n",
+              "stderr": ""
+            },
+            "ms": 2.313820878043771,
+            "flips": [
+              {
+                "expected": "ghjdthrf ",
+                "ms": 16.35572616942227
+              },
+              {
+                "expected": "проверка ",
+                "ms": 19.52267508022487
+              }
+            ],
+            "status": "PASS",
+            "actual": {
+              "text": "проверка я",
+              "at": 1368509.447713177
+            }
+          },
+          {
+            "name": "moved-boundary",
+            "status": "PASS",
+            "actual": {
+              "text": "должны быть ",
+              "at": 1368510.355057022
+            }
+          },
+          {
+            "name": "ordinary-shift-ru-left",
+            "expected": "ФВАфва",
+            "seen_at": 1369145.215923723,
+            "engine": "lay-ime-ru",
+            "status": "PASS",
+            "actual": {
+              "text": "ФВАфва",
+              "at": 1369145.215923723
+            }
+          },
+          {
+            "name": "ordinary-shift-ru-right",
+            "expected": "ФВАфва",
+            "seen_at": 1369146.079061997,
+            "engine": "lay-ime-ru",
+            "status": "PASS",
+            "actual": {
+              "text": "ФВАфва",
+              "at": 1369146.079061997
+            }
+          },
+          {
+            "name": "ordinary-shift-us-left",
+            "expected": "ASDasd",
+            "seen_at": 1369146.946558854,
+            "engine": "lay-ime-us",
+            "status": "PASS",
+            "actual": {
+              "text": "ASDasd",
+              "at": 1369146.946558854
+            }
+          },
+          {
+            "name": "ordinary-shift-us-right",
+            "expected": "ASDasd",
+            "seen_at": 1369147.803109742,
+            "engine": "lay-ime-us",
+            "status": "PASS",
+            "actual": {
+              "text": "ASDasd",
+              "at": 1369147.803109742
+            }
+          },
+          {
+            "name": "shift-punctuation-ru",
+            "status": "PASS",
+            "actual": {
+              "text": "!?:()_",
+              "at": 1369148.64584236
+            }
+          },
+          {
+            "name": "shift-punctuation-us",
+            "status": "PASS",
+            "actual": {
+              "text": "!?:()_",
+              "at": 1369149.466026976
+            }
+          },
+          {
+            "name": "double-shift-space-five",
+            "flips": [
+              {
+                "expected": "ghbdtn ",
+                "ms": 16.98498404584825,
+                "start": 1368528.480354656,
+                "observed": 1368528.49733964,
+                "cadence_ms": null
+              },
+              {
+                "expected": "привет ",
+                "ms": 26.320672128349543,
+                "start": 1368528.671910435,
+                "observed": 1368528.698231107,
+                "cadence_ms": 191.55577896162868
+              },
+              {
+                "expected": "ghbdtn ",
+                "ms": 23.105653934180737,
+                "start": 1368528.874807815,
+                "observed": 1368528.897913469,
+                "cadence_ms": 202.8973801061511
+              },
+              {
+                "expected": "привет ",
+                "ms": 23.571248166263103,
+                "start": 1368529.074308629,
+                "observed": 1368529.097879877,
+                "cadence_ms": 199.5008138474077
+              },
+              {
+                "expected": "ghbdtn ",
+                "ms": 23.059066850692034,
+                "start": 1368529.273760911,
+                "observed": 1368529.296819978,
+                "cadence_ms": 199.4522821623832
+              }
+            ],
+            "engine_after": "lay-ime-us",
+            "next_letter": "f",
+            "status": "PASS",
+            "actual": {
+              "text": "ghbdtn f",
+              "at": 1368529.428507597
+            }
+          },
+          {
+            "name": "double-shift-active-five",
+            "flips": [
+              {
+                "expected": "ghbdtn",
+                "ms": 19.494896987453103,
+                "start": 1368530.255500267,
+                "observed": 1368530.274995164,
+                "cadence_ms": null
+              },
+              {
+                "expected": "привет",
+                "ms": 21.8872360419482,
+                "start": 1368530.451253853,
+                "observed": 1368530.473141089,
+                "cadence_ms": 195.75358601287007
+              },
+              {
+                "expected": "ghbdtn",
+                "ms": 22.079366957768798,
+                "start": 1368530.648916746,
+                "observed": 1368530.670996113,
+                "cadence_ms": 197.66289298422635
+              },
+              {
+                "expected": "привет",
+                "ms": 17.9753708653152,
+                "start": 1368530.843280455,
+                "observed": 1368530.861255826,
+                "cadence_ms": 194.36370907351375
+              },
+              {
+                "expected": "ghbdtn",
+                "ms": 19.898138009011745,
+                "start": 1368531.029781093,
+                "observed": 1368531.049679231,
+                "cadence_ms": 186.50063779205084
+              }
+            ],
+            "engine_after": "lay-ime-us",
+            "next_letter": "f",
+            "status": "PASS",
+            "actual": {
+              "text": "ghbdtnf",
+              "at": 1368531.183277924
+            }
+          }
+        ],
+        "source_receipts": [
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/konsole-hint/result.json",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-physical-shift-v1/konsole/result.json",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/konsole-five/result.json"
+        ],
+        "hint_snapshot": {
+          "version": 1,
+          "stream": ":1.147700",
+          "revision": "255",
+          "owner": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/62",
+          "text": "ерка",
+          "rect": [
+            285,
+            216,
+            8,
+            17
+          ],
+          "monospace": true
+        },
+        "latency_pass_rows_ms": [
+          18.397661857306957,
+          19.973046146333218,
+          16.35572616942227,
+          19.52267508022487,
+          2.313820878043771,
+          16.98498404584825,
+          26.320672128349543,
+          23.105653934180737,
+          23.571248166263103,
+          23.059066850692034,
+          19.494896987453103,
+          21.8872360419482,
+          22.079366957768798,
+          17.9753708653152,
+          19.898138009011745
+        ],
+        "hint_images": [
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/konsole-hint/hint.png",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/konsole-hint/final.png"
+        ]
+      },
+      {
+        "kind": "kitty",
+        "counts": {
+          "PASS": 11
+        },
+        "rows": [
+          {
+            "name": "double-shift-space",
+            "flips": [
+              {
+                "expected": "ghbdtn ",
+                "ms": 14.873970067128539
+              },
+              {
+                "expected": "привет ",
+                "ms": 19.79216397739947
+              }
+            ],
+            "status": "PASS",
+            "actual": {
+              "text": "привет ",
+              "at": 1368537.20118789
+            }
+          },
+          {
+            "name": "hint-tab",
+            "before_tab": {
+              "text": "пров",
+              "at": 1368537.798487904
+            },
+            "hint_snapshot": {
+              "exit_code": 0,
+              "stdout": "('{\"version\":1,\"stream\":\":1.147700\",\"revision\":\"353\",\"owner\":\"/io/github/radislabus_star/LayIme/engine/lay_ime_ru/98\",\"text\":\"ерка\",\"rect\":[133,163,9,18],\"monospace\":true}',)\n",
+              "stderr": ""
+            },
+            "ms": 26.194575941190124,
+            "flips": [
+              {
+                "expected": "ghjdthrf ",
+                "ms": 17.03171501867473
+              },
+              {
+                "expected": "проверка ",
+                "ms": 21.844248054549098
+              }
+            ],
+            "status": "PASS",
+            "actual": {
+              "text": "проверка я",
+              "at": 1368539.179484435
+            }
+          },
+          {
+            "name": "moved-boundary",
+            "status": "PASS",
+            "actual": {
+              "text": "должны быть ",
+              "at": 1368540.097464358
+            }
+          },
+          {
+            "name": "ordinary-shift-ru-left",
+            "expected": "ФВАфва",
+            "seen_at": 1369155.225550897,
+            "engine": "lay-ime-ru",
+            "status": "PASS",
+            "actual": {
+              "text": "ФВАфва",
+              "at": 1369155.225550897
+            }
+          },
+          {
+            "name": "ordinary-shift-ru-right",
+            "expected": "ФВАфва",
+            "seen_at": 1369156.091964441,
+            "engine": "lay-ime-ru",
+            "status": "PASS",
+            "actual": {
+              "text": "ФВАфва",
+              "at": 1369156.091964441
+            }
+          },
+          {
+            "name": "ordinary-shift-us-left",
+            "expected": "ASDasd",
+            "seen_at": 1369156.941555579,
+            "engine": "lay-ime-us",
+            "status": "PASS",
+            "actual": {
+              "text": "ASDasd",
+              "at": 1369156.941555579
+            }
+          },
+          {
+            "name": "ordinary-shift-us-right",
+            "expected": "ASDasd",
+            "seen_at": 1369157.814699468,
+            "engine": "lay-ime-us",
+            "status": "PASS",
+            "actual": {
+              "text": "ASDasd",
+              "at": 1369157.814699468
+            }
+          },
+          {
+            "name": "shift-punctuation-ru",
+            "status": "PASS",
+            "actual": {
+              "text": "!?:()_",
+              "at": 1369158.659828923
+            }
+          },
+          {
+            "name": "shift-punctuation-us",
+            "status": "PASS",
+            "actual": {
+              "text": "!?:()_",
+              "at": 1369159.48410156
+            }
+          },
+          {
+            "name": "double-shift-space-five",
+            "flips": [
+              {
+                "expected": "ghbdtn ",
+                "ms": 16.04114007204771,
+                "start": 1368549.91732627,
+                "observed": 1368549.93336741,
+                "cadence_ms": null
+              },
+              {
+                "expected": "привет ",
+                "ms": 20.67244495265186,
+                "start": 1368550.1099537,
+                "observed": 1368550.130626145,
+                "cadence_ms": 192.62743019498885
+              },
+              {
+                "expected": "ghbdtn ",
+                "ms": 21.854519145563245,
+                "start": 1368550.307382414,
+                "observed": 1368550.329236933,
+                "cadence_ms": 197.42871378548443
+              },
+              {
+                "expected": "привет ",
+                "ms": 20.719178020954132,
+                "start": 1368550.506452779,
+                "observed": 1368550.527171957,
+                "cadence_ms": 199.07036516815424
+              },
+              {
+                "expected": "ghbdtn ",
+                "ms": 20.62790608033538,
+                "start": 1368550.703113569,
+                "observed": 1368550.723741475,
+                "cadence_ms": 196.6607898939401
+              }
+            ],
+            "engine_after": "lay-ime-us",
+            "next_letter": "f",
+            "status": "PASS",
+            "actual": {
+              "text": "ghbdtn f",
+              "at": 1368550.853671229
+            }
+          },
+          {
+            "name": "double-shift-active-five",
+            "flips": [
+              {
+                "expected": "ghbdtn",
+                "ms": 14.918274944648147,
+                "start": 1368551.707537013,
+                "observed": 1368551.722455288,
+                "cadence_ms": null
+              },
+              {
+                "expected": "привет",
+                "ms": 18.121171044185758,
+                "start": 1368551.890625696,
+                "observed": 1368551.908746867,
+                "cadence_ms": 183.08868282474577
+              },
+              {
+                "expected": "ghbdtn",
+                "ms": 17.45999394915998,
+                "start": 1368552.07539005,
+                "observed": 1368552.092850044,
+                "cadence_ms": 184.76435402408242
+              },
+              {
+                "expected": "привет",
+                "ms": 21.975413896143436,
+                "start": 1368552.262605801,
+                "observed": 1368552.284581215,
+                "cadence_ms": 187.2157510370016
+              },
+              {
+                "expected": "ghbdtn",
+                "ms": 20.13753610663116,
+                "start": 1368552.460962548,
+                "observed": 1368552.481100084,
+                "cadence_ms": 198.35674692876637
+              }
+            ],
+            "engine_after": "lay-ime-us",
+            "next_letter": "f",
+            "status": "PASS",
+            "actual": {
+              "text": "ghbdtnf",
+              "at": 1368552.611888263
+            }
+          }
+        ],
+        "source_receipts": [
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/kitty-hint/result.json",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-physical-shift-v1/kitty/result.json",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/kitty-five/result.json"
+        ],
+        "hint_snapshot": {
+          "version": 1,
+          "stream": ":1.147700",
+          "revision": "353",
+          "owner": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/98",
+          "text": "ерка",
+          "rect": [
+            133,
+            163,
+            9,
+            18
+          ],
+          "monospace": true
+        },
+        "latency_pass_rows_ms": [
+          14.873970067128539,
+          19.79216397739947,
+          17.03171501867473,
+          21.844248054549098,
+          26.194575941190124,
+          16.04114007204771,
+          20.67244495265186,
+          21.854519145563245,
+          20.719178020954132,
+          20.62790608033538,
+          14.918274944648147,
+          18.121171044185758,
+          17.45999394915998,
+          21.975413896143436,
+          20.13753610663116
+        ],
+        "hint_images": [
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/kitty-hint/hint.png",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/kitty-hint/final.png"
+        ]
+      },
+      {
+        "kind": "gnome-terminal",
+        "counts": {
+          "PASS": 3,
+          "FAIL": 8
+        },
+        "rows": [
+          {
+            "name": "double-shift-space",
+            "flips": [
+              {
+                "expected": "ghbdtn ",
+                "ms": 183.67777904495597
+              },
+              {
+                "expected": "привет ",
+                "ms": 207.741318969056
+              }
+            ],
+            "status": "PASS",
+            "actual": {
+              "text": "привет ",
+              "at": 1368554.94111081
+            }
+          },
+          {
+            "name": "hint-tab",
+            "before_tab": {
+              "text": "",
+              "at": 1368555.062129131
+            },
+            "hint_snapshot": {
+              "exit_code": 0,
+              "stdout": "('{\"version\":1,\"stream\":\":1.147700\",\"revision\":\"434\",\"owner\":\"/io/github/radislabus_star/LayIme/engine/lay_ime_ru/134\",\"text\":\"ерка\",\"rect\":[470,275,9,18],\"monospace\":false}',)\n",
+              "stderr": ""
+            },
+            "ms": 5.257412092760205,
+            "flips": [
+              {
+                "expected": "ghjdthrf ",
+                "ms": 161.60724707879126
+              },
+              {
+                "expected": "проверка ",
+                "ms": 220.701667945832
+              }
+            ],
+            "status": "FAIL",
+            "error": "('target absent', 'проверка я', {'text': 'проверка ', 'at': 1368557.106986624})",
+            "actual": {
+              "text": "проверка ",
+              "at": 1368557.106986624
+            }
+          },
+          {
+            "name": "moved-boundary",
+            "status": "FAIL",
+            "error": "('target absent', 'должны быть ', {'text': 'должн ыбыть ', 'at': 1368560.188644905})",
+            "actual": {
+              "text": "должн ыбыть ",
+              "at": 1368560.188644905
+            }
+          },
+          {
+            "name": "ordinary-shift-ru-left",
+            "status": "FAIL",
+            "error": "('target absent', 'ФВАфва', {'text': '', 'at': 1369160.65547804})",
+            "actual": {
+              "text": "",
+              "at": 1369160.65547804
+            }
+          },
+          {
+            "name": "ordinary-shift-ru-right",
+            "status": "FAIL",
+            "error": "('target absent', 'ФВАфва', {'text': '', 'at': 1369163.521160214})",
+            "actual": {
+              "text": "",
+              "at": 1369163.521160214
+            }
+          },
+          {
+            "name": "ordinary-shift-us-left",
+            "status": "FAIL",
+            "error": "('target absent', 'ASDasd', {'text': '', 'at': 1369166.404450467})",
+            "actual": {
+              "text": "",
+              "at": 1369166.404450467
+            }
+          },
+          {
+            "name": "ordinary-shift-us-right",
+            "status": "FAIL",
+            "error": "('target absent', 'ASDasd', {'text': '', 'at': 1369169.313148072})",
+            "actual": {
+              "text": "",
+              "at": 1369169.313148072
+            }
+          },
+          {
+            "name": "shift-punctuation-ru",
+            "status": "PASS",
+            "actual": {
+              "text": "!?:()_",
+              "at": 1369172.902184767
+            }
+          },
+          {
+            "name": "shift-punctuation-us",
+            "status": "PASS",
+            "actual": {
+              "text": "!?:()_",
+              "at": 1369173.736027938
+            }
+          },
+          {
+            "name": "double-shift-space-five",
+            "flips": [
+              {
+                "expected": "ghbdtn ",
+                "ms": 180.80561887472868,
+                "start": 1368580.47721806,
+                "observed": 1368580.658023679,
+                "cadence_ms": null
+              },
+              {
+                "expected": "привет ",
+                "ms": 199.73275903612375,
+                "start": 1368580.83103395,
+                "observed": 1368581.030766709,
+                "cadence_ms": 353.81588991731405
+              },
+              {
+                "expected": "ghbdtn ",
+                "ms": 274.02761415578425,
+                "start": 1368581.203767591,
+                "observed": 1368581.477795205,
+                "cadence_ms": 372.73364095017314
+              },
+              {
+                "expected": "привет ",
+                "ms": 290.7483968883753,
+                "start": 1368581.652967384,
+                "observed": 1368581.943715781,
+                "cadence_ms": 449.19979316182435
+              },
+              {
+                "expected": "ghbdtn ",
+                "ms": 207.55301509052515,
+                "start": 1368582.120354865,
+                "observed": 1368582.32790788,
+                "cadence_ms": 467.38748089410365
+              }
+            ],
+            "engine_after": "lay-ime-us",
+            "status": "FAIL",
+            "error": "('target absent', 'ghbdtn f', {'text': 'ghbdtn ', 'at': 1368582.32790788})",
+            "actual": {
+              "text": "ghbdtn ",
+              "at": 1368582.32790788
+            }
+          },
+          {
+            "name": "double-shift-active-five",
+            "status": "FAIL",
+            "error": "('target absent', 'привет', {'text': '', 'at': 1368584.618720183})",
+            "actual": {
+              "text": "",
+              "at": 1368584.618720183
+            }
+          }
+        ],
+        "source_receipts": [
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/gnome-terminal-hint/result.json",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-physical-shift-v1/gnome-terminal/result.json",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/gnome-terminal-five/result.json"
+        ],
+        "hint_snapshot": {
+          "version": 1,
+          "stream": ":1.147700",
+          "revision": "434",
+          "owner": "/io/github/radislabus_star/LayIme/engine/lay_ime_ru/134",
+          "text": "ерка",
+          "rect": [
+            470,
+            275,
+            9,
+            18
+          ],
+          "monospace": false
+        },
+        "latency_pass_rows_ms": [
+          183.67777904495597,
+          207.741318969056
+        ],
+        "hint_images": [
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/gnome-terminal-hint/hint.png",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/gnome-terminal-hint/final.png",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/gnome-terminal-hint/fail-hint-tab.png",
+          "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v2/gnome-terminal-hint/fail-moved-boundary.png"
+        ]
+      }
+    ],
+    "chrome_controls": [
+      {
+        "case": "text:roundtrip:space",
+        "counts": {
+          "PASS": 1,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "exit": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-native-phase-v1/chrome1/chrome/result.json"
+      },
+      {
+        "case": "iframe-rich:moved-boundary:functional",
+        "counts": {
+          "PASS": 1,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "exit": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-native-phase-v1/chrome2/chrome/result.json"
+      },
+      {
+        "case": "search:space-en-ru:functional",
+        "counts": {
+          "PASS": 1,
+          "FAIL": 0,
+          "BLOCKED": 0,
+          "NOT_TESTED": 0
+        },
+        "exit": 0,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-native-phase-v1/chrome3/chrome/result.json"
+      }
+    ],
+    "firefox20": {
+      "PASS": 14,
+      "FAIL": 4,
+      "BLOCKED": 2,
+      "NOT_TESTED": 0
+    },
+    "firefox_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-native-phase-v1/firefox20/firefox/result.json",
+    "rejected_evidence": {
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-terminal-controls-v1/result.json",
+      "reason": "nine NO_RESULT setup failures incorrectly aggregated PASS; never accepted; current separate strict manifest acceptance supersedes it"
+    },
+    "fixture_correction": {
+      "control": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-punctuation-no-ime-v1/result.json",
+      "physical_shift": "/home/e/projects/lay-development-runner/kde-install-control-20261020/isolated-release109-physical-shift-v1/result.json",
+      "reason": "same Russian punctuation mismatch without IME; compiled XKB proves proper physical RU/US keys; expected output unchanged"
+    },
+    "local_gnome": "NOT_TESTED",
+    "physical_evdev": "NOT_TESTED",
+    "product_source_changed_after_gates": false
+  },
+  "terminal_timing": {
+    "konsole": {
+      "n": 15,
+      "median_ms": 19.898138009011745,
+      "p95_ms": 26.320672128349543,
+      "scope": "existing terminal RFB/PTy observed target from actor clock; PASS rows only, polling and gesture timing included; not pure core and not comparable to browser clock"
+    },
+    "kitty": {
+      "n": 15,
+      "median_ms": 20.13753610663116,
+      "p95_ms": 26.194575941190124,
+      "scope": "existing terminal RFB/PTy observed target from actor clock; PASS rows only, polling and gesture timing included; not pure core and not comparable to browser clock"
+    },
+    "gnome-terminal": {
+      "n": 2,
+      "median_ms": 195.709549007006,
+      "p95_ms": 207.741318969056,
+      "scope": "existing terminal RFB/PTy observed target from actor clock; PASS rows only, polling and gesture timing included; not pure core and not comparable to browser clock"
+    }
+  },
+  "visual_inspection": {
+    "konsole": "captured own prefix plain, continuation ерка in white box; current own snapshot monospace=true",
+    "kitty": "captured own prefix plain, continuation ерка in white box; own snapshot monospace=true",
+    "gnome-terminal": "own hint visible in white box; monospace=false and letters remain preedit until separator/Tab; this frame is not functional acceptance",
+    "scope": "one before-Tab frame each, not universal visual acceptance"
+  },
+  "native_limitations": [
+    "Kitty/Konsole11/11 each; GTK VTE GNOME Terminal3PASS8FAIL, no whole-terminal success claim.",
+    "Firefox20=14PASS4FAIL2BLOCKED; Chrome3controlsPASS, neither a new full220 matrix.",
+    "Original terminalV1 nine NO_RESULT falsely aggregated PASS is explicitly rejected; no physical terminal input ran then.",
+    "Russian punctuation fixture corrected only after same no-IME mismatch and actual compiled XKB proof; strict expected output unchanged.",
+    "Local GNOME, Wayland and physical USB not accepted."
+  ],
+  "canonical_kwin_observations": [
+    {
+      "window": "{003d12f8-4217-44ae-a378-938c479358c9}",
+      "pid": 2739414,
+      "app_id": "org.kde.konsole",
+      "wm_class": "konsole",
+      "owned_title": "LayOwned-konsole-2739400 — Konsole"
+    },
+    {
+      "window": "{51a9aa63-697e-44ee-a748-21c9583aac7d}",
+      "pid": 2740104,
+      "app_id": "",
+      "wm_class": "kitty",
+      "owned_title": "LayOwned-kitty-2740091"
+    },
+    {
+      "window": "{b2f08b6f-27ad-4a81-8e92-9117e727f91e}",
+      "pid": 2740718,
+      "app_id": "",
+      "wm_class": "gnome-terminal",
+      "owned_title": "LayOwned-gnome-terminal-2740700"
+    }
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "local_install_or_restart": false,
+  "publication": "NOT_PUBLISHED"
+}

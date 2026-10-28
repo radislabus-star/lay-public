@@ -47,3 +47,8 @@ the existing native field/focus/lease/layout transport and the owned append
 witness. Its two attempts share the original80ms deadline. Edit preparation
 retains the original native observation token and requires an actual complete
 snapshot; a read request never rebinds that edit receipt or installs projection.
+
+`terminal.rs` owns the existing Kitty/Konsole qualification and probe. The
+`desktop.rs` facade preserves the selected-desktop API and test identities;
+the common terminal receipt and executor remain unchanged. No terminal name
+adds authority, and an unavailable KDE probe never invokes GNOME.
