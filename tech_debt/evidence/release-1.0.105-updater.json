@@ -1,0 +1,23 @@
+{
+  "schema": "lay.release-updater-proof.v1",
+  "status": "PASS",
+  "published_version": "1.0.105",
+  "checks": {
+    "local": {
+      "exit": 0,
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.104\nстабильный релиз: 1.0.105\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.104 → 1.0.105\n",
+      "stderr": "",
+      "mode": "--check",
+      "apply": false
+    },
+    "remote": {
+      "exit": 0,
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.105\nстабильный релиз: 1.0.105\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+      "stderr": "",
+      "mode": "--check",
+      "apply": false
+    }
+  },
+  "local_install_or_restart": false,
+  "checked_at": "2026-10-28T02:40:59.351648+00:00"
+}

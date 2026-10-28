@@ -1,3 +1,9 @@
+> Публикация: stable [v1.0.105](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.105),
+> commit4ebd03f3, CI4/4SUCCESS. Updater --check: локально104→105, remote105current.
+> Нативный итог105: Chrome180PASS0FAIL40BLOCKED/220; Firefox для этих байтов
+> не проверен. Начата механическая изоляция106, source3548PASS; это отдельная
+> ещё не принятая версия. Подробности в owning document106 и release105receipt.
+
 # Release105 verification accepted for tested Chrome scope — 2026-10-28T02:08:21.059088+00:00
 
 V11 source3548/3548 and all18 final gatesPASS;10release artifacts resolved from compiler records, zero release warnings, exact remote installation and fixed native7/7PASS. Full unchangedChrome220 COMPLETE: original128PASS0FAIL32BLOCKED/160; additional52PASS0FAIL8BLOCKED/60; total180PASS0FAIL40BLOCKED, NOT_TESTED0. Normal/text/moved-boundary row9 isPASS. Runtimeengine1437885 SHA9e0731fd2014a0c9fc2948e56ab9a58f8d8298ce066d9db1f664fea8b538717c, source85cf6f9f9590ca5c3c942d67202e1bff9edc3fbe70208f0f2cdb871175400f9d. Space fixed7 {"n": 7, "median_ms": 100.63644195906818, "p95_ms": 147.8799961041659, "max_ms": 147.8799961041659}, DoubleShift pass rows {"n": 367, "median_ms": 48.37643774226308, "p95_ms": 62.78461706824601, "max_ms": 83.4248480387032}. RFB/X11 evidence, no USB/Wayland/current-Firefox acceptance claim.40BLOCKED retained, not PASS. Exact receipts and full observed baseline transitions in tech_debt/evidence/release-1.0.105-verification.json.

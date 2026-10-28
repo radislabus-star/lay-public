@@ -1,3 +1,21 @@
+# Текущий шаг автономной серии —105 опубликована,106 проверяется
+
+Stable v1.0.105 /4ebd03f3 опубликована2026-10-28T02:40:30Z, CI4/4SUCCESS.
+Updater локально104→105, remote105актуальна; локальныйGNOME не трогали.
+105 source85cf6f9f,3548PASS,18gatesPASS,10releasebinaries, native7/7,
+Chrome220=180PASS0FAIL40BLOCKED.40BLOCKED сохранены. Полная запись:
+tech_debt/evidence/release-1.0.105-verification.json. Git blobs/executable bits
+совпадают с проверенным source; полные FS permissions отличаются group-write
+битом, которыйGit не хранит. Это явно записано в committed-source proof.
+
+106: дваruntimeфайла observation.rs/preparation.rs; триKDEentrypoint вынесены
+в native preparation. Общийwitness/owner/verifier/executor сохранены.
+Source df48fc2b,3548/3548PASS, IME1111. Remote fullrun-F2YYfw; локальный
+run-hm92mk2e. Сейчас guarded release gates: isolated-release106-gates-v1.
+Послеgates: установить10retainedartifactтольконаKDE,7nativeконтролей,
+commit/push/CI/tag106/updater. Затем107–111 по roadmap, не останавливаться.
+НикакихHarness²/субагентов/локальныхтестовилиперезапусков.
+
 # ACTIVE SERIES:105 native accepted, publication next
 
 2026-10-28T02:08:21.059088+00:00 — V11 frozen source85cf6f9f9590ca5c3c942d67202e1bff9edc3fbe70208f0f2cdb871175400f9d;3548all-source/18gates/10release artifactsPASS; installedremote105engine1437885 SHA9e0731fd2014a0c9fc2948e56ab9a58f8d8298ce066d9db1f664fea8b538717c. Native7/7PASS and fullChrome220180PASS0FAIL40BLOCKED, complete/no held keys/config restored.40BLOCKED not acceptance; Firefox remains old baseline and scheduled108. Runtime accepted for this measured scope, no more source edits105. Next commit/push public main and own origin branch (never private origin main), fresh CI, v1.0.105 stable release and actual local/remote lay-update --check. Then106: exact AST move of3KDE-only functions out of common observation; draft/AST hashes in cache. Continue105–111 without questions/agents/Harness/local GNOME changes.

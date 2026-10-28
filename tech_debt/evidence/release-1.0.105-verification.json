@@ -1,7 +1,7 @@
 {
   "schema": "lay.release105.verification.v1",
-  "recorded_at": "2026-10-28T02:08:21.059088+00:00",
-  "status": "LOCAL_GATES_PASS_NATIVE_TESTED_SCOPE_PASS_WITH_DECLARED_BLOCKED; CI_PUBLICATION_PENDING",
+  "recorded_at": "2026-10-28T02:42:00.045416+00:00",
+  "status": "STABLE_PUBLISHED_UPDATER_VERIFIED_WITH_DECLARED_NATIVE_BLOCKED",
   "version": "1.0.105",
   "canonical_base": "c794d31d1b29c25d48c60d4dab554c5dfba88044",
   "source": {
@@ -9,7 +9,6 @@
     "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
     "sha256": "85cf6f9f9590ca5c3c942d67202e1bff9edc3fbe70208f0f2cdb871175400f9d"
   },
-  "canonical_source_equal_in_content_and_modes": true,
   "correctness_and_package": {
     "elapsed_by_lane_seconds": {
       "correctness": 452.44058826752007,
@@ -385,13 +384,77 @@
   "authority_scope": "Only existing native pending pair across own verified canonical Space successor; no new owner/reducer, unchanged revalidate and edit verifier",
   "delivery_routes_changed": false,
   "new_physical_delivery_route_added": false,
-  "ci": {
-    "status": "PENDING"
-  },
+  "ci": [
+    {
+      "name": "RustSec vulnerabilities and unsoundness",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40619519504/job/122589863879"
+    },
+    {
+      "name": "Public installer regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40619519534/job/122589863829"
+    },
+    {
+      "name": "Rust 1.97.1, tray, and extension checks",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40619519534/job/122589863742"
+    },
+    {
+      "name": "Rust 1.88.0 MSRV",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/40619519534/job/122589863561"
+    }
+  ],
   "stable_updater": {
-    "status": "PENDING_AFTER_PUBLICATION"
+    "status": "PASS",
+    "published_version": "1.0.105",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.104\nстабильный релиз: 1.0.105\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.104 → 1.0.105\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.105\nстабильный релиз: 1.0.105\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-28T02:40:59.351648+00:00"
   },
   "publication": {
-    "status": "NOT_PUBLISHED"
+    "status": "STABLE_PUBLISHED",
+    "version": "1.0.105",
+    "canonical_commit": "4ebd03f3566a981a9be384a67e1a7b1013b84ff4",
+    "tag": "v1.0.105",
+    "tag_object": "6e9e899409d8b2104ae795a7080ed57b1fd3d165",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.105",
+    "published_at": "2026-10-28T02:40:30Z",
+    "draft": false,
+    "prerelease": false,
+    "assets": [],
+    "checked_at": "2026-10-28T02:40:32.553458+00:00"
+  },
+  "canonical_worktree_equal_in_content_and_modes": true,
+  "canonical_committed_source": {
+    "canonical_commit": "4ebd03f3566a981a9be384a67e1a7b1013b84ff4",
+    "files": 1290,
+    "tested_worktree_source_sha256": "85cf6f9f9590ca5c3c942d67202e1bff9edc3fbe70208f0f2cdb871175400f9d",
+    "git_mode_source_sha256": "025a4d0e1a2d93ba65a8c9c8dc526fc5abee764ab6af9adc3429ef2686a6e29a",
+    "all_contents_equal": true,
+    "all_executable_bits_equal": true,
+    "full_filesystem_modes_equal": false,
+    "group_write_bit_difference_count": 1290,
+    "method": "Committed blobs compared to frozen tested request. Git records executable bit only; checkout/proof has group-write permission, which Git normalizes. No build/test/runtime effect."
   }
 }
