@@ -1,0 +1,16 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-30-release112-ci-observation-binding",
+  "status": "implementation_authorized",
+  "owner": "docs/development/release-1.0.112-ci-binding.md",
+  "baseline": "1ea1d44e6723c86e7553681de966e41ee39e6891",
+  "protected_paths": [
+    "scripts/test-lanes/known_failures.json",
+    "tech_debt/evidence/release-1.0.112-ci-target-observation.json"
+  ],
+  "decision": "Repair the known-failure ledger binding using all 34 real CI target summaries from run 40967927798. Preserve zero allowed failures, the published test manifest, the existing strict loader and all runtime source. Do not move v1.0.112 or replace running binaries.",
+  "invariants": ["C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C10"],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "evidence": "tech_debt/evidence/release-1.0.112-ci-target-observation.json"
+}

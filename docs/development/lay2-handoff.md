@@ -1,3 +1,31 @@
+# 2026-10-29T23:06:34Z — next task: strict CI observation binding
+
+Accepted 1.0.112 is published at public commit1ea1d44e and immutable tagv1.0.112.
+Automatic CI40967927798 executed all34 targets/3595 selected tests with0failures,
+then rejected stale known_failures.json manifest binding. Later lint/build steps
+were skipped. New owning preflight: release-1.0.112-ci-binding.md. Repair is only
+ledger hash/path metadata + real CI observation, zero allowed failures, no runtime
+source, installs, services or input changes. Existing loader and scope check PASS;
+commit/push and fresh automatic CI readback remain pending.
+
+# Publication1.0.112 verified; next task is KDE Firefox desktop deadline
+
+# Lay1.0.112 publication — verified
+
+User accepted the running version and requested push. Published2026-10-29T22:43:44Z.
+- Public release:https://github.com/radislabus-star/lay-public/releases/tag/v1.0.112
+- Public main and peeled annotated tag:1ea1d44e6723c86e7553681de966e41ee39e6891.
+- Annotated tag object:0429988c5956038f625023020553f4f401ad42d6.
+- Latest-release endpoint independently returns tagv1.0.112,draft=false,prerelease=false,target1ea1d44e.
+- Private development branch and tag pushed too; private origin/main remains untouched.
+- No build/test/install/service restart/browser input repeated for publication.
+- Only source graph/binding/receipt metadata generated for the selected accepted source.
+- Original accepted daemon pacinga3815fec is in commit. Held uninstalled experiment5d13ae93 is archived privately as CACHE/held-firefox-closed-pacing-20261030.rs; active checkout restored to published original bytes after preserving it.
+- Remote accepted runtime remains IME05d62373 +daemon35527e63 +trayc40bd104/module47768ee0, version1.0.111 until an authorized update. Publication metadata version1.0.112 does not claim new installed binaries.
+- Previous1146/1146IME,23/23focused,zero-warning build,terminal4/4cases20/20flips and limited Firefox typography evidence reused. Initial80ms Textarea desktop-observation failure remains open; no0FAIL claim.
+
+Next owning preflight:docs/development/kde-firefox-focus-deadline-map-2026-10-30.md. SOLO/no Harness/agents. Fresh diagnosis only; accepted runtime and local GNOME preserved.
+
 # 2026-10-29T22:05:07Z — installed terminal fix and Firefox natural suffix
 
 Current remote KDE runtime: IME2201796 SHA05d62373257e754997a6f742067036aa3519398fbe18acab1d73b392acc7eb6d, sourceab56c71b484c1bd638cc62588120b84621d3f20224f9279ca4d59c38b707a942. Tray2201829 scriptc40bd1041b25b1230e9dc511ac6ea91bc5f24d21c47d60b2846007adb77696f3 +module47768ee05f1f082fdf56ae8ab6d08c8da736e7f0ecade9be9d1e5ba90018c85f. Daemon1722873/35527e63, global IBus3168326, original Firefox988548 and config6e62eab3 unchanged. Final readback confirms installed/loaded IME equality and exact tray assets. Only KDE tray and idle IME factory restarted. Local GNOME untouched. Version1.0.111 unpublished; no push/release in this turn. Held fast daemon source remains UNINSTALLED. SOLO/no Harness/agents.

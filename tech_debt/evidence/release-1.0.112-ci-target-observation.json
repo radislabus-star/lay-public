@@ -1,0 +1,253 @@
+{
+  "schema": "lay.test-failure-observation.v1",
+  "recorded_at_utc": "2026-10-29T23:05:19.513139+00:00",
+  "observation_kind": "reconstructed_from_complete_github_ci_target_summaries",
+  "source_commit": "1ea1d44e6723c86e7553681de966e41ee39e6891",
+  "manifest_sha256": "2ded339380fe2075664754e7fbf07d29043144aacb230205226d97fc2f6f81b0",
+  "ci": {
+    "run_url": "https://github.com/radislabus-star/lay-public/actions/runs/40967927798",
+    "head_sha": "1ea1d44e6723c86e7553681de966e41ee39e6891",
+    "conclusion": "failure",
+    "job": "Rust 1.97.1, tray, and extension checks",
+    "step": "Hermetic Rust correctness and package lanes",
+    "event_at_utc": "2026-10-29T22:51:56.8784444Z",
+    "step_transcript_sha256": "55ae6d641da4611efec91d156ebe9f4d18f2a215d2e9b41d6aa6bff5c9c1c13d",
+    "last_error": "known-failure manifest is bound to a different test manifest",
+    "later_lint_and_release_build_steps": "skipped",
+    "summary_json_emitted": false
+  },
+  "invocation": {
+    "action": "all",
+    "lanes": [
+      "correctness",
+      "package"
+    ]
+  },
+  "lanes": [
+    "correctness",
+    "package"
+  ],
+  "selected_by_lane": {
+    "correctness": 3559,
+    "package": 36
+  },
+  "selected_total": 3595,
+  "target_count": 34,
+  "targets": [
+    {
+      "target": "bin:lay-daemon",
+      "selected": 340,
+      "failures": 0,
+      "elapsed_seconds": 126.969
+    },
+    {
+      "target": "bin:lay-debug-actions",
+      "selected": 12,
+      "failures": 0,
+      "elapsed_seconds": 0.004
+    },
+    {
+      "target": "bin:lay-ibus-engine",
+      "selected": 1146,
+      "failures": 0,
+      "elapsed_seconds": 106.73
+    },
+    {
+      "target": "bin:lay-l11-serve",
+      "selected": 6,
+      "failures": 0,
+      "elapsed_seconds": 0.004
+    },
+    {
+      "target": "bin:lay-memory-report",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 0.003
+    },
+    {
+      "target": "bin:lay-nanda-dataset",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 0.014
+    },
+    {
+      "target": "bin:lay-nanda-wave-eval",
+      "selected": 42,
+      "failures": 0,
+      "elapsed_seconds": 1.107
+    },
+    {
+      "target": "bin:lay-nanda-wave-train",
+      "selected": 44,
+      "failures": 0,
+      "elapsed_seconds": 1.28
+    },
+    {
+      "target": "bin:lay-test-input",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 0.003
+    },
+    {
+      "target": "bin:lay_output_transaction_microproof",
+      "selected": 8,
+      "failures": 0,
+      "elapsed_seconds": 0.004
+    },
+    {
+      "target": "lib:lay",
+      "selected": 1855,
+      "failures": 0,
+      "elapsed_seconds": 113.823
+    },
+    {
+      "target": "test:correction_gate_metrics",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 1.721
+    },
+    {
+      "target": "test:decoder_alternating_stress",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 1.045
+    },
+    {
+      "target": "test:decoder_transition_regression",
+      "selected": 5,
+      "failures": 0,
+      "elapsed_seconds": 1.902
+    },
+    {
+      "target": "test:ibus_wire_compat",
+      "selected": 3,
+      "failures": 0,
+      "elapsed_seconds": 0.004
+    },
+    {
+      "target": "test:ime_space_boundary_contract",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 0.003
+    },
+    {
+      "target": "test:input_gate_operator_contract",
+      "selected": 2,
+      "failures": 0,
+      "elapsed_seconds": 0.003
+    },
+    {
+      "target": "test:input_gate_space_contract",
+      "selected": 6,
+      "failures": 0,
+      "elapsed_seconds": 6.848
+    },
+    {
+      "target": "test:l3_context_feedback_overlay_contract",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 1.136
+    },
+    {
+      "target": "test:l3_context_metrics_contract",
+      "selected": 2,
+      "failures": 0,
+      "elapsed_seconds": 0.003
+    },
+    {
+      "target": "test:l3_online_resource_contract",
+      "selected": 2,
+      "failures": 0,
+      "elapsed_seconds": 0.003
+    },
+    {
+      "target": "test:l4_feedback_memory_contract",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 0.003
+    },
+    {
+      "target": "test:live_candidate_gate_metrics",
+      "selected": 6,
+      "failures": 0,
+      "elapsed_seconds": 2.722
+    },
+    {
+      "target": "test:protected_words_runtime",
+      "selected": 2,
+      "failures": 0,
+      "elapsed_seconds": 1.327
+    },
+    {
+      "target": "test:restore_word_cli",
+      "selected": 4,
+      "failures": 0,
+      "elapsed_seconds": 4.837
+    },
+    {
+      "target": "test:space_boundary_shift_mechanism",
+      "selected": 7,
+      "failures": 0,
+      "elapsed_seconds": 4.066
+    },
+    {
+      "target": "test:td113_hybrid_source_contract",
+      "selected": 7,
+      "failures": 0,
+      "elapsed_seconds": 0.023
+    },
+    {
+      "target": "test:text_edit_gate_contract",
+      "selected": 5,
+      "failures": 0,
+      "elapsed_seconds": 0.089
+    },
+    {
+      "target": "test:text_mutation_monopoly_contract",
+      "selected": 16,
+      "failures": 0,
+      "elapsed_seconds": 0.109
+    },
+    {
+      "target": "test:tray_ui_contract",
+      "selected": 18,
+      "failures": 0,
+      "elapsed_seconds": 0.007
+    },
+    {
+      "target": "test:typing_assist_alternating_stress",
+      "selected": 1,
+      "failures": 0,
+      "elapsed_seconds": 2.675
+    },
+    {
+      "target": "test:typing_assist_mixed_corpus",
+      "selected": 23,
+      "failures": 0,
+      "elapsed_seconds": 26.459
+    },
+    {
+      "target": "test:typing_assist_short_alternating",
+      "selected": 4,
+      "failures": 0,
+      "elapsed_seconds": 2.38
+    },
+    {
+      "target": "test:typing_transition_authority_contract",
+      "selected": 21,
+      "failures": 0,
+      "elapsed_seconds": 0.011
+    }
+  ],
+  "failures": [],
+  "failures_by_lane": {
+    "correctness": 0,
+    "package": 0
+  },
+  "known_failure_contract_at_run_sha256": "0ccc4df151ac4a85054ba806e09fbc105715e3a2e654edc7e578998f5deebb83",
+  "coverage_check": "All distinct CI target identities and selected counts exactly equal the complete published correctness/package manifest; no missing, duplicate or failing target.",
+  "verdict_scope": "All selected test targets passed. The final ledger binding check failed; this observation is not an overall CI PASS or native input acceptance.",
+  "runtime_authority_changed": false,
+  "installed_runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}
