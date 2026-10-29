@@ -279,6 +279,7 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         ch: char,
     ) -> fdo::Result<()> {
+        self.observe_kde_native_terminal_input_mode(ch);
         self.observe_native_restoration_letter(ch);
         self.push_tail_char(ch);
         let frame = self

@@ -1,0 +1,30 @@
+#!/bin/sh
+set -eu
+
+# Keep the existing Firefox adapter local to the explicit KDE native client.
+case ":${XDG_CURRENT_DESKTOP:-}:" in
+    *:KDE:*) ;;
+    *) printf '%s\n' 'This Firefox launcher requires a KDE session.' >&2; exit 1 ;;
+esac
+
+browser=${1:?Usage: lay-firefox-kde-native /absolute/path/to/firefox [arguments...]}
+shift
+case "$browser" in
+    /*) ;;
+    *) printf '%s\n' 'The Firefox binary path must be absolute.' >&2; exit 1 ;;
+esac
+library="$HOME/.local/lib/lay/compat/liblay-firefox-ibus-reset-notify.so"
+if [ ! -x "$browser" ] || [ ! -r "$library" ]; then
+    printf '%s\n' 'Lay Firefox native binary or compatibility library is missing.' >&2
+    exit 1
+fi
+
+unset IBUS_ENABLE_SYNC_MODE
+if [ -n "${LD_PRELOAD:-}" ]; then
+    preload="$library:$LD_PRELOAD"
+else
+    preload="$library"
+fi
+# GTK's process-local accessibility switch does not select a desktop backend.
+# The read-only KDE suffix view needs Firefox's actual character coordinates.
+exec env GTK_IM_MODULE=ibus GNOME_ACCESSIBILITY=1 LD_PRELOAD="$preload" "$browser" "$@"

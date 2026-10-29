@@ -1,0 +1,47 @@
+{
+  "schema": "lay.accepted-publication.v1",
+  "version": "1.0.112",
+  "accepted_runtime_version": "1.0.111",
+  "acceptance": "User accepted the exact running version and requested push.",
+  "ime_sha256": "05d62373257e754997a6f742067036aa3519398fbe18acab1d73b392acc7eb6d",
+  "daemon_sha256": "35527e63ebff48a4cc6711a71e62999e737298c252583990f1a308a388988cec",
+  "tray_script_sha256": "c40bd1041b25b1230e9dc511ac6ea91bc5f24d21c47d60b2846007adb77696f3",
+  "tray_module_sha256": "47768ee05f1f082fdf56ae8ab6d08c8da736e7f0ecade9be9d1e5ba90018c85f",
+  "source_proof": {
+    "ime_passed": 1146,
+    "focused_passed": 23,
+    "warnings": 0,
+    "source": "ab56c71b484c1bd638cc62588120b84621d3f20224f9279ca4d59c38b707a942"
+  },
+  "native_terminal": {
+    "cases_passed": 4,
+    "flips_passed": 20,
+    "failures": 0,
+    "median_ms": 20.392,
+    "p95_ms": 24.774,
+    "timing": "second Shift press to PTY receipt including12ms hold"
+  },
+  "native_firefox": {
+    "first_batch": "3PASS/1FAIL",
+    "targeted_textarea_recheck": "1PASS/0FAIL",
+    "open": "Initial KDE desktop observation timeout80.204ms before first geometry sample; repeat PASS does not close intermittent failure.",
+    "hint_and_accepted_ink_bounds": [
+      300,
+      371,
+      330,
+      380
+    ]
+  },
+  "full_historical_matrix": {
+    "firefox": "159PASS/24FAIL/37BLOCKED/220",
+    "chrome": "179PASS/0FAIL/41BLOCKED/220"
+  },
+  "publication_source_selection": {
+    "path": "src/bin/lay_daemon/kde/firefox_replay_pacing.rs",
+    "selected_original_sha256": "a3815fec045f9d3f786a5d58d8ae1d2ac212caeafb624e33b31f3884854d66e8",
+    "excluded_worktree_sha256": "5d13ae93516dc0f1260d326c5223899854dd30e309f1efd833a74e37c8cb609d",
+    "reason": "Publish original pacing actually loaded in accepted daemon35527e63; preserve uninstalled fast experiment outside index. All other14 recorded daemon snapshot files match accepted source."
+  },
+  "publication_operations": "Version metadata, accepted-source snapshot selection, generated graph metadata, commit/push/tag/release only; no tests/build/install/restart/native input repeated.",
+  "not_claimed": "No new full browser matrix,0FAIL, published-version binary rebuild or arbitrary website/Qt6 acceptance."
+}

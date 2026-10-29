@@ -1,6 +1,27 @@
 //! KDE terminal qualification; actual input/edit authority stays common.
 use crate::trace;
 
+impl crate::engine::LayIbusEngine {
+    /// Observe the existing native literal path; never emit or admit text here.
+    pub(crate) fn observe_kde_native_terminal_input_mode(&mut self, ch: char) {
+        if self.config.active_layout_backend() != lay::desktop::LayoutBackend::Kde
+            || !self.uses_native_terminal_input()
+            || !self.composition.buffer.is_empty()
+        {
+            return;
+        }
+        // Native keys enter the terminal literally, even if KDE's group and
+        // the selected IBus factory differ. Keep the existing decoder in step
+        // with that observed script, without switching factories mid-word.
+        let mut literal = [0; 4];
+        let mode = lay::keyboard::preferred_layout_for_text(
+            ch.encode_utf8(&mut literal),
+            self.layout_gesture.layout_is_ru,
+        );
+        self.set_layout_is_ru(mode);
+    }
+}
+
 pub(in crate::window_interaction) fn native_terminal_focus_purpose_supported(purpose: u32) -> bool {
     // GTK/VTE reports TERMINAL even when it advertises surrounding text.
     // This only permits the existing exact current-field focus probe.

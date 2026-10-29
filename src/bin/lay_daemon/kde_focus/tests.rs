@@ -4,6 +4,37 @@ use std::os::unix::fs::PermissionsExt;
 const WINDOW_A: &str = "12345678-1234-4234-8234-123456789abc";
 const WINDOW_B: &str = "12345678-1234-4234-8234-123456789abd";
 
+#[test]
+#[ignore = "explicit read-only live KDE observation benchmark"]
+fn live_kwin_focus_observation_latency() {
+    assert_eq!(
+        std::env::var("LAY_KDE_LIVE_OBSERVATION_BENCH").as_deref(),
+        Ok("1")
+    );
+    assert_eq!(std::env::var("DISPLAY").as_deref(), Ok(":71"));
+    assert_eq!(std::env::var("XDG_CURRENT_DESKTOP").as_deref(), Ok("KDE"));
+    let mut samples_ms = Vec::new();
+    for _ in 0..24 {
+        let started = Instant::now();
+        let observation = read().expect("live canonical KWin observation");
+        assert!(!observation.identity.is_empty());
+        samples_ms.push(started.elapsed().as_secs_f64() * 1000.0);
+    }
+    let mut ordered = samples_ms.clone();
+    ordered.sort_by(f64::total_cmp);
+    eprintln!(
+        "LAY_KDE_FOCUS_LATENCY {}",
+        serde_json::json!({
+            "samples_ms": samples_ms,
+            "median_ms": (ordered[11] + ordered[12]) / 2.0,
+            "p95_ms": ordered[22],
+            "max_ms": ordered[23],
+            "keyboard_input": false,
+            "window_metadata_exported": false,
+        })
+    );
+}
+
 fn reply(uuid: &str, title: &str) -> RawWindow {
     RawWindow {
         uuid: uuid.into(),

@@ -564,6 +564,36 @@ impl LayImeBridge {
         true
     }
 
+    /// A text-free observation of processed input, never a client receipt.
+    pub(crate) async fn native_replay_processed_v1_inner(
+        &self,
+        expected_epoch: u64,
+        expected_path: String,
+        expected_layout_is_ru: bool,
+    ) -> fdo::Result<bool> {
+        let token = self.bridge_admission_token().await?;
+        if expected_path.is_empty() || !self.shared_active_path_matches(&expected_path) {
+            return Ok(false);
+        }
+        let iface_ref = self
+            .ibus_connection
+            .object_server()
+            .interface::<_, LayIbusEngine>(expected_path.as_str())
+            .await
+            .map_err(|error| fdo::Error::Failed(error.to_string()))?;
+        let engine = iface_ref.get().await;
+        let processed = self.bridge_token_is_live(&engine, token.as_ref())
+            && engine.native_replay_processed(
+                expected_epoch,
+                &expected_path,
+                expected_layout_is_ru,
+            );
+        crate::trace::record(format!(
+            r#"{{"kind":"ibus_native_replay_processed","processed":{processed},"epoch":{expected_epoch},"target_layout_is_ru":{expected_layout_is_ru}}}"#
+        ));
+        Ok(processed)
+    }
+
     pub(crate) async fn cancel_exact_manual_toggle_suppression_v2_inner(
         &self,
         expected_epoch: u64,

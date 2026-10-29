@@ -1,0 +1,43 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-29-kde-firefox-owned-preedit-observation",
+  "decision": "Only KDE Firefox may project a fresh independently read complete native field back to its already-current owned-preedit external boundary. Preserve the current witness across the adjacent actual observation, including a held local key, while retaining the existing manual held-key prohibition. Do not restore a stale or missing witness, issue KnownStart, install native edit binding or create a delivery route.",
+  "reason": "Native rows show Firefox reporting one trailing character then empty surrounding text during owned-preedit Backspace, and a full first word with a lagging caret during managed insertion. Both invalidate the current boundary before a reverse Double Shift or later Tab. The existing generic observation carry also depends on manual input-release retirement, although observation preservation itself grants no edit authority.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/compat/lay-firefox-kde-native",
+    "scripts/compat/README.md",
+    "src/bin/lay_ibus_engine/hint_view.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/hint_geometry.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/presentation.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/bridge.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/tests.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs",
+    "src/bin/lay_daemon/kde/firefox_replay_receipt.rs",
+    "src/bin/lay_daemon/layout_controller.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs",
+    "scripts/test-lanes/manifest.json",
+    "src/bin/lay_ibus_engine/kde/firefox/owned_preedit_observation.rs",
+    "src/bin/lay_ibus_engine/window_interaction/mod.rs"
+  ],
+  "verification": "Pure projection tests bind complete native text and exact unselected caret to the current owner, witness, layout, epoch and existing external prefix/suffix. Fail closed for stale/missing proof, foreign prefix or suffix, different token, selection, privacy, atomic operation, focus/lease/layout/epoch/revision changes. A held key can preserve read evidence but must still forbid manual toggle. Source RED/GREEN, complete affected IME lane, warning-free release, exact loaded bytes, then short causal controls before longer series and window modes. Preserve every prior failure receipt.",
+  "not_tested": "Rejected before build/install: a fresh AT-SPI field alone cannot bind an older owned preedit to the same native field. Unbuilt source experiment archived outside the checkout and removed. No runtime change from this proposal.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "status": "rejected_before_build"
+}

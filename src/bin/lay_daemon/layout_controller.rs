@@ -75,14 +75,18 @@ pub(super) fn wait_for_ime_committed_tail_settlement(
     expected_layout_is_ru: bool,
     lease: &ImeDelegatedTailLease,
     target_path: Option<&str>,
+    input_processed: impl FnMut() -> Result<bool, String>,
     verify_focus: impl FnMut() -> Result<(), String>,
+    readback_matches: impl Fn(&str, &str) -> bool,
 ) -> Result<(), String> {
     ime_bridge::wait_for_committed_tail_settlement(
         expected_tail,
         expected_layout_is_ru,
         lease,
         target_path,
+        input_processed,
         verify_focus,
+        readback_matches,
     )
 }
 
@@ -516,6 +520,14 @@ pub(super) fn cancel_exact_ime_manual_toggle_handoff_v2(
         true => Ok(()),
         false => Err("focused IME rejected exact handoff cancellation".to_string()),
     }
+}
+
+pub(super) fn native_ime_replay_processed(
+    expected_epoch: u64,
+    expected_path: &str,
+    expected_layout_is_ru: bool,
+) -> Result<bool, String> {
+    ime_bridge::native_replay_processed(expected_epoch, expected_path, expected_layout_is_ru)
 }
 
 pub(super) fn cancel_exact_ime_autocorrect_suppression(

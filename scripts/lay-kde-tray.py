@@ -72,6 +72,17 @@ class InlineHintProjection:
                 return False, None
             if type(value.get("monospace")) is not bool:
                 return False, None
+            if type(value.get("outlined", False)) is not bool:
+                return False, None
+            style = value.get("suffix_style")
+            if style is not None:
+                if not isinstance(style, dict):
+                    return False, None
+                family = style.get("font_family")
+                if family is not None and (not isinstance(family, str)
+                        or not family.strip() or len(family) > 128
+                        or any(ord(c) < 32 or 127 <= ord(c) <= 159 for c in family)):
+                    return False, None
         except (ValueError, TypeError, AttributeError):
             return False, None
         self.revision = number
@@ -347,11 +358,19 @@ def main() -> int:
             if height <= QFontMetrics(font).height() * 2:
                 font.setPixelSize(max(8, int(height * 0.78)))
             self.label.setFont(font)
+            border = "1px solid #777777" if frame.get("outlined", False) else "none"
+            self.label.setStyleSheet(
+                f"color: #000000; background: #ffffff; border: {border}; margin: 0; padding: 0;"
+            )
             self.label.setText(frame["text"])
             metrics = QFontMetrics(font)
             available = screen.geometry().right() - x + 1
             self.label.resize(max(1, min(available, metrics.horizontalAdvance(frame["text"]) + 2)), height)
             self.label.move(x, y)
+            self.label.clearMask()
+            if frame.get("suffix_style") is not None:
+                from lay_kde_firefox_hint import render_suffix
+                render_suffix(self.label, frame["suffix_style"], available, height)
             # This view owns only the unaccepted suffix. Keep its complete
             # white rectangle opaque, including on noncomposited desktops.
             self.label.show()

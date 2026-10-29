@@ -37,8 +37,8 @@
     },
     {
       "evidence": [
-        "src/bin/lay_daemon/layout_controller.rs:L335:call_replace_text()",
-        "src/bin/lay_daemon/layout_controller.rs:L365:try_ime_replace_tail()",
+        "src/bin/lay_daemon/layout_controller.rs:L339:call_replace_text()",
+        "src/bin/lay_daemon/layout_controller.rs:L369:try_ime_replace_tail()",
         "src/bin/lay_daemon/text_output/replacement.rs:L78:apply_text_replacement_pipeline()",
         "src/text_edit/executor.rs:L108:AuthorizedEdit",
         "src/text_edit/executor.rs:L139:authorize_backend_edit()"
@@ -61,8 +61,8 @@
     {
       "evidence": [
         "src/bin/lay_ibus_engine/engine/types.rs:L466:PendingSystemOutcomeFeedback",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6581:.arm_visible_postcondition_from_surrounding_dispatch()",
-        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L6656:.observe_visible_postcondition()"
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L7147:.arm_visible_postcondition_from_surrounding_dispatch()",
+        "src/bin/lay_ibus_engine/window_interaction/observation.rs:L7222:.observe_visible_postcondition()"
       ],
       "id": "observed-outcome-feedback",
       "status": "PASS",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:72022",
-        "graph_nodes:27966"
+        "graph_links:72689",
+        "graph_nodes:28345"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "dc3914f776332ecfc2b8e8bfa039e583ced40d8af9dbca55745d6ffdebd53c66",
-  "graph_fingerprint": "ed58c068a5b44fd3f695447d6a350d3d8661c6b531ab8a7a971747f5351a9494",
-  "graph_links": 72022,
-  "graph_nodes": 27966,
+  "graph_binding_fingerprint": "6682631392631ea47b9eabe04c468ed37b7daeaad7bcd163663dbe5373cb6ca7",
+  "graph_fingerprint": "654718a80c38e0151b6853fe0011d587fb486fc117a2848da1e755a0b078d65a",
+  "graph_links": 72689,
+  "graph_nodes": 28345,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "08a7daad94a3f163b5ba012e23e15c003e45904635966bd1d1aa815e2a76e68e",
+  "source_fingerprint": "2c61443dd9affd55da663a5e060fdf8fd5782ff8493aa46449559391856161d5",
   "verdict": "PASS"
 }

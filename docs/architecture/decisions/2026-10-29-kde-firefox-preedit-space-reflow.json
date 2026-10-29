@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-29-kde-firefox-preedit-space-reflow",
+  "decision": "A KDE/Firefox-only presentation adapter may acknowledge the exact two separator changes observed after an owned preedit commit: the immediately preceding NBSP becomes ASCII Space, and the newly emitted final ASCII Space becomes NBSP. Compare the entire expected and actual snapshot with unchanged caret/selection. Reuse the existing pending postcondition and sole tail owner; do not normalize arbitrary whitespace or change mutation authority/delivery.",
+  "reason": "Native reference/current rich controls fail after Tab. New passive wire reproduces ordinary inputPASS/richFAIL: ManualToggleV3 returns3, but VisibleTailV4 returns passive:unknown-context before replay. The pending expected owned tail hash5a181987736dcf2d represents prior NBSP/new final Space; actual DOM has prior ASCII/new final NBSP. The existing GNOME/common acknowledgement is byte-identical to installed update-source and intentionally accepts only the final emitted Space; an existing negative test rejects arbitrary earlier-prefix change. Keep that test. Reuse KDE/Chrome's exact presentation acknowledgement pattern for this explicit Firefox case.",
+  "invariants": ["C01", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10"],
+  "protected_paths": [
+    "scripts/compat/lay-firefox-kde-native",
+    "scripts/compat/README.md",
+    "scripts/test-lanes/manifest.json",
+    "src/bin/lay_ibus_engine/hint_view.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/hint_geometry.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/presentation.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs"
+  ],
+  "verification": "First source RED on the owned-prefix form using the existing private composition/Tab fixture. Then semantic positive/negative controls for full snapshot, original pending identity, epoch, focus, selection and all unrelated text. Preserve existing generic/GNOME rejection. Short native ordinary/rich causal comparison before the three rich fields, window modes and existing held Shift/display/Tab/roundtrip controls. Retain exact source/build/loaded hashes and native timings; no full-matrix recount from a diagnostic subset.",
+  "not_tested": "Implementation and changed-byte native acceptance pending. Full historical KDE matrix remains unchanged. No GNOME/Chrome runtime install/restart or public release authorized by this decision.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

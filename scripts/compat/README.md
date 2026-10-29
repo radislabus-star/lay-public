@@ -52,6 +52,24 @@ to load the adapter. Restore the prior desktop Exec lines and remove the
 launcher/library to roll back. This adapter covers the measured Firefox
 155.0.1/GTK 3 route; rerun the controls after a Firefox or GTK ABI change.
 
+## Native Firefox on KDE
+
+For an already installed native Firefox on KDE, use the separate
+`lay-firefox-kde-native /absolute/path/to/firefox [arguments...]` launcher.
+It loads the same unchanged adapter from
+`~/.local/lib/lay/compat/liblay-firefox-ibus-reset-notify.so`, preserves inherited
+preloads, selects GTK IBus only for Firefox, and removes synchronous IBus mode.
+It also sets the GTK process flag `GNOME_ACCESSIBILITY=1` for this Firefox only.
+This exposes actual character bounds to the read-only KDE hint renderer; it
+does not select the GNOME desktop, change global accessibility settings or
+change the Firefox profile. KDE owned preedit hints must use those bounds:
+Firefox's raw IBus cursor rectangle can describe the start of the composition.
+It requires KDE and refuses a missing browser or library. The existing Snap
+launcher and GNOME entries remain unchanged. A KDE desktop entry may use this
+command with `OnlyShowIn=KDE`; it must not change the default browser or MIME
+associations. Restart the browser normally and verify its actual library mapping
+before accepting a manual result; compilation alone is not client acceptance.
+
 ## KDE IBus candidate-panel focus
 
 On the measured KDE Wayland/direct GTK IBus route, IBus can map its candidate

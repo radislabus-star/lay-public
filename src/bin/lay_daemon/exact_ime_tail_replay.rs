@@ -1,4 +1,11 @@
 use crate::native_input::VirtualDevice;
+#[path = "kde/firefox_replay_pacing.rs"]
+mod firefox_pacing;
+#[path = "kde/firefox_replay_receipt.rs"]
+mod firefox_receipt;
+pub(super) use firefox_receipt::readback_policy as exact_ime_tail_readback_policy;
+#[path = "kde/exact_replay_diagnostics.rs"]
+mod kde_diagnostics;
 use lay::keyboard::{map_events_to_layout, text_to_key_events, KeyEvent};
 use lay::manual_toggle::{ManualTogglePlan, ManualToggleRoute};
 use lay::text_edit::{
@@ -10,8 +17,9 @@ use lay::word_buffer::WordBuffer;
 use super::{
     activate_target_layout_once_for_exact_replay, cancel_exact_ime_autocorrect_suppression,
     cancel_exact_ime_manual_toggle_handoff_v2, capture_exact_focused_window_identity,
-    emit_backspaces, log, release_possible_modifiers_fast,
+    emit_backspaces, emit_backspaces_for_text_replace_fast, log, release_possible_modifiers_fast,
     replay_keycodes_isolated_paced_after_modifier_cleanup,
+    replay_text_insert_keycodes_fast_after_modifier_cleanup,
     suppress_next_ime_autocorrect_for_exact_replay, validate_isolated_replay_bounds,
     verify_exact_focused_window_identity, ExecutingGuard, ImeCommittedTailReplay,
 };
@@ -231,6 +239,13 @@ pub(super) fn execute_exact_ime_tail_replay(
         );
         return None;
     }
+    let fast_pacing = firefox_pacing::use_fast_replay(
+        input_isolated,
+        virtual_keyboard.requires_client_settlement(),
+        &plan.edit.original_token,
+        lease.expected_suffix(),
+        &focused_window,
+    );
     if let Err(error) = verify_exact_focused_window_identity(&focused_window) {
         log_replay_error(
             "warning: exact IME tail replay focus changed before delete",
@@ -239,7 +254,12 @@ pub(super) fn execute_exact_ime_tail_replay(
         );
         return None;
     }
-    if let Err(error) = emit_backspaces(virtual_keyboard, plan.backspaces) {
+    let deleted = if fast_pacing {
+        emit_backspaces_for_text_replace_fast(virtual_keyboard, plan.backspaces)
+    } else {
+        emit_backspaces(virtual_keyboard, plan.backspaces)
+    };
+    if let Err(error) = deleted {
         log_replay_error(
             "warning: exact IME tail replay delete became indeterminate",
             &error,
@@ -255,9 +275,12 @@ pub(super) fn execute_exact_ime_tail_replay(
         );
         return None;
     }
-    if let Err(error) =
+    let inserted = if fast_pacing {
+        replay_text_insert_keycodes_fast_after_modifier_cleanup(virtual_keyboard, &prepared.events)
+    } else {
         replay_keycodes_isolated_paced_after_modifier_cleanup(virtual_keyboard, &prepared.events)
-    {
+    };
+    if let Err(error) = inserted {
         log_replay_error(
             "warning: exact IME tail replay insert became indeterminate after delete",
             &error,
@@ -277,13 +300,35 @@ pub(super) fn execute_exact_ime_tail_replay(
     // processed its frames. Reuse the exact-tail observation already used for
     // queued gestures; a failure is indeterminate and never retries the edit.
     if virtual_keyboard.requires_client_settlement() {
+        let processing = firefox_receipt::processing_readiness(
+            &focused_window,
+            fast_pacing,
+            lease.expected_epoch(),
+            &target_path,
+            plan.target_layout_is_ru,
+        );
         if let Err(error) = super::wait_for_ime_committed_tail_settlement(
             &prepared.visible_after,
             plan.target_layout_is_ru,
             &lease,
             Some(&target_path),
+            || processing.input_processed(),
             || verify_exact_focused_window_identity(&focused_window),
+            |actual, expected| processing.tail_matches(actual, expected),
         ) {
+            if processing.retain_processed_result() {
+                // All native presses are proved, but the client result remains
+                // unverified. Release isolation without cancelling the existing
+                // bounded result provenance before its final snapshot arrives.
+                handoff_cleanup.disarm();
+                kde_diagnostics::record_refusal(
+                    "native_processed_receipt_pending",
+                    &error,
+                    may_retain,
+                );
+                log("· KDE Firefox native output processed; actual client result pending");
+                return None;
+            }
             log_replay_error(
                 "warning: remote exact replay did not settle before retirement",
                 &error,
@@ -310,6 +355,7 @@ pub(super) fn execute_exact_ime_tail_replay(
 }
 
 fn log_replay_error(stage: &str, error: &dyn std::fmt::Display, may_retain: bool) {
+    kde_diagnostics::record_refusal(stage, error, may_retain);
     if may_retain {
         log(&format!("{stage}: {error}"));
     } else {

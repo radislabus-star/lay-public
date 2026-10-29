@@ -1,0 +1,41 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-29-kde-firefox-owned-erasure-echo",
+  "decision": "For KDE Firefox only, retain inert provenance of a successfully published local owned-preedit Backspace in the existing ManagedWordStartWitness. Recognize at most one exact trailing-erased-character surrounding echo, keep mutation refused, and require the immediately following exact original external snapshot in the same owner/epoch/layout/revision chain before carrying that same witness. Any other snapshot/key/focus/selection/state mismatch discards the inert effect.",
+  "reason": "The retained native active roundtrip succeeds once and its decoder/Backspace succeeds, then surrounding text reports the erased character after the start caret before returning to the exact original external snapshot. The existing word owner is current before this known local erasure. Its publication effect supplies causal provenance; text coincidence or new AT-SPI field matching must not restore authority.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/compat/lay-firefox-kde-native",
+    "scripts/compat/README.md",
+    "src/bin/lay_ibus_engine/hint_view.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/hint_geometry.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/presentation.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "src/bin/lay_ibus_engine/bridge.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/tests.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs",
+    "src/bin/lay_daemon/kde/firefox_replay_receipt.rs",
+    "src/bin/lay_daemon/layout_controller.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs",
+    "scripts/test-lanes/manifest.json",
+    "src/bin/lay_ibus_engine/kde/firefox/preedit_echo.rs"
+  ],
+  "verification": "Test the exact local-key/output/echo/final-snapshot order through the existing owner. Assert no authority after the transient echo and no resurrection without a successful same-owner erasure effect. Cover stale owner/lease/focus/layout/epoch/revision, selection, foreign prefix/suffix/character, missing or skipped receipt, intervening input, privacy and atomic/sealed state. Preserve the held-key manual barrier and all generic/GNOME behavior. Then complete affected IME source lane, warning-free release, loaded-byte identity and short native cause before longer retained controls.",
+  "not_tested": "Implementation and native acceptance pending. The independent AT-SPI re-projection proposal was rejected before build/install; no accepted source or runtime was replaced by it.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

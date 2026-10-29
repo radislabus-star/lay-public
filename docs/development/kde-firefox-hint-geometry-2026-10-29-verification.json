@@ -1,0 +1,347 @@
+{
+  "schema": "lay.kde-firefox-hint-geometry-verification.v1",
+  "verified_at": "2026-10-28T21:35:40.975020+00:00",
+  "status": "RENDER_PASS_WITH_PREEXISTING_POST_TAB_SHIFT_FAILURES",
+  "scope": {
+    "desktop": "KDE",
+    "session": "X11 DISPLAY :71",
+    "browser": "native Firefox159.0 with existing adapter; verified by fixture capabilities and manual process application.ini",
+    "device_pixel_ratio": 1,
+    "input": "native RFB key/pointer events on owned fixtures",
+    "physical_usb_input": "NOT_TESTED",
+    "long_documents": "NOT_TESTED; inherited native reader limit4096 characters",
+    "Wayland_GNOME_Chrome": "NOT_TESTED in this task"
+  },
+  "source": {
+    "canonical_checkout": "/home/ubu/projects/lay-dependency-updates-20261027",
+    "branch": "codex/browser-matrix-repair-20261027",
+    "base_head": "b835ca478198d6cb765a2246329d5646966c118c",
+    "tested": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1303,
+      "sha256": "31343204cfec623daeb9ebc91db9b019c54c04efb44095e59a11e789d292ecd6"
+    },
+    "built": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1303,
+      "sha256": "4f69beb0ce810ca5798fcc9e6c278461a7c9af2d0ebb3d706a1232f85255a1f6"
+    },
+    "short_pass": 13,
+    "ime_correctness_package_pass": 1123,
+    "catalogued_IME_tests": 1126,
+    "performance_tests_not_run": 3,
+    "compiler_warnings": 0
+  },
+  "runtime": {
+    "base_version": "1.0.111",
+    "unpublished_candidate": true,
+    "engine_pid": 1443794,
+    "engine_sha256": "004f6285a1725f280a4549c18ffa8d8937d6c27728b4dd0edfddf85a068e1c28",
+    "installed_and_activation_bytes_match": true,
+    "protected_process_pids": [
+      374525,
+      3168326,
+      3228081
+    ],
+    "manual_firefox_pid": 988548,
+    "manual_firefox_same_adapter": true,
+    "config_sha256": "6e62eab3c278c733fedb47e45ef6306105a3700222cf9f7a4e5bff4bd92264d1",
+    "debug_flag_restored": true,
+    "input_ready": true,
+    "delivery_routes_changed": false,
+    "daemon_tray_global_ibus_restart": false
+  },
+  "native_modes": {
+    "normal": {
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/kde-firefox-owned-hint-ready-ten-fields-native-v5/firefox/result.json",
+      "receipt_sha256": "ba0acaa8569ba0447ff4de68b282f48e0d28a9d6193d311ece99e06202ee8d51",
+      "actor_sha256": "f832cd377ac12d8c5ee93ae57a0f8f4b65912691703397a487387761113c32db",
+      "counts": {
+        "PASS": 13,
+        "FAIL": 3,
+        "BLOCKED": 2,
+        "NOT_TESTED": 0
+      },
+      "prefix_points": 54,
+      "geometry_errors": 0,
+      "complete_two_word_fields": 8,
+      "first_word_only_fields": [
+        "url",
+        "email"
+      ],
+      "Tab_pass": 8,
+      "fast_typing_pass": 8,
+      "Double_Shift_complete_fields": [
+        "text",
+        "search",
+        "tel",
+        "textarea",
+        "iframe-input"
+      ],
+      "Double_Shift_failed_fields": [
+        "rich",
+        "plain",
+        "iframe-rich"
+      ],
+      "hint_timing": {
+        "n": 54,
+        "median_ms": 31.859,
+        "p95_ms": 34.82,
+        "max_ms": 79.161
+      },
+      "Tab_timing": {
+        "n": 8,
+        "median_ms": 18.54,
+        "p95_ms": 22.619,
+        "max_ms": 22.619
+      },
+      "successful_Double_Shift_timing": {
+        "n": 10,
+        "median_ms": 190.28,
+        "p95_ms": 217.058,
+        "max_ms": 217.058
+      },
+      "fast_post_space_timing": {
+        "n": 8,
+        "median_ms": 17.56,
+        "p95_ms": 19.797,
+        "max_ms": 19.797
+      },
+      "browser_sessions": [
+        {
+          "pid": 1416302,
+          "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:159.0) Gecko/20100101 Firefox/159.0",
+          "mode": "normal",
+          "fullscreen_verified": false
+        }
+      ]
+    },
+    "private": {
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/kde-firefox-owned-hint-ready-private-native-v7/firefox/result.json",
+      "receipt_sha256": "38a0ca77e0c27ee703284cc414b92dc42ca45c9232c7414a04fdd212aed7ca65",
+      "actor_sha256": "c2ec1ec6fe9f065919edadd464d5271dc66e90e1bda27bb1a1cf5c39ae4be1fe",
+      "counts": {
+        "PASS": 13,
+        "FAIL": 3,
+        "BLOCKED": 2,
+        "NOT_TESTED": 0
+      },
+      "prefix_points": 54,
+      "geometry_errors": 0,
+      "complete_two_word_fields": 8,
+      "first_word_only_fields": [
+        "url",
+        "email"
+      ],
+      "Tab_pass": 8,
+      "fast_typing_pass": 8,
+      "Double_Shift_complete_fields": [
+        "text",
+        "search",
+        "tel",
+        "textarea",
+        "iframe-input"
+      ],
+      "Double_Shift_failed_fields": [
+        "rich",
+        "plain",
+        "iframe-rich"
+      ],
+      "hint_timing": {
+        "n": 54,
+        "median_ms": 32.63,
+        "p95_ms": 40.553,
+        "max_ms": 71.517
+      },
+      "Tab_timing": {
+        "n": 8,
+        "median_ms": 17.381,
+        "p95_ms": 19.387,
+        "max_ms": 19.387
+      },
+      "successful_Double_Shift_timing": {
+        "n": 10,
+        "median_ms": 181.552,
+        "p95_ms": 215.834,
+        "max_ms": 215.834
+      },
+      "fast_post_space_timing": {
+        "n": 8,
+        "median_ms": 18.496,
+        "p95_ms": 21.163,
+        "max_ms": 21.163
+      },
+      "browser_sessions": [
+        {
+          "pid": 1459741,
+          "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:159.0) Gecko/20100101 Firefox/159.0",
+          "mode": "private",
+          "fullscreen_verified": false
+        }
+      ]
+    },
+    "fullscreen": {
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/kde-firefox-owned-hint-ready-fullscreen-native-v7/firefox/result.json",
+      "receipt_sha256": "64cb11487a50d75ef4344377d1f9a270f5275e31071b623c8432809027c91f05",
+      "actor_sha256": "c2ec1ec6fe9f065919edadd464d5271dc66e90e1bda27bb1a1cf5c39ae4be1fe",
+      "counts": {
+        "PASS": 13,
+        "FAIL": 3,
+        "BLOCKED": 2,
+        "NOT_TESTED": 0
+      },
+      "prefix_points": 54,
+      "geometry_errors": 0,
+      "complete_two_word_fields": 8,
+      "first_word_only_fields": [
+        "url",
+        "email"
+      ],
+      "Tab_pass": 8,
+      "fast_typing_pass": 8,
+      "Double_Shift_complete_fields": [
+        "text",
+        "search",
+        "tel",
+        "textarea",
+        "iframe-input"
+      ],
+      "Double_Shift_failed_fields": [
+        "rich",
+        "plain",
+        "iframe-rich"
+      ],
+      "hint_timing": {
+        "n": 54,
+        "median_ms": 32.262,
+        "p95_ms": 34.432,
+        "max_ms": 116.503
+      },
+      "Tab_timing": {
+        "n": 8,
+        "median_ms": 18.148,
+        "p95_ms": 19.294,
+        "max_ms": 19.294
+      },
+      "successful_Double_Shift_timing": {
+        "n": 10,
+        "median_ms": 183.767,
+        "p95_ms": 216.531,
+        "max_ms": 216.531
+      },
+      "fast_post_space_timing": {
+        "n": 8,
+        "median_ms": 18.172,
+        "p95_ms": 19.879,
+        "max_ms": 19.879
+      },
+      "browser_sessions": [
+        {
+          "pid": 1469033,
+          "user_agent": "Mozilla/5.0 (X11; Linux x86_64; rv:159.0) Gecko/20100101 Firefox/159.0",
+          "mode": "fullscreen",
+          "fullscreen_verified": true
+        }
+      ]
+    }
+  },
+  "aggregate": {
+    "counts": {
+      "PASS": 39,
+      "FAIL": 9,
+      "BLOCKED": 6,
+      "NOT_TESTED": 0
+    },
+    "prefix_points": 162,
+    "prefix_coordinate_errors": 0,
+    "first_word_fields": 30,
+    "second_word_fields": 24,
+    "second_word_blocked": 6,
+    "Tab_pass": 24,
+    "fast_typing_pass": 24,
+    "successful_Double_Shift_transitions": 30,
+    "Double_Shift_failed_first_transitions": 9,
+    "Double_Shift_second_transitions_not_reached": 9,
+    "hint_timing": {
+      "n": 162,
+      "median_ms": 32.271,
+      "p95_ms": 35.002,
+      "max_ms": 116.503
+    },
+    "Tab_timing": {
+      "n": 24,
+      "median_ms": 17.921,
+      "p95_ms": 22.294,
+      "max_ms": 22.619
+    },
+    "successful_Double_Shift_timing": {
+      "n": 30,
+      "median_ms": 183.767,
+      "p95_ms": 216.531,
+      "max_ms": 217.058
+    },
+    "fast_post_space_timing": {
+      "n": 24,
+      "median_ms": 18.28,
+      "p95_ms": 19.879,
+      "max_ms": 21.163
+    }
+  },
+  "post_tab_comparison": {
+    "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/kde-firefox-post-tab-compare-v3/result.json",
+    "status": "SAME_CONTROL_OUTCOMES",
+    "reference_sha256": "8b84bf5b6c569550af8e4061ea4cca83e74382d243ae693aeb243a1e22a035d3",
+    "current_sha256": "004f6285a1725f280a4549c18ffa8d8937d6c27728b4dd0edfddf85a068e1c28",
+    "comparison": [
+      {
+        "field": "text",
+        "reference_status": "PASS",
+        "current_status": "PASS",
+        "reference_actual": "привет привет ",
+        "current_actual": "привет привет "
+      },
+      {
+        "field": "rich",
+        "reference_status": "FAIL",
+        "current_status": "FAIL",
+        "reference_actual": "привет привет ",
+        "current_actual": "привет привет "
+      },
+      {
+        "field": "plain",
+        "reference_status": "FAIL",
+        "current_status": "FAIL",
+        "reference_actual": "привет привет ",
+        "current_actual": "привет привет "
+      },
+      {
+        "field": "iframe-rich",
+        "reference_status": "FAIL",
+        "current_status": "FAIL",
+        "reference_actual": "привет привет ",
+        "current_actual": "привет привет "
+      }
+    ],
+    "scope": "Normal window only; text, rich, plain and iframe-rich. Private/fullscreen baseline was not rerun."
+  },
+  "historical_full_KDE_matrix": {
+    "Firefox": {
+      "PASS": 127,
+      "FAIL": 55,
+      "BLOCKED": 38,
+      "total": 220
+    },
+    "Chrome": {
+      "PASS": 179,
+      "FAIL": 0,
+      "BLOCKED": 41,
+      "total": 220
+    },
+    "recounted": false
+  },
+  "publication": {
+    "commit": false,
+    "push": false,
+    "release": false
+  }
+}

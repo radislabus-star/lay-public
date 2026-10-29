@@ -54,8 +54,11 @@ preedit.rs + committed_tail.rs: exact current frame / prepared candidate lease
 src/text_edit/structural_verifier.rs + src/text_edit/gate.rs
                           ↓
 src/text_edit/executor.rs: AuthorizedEdit
-  → window_interaction/execution.rs: revalidate and execute current target
+  → state.rs: replace_committed_tail_with_effect_progress (IME executor)
   → output.rs: existing IBus output operations
+
+Bridge-issued local commands additionally enter through
+window_interaction/authority.rs → window_interaction/execution.rs → state.rs.
 ```
 
 The candidate worker can run before the actual field read settles. Both

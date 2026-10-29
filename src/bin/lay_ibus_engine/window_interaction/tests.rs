@@ -1225,6 +1225,7 @@ fn window_interaction_only_boundary_has_full_callsite_closure() {
         ("self.can_replace_committed_tail_inner(backspaces)", 1),
         ("self.suppress_next_autocorrect_inner()", 1),
         ("self.suppress_next_autocorrect_v2_inner(", 1),
+        ("self.native_replay_processed_v1_inner(", 1),
         ("self.cancel_exact_manual_toggle_suppression_v2_inner(", 1),
         ("self.cancel_exact_manual_toggle_handoff_v2_inner(", 1),
         ("self.manual_toggle_inner()", 1),

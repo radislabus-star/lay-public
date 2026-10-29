@@ -173,6 +173,8 @@ impl LayIbusEngine {
             awaiting_owned_append_receipt: false,
             strict_prefix_echo_revision: None,
             published_preedit: None,
+            owned_append_actual_before: None,
+            owned_preedit_return_echo: None,
         });
         true
     }
@@ -313,9 +315,11 @@ impl LayIbusEngine {
             awaiting_owned_append_receipt: false,
             strict_prefix_echo_revision: None,
             published_preedit: None,
+            owned_append_actual_before: None,
             native_mutation_reset_evidence: Some(NativeMutationResetEvidence::CursorEditing(
                 Box::new(receipt),
             )),
+            owned_preedit_return_echo: None,
         });
     }
 

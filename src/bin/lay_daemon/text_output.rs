@@ -15,9 +15,10 @@ pub(super) use device::{
     make_virtual_keyboard, virtual_keyboard_supports_key, VIRTUAL_KEYBOARD_KEYS,
 };
 pub(super) use key_emit::{
-    emit_backspaces, emit_closed_key_chord, emit_key_taps_fast, emit_left_shift_pair_fast,
-    release_all_virtual_keys, replay_keycodes,
-    replay_keycodes_isolated_paced_after_modifier_cleanup, validate_isolated_replay_bounds,
+    emit_backspaces, emit_backspaces_for_text_replace_fast, emit_closed_key_chord,
+    emit_key_taps_fast, emit_left_shift_pair_fast, release_all_virtual_keys, replay_keycodes,
+    replay_keycodes_isolated_paced_after_modifier_cleanup,
+    replay_text_insert_keycodes_fast_after_modifier_cleanup, validate_isolated_replay_bounds,
 };
 pub(super) use layout_preflight::LayoutCapabilityPreflight;
 pub(super) use modifiers::{release_possible_modifiers, release_possible_modifiers_fast};

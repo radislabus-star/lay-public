@@ -1,0 +1,72 @@
+{
+  "schema": "lay.kde-firefox-client-adapter-setup.v1",
+  "status": "USER_ACCEPTED_MANUAL_CASE_PASS",
+  "observed_at": "2026-10-28T17:46:48.978456+00:00",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1302,
+    "sha256": "d44e72639f97c0a94802308b97319f60f69b61cc982d0c7c426db505c847edf9"
+  },
+  "source_c_unchanged": true,
+  "unchanged_gnome_library_sha256": "924b59822e26f5ad3e6e0daf2a8f762b15e6905bb0b3683ce56bee55744a6f22",
+  "source_checks": {
+    "existing_tests": 2,
+    "passed": 2,
+    "compiler_warnings": 0,
+    "shell_syntax": "PASS",
+    "architecture_graph": "PASS"
+  },
+  "runtime": {
+    "firefox_pid": 719893,
+    "window": "67108885",
+    "profile_preserved": true,
+    "adapter_mapped": true,
+    "adapter_sha256": "924b59822e26f5ad3e6e0daf2a8f762b15e6905bb0b3683ce56bee55744a6f22",
+    "gtk_im_module": "ibus",
+    "synchronous_mode_absent": true,
+    "protected_lay_runtime_unchanged": true,
+    "automatic_text_input": false
+  },
+  "menu": {
+    "status": "KDE_MENU_ENTRY_INDEXED",
+    "desktop": "/home/e/.cache/lay/kde-live-20261019/data/applications/lay-firefox-kde-native.desktop",
+    "cache_matches": [
+      {
+        "cache": "ksycoca5_en_0Gujk0rD5U0qEm3pxQ3gm13Tf4w=",
+        "encoding": "utf-16be"
+      },
+      {
+        "cache": "ksycoca5_en_0Gujk0rD5U0qEm3pxQ3gm13Tf4w=",
+        "encoding": "utf-16le"
+      },
+      {
+        "cache": "ksycoca5_ru_0Gujk0rD5U0qEm3pxQ3gm13Tf4w=",
+        "encoding": "utf-16be"
+      },
+      {
+        "cache": "ksycoca5_ru_0Gujk0rD5U0qEm3pxQ3gm13Tf4w=",
+        "encoding": "utf-16le"
+      }
+    ],
+    "standard_copy_absent": true,
+    "note": "Initial check treated Qt binary cache as UTF-8; actual UTF-16 index verified without changing desktop entry or re-running setup",
+    "finished_unix": 1793209747.951956
+  },
+  "manual_case": {
+    "browser": "KDE Firefox",
+    "field": "first ordinary input",
+    "scenario": "Double Shift after autocorrection",
+    "before": "USER_REPORTED_FAIL",
+    "after": "USER_CONFIRMED_PASS",
+    "confirmation": "да это ты починил",
+    "confirmed_at": "2026-10-28T18:18:58.453828+00:00",
+    "acceptance_scope": "First ordinary input in KDE Firefox: Double Shift after autocorrection. Other fields, repeated bursts and reverse toggle not independently confirmed by this message."
+  },
+  "full_matrix_recounted": false,
+  "receipts": {
+    "build": "CROOT/kde-firefox-client-adapter-build-v1/result.json",
+    "setup": "CROOT/kde-firefox-client-adapter-install-v1/result.json",
+    "verified": "CROOT/kde-firefox-client-adapter-verify-v2/result.json",
+    "menu": "CROOT/kde-firefox-client-adapter-menu-v2.json"
+  }
+}

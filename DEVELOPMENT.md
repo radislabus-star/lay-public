@@ -194,6 +194,22 @@ checks on the remote worker. This development command cannot waive them.
 
 ## Existing opt-in diagnostics
 
+Analyze saved native results before starting another experiment:
+
+```sh
+python3 scripts/lay-diagnose.py report /private/run-directory --output /private/analysis-1
+python3 scripts/lay-diagnose.py report /private/after.json --compare /private/before.json --output /private/comparison-1
+python3 scripts/lay-diagnose.py wire /private/events-summary.jsonl --output /private/wire-1
+```
+
+The analyzer reads existing files only. `report` accepts a combined
+actor/controller/verification JSON, a one-browser native run directory, or a
+raw actor JSON with missing-provenance warnings. `wire` accepts the existing
+sanitized D-Bus JSONL, supports `--compare`, and writes a text-free Perfetto
+timeline. It does not launch browsers, collect keys, install binaries or grant
+native acceptance. See the [one-loop procedure and limits](docs/development/native-diagnostics-workflow.md).
+All tooling tests still run on the remote worker under the existing guard.
+
 IME tracing uses `debug_action_log` in `~/.config/lay/config.json` and writes
 `~/.local/share/lay/ibus_engine_debug.jsonl` (or `LAY_IBUS_TRACE_PATH`). The
 IME refreshes its logging configuration; this option does not require a new

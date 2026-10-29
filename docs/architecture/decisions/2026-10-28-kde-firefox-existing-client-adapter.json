@@ -1,0 +1,24 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-firefox-existing-client-adapter",
+  "decision": "Reuse the unchanged existing Firefox GTK/IBus exact-surrounding adapter with a KDE-only native Firefox launcher; preserve all Lay input owners and text executors.",
+  "reason": "User confirmed failure of Double Shift after autocorrection in KDE Firefox field1. The manually opened native Firefox lacks the compatibility library selected by the GNOME launcher. User explicitly authorized this bounded setup fix and browser restart.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/compat/lay-firefox-kde-native",
+    "scripts/compat/README.md"
+  ],
+  "verification": "Build unchanged C with Wall/Wextra/Werror on guarded remote worker; run existing C semantic tests and shell syntax; verify installed hashes, native Firefox mapped library and async GTK IBus; preserve profile and verify unchanged daemon/IME/IBus/tray/config before leaving page for user manual acceptance.",
+  "not_tested": "No automatic text input, matrix recount, GNOME/Chrome acceptance or release implied. Firefox158 ABI and the user scenario require manual confirmation.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

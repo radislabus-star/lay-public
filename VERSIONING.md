@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.111`
+- `1.0.112`
 
 1.0.97 preserves verified KDE closed-word replay after an ordinary new-word
 letter is erased, including one owned Space/NBSP presentation transition.

@@ -1480,7 +1480,7 @@ impl LayIbusEngine {
         true
     }
 
-    fn exact_replay_scope_pair(
+    pub(super) fn exact_replay_scope_pair(
         &self,
     ) -> (
         Option<ExactManualToggleSuppression>,
@@ -1499,6 +1499,86 @@ impl LayIbusEngine {
                 .flatten()
         });
         (local, shared)
+    }
+
+    /// The client reflowed exactly the separator before this committed preedit
+    /// and its newly emitted closing Space. A whole-field result is required;
+    /// this cannot establish a new word scope or authorize any text output.
+    pub(super) fn acknowledge_owned_preedit_space_reflow(
+        &mut self,
+        pending: &mut super::engine::PendingVisiblePostcondition,
+    ) -> bool {
+        use lay::text_edit::VisibleTailSource;
+        if self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || self.live_context_token().is_none()
+            || pending.snapshot.source != VisibleTailSource::ImeActiveComposition
+            || pending.snapshot.focus_id.as_deref() != Some(self.path.as_str())
+            || pending.dispatched_epoch != self.committed_tail.epoch
+            || pending.expected_suffix != self.committed_tail.buffer
+            || pending.feedback.is_some()
+            || pending.native_document.is_some()
+            || pending.space_boundary_commit.is_some()
+            || self.exact_replay_quarantine_active()
+            || self.exact_replay_tail_change_quarantined
+            || matches!(
+                self.committed_tail.autocorrect_suppression,
+                Some(AutocorrectSuppression::ExactReplay(_))
+            )
+        {
+            return false;
+        }
+        let (Some(expected), Some(actual)) = (
+            pending.expected_external_snapshot.as_ref(),
+            self.client_context.surrounding_text_snapshot.as_ref(),
+        ) else {
+            return false;
+        };
+        if expected.has_selection()
+            || expected.cursor_pos as usize != expected.text.chars().count()
+            || !expected.text.ends_with(&pending.expected_suffix)
+            || actual.cursor_pos != expected.cursor_pos
+            || actual.anchor_pos != expected.anchor_pos
+        {
+            return false;
+        }
+        let mut chars: Vec<_> = expected.text.chars().collect();
+        let Some(final_slot) = chars.len().checked_sub(1) else {
+            return false;
+        };
+        let Some(prior_slot) = chars[..final_slot]
+            .iter()
+            .rposition(|ch| ch.is_whitespace())
+        else {
+            return false;
+        };
+        if chars[final_slot] != ' ' || chars[prior_slot] != '\u{a0}' || prior_slot + 1 == final_slot
+        {
+            return false;
+        }
+        chars[prior_slot] = ' ';
+        chars[final_slot] = '\u{a0}';
+        if !actual.text.chars().eq(chars) {
+            return false;
+        }
+        let actual = actual.clone();
+        let Some(actual_tail) =
+            actual.suffix_before_cursor(pending.expected_suffix.chars().count())
+        else {
+            return false;
+        };
+        // The complete original field above proves both presentation slots.
+        // Keep one common owner/epoch; there is no new edit or replay receipt.
+        if self
+            .install_owned_tail_presentation(&actual_tail, None, None)
+            .is_err()
+        {
+            return false;
+        }
+        pending.expected_suffix = actual_tail;
+        pending.expected_external_snapshot = Some(actual);
+        true
     }
 
     pub(super) fn acknowledge_owned_space_tail(
@@ -1559,6 +1639,15 @@ impl LayIbusEngine {
             }
             None
         };
+        self.install_owned_tail_presentation(actual_tail, replay, acknowledged_replay)
+    }
+
+    fn install_owned_tail_presentation(
+        &mut self,
+        actual_tail: &str,
+        replay: Option<&ExactManualToggleSuppression>,
+        acknowledged_replay: Option<ExactManualToggleSuppression>,
+    ) -> Result<Option<ExactManualToggleSuppression>, ()> {
         let Ok(mut shared) = self.shared.lock() else {
             return Err(());
         };
@@ -1573,9 +1662,9 @@ impl LayIbusEngine {
         {
             return Err(());
         }
-        // Same witnessed effects, same epoch. Ordinary Space changes only its
-        // new final character; a completed replay proves every newly emitted
-        // Space above. Full old prefixes and both scope copies stay exact.
+        // Each caller has proved its precise presentation slots against the
+        // current observation. Retain the same sole owner and input epoch;
+        // replay callers must update both copies of their existing scope.
         self.committed_tail.buffer = actual_tail.to_string();
         shared
             .handoff_tail_buffer
@@ -1742,7 +1831,7 @@ impl LayIbusEngine {
         ))
     }
 
-    fn exact_replay_scope_is_current_except_expiry(
+    pub(super) fn exact_replay_scope_is_current_except_expiry(
         &self,
         scope: &ExactManualToggleSuppression,
     ) -> bool {
@@ -1958,6 +2047,32 @@ impl LayIbusEngine {
                 .count()
                 .saturating_add(scope.replacement.chars().count())
             && self.exact_replay_scope_is_current_except_expiry(scope)
+    }
+
+    /// Processed native presses are not a client-visible result or an edit
+    /// permission. This read only bounds post-output result-provenance cleanup.
+    pub(super) fn native_replay_processed(
+        &self,
+        expected_epoch: u64,
+        expected_path: &str,
+        expected_layout_is_ru: bool,
+    ) -> bool {
+        let (Some(local), Some(shared)) = self.exact_replay_scope_pair() else {
+            return false;
+        };
+        if local != shared
+            || local.epoch != expected_epoch
+            || local.path != expected_path
+            || local.target_layout_is_ru != expected_layout_is_ru
+            || local.held_boundary.is_some()
+            || local.native_press_count
+                != local.original_suffix.chars().count() + local.replacement.chars().count()
+            || !self.exact_replay_scope_is_current(&local)
+            || !self.exact_replay_scope_is_completed(&local)
+        {
+            return false;
+        }
+        true
     }
 
     pub(super) fn spent_completed_exact_replay_scope_is_current(&self) -> bool {
@@ -4131,6 +4246,152 @@ mod tests {
         target.consume_exact_manual_toggle_handoff();
         target.reset_for_ibus_soft_reset();
         assert_eq!(target.committed_tail.epoch, leased_epoch.wrapping_add(1));
+    }
+
+    fn native_processed_fixture() -> (LayIbusEngine, u64) {
+        let shared = Arc::new(Mutex::new(Default::default()));
+        let mut source = LayIbusEngine::new(
+            "/engine/ru".into(),
+            shared.clone(),
+            true,
+            true,
+            LayConfig::default(),
+        );
+        assert!(source.bind_focus_path());
+        source.committed_tail.buffer = "привет".into();
+        source.prepare_exact_manual_toggle_layout_handoff();
+        let epoch = source.committed_tail.epoch;
+        let mut target = LayIbusEngine::new(
+            "/engine/us".into(),
+            shared,
+            false,
+            true,
+            LayConfig::default(),
+        );
+        assert!(target.bind_focus_path());
+        target.reset_for_ibus_soft_reset();
+        target.set_client_capabilities(1 << 5);
+        target.client_context.managed_input = true;
+        target.config.text_backend = "ime".into();
+        target.client_context.surrounding_text_snapshot =
+            Some(SurroundingTextSnapshot::new("привет".into(), 6, 6));
+        assert!(target.arm_exact_manual_toggle_autocorrect_suppression(
+            "привет",
+            epoch,
+            "/engine/us",
+            false
+        ));
+        (target, epoch)
+    }
+
+    fn process_fixture_native_replay(target: &mut LayIbusEngine, epoch: u64, check_last: bool) {
+        for _ in 0..6 {
+            assert_eq!(
+                target.process_exact_replay_press(crate::protocol::KEY_BACKSPACE, 14, 0),
+                super::ExactReplayPress::Native
+            );
+            assert!(!target.native_replay_processed(epoch, "/engine/us", false));
+        }
+        for (index, (ch, keycode)) in [
+            ('g', 34),
+            ('h', 35),
+            ('b', 48),
+            ('d', 32),
+            ('t', 20),
+            ('n', 49),
+        ]
+        .into_iter()
+        .enumerate()
+        {
+            assert_eq!(
+                target.process_exact_replay_press(ch as u32, keycode, 0),
+                super::ExactReplayPress::Native
+            );
+            if index < 5 {
+                assert!(!target.native_replay_processed(epoch, "/engine/us", false));
+            } else if check_last {
+                assert!(
+                    target.native_replay_processed(epoch, "/engine/us", false),
+                    "native presses complete without a client receipt"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn native_replay_processed_is_read_only_and_distinct_from_client_confirmation() {
+        let (mut target, epoch) = native_processed_fixture();
+        process_fixture_native_replay(&mut target, epoch, true);
+        assert_eq!(target.committed_tail.buffer, "ghbdtn");
+        assert!(target.client_context.surrounding_text_snapshot.is_none());
+        let before = (
+            target.committed_tail.buffer.clone(),
+            target.committed_tail.epoch,
+            target.committed_tail.autocorrect_suppression.clone(),
+        );
+        assert!(target.native_replay_processed(epoch, "/engine/us", false));
+        assert_eq!(
+            before,
+            (
+                target.committed_tail.buffer.clone(),
+                target.committed_tail.epoch,
+                target.committed_tail.autocorrect_suppression.clone()
+            )
+        );
+        assert!(target.revoke_exact_manual_toggle_autocorrect_suppression(epoch, "/engine/us"));
+        assert!(!target.native_replay_processed(epoch, "/engine/us", false));
+    }
+
+    #[test]
+    fn native_replay_processed_refuses_stale_or_unprocessed_effects() {
+        for invalid in [
+            "epoch",
+            "path",
+            "layout",
+            "owner",
+            "count",
+            "expiry",
+            "selection",
+            "tail",
+        ] {
+            let (mut target, epoch) = native_processed_fixture();
+            process_fixture_native_replay(&mut target, epoch, false);
+            let mut requested_epoch = epoch;
+            let mut path = "/engine/us";
+            let mut layout = false;
+            match invalid {
+                "epoch" => requested_epoch += 1,
+                "path" => path = "/engine/other",
+                "layout" => layout = true,
+                "owner" => target.shared.lock().unwrap().active_path = Some("/engine/other".into()),
+                "selection" => {
+                    target.client_context.surrounding_text_snapshot =
+                        Some(SurroundingTextSnapshot::new("ghbdtn".into(), 6, 5))
+                }
+                "tail" => target.committed_tail.buffer.push('x'),
+                "count" | "expiry" => {
+                    let Some(AutocorrectSuppression::ExactReplay(mut scope)) =
+                        target.committed_tail.autocorrect_suppression.clone()
+                    else {
+                        panic!("scope")
+                    };
+                    if invalid == "count" {
+                        scope.native_press_count -= 1;
+                    } else {
+                        scope.expires_at = Instant::now() - std::time::Duration::from_secs(1);
+                    }
+                    target.committed_tail.autocorrect_suppression =
+                        Some(AutocorrectSuppression::ExactReplay(scope.clone()));
+                    target.shared.lock().unwrap().autocorrect_suppression =
+                        Some(AutocorrectSuppression::ExactReplay(scope));
+                }
+                _ => unreachable!(),
+            }
+            assert!(
+                !target.native_replay_processed(requested_epoch, path, layout),
+                "{invalid}"
+            );
+        }
     }
 
     #[test]

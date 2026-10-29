@@ -3,6 +3,12 @@
 use super::*;
 use crate::protocol::KEY_ENTER;
 
+#[path = "../../../kde/firefox/native_boundary_tests.rs"]
+mod kde_firefox_native_boundary;
+
+#[path = "../../../kde/terminal/native_mode_tests.rs"]
+mod kde_terminal_native_mode;
+
 #[test]
 fn terminal_delivery_opaque_or_terminal_managed_word_retains_native_space() {
     zbus::block_on(async {

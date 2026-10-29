@@ -1,3 +1,15 @@
+### 2026-10-29 — empty-preedit source PASS did not establish live root
+
+Owner: kde-firefox-owned-append-caret-map-2026-10-29.md. Earlier source1134PASS
+and native short2PASS cannot certify an unexecuted new branch; retained22 gives
+19PASS2FAIL1BLOCKED. Preserve the receipts and source, withdraw only this
+unaccepted overlay by frozen hash checks. Installed diagnostic IME0a26 remains
+until next verified replacement; accepted daemon freeze-focus fix stays.
+First current plain Tab failure is before all decoder probes: handled sixth
+CommitText -> actual6chars/caret5 SSI -> receipt rejection -> Reset -> exact6/6.
+Reuse existing owned-append/strict-prefix lineage, not a new owner or retry.
+No new source or native acceptance for this corrected hypothesis yet.
+
 ### 2026-10-24 — gate follow-up: common KDE presentation leak found
 
 Receiver-order fix passes its existing positive and revocation tests. Heap-bound
@@ -4176,3 +4188,33 @@ Do not reapply it or increase waits based solely on its unit GREEN.
 Current full proof172/9/39;post-rollback two-word1PASS separate.
 Upper own suffix exists but rect:null at both positions;two common release
 hooks remain unapproved. No duplicated scope question,agents or Harness.
+
+## 2026-10-29 KDE Firefox bounded pace experiment
+
+Owner: kde-firefox-rapid-latency-map-2026-10-29.md. Full fast candidate5df1 source
+d8bc2e42: source334+KDE28/GNOME28PASS, prefix n5 faster180->126ms median, but
+retained22=19P2F1B after Tab; native gate rejects, full220 not launched. Row traces
+rotated, no complete ownership cause claim. Restored4403 daemon419352, IME/IBus/
+tray/userFirefox/config protected. Do not reapply closed fast pacing as if accepted.
+Next ADR2026-10-29-kde-firefox-open-word-replay-pacing keeps exact original closed
+pace, adds lazy open-word eligibility only. RED19/18,SHORT19/19; full source/native
+verification pending. No authority/RPC/route change; GNOME runtime untouched.
+
+### Raw separator correction for pacing eligibility
+
+Second candidate3295/source7b43 rejected by22=18P3F1B. ASCII-only open-word check
+was wrong: canonical raw replay lease acknowledges NBSP, so rich closed words
+remained fast. Restored4403/482183. Source/raw-wordADR before edit; raw fixture
+regression RED19/18(NBSP wrongly queries fast client), GREEN19/19 exact equality
+of original token and leased suffix. No IME permission/route change. New full
+source/native pending; both failed candidate receipts preserved.
+
+
+### KDE Firefox queued managed append — 2026-10-29
+
+Owner kde-firefox-queued-owned-append-map-2026-10-29.md; first actual native
+failure two CommitText appends then earlier lagging caret SSI, before any DS.
+OriginalRED15/16, pre-install external-contextRED17/18; finalshort18/18 and
+fullIME1140/1140,graph/registryPASS,sourced8a90c49. Only observation.rs + KDE
+Firefox pure preedit_echo predicate plus tests/generated metadata. Runtime not
+yet changed. See owner for exact receipts and rejected provisional variant.

@@ -1,0 +1,218 @@
+{
+  "schema": "lay.kde-native-focus-verification.v1",
+  "status": "BOUNDED_NATIVE_PASS_NOT_FULL_MATRIX",
+  "recorded_at": "2026-10-29T02:25:51.379335+00:00",
+  "canonical_checkout": "/home/ubu/projects/lay-dependency-updates-20261027",
+  "canonical_base": "b835ca478198d6cb765a2246329d5646966c118c",
+  "built_source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1307,
+    "sha256": "50938ebe30ad78da2d90389893b75d35273a80017e799fb018c949a02ec10ebf"
+  },
+  "base_version": "1.0.111",
+  "unpublished_candidate": true,
+  "runtime": {
+    "host": "192.168.3.94",
+    "display": ":71",
+    "daemon_pid": 2374910,
+    "daemon_sha256": "ae77e705ba6795cfb99f1b074b027a70e2f7277c81f480380d969880fd07d644",
+    "ime_pid": 2067215,
+    "ime_sha256": "bad527220d1034e51444c567770511794f6b3c43c439599484698b84651d9bac",
+    "firefox_pid": 988548,
+    "owned_window": "67109872",
+    "config_sha256": "6e62eab3c278c733fedb47e45ef6306105a3700222cf9f7a4e5bff4bd92264d1",
+    "protected_processes_unchanged": true
+  },
+  "cause": "Original master keyboard acquisition emitted core FocusOut. Same-client exact tail proof became unknown before layout/output. Existing owned-master client focus is now retained before acquisition only for canonical KDE policy. Admission/verifier/executor remain unchanged.",
+  "red_receipt": "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/freeze-focus-source-red-v3/result.json",
+  "source_receipt": "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/freeze-focus-source-green-v2/result.json",
+  "source_checks": {
+    "daemon_correctness_package": {
+      "selected": 330,
+      "passed": 330,
+      "failures": []
+    },
+    "native_policies": [
+      {
+        "desktop": "kde",
+        "selected": 28,
+        "returncode": 0,
+        "seconds": 2.37
+      },
+      {
+        "desktop": "gnome",
+        "selected": 28,
+        "returncode": 0,
+        "seconds": 2.221
+      }
+    ],
+    "perf_tests_not_run": 2
+  },
+  "build": {
+    "warnings": 0,
+    "seconds": 67.005,
+    "receipt": "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/freeze-focus-build-v1.json"
+  },
+  "native_receipts": [
+    "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/freeze-focus-native-cause-after-v1.json",
+    "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/freeze-focus-native-acceptance-v1.json",
+    "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/freeze-focus-native-rich-v2.json",
+    "/home/ubu/.cache/lay/development/browser-matrix-repair-20261027/freeze-focus-native-second-word-v1.json"
+  ],
+  "physical_scope": "Native RFB keyboard/mouse and actual AT-SPI field text/caret in same existing Firefox process/profile, normal window only; no JS text/key injection",
+  "unique_slots": {
+    "PASS": 10,
+    "FAIL": 0,
+    "BLOCKED": 0,
+    "total": 10
+  },
+  "double_shift_transitions": 62,
+  "next_letter_decoder_checks": 62,
+  "held_and_released_shift_pairs": 7,
+  "tab_acceptances": 4,
+  "rows": [
+    {
+      "field": "text",
+      "case": "active-eight",
+      "status": "PASS",
+      "gestures": 8,
+      "tab_ms": null
+    },
+    {
+      "field": "text",
+      "case": "space-eight",
+      "status": "PASS",
+      "gestures": 8,
+      "tab_ms": null
+    },
+    {
+      "field": "text",
+      "case": "tab",
+      "status": "PASS",
+      "gestures": 2,
+      "tab_ms": 18.672341015189886
+    },
+    {
+      "field": "textarea",
+      "case": "active-eight",
+      "status": "PASS",
+      "gestures": 8,
+      "tab_ms": null
+    },
+    {
+      "field": "textarea",
+      "case": "space-eight",
+      "status": "PASS",
+      "gestures": 8,
+      "tab_ms": null
+    },
+    {
+      "field": "textarea",
+      "case": "tab",
+      "status": "PASS",
+      "gestures": 2,
+      "tab_ms": 20.006099017336965
+    },
+    {
+      "field": "rich",
+      "case": "active-eight",
+      "status": "PASS",
+      "gestures": 8,
+      "tab_ms": null
+    },
+    {
+      "field": "rich",
+      "case": "space-eight",
+      "status": "PASS",
+      "gestures": 8,
+      "tab_ms": null
+    },
+    {
+      "field": "rich",
+      "case": "tab",
+      "status": "PASS",
+      "gestures": 2,
+      "tab_ms": 18.440959975123405
+    },
+    {
+      "field": "rich",
+      "case": "second-word-tab-eight",
+      "status": "PASS",
+      "gestures": 8,
+      "tab_ms": 20.422929897904396
+    }
+  ],
+  "latency": {
+    "active-eight": {
+      "n": 24,
+      "median_ms": 18.69,
+      "p95_ms": 199.821,
+      "max_ms": 203.094
+    },
+    "space-eight": {
+      "n": 24,
+      "median_ms": 186.456,
+      "p95_ms": 214.356,
+      "max_ms": 222.984
+    },
+    "tab": {
+      "n": 6,
+      "median_ms": 201.693,
+      "p95_ms": 240.826,
+      "max_ms": 240.826
+    },
+    "tab_accept": {
+      "n": 4,
+      "median_ms": 19.339,
+      "p95_ms": 20.423,
+      "max_ms": 20.423
+    },
+    "second-word-tab-eight": {
+      "n": 8,
+      "median_ms": 187.614,
+      "p95_ms": 219.066,
+      "max_ms": 219.066
+    }
+  },
+  "latency_method": "Monotonic native key release to first observed target confirmed stable for100ms; polling included; nearest-rank p95",
+  "retained_setup_blocks": "First acceptance keeps two pre-input rich empty-editor-marker BLOCKED receipts. Follow-up only repeats these two slots with the existing native/visible empty-editor distinction. Native raw newline and caret0 are recorded; actual nonempty targets have no stripped terminator. No product source changed for this reader preparation.",
+  "not_tested": [
+    "Full440-cell KDE matrix not rerun",
+    "Firefox private/fullscreen and other applications not certified by this focused same-process result",
+    "Physical evdev/HID not tested; user uses remote desktop"
+  ],
+  "historical_full_matrix": {
+    "firefox": {
+      "PASS": 127,
+      "FAIL": 55,
+      "BLOCKED": 38,
+      "total": 220
+    },
+    "chrome": {
+      "PASS": 179,
+      "FAIL": 0,
+      "BLOCKED": 41,
+      "total": 220
+    }
+  },
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "gnome_runtime_installed_or_restarted": false,
+  "native_last_finished_at": "2026-10-29T02:20:37.686716+00:00",
+  "final_runtime_verification": {
+    "verified_at": "2026-10-29T02:29:03.595416+00:00",
+    "daemon_pid": 2374910,
+    "daemon_sha256": "ae77e705ba6795cfb99f1b074b027a70e2f7277c81f480380d969880fd07d644",
+    "ime_pid": 2067215,
+    "ime_sha256": "bad527220d1034e51444c567770511794f6b3c43c439599484698b84651d9bac",
+    "protected_alive": {
+      "2067215": true,
+      "3168326": true,
+      "3228081": true,
+      "988548": true
+    },
+    "engine": "lay-ime-ru",
+    "kde_layout": "(uint32 1,)",
+    "config_sha256": "6e62eab3c278c733fedb47e45ef6306105a3700222cf9f7a4e5bff4bd92264d1"
+  }
+}

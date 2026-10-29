@@ -1,0 +1,30 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-29-kde-firefox-processed-native-result",
+  "decision": "Separate a read-only IME proof that all native replay presses were processed from actual client result confirmation. Only KDE Firefox post-output cleanup may retain the existing bounded result scope on that proof while returning client-unverified; all mutation, exact field verification, expiry and learning contracts remain unchanged.",
+  "reason": "Native trace proves cleanup cancels completed replay provenance before a delayed final actual snapshot, causing reverse-toggle authority refusal. Waiting-only and client forwarded-release experiments failed native acceptance and remain rejected. Preserve a completed effect for later actual confirmation instead of cancelling it or pretending dispatch is success.",
+  "invariants": ["C01", "C03", "C04", "C05", "C06", "C07", "C08", "C09", "C10"],
+  "protected_paths": [
+    "scripts/compat/lay-firefox-kde-native",
+    "scripts/compat/README.md",
+    "src/bin/lay_ibus_engine/hint_view.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/hint_geometry.rs",
+    "src/bin/lay_ibus_engine/kde/firefox/presentation.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs",
+    "src/bin/lay_daemon/kde/firefox_replay_receipt.rs",
+    "src/bin/lay_daemon/layout_controller.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_ibus_engine/bridge.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/tests.rs",
+    "src/bin/lay_ibus_engine/tail_memory.rs",
+    "scripts/test-lanes/manifest.json"
+  ],
+  "verification": "Before editing, record the exact first failed transition and source map. Source semantics must distinguish incomplete native input, fully processed input without a client snapshot, and actual client-confirmed success. Check epoch/path/layout/press-count/focus/selection/expiry/pair/cancellation negatives and that reads mutate no state or emit output. Keep existing generic/GNOME cleanup and verifier tests. Then run short native causal controls before longer repeated-toggle/window modes, decoder, held Shift and display/Tab acceptance; retain source/build/loaded/native identities and all failures.",
+  "not_tested": "Implementation, installation and native acceptance pending. No route migration, new timer, C03 relaxation, GNOME/Chrome acceptance or public release.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false
+}

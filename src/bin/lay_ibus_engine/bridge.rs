@@ -108,6 +108,17 @@ impl LayImeBridge {
         .await
     }
 
+    #[zbus(name = "NativeReplayProcessedV1")]
+    async fn native_replay_processed_v1(
+        &self,
+        expected_epoch: u64,
+        expected_path: String,
+        expected_layout_is_ru: bool,
+    ) -> fdo::Result<bool> {
+        self.native_replay_processed_v1_inner(expected_epoch, expected_path, expected_layout_is_ru)
+            .await
+    }
+
     #[zbus(name = "CancelExactManualToggleSuppressionV2")]
     async fn cancel_exact_manual_toggle_suppression_v2(
         &self,

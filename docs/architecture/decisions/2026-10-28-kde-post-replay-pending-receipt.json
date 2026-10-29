@@ -1,0 +1,30 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-post-replay-pending-receipt",
+  "decision": "Classify a strictly bounded sanitized KDE post-output unknown-field observation as pending inside the existing settlement deadline; exact current field and privacy/source checks remain mandatory for success. Other desktops and pre-output lease reads retain their original rejection.",
+  "reason": "Native trace shows cancellation of exact-replay scope before delayed Firefox deletion snapshots; the existing IME then correctly loses reset lineage and refuses later manual authority. Preserve the existing read-only scope lifetime instead of weakening authority or changing text output.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C08",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs",
+    "src/bin/lay_daemon/layout_controller/ime_bridge/settlement.rs",
+    "src/bin/lay_daemon/kde/exact_replay_settlement.rs",
+    "src/bin/lay_daemon/kde/exact_replay_settlement/tests.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "verification": "Map and consequence preflight before code; scripted RED/GREEN for pending-to-current with unchanged success predicate, privacy/focus/identity negatives and absolute deadline; canonical shared-replay source recipe; architecture checks and warning-free release; native three-case gate before a longer Firefox proof.",
+  "not_tested": "No GNOME, USB, Wayland, terminal or Chrome acceptance implied. Original output pacing retained. The earlier pacing-only experiment is rejected and may not be reused as proof.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "experiment_verdict": "REJECTED: native2PASS1FAIL; all six final field reads remained unknown through the existing deadline; source and installed daemon restored.",
+  "result_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/kde-post-replay-rollback-v1/result.json"
+}

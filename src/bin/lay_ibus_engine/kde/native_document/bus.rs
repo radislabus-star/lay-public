@@ -66,7 +66,7 @@ fn native_bus_cache() -> &'static NativeBusCache {
     CACHE.get_or_init(NativeBusCache::default)
 }
 
-async fn call<B: serde::Serialize + zbus::zvariant::DynamicType + Sync>(
+pub(super) async fn call<B: serde::Serialize + zbus::zvariant::DynamicType + Sync>(
     connection: &Connection,
     owner: &str,
     path: &str,

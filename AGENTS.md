@@ -132,6 +132,18 @@
 
 ## Automated checks and compact evidence
 
+- Before another native-input hypothesis or rerun, use the saved-receipt
+  workflow in [native diagnostics](docs/development/native-diagnostics-workflow.md):
+  `python3 scripts/lay-diagnose.py report <receipt> --output <new-directory>`.
+  Record one distinguishing hypothesis in the existing owning task, with exact
+  source/runtime/launcher/config identities and the first failed or UNKNOWN
+  transition. Read analyzer warnings before interpreting counts. An intact
+  trace-file anchor alone is not a causal proof. After two attempts with no
+  new distinguishing evidence, change observation method or involve the user;
+  do not retry unchanged inputs for green. Preserve failed variants and state
+  the new evidence required before revisiting one. Use existing actors and
+  capture tools; do not recreate them in another temporary script.
+
 - Browser input changes must use the [standard ten-field Firefox/Chrome
   protocol](tests/manual/browser_ime_standard.md). Test each affected browser
   in normal, private and fullscreen windows, with an active word and after

@@ -8,6 +8,881 @@ async fn compose_owned_word(prefix: &str) -> (Harness, LayIbusEngine) {
     compose_owned_word_with_initial_snapshot(Some(prefix), 1_073_741_865).await
 }
 
+async fn compose_owned_erasure(prefix: &str) -> (Harness, LayIbusEngine) {
+    let (mut harness, mut engine) = compose_owned_word(prefix).await;
+    engine.config.layout_backend = "kde".into();
+    assert!(legacy_key(&mut harness, &mut engine, 159_900, 'd' as u32, 32, 0).await);
+    let (_, commits) = drain_output_to_text_proof(&mut harness).await;
+    assert!(commits.is_empty());
+    assert!(
+        legacy_key(
+            &mut harness,
+            &mut engine,
+            159_901,
+            'd' as u32,
+            32,
+            RELEASE_MASK
+        )
+        .await
+    );
+    cycle09_assert_no_local_text_effect(&mut harness).await;
+    assert!(engine.prepare_owned_preedit_local_backspace().is_some());
+    assert!(legacy_key(&mut harness, &mut engine, 159_902, KEY_BACKSPACE, 14, 0).await);
+    let (members, commits) = drain_output_to_text_proof(&mut harness).await;
+    assert!(commits.is_empty());
+    assert!(members.iter().any(|m| m == "UpdatePreeditText"));
+    assert!(!members.iter().any(|m| m == "DeleteSurroundingText"));
+    assert_eq!(engine.composition.buffer, "abc");
+    (harness, engine)
+}
+
+async fn compose_closed_word_erasure(separator: &str, backend: &str) -> (Harness, LayIbusEngine) {
+    let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+    let mut engine = observed_closed_word_for_owned_preedit(&mut harness, separator, true).await;
+    engine.config.layout_backend = backend.into();
+    assert!(legacy_key(&mut harness, &mut engine, 160_100, 'z' as u32, 44, 0).await);
+    assert_eq!(engine.composition.buffer, "z");
+    assert!(
+        legacy_key(
+            &mut harness,
+            &mut engine,
+            160_101,
+            'z' as u32,
+            44,
+            RELEASE_MASK
+        )
+        .await
+    );
+    assert!(legacy_key(&mut harness, &mut engine, 160_102, KEY_BACKSPACE, 14, 0).await);
+    assert!(engine.composition.buffer.is_empty());
+    assert!(!engine.composition.legacy_word_preedit_active);
+    assert_eq!(engine.committed_tail.buffer, format!("abc{separator}"));
+    assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+    assert!(
+        legacy_key(
+            &mut harness,
+            &mut engine,
+            160_103,
+            KEY_BACKSPACE,
+            14,
+            RELEASE_MASK
+        )
+        .await
+    );
+    cycle09_assert_no_local_text_effect(&mut harness).await;
+    (harness, engine)
+}
+
+#[test]
+fn kde_firefox_closed_word_erasure_echo_requires_final_actual_receipt() {
+    for separator in [" ", "\u{a0}"] {
+        zbus::block_on(bounded(async {
+            let (mut harness, mut engine) = compose_closed_word_erasure(separator, "kde").await;
+            let closed = format!("abc{separator}");
+            let cursor = closed.chars().count() as u32;
+            let epoch = engine.committed_tail.epoch;
+            let revision = engine.client_context.surrounding_observation_revision;
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(
+                    format!("{closed}z"),
+                    cursor,
+                    cursor,
+                )),
+                true,
+            );
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert!(!engine.context_reset_rereceipt_computation_allowed());
+            assert!(!engine.context_reset_rereceipt_manual_refresh_allowed());
+            assert!(
+                !engine.context_word_is_known(),
+                "the stale preedit echo grants no word authority"
+            );
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(closed.clone(), cursor, cursor)),
+                true,
+            );
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "the next whole actual field must reconfirm the successfully cancelled local preedit");
+            assert_eq!(engine.committed_tail.epoch, epoch);
+            assert_eq!(engine.committed_tail.buffer, closed);
+            assert_eq!(
+                engine.client_context.surrounding_observation_revision,
+                revision + 2
+            );
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            let path = engine.path.clone();
+            let (engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
+            assert_eq!(
+                disposition,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3())
+            );
+            let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
+            assert!(cycle09_tail_is_authoritative(&tail, &path, false, &closed));
+        }));
+    }
+}
+
+#[test]
+fn kde_firefox_closed_word_erasure_echo_refuses_changed_or_interrupted_receipts() {
+    for separator in [" ", "\u{a0}"] {
+        for invalid in [
+            "wrong_erased",
+            "selected_echo",
+            "moved_caret_echo",
+            "foreign_first",
+            "gnome",
+            "selected_final",
+            "changed_prefix",
+            "duplicate_echo",
+            "foreign_final",
+            "epoch",
+            "focus",
+            "lease",
+            "layout",
+            "word_revoked",
+            "inactive_path",
+            "reset",
+            "intervening",
+            "missing_proof",
+        ] {
+            zbus::block_on(bounded(async {
+                let backend = if invalid == "gnome" { "gnome" } else { "kde" };
+                let (mut harness, mut engine) =
+                    compose_closed_word_erasure(separator, backend).await;
+                let closed = format!("abc{separator}");
+                let cursor = closed.chars().count() as u32;
+                if invalid == "missing_proof" {
+                    engine.context_reset_rereceipt = None;
+                }
+                let echo = SurroundingTextSnapshot::new(
+                    format!(
+                        "{closed}{}",
+                        if invalid == "wrong_erased" { 'x' } else { 'z' }
+                    ),
+                    cursor + u32::from(invalid == "moved_caret_echo"),
+                    cursor + u32::from(matches!(invalid, "selected_echo" | "moved_caret_echo")),
+                );
+                engine.observe_external_surrounding_text_for_owned_erasure(
+                    Some(echo.clone()),
+                    invalid != "foreign_first",
+                );
+                assert!(
+                    !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                    "{invalid}"
+                );
+                match invalid {
+                    "duplicate_echo" => {
+                        engine.observe_external_surrounding_text_for_owned_erasure(Some(echo), true)
+                    }
+                    "epoch" => engine.committed_tail.epoch += 1,
+                    "focus" => engine.client_context.focus_serial += 1,
+                    "lease" => engine.client_context.runtime_owner_lease_identity += 1,
+                    "layout" => engine.layout_gesture.layout_generation += 1,
+                    "word_revoked" => engine.revoke_context_word(),
+                    "inactive_path" => {
+                        engine.shared.lock().unwrap().active_path = Some("/other".into())
+                    }
+                    "reset" => {
+                        actual_reset(&mut harness, &mut engine, 160_104, false).await;
+                    }
+                    "intervening" => engine.observe_external_surrounding_text_for_owned_erasure(
+                        Some(SurroundingTextSnapshot::new("other".into(), 5, 5)),
+                        true,
+                    ),
+                    _ => (),
+                }
+                let final_text = if invalid == "changed_prefix" {
+                    format!("other {closed}")
+                } else {
+                    closed.clone()
+                };
+                let final_cursor = final_text.chars().count() as u32;
+                engine.observe_external_surrounding_text_for_owned_erasure(
+                    Some(SurroundingTextSnapshot::new(
+                        final_text,
+                        final_cursor,
+                        final_cursor - u32::from(invalid == "selected_final"),
+                    )),
+                    invalid != "foreign_final",
+                );
+                assert!(
+                    !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                    "{invalid}"
+                );
+                // Even another exact suffix cannot revive discarded provenance.
+                engine.observe_external_surrounding_text_for_owned_erasure(
+                    Some(SurroundingTextSnapshot::new(closed, cursor, cursor)),
+                    true,
+                );
+                assert!(
+                    !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                    "{invalid}"
+                );
+                assert!(!engine.context_word_is_known(), "{invalid}");
+                cycle09_assert_no_local_text_effect(&mut harness).await;
+            }));
+        }
+    }
+}
+
+#[test]
+fn kde_firefox_closed_word_erasure_echo_preserves_direct_exact_receipts() {
+    for backend in ["kde", "gnome"] {
+        for separator in [" ", "\u{a0}"] {
+            zbus::block_on(bounded(async {
+                let (mut harness, mut engine) =
+                    compose_closed_word_erasure(separator, backend).await;
+                let closed = format!("abc{separator}");
+                let cursor = closed.chars().count() as u32;
+                engine.observe_external_surrounding_text_for_owned_erasure(
+                    Some(SurroundingTextSnapshot::new(closed.clone(), cursor, cursor)),
+                    true,
+                );
+                assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                cycle09_assert_no_local_text_effect(&mut harness).await;
+                let path = engine.path.clone();
+                let (engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
+                assert_eq!(
+                    disposition,
+                    Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3())
+                );
+                let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
+                assert!(cycle09_tail_is_authoritative(&tail, &path, false, &closed));
+            }));
+        }
+    }
+}
+
+async fn compose_owned_append_before_caret_echo(backend: &str) -> (Harness, LayIbusEngine, String) {
+    let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
+    let mut engine = known_engine(&mut harness).await;
+    engine.config.layout_backend = backend.into();
+    engine.config.auto_replace = false;
+    engine.config.typing_assist = false;
+    engine.config.nanda_precognition = false;
+    engine.client_context.content_purpose = 0;
+    engine.client_context.cursor_cell_width = 0;
+    engine.set_client_capabilities(0x4000_0029);
+    assert_eq!(engine.committed_tail.buffer, " ");
+    for (index, (ch, code)) in [('a', 30), ('b', 48), ('c', 46)].into_iter().enumerate() {
+        strict_prefix_v10_literal_key(
+            &mut harness,
+            &mut engine,
+            161_000 + index as u32 * 2,
+            ch,
+            code,
+        )
+        .await;
+    }
+    actual_reset(&mut harness, &mut engine, 161_010, false).await;
+    exact_surrounding_receipt(&mut harness, &mut engine, " abc").await;
+    assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+    strict_prefix_v10_literal_key(&mut harness, &mut engine, 161_012, 'd', 32).await;
+    let pending = engine.context_reset_rereceipt.as_ref().unwrap();
+    assert!(pending.confirmed && pending.awaiting_owned_append_receipt);
+    assert_eq!(engine.committed_tail.buffer, " abcd");
+    (harness, engine, " abcd".into())
+}
+
+#[test]
+fn kde_firefox_queued_owned_append_requires_final_whole_actual_receipt() {
+    for intermediate_caret in [false, true] {
+        zbus::block_on(bounded(async {
+            let (mut harness, mut engine, earlier) =
+                compose_owned_append_before_caret_echo("kde").await;
+            strict_prefix_v10_literal_key(&mut harness, &mut engine, 161_014, 'e', 18).await;
+            let full = format!("{earlier}e");
+            let epoch = engine.committed_tail.epoch;
+            let old_cursor = earlier.chars().count() as u32 - 1;
+            let echo = SurroundingTextSnapshot::new(earlier.clone(), old_cursor, old_cursor);
+            assert!(
+                engine.kde_firefox_owned_append_caret_observation_pending(&echo),
+                "a delayed caret from the earlier owned append must survive a second handled append"
+            );
+            engine.observe_external_surrounding_text_for_owned_erasure(Some(echo), true);
+            assert!(engine.context_reset_rereceipt.is_some());
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert!(!engine.context_allows_manual_toggle());
+            assert!(!engine.context_observed_suffix_exact_manual_handoff_allowed());
+            assert!(!engine.context_owns_active_preedit_manual_toggle());
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            if intermediate_caret {
+                let cursor = earlier.chars().count() as u32;
+                let actual = SurroundingTextSnapshot::new(earlier, cursor, cursor);
+                assert!(engine.kde_firefox_owned_append_caret_observation_pending(&actual));
+                engine.observe_external_surrounding_text_for_owned_erasure(Some(actual), true);
+                assert!(engine.context_reset_rereceipt.is_some());
+                assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+                assert!(!engine.context_allows_manual_toggle());
+                cycle09_assert_no_local_text_effect(&mut harness).await;
+            }
+            let cursor = full.chars().count() as u32;
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(full.clone(), cursor, cursor)),
+                true,
+            );
+            assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert_eq!(engine.committed_tail.epoch, epoch);
+            assert_eq!(engine.committed_tail.buffer, full);
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            let path = engine.path.clone();
+            let (engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
+            assert_eq!(
+                disposition,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3())
+            );
+            let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
+            assert!(cycle09_tail_is_authoritative(&tail, &path, false, &full));
+        }));
+    }
+}
+
+#[test]
+fn kde_firefox_queued_owned_append_rejects_contradictory_receipts() {
+    for invalid in [
+        "gnome",
+        "missing_receipt",
+        "unconfirmed",
+        "inactive_path",
+        "foreign_first",
+        "selected_echo",
+        "wrong_echo",
+        "duplicate_echo",
+        "regressing_prefix",
+        "changed_prefix",
+        "selected_prefix",
+        "duplicate_prefix",
+        "changed_final_after_prefix",
+        "changed_final",
+        "selected_final",
+        "foreign_final",
+        "focus_loss",
+    ] {
+        zbus::block_on(bounded(async {
+            let (mut harness, mut engine, earlier) =
+                compose_owned_append_before_caret_echo(if invalid == "gnome" {
+                    "gnome"
+                } else {
+                    "kde"
+                })
+                .await;
+            strict_prefix_v10_literal_key(&mut harness, &mut engine, 161_014, 'e', 18).await;
+            let full = format!("{earlier}e");
+            if invalid == "missing_receipt" {
+                engine.context_reset_rereceipt = None;
+            }
+            if invalid == "unconfirmed" {
+                engine.context_reset_rereceipt.as_mut().unwrap().confirmed = false;
+            }
+            if invalid == "inactive_path" {
+                engine.shared.lock().unwrap().active_path = Some("/other".into());
+            }
+            let old = earlier.chars().count() as u32 - 1;
+            let echo = SurroundingTextSnapshot::new(
+                if invalid == "wrong_echo" {
+                    " abcx".into()
+                } else {
+                    earlier.clone()
+                },
+                old,
+                old + u32::from(invalid == "selected_echo"),
+            );
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(echo.clone()),
+                invalid != "foreign_first",
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            if invalid == "duplicate_echo" {
+                engine.observe_external_surrounding_text_for_owned_erasure(Some(echo), true);
+            }
+            if matches!(
+                invalid,
+                "regressing_prefix"
+                    | "changed_prefix"
+                    | "selected_prefix"
+                    | "duplicate_prefix"
+                    | "changed_final_after_prefix"
+            ) {
+                let text = match invalid {
+                    "regressing_prefix" => " abc".into(),
+                    "changed_prefix" => format!("other{earlier}"),
+                    _ => earlier.clone(),
+                };
+                let end = text.chars().count() as u32;
+                let actual = SurroundingTextSnapshot::new(
+                    text,
+                    end,
+                    end - u32::from(invalid == "selected_prefix"),
+                );
+                engine.observe_external_surrounding_text_for_owned_erasure(
+                    Some(actual.clone()),
+                    true,
+                );
+                if invalid == "duplicate_prefix" {
+                    engine.observe_external_surrounding_text_for_owned_erasure(Some(actual), true);
+                }
+            }
+            if invalid == "focus_loss" {
+                actual_focus_out(&mut harness, &mut engine, 161_016).await;
+            }
+            assert!(!engine.context_allows_manual_toggle(), "{invalid}");
+            assert!(
+                !engine.context_observed_suffix_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            assert!(
+                !engine.context_owns_active_preedit_manual_toggle(),
+                "{invalid}"
+            );
+            let final_text = if matches!(invalid, "changed_final" | "changed_final_after_prefix") {
+                format!("other{full}")
+            } else {
+                full.clone()
+            };
+            let end = final_text.chars().count() as u32;
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(
+                    final_text,
+                    end,
+                    end - u32::from(invalid == "selected_final"),
+                )),
+                invalid != "foreign_final",
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            let end = full.chars().count() as u32;
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(full, end, end)),
+                true,
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+        }));
+    }
+}
+
+#[test]
+fn kde_firefox_queued_owned_append_preserves_unicode_whole_field() {
+    for external in ["", "π ", "до\u{a0}"] {
+        for token in ["abcde", "абвгд"] {
+            let mut chars = token.chars();
+            let prefix: String = chars.by_ref().take(3).collect();
+            let first = chars.next().unwrap();
+            let before = format!("{external}{prefix}");
+            let earlier = format!("{before}{first}");
+            let old = before.chars().count() as u32;
+            let actual_before = SurroundingTextSnapshot::new(before, old, old);
+            let echo = SurroundingTextSnapshot::new(earlier.clone(), old, old);
+            assert!(LayIbusEngine::kde_firefox_owned_append_caret_echo_matches(
+                &actual_before,
+                &echo,
+                token
+            ));
+            for text in [earlier, format!("{external}{token}")] {
+                let end = text.chars().count() as u32;
+                let actual = SurroundingTextSnapshot::new(text, end, end);
+                assert!(LayIbusEngine::kde_firefox_owned_append_caret_echo_settles(
+                    &echo, &actual, token
+                ));
+                let mut changed = actual.clone();
+                changed.text.insert_str(0, "other ");
+                changed.cursor_pos += 6;
+                changed.anchor_pos += 6;
+                assert!(!LayIbusEngine::kde_firefox_owned_append_caret_echo_settles(
+                    &echo, &changed, token
+                ));
+                assert!(!LayIbusEngine::kde_firefox_owned_append_caret_echo_matches(
+                    &actual_before,
+                    &actual,
+                    token
+                ));
+            }
+        }
+    }
+}
+
+#[test]
+fn kde_firefox_owned_append_caret_echo_requires_final_actual_receipt() {
+    for reset in [true, false] {
+        zbus::block_on(bounded(async {
+            let (mut harness, mut engine, full) =
+                compose_owned_append_before_caret_echo("kde").await;
+            let cursor = full.chars().count() as u32;
+            let epoch = engine.committed_tail.epoch;
+            let source_state = format!(
+                "mode={:?}, active={:?}, exact={}, before={:?}, scope={:?}, token_live={}",
+                engine.composition.word_input_mode,
+                engine.shared.lock().unwrap().active_path,
+                engine.client_context.exact_surrounding_refresh_available,
+                engine.client_context.surrounding_text_snapshot,
+                engine.context_word_scope.as_ref().map(|scope| (
+                    scope.lineage().completeness,
+                    scope.lineage().observed_suffix_chars
+                )),
+                engine.live_context_token().is_some()
+            );
+            let echo = SurroundingTextSnapshot::new(full.clone(), cursor - 1, cursor - 1);
+            assert!(engine.kde_firefox_owned_append_caret_observation_pending(&echo),
+                "the actual SSI selector must recognize the proved pre-effect snapshot: {source_state}");
+            engine.observe_external_surrounding_text_for_owned_erasure(Some(echo), true);
+            assert!(
+                engine.context_reset_rereceipt.is_some(),
+                "an owned append caret echo must retain only inert lineage: {source_state}"
+            );
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert!(!engine.context_allows_manual_toggle());
+            assert!(!engine.context_observed_suffix_exact_manual_handoff_allowed());
+            assert!(!engine.context_owns_active_preedit_manual_toggle());
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            if reset {
+                actual_reset(&mut harness, &mut engine, 161_014, false).await;
+                assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            }
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(full.clone(), cursor, cursor)),
+                true,
+            );
+            assert!(
+                engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "the full actual caret must settle the same owned append"
+            );
+            assert_eq!(engine.committed_tail.epoch, epoch);
+            assert_eq!(engine.committed_tail.buffer, full);
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            let path = engine.path.clone();
+            let (engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
+            assert_eq!(
+                disposition,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3())
+            );
+            let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
+            assert!(cycle09_tail_is_authoritative(&tail, &path, false, &full));
+        }));
+    }
+}
+
+#[test]
+fn kde_firefox_owned_append_caret_echo_refuses_unowned_or_changed_observations() {
+    for invalid in [
+        "gnome",
+        "foreign_first",
+        "unconfirmed",
+        "not_owned_append",
+        "selection",
+        "interior",
+        "wrong_text",
+        "inactive_path",
+        "duplicate",
+        "changed_final_prefix",
+        "selected_final",
+        "foreign_final",
+        "focus_loss",
+        "missing_receipt",
+    ] {
+        zbus::block_on(bounded(async {
+            let (mut harness, mut engine, full) =
+                compose_owned_append_before_caret_echo(if invalid == "gnome" {
+                    "gnome"
+                } else {
+                    "kde"
+                })
+                .await;
+            let cursor = full.chars().count() as u32;
+            if invalid == "unconfirmed" {
+                engine.context_reset_rereceipt.as_mut().unwrap().confirmed = false;
+            }
+            if invalid == "not_owned_append" {
+                engine
+                    .context_reset_rereceipt
+                    .as_mut()
+                    .unwrap()
+                    .awaiting_owned_append_receipt = false;
+            }
+            if invalid == "inactive_path" {
+                engine.shared.lock().unwrap().active_path = Some("/other".into());
+            }
+            if invalid == "missing_receipt" {
+                engine.context_reset_rereceipt = None;
+            }
+            let echo = SurroundingTextSnapshot::new(
+                if invalid == "wrong_text" {
+                    " abcx".into()
+                } else {
+                    full.clone()
+                },
+                cursor - if invalid == "interior" { 2 } else { 1 },
+                cursor
+                    - if invalid == "selection" {
+                        0
+                    } else if invalid == "interior" {
+                        2
+                    } else {
+                        1
+                    },
+            );
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(echo.clone()),
+                invalid != "foreign_first",
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            assert!(
+                !engine.context_allows_manual_toggle()
+                    && !engine.context_observed_suffix_exact_manual_handoff_allowed()
+                    && !engine.context_owns_active_preedit_manual_toggle(),
+                "{invalid}"
+            );
+            if invalid == "duplicate" {
+                engine.observe_external_surrounding_text_for_owned_erasure(Some(echo), true);
+            }
+            if invalid == "focus_loss" {
+                actual_focus_out(&mut harness, &mut engine, 161_015).await;
+            }
+            let final_text = if invalid == "changed_final_prefix" {
+                format!("other{full}")
+            } else {
+                full.clone()
+            };
+            let end = final_text.chars().count() as u32;
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(
+                    final_text,
+                    end,
+                    end - u32::from(invalid == "selected_final"),
+                )),
+                invalid != "foreign_final",
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(full, cursor, cursor)),
+                true,
+            );
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+        }));
+    }
+}
+
+#[test]
+fn kde_firefox_owned_append_caret_echo_preserves_unicode_external_context() {
+    for external in ["", "π ", "до\u{a0}"] {
+        for token in ["abcd", "абвг"] {
+            let full = format!("{external}{token}");
+            let (last, _) = full.char_indices().next_back().unwrap();
+            let before = &full[..last];
+            let old = before.chars().count() as u32;
+            let previous = SurroundingTextSnapshot::new(before.into(), old, old);
+            let echo = SurroundingTextSnapshot::new(full.clone(), old, old);
+            let exact = SurroundingTextSnapshot::new(full, old + 1, old + 1);
+            assert!(LayIbusEngine::kde_firefox_owned_append_caret_echo_matches(
+                &previous, &echo, token
+            ));
+            assert!(LayIbusEngine::kde_firefox_owned_append_caret_echo_settles(
+                &echo, &exact, token
+            ));
+            assert!(!LayIbusEngine::kde_firefox_owned_append_caret_echo_matches(
+                &previous, &exact, token
+            ));
+            let mut foreign = exact.clone();
+            foreign.text.insert_str(0, "other ");
+            foreign.cursor_pos += 6;
+            foreign.anchor_pos += 6;
+            assert!(!LayIbusEngine::kde_firefox_owned_append_caret_echo_settles(
+                &echo, &foreign, token
+            ));
+        }
+    }
+}
+
+#[test]
+fn kde_firefox_owned_erasure_echo_requires_final_actual_receipt() {
+    zbus::block_on(bounded(async {
+        let prefix = "π ";
+        let (mut harness, mut engine) = compose_owned_erasure(prefix).await;
+        let epoch = engine.committed_tail.epoch;
+        let known = engine.context_word_is_known();
+        let start = prefix.chars().count() as u32;
+        assert!(!engine.context_owns_active_preedit_manual_toggle());
+        engine.observe_external_surrounding_text_for_owned_erasure(
+            Some(SurroundingTextSnapshot::new(
+                format!("{prefix}d"),
+                start,
+                start,
+            )),
+            true,
+        );
+        assert!(
+            !engine.context_owns_active_preedit_manual_toggle(),
+            "the output echo is not authority"
+        );
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                159_903,
+                KEY_BACKSPACE,
+                14,
+                RELEASE_MASK
+            )
+            .await
+        );
+        cycle09_assert_no_local_text_effect(&mut harness).await;
+        assert!(
+            !engine.context_owns_active_preedit_manual_toggle(),
+            "a key release is not a client receipt"
+        );
+        engine.observe_external_surrounding_text_for_owned_erasure(
+            Some(SurroundingTextSnapshot::new(prefix.into(), start, start)),
+            true,
+        );
+        assert!(
+            engine.context_owns_active_preedit_manual_toggle(),
+            "same-owner erasure must settle only at the final exact client receipt"
+        );
+        assert_eq!(
+            engine
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .unwrap()
+                .text,
+            prefix
+        );
+        assert_eq!(engine.committed_tail.epoch, epoch);
+        assert_eq!(engine.committed_tail.buffer, "abc");
+        assert_eq!(engine.context_word_is_known(), known);
+        assert!(engine.client_context.native_document_binding.is_none());
+        assert!(engine.committed_tail.pending_completion_learning.is_none());
+        assert!(engine.committed_tail.recent_replace.is_none());
+    }));
+}
+
+#[test]
+fn kde_firefox_owned_erasure_echo_refuses_stale_or_foreign_observations() {
+    zbus::block_on(bounded(async {
+        for invalid in [
+            "owner",
+            "focus",
+            "lease",
+            "layout",
+            "epoch",
+            "revision",
+            "prefix",
+            "suffix",
+            "character",
+            "cursor",
+            "selection",
+            "missing",
+            "sealed",
+            "atomic",
+            "backend",
+            "client",
+        ] {
+            let (mut harness, mut engine) = compose_owned_erasure("π ").await;
+            assert!(
+                legacy_key(
+                    &mut harness,
+                    &mut engine,
+                    159_903,
+                    KEY_BACKSPACE,
+                    14,
+                    RELEASE_MASK
+                )
+                .await
+            );
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            let mut echo = Some(SurroundingTextSnapshot::new("π d".into(), 2, 2));
+            match invalid {
+                "owner" => engine.shared.lock().unwrap().active_path = Some("/foreign".into()),
+                "focus" => engine.client_context.focus_serial += 1,
+                "lease" => engine.client_context.runtime_owner_lease_identity += 1,
+                "layout" => engine.layout_gesture.layout_generation += 1,
+                "epoch" => engine.committed_tail.epoch += 1,
+                "revision" => engine.client_context.surrounding_observation_revision += 1,
+                "prefix" => echo.as_mut().unwrap().text = "χ d".into(),
+                "suffix" => echo.as_mut().unwrap().text.push('x'),
+                "character" => echo.as_mut().unwrap().text = "π e".into(),
+                "cursor" => {
+                    echo.as_mut().unwrap().cursor_pos = 3;
+                    echo.as_mut().unwrap().anchor_pos = 3;
+                }
+                "selection" => echo.as_mut().unwrap().anchor_pos = 3,
+                "missing" => echo = None,
+                "sealed" => engine.context_handoff_sealed = true,
+                "atomic" => engine.atomic.active = true,
+                "backend" => engine.config.layout_backend = "gnome".into(),
+                _ => {}
+            }
+            engine.observe_external_surrounding_text_for_owned_erasure(echo, invalid != "client");
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new("π ".into(), 2, 2)),
+                true,
+            );
+            assert!(
+                !engine.context_owns_active_preedit_manual_toggle(),
+                "{invalid}"
+            );
+        }
+    }));
+}
+
+#[test]
+fn kde_firefox_owned_erasure_echo_does_not_survive_an_intervening_receipt() {
+    zbus::block_on(bounded(async {
+        let (mut harness, mut engine) = compose_owned_erasure("").await;
+        assert!(
+            legacy_key(
+                &mut harness,
+                &mut engine,
+                159_903,
+                KEY_BACKSPACE,
+                14,
+                RELEASE_MASK
+            )
+            .await
+        );
+        cycle09_assert_no_local_text_effect(&mut harness).await;
+        for text in ["d", "foreign", ""] {
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(text.into(), 0, 0)),
+                true,
+            );
+        }
+        assert!(!engine.context_owns_active_preedit_manual_toggle());
+    }));
+}
+
+#[test]
+fn kde_firefox_owned_erasure_echo_requires_the_successful_local_effect() {
+    zbus::block_on(bounded(async {
+        let (_, mut engine) = compose_owned_word("").await;
+        engine.config.layout_backend = "kde".into();
+        for text in ["d", ""] {
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(SurroundingTextSnapshot::new(text.into(), 0, 0)),
+                true,
+            );
+        }
+        assert!(!engine.context_owns_active_preedit_manual_toggle());
+    }));
+}
+
 async fn compose_owned_word_with_initial_snapshot(
     prefix: Option<&str>,
     capabilities: u32,
@@ -554,6 +1429,124 @@ fn td159_accepted_completion_nbsp_keeps_real_v4_delegated_tail() {
         assert_eq!(state, "passive:committed-tail");
         assert!(!path.is_empty());
         assert!(!field_receipt.is_empty());
+    }));
+}
+
+#[test]
+fn firefox_preedit_space_reflow_retains_the_same_owner_and_exact_field() {
+    zbus::block_on(bounded(async {
+        for retain_prefix in [false, true] {
+            let prefix = "πrefix\u{a0}";
+            let (mut harness, mut engine) = compose_and_accept_completion(prefix).await;
+            let epoch = engine.committed_tail.epoch;
+            let known = engine.context_word_is_known();
+            let actual = "πrefix abcdef\u{a0}";
+            let cursor = actual.chars().count() as u32;
+            cycle09_surrounding_receipt(&mut harness, &mut engine, actual, cursor, cursor).await;
+            let mut pending = engine
+                .committed_tail
+                .pending_visible_postcondition
+                .take()
+                .unwrap();
+            assert!(pending.expected_external_snapshot.is_some());
+            if retain_prefix {
+                // Model this same pending result with locally retained earlier
+                // text. The native fixture proves acquisition/key history;
+                // this contract test checks the owner/result transformation.
+                engine.committed_tail.buffer.insert_str(0, prefix);
+                engine.shared.lock().unwrap().handoff_tail_buffer =
+                    engine.committed_tail.buffer.clone();
+                pending.expected_suffix = engine.committed_tail.buffer.clone();
+                pending.snapshot = lay::text_edit::VisibleTailSnapshot::new(
+                    lay::text_edit::VisibleTailSource::ImeActiveComposition,
+                    pending.expected_suffix.clone(),
+                    Some(engine.path.clone()),
+                    epoch,
+                )
+                .identity();
+            }
+            assert!(
+                engine.acknowledge_owned_preedit_space_reflow(&mut pending),
+                "owned prefix={retain_prefix}"
+            );
+            let wanted = if retain_prefix {
+                actual
+            } else {
+                "abcdef\u{a0}"
+            };
+            assert_eq!(engine.committed_tail.buffer, wanted);
+            assert_eq!(engine.shared.lock().unwrap().handoff_tail_buffer, wanted);
+            assert_eq!(engine.committed_tail.epoch, epoch);
+            assert_eq!(engine.context_word_is_known(), known);
+            assert!(engine.current_external_snapshot_agrees_with_owned_tail());
+            engine.committed_tail.pending_visible_postcondition = Some(pending);
+            assert_eq!(
+                engine.observe_visible_postcondition(),
+                crate::window_interaction::OutcomeProof::ExistingPostconditionConfirmed
+            );
+            assert!(engine
+                .committed_tail
+                .pending_visible_postcondition
+                .is_none());
+            assert!(engine.committed_tail.recent_replace.is_none());
+        }
+    }));
+}
+
+#[test]
+fn firefox_preedit_space_reflow_refuses_unrelated_or_unowned_changes() {
+    zbus::block_on(bounded(async {
+        for (actual, selection, moved, invalid) in [
+            ("changed abcdef\u{a0}", false, false, ""),
+            ("πrefix abcdeg\u{a0}", false, false, ""),
+            ("πrefix abcdef\u{a0}", true, false, ""),
+            ("πrefix abcdef\u{a0}", false, true, ""),
+            ("πrefix abcdef ", false, false, ""),
+            ("πrefix abcdef\u{a0}", false, false, "epoch"),
+            ("πrefix abcdef\u{a0}", false, false, "field"),
+            ("πrefix abcdef\u{a0}", false, false, "source"),
+            ("πrefix abcdef\u{a0}", false, false, "owner"),
+            ("πrefix abcdef\u{a0}", false, false, "sealed"),
+            ("πrefix abcdef\u{a0}", false, false, "atomic"),
+            ("πrefix abcdef\u{a0}", false, false, "missing_snapshot"),
+        ] {
+            let (mut harness, mut engine) = compose_and_accept_completion("πrefix\u{a0}").await;
+            let cursor = actual.chars().count() as u32 - u32::from(moved);
+            cycle09_surrounding_receipt(
+                &mut harness,
+                &mut engine,
+                actual,
+                cursor,
+                cursor - u32::from(selection),
+            )
+            .await;
+            let epoch = engine.committed_tail.epoch;
+            let old = engine.committed_tail.buffer.clone();
+            let mut pending = engine
+                .committed_tail
+                .pending_visible_postcondition
+                .take()
+                .unwrap();
+            match invalid {
+                "epoch" => pending.dispatched_epoch += 1,
+                "field" => pending.snapshot.focus_id = Some("/other/field".into()),
+                "source" => {
+                    pending.snapshot.source = lay::text_edit::VisibleTailSource::ImeCommittedTail
+                }
+                "owner" => engine.shared.lock().unwrap().active_path = Some("/other/owner".into()),
+                "sealed" => engine.context_handoff_sealed = true,
+                "atomic" => engine.atomic.active = true,
+                "missing_snapshot" => pending.expected_external_snapshot = None,
+                _ => {}
+            }
+            assert!(
+                !engine.acknowledge_owned_preedit_space_reflow(&mut pending),
+                "{actual:?}/{invalid}"
+            );
+            assert_eq!(engine.committed_tail.buffer, old);
+            assert_eq!(engine.shared.lock().unwrap().handoff_tail_buffer, old);
+            assert_eq!(engine.committed_tail.epoch, epoch);
+        }
     }));
 }
 

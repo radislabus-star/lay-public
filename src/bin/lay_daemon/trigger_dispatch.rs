@@ -100,12 +100,16 @@ pub(super) fn run_exact_ime_tail_replay(
                     super::log("warning: queued Double Shift has no settled daemon tail");
                     return None;
                 };
+                let readback_policy =
+                    super::exact_ime_tail_replay::exact_ime_tail_readback_policy(&settlement_focus);
                 if let Err(error) = wait_for_ime_committed_tail_settlement(
                     &expected_tail,
                     current_layout_is_ru,
                     &settlement_lease,
                     None,
+                    || Ok(true),
                     || super::verify_exact_focused_window_identity(&settlement_focus),
+                    readback_policy,
                 ) {
                     super::log(&format!(
                         "warning: queued Double Shift settlement failed: {error}"

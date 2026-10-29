@@ -527,6 +527,85 @@ fn native_x11_master_freeze_preserves_input_on_success_and_rejection() {
 
 #[test]
 #[ignore = "requires dedicated owned Xvfb"]
+fn native_x11_prepared_focus_cannot_emit_before_input_isolation() {
+    let mut f = Fixture::new();
+    let _maps = f.input.prepare_replay().unwrap();
+    {
+        let mut replay = f.input.replay.lock().unwrap();
+        kde_client_focus::retain(&mut replay, f.window).unwrap();
+        assert!(replay.maps.is_none());
+    }
+    assert!(!f.input.grabbed);
+    assert!(f
+        .output
+        .emit(&[
+            InputEvent::new(EventType::KEY.0, KeyCode::KEY_C.code(), 1),
+            InputEvent::new(EventType::KEY.0, KeyCode::KEY_C.code(), 0),
+        ])
+        .is_err());
+    assert!(f.app_keys().is_empty());
+    f.input.ungrab().unwrap();
+    assert_eq!(f.input.replay.lock().unwrap().keyboard, 0);
+    f.pair(38);
+    assert_eq!(f.app_keys().len(), 2);
+}
+
+#[test]
+#[ignore = "requires dedicated owned Xvfb"]
+fn native_x11_kde_failed_grab_retires_prepared_focus_without_thawing_foreign_grab() {
+    let mut f = Fixture::new();
+    f.source
+        .xinput_xi_query_version(2, 2)
+        .unwrap()
+        .reply()
+        .unwrap();
+    let reply = f
+        .source
+        .xinput_xi_grab_device(
+            f.window,
+            x11rb::CURRENT_TIME,
+            0u32,
+            f.input.core,
+            xproto::GrabMode::SYNC,
+            xproto::GrabMode::ASYNC,
+            xinput::GrabOwner::NO_OWNER,
+            &[u32::from(XIEventMask::KEY_PRESS | XIEventMask::KEY_RELEASE)],
+        )
+        .unwrap()
+        .reply()
+        .unwrap();
+    assert_eq!(reply.status, xproto::GrabStatus::SUCCESS);
+    assert!(f.input.grab_with_client_focus(true).is_err());
+    assert!(!f.input.grabbed);
+    assert_eq!(f.input.replay.lock().unwrap().keyboard, 0);
+    let reply = f
+        .input
+        .conn
+        .xinput_xi_grab_device(
+            f.window,
+            x11rb::CURRENT_TIME,
+            0u32,
+            f.input.core,
+            xproto::GrabMode::SYNC,
+            xproto::GrabMode::ASYNC,
+            xinput::GrabOwner::NO_OWNER,
+            &[u32::from(XIEventMask::KEY_PRESS | XIEventMask::KEY_RELEASE)],
+        )
+        .unwrap()
+        .reply()
+        .unwrap();
+    assert_eq!(reply.status, xproto::GrabStatus::ALREADY_GRABBED);
+    f.source
+        .xinput_xi_ungrab_device(x11rb::CURRENT_TIME, f.input.core)
+        .unwrap()
+        .check()
+        .unwrap();
+    f.pair(38);
+    assert_eq!(f.app_keys().len(), 2);
+}
+
+#[test]
+#[ignore = "requires dedicated owned Xvfb"]
 fn native_x11_output_is_excluded_and_old_raw_prefix_is_not_replayed() {
     let mut f = Fixture::new();
     assert!(f
@@ -1098,7 +1177,7 @@ fn native_x11_master_freeze_preserves_existing_client_focus() {
         "root-grab negative control did not observe focus loss"
     );
     f.app_keys();
-    f.input.grab().unwrap();
+    f.input.grab_with_client_focus(true).unwrap();
     assert_eq!(
         f.app.get_input_focus().unwrap().reply().unwrap().focus,
         f.window
@@ -1107,6 +1186,10 @@ fn native_x11_master_freeze_preserves_existing_client_focus() {
         assert!(
             !matches!(event, Event::XinputFocusOut(_)),
             "transport acquisition changed the client's logical focus: {event:?}"
+        );
+        assert!(
+            !matches!(event, Event::FocusOut(_)),
+            "transport acquisition emitted core FocusOut: {event:?}"
         );
     }
     f.pair(38);

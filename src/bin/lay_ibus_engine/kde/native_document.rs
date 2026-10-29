@@ -8,6 +8,12 @@ mod bus;
 mod client_observation;
 #[path = "chrome/presentation.rs"]
 mod client_presentation;
+#[path = "firefox/hint_geometry.rs"]
+mod firefox_hint_geometry;
+#[path = "firefox/preedit_echo.rs"]
+mod firefox_preedit_echo;
+#[path = "firefox/presentation.rs"]
+mod firefox_presentation;
 #[path = "native_document/observer.rs"]
 mod observer;
 #[path = "native_document/preparation.rs"]

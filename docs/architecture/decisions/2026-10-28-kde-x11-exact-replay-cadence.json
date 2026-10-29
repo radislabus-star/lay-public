@@ -1,0 +1,20 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-28-kde-x11-exact-replay-cadence",
+  "decision": "Isolate cadence selection for the existing exact-tail executor in a KDE module and reuse existing bounded fast emitters only for the resolved KDE backend with an actual X11 virtual device. Other desktops and evdev retain original paced functions.",
+  "reason": "Fresh native Firefox five-gesture failures reach the existing delegated executor; a six-letter replay includes 28 ms of fixed deletion sleeps and 6 ms of insertion sleeps. Test removal of those waits without changing delivery, focus, ownership or settlement.",
+  "invariants": ["C01", "C03", "C04", "C05", "C07", "C08", "C09", "C10"],
+  "protected_paths": [
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs",
+    "src/bin/lay_daemon/text_output.rs",
+    "src/bin/lay_daemon/kde/exact_replay_cadence.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "verification": "Pre-edit dependency map and consequence analysis; preserve existing executor statements and guard/order proofs with mechanical cadence-call substitutions only; reuse unchanged bounded emission code; targeted daemon source checks and warning-free release build; unchanged native three-case RED/GREEN, then full Firefox and existing-route KDE controls after short PASS.",
+  "not_tested": "No new GNOME, Wayland or USB acceptance is implied. Post-output unavailable field receipts and the earlier pre-layout cancellation are separate unresolved observations. A visible native PASS does not certify those backend receipts.",
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "experiment_verdict": "REJECTED: native short check 1 PASS / 2 FAIL; all source checks passed but repeat gestures lost context authority. Original daemon and source restored; do not remove pacing again without new settlement evidence.",
+  "result_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/kde-native-cadence-rollback-v1/result.json"
+}

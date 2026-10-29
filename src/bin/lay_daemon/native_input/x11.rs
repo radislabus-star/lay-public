@@ -21,6 +21,8 @@ use x11rb::{
     rust_connection::RustConnection,
 };
 
+#[path = "../kde/native_input_focus.rs"]
+mod kde_client_focus;
 #[path = "keymap.rs"]
 mod keymap;
 #[path = "mapping.rs"]
@@ -435,6 +437,10 @@ impl Input {
     }
 
     pub(crate) fn grab(&mut self) -> io::Result<()> {
+        self.grab_with_client_focus(kde_client_focus::required(crate::active_layout_backend()))
+    }
+
+    fn grab_with_client_focus(&mut self, retain_client_focus: bool) -> io::Result<()> {
         let acquisition_epoch = self.epoch.load(Ordering::Acquire);
         if self.grabbed || self.batch_pending || !self.pending.is_empty() {
             return Err(io::ErrorKind::WouldBlock.into());
@@ -466,23 +472,49 @@ impl Input {
         if focus <= 1 {
             return Err(err("X11 input has no concrete focused window"));
         }
-        let reply = self
-            .conn
-            .xinput_xi_grab_device(
-                focus,
-                x11rb::CURRENT_TIME,
-                0u32,
-                self.core,
-                xproto::GrabMode::SYNC,
-                xproto::GrabMode::ASYNC,
-                xinput::GrabOwner::NO_OWNER,
-                &[u32::from(XIEventMask::KEY_PRESS | XIEventMask::KEY_RELEASE)],
-            )
-            .map_err(err)?
-            .reply()
-            .map_err(err)?;
-        if reply.status != xproto::GrabStatus::SUCCESS {
-            return Err(err(format!("X11 master grab rejected: {:?}", reply.status)));
+        let mut prepared_maps = if retain_client_focus {
+            let prepared = (|| {
+                let maps = self.prepare_replay()?;
+                let mut replay = self.replay.lock().map_err(err)?;
+                kde_client_focus::retain(&mut replay, focus)?;
+                Ok(maps)
+            })();
+            match prepared {
+                Ok(maps) => Some(maps),
+                Err(error) => {
+                    self.ungrab()?;
+                    return Err(error);
+                }
+            }
+        } else {
+            None
+        };
+        let acquired = (|| {
+            let reply = self
+                .conn
+                .xinput_xi_grab_device(
+                    focus,
+                    x11rb::CURRENT_TIME,
+                    0u32,
+                    self.core,
+                    xproto::GrabMode::SYNC,
+                    xproto::GrabMode::ASYNC,
+                    xinput::GrabOwner::NO_OWNER,
+                    &[u32::from(XIEventMask::KEY_PRESS | XIEventMask::KEY_RELEASE)],
+                )
+                .map_err(err)?
+                .reply()
+                .map_err(err)?;
+            if reply.status != xproto::GrabStatus::SUCCESS {
+                return Err(err(format!("X11 master grab rejected: {:?}", reply.status)));
+            }
+            Ok(())
+        })();
+        if let Err(error) = acquired {
+            if retain_client_focus {
+                self.ungrab()?;
+            }
+            return Err(error);
         }
         self.grabbed = true;
         // All raw input preceding the reply was already delivered. The master now
@@ -520,7 +552,11 @@ impl Input {
             {
                 return Err(io::ErrorKind::WouldBlock.into());
             }
-            self.activate_replay()?;
+            if let Some(maps) = prepared_maps.take() {
+                self.replay.lock().map_err(err)?.maps = Some(maps);
+            } else {
+                self.activate_replay()?;
+            }
             if self.epoch.load(Ordering::Acquire) != acquisition_epoch || !self.pending.is_empty() {
                 return Err(io::ErrorKind::WouldBlock.into());
             }
@@ -562,7 +598,13 @@ impl Input {
     }
 
     fn activate_replay(&mut self) -> io::Result<()> {
-        let ids = {
+        let maps = self.prepare_replay()?;
+        self.replay.lock().map_err(err)?.maps = Some(maps);
+        Ok(())
+    }
+
+    fn prepare_replay(&mut self) -> io::Result<mapping::Maps> {
+        let (ids, maps) = {
             let mut replay = self.replay.lock().map_err(err)?;
             replay.activate()?;
             let ids = replay.device_ids()?;
@@ -594,7 +636,6 @@ impl Input {
                     ],
                 )
             })?;
-            replay.maps = Some(maps);
             replay
                 .conn
                 .get_input_focus()
@@ -610,23 +651,20 @@ impl Input {
                 if own_hierarchy(&event, &ids) {
                     continue;
                 }
-                replay
-                    .maps
-                    .as_ref()
-                    .unwrap()
-                    .validate_event(&replay.conn, &event)?;
+                maps.validate_event(&replay.conn, &event)?;
             }
             if !empty {
                 return Err(err("X11 replay resource event budget exceeded"));
             }
             replay.validate_owner()?;
-            ids
+            (ids, maps)
         };
-        self.settle_lifecycle(&ids)
+        self.settle_lifecycle(&ids)?;
+        Ok(maps)
     }
 
     pub(crate) fn ungrab(&mut self) -> io::Result<()> {
-        if !self.grabbed {
+        if !self.grabbed && self.replay.lock().map_err(err)?.keyboard == 0 {
             return Ok(());
         }
         let cleanup = (|| {

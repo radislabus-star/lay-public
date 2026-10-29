@@ -58,6 +58,22 @@ pub(crate) struct PendingContextResetRereceipt {
     // grants authority until the immediately following exact full receipt.
     strict_prefix_echo_revision: Option<u64>,
     published_preedit: Option<PublishedPreeditWitness>,
+    // One actual pre-effect field carried through its authenticated local
+    // append. It is never published as the current client snapshot.
+    owned_append_actual_before: Option<SurroundingTextSnapshot>,
+    // Successful local cancellation may be followed by one stale Firefox
+    // preedit echo. This is inert provenance inside the existing receipt.
+    owned_preedit_return_echo: Option<OwnedClosedWordErasureEcho>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct OwnedClosedWordErasureEcho {
+    actual_before: SurroundingTextSnapshot,
+    erased: char,
+    echo_revision: Option<u64>,
+    focus_serial: u64,
+    runtime_owner_lease_identity: u64,
+    layout_generation: u64,
 }
 
 /// One Reset echo of an independently confirmed, fully completed native replay.
@@ -154,6 +170,17 @@ pub(crate) struct ManagedWordStartWitness {
     // Inert provenance for the already confirmed word before this preedit.
     // It cannot authorize an edit of either word while the preedit is open.
     closed_word_predecessor: Option<Box<ContextResetRereceiptCandidate>>,
+    // One successful local preedit erasure may have a delayed Firefox echo.
+    // Inert output provenance only; the echo itself never grants authority.
+    owned_erasure_echo: Option<OwnedPreeditErasureEcho>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
+struct OwnedPreeditErasureEcho {
+    erased: char,
+    tail_epoch: u64,
+    armed_revision: u64,
+    echo_revision: Option<u64>,
 }
 
 impl ManagedWordStartWitness {
@@ -827,34 +854,10 @@ impl LayIbusEngine {
         &self,
         witness: &ManagedWordStartWitness,
     ) -> bool {
-        witness.exact_refresh_at_start
-            && self.client_context.exact_surrounding_refresh_available
-            // UnknownStart may use the exact entirely-owned birth proof only
-            // after the preceding handled input has retired its paired release.
-            // A still-held local input cannot stand in for a settled word start.
-            && (self.context_word_is_known()
-                || self.layout_gesture.handled_press_keycodes.is_empty())
-            && self.client_context.managed_input
-            && self.client_context.surrounding_text_supported
-            && self.client_context.preedit_text_supported
-            && self.composition.word_input_mode == Some(WordInputMode::ManagedCommit)
-            && witness.anchored_token_chars == 0
-            && witness.focus_receipt == self.client_context.focus_receipt
-            && witness.focus_serial == self.client_context.focus_serial
-            && witness.runtime_owner_lease_identity
-                == self.client_context.runtime_owner_lease_identity
-            && witness.layout_generation == self.layout_gesture.layout_generation
+        // UnknownStart still requires the preceding handled input's release.
+        (self.context_word_is_known() || self.layout_gesture.handled_press_keycodes.is_empty())
+            && self.owned_preedit_boundary_owner_matches(witness)
             && witness.armed_revision == self.client_context.surrounding_observation_revision
-            && self.committed_tail.epoch
-                == witness
-                    .start_tail_epoch
-                    .wrapping_add(self.composition.buffer.chars().count() as u64)
-                    .wrapping_add(witness.manual_tail_epoch_offset)
-            && self
-                .committed_tail
-                .buffer
-                .strip_suffix(self.composition.buffer.as_str())
-                == Some(witness.start_committed_tail.as_str())
             && self
                 .client_context
                 .surrounding_text_snapshot
@@ -865,6 +868,31 @@ impl LayIbusEngine {
                         && snapshot.text.strip_prefix(witness.snapshot_prefix.as_str())
                             == Some(witness.snapshot_suffix.as_str())
                 })
+    }
+
+    fn owned_preedit_boundary_owner_matches(&self, witness: &ManagedWordStartWitness) -> bool {
+        witness.exact_refresh_at_start
+            && self.client_context.exact_surrounding_refresh_available
+            && self.client_context.managed_input
+            && self.client_context.surrounding_text_supported
+            && self.client_context.preedit_text_supported
+            && self.composition.word_input_mode == Some(WordInputMode::ManagedCommit)
+            && witness.anchored_token_chars == 0
+            && witness.focus_receipt == self.client_context.focus_receipt
+            && witness.focus_serial == self.client_context.focus_serial
+            && witness.runtime_owner_lease_identity
+                == self.client_context.runtime_owner_lease_identity
+            && witness.layout_generation == self.layout_gesture.layout_generation
+            && self.committed_tail.epoch
+                == witness
+                    .start_tail_epoch
+                    .wrapping_add(self.composition.buffer.chars().count() as u64)
+                    .wrapping_add(witness.manual_tail_epoch_offset)
+            && self
+                .committed_tail
+                .buffer
+                .strip_suffix(self.composition.buffer.as_str())
+                == Some(witness.start_committed_tail.as_str())
     }
 
     // Only the existing verified owned-word producer calls this after its
@@ -1287,13 +1315,50 @@ impl LayIbusEngine {
     /// its first local key clears the widget snapshot. This never projects an
     /// uncommitted character into the managed CommitText witness.
     pub(crate) fn capture_legacy_preedit_start_boundary(&self) -> Option<ManagedWordStartWitness> {
-        if self.composition.word_input_mode != Some(WordInputMode::ManagedCommit)
-            || (!self.committed_tail.buffer.is_empty()
-                && !self.committed_tail.buffer.ends_with(char::is_whitespace))
+        let witness = if self.composition.word_input_mode == Some(WordInputMode::ManagedCommit)
+            && (self.committed_tail.buffer.is_empty()
+                || self.committed_tail.buffer.ends_with(char::is_whitespace))
         {
-            return None;
+            self.observed_word_start_from_current_snapshot("", false)
+        } else {
+            None
+        };
+        if self.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
+            && !self.content_is_sensitive()
+            && !self.committed_tail.buffer.is_empty()
+            && self.committed_tail.buffer.ends_with(char::is_whitespace)
+            && trace::diagnostics_enabled_cached()
+        {
+            let snapshot = self.client_context.surrounding_text_snapshot.as_ref();
+            let pending = self.context_reset_rereceipt.as_ref();
+            trace::record(serde_json::json!({
+                "kind": "ibus_closed_word_predecessor",
+                "stage": "preedit_start_capture",
+                "witness_captured": witness.is_some(),
+                "closed_predecessor_captured": witness.as_ref().is_some_and(|witness| witness.closed_word_predecessor.is_some()),
+                "managed_mode": self.composition.word_input_mode == Some(WordInputMode::ManagedCommit),
+                "client_exact_refresh": self.client_context.exact_surrounding_refresh_available,
+                "client_managed_input": self.client_context.managed_input,
+                "scope_known_start": self.context_word_scope.as_ref().is_some_and(|scope| scope.lineage().completeness == WordCompleteness::KnownStart),
+                "pending_present": pending.is_some(),
+                "pending_confirmed": pending.is_some_and(|pending| pending.confirmed),
+                "pending_token_current": pending.is_some_and(|pending| self.context_token.as_ref() == Some(&pending.token)),
+                "pending_native_ack": pending.is_some_and(|pending| pending.confirmed_native_replay_reset_ack.is_some()),
+                "pending_scope_known_start": pending.is_some_and(|pending| pending.token.word_scope().lineage().completeness == WordCompleteness::KnownStart),
+                "pending_snapshot_exact": pending.zip(snapshot).is_some_and(|(pending, snapshot)| snapshot_exactly_bounds_token(snapshot, &pending.token_text, pending.observed_suffix_chars as usize)),
+                "snapshot_present": snapshot.is_some(),
+                "snapshot_matches_tail": snapshot.is_some_and(|snapshot| !snapshot.has_selection() && snapshot.cursor_pos as usize == snapshot.text.chars().count() && snapshot.text == self.committed_tail.buffer),
+                "tail_ascii_space": self.committed_tail.buffer.ends_with(' '),
+                "tail_nbsp": self.committed_tail.buffer.ends_with('\u{a0}'),
+                "snapshot_ascii_space": snapshot.is_some_and(|snapshot| snapshot.text.ends_with(' ')),
+                "snapshot_nbsp": snapshot.is_some_and(|snapshot| snapshot.text.ends_with('\u{a0}')),
+                "tail_epoch": self.committed_tail.epoch,
+                "revision": self.client_context.surrounding_observation_revision,
+                "focus_serial": self.client_context.focus_serial,
+                "layout_generation": self.layout_gesture.layout_generation,
+            }).to_string());
         }
-        self.observed_word_start_from_current_snapshot("", false)
+        witness
     }
 
     pub(crate) fn capture_space_boundary_pair_scope(
@@ -1616,7 +1681,7 @@ impl LayIbusEngine {
         let Some((mut witness, mut before, before_epoch)) = receipt else {
             return;
         };
-        before.pop();
+        let erased = before.pop();
         if self.composition.buffer != before
             || before.is_empty()
             || self.composition.cursor != before.chars().count()
@@ -1640,6 +1705,19 @@ impl LayIbusEngine {
                 || self.marked_owned_preedit_manual_boundary_matches(&witness))
             && token.matches_word_scope(scope)
         {
+            witness.owned_erasure_echo = if self.config.active_layout_backend()
+                == lay::desktop::LayoutBackend::Kde
+                && witness.exact_refresh_at_start
+            {
+                erased.map(|erased| OwnedPreeditErasureEcho {
+                    erased,
+                    tail_epoch: self.committed_tail.epoch,
+                    armed_revision: self.client_context.surrounding_observation_revision,
+                    echo_revision: None,
+                })
+            } else {
+                None
+            };
             self.composition.legacy_preedit_start_boundary = Some(witness);
         }
     }
@@ -1735,6 +1813,7 @@ impl LayIbusEngine {
             start_cursor: start as u32,
             armed_revision: self.client_context.surrounding_observation_revision,
             reset_echo_epoch: None,
+            owned_erasure_echo: None,
             closed_word_predecessor: (token_chars == 0
                 && self.context_reset_rereceipt_exact_manual_handoff_allowed()
                 && self.committed_tail.buffer.ends_with(char::is_whitespace))
@@ -2864,6 +2943,21 @@ impl LayIbusEngine {
             return;
         }
         let (boundary_candidate, native_space_eligible, native_backspace_source) = boundary;
+        let owned_append_actual_before = boundary_candidate
+            .as_ref()
+            .filter(|candidate| {
+                self.context_reset_rereceipt
+                    .as_ref()
+                    .is_some_and(|pending| {
+                        pending.confirmed
+                            && !pending.awaiting_owned_append_receipt
+                            && candidate.tail_epoch == pending.tail_epoch
+                            && candidate.armed_revision == pending.armed_revision
+                            && candidate.token_text == pending.token_text
+                            && candidate.token == pending.predecessor_token
+                    })
+            })
+            .and_then(|candidate| candidate.owned_preedit_return_snapshot.clone());
         let owned_append = handled
             || (self.exact_replay_tail_change_quarantined && self.exact_replay_quarantine_active());
         if is_key_press(state) && keyval == KEY_BACKSPACE {
@@ -2923,6 +3017,19 @@ impl LayIbusEngine {
                     }
                     // Keep the real original observation and its revision;
                     // neither a reconstructed mirror nor a new client receipt.
+                    let owned_preedit_return_echo = (self.config.active_layout_backend()
+                        == lay::desktop::LayoutBackend::Kde
+                        && self.client_context.exact_surrounding_refresh_available)
+                        .then(|| OwnedClosedWordErasureEcho {
+                            actual_before: snapshot.clone(),
+                            erased: removed,
+                            echo_revision: None,
+                            focus_serial: self.client_context.focus_serial,
+                            runtime_owner_lease_identity: self
+                                .client_context
+                                .runtime_owner_lease_identity,
+                            layout_generation: self.layout_gesture.layout_generation,
+                        });
                     self.client_context.surrounding_text_snapshot = Some(snapshot);
                     Some(PendingContextResetRereceipt {
                         completed_replay: None,
@@ -2938,6 +3045,8 @@ impl LayIbusEngine {
                         awaiting_owned_append_receipt: false,
                         strict_prefix_echo_revision: None,
                         published_preedit: None,
+                        owned_append_actual_before: None,
+                        owned_preedit_return_echo,
                     })
                 })();
                 return;
@@ -3057,6 +3166,8 @@ impl LayIbusEngine {
                     awaiting_owned_append_receipt: false,
                     strict_prefix_echo_revision: None,
                     published_preedit: None,
+                    owned_append_actual_before: None,
+                    owned_preedit_return_echo: None,
                 })
             })();
             if crate::kde::native_erasure::supports(self.config.active_layout_backend()) {
@@ -3148,6 +3259,8 @@ impl LayIbusEngine {
                                     awaiting_owned_append_receipt: false,
                                     strict_prefix_echo_revision: None,
                                     published_preedit: candidate.published_preedit,
+                                    owned_append_actual_before: None,
+                                    owned_preedit_return_echo: None,
                                 });
                                 return;
                             }
@@ -3232,6 +3345,20 @@ impl LayIbusEngine {
             awaiting_owned_append_receipt: pending.confirmed,
             strict_prefix_echo_revision: None,
             published_preedit: pending.published_preedit,
+            owned_append_actual_before: owned_append_actual_before
+                // Several handled appends may precede the first actual SSI.
+                // Carry only the same chain's inert whole pre-effect field;
+                // the guards above still require each exact owned character.
+                .or_else(|| {
+                    (pending.confirmed
+                        && pending.awaiting_owned_append_receipt
+                        && pending.armed_revision
+                            == self.client_context.surrounding_observation_revision)
+                        .then_some(pending.owned_append_actual_before)
+                        .flatten()
+                })
+                .filter(|_| pending.tail_epoch.checked_add(1) == Some(self.committed_tail.epoch)),
+            owned_preedit_return_echo: None,
         });
     }
 
@@ -3684,6 +3811,20 @@ impl LayIbusEngine {
     }
 
     fn capture_context_reset_rereceipt_candidate(&self) -> Option<ContextResetRereceiptCandidate> {
+        if self
+            .context_reset_rereceipt
+            .as_ref()
+            .is_some_and(|pending| {
+                pending
+                    .owned_preedit_return_echo
+                    .as_ref()
+                    .is_some_and(|effect| effect.echo_revision.is_some())
+            })
+        {
+            // This inert echo can be settled only by the next actual
+            // field. A Reset cannot turn it into an unrelated reset seed.
+            return None;
+        }
         self.capture_pending_native_erasure_reset_candidate()
             .or_else(|| self.capture_owned_context_reset_rereceipt_candidate())
             .or_else(|| {
@@ -3767,8 +3908,30 @@ impl LayIbusEngine {
                         && published.text.starts_with(&token_text)
                 })
                 .cloned();
+            let owned_preedit_return_snapshot = if self.config.active_layout_backend()
+                == lay::desktop::LayoutBackend::Kde
+                && self.client_context.exact_surrounding_refresh_available
+                && pending.confirmed
+                && !pending.awaiting_owned_append_receipt
+                && pending.armed_revision == self.client_context.surrounding_observation_revision
+            {
+                self.client_context
+                    .surrounding_text_snapshot
+                    .as_ref()
+                    .filter(|snapshot| {
+                        snapshot.cursor_pos as usize == snapshot.text.chars().count()
+                            && snapshot_exactly_bounds_token(
+                                snapshot,
+                                &token_text,
+                                observed_suffix_chars,
+                            )
+                    })
+                    .cloned()
+            } else {
+                None
+            };
             return Some(ContextResetRereceiptCandidate {
-                owned_preedit_return_snapshot: None,
+                owned_preedit_return_snapshot,
                 completed_replay: pending.completed_replay.clone(),
                 confirmed_native_replay_reset_ack: pending
                     .confirmed_native_replay_reset_ack
@@ -3881,6 +4044,8 @@ impl LayIbusEngine {
             } else {
                 None
             },
+            owned_append_actual_before: None,
+            owned_preedit_return_echo: None,
         });
         trace::record(format!(
             r#"{{"kind":"ibus_context_reset_rereceipt","stage":"armed","tail_epoch":{tail_epoch},"suffix_chars":{observed_suffix_chars}}}"#,
@@ -4032,16 +4197,119 @@ impl LayIbusEngine {
         ));
     }
 
+    fn observe_closed_word_erasure_echo(
+        &mut self,
+        previous_snapshot: Option<&SurroundingTextSnapshot>,
+        previous_revision: u64,
+        erasure_client: bool,
+    ) -> bool {
+        let Some(pending) = self.context_reset_rereceipt.as_ref() else {
+            return false;
+        };
+        let Some(effect) = pending.owned_preedit_return_echo.clone() else {
+            return false;
+        };
+        // An unrelated client keeps the previous ordinary observation policy.
+        // Once an echo was retained, a client change must retire it instead.
+        if !erasure_client && effect.echo_revision.is_none() {
+            self.context_reset_rereceipt
+                .as_mut()
+                .unwrap()
+                .owned_preedit_return_echo = None;
+            return false;
+        }
+        let current = self.client_context.surrounding_text_snapshot.as_ref();
+        let revision = self.client_context.surrounding_observation_revision;
+        let is_echo = |snapshot: &SurroundingTextSnapshot| {
+            Self::kde_firefox_erased_preedit_snapshot_matches(
+                snapshot,
+                &effect.actual_before.text,
+                "",
+                effect.actual_before.cursor_pos,
+                effect.erased,
+            )
+        };
+        let identity_current =
+            erasure_client
+                && self.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
+                && self.client_context.exact_surrounding_refresh_available
+                && !self.composition.legacy_word_preedit_active
+                && !self.composition.preedit_visible
+                && effect.focus_serial == self.client_context.focus_serial
+                && effect.runtime_owner_lease_identity
+                    == self.client_context.runtime_owner_lease_identity
+                && effect.layout_generation == self.layout_gesture.layout_generation
+                && self.context_reset_rereceipt_identity_is_current()
+                && self.shared.lock().ok().is_some_and(|shared| {
+                    shared.active_path.as_deref() == Some(self.path.as_str())
+                });
+        let first = effect.echo_revision.is_none()
+            && pending.confirmed
+            && previous_revision == pending.armed_revision
+            && previous_revision.checked_add(1) == Some(revision)
+            && previous_snapshot == Some(&effect.actual_before);
+        if identity_current && first && current == Some(&effect.actual_before) {
+            // A deduplicated or direct exact reply needs no special handling.
+            self.context_reset_rereceipt
+                .as_mut()
+                .unwrap()
+                .owned_preedit_return_echo = None;
+            return false;
+        }
+        let retain_echo = identity_current && first && current.is_some_and(is_echo);
+        let confirm = identity_current
+            && !pending.confirmed
+            && effect.echo_revision == Some(previous_revision)
+            && pending.armed_revision.checked_add(1) == Some(previous_revision)
+            && previous_revision.checked_add(1) == Some(revision)
+            && previous_snapshot.is_some_and(is_echo)
+            && current == Some(&effect.actual_before);
+        if retain_echo || confirm {
+            let pending = self.context_reset_rereceipt.as_mut().unwrap();
+            pending.confirmed = confirm;
+            if confirm {
+                pending.armed_revision = revision;
+                pending.owned_preedit_return_echo = None;
+            } else {
+                let mut effect = effect;
+                effect.echo_revision = Some(revision);
+                pending.owned_preedit_return_echo = Some(effect);
+            }
+            trace::record(format!(
+                r#"{{"kind":"ibus_owned_closed_word_erasure_echo","stage":"{}","revision":{revision}}}"#,
+                if confirm {
+                    "confirmed"
+                } else {
+                    "retained_unconfirmed"
+                },
+            ));
+            return true;
+        }
+        // Spend this one-shot proof on any contradictory/intervening receipt.
+        // A later suffix match cannot revive it through a different cache path.
+        self.discard_context_reset_rereceipt();
+        trace::record(r#"{"kind":"ibus_owned_closed_word_erasure_echo","stage":"rejected"}"#);
+        true
+    }
+
     fn observe_context_reset_rereceipt_surrounding_text(
         &mut self,
         previous_snapshot: Option<&SurroundingTextSnapshot>,
         previous_revision: u64,
         retained_native_progress: Option<&SurroundingTextSnapshot>,
+        firefox_presentation_client: bool,
     ) {
         if self.observe_native_cursor_edit_receipt() {
             return;
         }
         self.acknowledge_owned_space_boundary();
+        if self.observe_closed_word_erasure_echo(
+            previous_snapshot,
+            previous_revision,
+            firefox_presentation_client,
+        ) {
+            return;
+        }
         let Some(pending) = self.context_reset_rereceipt.clone() else {
             return;
         };
@@ -4073,6 +4341,76 @@ impl LayIbusEngine {
         // contradictory. Other inert cache/sentinel paths cannot manufacture it.
         if let Some(current) = self.context_reset_rereceipt.as_mut() {
             current.strict_prefix_echo_revision = None;
+            current.owned_append_actual_before = None;
+        }
+        let firefox_caret_client = firefox_presentation_client
+            && self.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
+            && self.client_context.exact_surrounding_refresh_available
+            && self
+                .shared
+                .lock()
+                .is_ok_and(|shared| shared.active_path.as_deref() == Some(self.path.as_str()));
+        if firefox_caret_client
+            && pending.confirmed
+            && pending.awaiting_owned_append_receipt
+            && pending.published_preedit.is_none()
+            && previous_revision == pending.armed_revision
+            && previous_revision.checked_add(1)
+                == Some(self.client_context.surrounding_observation_revision)
+            && self.managed_strict_prefix_echo_identity_is_current(&pending)
+            && previous_snapshot
+                .or(pending.owned_append_actual_before.as_ref())
+                .zip(self.client_context.surrounding_text_snapshot.as_ref())
+                .is_some_and(|(previous, current)| {
+                    Self::kde_firefox_owned_append_caret_echo_matches(
+                        previous,
+                        current,
+                        &pending.token_text,
+                    )
+                })
+        {
+            if let Some(current) = self.context_reset_rereceipt.as_mut() {
+                current.confirmed = false;
+                current.strict_prefix_echo_revision =
+                    Some(self.client_context.surrounding_observation_revision);
+            }
+            trace::record(
+                r#"{"kind":"ibus_context_reset_rereceipt","stage":"retained_unconfirmed","reason":"kde_firefox_owned_append_caret_echo"}"#,
+            );
+            return;
+        }
+        if firefox_caret_client
+            && !pending.confirmed
+            && pending.awaiting_owned_append_receipt
+            && pending.strict_prefix_echo_revision.is_some_and(|revision| {
+                revision.checked_add(1)
+                    == Some(self.client_context.surrounding_observation_revision)
+                    && pending.armed_revision.checked_add(1) == Some(revision)
+                    && previous_revision == revision
+            })
+            && self.managed_strict_prefix_echo_identity_is_current(&pending)
+            && previous_snapshot
+                .zip(self.client_context.surrounding_text_snapshot.as_ref())
+                .is_some_and(|(previous, current)| {
+                    Self::kde_firefox_owned_append_caret_echo_settles(
+                        previous,
+                        current,
+                        &pending.token_text,
+                    ) && snapshot_exactly_bounds_strict_token_prefix(current, &pending.token_text)
+                })
+        {
+            // The earlier append's caret has caught up, but later owned text
+            // has not. Shift the existing inert echo pair so that its next
+            // whole-field comparison still checks all external text, too.
+            if let Some(current) = self.context_reset_rereceipt.as_mut() {
+                current.armed_revision = previous_revision;
+                current.strict_prefix_echo_revision =
+                    Some(self.client_context.surrounding_observation_revision);
+            }
+            trace::record(
+                r#"{"kind":"ibus_context_reset_rereceipt","stage":"retained_unconfirmed","reason":"kde_firefox_owned_append_prefix_progress"}"#,
+            );
+            return;
         }
         let exact_after_managed_prefix_echo = !pending.confirmed
             && pending.strict_prefix_echo_revision.is_some_and(|revision| {
@@ -4081,16 +4419,24 @@ impl LayIbusEngine {
                     && pending.armed_revision.checked_add(1) == Some(revision)
                     && previous_revision == revision
                     && previous_snapshot.is_some_and(|previous| {
-                        snapshot_exactly_bounds_strict_token_prefix(previous, &pending.token_text)
-                            && previous.cursor_pos as usize == previous.text.chars().count()
-                            && self
-                                .client_context
-                                .surrounding_text_snapshot
-                                .as_ref()
-                                .is_some_and(|current| {
-                                    current.cursor_pos as usize == current.text.chars().count()
-                                        && current.text.starts_with(&previous.text)
-                                })
+                        self.client_context
+                            .surrounding_text_snapshot
+                            .as_ref()
+                            .is_some_and(|current| {
+                                (snapshot_exactly_bounds_strict_token_prefix(
+                                    previous,
+                                    &pending.token_text,
+                                ) && previous.cursor_pos as usize == previous.text.chars().count()
+                                    && current.cursor_pos as usize == current.text.chars().count()
+                                    && current.text.starts_with(&previous.text))
+                                    || (firefox_caret_client
+                                        && pending.awaiting_owned_append_receipt
+                                        && Self::kde_firefox_owned_append_caret_echo_settles(
+                                            previous,
+                                            current,
+                                            &pending.token_text,
+                                        ))
+                            })
                     })
             })
             && self.managed_strict_prefix_echo_identity_is_current(&pending)
@@ -4205,7 +4551,10 @@ impl LayIbusEngine {
                 .surrounding_text_snapshot
                 .as_ref()
                 .is_some_and(|snapshot| {
-                    self.exact_replay_contains_prior_snapshot(snapshot) || advancing_native_target
+                    self.exact_replay_contains_prior_snapshot(snapshot)
+                        || (firefox_caret_client
+                            && self.kde_firefox_native_erased_boundary_echo(snapshot))
+                        || advancing_native_target
                 })
         {
             if let Some(pending) = self.context_reset_rereceipt.as_mut() {
@@ -5188,9 +5537,201 @@ impl LayIbusEngine {
     pub(crate) fn content_allows_text_assistance(&self) -> bool {
         self.content_allows_personalization()
     }
+    pub(crate) fn kde_firefox_owned_append_caret_observation_pending(
+        &self,
+        snapshot: &SurroundingTextSnapshot,
+    ) -> bool {
+        self.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
+            && self.client_context.exact_surrounding_refresh_available
+            && self
+                .context_reset_rereceipt
+                .as_ref()
+                .is_some_and(|pending| {
+                    self.client_context
+                        .surrounding_text_snapshot
+                        .as_ref()
+                        .or(pending.owned_append_actual_before.as_ref())
+                        .is_some_and(|previous| {
+                            (pending.awaiting_owned_append_receipt
+                                && Self::kde_firefox_owned_append_caret_echo_matches(
+                                    previous,
+                                    snapshot,
+                                    &pending.token_text,
+                                ))
+                                || (pending.strict_prefix_echo_revision.is_some()
+                                    && Self::kde_firefox_owned_append_caret_echo_settles(
+                                        previous,
+                                        snapshot,
+                                        &pending.token_text,
+                                    ))
+                        })
+                })
+    }
+
     pub(crate) fn observe_external_surrounding_text(
         &mut self,
         snapshot: Option<SurroundingTextSnapshot>,
+    ) {
+        let cursor_echo = snapshot.as_ref().is_some_and(|snapshot| {
+            self.kde_firefox_owned_append_caret_observation_pending(snapshot)
+        });
+        let erasure_client = (self
+            .composition
+            .legacy_preedit_start_boundary
+            .as_ref()
+            .is_some_and(|witness| witness.owned_erasure_echo.is_some())
+            || cursor_echo
+            || self
+                .context_reset_rereceipt
+                .as_ref()
+                .is_some_and(|pending| pending.owned_preedit_return_echo.is_some())
+            || snapshot
+                .as_ref()
+                .is_some_and(|snapshot| self.kde_firefox_native_erased_boundary_echo(snapshot)))
+            && self.kde_firefox_preedit_echo_client_is_current();
+        self.observe_external_surrounding_text_for_owned_erasure(snapshot, erasure_client);
+    }
+
+    fn prepare_owned_preedit_erasure_observation(
+        &self,
+        snapshot: Option<&SurroundingTextSnapshot>,
+        erasure_client: bool,
+    ) -> Option<(u64, OwnedPreeditErasureEcho, bool)> {
+        if !erasure_client
+            || self.config.active_layout_backend() != lay::desktop::LayoutBackend::Kde
+            || self.context_handoff_sealed
+            || self.atomic.active
+            || self.content_is_sensitive()
+            || self.client_context.native_document_binding.is_some()
+            || !self.exact_owned_legacy_preedit_is_current()
+            || !self.composition.preedit_visible
+            || self.composition.preedit_dirty
+            || self.composition.preedit_display_only_pending
+            || !self.composition.preedit_suffix.is_empty()
+            || self.composition.cursor != self.composition.buffer.chars().count()
+            || self.selected_precognition_replacement().is_some()
+        {
+            return None;
+        }
+        let witness = self.composition.legacy_preedit_start_boundary.as_ref()?;
+        let effect = witness.owned_erasure_echo.as_ref()?;
+        let previous = self.client_context.surrounding_text_snapshot.as_ref()?;
+        let snapshot = snapshot?;
+        if !self.owned_preedit_erasure_owner_is_current(witness)
+            || self.committed_tail.epoch != effect.tail_epoch
+            || witness.armed_revision != effect.armed_revision
+        {
+            return None;
+        }
+        let external = SurroundingTextSnapshot::new(
+            format!("{}{}", witness.snapshot_prefix, witness.snapshot_suffix),
+            witness.start_cursor,
+            witness.start_cursor,
+        );
+        let is_echo = |snapshot: &SurroundingTextSnapshot| {
+            Self::kde_firefox_erased_preedit_snapshot_matches(
+                snapshot,
+                &witness.snapshot_prefix,
+                &witness.snapshot_suffix,
+                witness.start_cursor,
+                effect.erased,
+            )
+        };
+        let complete = match effect.echo_revision {
+            None if self.client_context.surrounding_observation_revision
+                == effect.armed_revision
+                && previous == &external =>
+            {
+                if snapshot == &external {
+                    true
+                } else if is_echo(snapshot) {
+                    false
+                } else {
+                    return None;
+                }
+            }
+            Some(revision)
+                if effect.armed_revision.checked_add(1) == Some(revision)
+                    && self.client_context.surrounding_observation_revision == revision
+                    && is_echo(previous)
+                    && snapshot == &external =>
+            {
+                true
+            }
+            _ => return None,
+        };
+        Some((witness.identity, effect.clone(), complete))
+    }
+
+    fn owned_preedit_erasure_owner_is_current(&self, witness: &ManagedWordStartWitness) -> bool {
+        self.owned_preedit_boundary_owner_matches(witness)
+            && self
+                .live_context_token()
+                .zip(self.context_word_scope.as_ref())
+                .is_some_and(|(token, scope)| token.matches_word_scope(scope))
+            && self
+                .shared
+                .lock()
+                .ok()
+                .is_some_and(|shared| shared.active_path.as_deref() == Some(self.path.as_str()))
+    }
+
+    fn settle_owned_preedit_erasure_observation(
+        &mut self,
+        receipt: Option<(u64, OwnedPreeditErasureEcho, bool)>,
+    ) {
+        if !self
+            .composition
+            .legacy_preedit_start_boundary
+            .as_ref()
+            .is_some_and(|witness| witness.owned_erasure_echo.is_some())
+        {
+            return;
+        }
+        let owner_current = self
+            .composition
+            .legacy_preedit_start_boundary
+            .as_ref()
+            .is_some_and(|witness| self.owned_preedit_erasure_owner_is_current(witness));
+        let Some(witness) = self.composition.legacy_preedit_start_boundary.as_mut() else {
+            return;
+        };
+        let effect = witness.owned_erasure_echo.take();
+        let Some((identity, mut expected, complete)) = receipt else {
+            return;
+        };
+        let revision = self.client_context.surrounding_observation_revision;
+        if !owner_current
+            || witness.identity != identity
+            || effect.as_ref() != Some(&expected)
+            || expected
+                .echo_revision
+                .unwrap_or(expected.armed_revision)
+                .checked_add(1)
+                != Some(revision)
+        {
+            return;
+        }
+        if complete {
+            witness.armed_revision = revision;
+        } else {
+            expected.echo_revision = Some(revision);
+            witness.owned_erasure_echo = Some(expected);
+        }
+        crate::trace::record(format!(
+            r#"{{"kind":"ibus_owned_preedit_erasure_echo","stage":"{}","revision":{revision}}}"#,
+            if complete {
+                "confirmed"
+            } else {
+                "retained_unconfirmed"
+            },
+        ));
+    }
+
+    pub(crate) fn observe_external_surrounding_text_for_owned_erasure(
+        &mut self,
+        snapshot: Option<SurroundingTextSnapshot>,
+        erasure_client: bool,
     ) {
         self.client_context.native_document_binding = None;
         // The inherited receiver receipt is current until this callback. Save
@@ -5198,21 +5739,24 @@ impl LayIbusEngine {
         let manual_snapshot = self.current_exact_manual_source_snapshot();
         self.client_context.surrounding_text_callback_observed = true;
         self.client_context.surrounding_text_supported = true;
-        self.observe_document_snapshot_with_receipt(snapshot, manual_snapshot);
+        self.observe_document_snapshot_with_receipt(snapshot, manual_snapshot, erasure_client);
     }
 
     /// Applies actual document data from an explicitly identified transport.
     /// Native callers do not set either IBus capability/callback flag.
     pub(crate) fn observe_document_snapshot(&mut self, snapshot: Option<SurroundingTextSnapshot>) {
         let manual_snapshot = self.current_exact_manual_source_snapshot();
-        self.observe_document_snapshot_with_receipt(snapshot, manual_snapshot);
+        self.observe_document_snapshot_with_receipt(snapshot, manual_snapshot, false);
     }
 
     fn observe_document_snapshot_with_receipt(
         &mut self,
         snapshot: Option<SurroundingTextSnapshot>,
         manual_snapshot: Option<super::super::context_admission::ExactManualSourceSnapshotReceipt>,
+        erasure_client: bool,
     ) {
+        let owned_erasure_observation =
+            self.prepare_owned_preedit_erasure_observation(snapshot.as_ref(), erasure_client);
         // Capture the separate Space proof before advancing its revision. An
         // actual prefix/preedit projection can retain this current inert start
         // without requiring the unrelated marked manual-toggle producer.
@@ -5303,6 +5847,7 @@ impl LayIbusEngine {
                 }
             }
         }
+        self.settle_owned_preedit_erasure_observation(owned_erasure_observation);
         // A native replay invalidates current client text on every key. Keep
         // its last actual observation only as an inert adjacent-progress proof;
         // never restore it as the current snapshot or an authorized edit range.
@@ -5328,6 +5873,7 @@ impl LayIbusEngine {
             previous_snapshot.as_ref(),
             previous_revision,
             retained_progress.as_ref().map(|receipt| &receipt.snapshot),
+            erasure_client,
         );
         self.confirm_manual_autocorrection_restoration();
     }
@@ -5746,25 +6292,45 @@ impl WindowInteraction {
         let native_backspace_source = native_backspace_identity
             .as_ref()
             .and_then(|_| engine.live_context_token());
+        let owned_append_candidate = is_key_press(state)
+            && !has_command_modifier(state)
+            && !is_shift_key(keyval)
+            && !matches!(keyval, KEY_SPACE | KEY_TAB | KEY_BACKSPACE)
+            && !is_accept_completion_with_space_key(keyval)
+            && output.is_legacy()
+            && engine.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
+            && engine.client_context.exact_surrounding_refresh_available
+            && engine.composition.buffer.is_empty()
+            && !engine.composition.legacy_word_preedit_active
+            && engine
+                .composition
+                .word_input_mode
+                .unwrap_or_else(|| engine.initial_word_input_mode())
+                == WordInputMode::ManagedCommit
+            && engine
+                .context_reset_rereceipt
+                .as_ref()
+                .is_some_and(|pending| pending.confirmed && !pending.awaiting_owned_append_receipt);
         let boundary_candidate = if native_backspace_identity.is_some() {
             engine
                 .capture_native_backspace_reset_rereceipt_candidate()
                 .or_else(|| engine.capture_owned_preedit_erasure_reset_rereceipt_candidate())
         } else {
             (callback.is_some()
-                && (matches!(keyval, KEY_SPACE | KEY_TAB)
-                    || is_accept_completion_with_space_key(keyval))
-                && (engine.context_word_is_known()
-                    || engine.context_observed_suffix_exact_manual_handoff_allowed()
-                    || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
-                    || (keyval == KEY_SPACE
-                        && is_key_press(state)
-                        && engine
-                            .context_reset_rereceipt
-                            .as_ref()
-                            .is_some_and(|pending| pending.confirmed)
-                        && engine.context_reset_rereceipt_computation_allowed())
-                    || engine.exact_replay_quarantine_active()))
+                && (owned_append_candidate
+                    || ((matches!(keyval, KEY_SPACE | KEY_TAB)
+                        || is_accept_completion_with_space_key(keyval))
+                        && (engine.context_word_is_known()
+                            || engine.context_observed_suffix_exact_manual_handoff_allowed()
+                            || engine.context_reset_rereceipt_exact_manual_handoff_allowed()
+                            || (keyval == KEY_SPACE
+                                && is_key_press(state)
+                                && engine
+                                    .context_reset_rereceipt
+                                    .as_ref()
+                                    .is_some_and(|pending| pending.confirmed)
+                                && engine.context_reset_rereceipt_computation_allowed())
+                            || engine.exact_replay_quarantine_active()))))
             .then(|| engine.capture_context_reset_rereceipt_candidate())
             .flatten()
         };
@@ -6675,6 +7241,7 @@ impl LayIbusEngine {
             record_causal_outcome("censored", &pending, self.committed_tail.epoch);
             return OutcomeProof::ExistingPostconditionCensored;
         }
+        self.acknowledge_kde_firefox_preedit_space_postcondition(&mut pending);
         self.acknowledge_owned_preedit_space_postcondition(&mut pending);
         let observed = match pending.expected_external_snapshot.as_ref() {
             Some(expected)

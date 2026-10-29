@@ -574,6 +574,26 @@ pub(super) fn suppress_next_autocorrect_v2(
         .map_err(|error| error.to_string())
 }
 
+pub(super) fn native_replay_processed(
+    expected_epoch: u64,
+    expected_path: &str,
+    expected_layout_is_ru: bool,
+) -> Result<bool, String> {
+    let reply = dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "NativeReplayProcessedV1",
+            &(expected_epoch, expected_path, expected_layout_is_ru),
+        )
+        .map_err(|error| error.to_string())?;
+    reply
+        .body()
+        .deserialize::<bool>()
+        .map_err(|error| error.to_string())
+}
+
 pub(super) fn cancel_exact_manual_toggle_handoff_v2(
     expected_epoch: u64,
     expected_path: &str,
@@ -1199,6 +1219,7 @@ mod delegated_tail_tests {
             false,
             &lease,
             "/engine/ru",
+            |actual, expected| actual.ends_with(expected),
         ));
         assert!(committed_tail_is_settled(
             &reply_v3(
@@ -1212,6 +1233,7 @@ mod delegated_tail_tests {
             false,
             &lease,
             "/engine/ru",
+            |actual, expected| actual.ends_with(expected),
         ));
         for (epoch, path, field) in [
             (6, "/engine/ru", "field-a"),
@@ -1227,6 +1249,7 @@ mod delegated_tail_tests {
                     false,
                     &lease,
                     "/engine/ru",
+                    |actual, expected| actual.ends_with(expected),
                 ),
                 "stale or foreign settlement admitted: {epoch} {path} {field}"
             );

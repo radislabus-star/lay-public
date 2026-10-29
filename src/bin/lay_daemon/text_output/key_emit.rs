@@ -154,7 +154,7 @@ pub(super) fn replay_text_insert_keycodes(
     )
 }
 
-pub(super) fn replay_text_insert_keycodes_fast_after_modifier_cleanup(
+pub(crate) fn replay_text_insert_keycodes_fast_after_modifier_cleanup(
     dev: &mut VirtualDevice,
     events: &[KeyEvent],
 ) -> std::io::Result<()> {
@@ -268,7 +268,7 @@ pub(super) fn emit_backspaces_for_text_replace(
     Ok(())
 }
 
-pub(super) fn emit_backspaces_for_text_replace_fast(
+pub(crate) fn emit_backspaces_for_text_replace_fast(
     dev: &mut VirtualDevice,
     n: u32,
 ) -> std::io::Result<()> {
