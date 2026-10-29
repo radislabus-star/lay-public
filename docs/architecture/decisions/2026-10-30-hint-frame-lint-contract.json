@@ -1,0 +1,13 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-30-hint-frame-lint-contract",
+  "status": "implementation_authorized",
+  "owner": "docs/development/release-1.0.112-ci-lint.md",
+  "baseline": "59dd712a427c30510415d97a5f72fbabb47e930f",
+  "protected_paths": ["src/bin/lay_ibus_engine/hint_view.rs", "src/bin/lay_daemon/kde/firefox_replay_receipt.rs"],
+  "decision": "Document the existing explicit atomic hint-frame argument contract with one item-local Clippy expectation. Keep its signature and body byte-identical after removing that attribute. The first guarded lint follow-up also proves manual_pattern_char_comparison at firefox_replay_receipt.rs:133; replace only that exact two-character predicate with the equivalent Rust character-array pattern and verify existing whitespace receipt tests. Preserve strict unfulfilled-expectation errors and all global lint rules. Refresh derived graph metadata; no runtime build, installation, delivery-route or field behavior change.",
+  "invariants": ["C01", "C02", "C03", "C04", "C05", "C06", "C07", "C08", "C10"],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "red_evidence": "https://github.com/radislabus-star/lay-public/actions/runs/40970843062"
+}

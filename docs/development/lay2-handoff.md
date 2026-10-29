@@ -1,3 +1,22 @@
+# 2026-10-29T23:29:55Z — publication CI lint fixes ready
+
+Accepted v1.0.112 remains published and its tag/runtime unchanged. Strict ledger
+binding repair59dd712a passed all3595 correctness/package tests in publicCI
+40970843062. That run then exposed hint_view argument-count lint. Guarded
+follow-up additionally exposed one manual two-character comparison in the
+KDE Firefox receipt leaf. Changes: one item-local expect attribute and one
+equivalent character-array pattern; no delivery/ownership/rendering behavior
+change. Five exact receipt tests and both complete feature-scoped lint routes
+PASS, graph/binding/receipt refreshed. Owner: release-1.0.112-ci-lint.md.
+CROOT/release112-ci-lint-v2/result.json retains both source closures and steps.
+No runtime install/restart. Remote accepted process identities unchanged.
+Both installed menu updater entrypoints discover111 ->112; private receipt
+CACHE/release112-installed-updater-readback.json.
+Next: push lint-only repair, read automatic CI to its final release-build step.
+Final CI readback will be saved at CACHE/release112-final-ci-readback.json.
+Firefox80ms initial KWin-query timeout remains OPEN; profile3/3PASS did not
+reproduce it. Preserve historical browser matrix338PASS/24FAIL/78BLOCKED/440.
+
 # 2026-10-29T23:06:34Z — next task: strict CI observation binding
 
 Accepted 1.0.112 is published at public commit1ea1d44e and immutable tagv1.0.112.

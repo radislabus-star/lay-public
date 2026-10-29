@@ -130,7 +130,7 @@ fn acknowledged_space_tail_matches(observed: &str, expected: &str) -> bool {
     if closing_spaces == 0 || expected_body.is_empty() {
         return false;
     }
-    let observed_body = observed.trim_end_matches(|ch| matches!(ch, ' ' | '\u{a0}'));
+    let observed_body = observed.trim_end_matches([' ', '\u{a0}']);
     observed[observed_body.len()..].chars().count() == closing_spaces
         && observed_body.ends_with(expected_body)
 }

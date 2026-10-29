@@ -38,4 +38,6 @@ The existing `load_known_failures` loader accepted the repaired ledger and
 receipt. Exact target coverage is 34/34, selected tests 3595/3595, allowed
 failures remain zero. The declared scope check passed. Runtime source, the
 published manifest and the loader have no diff against the accepted baseline.
-Automatic CI readback after push is pending; no native checks were repeated.
+Automatic CI40970843062 passed the complete correctness/package step after
+push. It then failed the separate Clippy argument-count diagnostic; the owning
+continuation is release-1.0.112-ci-lint.md. No native checks were repeated.

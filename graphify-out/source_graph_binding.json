@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "654718a80c38e0151b6853fe0011d587fb486fc117a2848da1e755a0b078d65a",
-  "manifest_fingerprint": "e014288368d36dea94d3a647d08fea6a949639eadc8425423af8af9e37f50ea3",
+  "graph_fingerprint": "efc231b36c98e06d11b3a71bfd2bd251f6b13f5e8ae540aa1d6c30421ba66c4d",
+  "manifest_fingerprint": "9797b848890752acf5ac3291732b58c352f28064be5535996c19afc22df9cca1",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -41,7 +41,7 @@
     "src/bin/lay_daemon/force_layout_hotkeys.rs": "dc8a7d7e630afbeac9b3e0ef331e9bec59f3cfa992b7f29634ffb71ccd51085f",
     "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs": "77455857555f28a9cb6ed3cc11593b785fee94634c715fc68319cc6253f270c7",
     "src/bin/lay_daemon/kde/firefox_replay_pacing.rs": "a3815fec045f9d3f786a5d58d8ae1d2ac212caeafb624e33b31f3884854d66e8",
-    "src/bin/lay_daemon/kde/firefox_replay_receipt.rs": "0a47fcb2f78d716022179f1e4007d7ef2a305a0f3a661fd3f450b0df4fcddd86",
+    "src/bin/lay_daemon/kde/firefox_replay_receipt.rs": "58685bb1fee16423b3760f6733f03e6b6c53d396444df00d717dd7ab0ab04780",
     "src/bin/lay_daemon/kde/focus_policy.rs": "0e4401d558ad8b931f61792ae6669881c04d4bd10f4b0b96ae4b78e60d47bc0c",
     "src/bin/lay_daemon/kde/native_input_focus.rs": "a27cb934325aa49d7673330ab9e81dc17b27ae9d504423d60b8cb8e7c522b7ba",
     "src/bin/lay_daemon/kde_focus.rs": "2a98ad438b8ee32fba48817adde05c2c60ae1197c4478a255421b580edf0db43",
@@ -217,7 +217,7 @@
     "src/bin/lay_ibus_engine/gnome/display.rs": "e60abbffb480b6fe02a9888788a8e28edc831df06f04af6ba17b7da39c7eccf1",
     "src/bin/lay_ibus_engine/gnome/layout_sync.rs": "1df7a3b1f8b84153d901f65415c424277dc718f0e8dbd454344b671f08f4f6b5",
     "src/bin/lay_ibus_engine/gnome/mod.rs": "bb0d6823379f9e52df8a74fcf796b39638f4ef180137205aa13654438690e3b6",
-    "src/bin/lay_ibus_engine/hint_view.rs": "85e891f8306461023b851a5dcdb2cb5e659fba202fa312f140eb3ab946c0a295",
+    "src/bin/lay_ibus_engine/hint_view.rs": "92bd8ae2040f4fccbb777287c5bf4b0dfccb60139d8855f22e63f0fa99000171",
     "src/bin/lay_ibus_engine/ibus_interface.rs": "b5f9c089918b4cb5cc06ba89b2d893207b47a4458abb1feb41105559cb6e8bec",
     "src/bin/lay_ibus_engine/kde/chrome.rs": "80a1939f1bd64deac3d9f40607f079cb55ca0fb39e178802d992318464c4a669",
     "src/bin/lay_ibus_engine/kde/chrome/observation.rs": "87d6cfba6bcd3162ca861145b48ad1ad741ef0c51089f92417a42ab530a8ab6a",

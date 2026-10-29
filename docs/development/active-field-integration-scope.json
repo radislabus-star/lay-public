@@ -1,12 +1,12 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "1ea1d44e6723c86e7553681de966e41ee39e6891",
+  "base": "59dd712a427c30510415d97a5f72fbabb47e930f",
   "components": [
     "tooling"
   ],
   "shared_paths": [
-    "scripts/test-lanes/known_failures.json",
-    "tech_debt/evidence/release-1.0.112-ci-target-observation.json"
+    "src/bin/lay_ibus_engine/hint_view.rs",
+    "src/bin/lay_daemon/kde/firefox_replay_receipt.rs"
   ],
-  "decision": "docs/architecture/decisions/2026-10-30-release112-ci-observation-binding.json"
+  "decision": "docs/architecture/decisions/2026-10-30-hint-frame-lint-contract.json"
 }

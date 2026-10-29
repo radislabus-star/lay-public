@@ -82,6 +82,10 @@ impl HintViewFrame {
         self.replace_with_style(active, owner, text, rect, monospace, outlined, None)
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "one owner-checked frame updates text, geometry and optional typography together"
+    )]
     fn replace_with_style(
         &mut self,
         active: Option<&str>,

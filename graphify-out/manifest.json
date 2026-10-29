@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793310473.9580865,
-    "ast_hash": "f4461dec0468883000ef05f2a641df00",
+    "mtime": 1793313654.251109,
+    "ast_hash": "de489ea662b4a85b07d8c865fb16e869",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -8020,8 +8020,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/hint_view.rs": {
-    "mtime": 1793310438.108775,
-    "ast_hash": "7ed4903841964c810ddf767ebbf17a02",
+    "mtime": 1793316124.5894148,
+    "ast_hash": "ef2b97f6f036495a7c77680bc3905911",
     "semantic_hash": ""
   },
   "docs/architecture/ime-inline-hint-preflight-2026-10-20.md": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793313618.864875,
-    "ast_hash": "581f5e6d4d485c03740e3133f48adc7a",
+    "mtime": 1793316432.5348291,
+    "ast_hash": "1753784889f378ed330c4d7bf8533351",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9275,8 +9275,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/kde/firefox_replay_receipt.rs": {
-    "mtime": 1793293924.388412,
-    "ast_hash": "beb1a1bad7b62dadc1238e984f5f01a3",
+    "mtime": 1793316432.5348291,
+    "ast_hash": "4d6e5ff8030aa337299b444c1c67db2e",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-native-result-map-2026-10-29.md": {
@@ -9582,6 +9582,16 @@
   "docs/release-1.0.112.md": {
     "mtime": 1793313618.865875,
     "ast_hash": "c20c59bc46b9d624159e3ed1373d00ed",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-30-hint-frame-lint-contract.json": {
+    "mtime": 1793316432.5348291,
+    "ast_hash": "a691021bf975e09c80d464d30097e498",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.112-ci-lint.md": {
+    "mtime": 1793316432.5348291,
+    "ast_hash": "d5ba20ab27604a0c9705710e1fa1edf1",
     "semantic_hash": ""
   }
 }
