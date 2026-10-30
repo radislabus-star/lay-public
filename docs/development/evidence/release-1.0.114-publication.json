@@ -1,0 +1,21 @@
+{
+  "schema": 1,
+  "release": "v1.0.114",
+  "published_at": "2026-10-30T16:19:38Z",
+  "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.114",
+  "commit": "7b7fe8e033d92e411068d598ae70d18fb81a4323",
+  "annotated_tag_object": "dc370d26eaa72643b43c23d36803ed353fe50ef1",
+  "tag_pushed_to": ["origin", "public"],
+  "draft": false,
+  "prerelease": false,
+  "public_ci": {"run": 41018481523, "conclusion": "success"},
+  "public_security": {"run": 41018481499, "conclusion": "success"},
+  "open_public_prs_before_publication": 0,
+  "installed_updater_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+  "updater_readbacks": {
+    "local_gnome": {"installed": "1.0.113", "stable": "1.0.114", "verdict": "update_available", "exit_code": 0},
+    "remote_kde": {"installed": "1.0.114", "stable": "1.0.114", "verdict": "current", "exit_code": 0}
+  },
+  "publication_rebuilt_or_reinstalled_runtime": false,
+  "completed_releases_in_requested_queue": 1
+}

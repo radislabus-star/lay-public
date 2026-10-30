@@ -1,7 +1,11 @@
 # Lay1.0.114 — bounded KDE Firefox pacing improvement
 
-Status: source/build verified and installed on dedicated KDE; publication
-awaits independent public CI. This fixes the slow-profile selection for an
+Status: published2026-10-30T16:19:38Z as v1.0.114,immutable source7b7fe8e0.
+Public CI41018481523 and Security41018481499 bothSUCCESS. Actual installed
+updaters:localGNOME113 sees114available;remoteKDE114 confirmscurrent.
+Publication receipt:evidence/release-1.0.114-publication.json. Queue1/10.
+Publication did not rebuild,reinstall or restart runtime.
+This fixes the slow-profile selection for an
 acknowledged closed word, not every remaining rapid-input compatibility issue.
 
 Only runtime file: src/bin/lay_daemon/kde/firefox_replay_pacing.rs. It selects

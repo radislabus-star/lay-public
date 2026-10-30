@@ -1,4 +1,16 @@
-# 1.0.114 publication pending — queue0/10,2026-10-30
+# Active queue1/10 — 1.0.114 published2026-10-30T16:19:38Z
+
+Canonical tested source7b7fe8e033d92e411068d598ae70d18fb81a4323 tagged114
+on both remotes; public stable release/readback confirmed. Public CI41018481523
+and Security41018481499SUCCESS. Actual installed updater local113 sees114;
+remoteKDE114 confirmscurrent. No publication rebuild or runtime restart.
+Publication proof:evidence/release-1.0.114-publication.json.
+Continue115 compiler diagnostic preservation in tooling only,then remaining8.
+No agents/Harness,no localGNOME installation. Earlier checkpoints preserved below.
+
+---
+
+# Historical 1.0.114 publication pending — queue0/10,2026-10-30
 
 Canonical HEADac50a781 plus final verified114source/docs/graph/zeroledger.
 Read release-1.0.114-firefox-closed-pacing.md for exact source/native scope.
