@@ -1,17 +1,15 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "7d9787bf46cd1acf0393805735d4655da3500b6c",
+  "base": "75cd04bdbd3394f15ccf29dbcd9e0d4f8f23f67c",
   "components": [
-    "kde-focus",
     "tooling"
   ],
   "shared_paths": [
-    "tech_debt/162-glued-pronoun-space.md",
-    "tech_debt/163-kde-pacing-debug-config-publication.md",
-    "tech_debt/164-fragment-autoflip-blocks-space.md",
-    "tech_debt/165-kde-menu-checkbox-stays-open.md",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
     "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json"
+    "scripts/test-lanes/known_failures.json",
+    "tech_debt/163-kde-pacing-debug-config-publication.md",
+    "tech_debt/164-fragment-autoflip-blocks-space.md"
   ],
-  "decision": "docs/architecture/decisions/2026-10-30-kde-debug-config-publication-117.json"
+  "decision": "docs/architecture/decisions/2026-10-30-ci117-cache-fixture.json"
 }

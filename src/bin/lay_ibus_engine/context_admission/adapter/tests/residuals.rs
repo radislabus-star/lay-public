@@ -2255,6 +2255,12 @@ fn td121_pending_worker_fills_missing_material_before_exact_receipt() {
             allow_short_lexical: true,
             limit: 12,
         };
+        // Slow fixture setup must not consume this cold worker's usage freshness.
+        // Refresh only private dependencies; the readout must still be absent.
+        assert_eq!(
+            lay::nanda_wave::l2_surface_words_by_usage(1),
+            vec!["проверка".to_owned()]
+        );
         assert!(TypingCpu::cached_live_completion_candidates(query.clone()).is_none());
         engine.config.nanda_precognition = true;
         let frame = engine.capture_pending_reset_readout_frame().unwrap();

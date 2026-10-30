@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793388401.4274685,
-    "ast_hash": "8a6dd54aa6f88d543abec6e7fd0a57ae",
+    "mtime": 1793394205.5547996,
+    "ast_hash": "2aa4d371f295d74f8834d614843b405d",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793388401.5504692,
-    "ast_hash": "e4739fe60e13525f47e5e27853181ea7",
+    "mtime": 1793390152.1925244,
+    "ast_hash": "b3587aff3043ec1ed7b5241e9fab5248",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793381376.9812794,
-    "ast_hash": "3622863cc5ac0edafb28b7bcfa6e5f55",
+    "mtime": 1793390722.5588825,
+    "ast_hash": "f392f4bfdeaf7d54f90deaa65343bee0",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793387186.707566,
-    "ast_hash": "40ecd6db16f2a62d8d70c9db4118c660",
+    "mtime": 1793390209.6208572,
+    "ast_hash": "84f205d6e41325b079ad8ad05d8f8f99",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1793101983.4209156,
-    "ast_hash": "55aa276359439c73c998c0352ac489fd",
+    "mtime": 1793394503.8440287,
+    "ast_hash": "2ab3122494b8caf1dc574d1e8e9981a0",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793389895.2319984,
-    "ast_hash": "2ff69a196c856867e74e2883d0da6c5d",
+    "mtime": 1793394354.951376,
+    "ast_hash": "da5028b7322faae0ab2cbdc36cf39c7c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793389895.2319984,
-    "ast_hash": "6d4898b0645e8c86fdb88eceae9750ef",
+    "mtime": 1793394205.5547996,
+    "ast_hash": "b53472f9ddf8165e5c436df972ac2f3f",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9660,8 +9660,8 @@
     "semantic_hash": ""
   },
   "docs/development/ten-release-queue-2026-10-30.md": {
-    "mtime": 1793389895.2319984,
-    "ast_hash": "9eb8a49cc744e7a2e1685e15e84af3bf",
+    "mtime": 1793394205.5547996,
+    "ast_hash": "12ae3f56011b65f63a36efb5e810c9ce",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
@@ -9700,8 +9700,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-kde-debug-config-publication-117.json": {
-    "mtime": 1793390112.8962975,
-    "ast_hash": "3afcdb3b5d599873fd269ba4087b57cc",
+    "mtime": 1793394205.5547996,
+    "ast_hash": "066a6309cf55ed5f9fa87f691478aee2",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.116-publication.json": {
@@ -9715,8 +9715,8 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.117-debug-config-publication.md": {
-    "mtime": 1793390112.8962975,
-    "ast_hash": "7682e47344a61d1187668f91968b2dca",
+    "mtime": 1793394205.5547996,
+    "ast_hash": "ce4c8033dcfc3ce4f4000ab5c887561e",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.117-glued-function-chain.md": {
@@ -9730,8 +9730,8 @@
     "semantic_hash": ""
   },
   "tech_debt/163-kde-pacing-debug-config-publication.md": {
-    "mtime": 1793390112.8962975,
-    "ast_hash": "0e42cc720f53b97dc563894a99ce955c",
+    "mtime": 1793394205.5567997,
+    "ast_hash": "db1f162781b09ea04ade33add8a828a6",
     "semantic_hash": ""
   },
   "tech_debt/164-fragment-autoflip-blocks-space.md": {
@@ -9742,6 +9742,21 @@
   "tech_debt/165-kde-menu-checkbox-stays-open.md": {
     "mtime": 1793384070.397113,
     "ast_hash": "1c58613f0dabadea4ea838572841ef09",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-30-ci117-cache-fixture.json": {
+    "mtime": 1793394655.6487541,
+    "ast_hash": "b03e5acaa1e7c8b80a6b79a1b5a1a960",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.117-tests.json": {
+    "mtime": 1793390722.5588825,
+    "ast_hash": "be76fc8b255fe44440498da4f14a5bed",
+    "semantic_hash": ""
+  },
+  "docs/development/ci117-completion-cache-fixture.md": {
+    "mtime": 1793394655.6487541,
+    "ast_hash": "ffc243cf1f892cd751a85286a63d7d0c",
     "semantic_hash": ""
   }
 }

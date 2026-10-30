@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "c9118483f44ec3cef5666a5dd9f79826aaba903fcf32b5bff23558ef613a9bc2",
-  "manifest_fingerprint": "4eea2628620a16987aa29667f869b193feadda21157c3c47e79e35766dcef274",
+  "graph_fingerprint": "6c77ea721c50b1c033740e096a61ca7a103335f1c212b1d3fe5336f64fc0eb7d",
+  "manifest_fingerprint": "40e92d77d403b634e1729d97f07e5f8c35f733a1e1248aa085205b92a05eff47",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -196,7 +196,7 @@
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs": "250cb37498414db2e9c3616fd90020c9c4eeae89378b50f7de1e94f687663321",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/queued_compatibility_focus.rs": "2e80f8aabde1e88e4e248411b88b9c86485ce4f7f3deab4546f7bfa58472f973",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/replay_suppression.rs": "ef953a8d8475021e195107bec83521e4ae6a4cd6d90964284588937c162a5335",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "14d58c59afe7e6217a105d16fb833019c8920530265887fa657ffec95234b4e0",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "d6589f23427c8b8420e6f7a75eae587921b8f74411eb9f1e075d5751af50730f",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals/release97_firefox.rs": "05d6db73ca030f0e7849d09ea530c5f65e849626d514eaabbb2bca5cd94506b4",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_owned_source.rs": "d06c9082cf3b19d0878c2a4b747f2909a94a979e1e29c5d88222cbc97650f4e6",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_surrounding.rs": "631ba58d0a5f304f5cb2442d847c58b2157f6c15344dc31e9af30c1af3f82ea7",
