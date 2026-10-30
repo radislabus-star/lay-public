@@ -1,7 +1,7 @@
 # TD-163 — debug-проверка pacing повторно загружает конфигурацию
 
-Статус: SOURCE_MAP_CONFIRMED_REPRO_PENDING. Следующий кандидат после TD-162;
-не исправлено, номер релиза не назначен. Не смешивать с активной правкой116.
+Статус: VALIDATED_AWAITING_PUBLICATION. Кандидат 1.0.117;
+исходники/сборка/установленные байты и короткие native-контроли проверены, CI/публикация ещё ожидаются. Владелец: docs/development/release-1.0.117-debug-config-publication.md.
 
 Карта фактического источника:
 src/bin/lay_daemon/exact_ime_tail_replay.rs::execute

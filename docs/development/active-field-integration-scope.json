@@ -1,17 +1,15 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "21f82bb20f4ee932186520a55ecc14e614233963",
+  "base": "7d9787bf46cd1acf0393805735d4655da3500b6c",
   "components": [
+    "kde-focus",
     "tooling"
   ],
   "shared_paths": [
-    "src/bin/lay_ibus_engine/kde/firefox/preedit_echo.rs",
-    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs",
-    "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json",
     "tech_debt/162-glued-pronoun-space.md",
-    "tech_debt/163-kde-pacing-debug-config-publication.md"
+    "tech_debt/163-kde-pacing-debug-config-publication.md",
+    "tech_debt/164-fragment-autoflip-blocks-space.md",
+    "tech_debt/165-kde-menu-checkbox-stays-open.md"
   ],
-  "decision": "docs/architecture/decisions/2026-10-30-firefox-interleaved-prefix-116.json"
+  "decision": "docs/architecture/decisions/2026-10-30-kde-debug-config-publication-117.json"
 }

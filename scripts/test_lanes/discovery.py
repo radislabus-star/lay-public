@@ -63,6 +63,10 @@ PACKAGE_FIXTURE_PATHS = (
 )
 
 PROCESS_ISOLATED_TESTS = {
+    (
+        "bin:lay-daemon",
+        "exact_ime_tail_replay::firefox_pacing::tests::debug_probe_preserves_published_config_until_explicit_reload",
+    ),
     ("lib:lay", "russian_lexicon::tests::attested_verb_forms_use_current_ime_lemma_authority_without_full_generated_forms"),
     ("lib:lay", "russian_lexicon::tests::inflection_metadata_initialization_is_shared_and_reports_its_bounded_cost"),
     ("lib:lay", "correction_core::tests::attested_clean_verb_forms_are_preserved_in_first_and_later_positions"),

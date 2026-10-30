@@ -20,7 +20,7 @@ pub(super) fn use_fast_replay(
             current
         },
     );
-    if lay::config::LayConfig::load().debug_action_log {
+    if lay::config::runtime_debug_action_log() {
         lay::debug_log::append_private_line(
             lay::debug_log::ibus_runtime_trace_path()
                 .with_file_name("kde_exact_replay_debug.jsonl"),
@@ -63,6 +63,48 @@ fn select_fast_profile(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    // The canonical runner gives this process its own config and HOME. It must
+    // stay process-isolated because published runtime flags are process-global.
+    #[test]
+    fn debug_probe_preserves_published_config_until_explicit_reload() {
+        let path = std::path::PathBuf::from(
+            std::env::var_os(lay::config::CONFIG_PATH_ENV)
+                .expect("run this test through the canonical hermetic runner"),
+        );
+        let private_config = std::path::PathBuf::from(
+            std::env::var_os("XDG_CONFIG_HOME").expect("private hermetic config directory"),
+        );
+        assert_eq!(path, private_config.join("lay/config.toml"));
+        assert!(!path.exists(), "the isolated config must start empty");
+        std::fs::create_dir_all(path.parent().unwrap()).unwrap();
+
+        for enabled in [false, true] {
+            let published = serde_json::json!({
+                "debug_action_log": enabled,
+                "fragment_layout_autoflip": enabled,
+            });
+            std::fs::write(&path, published.to_string()).unwrap();
+            let _ = lay::config::LayConfig::load();
+            let pending = serde_json::json!({
+                "debug_action_log": !enabled,
+                "fragment_layout_autoflip": !enabled,
+            });
+            std::fs::write(&path, pending.to_string()).unwrap();
+
+            assert!(!use_fast_replay(false, true, "source", "source ", ""));
+            assert_eq!(
+                lay::config::runtime_debug_action_log(),
+                enabled,
+                "a debug probe must not publish pending disk configuration"
+            );
+            assert_eq!(lay::config::runtime_fragment_layout_enabled(), enabled);
+
+            let _ = lay::config::LayConfig::load();
+            assert_eq!(lay::config::runtime_debug_action_log(), !enabled);
+            assert_eq!(lay::config::runtime_fragment_layout_enabled(), !enabled);
+        }
+    }
 
     #[test]
     fn fast_pacing_requires_isolated_native_replay_and_current_scoped_client() {

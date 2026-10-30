@@ -1,0 +1,66 @@
+{
+  "status": "STABLE_PUBLISHED",
+  "version": "1.0.116",
+  "canonical_commit": "7d9787bf46cd1acf0393805735d4655da3500b6c",
+  "tag": "v1.0.116",
+  "tag_object": "b477b81746281e09f176de460454b866f47a67ab",
+  "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.116",
+  "published_at": "2026-10-30T18:33:54Z",
+  "draft": false,
+  "prerelease": false,
+  "assets": [],
+  "ci": [
+    {
+      "name": "RustSec vulnerabilities and unsoundness",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41104503608/job/124230316162"
+    },
+    {
+      "name": "Rust 1.97.1, tray, and extension checks",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41104503630/job/124230305660"
+    },
+    {
+      "name": "Public installer regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41104503630/job/124230305588"
+    },
+    {
+      "name": "Rust 1.88.0 MSRV",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41104503630/job/124230305102"
+    }
+  ],
+  "updater": "PASS",
+  "tag_verified_both_remotes": true,
+  "updater_details": {
+    "status": "PASS",
+    "published_version": "1.0.116",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.115",
+        "stable": "1.0.116",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.115\nстабильный релиз: 1.0.116\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.115 → 1.0.116\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.116",
+        "stable": "1.0.116",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.116\nстабильный релиз: 1.0.116\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-30T18:33:57.382012+00:00"
+  }
+}

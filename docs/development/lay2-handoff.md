@@ -1,3 +1,97 @@
+# CURRENT117 validated, CI/publication pending — 2026-10-30T20:17:59.088524+00:00
+
+Still3/10 published until117 publication/updater receipts. New117 owner release-1.0.117-debug-config-publication.md (not rejected glued experiment). Full source1327 SHA094e5c50d440fa35c1235d40855e944be583e70409777fc4249832655e338446,3615Rust/491isolated/439Python10skips/all10binaries0warningsPASS. Source returned and imported with preimage/hash verification. RuntimeKDE117 daemon2297924 SHA761d3bd6cda1fb008b008df9e66cbf5b139af1821f7c3a00d9af6c870dd11c97;IME2298008 SHA5f728b4f8f5578bf8cb5f869d45524a33e0cbf7bfe8011704ecf66853c9c4b03;tray2298081;globalIBus3168326 unchanged. Initial install selectedUS instead of savedRU; rawFAIL retained. Existing IBus activation restoredRU without restart; audited deployment-recovery-v1. Native2controls/4flipsPASS,config5d02... exact. User fragmentflagON preserved. No local GNOME install/restart.
+
+Before publishing117: verify exact committed source inventory, freshPRs, CI+Security, annotatedtag bothremotes, latestrelease and both actual installed updater --check. Then TD164/165 future user reports, one at a time, map/RED first. Full matrix remains344/15/81 of440,not a fresh117 full matrix. Adjacent KDE refusal debug loader still untouched; owner names this remaining source-only finding.
+
+# Active update — 2026-10-30T19:50:07.945148+00:00
+
+Resume TD163, the existing KDE debug probe config-publication bug. New117 owning preflight: release-1.0.117-debug-config-publication.md and 2026-10-30-kde-debug-config-publication-117 ADR. TD164/165 remain queued for later as user requested. TD164 initial hypothesis that legacy FAST accepts allow_layout_auto=false was disproved by rules.rs::apply_fast_layout_en_to_ru: it also requires layout_auto_allowed(ctx). Do not bypass this gate or revive the rejected TD162 split. No runtime source edited yet.
+
+# CURRENT — 3/10 published; next TD163; TD162 rejected, no117 install
+
+Canonical HEAD7d9787bf46cd1acf0393805735d4655da3500b6c,stable116.
+CI41104503630/Security41104503608PASS;tagb477b817bothremotes/updaterbothPASS.
+All canonical production/testfixtures/version files RESTORED exactlyto116:1327
+sourcefiles SHA545f941b2b3cc8fa18b25600fc03ec607d6c0e630015bcc0f76e872fd74efcbe.
+Remote source restored underguard CROOT/td162-source-rollback-v1/result.json,
+same exacthash,NO BUILD/INSTALL/RESTART. Current source edits are documentation
+only(rejectedexperiment record,newTD164/165reports,queue,publication116proof).
+
+TD162 тыего remainsOPEN,user originallyaskedfuture. Afunction-chain variant
+failed;Bknown-part/min3passed3focusedtests but FULL512.54stestfailed existing
+test:typing_assist_mixed_corpus::live_journal_false_positive_candidates_are_rejected:
+таможе(space) became там(space)оже(space). DoNOT alterthat existingtest.
+Diagnosticsv5:его/оже bothpart=true,function=false,clean=false,reference=true,
+hot=true,common=false,standalone=false. No simpleboolean proof distinguishes.
+BNEVERinstalled,noreleasebinarybuilt,notpublished. Full receipts/patch archived
+CACHE/td162-rejected-candidate*. Runtime2files/fixtures/versionsrestoredtogether.
+DoNOT reapplyA/B;new pair-level evidence/calibration required. Oldowner117glued
+file andADR are explicitlyREJECTEDexperimentlabels,notanactual117release.
+
+Next userTD164 P1.fragmentONblocksnormalSpace. Readonlyinspection shows
+fragment.rs::apply_with_mode globallyrequiresctx.allow_layout_auto forFAST
+aswell asLAYOUT rules. Hypothesis:legacyFASTallowsfalse inexact Space path.
+Needfreshgraph andactualsrc/typing_rule_graph/rules.rs:60,then realOFF/ONcommon
+pipelineRED beforeanycode. No runtimefix yet. Avoidguessedlayout.rs(pathabsent).
+Read dirs via rg--files first. Skillscan97896 mayhavecompleted,polloncebefore
+query. SOLO/noHarness/noagents,no localGNOMEinstall orRDPviewer.
+
+Latestremote observed116:daemon1843722(same41acd9b9bytes,externallyrestarted),
+IME1751630/1399f098,tray1751764,globalIBus3168326unchanged. CurrentUSERconfig
+SHA5d02dfda,fragment_layout_autoflip=true,auto_replace/typing_assist=true.
+Neverrestoreold6e62snapshot. Actualsource117full-v1stoppedbeforeoverlayonstalePID;
+v2freshPIDguardranfullsourceFAILEDgatingabove. All jobsfinished,no currentheavy
+worker. Cargo cache54e7bytesoldrlib/rmetacleaned,noexecutables/models;onephase
+configuredexistingCargoceiling16GiB(363GiBfree),defaultguardfileunchanged.
+
+Privateprepare-fragment-release-source.py nowcarriespreviously touchedpaths
+innewsnapshot so rollbacktoGitbaselineactuallypropagates toremote. Native
+gluedactors/install117helperspreparedbutNOTRUN;do notuse forTD164withoutmap.
+Current native table344PASS15FAIL81BLOCKED/440;FF116165/15/40,Chromehistorical
+179/0/41;all15FAILrapid-fiveafterSpace. No updatedfulltableon117.
+
+# Current — queue3/10 published;117 TD162 candidateB short proof running next
+
+116 stable published2026-10-30T18:33:54Z,source7d9787bf46cd1acf0393805735d4655da3500b6c;
+public CI41104503630/Security41104503608SUCCESS;tagb477b817 onbothremotes verified.
+Actual installed updater local115→116available,remote116current. No localinstall.
+Source bytes equal tested545f941b/1327files. Publication proof nowin evidence.
+
+Current117corecandidateonly glued_phrase.rs+guards.rs;no version bump/installyet.
+A(helperfunctionchain)rejected,notreapply. Actualdiagnosticv2/v3:exactparts known,
+его notfunctionlist;weakтылего/тчего proposals veto split;no directauthorizedtypo.
+Bretains ONLYzero-repair known confident split pastproposalveto;existing confidence
+minright3(alignssplitter).User-case passedpure+connected;initialnewsyntheticgoldens
+wyemu/capswerewrong:clean surfacecertificate mustpreserveвыему,casingpolicy
+ЯБЫЛ→Я был/ТЫЕГО→Ты его. v4explicitobservationonly confirmed,notproductverdict.
+Correctedgoldensbeforegreen-v3,keptuser-case/context unchanged;runtimeBunchanged.
+Next same3semanticchecks;thenwidernegative/sourcegates,117metadata/fullbuild,
+remoteKDEinstallandnativefirst/secondwordproof,commit/CI/publish/updater.
+
+IMPORTANT freshrealremote config now fragment_layout_autoflip=true(userchanged);
+neveroverwritewithold116snapshot6e62. Installerreads/preservescurrentconfig.
+TD164P1fragmentONblockslegacySpace andTD165KDEmenucheckboxcloses savedfuture
+reports,notreproduced/fixed.117scopeexplicitlydeclaresnewMarkdownnotes.
+SOLO/noHarness/noagents. Keep116native344/15/81historicaltableuntilnewfull.
+
+# New queued user reports — 2026-10-30T18:11:30Z
+
+TD164 P1: fragment autoflip reportedly does not work and when ON blocks the
+legacy Space flip. TD165 P2: KDE menu closes after checking each option;keep
+open for consecutive toggles. Exact tasks in tech_debt/164-*,165-*. Not reproduced
+or fixed. User explicitly requested later work; do not interrupt current116
+publication/TD162 candidate. Queue updated;117 scope explicitly includes these
+new Markdown notes to avoid repeating116 CI documentation-boundary omission.
+
+116 publication target now7d9787bf(metadata-only successor of5a9f952c).
+FirstCI41102635991failed scope on newTD162/163notes,guard unchanged. Addedexact
+2docpaths,source/compiler/nativebytes unchanged and independentlyreverified.
+Pushedboth; watcher78561 awaiting actual newCI+Security. No116tag/releaseyet.
+117draft restored locally,candidate plan/testfixtures ONLY,no runtimefix.
+Real production splitterRED CROOT/release117-glued-diagnostic-v1;nextconnected
+existing fixture tests on old baseline,then one existing predicate gate.
+
 # Active queue2/10 — 1.0.116 verified, commit/CI/publication next
 
 Canonical HEAD21f82bb2 (stable115);current116source+metadata+evidence dirty.
