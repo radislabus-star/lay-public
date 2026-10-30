@@ -19,3 +19,21 @@ CACHE/release112-installed-updater-readback.json. Original tag CI passed all
 3595 test cases but failed stale ledger binding. Repair59dd712a closes that
 step in CI40970843062; subsequent lint-only repairs are owned separately in
 release-1.0.112-ci-lint.md and do not move the accepted tag.
+
+## Final automatic CI readback
+
+Observed 2026-10-30T00:02:46Z: public main `fca6f8427b76782b246fb2b7cdfaff7fd97f9d4b`
+passed [CI40973676834](https://github.com/radislabus-star/lay-public/actions/runs/40973676834)
+and [Security40973676896](https://github.com/radislabus-star/lay-public/actions/runs/40973676896).
+Complete actual transcript matches34 distinct targets/3595 selected tests with
+zero failures and no missing target. Both exact dead-code inventories117/129
+and hard Clippy routes pass; GNOME/KDE/shell syntax, CLI smoke, all release
+binaries and ngram-cache probe pass. CI ran23:31:07–23:59:27UTC on29October.
+Private complete readback: CACHE/release112-final-ci-readback.json; full
+transcript: CACHE/release112-final-ci-job.log. This is proof for main after the
+CI maintenance fixes; immutable accepted v1.0.112 still points to1ea1d44e.
+No native full matrix, installation or runtime restart was performed for these
+CI fixes. Read-only runtime verification at00:02UTC on30October still finds
+CLI1.0.111 on both hosts and the exact accepted remote IME05d62373/daemon35527e63
+processes. Installed updater discovery of1.0.112 is independently saved.
+Native timeout evidence stays OPEN and browser totals remain338/24/78/440.

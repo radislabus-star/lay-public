@@ -1,3 +1,28 @@
+# 2026-10-30T00:02:46Z — COMPLETE: accepted112 published and main CI green
+
+Stable release v1.0.112 is published at immutable tag1ea1d44e. Public main
+fca6f842 carries the strict zero-failure ledger rebinding and two equivalent
+lint-only fixes. CI40973676834 and Security40973676896 SUCCESS:34 targets,
+3595/3595 tests,117/129 exact dead-code inventories, both Clippy profiles,
+syntax, CLI smoke, actual all-release-binary build and ngram cache PASS.
+Read CACHE/release112-final-ci-readback.json for verified final state, plus
+release112-final-publication-readback.json and release112-final-installed-runtime.json.
+Both actual installed updater entrypoints discover111 ->112. Read-only current
+CLI version remains111 on both machines; exact remote daemon35527e63/IME05d62373
+processes still running. No local/remote installation or service restart in
+publication/CI work. Source code and field behavior are frozen. Private completion
+documentation may follow fca6f842; that docs-only commit does not reopen checks.
+
+NEXT single native issue: KDE Firefox initial foreground observation may exceed
+80ms before any geometry/font sample, leaving typed text intact and no published
+suffix. Actual failing stage within KWin query still UNKNOWN. Map:
+docs/development/kde-firefox-focus-deadline-map-2026-10-30.md. One unchanged-runtime
+profile3/3PASS did not reproduce or close it. Do not repeat identical inputs for
+green, raise deadlines, cache authority or edit common delivery to hide it.
+Historical full matrix stays Firefox159/24/37/220 and Chrome179/0/41/220.
+SOLO, no Harness/agents, preserve GNOME, independent existing KDE providers and
+the common correction/ownership/verifier/executor contracts.
+
 # 2026-10-29T23:29:55Z — publication CI lint fixes ready
 
 Accepted v1.0.112 remains published and its tag/runtime unchanged. Strict ledger
