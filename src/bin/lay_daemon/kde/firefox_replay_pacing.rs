@@ -8,13 +8,37 @@ pub(super) fn use_fast_replay(
     leased_suffix: &str,
     expected_focus: &str,
 ) -> bool {
-    select_fast_profile(
+    let mut scoped = None;
+    let fast = select_fast_profile(
         input_isolated,
         requires_client_settlement,
         original_token,
         leased_suffix,
-        || super::firefox_receipt::current_client_is_scoped(expected_focus),
-    )
+        || {
+            let current = super::firefox_receipt::current_client_is_scoped(expected_focus);
+            scoped = Some(current);
+            current
+        },
+    );
+    if lay::config::LayConfig::load().debug_action_log {
+        lay::debug_log::append_private_line(
+            lay::debug_log::ibus_runtime_trace_path()
+                .with_file_name("kde_exact_replay_debug.jsonl"),
+            serde_json::json!({
+                "kind": "kde_firefox_replay_pacing",
+                "ts": lay::time::unix_timestamp(),
+                "pid": std::process::id(),
+                "input_isolated": input_isolated,
+                "requires_client_settlement": requires_client_settlement,
+                "original_chars": original_token.chars().count(),
+                "suffix_chars": leased_suffix.chars().count(),
+                "current_scoped_client": scoped,
+                "fast_profile": fast,
+            })
+            .to_string(),
+        );
+    }
+    fast
 }
 
 fn select_fast_profile(
@@ -24,8 +48,16 @@ fn select_fast_profile(
     leased_suffix: &str,
     current_client_is_scoped: impl FnOnce() -> bool,
 ) -> bool {
-    let word_is_open = leased_suffix == original_token;
-    input_isolated && requires_client_settlement && word_is_open && current_client_is_scoped()
+    let exact_word_boundary = leased_suffix == original_token
+        || leased_suffix
+            .strip_prefix(original_token)
+            .is_some_and(|closing| {
+                !closing.is_empty() && closing.chars().all(|ch| matches!(ch, ' ' | '\u{a0}'))
+            });
+    input_isolated
+        && requires_client_settlement
+        && exact_word_boundary
+        && current_client_is_scoped()
 }
 
 #[cfg(test)]
@@ -44,23 +76,39 @@ mod tests {
             "source  ",
             "source \u{a0}",
             "source\u{a0} ",
+        ] {
+            assert!(
+                select_fast_profile(true, true, "source", suffix, || true),
+                "acknowledged closed-word replay must use the bounded fast profile: {suffix:?}"
+            );
+            assert!(!select_fast_profile(true, true, "source", suffix, || false));
+        }
+        for suffix in [
             "other",
+            "sourceword ",
+            "source x",
+            "source\t",
+            "source\n",
+            "source\u{2003}",
+            " source ",
         ] {
             assert!(
                 !select_fast_profile(true, true, "source", suffix, || {
-                    panic!("closed or mismatched suffix must not query the current client")
+                    panic!("mismatched suffix must not query the current client")
                 }),
                 "ineligible suffix {suffix:?}"
             );
         }
         for (isolated, native) in [(false, false), (false, true), (true, false)] {
-            assert!(!select_fast_profile(
-                isolated,
-                native,
-                "source",
-                "source",
-                || { panic!("ineligible replay must not query the current client") }
-            ));
+            for suffix in ["source", "source ", "source\u{a0}"] {
+                assert!(!select_fast_profile(
+                    isolated,
+                    native,
+                    "source",
+                    suffix,
+                    || { panic!("ineligible replay must not query the current client") }
+                ));
+            }
         }
     }
 }

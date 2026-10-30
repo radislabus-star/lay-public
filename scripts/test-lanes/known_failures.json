@@ -2,7 +2,7 @@
   "failure_count": 0,
   "failures": [],
   "manifest_sha256": "28ba8d9e88893cd2d6daac0284c753019c882c3f4425ab347490fa3e46acfeea",
-  "observation_path": "docs/development/evidence/fragment-layout-1.0.113-tests.json",
-  "observation_sha256": "4ed98ca7c9993b48812cc0fffc24ffa72d6ddfaa146aa2bbbf99fa6b4eecc435",
+  "observation_path": "docs/development/evidence/release-1.0.114-tests.json",
+  "observation_sha256": "ab08514a2704db7ca0d30509a0f35fb7c86dab0be33abb1643bb10665d01d7b9",
   "schema": "lay.test-known-failures.v1"
 }

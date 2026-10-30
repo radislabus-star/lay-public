@@ -1,30 +1,13 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "d4dae7a027a7a9a67d6a1238f3881288dddb75a3",
+  "base": "ac50a7819e62c1b8d5d4b74845c7d6c2be060797",
   "components": [
-    "correction",
-    "gnome",
+    "kde-focus",
     "tooling"
   ],
   "shared_paths": [
-    "src/lib.rs",
-    "src/layout_fragments.rs",
-    "src/layout_fragments/model.rs",
-    "src/layout_fragments/tests.rs",
-    "src/typing_rule_graph/rules.rs",
-    "src/typing_rule_graph/rules/fragment.rs",
-    "src/typing_pipeline/candidates.rs",
-    "src/config.rs",
-    "src/config/types.rs",
-    "src/config/defaults.rs",
-    "src/config/runtime_flags.rs",
-    "scripts/lay-kde-tray.py",
-    "scripts/train-layout-fragments.py",
-    "examples/fragment_layout_proof.rs",
-    "data/layout_fragments/model.bin",
-    "data/layout_fragments/model.json",
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json"
   ],
-  "decision": "docs/architecture/decisions/2026-10-30-fragment-layout-contour.json"
+  "decision": "docs/architecture/decisions/2026-10-30-firefox-closed-pacing-114.json"
 }

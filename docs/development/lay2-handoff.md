@@ -1,3 +1,106 @@
+# 1.0.114 publication pending — queue0/10,2026-10-30
+
+Canonical HEADac50a781 plus final verified114source/docs/graph/zeroledger.
+Read release-1.0.114-firefox-closed-pacing.md for exact source/native scope.
+Onlyruntimeleaf KDEFirefox pacing; no agents/Harness or localGNOMEinstall.
+Full-v2 canonical3611/3611,all10binaries0warnings,lint/MSRV/architecturePASS.
+Actual KDE114daemon3962945/ae2844b2,IME3963028/3f581662,tray3963083;
+config6e62exact,globalIBus3168326/originalFirefox988548/models preserved.
+Final installednative2cases4flipsPASS;postTab16/16PASS. FullFirefox159/21/40
+retained,Chromehistorical179/0/41;aggregate338/21/81/440. No all-FAILfix claim.
+Next commit/push exactsource,waitpublicCI+Security,annotatedtag114andrelease,
+verifyactualinstalledupdater local+KDE --check. Then count1/10andcontinue9.
+Do not rebuild/retest accepted artifacts for publication. Privatecompletion
+docs may follow without moving publishedtag. MandatoryPRcheck currently0open.
+
+Following bounded candidate: Cargo discovery currently discards rustc JSON
+errors in a deletedTemporaryFile,leaving only 'could not compile due previous
+error'. This hid currentfull-v1 unavailablecachedaccessorerror. Map
+scripts/test_lanes/discovery.py::cargo_discovery579 -> compile subprocess
+JSONstdoutTemporaryFile -> raiseDiscoveryErrorwithoutreport. Puretooling fix
+withred/greenfixture inexistingtestlane unittest,zero deliveryroute changes.
+Do not start code before114publication; source/rawnativeC03 issue remains
+separatelymappedbelow and must not be erased.
+
+---
+
+# Active2026-10-30 — ten bug-fix releases requested,0/10published
+
+Read ten-release-queue-2026-10-30.md and release-1.0.114-firefox-closed-pacing.md.
+SOLO/no Harness. Canonical HEADac50a781; current source version114prepared,
+NOT published. First release scope is measured KDE Firefox pacing improvement,
+NOT a claim that all rapid failures are closed. Only runtime leaf changed:
+src/bin/lay_daemon/kde/firefox_replay_pacing.rs;36adjacent hashes frozen.
+
+Source phases: REDv2 exact test proves old closed-word rejection; green-v2
+340hermetic daemon testsPASS and0warning build9c487a4f. Raw broadtestv1
+was canceled as invalid unisolatedsetup; REDv1 selected0, retained notPASS.
+Diagnostic trace41e5a3f built/installed temporarily and proved fast_profile=true
+for9observed calls,7closedwords. Current actual daemon3835325/9c487a4f
+is the noninstrumented candidate restored for a controlled comparison.
+IME3131409/30ceff92,tray3131455,IBus3168326,originalFirefox988548 preserved.
+ConfigSHA6e62restored; no localGNOME install/restart or globalIBus restart.
+
+Native full220 CROOT/release114-native-full-v1:159PASS21FAIL40BLOCKED
+420.807s;20rapid-space lateness +1privateiframe-rich consecutive-active
+context_authority refusal BEFORE pacing/delegation. Delta vs oldfull:4FAIL
+toPASS,1PASStoFAIL,3emailPASStoBLOCKED, so netPASS unchanged.
+Chrome historical179/0/41/220 remains; aggregate338/21/81/440 mixes explicit
+oldChrome evidence with newFirefox. No universal0FAILclaim.
+Rapid115samples candidate median140.06,p95239.59,max292.76ms vs historical
+184.47/281.80/303.34; historical comparison is NOT one-variable causal proof.
+Samehost original1139e06bae7 vs candidate9c paired prefix5latencies:
+median161.23->131.55ms,max175.93->244.97,bothrapidFAIL/all5targets.
+Do not claim maximum improvement or statistical certainty from5samples.
+PostTab native v2:plain+iframe2/2cases16/16flips,decoder/heldShiftPASS.
+Nativeprefix once4PASS laterprofile3PASS1FAIL; retain both, no retry-green.
+Use existing kde-firefox-space-readback-full-controller-v1.py with owned
+processa11y flag,LD_PRELOAD alignment and --deployment actual receipt.
+Do NOT use release114-native-controller-v1.py for standard acceptance.
+
+Current longsourcegate:session30114 CROOT/release114-full-v2 under dedicated
+20CPU/24Ghigh28Gmax/1Gswap/512tasks/target12GiB guard. Local script
+CACHE/release114-full-worker-v1.py. format/architecture-refresh44.661s/
+manifest25.123sPASS; actual complete canonical3611 execution running.
+Full-v1 failedcompile from attempted private current_config accessor; fixed
+in sameleaf to alreadycompiled LayConfig::load, no shared visibilitychange.
+Six generated graph files returned from full-v1 accepted with hashes. Local
+graph now will become stale again after corrected leaf; import full-v2returns
+ONLY after frozen-prehashchecks. Current Wclosure is bound by
+release114-full-v2-pinned.json; remote synthetic GitHEAD never authoritative.
+
+Next:finish source/full build gates; inspect actual3611statuses inclprocess
+isolation487 rather than guessed14. Worker handles complete logs correctly
+and binds actual release114 observation. Do not rerun completed alltests
+for reporting errors. Then retain exactall10artifacts, install114on KDE using
+existing coordinator(daemon+individualIME+tray,keepglobalIBus), tiny native
+version/controlcheck, strictsourcecommit,pushpublicmain,CI+Securitygreen,
+annotatedimmutabletag/release114,installed updater--check local+remote.
+No manual localGNOME installation. Count first release only once published
+and verified; continue remaining9 without ending turn.
+
+Following priorities:newnative row155 complete trace shows pendingReset
+receipt mismatch(revisiongap2,identity_current=true,initial_matches=true),
+then current managedword witness absent,unknown_start,manual RPCrefused
+context_authority. Map authority.rs823 -> observation.rs935 +KDEFirefox
+preedit_echo. Need causal reducer/adapter fixture BEFORE any edit; do NOT
+weakenunknown-start authority or edit commonSafetyGate/output. Initial hint
+KWin80ms deadline remainsstageUNKNOWN; actual privateIBusfixture unknown
+context alsoopen; GNOME Chrome styling report retained separately.
+
+Profiling:actual83daemonKWinqueries plus7IME, layout-list outlier74.7ms.
+Correction to earlier inference: X11Output::prepare does NOT call KWin;
+its device/focus checks are separate. ActualKWin requests occur in existing
+focus/layout guards; don't batchoutput based on the rejected inference.
+No IBusCLI callsobserved in measured5gesturewindow; no speculativeCLIpatch.
+
+Private prepare-fragment-release-source.py fixed to queryunknown remote
+filehashes rather than assume remote docs match localHEAD. Overlayprechecks
+and fullclosureguards remain. Current fullpin includes handoff oldercontent;
+localhandoff update is docs only, preserve it when accepting generatedreturns.
+
+---
+
 # Current handoff — 1.0.113 COMPLETE, 2026-10-30
 
 The requested isolated fragment-layout contour is implemented, source/native

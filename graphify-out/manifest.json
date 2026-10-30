@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793323300.5297613,
-    "ast_hash": "fcc049e2071371304a406b273488dbb2",
+    "mtime": 1793342530.7423856,
+    "ast_hash": "df4da517846e1b66bc5728bf9969f0cd",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793323300.5297613,
-    "ast_hash": "38dfbaae543ad2c59737b889eb1b7651",
+    "mtime": 1793342530.7423856,
+    "ast_hash": "eb86b27adff97c31e4126f6094dd2222",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793323300.5297613,
-    "ast_hash": "743254dacdb82e3ecfb41566b64e6afb",
+    "mtime": 1793342530.7413857,
+    "ast_hash": "0431b42bb1691de79534e5d88c8d089b",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793316545.2793558,
-    "ast_hash": "7cdd36bad4196525a34de2a7833ce757",
+    "mtime": 1793342570.3546143,
+    "ast_hash": "e9549e49603d942af035621f9ec26e85",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793323347.099011,
-    "ast_hash": "78ec889c92d329e014569e0589f6230b",
+    "mtime": 1793324881.3761802,
+    "ast_hash": "99341faee024a83d791d8e36d12f4f8f",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793310665.5686743,
-    "ast_hash": "4ad037ee84db4405e5aaf0604429a93e",
+    "mtime": 1793323845.7937896,
+    "ast_hash": "515a9ce7f079f5b4cebb54c2e21f1b1c",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793313618.864875,
-    "ast_hash": "563f518983cdbf7fe36716589f6ea6eb",
+    "mtime": 1793341534.524535,
+    "ast_hash": "01ad25d273a525310093cccb159cd7c2",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793321256.1373994,
-    "ast_hash": "95883bc7cd2a0710b8f89c5a3d9416b6",
+    "mtime": 1793339819.8834012,
+    "ast_hash": "49846b4ca9b84d056e203318c3eb2ec1",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9385,8 +9385,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/kde/firefox_replay_pacing.rs": {
-    "mtime": 1793313618.9178755,
-    "ast_hash": "62a4181926eff8d12a1334946a8aec92",
+    "mtime": 1793342786.8638618,
+    "ast_hash": "14819b1ead00eb9b06b26da1cfad2aa4",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-first-word-tab-map-2026-10-29.md": {
@@ -9642,6 +9642,26 @@
   "docs/development/fragment-layout-contour-2026-10-30.md": {
     "mtime": 1793323300.5297613,
     "ast_hash": "71a6dfddfaf635369f3ba3f204143ec8",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-30-firefox-closed-pacing-114.json": {
+    "mtime": 1793339819.8834012,
+    "ast_hash": "849abbb888f84cbb759f848489afedf3",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/fragment-layout-1.0.113-tests.json": {
+    "mtime": 1793324881.3751802,
+    "ast_hash": "ef49f8bdd6b3d3679f481f6073d5e60a",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.114-firefox-closed-pacing.md": {
+    "mtime": 1793342786.53386,
+    "ast_hash": "ba13e6e7ff0d17c6cb94c4a93bf463b1",
+    "semantic_hash": ""
+  },
+  "docs/development/ten-release-queue-2026-10-30.md": {
+    "mtime": 1793339819.8834012,
+    "ast_hash": "bf0e9bf3dde160bb3197c436e76fb5c2",
     "semantic_hash": ""
   }
 }

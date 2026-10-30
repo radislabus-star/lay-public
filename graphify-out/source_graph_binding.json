@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "7370961f6c7d1f2949325d5c929865fe7d2571a6d6e9cd9480defd293c50bd25",
-  "manifest_fingerprint": "aab586c8a9b172b3c1456174b01730dd25689cb1374acffb2356dbb0c859738a",
+  "graph_fingerprint": "38a30f4fdb1497519bb70d8b979c7f0655a628334fe9effec5bea2edf1ca78e8",
+  "manifest_fingerprint": "41cc16839a4ff011d454b1e77d987a5c52cb3b8847fbc211c4f4fa847dcd083a",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -40,7 +40,7 @@
     "src/bin/lay_daemon/focus_guard.rs": "e7a8478ca964097c781844906813d2221f92b07ecf05a431dd3991a3c9acdfe6",
     "src/bin/lay_daemon/force_layout_hotkeys.rs": "dc8a7d7e630afbeac9b3e0ef331e9bec59f3cfa992b7f29634ffb71ccd51085f",
     "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs": "77455857555f28a9cb6ed3cc11593b785fee94634c715fc68319cc6253f270c7",
-    "src/bin/lay_daemon/kde/firefox_replay_pacing.rs": "a3815fec045f9d3f786a5d58d8ae1d2ac212caeafb624e33b31f3884854d66e8",
+    "src/bin/lay_daemon/kde/firefox_replay_pacing.rs": "99482448ef1a0ee027f25529fe69b4854e5b6d3180f7a313581b6991ca13d7a7",
     "src/bin/lay_daemon/kde/firefox_replay_receipt.rs": "58685bb1fee16423b3760f6733f03e6b6c53d396444df00d717dd7ab0ab04780",
     "src/bin/lay_daemon/kde/focus_policy.rs": "0e4401d558ad8b931f61792ae6669881c04d4bd10f4b0b96ae4b78e60d47bc0c",
     "src/bin/lay_daemon/kde/native_input_focus.rs": "a27cb934325aa49d7673330ab9e81dc17b27ae9d504423d60b8cb8e7c522b7ba",
