@@ -1,0 +1,347 @@
+{
+  "status": "SCOPED_FIX_AND_NATIVE_CONTROLS_VERIFIED_COMPATIBILITY_LIMITS_REMAIN",
+  "source_gate": "release-1.0.116-source-gates.json",
+  "deployment": {
+    "status": "CANDIDATE_LOADED_NATIVE_NOT_TESTED",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1327,
+      "sha256": "545f941b2b3cc8fa18b25600fc03ec607d6c0e630015bcc0f76e872fd74efcbe"
+    },
+    "local_gnome_modified": false,
+    "global_ibus_restarted": false,
+    "model_files_replaced": false,
+    "testing_config_sha256": "6e62eab3c278c733fedb47e45ef6306105a3700222cf9f7a4e5bff4bd92264d1",
+    "daemon_pid": 1751547,
+    "daemon_sha256": "41acd9b9d9cd706acccbb68008ba86b206ff5ff1cdafd9640164827939ff6294",
+    "engine_pid": 1751630,
+    "engine_sha256": "1399f098af7b094e5353e2d9677d217061c99b249f2aceaf11e6380c01f3989d",
+    "engine_inode": 24803045,
+    "tray_pid": 1751764,
+    "config_path": "/home/e/.cache/lay/kde-live-20261019/config/lay/config.json",
+    "saved_config": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-final-deployment-v1/config-before.json"
+  },
+  "firefox_full_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-firefox-full-v1",
+  "firefox_counts": {
+    "PASS": 165,
+    "FAIL": 15,
+    "BLOCKED": 40,
+    "NOT_TESTED": 0
+  },
+  "baseline_delta": {
+    "baseline_counts": {
+      "PASS": 159,
+      "FAIL": 21,
+      "BLOCKED": 40,
+      "NOT_TESTED": 0
+    },
+    "candidate_counts": {
+      "PASS": 165,
+      "FAIL": 15,
+      "BLOCKED": 40,
+      "NOT_TESTED": 0
+    },
+    "transition_counts": {
+      "FAIL->PASS": 10,
+      "PASS->BLOCKED": 2,
+      "PASS->FAIL": 4,
+      "BLOCKED->PASS": 2
+    },
+    "changed_rows": [
+      {
+        "key": [
+          "normal",
+          "tel",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "normal",
+          "email",
+          "roundtrip",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "BLOCKED",
+        "error": "native/DOM text disagreement"
+      },
+      {
+        "key": [
+          "normal",
+          "textarea",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "normal",
+          "rich",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "normal",
+          "iframe-input",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "normal",
+          "iframe-rich",
+          "rapid-five",
+          "space"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error": "{'late_targets': [{'target': 2, 'observed': 1579916.26584692, 'next_gesture_start': 1579916.171980981}, {'target': 3, 'observed': 1579916.43484692, 'next_gesture_start': 1579916.390407069}], 'clock_mapping_uncertainty_ms': 2.172017004340887}"
+      },
+      {
+        "key": [
+          "private",
+          "search",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "private",
+          "tel",
+          "rapid-five",
+          "space"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error": "{'late_targets': [{'target': 0, 'observed': 1579971.7300554495, 'next_gesture_start': 1579971.729713643}, {'target': 2, 'observed': 1579972.2610554495, 'next_gesture_start': 1579972.152024331}, {'target': 3, 'observed': 1579972.4080554494, 'next_gesture_start': 1579972.361878286}], 'clock_mapping_uncertainty_ms': 2.250527497380972}"
+      },
+      {
+        "key": [
+          "private",
+          "email",
+          "roundtrip",
+          "active"
+        ],
+        "before": "PASS",
+        "after": "BLOCKED",
+        "error": "native/DOM text disagreement"
+      },
+      {
+        "key": [
+          "private",
+          "email",
+          "rapid-five",
+          "active"
+        ],
+        "before": "BLOCKED",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "private",
+          "plain",
+          "rapid-five",
+          "space"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error": "{'late_targets': [{'target': 2, 'observed': 1580018.8808898155, 'next_gesture_start': 1580018.791230989}], 'clock_mapping_uncertainty_ms': 1.6269905027002096}"
+      },
+      {
+        "key": [
+          "private",
+          "iframe-input",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "private",
+          "iframe-rich",
+          "consecutive-two",
+          "active"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "private",
+          "iframe-rich",
+          "rapid-five",
+          "space"
+        ],
+        "before": "PASS",
+        "after": "FAIL",
+        "error": "{'late_targets': [{'target': 2, 'observed': 1580046.4111535812, 'next_gesture_start': 1580046.389725327}, {'target': 3, 'observed': 1580046.666153581, 'next_gesture_start': 1580046.599365953}], 'clock_mapping_uncertainty_ms': 1.5287710120901465}"
+      },
+      {
+        "key": [
+          "fullscreen",
+          "text",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "fullscreen",
+          "search",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "fullscreen",
+          "tel",
+          "rapid-five",
+          "space"
+        ],
+        "before": "FAIL",
+        "after": "PASS",
+        "error": null
+      },
+      {
+        "key": [
+          "fullscreen",
+          "email",
+          "roundtrip",
+          "active"
+        ],
+        "before": "BLOCKED",
+        "after": "PASS",
+        "error": null
+      }
+    ],
+    "failure_classes": {
+      "rapid-five: {'late_targets': [{'target': 1, 'observed': 1579772.7813415986, 'next_gesture_start': 1579772.782660737}, {'target': 2, 'observed': 1579773.0103415987, 'next_gesture_start': 1579773.007602301}, {'target': 3, 'observed': 1579773.2733415985, 'next_gesture_start': 1579773.218287501}], 'clock_mapping_uncertainty_ms': 1.6097244806587696}": 1,
+      "rapid-five: {'late_targets': [{'target': 3, 'observed': 1579792.249401801, 'next_gesture_start': 1579792.23891826}], 'clock_mapping_uncertainty_ms': 0.9926629718393087}": 1,
+      "rapid-five: {'late_targets': [{'target': 0, 'observed': 1579877.3952942104, 'next_gesture_start': 1579877.380024024}, {'target': 2, 'observed': 1579877.9072942105, 'next_gesture_start': 1579877.800693657}, {'target': 3, 'observed': 1579878.0382942106, 'next_gesture_start': 1579878.009748146}], 'clock_mapping_uncertainty_ms': 1.233595423400402}": 1,
+      "rapid-five: {'late_targets': [{'target': 2, 'observed': 1579916.26584692, 'next_gesture_start': 1579916.171980981}, {'target': 3, 'observed': 1579916.43484692, 'next_gesture_start': 1579916.390407069}], 'clock_mapping_uncertainty_ms': 2.172017004340887}": 1,
+      "rapid-five: {'late_targets': [{'target': 2, 'observed': 1579938.3497618819, 'next_gesture_start': 1579938.344296509}, {'target': 3, 'observed': 1579938.621761882, 'next_gesture_start': 1579938.55541872}], 'clock_mapping_uncertainty_ms': 1.084265997633338}": 1,
+      "rapid-five: {'late_targets': [{'target': 0, 'observed': 1579971.7300554495, 'next_gesture_start': 1579971.729713643}, {'target': 2, 'observed': 1579972.2610554495, 'next_gesture_start': 1579972.152024331}, {'target': 3, 'observed': 1579972.4080554494, 'next_gesture_start': 1579972.361878286}], 'clock_mapping_uncertainty_ms': 2.250527497380972}": 1,
+      "rapid-five: {'late_targets': [{'target': 3, 'observed': 1579991.0788361025, 'next_gesture_start': 1579991.079569109}], 'clock_mapping_uncertainty_ms': 1.9597415812313557}": 1,
+      "rapid-five: {'late_targets': [{'target': 2, 'observed': 1580004.972691656, 'next_gesture_start': 1580004.970526006}, {'target': 3, 'observed': 1580005.227691656, 'next_gesture_start': 1580005.188137618}], 'clock_mapping_uncertainty_ms': 1.1577339610084891}": 1,
+      "rapid-five: {'late_targets': [{'target': 2, 'observed': 1580018.8808898155, 'next_gesture_start': 1580018.791230989}], 'clock_mapping_uncertainty_ms': 1.6269905027002096}": 1,
+      "rapid-five: {'late_targets': [{'target': 2, 'observed': 1580046.4111535812, 'next_gesture_start': 1580046.389725327}, {'target': 3, 'observed': 1580046.666153581, 'next_gesture_start': 1580046.599365953}], 'clock_mapping_uncertainty_ms': 1.5287710120901465}": 1,
+      "rapid-five: {'late_targets': [{'target': 0, 'observed': 1580117.2167621765, 'next_gesture_start': 1580117.215848629}, {'target': 2, 'observed': 1580117.7337621765, 'next_gesture_start': 1580117.634884948}, {'target': 3, 'observed': 1580117.9047621766, 'next_gesture_start': 1580117.84265097}], 'clock_mapping_uncertainty_ms': 2.3244384210556746}": 1,
+      "rapid-five: {'late_targets': [{'target': 0, 'observed': 1580131.397927482, 'next_gesture_start': 1580131.398307477}, {'target': 2, 'observed': 1580131.850927482, 'next_gesture_start': 1580131.852193008}, {'target': 3, 'observed': 1580132.109927482, 'next_gesture_start': 1580132.059876179}], 'clock_mapping_uncertainty_ms': 1.535792020149529}": 1,
+      "rapid-five: {'late_targets': [{'target': 1, 'observed': 1580145.4521638856, 'next_gesture_start': 1580145.452093217}, {'target': 2, 'observed': 1580145.7941638855, 'next_gesture_start': 1580145.660983314}, {'target': 3, 'observed': 1580145.9231638855, 'next_gesture_start': 1580145.869039295}], 'clock_mapping_uncertainty_ms': 1.9744415767490864}": 1,
+      "rapid-five: {'late_targets': [{'target': 0, 'observed': 1580159.0878534059, 'next_gesture_start': 1580159.069555421}, {'target': 2, 'observed': 1580159.525853406, 'next_gesture_start': 1580159.521082831}], 'clock_mapping_uncertainty_ms': 1.3419450260698795}": 1,
+      "rapid-five: {'late_targets': [{'target': 1, 'observed': 1580173.2749772323, 'next_gesture_start': 1580173.267182509}, {'target': 2, 'observed': 1580173.5079772323, 'next_gesture_start': 1580173.497659618}, {'target': 3, 'observed': 1580173.7959772325, 'next_gesture_start': 1580173.70757337}], 'clock_mapping_uncertainty_ms': 1.6399434534832835}": 1
+    },
+    "controller_config_restored": true,
+    "trace_complete": false,
+    "scope": "same frozen r19 actor/220 exact manifest keys; single full run, not paired latency causality"
+  },
+  "target_row155": {
+    "window": "private",
+    "field": "iframe-rich",
+    "name": "consecutive-two",
+    "word": "active",
+    "status": "PASS",
+    "native_trace_complete": true
+  },
+  "actual_new_branch": {
+    "row": 80,
+    "field": "plain",
+    "case": "tab",
+    "window": "normal",
+    "count": 1,
+    "status": "PASS",
+    "row_trace_complete": true
+  },
+  "trace_limits": {
+    "global_debug_trace_complete": false,
+    "complete_row_traces": 211,
+    "incomplete_row_traces": 9,
+    "no_complete_trace_claim": true
+  },
+  "native_controls": {
+    "status": "PASS",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1327,
+      "sha256": "545f941b2b3cc8fa18b25600fc03ec607d6c0e630015bcc0f76e872fd74efcbe"
+    },
+    "scope": "2 focused native RFB cases (4 roundtrip flips); separate from historical full matrix",
+    "rows": [
+      {
+        "browser": "chrome",
+        "name": "roundtrip",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          59.31227398104966,
+          37.50646091066301
+        ],
+        "seconds": 4.477,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-final-native-v1/chrome-roundtrip/result.json",
+        "exit": 0
+      },
+      {
+        "browser": "firefox",
+        "name": "roundtrip",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          138.39116389863193,
+          166.78817104548216
+        ],
+        "seconds": 5.981,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-final-native-v1/firefox-roundtrip/result.json",
+        "exit": 0
+      }
+    ],
+    "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "parent_actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "config_restored_exactly": true,
+    "global_ibus_restarted": false
+  },
+  "latency": {
+    "sample": "standard recorded roundtrip transitions; different passing subsets; unpaired",
+    "n": 102,
+    "median_ms": 141.44071005284786,
+    "p95_ms": 173.90401009470224,
+    "max_ms": 213.18616485223174,
+    "p95_method": "nearest-rank",
+    "speedup_claim": false
+  },
+  "all_remaining_failures": "15 rapid-five after Space, late targets;4 were PASS in baseline. No deadline/actor changes.",
+  "chrome_full_matrix": "historical179PASS0FAIL41BLOCKED; only fresh normal roundtrip control checked",
+  "local_gnome_install_or_restart": false
+}

@@ -1679,3 +1679,271 @@ fn td159_active_composition_space_receipt_rejects_expired_epoch_and_owner() {
         }
     }));
 }
+
+#[test]
+fn kde_firefox_owned_append_between_delayed_prefix_receipts_requires_final_whole_field() {
+    for queued in [false, true] {
+        zbus::block_on(bounded(async {
+            let (mut harness, mut engine, earlier) =
+                compose_owned_append_before_caret_echo("kde").await;
+            strict_prefix_v10_literal_key(&mut harness, &mut engine, 162_000, 'e', 18).await;
+            let first = SurroundingTextSnapshot::new(earlier.clone(), 5, 5);
+            let first_candidate = engine.kde_firefox_owned_append_caret_observation_pending(&first);
+            assert!(
+                first_candidate,
+                "the actual selector must recognize the first owned prefix"
+            );
+            engine
+                .observe_external_surrounding_text_for_owned_erasure(Some(first), first_candidate);
+            let first_receipt_state = format!("{:?}", engine.context_reset_rereceipt);
+            assert!(engine.context_reset_rereceipt.is_some());
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert!(!engine.context_allows_manual_toggle());
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            strict_prefix_v10_literal_key(&mut harness, &mut engine, 162_002, 'f', 33).await;
+            if queued {
+                strict_prefix_v10_literal_key(&mut harness, &mut engine, 162_004, 'g', 34).await;
+            }
+            let mut full = format!("{earlier}ef{}", if queued { "g" } else { "" });
+            let mut epoch = engine.committed_tail.epoch;
+            let prefix = format!("{earlier}e");
+            let cursor = prefix.chars().count() as u32;
+            let partial = SurroundingTextSnapshot::new(prefix, cursor, cursor);
+            let candidate = engine.kde_firefox_owned_append_caret_observation_pending(&partial);
+            assert!(candidate, "the actual selector must retain the whole-field anchor across the owned key: first={first_receipt_state}; after={:?}; mode={:?}; active={:?}; exact={}", engine.context_reset_rereceipt, engine.composition.word_input_mode, engine.shared.lock().unwrap().active_path, engine.client_context.exact_surrounding_refresh_available);
+            engine.observe_external_surrounding_text_for_owned_erasure(Some(partial), candidate);
+            assert!(engine.context_reset_rereceipt.is_some());
+            assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
+            assert!(!engine.context_allows_manual_toggle());
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            if queued {
+                strict_prefix_v10_literal_key(&mut harness, &mut engine, 162_006, 'h', 35).await;
+                full.push('h');
+                epoch = engine.committed_tail.epoch;
+                for suffix in ["ef", "efg"] {
+                    let text = format!("{earlier}{suffix}");
+                    let end = text.chars().count() as u32;
+                    let partial = SurroundingTextSnapshot::new(text, end, end);
+                    let candidate =
+                        engine.kde_firefox_owned_append_caret_observation_pending(&partial);
+                    assert!(
+                        candidate,
+                        "each later actual prefix must preserve its checked predecessor"
+                    );
+                    engine.observe_external_surrounding_text_for_owned_erasure(
+                        Some(partial),
+                        candidate,
+                    );
+                    assert!(!engine.context_allows_manual_toggle());
+                    cycle09_assert_no_local_text_effect(&mut harness).await;
+                }
+            }
+            let cursor = full.chars().count() as u32;
+            let actual = SurroundingTextSnapshot::new(full.clone(), cursor, cursor);
+            let candidate = engine.kde_firefox_owned_append_caret_observation_pending(&actual);
+            engine.observe_external_surrounding_text_for_owned_erasure(Some(actual), candidate);
+            assert!(
+                engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "the whole actual field must settle the same locally owned append chain"
+            );
+            assert_eq!(engine.committed_tail.epoch, epoch);
+            assert_eq!(engine.committed_tail.buffer, full);
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            let path = engine.path.clone();
+            let (engine, disposition) = cycle09_manual_toggle(&mut harness, engine).await;
+            assert_eq!(
+                disposition,
+                Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3())
+            );
+            let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
+            assert!(cycle09_tail_is_authoritative(&tail, &path, false, &full));
+        }));
+    }
+}
+
+#[test]
+fn kde_firefox_interleaved_prefix_requires_original_whole_field_and_current_owner() {
+    for invalid in [
+        "gnome",
+        "other_client",
+        "foreign_first",
+        "unconfirmed_reset",
+        "missing_receipt",
+        "selected_first",
+        "changed_final",
+        "selected_final",
+        "regressing_prefix",
+        "duplicate_prefix",
+        "focus_loss",
+    ] {
+        zbus::block_on(bounded(async {
+            let (mut harness, mut engine, earlier) =
+                compose_owned_append_before_caret_echo(if invalid == "gnome" {
+                    "gnome"
+                } else {
+                    "kde"
+                })
+                .await;
+            if invalid == "unconfirmed_reset" {
+                actual_reset(&mut harness, &mut engine, 161_020, false).await;
+            }
+            if invalid == "missing_receipt" {
+                engine.context_reset_rereceipt = None;
+            }
+            strict_prefix_v10_literal_key(&mut harness, &mut engine, 162_000, 'e', 18).await;
+            let external = if invalid == "foreign_first" {
+                "foreign"
+            } else {
+                ""
+            };
+            let first_text = format!("{external}{earlier}");
+            let cursor = first_text.chars().count() as u32;
+            let first = SurroundingTextSnapshot::new(
+                first_text,
+                cursor,
+                cursor - u32::from(invalid == "selected_first"),
+            );
+            let candidate = invalid != "other_client"
+                && engine.kde_firefox_owned_append_caret_observation_pending(&first);
+            engine.observe_external_surrounding_text_for_owned_erasure(
+                Some(first.clone()),
+                candidate,
+            );
+            if invalid == "duplicate_prefix" {
+                let candidate = engine.kde_firefox_owned_append_caret_observation_pending(&first);
+                engine.observe_external_surrounding_text_for_owned_erasure(Some(first), candidate);
+            }
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            strict_prefix_v10_literal_key(&mut harness, &mut engine, 162_002, 'f', 33).await;
+            let prefix = format!(
+                "{external}{earlier}{}",
+                if invalid == "regressing_prefix" {
+                    ""
+                } else {
+                    "e"
+                }
+            );
+            let cursor = prefix.chars().count() as u32;
+            let partial = SurroundingTextSnapshot::new(prefix, cursor, cursor);
+            let candidate = invalid != "other_client"
+                && engine.kde_firefox_owned_append_caret_observation_pending(&partial);
+            engine.observe_external_surrounding_text_for_owned_erasure(Some(partial), candidate);
+            assert!(!engine.context_allows_manual_toggle(), "partial:{invalid}");
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+            if invalid == "focus_loss" {
+                actual_focus_out(&mut harness, &mut engine, 162_010).await;
+            }
+            let full = format!(
+                "{}{earlier}ef",
+                if invalid == "changed_final" {
+                    "foreign"
+                } else {
+                    external
+                }
+            );
+            let cursor = full.chars().count() as u32;
+            let actual = SurroundingTextSnapshot::new(
+                full,
+                cursor,
+                cursor - u32::from(invalid == "selected_final"),
+            );
+            let candidate = invalid != "other_client"
+                && engine.kde_firefox_owned_append_caret_observation_pending(&actual);
+            engine.observe_external_surrounding_text_for_owned_erasure(Some(actual), candidate);
+            assert!(
+                !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            assert!(!engine.context_allows_manual_toggle(), "{invalid}");
+            assert!(
+                !engine.context_observed_suffix_exact_manual_handoff_allowed(),
+                "{invalid}"
+            );
+            assert!(
+                !engine.context_owns_active_preedit_manual_toggle(),
+                "{invalid}"
+            );
+            cycle09_assert_no_local_text_effect(&mut harness).await;
+        }));
+    }
+}
+
+#[test]
+fn kde_firefox_interleaved_prefix_preserves_unicode_anchor_and_rejects_changed_geometry() {
+    for (anchor_text, before_text, after_text, token) in [
+        ("context abc", "context abcd", "context abcde", "abcdef"),
+        (
+            "контекст прив",
+            "контекст приве",
+            "контекст привет",
+            "приветик",
+        ),
+    ] {
+        let snapshot = |text: &str| {
+            let end = text.chars().count() as u32;
+            SurroundingTextSnapshot::new(text.into(), end, end)
+        };
+        let anchor = snapshot(anchor_text);
+        let previous = snapshot(before_text);
+        let current = snapshot(after_text);
+        assert!(LayIbusEngine::kde_firefox_owned_prefix_progress(
+            &anchor, &previous, &current, token
+        ));
+        for invalid in [
+            "selected_anchor",
+            "selected_previous",
+            "selected_current",
+            "moved_previous",
+            "moved_current",
+            "foreign_previous",
+            "foreign_current",
+            "duplicate",
+            "complete",
+            "regression",
+        ] {
+            let (mut anchor, mut previous, mut current) =
+                (anchor.clone(), previous.clone(), current.clone());
+            match invalid {
+                "selected_anchor" => anchor.anchor_pos -= 1,
+                "selected_previous" => previous.anchor_pos -= 1,
+                "selected_current" => current.anchor_pos -= 1,
+                "moved_previous" => {
+                    previous.cursor_pos -= 2;
+                    previous.anchor_pos -= 2;
+                }
+                "moved_current" => {
+                    current.cursor_pos -= 1;
+                    current.anchor_pos -= 1;
+                }
+                "foreign_previous" => previous = snapshot(&format!("foreign {before_text}")),
+                "foreign_current" => current = snapshot(&format!("foreign {after_text}")),
+                "duplicate" => current = previous.clone(),
+                "complete" => {
+                    current = snapshot(&format!(
+                        "{}{}",
+                        &anchor.text[..anchor.text.len()
+                            - anchor
+                                .text
+                                .rsplit(crate::preedit::is_observed_word_boundary)
+                                .next()
+                                .unwrap()
+                                .len()],
+                        token
+                    ))
+                }
+                "regression" => current = anchor.clone(),
+                _ => unreachable!(),
+            }
+            assert!(
+                !LayIbusEngine::kde_firefox_owned_prefix_progress(
+                    &anchor, &previous, &current, token
+                ),
+                "{invalid}:{token}"
+            );
+        }
+    }
+}

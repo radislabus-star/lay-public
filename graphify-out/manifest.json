@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793377615.021103,
-    "ast_hash": "d19cf8b1c1fb9e4811b250a93b702f6a",
+    "mtime": 1793380772.690592,
+    "ast_hash": "320bca172d4685ba327ac2d563a1b6bb",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793377615.021103,
-    "ast_hash": "bb8f735e015cecb7312438a351a86d52",
+    "mtime": 1793380772.690592,
+    "ast_hash": "65bfec34fdfef5cd0a77c59e07b9e43f",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793377615.021103,
-    "ast_hash": "246955758726d7c286f5089d19f29504",
+    "mtime": 1793380772.690592,
+    "ast_hash": "8a6dd54aa6f88d543abec6e7fd0a57ae",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793342816.3470314,
-    "ast_hash": "5edee536b1d356e41fa8612fffd25fef",
+    "mtime": 1793377654.3783295,
+    "ast_hash": "2b6ef1419f628ed6c52797eb6f3cfb70",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793343369.603761,
-    "ast_hash": "cf20f0ca589bc82954abdc1e6a17fccf",
+    "mtime": 1793378222.3302438,
+    "ast_hash": "425c7f281bea8a0632ea24a86eb4cbe6",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793342859.9742825,
+    "mtime": 1793377711.0946562,
     "ast_hash": "515a9ce7f079f5b4cebb54c2e21f1b1c",
     "semantic_hash": ""
   },
@@ -5745,8 +5745,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1793304593.197462,
-    "ast_hash": "ac66de83167b35709020d589d719ba82",
+    "mtime": 1793380280.2964115,
+    "ast_hash": "03912d59ec688b578cf3a36c23ecba99",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
@@ -7480,8 +7480,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs": {
-    "mtime": 1793284220.6489038,
-    "ast_hash": "f4faa47cc1a101f19112c58cd0249b1e",
+    "mtime": 1793380279.3014047,
+    "ast_hash": "2a3e16cf4b266256e2e488cc3b8c78a2",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-19-revoked-native-acquisition-retirement.json": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793377615.021103,
-    "ast_hash": "39f125cadc0db530ab9f8aa675420dab",
+    "mtime": 1793379453.6930006,
+    "ast_hash": "5a14ceca1df25e296d1e7db307f2f3d8",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9295,8 +9295,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/firefox/preedit_echo.rs": {
-    "mtime": 1793304775.9114928,
-    "ast_hash": "1cdb955c64981b8b2355dde3e5ec7a9c",
+    "mtime": 1793380278.7834013,
+    "ast_hash": "9326c1b97a76138bb827531bbbb9a221",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-owned-erasure-echo-map-2026-10-29.md": {
@@ -9677,6 +9677,21 @@
   "docs/development/release-1.0.115-compiler-diagnostics.md": {
     "mtime": 1793377615.021103,
     "ast_hash": "59ae246c2a2e5edb2ea18d4ef41c515b",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-30-firefox-interleaved-prefix-116.json": {
+    "mtime": 1793380772.690592,
+    "ast_hash": "1d3d83f5560e055a165f42f81fd25cb2",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.115-tests.json": {
+    "mtime": 1793378222.329244,
+    "ast_hash": "f44f4b41ac343c103d2fd552b694a86b",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.116-firefox-interleaved-prefix.md": {
+    "mtime": 1793380772.690592,
+    "ast_hash": "b822b22b5114e00c20851076406d1acf",
     "semantic_hash": ""
   }
 }

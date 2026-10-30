@@ -102,6 +102,31 @@ impl LayIbusEngine {
             && format!("{external}{token}").starts_with(&current.text)
     }
 
+    /// An inert partial readback preserves its preceding whole actual field,
+    /// including external context. The ordinary exact receipt still owns edits.
+    pub(crate) fn kde_firefox_owned_prefix_progress(
+        anchor: &SurroundingTextSnapshot,
+        previous: &SurroundingTextSnapshot,
+        current: &SurroundingTextSnapshot,
+        token: &str,
+    ) -> bool {
+        let anchor_word = anchor
+            .text
+            .rsplit(crate::preedit::is_observed_word_boundary)
+            .next()
+            .unwrap_or("");
+        let external = &anchor.text[..anchor.text.len() - anchor_word.len()];
+        let expected = format!("{external}{token}");
+        !anchor_word.is_empty()
+            && !anchor.has_selection()
+            && anchor.cursor_pos as usize == anchor.text.chars().count()
+            && token.starts_with(anchor_word)
+            && previous.text.starts_with(&anchor.text)
+            && current.text != expected
+            && expected.starts_with(&current.text)
+            && Self::kde_firefox_owned_append_caret_echo_settles(previous, current, token)
+    }
+
     pub(crate) fn kde_firefox_erased_preedit_snapshot_matches(
         snapshot: &SurroundingTextSnapshot,
         prefix: &str,

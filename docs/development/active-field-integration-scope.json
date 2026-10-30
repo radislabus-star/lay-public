@@ -1,12 +1,15 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "740fc6ecc4d8fb86a43a92a5ff5190da913ab773",
+  "base": "21f82bb20f4ee932186520a55ecc14e614233963",
   "components": [
     "tooling"
   ],
   "shared_paths": [
+    "src/bin/lay_ibus_engine/kde/firefox/preedit_echo.rs",
+    "src/bin/lay_ibus_engine/window_interaction/observation.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs",
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json"
   ],
-  "decision": "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json"
+  "decision": "docs/architecture/decisions/2026-10-30-firefox-interleaved-prefix-116.json"
 }

@@ -1,4 +1,43 @@
-# Active queue1/10 — 1.0.115 source/build verified,publication pending
+# Active queue2/10 — 1.0.116 verified, commit/CI/publication next
+
+Canonical HEAD21f82bb2 (stable115);current116source+metadata+evidence dirty.
+Stable115 actual installed updater local+KDEPASS;local user independent update
+finished naturally. No local install/restart by this task. SOLO/noHarness.
+
+116 source COMPLETE:3614/3614,34targets,490isolated,439Python10skips,lints/MSRV/
+architecture/all10binariesPASS. Actualsource1327files SHA545f941b2b3cc8fa18b25600fc03ec607d6c0e630015bcc0f76e872fd74efcbe.
+Bootstrap wrapper exit1 retained(obsolete manifest after3newidentities),actual
+zeroledger renewed;independent CI must accept final ledger. Owner/ADR116.
+KDEONLYloaded116:daemon1751547/41acd9b9,IME1751630/1399f098,tray1751764;
+config6e62exact,globalIBus/models/localGNOME unchanged.
+
+FullFirefox220 COMPLETE165PASS15FAIL40BLOCKED. Exactprivateiframe row155PASS;
+newprefixbranch observedin normalplainTab row80PASS. Globaltracerotated,211
+complete individualtraces/9incomplete. 10FAIL→PASS,4PASS→FAILtiming,2PASS→BLOCKED,
+2BLOCKED→PASS. All15remainingFAILrapid-fiveafterSpace. No causal speedupclaim.
+Chromehistorical179/0/41;aggregate344/15/81/440. FreshChrome+FFroundtrip2/2cases
+4flipsPASS,configrestored. Native/source receipts in evidence/release-1.0.116*.
+FinalnativeCROOT/release116-final-native-v1/result.json;fullCROOT/release116-firefox-full-v1.
+
+Next:commit exacttestedsource/docs,verifytree againstclosure,pushboth after
+PRcheck,waitCI+Security,publish116,actualinstalled updaterboth. Then3/10.
+No morebuild/inputduringpublication. WhilecloudCIruns,diagnoseTD162 separately
+without changing frozen116files;private diagnostic preparedCACHE/release162-glued-diagnostic.rs.
+
+Latestuser clarified original independent ENG↔RU fragment contour: already
+implemented/published113,f7e1ccfc,owncompact687981byte model,menu switch default
+OFF,source files layout_fragments.rs and typing_rule_graph/rules/fragment.rs.
+No originalCarambaweights copied;10/10focusednative113;scope/qualitylimits in
+fragment-layout-contour-2026-10-30.md. User now asks to record «тыего»→«ты его»
+for a followingrelease:TD162 tech_debt/162-glued-pronoun-space.md,next after
+current116. Reuse glued_phrase.rs,prove first candidate loss,no deliverychange.
+Userexplicitmemorynote saved in extensions/ad_hoc/notes;no runtimecode forTD162.
+
+SOLO/noHarness/noagents;continue user10realreleasequeue,do not claim10done.
+
+---
+
+# Historical queue1/10 — 1.0.115 source/build verified,publication pending
 
 Stable114 published/readback verified below. Canonical baseline740fc6ec.
 Current115 changes ONLY scripts/test_lanes/discovery.py plus its tests,version

@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3575,
+    "correctness": 3578,
     "ignored": 45,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 499,
+    "process": 502,
     "target": 3168
   },
   "package_fixtures": [
@@ -994,6 +994,27 @@
       "kind": "test",
       "lane": "correctness",
       "name": "context_admission::adapter::tests::word_scope::residuals::active_composition_space_receipt::kde_firefox_closed_word_erasure_echo_requires_final_actual_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::active_composition_space_receipt::kde_firefox_interleaved_prefix_preserves_unicode_anchor_and_rejects_changed_geometry",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::active_composition_space_receipt::kde_firefox_interleaved_prefix_requires_original_whole_field_and_current_owner",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "context_admission::adapter::tests::word_scope::residuals::active_composition_space_receipt::kde_firefox_owned_append_between_delayed_prefix_receipts_requires_final_whole_field",
       "target": "bin:lay-ibus-engine"
     },
     {

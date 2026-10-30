@@ -1,0 +1,231 @@
+{
+  "status": "SOURCE_RELEASE_GATES_PASS_NOT_NATIVE_ACCEPTANCE",
+  "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/result.json",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1327,
+    "sha256": "545f941b2b3cc8fa18b25600fc03ec607d6c0e630015bcc0f76e872fd74efcbe"
+  },
+  "worker_sha256": "51645b5c9cbd7b14f37324a092716ba0e12d29a46f579a9014841be02e70433f",
+  "rust_tests": {
+    "selected": 3614,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 490,
+    "canonical_invocation_exit": 1,
+    "manifest_sha256": "1428955da0dc750f4c99dbd7591b6ab8f9b60990a1079a52a214c64aa7901e0e",
+    "observation_sha256": "f272a988f3b823120f8088ac5364118cec235ef288bfc2f803de15772e8dfdb4"
+  },
+  "steps": [
+    {
+      "name": "format",
+      "returncode": 0,
+      "seconds": 3.591
+    },
+    {
+      "name": "architecture-refresh",
+      "returncode": 0,
+      "seconds": 54.007
+    },
+    {
+      "name": "manifest",
+      "returncode": 0,
+      "seconds": 38.344
+    },
+    {
+      "name": "test-observation-bootstrap",
+      "returncode": 1,
+      "seconds": 508.024
+    },
+    {
+      "name": "lints",
+      "returncode": 0,
+      "seconds": 98.18
+    },
+    {
+      "name": "python",
+      "returncode": 0,
+      "seconds": 27.587
+    },
+    {
+      "name": "public",
+      "returncode": 0,
+      "seconds": 10.666
+    },
+    {
+      "name": "installer",
+      "returncode": 0,
+      "seconds": 0.278
+    },
+    {
+      "name": "node",
+      "returncode": 0,
+      "seconds": 0.119
+    },
+    {
+      "name": "shell-syntax",
+      "returncode": 0,
+      "seconds": 0.004
+    },
+    {
+      "name": "python-syntax",
+      "returncode": 0,
+      "seconds": 0.076
+    },
+    {
+      "name": "gnome-syntax",
+      "returncode": 0,
+      "seconds": 0.189
+    },
+    {
+      "name": "audit50",
+      "returncode": 0,
+      "seconds": 24.719
+    },
+    {
+      "name": "msrv",
+      "returncode": 0,
+      "seconds": 20.468
+    },
+    {
+      "name": "msrv-lexical",
+      "returncode": 0,
+      "seconds": 22.058
+    },
+    {
+      "name": "release",
+      "returncode": 0,
+      "seconds": 218.061
+    },
+    {
+      "name": "artifacts",
+      "returncode": 0,
+      "seconds": 0.326
+    }
+  ],
+  "artifacts": {
+    "lay-daemon": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-daemon",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-daemon",
+      "sha256": "41acd9b9d9cd706acccbb68008ba86b206ff5ff1cdafd9640164827939ff6294",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ngram-corpus": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ngram-corpus",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-ngram-corpus",
+      "sha256": "0671ea86d667ef311d5762343a0c42bec45f9b58aaa76f78884e4d2dfdcb09cd",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-train": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-nanda-wave-train",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-nanda-wave-train",
+      "sha256": "8501f54431f29466d2d53850613655e9d82101935f56d3d5894d7c33342937cc",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-test-input": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-test-input",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-test-input",
+      "sha256": "4e2a0cd8f786070a7cb5716662f817ffadd86e7c32f0126927296adc79f2e3df",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay",
+      "sha256": "a1b09d49840d0979f78bed190380435e176ce994bfd601683995b13bb13b7743",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-nanda-wave-eval": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-nanda-wave-eval",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-nanda-wave-eval",
+      "sha256": "5ddea0b667b871dc15fb3d08bd8a803e02aa95345a5020d066c9534bff2f39e8",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-memory-report": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-memory-report",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-memory-report",
+      "sha256": "367620c935e1797b823b6c144c094f6d7693a86217c65c805e0c5f0529f898e6",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-restore": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-l11-restore",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-l11-restore",
+      "sha256": "97a65f69bb15edacd36f1f0f4200631eb06d8c0bf11f034c21ab93aff40e6a4b",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-l11-serve": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-l11-serve",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-l11-serve",
+      "sha256": "85df909edcef63846afb15a55d77a99dcc0c3dc712d14d9c379e09e9a15277b8",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    },
+    "lay-ibus-engine": {
+      "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+      "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release116-full-v1/binaries/lay-ibus-engine",
+      "sha256": "1399f098af7b094e5353e2d9677d217061c99b249f2aceaf11e6380c01f3989d",
+      "profile": {
+        "opt_level": "3",
+        "debuginfo": 0,
+        "debug_assertions": false,
+        "overflow_checks": false,
+        "test": false
+      }
+    }
+  },
+  "runtime_processes_unchanged_during_build": true,
+  "bootstrap_note": "Canonical invocation exit1 was obsolete manifest binding after 3 new tests. All3614 actual tests passed; actual observation and zero ledger renewed. Independent CI must accept final ledger. Raw exit retained.",
+  "native_acceptance": "pending"
+}

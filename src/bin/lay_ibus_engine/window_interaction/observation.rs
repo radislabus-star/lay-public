@@ -3331,6 +3331,22 @@ impl LayIbusEngine {
             self.context_reset_rereceipt = None;
             return;
         }
+        // Only identified Firefox prefix progress retains a whole-field anchor
+        // while unconfirmed. A later exact owned append can carry that inert
+        // predecessor; generic prefix echoes spent it at observation ingress.
+        let inert_firefox_prefix_anchor = !pending.confirmed
+            && self.config.active_layout_backend() == lay::desktop::LayoutBackend::Kde
+            && self.client_context.exact_surrounding_refresh_available
+            && pending.owned_append_actual_before.is_some()
+            && pending
+                .predecessor_token
+                .word_scope()
+                .lineage()
+                .completeness
+                == WordCompleteness::KnownStart
+            && (pending.armed_revision == self.client_context.surrounding_observation_revision
+                || pending.strict_prefix_echo_revision
+                    == Some(self.client_context.surrounding_observation_revision));
         self.context_reset_rereceipt = Some(PendingContextResetRereceipt {
             completed_replay: None,
             confirmed_native_replay_reset_ack: None,
@@ -3350,10 +3366,11 @@ impl LayIbusEngine {
                 // Carry only the same chain's inert whole pre-effect field;
                 // the guards above still require each exact owned character.
                 .or_else(|| {
-                    (pending.confirmed
+                    ((pending.confirmed
                         && pending.awaiting_owned_append_receipt
                         && pending.armed_revision
                             == self.client_context.surrounding_observation_revision)
+                        || inert_firefox_prefix_anchor)
                         .then_some(pending.owned_append_actual_before)
                         .flatten()
                 })
@@ -4350,6 +4367,53 @@ impl LayIbusEngine {
                 .shared
                 .lock()
                 .is_ok_and(|shared| shared.active_path.as_deref() == Some(self.path.as_str()));
+        if firefox_caret_client
+            && (previous_revision == pending.armed_revision
+                || (pending.strict_prefix_echo_revision == Some(previous_revision)
+                    && pending.armed_revision.checked_add(1) == Some(previous_revision)))
+            && previous_revision.checked_add(1)
+                == Some(self.client_context.surrounding_observation_revision)
+            && pending
+                .predecessor_token
+                .word_scope()
+                .lineage()
+                .completeness
+                == WordCompleteness::KnownStart
+            && self.managed_strict_prefix_echo_identity_is_current(&pending)
+            && pending
+                .owned_append_actual_before
+                .as_ref()
+                .is_some_and(|anchor| {
+                    self.client_context
+                        .surrounding_text_snapshot
+                        .as_ref()
+                        .is_some_and(|current| {
+                            Self::kde_firefox_owned_prefix_progress(
+                                anchor,
+                                previous_snapshot.unwrap_or(anchor),
+                                current,
+                                &pending.token_text,
+                            )
+                        })
+                })
+        {
+            if let Some(current) = self.context_reset_rereceipt.as_mut() {
+                current.confirmed = false;
+                current.awaiting_owned_append_receipt = true;
+                current.armed_revision = previous_revision;
+                current.strict_prefix_echo_revision =
+                    Some(self.client_context.surrounding_observation_revision);
+                // Keep the newest whole actual field after checking it against
+                // the preceding anchor. Replaying that same partial is not new
+                // progress after another owned key invalidates the live view.
+                current.owned_append_actual_before =
+                    self.client_context.surrounding_text_snapshot.clone();
+            }
+            trace::record(
+                r#"{"kind":"ibus_context_reset_rereceipt","stage":"retained_unconfirmed","reason":"kde_firefox_interleaved_owned_prefix_progress"}"#,
+            );
+            return;
+        }
         if firefox_caret_client
             && pending.confirmed
             && pending.awaiting_owned_append_receipt
@@ -5564,6 +5628,16 @@ impl LayIbusEngine {
                                         snapshot,
                                         &pending.token_text,
                                     ))
+                                || pending.owned_append_actual_before.as_ref().is_some_and(
+                                    |anchor| {
+                                        Self::kde_firefox_owned_prefix_progress(
+                                            anchor,
+                                            previous,
+                                            snapshot,
+                                            &pending.token_text,
+                                        )
+                                    },
+                                )
                         })
                 })
     }

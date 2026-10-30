@@ -1,5 +1,15 @@
 # Lay 1.0.115 — preserve compiler failure diagnostics
 
+Published2026-10-30T17:18:04Z,immutable source21f82bb20f4ee932186520a55ecc14e614233963.
+Independent CI41093004986 and Security41093005209 bothSUCCESS. DedicatedKDE
+actual installed updater sees114→115. Local actual updater returnedBUSY75
+because an independent update already owns its lock;no interference. Its
+initial BUSY result is retained. After the existing update finished naturally,
+actual local--check verified installed114→stable115available(exit0). Both
+installed updater discovery checks nowPASS;no update was interrupted. Receipt
+evidence/release-1.0.115-publication.json. Queue2/10published.
+Publication did not build,install or restart local runtime.
+
 Preflight2026-10-30; baseline740fc6ec (completed114 publication).
 Only tooling implementation scripts/test_lanes/discovery.py and its existing
 tests/test_test_lanes.py. No runtime source, delivery route or configuration
