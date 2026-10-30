@@ -1,6 +1,7 @@
 # Fragment layout release — 2026-10-30
 
-Active task: publish optional fragment-based RU/EN layout method as1.0.113.
+Task COMPLETE: optional fragment-based RU/EN layout method published as1.0.113.
+Publication verified2026-10-30T03:13:31Z. See release-1.0.113-publication.md.
 Source/native proof completed; see fragment-layout-contour-2026-10-30.md and
 its evidence JSON. Work solo, without Harness or subagents. Do not revive the
 old Firefox hint task or change frozen field routes during this publication.
@@ -12,8 +13,11 @@ Dedicated KDE has1.0.113, verified daemon9e06bae7/IME30ceff92. Native8/8PASS
 normal Chrome/Firefox text inputs). Config restored SHA6e62eab3; new flag OFF.
 Global IBus and local GNOME were not restarted. Local GNOME is not updated.
 
-Next: commit/push source, await public CI+Security, publish immutable v1.0.113,
-read back the release and both actual installed updater entrypoints, play sound.
+Public source/tag f7e1ccfc,CI/Security SUCCESS,actual installed updater offers
+local1.0.112 ->1.0.113 and confirms dedicated KDE1.0.113 is current stable.
+Two additional automatic RU→EN native cases passed; focused native total10/10.
+No more code/build/install work remains for this release. Resume another task
+only from fresh user scope; preserve the documented prior Firefox issue.
 Historical full matrix unchanged: Firefox159/24/37,Chrome179/0/41,total338/24/78.
 No new full native matrix. The private no-display client failed before first
 case with both flag values; its setup failure is not a product PASS.

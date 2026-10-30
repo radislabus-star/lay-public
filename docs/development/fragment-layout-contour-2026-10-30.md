@@ -1,6 +1,10 @@
 # Optional fragment layout contour — 2026-10-30
 
-Status: source and scoped native verification complete; stable publication requires green public CI/Security.
+Status: published as stable v1.0.113; public CI/Security and installed updater discovery verified.
+
+Final publication and two additional automatic reverse native cases are recorded
+in [release-1.0.113-publication.md](release-1.0.113-publication.md). Total focused
+native result is10/10PASS; the original8-case source evidence remains immutable.
 Source baseline: d4dae7a027a7a9a67d6a1238f3881288dddb75a3.
 Installed baseline: accepted 1.0.111, stable source 1.0.112.
 Scope: correction-only plus requested GNOME/KDE configuration/menu controls.

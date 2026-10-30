@@ -1,3 +1,45 @@
+# Current handoff — 1.0.113 COMPLETE, 2026-10-30
+
+The requested isolated fragment-layout contour is implemented, source/native
+verified and released. User required completion through release; no Harness or
+subagents were used. Do not resume the old Firefox work automatically.
+
+Authoritative source checkout:lay-dependency-updates-20261027,
+branch codex/browser-matrix-repair-20261027. Published main/tag v1.0.113 point to
+f7e1ccfc855df4c33e2e82d681ba2573e8337059. Any later commit in this branch for
+this completion is documentation only. origin/main was not changed.
+
+Read release-1.0.113-publication.md,fragment-layout-contour-2026-10-30.md and
+its evidence JSON. CI40993117623 and Security40993117500 are SUCCESS; complete
+canonical3611/3611,all10 installed release binaries,strict lint/MSRV PASS.
+10/10 focused native Chrome/Firefox KDE checks including automatic both
+language directions,first/second word,physical punctuation-key letters and
+manual roundtrip after Space. Real menu:Lay enabled1,new switch0 after config
+restoration. Exact config SHA6e62eab3c278c733fedb47e45ef6306105a3700222cf9f7a4e5bff4bd92264d1.
+KDE installed1.0.113:daemon9e06bae7cce850f507117d5fd0ec99164e8ef48e1d8736f463cf537fe24bd7d8,
+IME30ceff920904527a5176f415895a755375a2aa54d33e0de632b4afce9447bed9.
+PID values from earlier entries are historical; query current owner.
+Local GNOME installed1.0.112; actual menu updater --check offers1.0.113.
+No local installation/restart performed; user receives updates through menu.
+
+New flag fragment_layout_autoflip defaults OFF,uses existing config publication
+and menu switches. New pure scorer/adapter only; no IME,decoder,focus,ownership,
+keyboard,manual Double Shift or output source changes. Own compact model687981
+bytes; not original Caramba weights. Exact reproduction and40000 interpretation
+parity verified. Quality tradeoffs and13 residual clean EN ambiguities recorded;
+no perfect-accuracy or Wave-promotion claim. Private no-display client failed
+before first scenario with flag ON/OFF; not counted as functional PASS.
+
+Historical FULL native matrix unchanged:Firefox159PASS/24FAIL/37BLOCKED/220;
+Chrome179/0/41/220;total338/24/78/440. Focused10-case result never replaces it.
+Prior Firefox initial KWin query80ms hint refusal remains a separate,unassigned
+issue; no timeout/route fix was made in this release.
+
+---
+
+The following entries are historical and superseded by the current handoff
+where source/version/runtime/task status differs.
+
 # 2026-10-30T00:02:46Z — COMPLETE: accepted112 published and main CI green
 
 Stable release v1.0.112 is published at immutable tag1ea1d44e. Public main
