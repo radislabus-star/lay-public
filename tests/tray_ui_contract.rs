@@ -4,6 +4,22 @@ const ROOT: &str = env!("CARGO_MANIFEST_DIR");
 const EXTENSION: &str = "extension/lay@radislabus-star.github.io";
 
 #[test]
+fn fragment_layout_toggle_uses_existing_config_and_restart_owners_in_both_desktops() {
+    let key = "fragment_layout_autoflip";
+    let gnome = read_extension("lay-impl.js");
+    let kde = read("scripts/lay-kde-tray.py");
+    assert!(gnome.contains(
+        "_quickSwitchItem('Автопереворот по фрагментам', 'fragment_layout_autoflip', true)"
+    ));
+    assert!(kde.contains(
+        "_add_switch(\"Автопереворот по фрагментам\", \"fragment_layout_autoflip\", cfg)"
+    ));
+    assert!(read_extension("tray_support.js").contains("fragment_layout_autoflip: false"));
+    assert!(read_extension("settings_view.js").contains(key));
+    assert!(kde.contains("\"fragment_layout_autoflip\": False"));
+}
+
+#[test]
 fn gnome_tray_is_a_compact_daily_surface() {
     let tray = read_extension("lay-impl.js");
     for label in [

@@ -129,6 +129,7 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this._inputModeMenu());
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._quickSwitchItem('Помощь при наборе', 'typing_assist', true));
+        this.menu.addMenuItem(this._quickSwitchItem('Автопереворот по фрагментам', 'fragment_layout_autoflip', true));
         this.menu.addMenuItem(this._quickSwitchItem('Автозамена', 'auto_replace', true));
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._preferencesItem());

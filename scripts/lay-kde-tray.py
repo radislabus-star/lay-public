@@ -31,6 +31,7 @@ INSTALLED_SETTINGS_JS = (
 DEFAULTS: dict[str, Any] = {
     "text_backend": "uinput",
     "typing_assist": False,
+    "fragment_layout_autoflip": False,
     "auto_replace": False,
     "nanda_precognition": False,
 }
@@ -459,6 +460,7 @@ def main() -> int:
             self.menu.addSeparator()
             self._add_switch("Помощь при наборе", "typing_assist", cfg)
             self._add_switch("Автозамена", "auto_replace", cfg)
+            self._add_switch("Автопереворот по фрагментам", "fragment_layout_autoflip", cfg)
             self.menu.addSeparator()
 
             settings = QAction("Настройки", self.menu)

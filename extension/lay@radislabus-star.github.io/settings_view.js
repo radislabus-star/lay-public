@@ -172,6 +172,12 @@ export class LaySettingsView {
             {restart: true}
         ));
         group.add(this._switchRow(
+            'Автопереворот по фрагментам',
+            'Отдельный компактный метод выбора русской или английской раскладки слова',
+            'fragment_layout_autoflip',
+            {restart: true}
+        ));
+        group.add(this._switchRow(
             'Запоминать ручные правки',
             'Использовать принятые и отклонённые варианты для локального обучения',
             'learning_log'

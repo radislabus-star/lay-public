@@ -1,0 +1,43 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-30-fragment-layout-contour",
+  "status": "source_and_native_verified",
+  "owner": "docs/development/fragment-layout-contour-2026-10-30.md",
+  "baseline": "d4dae7a027a7a9a67d6a1238f3881288dddb75a3",
+  "protected_paths": [
+    "src/lib.rs",
+    "src/layout_fragments.rs",
+    "src/layout_fragments/model.rs",
+    "src/layout_fragments/tests.rs",
+    "src/typing_rule_graph/rules.rs",
+    "src/typing_rule_graph/rules/fragment.rs",
+    "src/typing_pipeline/candidates.rs",
+    "src/config.rs",
+    "src/config/types.rs",
+    "src/config/defaults.rs",
+    "src/config/runtime_flags.rs",
+    "scripts/lay-kde-tray.py",
+    "scripts/train-layout-fragments.py",
+    "examples/fragment_layout_proof.rs",
+    "data/layout_fragments/model.bin",
+    "data/layout_fragments/model.json",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "decision": "OFF-by-default fragment scoring provider dispatched only at existing automatic layout rule evaluation. Exact physical projection, existing source IDs and candidate/admission/DecisionCore/output authority. Independent compact model trained from pinned existing public lexical data; no claim of proprietary weights or identical Caramba behavior. Existing config publication and GNOME/KDE menu controls only.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C04",
+    "C05",
+    "C06",
+    "C07",
+    "C08",
+    "C10"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "verification": "docs/development/evidence/fragment-layout-1.0.113-proof.json",
+  "quality_scope": "optional alternative, not Wave promotion; exact/restoration and clean-preservation tradeoffs recorded; no authority or delivery changes"
+}

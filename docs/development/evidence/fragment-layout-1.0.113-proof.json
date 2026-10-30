@@ -1,0 +1,168 @@
+{
+  "schema": "lay.fragment-layout-release-proof.v1",
+  "version": "1.0.113",
+  "source_closure": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1327,
+    "sha256": "01509c18c977a0b7890eae437514ea8a856e5648635d099a2605266af731ee26"
+  },
+  "model_bytes": 687981,
+  "cold_us": 513,
+  "warm_median_us": 3.507,
+  "warm_p95_us": 8.556,
+  "runtime_trainer_comparisons": 40000,
+  "common_core": [
+    {
+      "mode": "legacy",
+      "language": "ru",
+      "total": 10000,
+      "clean_preserved": 10000,
+      "restored": 390,
+      "wrong": 97,
+      "abstain": 9513
+    },
+    {
+      "mode": "legacy",
+      "language": "en",
+      "total": 10000,
+      "clean_preserved": 9979,
+      "restored": 2964,
+      "wrong": 105,
+      "abstain": 6931
+    },
+    {
+      "mode": "fragments",
+      "language": "ru",
+      "total": 10000,
+      "clean_preserved": 10000,
+      "restored": 693,
+      "wrong": 0,
+      "abstain": 9307
+    },
+    {
+      "mode": "fragments",
+      "language": "en",
+      "total": 10000,
+      "clean_preserved": 9987,
+      "restored": 2961,
+      "wrong": 0,
+      "abstain": 7039
+    }
+  ],
+  "source_tests": {
+    "selected": 3611,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 487,
+    "manifest_sha256": "28ba8d9e88893cd2d6daac0284c753019c882c3f4425ab347490fa3e46acfeea",
+    "observation_sha256": "4ed98ca7c9993b48812cc0fffc24ffa72d6ddfaa146aa2bbbf99fa6b4eecc435",
+    "canonical_full_gate_pending_public_CI": true
+  },
+  "release_binary_count": 10,
+  "release_binary_sha256": {
+    "lay-l11-restore": "d504e44e09baf3fdb1daa7dd77b560afcb71aecf557a888054b89ed661cdfd75",
+    "lay-nanda-wave-train": "0b9bdc0d9493bb522594deff51566d660de6b76105144cd9e261825c4cee26ff",
+    "lay-ibus-engine": "30ceff920904527a5176f415895a755375a2aa54d33e0de632b4afce9447bed9",
+    "lay": "b6c737b8cc11b7f956edfe0208084ba7bba34ac094090b83ab5f430c3aadeaa4",
+    "lay-l11-serve": "f28654643e791e3d6177a9a3804b760d04cd89d97dee777c443d2687abbb16ff",
+    "lay-ngram-corpus": "5f15b950f5b8b8218c0433e844af51ee45cb25045d836af104983fcb3c76a763",
+    "lay-nanda-wave-eval": "37325959290b32801969603e8f0f1d1db6cb6bf391fd96f37b33f4c25cd9d9f5",
+    "lay-memory-report": "0fe325086461892306aba2183fb0c9cafccbc07c86d529545b93b860b104099f",
+    "lay-test-input": "ecbd5231895e0e3f5077ee6b7c22babdc74811dae0cc8e2937dc37e3b6addca4",
+    "lay-daemon": "9e06bae7cce850f507117d5fd0ec99164e8ef48e1d8736f463cf537fe24bd7d8"
+  },
+  "native_scope": "8 focused native RFB cases; text input in normal Chrome/Firefox windows; not a new full matrix",
+  "native_rows": [
+    {
+      "browser": "chrome",
+      "name": "space-en-ru",
+      "status": "PASS",
+      "latencies_ms": [
+        73.00311583094299
+      ]
+    },
+    {
+      "browser": "chrome",
+      "name": "fragment-second-word",
+      "status": "PASS",
+      "latencies_ms": [
+        149.04266991652548
+      ]
+    },
+    {
+      "browser": "chrome",
+      "name": "fragment-physical-word",
+      "status": "PASS",
+      "latencies_ms": [
+        39.70844205468893
+      ]
+    },
+    {
+      "browser": "chrome",
+      "name": "roundtrip",
+      "status": "PASS",
+      "latencies_ms": [
+        57.808578945696354,
+        58.49029705859721
+      ]
+    },
+    {
+      "browser": "firefox",
+      "name": "space-en-ru",
+      "status": "PASS",
+      "latencies_ms": [
+        17.46982499025762
+      ]
+    },
+    {
+      "browser": "firefox",
+      "name": "fragment-second-word",
+      "status": "PASS",
+      "latencies_ms": [
+        19.629414193332195
+      ]
+    },
+    {
+      "browser": "firefox",
+      "name": "fragment-physical-word",
+      "status": "PASS",
+      "latencies_ms": [
+        19.575185840949416
+      ]
+    },
+    {
+      "browser": "firefox",
+      "name": "roundtrip",
+      "status": "PASS",
+      "latencies_ms": [
+        190.1443030219525,
+        197.73956201970577
+      ]
+    }
+  ],
+  "native_config_restored_exactly": true,
+  "global_ibus_restarted": false,
+  "local_gnome_installed": false,
+  "delivery_routes_changed": false,
+  "private_client_fixture": {
+    "raw_status": "FAILED",
+    "cases_executed": 0,
+    "same_setup_failure_with_flag_off": true,
+    "verdict": "BLOCKED_AT_CONTEXT_SETUP_NOT_COUNTED_AS_PASS"
+  },
+  "historical_full_native_matrix": {
+    "firefox": {
+      "pass": 159,
+      "fail": 24,
+      "blocked": 37,
+      "total": 220
+    },
+    "chrome": {
+      "pass": 179,
+      "fail": 0,
+      "blocked": 41,
+      "total": 220
+    }
+  },
+  "promotion_scope": "opt-in alternative; not a Wave-package quality promotion; stable release requires public CI/Security"
+}

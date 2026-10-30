@@ -26,6 +26,7 @@ pub mod input_gate;
 pub mod keyboard;
 pub(crate) mod language_action;
 pub(crate) mod layout_autoswitch;
+pub mod layout_fragments;
 pub mod lexical_authority_frame;
 mod lexical_surface_atoms;
 pub mod lexicon;

@@ -1,0 +1,46 @@
+{
+  "schema": "lay.layout-fragments.v1",
+  "method": "overlapping byte fragments, signed sums, flagged selector",
+  "training_source": "data/lexical_grokking/lay_l11_ru462k_en300k_shadow_v1.txt",
+  "training_source_sha256": "449386fa3b9453423792329ecab42946d490bbfe5f863ab194c2d98fb3bd2584",
+  "source_provenance": "existing Lay RU lexical surfaces + wordfreq EN lexical surfaces; independent weights",
+  "keyboard_source_sha256": "2b5d9b03ead01014250c743ae3b876b04841dd8fbebface25d66f16892e1782c",
+  "trainer_sha256": "bf2e91fe7f848bb331539974c8eea403d736bb2dbe35ba9529de703960e02e78",
+  "partition": "SHA256(lay-layout-fragments-v1 NUL + lowercase surface); first byte <26 heldout",
+  "training_limit_per_language": 120000,
+  "training_counts": [
+    120000,
+    120000
+  ],
+  "proof_limit_per_language": 10000,
+  "features_per_language_budget": 20000,
+  "feature_count": 40000,
+  "nodes": 52918,
+  "edges": 52917,
+  "records": 7,
+  "max_key_bytes": 11,
+  "model_bytes": 687981,
+  "model_sha256": "28dc04cccc131c0b78167758982402ae519509d98bc9f0abcff22782286cdca9",
+  "heldout_proof_sha256": "89d13ce432d06b479fefb48d6f8b39b49ec2c75ca9d51dca76fd0823c9fb1c26",
+  "quality": {
+    "ru": {
+      "total": 10000,
+      "correct": 9968,
+      "wrong": 26,
+      "abstain": 6,
+      "correct_percent": 99.68,
+      "clean_preservation_percent": 99.74
+    },
+    "en": {
+      "total": 10000,
+      "correct": 9800,
+      "wrong": 160,
+      "abstain": 40,
+      "correct_percent": 98.0,
+      "clean_preservation_percent": 98.4
+    }
+  },
+  "scope": "surface holdout, not unseen lemmas or physical-client acceptance",
+  "runtime_authority": false,
+  "default_enabled": false
+}

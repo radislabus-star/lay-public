@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3559,
+    "correctness": 3575,
     "ignored": 45,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 499,
-    "target": 3152
+    "target": 3168
   },
   "package_fixtures": [
     {
@@ -187,6 +187,9 @@
     },
     {
       "target": "bin:lay_output_transaction_microproof"
+    },
+    {
+      "target": "example:fragment_layout_proof"
     },
     {
       "target": "lib:lay"
@@ -6870,6 +6873,13 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "fragment_layout_toggle_uses_existing_config_and_restart_owners_in_both_desktops",
+      "target": "test:tray_ui_contract"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "frameless_layout_projection_does_not_gain_autocorrect_authority",
       "target": "test:input_gate_space_contract"
     },
@@ -8650,6 +8660,76 @@
       "lane": "correctness",
       "name": "layout_controller::tests::verify_layout_retry_uses_all_attempts_on_failure",
       "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_config_is_optional_and_old_json_keeps_it_disabled",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_count_overlapping_occurrences_even_with_shared_records",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_decline_mixed_scripts_urls_and_unbounded_inputs",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_distinguish_open_closed_and_known_prefix_boundaries",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_embedded_artifact_matches_manifest_and_budget",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_filter_case_and_language_pair_without_double_counting",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_project_exact_keys_both_ways_and_preserve_case",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_reject_truncation_cycles_and_out_of_range_records",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_selector_keeps_reported_precedence_and_tie_behavior",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::tests::fragments_special_zero_flag_precedes_known_and_signed_sum",
+      "target": "lib:lay"
     },
     {
       "isolation": "target",
@@ -22957,6 +23037,41 @@
       "kind": "test",
       "lane": "correctness",
       "name": "typing_replacements::tests::visual_b_keeps_latin_labels_and_technical_context",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_obeys_master_switch_and_protected_context",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_off_preserves_legacy_dispatch_and_other_rules",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_preserves_previous_words_case_and_punctuation",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_projects_physical_edge_letters_before_stripping_punctuation",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_reuses_short_english_target_context_requirement",
       "target": "lib:lay"
     },
     {

@@ -72,7 +72,11 @@ pub(super) fn evaluate_rule_candidates(
 
     let fast_layout_started = Instant::now();
     if fast_en_to_ru_allowed(pipeline) {
-        if let Some(replacement) = rules::apply_fast_layout_en_to_ru(&ctx) {
+        if let Some(replacement) = rules::apply_automatic_layout_rule(
+            &ctx,
+            ids::FAST_LAYOUT_EN_TO_RU,
+            rules::apply_fast_layout_en_to_ru,
+        ) {
             let rule = TypingAssistRuleConfig {
                 id: ids::FAST_LAYOUT_EN_TO_RU.to_string(),
                 enabled: true,
@@ -118,7 +122,9 @@ pub(super) fn evaluate_rule_candidates(
                 explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_UNKNOWN_RULE));
                 return;
             };
-            let Some(replacement) = (definition.apply)(&ctx) else {
+            let Some(replacement) =
+                rules::apply_automatic_layout_rule(&ctx, &rule.id, definition.apply)
+            else {
                 explanation.record(evaluation.reject(TypingRuleEvaluation::REJECT_NO_CANDIDATE));
                 return;
             };

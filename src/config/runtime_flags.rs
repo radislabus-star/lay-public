@@ -3,6 +3,7 @@ use std::sync::atomic::{AtomicBool, AtomicU8, Ordering};
 
 const DEBUG_ACTION_LOG: u8 = 1 << 0;
 const USAGE_LEARNING: u8 = 1 << 1;
+const FRAGMENT_LAYOUT: u8 = 1 << 2;
 
 static FLAGS: AtomicU8 = AtomicU8::new(0);
 static INITIALIZED: AtomicBool = AtomicBool::new(false);
@@ -11,6 +12,9 @@ pub fn publish_runtime_config(config: &LayConfig) {
     let mut flags = 0u8;
     if config.debug_action_log {
         flags |= DEBUG_ACTION_LOG;
+    }
+    if config.fragment_layout_autoflip {
+        flags |= FRAGMENT_LAYOUT;
     }
     if config.learning_log || config.nanda_precognition || config.nanda_autocorrect {
         flags |= USAGE_LEARNING;
@@ -32,4 +36,8 @@ pub fn runtime_debug_action_log() -> bool {
 
 pub fn runtime_usage_learning_enabled() -> bool {
     current() & USAGE_LEARNING != 0
+}
+
+pub fn runtime_fragment_layout_enabled() -> bool {
+    current() & FRAGMENT_LAYOUT != 0
 }

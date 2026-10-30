@@ -1,8 +1,8 @@
 {
   "failure_count": 0,
   "failures": [],
-  "manifest_sha256": "2ded339380fe2075664754e7fbf07d29043144aacb230205226d97fc2f6f81b0",
-  "observation_path": "tech_debt/evidence/release-1.0.112-ci-target-observation.json",
-  "observation_sha256": "917ba6f426c2e3dd436f306079939850cce228ba68f41bb8c038362f2161bbaf",
+  "manifest_sha256": "28ba8d9e88893cd2d6daac0284c753019c882c3f4425ab347490fa3e46acfeea",
+  "observation_path": "docs/development/evidence/fragment-layout-1.0.113-tests.json",
+  "observation_sha256": "4ed98ca7c9993b48812cc0fffc24ffa72d6ddfaa146aa2bbbf99fa6b4eecc435",
   "schema": "lay.test-known-failures.v1"
 }

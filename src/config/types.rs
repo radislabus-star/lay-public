@@ -63,6 +63,8 @@ pub struct LayConfig {
     pub correction_safety: String,
     pub enter_autocorrect: bool,
     pub auto_switch_layout: bool,
+    /// Use the optional compact fragment scorer for automatic word layout candidates.
+    pub fragment_layout_autoflip: bool,
     pub nanda_l2_weight_percent: u8,
     pub nanda_l3_weight_percent: u8,
     pub llm_backend: String,

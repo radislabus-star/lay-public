@@ -42,6 +42,7 @@ impl Default for LayConfig {
             correction_safety: "normal".into(),
             enter_autocorrect: false,
             auto_switch_layout: true,
+            fragment_layout_autoflip: false,
             nanda_l2_weight_percent: 20,
             nanda_l3_weight_percent: 8,
             llm_backend: "off".into(),

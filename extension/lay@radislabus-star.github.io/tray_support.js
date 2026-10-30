@@ -5,8 +5,8 @@ export const CONFIG_PATH = GLib.getenv('LAY_CONFIG_PATH')
     || GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.112';
-export const APP_RELEASE_DATE = '2026-10-28';
+export const APP_VERSION = '1.0.113';
+export const APP_RELEASE_DATE = '2026-10-30';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
@@ -73,6 +73,7 @@ const DEFAULTS = {
     typing_assist: false,
     correction_safety: 'normal',
     auto_switch_layout: true,
+    fragment_layout_autoflip: false,
     debug_action_log: false,
     learning_log: false,
     nanda_trace: false,
@@ -125,6 +126,7 @@ export function normalizeConfig(input) {
         'auto_replace',
         'typing_assist',
         'auto_switch_layout',
+        'fragment_layout_autoflip',
         'debug_action_log',
         'learning_log',
         'nanda_trace',

@@ -20,7 +20,8 @@ pub use pipeline::{
     typing_assist_pipeline_for_policy,
 };
 pub use runtime_flags::{
-    publish_runtime_config, runtime_debug_action_log, runtime_usage_learning_enabled,
+    publish_runtime_config, runtime_debug_action_log, runtime_fragment_layout_enabled,
+    runtime_usage_learning_enabled,
 };
 pub use types::{CorrectionEngine, CorrectionSafety, LayConfig, TypingAssistRuleConfig};
 

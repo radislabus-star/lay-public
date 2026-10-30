@@ -1,0 +1,18 @@
+{
+  "canonical_contract_error": "prior known-failure manifest binding; rebound to this actual complete observation",
+  "canonical_invocation_exit": 1,
+  "failures": [],
+  "manifest_sha256": "28ba8d9e88893cd2d6daac0284c753019c882c3f4425ab347490fa3e46acfeea",
+  "process_isolated_selected": 487,
+  "recorded_at_utc": "2026-10-30T01:48:01Z",
+  "runtime_authority_changed": false,
+  "schema": "lay.test-failure-observation.v1",
+  "scope": "actual complete canonical correctness/package execution; every bulk and isolated test identity verified; metadata mismatch occurred only after all targets passed",
+  "selected": 3611,
+  "source_closure": {
+    "files": 1327,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "01509c18c977a0b7890eae437514ea8a856e5648635d099a2605266af731ee26"
+  },
+  "targets": 34
+}

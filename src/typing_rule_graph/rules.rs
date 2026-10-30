@@ -11,8 +11,11 @@ use crate::typing_replacements::replace_visual_b_words;
 
 use super::types::TypingRuleContext;
 
+#[path = "rules/fragment.rs"]
+mod fragment;
 #[path = "rules/helpers.rs"]
 mod helpers;
+pub(crate) use fragment::apply_automatic_layout_rule;
 use helpers::TextRule;
 use helpers::{
     apply_core_then_word_rule, apply_last_physical_layout_token_rule,
