@@ -26,7 +26,9 @@
     "src/bin/lay_ibus_engine/window_interaction/observation.rs",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs",
     "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json"
+    "scripts/test-lanes/known_failures.json",
+    "tech_debt/162-glued-pronoun-space.md",
+    "tech_debt/163-kde-pacing-debug-config-publication.md"
   ],
   "frozen_existing_integration_sha256": {
     "scripts/compat/README.md": "6d1b3b149238ec7189b870ac0ae52ebaa294085b2abbeb90fda0833ffc26b1be",
@@ -69,7 +71,8 @@
     "green": "CROOT/release116-prefix-closure-v2/result.json",
     "native": "docs/development/evidence/release-1.0.116-native.json",
     "selected_module_tests": 37,
-    "source": "docs/development/evidence/release-1.0.116-source-gates.json"
+    "source": "docs/development/evidence/release-1.0.116-source-gates.json",
+    "ci_first_attempt": "41102635991 failed before compilation: two task Markdown notes omitted from explicit scope; guard unchanged. Exact paths declared in metadata-only follow-up."
   },
   "not_tested": [
     "No complete global trace: log rotated;211 of220 individual traces complete",

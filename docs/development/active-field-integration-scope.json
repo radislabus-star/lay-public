@@ -9,7 +9,9 @@
     "src/bin/lay_ibus_engine/window_interaction/observation.rs",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs",
     "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json"
+    "scripts/test-lanes/known_failures.json",
+    "tech_debt/162-glued-pronoun-space.md",
+    "tech_debt/163-kde-pacing-debug-config-publication.md"
   ],
   "decision": "docs/architecture/decisions/2026-10-30-firefox-interleaved-prefix-116.json"
 }
