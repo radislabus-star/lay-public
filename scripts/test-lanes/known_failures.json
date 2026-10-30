@@ -2,7 +2,7 @@
   "failure_count": 0,
   "failures": [],
   "manifest_sha256": "28ba8d9e88893cd2d6daac0284c753019c882c3f4425ab347490fa3e46acfeea",
-  "observation_path": "docs/development/evidence/release-1.0.114-tests.json",
-  "observation_sha256": "ab08514a2704db7ca0d30509a0f35fb7c86dab0be33abb1643bb10665d01d7b9",
+  "observation_path": "docs/development/evidence/release-1.0.115-tests.json",
+  "observation_sha256": "310ba5a96b5f87f8de99cfc1dfea15d946b5cd0883c997df822e055f0d2691e1",
   "schema": "lay.test-known-failures.v1"
 }

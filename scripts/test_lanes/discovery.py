@@ -223,6 +223,47 @@ def target_id(target: dict[str, Any]) -> str:
     return f"{kinds[0]}:{target['name']}"
 
 
+def cargo_failure_message(path: pathlib.Path, summary: str) -> str:
+    """Retain compiler errors before a failed discovery's temporary log is removed."""
+    diagnostics = []
+    try:
+        with path.open(encoding="utf-8", errors="replace") as stream:
+            for line in stream:
+                try:
+                    message = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                if (not isinstance(message, dict)
+                        or message.get("reason") != "compiler-message"):
+                    continue
+                diagnostic = message.get("message")
+                if (not isinstance(diagnostic, dict)
+                        or diagnostic.get("level") not in ("error", "failure-note")):
+                    continue
+                rendered = diagnostic.get("rendered")
+                if isinstance(rendered, str) and rendered.strip():
+                    diagnostics.append(rendered.rstrip())
+                    continue
+                text = diagnostic.get("message")
+                if not isinstance(text, str) or not text.strip():
+                    continue
+                code = diagnostic.get("code")
+                code = code.get("code") if isinstance(code, dict) else None
+                label = f"error[{code}]" if isinstance(code, str) else diagnostic["level"]
+                text = f"{label}: {text}"
+                spans = diagnostic.get("spans")
+                for span in spans if isinstance(spans, list) else []:
+                    if isinstance(span, dict) and span.get("is_primary"):
+                        text += (f"\n --> {span.get('file_name', '?')}:"
+                                 f"{span.get('line_start', '?')}:"
+                                 f"{span.get('column_start', '?')}")
+                diagnostics.append(text)
+    except OSError:
+        # Failure reporting must not replace the original Cargo exit failure.
+        return summary
+    return "\n".join([summary, *diagnostics])
+
+
 def parse_cargo_artifacts(path: pathlib.Path) -> list[dict[str, str]]:
     artifacts: dict[str, dict[str, str]] = {}
     build_finished = False
@@ -235,7 +276,9 @@ def parse_cargo_artifacts(path: pathlib.Path) -> list[dict[str, str]]:
             raise DiscoveryError(f"{path}:{line_number}: invalid Cargo JSON: {error}") from error
         if message.get("reason") == "build-finished":
             if message.get("success") is not True:
-                raise DiscoveryError("Cargo discovery reported build failure")
+                raise DiscoveryError(cargo_failure_message(
+                    path, "Cargo discovery reported build failure"
+                ))
             build_finished = True
             continue
         if message.get("reason") != "compiler-artifact":
@@ -602,7 +645,9 @@ def cargo_discovery(
         )
         output.flush()
         if completed.returncode != 0:
-            raise DiscoveryError(f"Cargo test discovery exited {completed.returncode}")
+            raise DiscoveryError(cargo_failure_message(
+                pathlib.Path(output.name), f"Cargo test discovery exited {completed.returncode}"
+            ))
         artifacts = parse_cargo_artifacts(pathlib.Path(output.name))
     tests, targets = discover_from_artifacts(artifacts, requested_targets)
     return manifest_payload(tests, targets, cargo_args), artifacts

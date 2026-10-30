@@ -20,8 +20,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793342530.7423856,
-    "ast_hash": "df4da517846e1b66bc5728bf9969f0cd",
+    "mtime": 1793377615.021103,
+    "ast_hash": "d19cf8b1c1fb9e4811b250a93b702f6a",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/prefs.js": {
@@ -40,8 +40,8 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793342530.7423856,
-    "ast_hash": "eb86b27adff97c31e4126f6094dd2222",
+    "mtime": 1793377615.021103,
+    "ast_hash": "bb8f735e015cecb7312438a351a86d52",
     "semantic_hash": ""
   },
   "install-extension.sh": {
@@ -2490,8 +2490,8 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793342530.7413857,
-    "ast_hash": "0431b42bb1691de79534e5d88c8d089b",
+    "mtime": 1793377615.021103,
+    "ast_hash": "246955758726d7c286f5089d19f29504",
     "semantic_hash": ""
   },
   "corpus/README.md": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793342570.3546143,
-    "ast_hash": "e9549e49603d942af035621f9ec26e85",
+    "mtime": 1793342816.3470314,
+    "ast_hash": "5edee536b1d356e41fa8612fffd25fef",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793324881.3761802,
-    "ast_hash": "99341faee024a83d791d8e36d12f4f8f",
+    "mtime": 1793343369.603761,
+    "ast_hash": "cf20f0ca589bc82954abdc1e6a17fccf",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793323845.7937896,
+    "mtime": 1793342859.9742825,
     "ast_hash": "515a9ce7f079f5b4cebb54c2e21f1b1c",
     "semantic_hash": ""
   },
@@ -5045,8 +5045,8 @@
     "semantic_hash": ""
   },
   "scripts/test_lanes/discovery.py": {
-    "mtime": 1793101955.9869387,
-    "ast_hash": "cb2bcd737b54604846b265ffa2829fc3",
+    "mtime": 1793377615.021103,
+    "ast_hash": "3c24707c52899e72106d5338bf9fc2f9",
     "semantic_hash": ""
   },
   "scripts/test_lanes/execution.py": {
@@ -5055,8 +5055,8 @@
     "semantic_hash": ""
   },
   "tests/test_test_lanes.py": {
-    "mtime": 1793101956.1448,
-    "ast_hash": "73c1f1ff4cd0c9b1b6e6a835a2d6c344",
+    "mtime": 1793377615.021103,
+    "ast_hash": "5654e8dc60f67f4c800514b380325904",
     "semantic_hash": ""
   },
   "docs/test-lanes.md": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793339819.8834012,
-    "ast_hash": "49846b4ca9b84d056e203318c3eb2ec1",
+    "mtime": 1793377615.021103,
+    "ast_hash": "39f125cadc0db530ab9f8aa675420dab",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9662,6 +9662,21 @@
   "docs/development/ten-release-queue-2026-10-30.md": {
     "mtime": 1793339819.8834012,
     "ast_hash": "bf0e9bf3dde160bb3197c436e76fb5c2",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
+    "mtime": 1793377615.021103,
+    "ast_hash": "04e436e8492d92144a2bb8036088d874",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.114-tests.json": {
+    "mtime": 1793343369.602761,
+    "ast_hash": "35d496429ac84e66cba6898872bcde02",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.115-compiler-diagnostics.md": {
+    "mtime": 1793377615.021103,
+    "ast_hash": "59ae246c2a2e5edb2ea18d4ef41c515b",
     "semantic_hash": ""
   }
 }

@@ -21,6 +21,89 @@ from test_lanes import cli, contracts, discovery, execution
 
 
 class DiscoveryTests(unittest.TestCase):
+    def test_failed_cargo_discovery_retains_rendered_error_after_cleanup(self) -> None:
+        diagnostic = {
+            "reason": "compiler-message",
+            "message": {
+                "level": "error",
+                "message": "cannot find function missing_symbol",
+                "rendered": "error[E0425]: cannot find function missing_symbol\n --> src/lib.rs:2:12\n",
+            },
+        }
+        temporary_paths = []
+
+        def failed_cargo(command, **kwargs):
+            output = kwargs["stdout"]
+            temporary_paths.append(pathlib.Path(output.name))
+            output.write((json.dumps(diagnostic) + "\n").encode())
+            return subprocess.CompletedProcess(command, 101)
+
+        with tempfile.TemporaryDirectory() as directory:
+            with mock.patch.object(discovery, "cargo_build_environment", return_value={}):
+                with mock.patch.object(
+                    discovery, "cargo_sandbox_command",
+                    side_effect=lambda command, target: command,
+                ):
+                    with mock.patch.object(
+                        discovery.subprocess, "run", side_effect=failed_cargo,
+                    ):
+                        with self.assertRaises(discovery.DiscoveryError) as caught:
+                            discovery.cargo_discovery(pathlib.Path(directory))
+        message = str(caught.exception)
+        self.assertIn("exited 101", message)
+        self.assertIn("error[E0425]", message)
+        self.assertIn("missing_symbol", message)
+        self.assertIn("src/lib.rs:2:12", message)
+        self.assertTrue(temporary_paths)
+        self.assertTrue(all(not path.exists() for path in temporary_paths))
+
+    def test_failed_cargo_terminal_retains_diagnostics(self) -> None:
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "cargo.jsonl"
+            path.write_text(
+                json.dumps({"reason": "compiler-message", "message": {"level": "error", "rendered": "error: broken target"}})
+                + "\n" + json.dumps({"reason": "build-finished", "success": False}) + "\n",
+                encoding="utf-8",
+            )
+            with self.assertRaises(discovery.DiscoveryError) as caught:
+                discovery.parse_cargo_artifacts(path)
+        self.assertIn("reported build failure", str(caught.exception))
+        self.assertIn("error: broken target", str(caught.exception))
+
+    def test_cargo_failure_without_rendered_text_retains_code_and_span(self) -> None:
+        diagnostic = {"reason": "compiler-message", "message": {
+            "level": "error", "message": "cannot find function missing_symbol",
+            "code": {"code": "E0425"},
+            "spans": [{"is_primary": True, "file_name": "src/lib.rs", "line_start": 2, "column_start": 12}],
+            "rendered": None,
+        }}
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "cargo.jsonl"
+            path.write_text(json.dumps(diagnostic) + "\n", encoding="utf-8")
+            message = discovery.cargo_failure_message(path, "Cargo test discovery exited 101")
+        self.assertIn("E0425", message)
+        self.assertIn("missing_symbol", message)
+        self.assertIn("src/lib.rs:2:12", message)
+
+    def test_cargo_failure_without_valid_errors_preserves_exit_status(self) -> None:
+        payloads = ["", "not JSON\n", "[]\n"]
+        for diagnostic in (None, [], {"level": []},
+                           {"level": "warning", "rendered": "warning: unrelated"}):
+            payloads.append(json.dumps({
+                "reason": "compiler-message", "message": diagnostic,
+            }) + "\n")
+        with tempfile.TemporaryDirectory() as directory:
+            path = pathlib.Path(directory) / "cargo.jsonl"
+            for payload in payloads:
+                with self.subTest(payload=payload):
+                    path.write_text(payload, encoding="utf-8")
+                    self.assertEqual(
+                        "Cargo test discovery exited 101",
+                        discovery.cargo_failure_message(path, "Cargo test discovery exited 101"),
+                    )
+            path.unlink()
+            self.assertEqual("exited 101", discovery.cargo_failure_message(path, "exited 101"))
+
     def test_cargo_environment_preserves_only_resource_owner_contract(self) -> None:
         selected = {
             "CARGO_BUILD_JOBS": "20",

@@ -1,4 +1,31 @@
-# Active queue1/10 — 1.0.114 published2026-10-30T16:19:38Z
+# Active queue1/10 — 1.0.115 source/build verified,publication pending
+
+Stable114 published/readback verified below. Canonical baseline740fc6ec.
+Current115 changes ONLY scripts/test_lanes/discovery.py plus its tests,version
+metadata,owning docs/scope and generated graph/actual zero-failure observation.
+Preflight:release-1.0.115-compiler-diagnostics.md;ADR compiler-diagnostics-115.
+Short source7/7 PASS;real failing rustc crate now preserves101/E0425/item/span.
+Full guarded remote release115-full-v1 COMPLETE:canonical3611/3611,487isolated,
+439Python(10skips),lints/MSRV/architecture/all10release binariesPASS,0warnings.
+Imported20frozen-prehash-verified source/graph/registry returns. SourceSHA1adba121.
+Remote runtime remains114;115 is NOT installed or published. No GNOME changes.
+Frozen37 adjacent runtime/integration hashes. No agents/Harness.
+After gates:import source returns with pinned prehashes,preserve this handoff;
+commit/push,CI+Security,tag/publish115,actual installed updater both machines.
+Only then count2/10. Do not rerun complete source tests for report/import errors.
+
+Private next candidate116 map/test atCACHE/release116-prefix-progress-*. It
+targets observed Firefox row155 interleaved owned append between delayed
+strict-prefix SSI callbacks. No116 canonical edits yet. Need real adapterRED
+and actual selector before any runtime fix; don't treat forced Firefox=true
+fixture alone as proof that actual native dispatch recognizes the sequence.
+No new ownership/cache/retry/deadline or unknown-start bypass. If mechanism
+cannot be proved, retain nativeFAIL and move to another independently proven
+defect rather than inventing a fix/version. Continue until10 real releases.
+
+---
+
+# Queue1/10 — 1.0.114 published2026-10-30T16:19:38Z
 
 Canonical tested source7b7fe8e033d92e411068d598ae70d18fb81a4323 tagged114
 on both remotes; public stable release/readback confirmed. Public CI41018481523

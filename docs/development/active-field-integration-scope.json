@@ -1,13 +1,12 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "ac50a7819e62c1b8d5d4b74845c7d6c2be060797",
+  "base": "740fc6ecc4d8fb86a43a92a5ff5190da913ab773",
   "components": [
-    "kde-focus",
     "tooling"
   ],
   "shared_paths": [
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json"
   ],
-  "decision": "docs/architecture/decisions/2026-10-30-firefox-closed-pacing-114.json"
+  "decision": "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json"
 }
