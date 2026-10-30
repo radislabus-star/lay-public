@@ -23,7 +23,9 @@
     "tech_debt/162-glued-pronoun-space.md",
     "tech_debt/163-kde-pacing-debug-config-publication.md",
     "tech_debt/164-fragment-autoflip-blocks-space.md",
-    "tech_debt/165-kde-menu-checkbox-stays-open.md"
+    "tech_debt/165-kde-menu-checkbox-stays-open.md",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
   ],
   "test_change_allowed_paths": [
     "src/bin/lay_daemon/kde/firefox_replay_pacing.rs",
@@ -74,7 +76,8 @@
     "red": "CROOT/td163-config-red-v3/result.json: real production helper changes published flags; assertion FAILED exit101; existing eligibility test PASS. Live processes/config unchanged.",
     "green": "CROOT/td163-config-green-v1/result.json: 2/2 exact tests PASS, both flag directions and normal reload; processes/config unchanged.",
     "full": "CROOT/release117-config-full-v1/result.json:3615Rust/34targets/491isolated,439Python10skips,all10release binaries0warnings,full gatesPASS;source094e5c50d440fa35c1235d40855e944be583e70409777fc4249832655e338446",
-    "native": "CROOT/release117-config-native-v1/result.json:2/2controls,4exact roundtrip flipsPASS;config exact/globalIBus preserved. Initial install engine-selection FAIL retained; saved RU selection recovered by normal IBus activation without a second restart."
+    "native": "CROOT/release117-config-native-v1/result.json:2/2controls,4exact roundtrip flipsPASS;config exact/globalIBus preserved. Initial install engine-selection FAIL retained; saved RU selection recovered by normal IBus activation without a second restart.",
+    "initial_ci": "41122256849/job124291139182: scope guard correctly rejected both generated test inventory/known-failure proof files as undeclared shared seams. Declare exact paths; no guard/runtime/test changes."
   },
   "runtime_authority_changed": false,
   "scope_note": "The modified leaf is KDE-specific but the shared replay caller reaches its debug probe for other clients too. Preventing accidental publication has shared configuration effects; no GNOME live installation/restart is authorized."

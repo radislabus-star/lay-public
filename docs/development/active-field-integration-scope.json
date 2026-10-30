@@ -9,7 +9,9 @@
     "tech_debt/162-glued-pronoun-space.md",
     "tech_debt/163-kde-pacing-debug-config-publication.md",
     "tech_debt/164-fragment-autoflip-blocks-space.md",
-    "tech_debt/165-kde-menu-checkbox-stays-open.md"
+    "tech_debt/165-kde-menu-checkbox-stays-open.md",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
   ],
   "decision": "docs/architecture/decisions/2026-10-30-kde-debug-config-publication-117.json"
 }
