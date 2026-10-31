@@ -1,15 +1,17 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "75cd04bdbd3394f15ccf29dbcd9e0d4f8f23f67c",
+  "base": "e65b63b0c5583c30360f8385509f060d2d0d190c",
   "components": [
     "tooling"
   ],
   "shared_paths": [
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/typing_rule_graph/rules/fragment.rs",
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json",
     "tech_debt/163-kde-pacing-debug-config-publication.md",
-    "tech_debt/164-fragment-autoflip-blocks-space.md"
+    "tech_debt/164-fragment-autoflip-blocks-space.md",
+    "tech_debt/166-independent-fragment-evidence.md",
+    "tech_debt/167-chrome-first-space-evidence.md"
   ],
-  "decision": "docs/architecture/decisions/2026-10-30-ci117-cache-fixture.json"
+  "decision": "docs/architecture/decisions/2026-10-31-fragment-safe-exact-fallback-118.json"
 }

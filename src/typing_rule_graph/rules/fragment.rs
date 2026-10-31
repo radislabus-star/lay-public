@@ -1,5 +1,6 @@
 //! Automatic candidate policy only. No manual conversion or field delivery.
 
+use crate::dict::{convert, Direction};
 use crate::layout_fragments::{analyze, Boundary, Selection};
 use crate::typing_rule_graph::{ids, TypingRuleContext};
 
@@ -32,12 +33,12 @@ fn apply_with_mode(
     if !enabled {
         return legacy(ctx);
     }
-    let rule: TextRule = match id {
+    let (rule, direction): (TextRule, Direction) = match id {
         ids::FAST_LAYOUT_EN_TO_RU
         | ids::LAYOUT_EN_TO_RU
         | ids::CONTEXTUAL_LAYOUT_EN_TO_RU
-        | ids::EXPERIMENTAL_LAYOUT_EN_TO_RU => en_to_ru,
-        ids::LAYOUT_RU_TO_EN | ids::EXPERIMENTAL_LAYOUT_RU_TO_EN => ru_to_en,
+        | ids::EXPERIMENTAL_LAYOUT_EN_TO_RU => (en_to_ru, Direction::Us2Ru),
+        ids::LAYOUT_RU_TO_EN | ids::EXPERIMENTAL_LAYOUT_RU_TO_EN => (ru_to_en, Direction::Ru2Us),
         _ => return legacy(ctx),
     };
     if !ctx.allow_layout_auto || last_word_has_protected_ascii_context(ctx) {
@@ -46,6 +47,28 @@ fn apply_with_mode(
     apply_last_physical_layout_token_rule(ctx, rule)
         .or_else(|| apply_last_trailing_layout_token_rule(ctx, rule))
         .or_else(|| apply_last_word_rule(ctx, rule))
+        .or_else(|| {
+            let replacement = legacy(ctx)?;
+            safe_exact_legacy_candidate(ctx, &replacement, direction).then_some(replacement)
+        })
+}
+
+fn safe_exact_legacy_candidate(
+    ctx: &TypingRuleContext<'_>,
+    replacement: &str,
+    direction: Direction,
+) -> bool {
+    let Some(token) = ctx.core.split_whitespace().next_back() else {
+        return false;
+    };
+    let Some(prefix) = ctx.core.strip_suffix(token) else {
+        return false;
+    };
+    let Some(replacement_token) = replacement.strip_prefix(prefix) else {
+        return false;
+    };
+    replacement_token == convert(token, direction)
+        && !crate::word_recognizer::is_plain_layout_autocorrect_risky(token, replacement_token)
 }
 
 fn propose(token: &str, direction: Selection) -> Option<String> {
@@ -74,6 +97,56 @@ fn ru_to_en(token: &str) -> Option<String> {
 mod tests {
     use super::*;
     use crate::word_reader::split_word_punctuation;
+
+    #[test]
+    fn fragment_mode_retains_safe_exact_ordinary_layout_candidates() {
+        use crate::config::{default_typing_assist_pipeline, publish_runtime_config, LayConfig};
+        use crate::correction_core::{
+            resolve_text_correction, CandidateReadoutRoute, CorrectionMode, CorrectionRequest,
+        };
+        fn correction(input: &str, fragments: bool) -> Option<String> {
+            publish_runtime_config(&LayConfig {
+                fragment_layout_autoflip: fragments,
+                ..LayConfig::default()
+            });
+            let pipeline = default_typing_assist_pipeline();
+            resolve_text_correction(CorrectionRequest {
+                text: input,
+                lexical_authority_frame: None,
+                auto_replace: false,
+                typing_assist: false,
+                auto_switch_layout: true,
+                correction_safety: crate::config::CorrectionSafety::Normal,
+                typing_assist_pipeline: &pipeline,
+                nanda_autocorrect: false,
+                nanda_candidate_route: CandidateReadoutRoute::FullWave,
+                nanda_wave_options: crate::nanda_wave::WaveOptions::default(),
+                mode: CorrectionMode::DeterministicOnly,
+            })
+            .decision
+            .map(|decision| decision.replacement)
+        }
+        for (input, target) in [
+            ("фиикум", "abbrev"),
+            ("злцн", "pkwy"),
+            ("ручнд", "hexyl"),
+            ("цгтве", "wundt"),
+        ] {
+            assert_eq!(correction(input, false).as_deref(), Some(target));
+            assert_eq!(
+                correction(input, true).as_deref(),
+                Some(target),
+                "optional fragment abstention must retain safe exact ordinary result: {input}"
+            );
+        }
+        for original in ["rdy", "зфьудшф", "гайдуке", "abbrev"] {
+            assert_eq!(
+                correction(original, true),
+                None,
+                "unsafe or nonexact fallback must not gain authority: {original}"
+            );
+        }
+    }
 
     fn context(core: &str, allow_layout_auto: bool) -> TypingRuleContext<'_> {
         let (token_leading, word, token_trailing) = split_word_punctuation(core);

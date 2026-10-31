@@ -13,13 +13,13 @@
     "project": []
   },
   "counts": {
-    "correctness": 3579,
+    "correctness": 3580,
     "ignored": 45,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 503,
+    "process": 504,
     "target": 3168
   },
   "package_fixtures": [
@@ -3697,6 +3697,13 @@
       "lane": "correctness",
       "name": "tests::runtime_state::terminal_enter_records_bounded_raw_typed_context_before_reset",
       "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_retains_safe_exact_ordinary_layout_candidates",
+      "target": "lib:lay"
     },
     {
       "isolation": "process",

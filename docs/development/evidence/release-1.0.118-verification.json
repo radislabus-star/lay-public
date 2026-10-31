@@ -1,0 +1,483 @@
+{
+  "recorded_at_utc": "2026-10-31T00:45:34.400532+00:00",
+  "status": "SOURCE_VERIFIED_NATIVE_SCOPED_WITH_INITIAL_TRANSIENT_OPEN",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1327,
+    "sha256": "58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e"
+  },
+  "source_gate_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/result.json",
+  "rust": {
+    "selected": 3616,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 492,
+    "canonical_invocation_exit": 1,
+    "manifest_sha256": "5c46e07770963ca39fe616bb3a6fae07e30355a029c6d71a703dbb258a5be969",
+    "observation_sha256": "791a1c35872631b076be05185d2fa7c119de1553cda0a53ee115d6d7194b169b"
+  },
+  "steps": [
+    {
+      "name": "format",
+      "returncode": 0,
+      "seconds": 3.596
+    },
+    {
+      "name": "architecture-refresh",
+      "returncode": 0,
+      "seconds": 54.252
+    },
+    {
+      "name": "manifest",
+      "returncode": 0,
+      "seconds": 28.152
+    },
+    {
+      "name": "test-observation-bootstrap",
+      "returncode": 1,
+      "seconds": 516.462
+    },
+    {
+      "name": "lints",
+      "returncode": 0,
+      "seconds": 97.993
+    },
+    {
+      "name": "python",
+      "returncode": 0,
+      "seconds": 28.075
+    },
+    {
+      "name": "public",
+      "returncode": 0,
+      "seconds": 10.423
+    },
+    {
+      "name": "installer",
+      "returncode": 0,
+      "seconds": 0.341
+    },
+    {
+      "name": "node",
+      "returncode": 0,
+      "seconds": 0.124
+    },
+    {
+      "name": "shell-syntax",
+      "returncode": 0,
+      "seconds": 0.004
+    },
+    {
+      "name": "python-syntax",
+      "returncode": 0,
+      "seconds": 0.081
+    },
+    {
+      "name": "gnome-syntax",
+      "returncode": 0,
+      "seconds": 0.204
+    },
+    {
+      "name": "audit50",
+      "returncode": 0,
+      "seconds": 25.0
+    },
+    {
+      "name": "msrv",
+      "returncode": 0,
+      "seconds": 20.527
+    },
+    {
+      "name": "msrv-lexical",
+      "returncode": 0,
+      "seconds": 22.212
+    },
+    {
+      "name": "release",
+      "returncode": 0,
+      "seconds": 217.514
+    },
+    {
+      "name": "artifacts",
+      "returncode": 0,
+      "seconds": 0.359
+    }
+  ],
+  "artifact_inspection": {
+    "status": "TESTED_SOURCE_INVENTORY_AND_TEN_BINARIES_VERIFIED",
+    "warnings": [],
+    "artifacts": {
+      "lay": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay",
+        "sha256": "079b8aa061fdf1a05b737456ba12b24cad573fb33f1aa4f9a1d77cc7d0815d4f",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-l11-serve": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-l11-serve",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-l11-serve",
+        "sha256": "7f7bbe31587e0e60aa0f434434b9826ebc05ad82ce20736494a506dd95c75c79",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-nanda-wave-eval": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-nanda-wave-eval",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-nanda-wave-eval",
+        "sha256": "63d20bb582a98359df5d407c0c5f3638709197705a5a5fe98ccaeb0d5cc47044",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-daemon": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-daemon",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-daemon",
+        "sha256": "3e6cda78bb0fd8d6713433acdb6d41eedaf8c76020499cf248ce1d908dae055e",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-memory-report": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-memory-report",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-memory-report",
+        "sha256": "8104941de50d316c58fdefc8d581d9d282e4df8235aa47e1c6ef477dc6a51db4",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-nanda-wave-train": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-nanda-wave-train",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-nanda-wave-train",
+        "sha256": "2f32fe4cfea44e4a520959c0bdd8166fbb4a967cb45e3c36daf9c33f4f1d10ed",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-ibus-engine": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-ibus-engine",
+        "sha256": "7d0d33e117c955bde7c742e72610394540eaf2bc2bd3327f9112739ce1550fea",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-ngram-corpus": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ngram-corpus",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-ngram-corpus",
+        "sha256": "42c3ea5558657480c100113d2d1f90181150c56bf1d4004d285c33a316db131b",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-test-input": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-test-input",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-test-input",
+        "sha256": "70f3e56ce2902e8cca1407e70161bafc0c7048086f76377b31c78cdcaeb230bb",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      },
+      "lay-l11-restore": {
+        "compiler_executable": "/home/e/projects/lay-td119-gate-v1/target/release/lay-l11-restore",
+        "retained": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-full-v2/binaries/lay-l11-restore",
+        "sha256": "1f74c843bf82323e70a1f126996ea651088eaf8d194680e4088df58cf1038eef",
+        "profile": {
+          "opt_level": "3",
+          "debuginfo": 0,
+          "debug_assertions": false,
+          "overflow_checks": false,
+          "test": false
+        }
+      }
+    },
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1327,
+      "sha256": "58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e"
+    }
+  },
+  "deployment": {
+    "status": "CANDIDATE_LOADED_NATIVE_NOT_TESTED",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1327,
+      "sha256": "58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e"
+    },
+    "local_gnome_modified": false,
+    "global_ibus_restarted": false,
+    "model_files_replaced": false,
+    "testing_config_sha256": "5d02dfdaf28f59075f33d1e0ffb72c70fecd69a97208d11f22848c8411d543b3",
+    "saved_engine_restored_via_normal_activation": {
+      "before_restore": "lay-ime-us",
+      "restored": "lay-ime-ru"
+    },
+    "daemon_pid": 3119526,
+    "daemon_sha256": "3e6cda78bb0fd8d6713433acdb6d41eedaf8c76020499cf248ce1d908dae055e",
+    "engine_pid": 3119609,
+    "engine_sha256": "7d0d33e117c955bde7c742e72610394540eaf2bc2bd3327f9112739ce1550fea",
+    "engine_inode": 24803090,
+    "tray_pid": 3119657,
+    "config_path": "/home/e/.cache/lay/kde-live-20261019/config/lay/config.json",
+    "saved_config": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-deployment-v1/config-before.json"
+  },
+  "native_initial": {
+    "status": "FAIL_OR_BLOCKED",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1327,
+      "sha256": "58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e"
+    },
+    "scope": "6 focused native RFB cases:two normal roundtrips/four Space corrections first+second word;separate from historical full matrix",
+    "rows": [
+      {
+        "browser": "chrome",
+        "name": "roundtrip",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          60.61912886798382,
+          65.23494189605117
+        ],
+        "seconds": 5.332,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-native-v1/chrome-roundtrip/result.json",
+        "exit": 0
+      },
+      {
+        "browser": "chrome",
+        "name": "fragment-safe-first",
+        "status": "FAIL",
+        "error": "{'expected': 'abbrev ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1.0625, 'innerHeight': 664, 'innerWidth': 1494, 'outerHeight': 811, 'outerWidth': 1501, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 3704.600000143051, 'raw_text': 'фиикум ', 'rect': {'x': 455.3235321044922, 'y': 191.64706420898438}, 'rendered_text': None, 'rich': False, 'screen': {'x': 3.5, 'y': 147}, 'selection': False, 'text': 'фиикум '}}",
+        "latencies_ms": null,
+        "seconds": 5.131,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-native-v1/chrome-fragment-safe-first/result.json",
+        "exit": 1
+      },
+      {
+        "browser": "chrome",
+        "name": "fragment-safe-second",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          102.11923206225038
+        ],
+        "seconds": 3.875,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-native-v1/chrome-fragment-safe-second/result.json",
+        "exit": 0
+      },
+      {
+        "browser": "firefox",
+        "name": "roundtrip",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          160.0030150730163,
+          164.16571591980755
+        ],
+        "seconds": 6.032,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-native-v1/firefox-roundtrip/result.json",
+        "exit": 0
+      },
+      {
+        "browser": "firefox",
+        "name": "fragment-safe-first",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          18.67499598301947
+        ],
+        "seconds": 5.079,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-native-v1/firefox-fragment-safe-first/result.json",
+        "exit": 0
+      },
+      {
+        "browser": "firefox",
+        "name": "fragment-safe-second",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          18.27536290511489
+        ],
+        "seconds": 5.127,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-native-v1/firefox-fragment-safe-second/result.json",
+        "exit": 0
+      }
+    ],
+    "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "parent_actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "space_case_actor_sha256": "fc048d06389b27b712fd60d1d13daab1b10f2d2053d47ed02fe2e856e39f743d",
+    "config_restored_exactly": true,
+    "global_ibus_restarted": false
+  },
+  "native_default_confirmation": {
+    "status": "PASS",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1327,
+      "sha256": "58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e"
+    },
+    "scope": "default-config confirmation after diagnostic flag restoration;Chrome roundtrip and first Space only;initial FAIL retained",
+    "rows": [
+      {
+        "browser": "chrome",
+        "name": "roundtrip",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          50.665208138525486,
+          37.94892504811287
+        ],
+        "seconds": 5.279,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-chrome-first-default-confirm-v1/chrome-roundtrip/result.json",
+        "exit": 0
+      },
+      {
+        "browser": "chrome",
+        "name": "fragment-safe-first",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          49.816691083833575
+        ],
+        "seconds": 3.575,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-chrome-first-default-confirm-v1/chrome-fragment-safe-first/result.json",
+        "exit": 0
+      }
+    ],
+    "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "parent_actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "space_case_actor_sha256": "fc048d06389b27b712fd60d1d13daab1b10f2d2053d47ed02fe2e856e39f743d",
+    "config_restored_exactly": true,
+    "global_ibus_restarted": false
+  },
+  "diagnostic_only": {
+    "off": {
+      "status": "PASS",
+      "source": {
+        "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+        "files": 1327,
+        "sha256": "58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e"
+      },
+      "scope": "DIAGNOSTIC ONLY:Chrome roundtrip prelude then first-word Space;temporary debug+fragment flag;no code/install/input cadence change",
+      "rows": [
+        {
+          "browser": "chrome",
+          "name": "roundtrip",
+          "status": "PASS",
+          "error": null,
+          "latencies_ms": [
+            43.19447185844183,
+            48.87699498794973
+          ],
+          "seconds": 5.228,
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-chrome-first-diagnostic-off-v1/chrome-roundtrip/result.json",
+          "exit": 0
+        },
+        {
+          "browser": "chrome",
+          "name": "fragment-safe-first",
+          "status": "PASS",
+          "error": null,
+          "latencies_ms": [
+            51.007585134357214
+          ],
+          "seconds": 3.675,
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-chrome-first-diagnostic-off-v1/chrome-fragment-safe-first/result.json",
+          "exit": 0
+        }
+      ],
+      "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+      "parent_actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+      "space_case_actor_sha256": "fc048d06389b27b712fd60d1d13daab1b10f2d2053d47ed02fe2e856e39f743d",
+      "config_restored_exactly": true,
+      "global_ibus_restarted": false
+    },
+    "on": {
+      "status": "PASS",
+      "source": {
+        "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+        "files": 1327,
+        "sha256": "58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e"
+      },
+      "scope": "DIAGNOSTIC ONLY:Chrome roundtrip prelude then first-word Space;temporary debug+fragment flag;no code/install/input cadence change",
+      "rows": [
+        {
+          "browser": "chrome",
+          "name": "roundtrip",
+          "status": "PASS",
+          "error": null,
+          "latencies_ms": [
+            49.624441890046,
+            51.02074192836881
+          ],
+          "seconds": 4.325,
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-chrome-first-diagnostic-on-v1/chrome-roundtrip/result.json",
+          "exit": 0
+        },
+        {
+          "browser": "chrome",
+          "name": "fragment-safe-first",
+          "status": "PASS",
+          "error": null,
+          "latencies_ms": [
+            60.3406170848757
+          ],
+          "seconds": 3.623,
+          "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-chrome-first-diagnostic-on-v1/chrome-fragment-safe-first/result.json",
+          "exit": 0
+        }
+      ],
+      "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+      "parent_actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+      "space_case_actor_sha256": "fc048d06389b27b712fd60d1d13daab1b10f2d2053d47ed02fe2e856e39f743d",
+      "config_restored_exactly": true,
+      "global_ibus_restarted": false
+    }
+  },
+  "limitations": [
+    "Initial Chrome first-word native FAIL is retained and unexplained;original trace suffix empty. TD167 OPEN.",
+    "Default confirmation is2cases,not a fresh6/6 suite or full440-case matrix.",
+    "Full historical matrix344PASS15FAIL81BLOCKED remains unchanged.",
+    "Full provider independence/punctuation remains TD166 OPEN.",
+    "Thirteen clean-English errors in the optional ON fixed corpus remain."
+  ],
+  "gnome_manual_install_or_restart": false,
+  "publication": "PENDING_PUBLIC_CI"
+}

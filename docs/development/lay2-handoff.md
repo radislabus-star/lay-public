@@ -1,3 +1,75 @@
+# Current state — 1.0.118 installed as a KDE candidate; publication pending
+
+Recorded 2026-10-31T00:50:03.512085+00:00. Four of ten requested releases are published (114–117). Stable117 is e65b63b0; no118 commit/tag/publication yet. Work solo, no agents or Harness. No local GNOME install/restart, no RDP viewer.
+
+The minimal118 fix changes only production `src/typing_rule_graph/rules/fragment.rs`: after optional abstention, retain a real ordinary candidate only when its prefix is unchanged, the last token equals exact physical layout projection, and existing TOKEN plain-layout safety permits it. Model/weights/registry/input/ownership/rendering/delivery are frozen. Independent provider prototypes A/B/C were rejected and archived; TD166 remains OPEN. The five original provider tests are unchanged.
+
+Evidence: safe-red-v1 reproduced lost ordinary outputs; safe-green-v1 passes the same real core and five old tests. Strict fixed20k safe-quality-v1 passes BOTH baselines: RU clean10000/restored693/wrong0; EN clean9987/restored2965/wrong0; OFF exact, no lost correct ordinary targets. Thirteen existing clean-English errors remain. Source quality hash21c4d6d7... before version metadata.
+
+Full-v1 stopped before tests on12GiB cache budget. Guarded old debug-test-ELF cleanup freed4050679296bytes, preserved two newest per target and active release IME; no limits weakened. Full-v2 PASS:3616 actual tests across34 targets,492 process-isolated,all other gates/MSRV/all10release binaries. Canonical wrapper exit1 was ONLY old manifest binding; zero ledger rebound after inspecting every actual PASS. Public CI still must give canonical exit0. Inspector verifies1331files,10retained compiler-artifact binaries,zero warnings. Full source1327 SHA58c50f93e3a5daffcac535d23779f1a7e206021b7e865c29fe9b7bee4421ea5e.
+
+KDE118 installed via runtime-control coordinator: daemon3119526 SHA3e6cda78..., IME3119609 SHA7d0d33e1..., tray3119657. Global IBus3168326 preserved; exact user config5d02dfda... with fragmentON restored. Runtime engine factory executes target/release/lay-ibus-engine; never Cargo-clean active release files. No source edits after full gate.
+
+Native `release118-fragment-safe-native-v1`: 5 PASS/1 FAIL/0BLOCKED. Chrome roundtrip PASS60.619/65.235ms; first фиикум Space retained original (FAIL); second prefix case PASS102.119ms. Firefox roundtrip PASS160.003/164.166ms; first/second Space PASS18.675/18.275ms. Initial Chrome FAIL is retained and unexplained. Its debug trace suffix was empty despite actor native_trace_complete=true; do NOT claim complete causal trace. No delivery code was changed to force a result.
+
+Bounded diagnostic `release118-chrome-first-diagnostic-{off,on}-v1`: same Chrome roundtrip+first Space with temporary debug and fragment flag; both modes2/2PASS. Raw config restored exactly after each, no restart/install/code/cadence change. Drained trace files record real gate/apply/lease events for the successful runs, not the missing original failure. Latest ON first Space applied worker5/tail214; original first failure cannot be causally explained from absent logs. These diagnostic passes do not erase the initial failure.
+
+Default restoration confirmation `release118-chrome-first-default-confirm-v1` finished 2/2 PASS with debug disabled and exact original config: Chrome roundtrip50.665/37.949ms, first Space49.817ms. This is not a new6/6suite and does not erase the initial failure (OPEN TD167). ACTIVE: commit the verified118 source, compare immutable blobs with the1331-file tested inventory, push public/main and private development branch, require all4CI success, publish118, verify actual installed updaters and both annotated tag mirrors. No further functional reruns for publication metadata. Then TD165 KDE checkbox-menu UI task.
+
+Next: finish native decision, collect inventory/receipts, update owning docs/tasks, commit verified source, public+private-dev push, all4public CI checks, annotated tag/release118, verify both actual installed updaters and mirrored tags. Then continue119 KDE checkbox UI and later queue; no filler releases. TD163 published117 status corrected. TD164 only safe-fallback part is implemented; independence remains166. Full historical native table344PASS/15FAIL/81BLOCKED of440 unchanged (FFfull116; Chrome historical). Supplemental initial5/6 and diagnostic4/4 are separate, never added into the440 table.
+
+--- Prior checkpoints are history ---
+
+# CURRENT —118 full-v2 RUNNING after safe cache cleanup — 2026-10-30T23:56:09.610695+00:00
+
+Strict20k safequalityPASS andsixfocusedPASS unchanged. Full-v1 infrastructureFAILatmanifest BEFORE tests,notcodefailure:canonicaldiscovery guard12GiB killed13GiB;outer16overrideisnotpassedbyhermeticdiscovery. DO NOT relaxguard/cleanenv. Guardedcleanup deleted4,050,679,296bytes olddebug workspace testELFs,two newest pertarget+allactive preserved. RunningIMEis target/release/lay-ibus-engine2298008SHA5f728b... andisunchanged;release/libs/models/evidence notdeleted. Newphase release118-fragment-safe-full-v2 sameworker-v1,activeSSHsession63249. Preparedinstaller nowmustread full-v2,notfailedv1.4/10published,118NOTinstalled/published.
+
+--- Prior checkpoints are history ---
+
+# CURRENT —118 strict quality PASS;full all-source/all10 gate RUNNING — 2026-10-30T23:49:34.124068+00:00
+
+Remotephase release118-fragment-safe-full-v1,SSHsession9993,worker release118-fragment-safe-full-worker-v1.py. Cargo118now,sourceScopeONEproductionfilefragment.rs;registry/candidates/IDs/rules restoredexact117,51frozenhashes enforced. SafeGREENsix functionsPASS,source1327SHA21c4d6d7... beforeversionmetadata. Strictsafe-quality-v1 PASS:RU10000clean693restored0wrong;EN9987clean2965restored0wrong;OFFexact,0lostordinarycorrecttargets,40000modelparity;proof256.628s. Projectevidence release-1.0.118-fragment-quality.json. OldENclean13errorsremain. IndependentprototypeA/B/Crejected,archivedpatch+inventory,unmetindependence/physical-punctuation/known-originalevidence remainsOPEN TD166. DoNOT reapply failedprototypes orclaimindependencefixed.
+
+Fullgateexpects3616canonical/34targets/492isolated/all10zero warnings,MSRV1.88bothfeatures,lints/Python439+10skips/Node/publicinstaller/audit50. OnlyafterallPASS installKDE118. PreparedNOTRUN release118-fragment-safe-install-v1.py/native-v1.py and privateparent-pinnedactor dependency-browser-native-fragment-safe-r1.py (addsfirst/secondSpacecaseonly,nocadence/deadlinechange);normalcontrolsusefrozenr19 unchanged. Exactconfigpreserved,globalIBusmustnotrestart. No localGNOMEinstall/restart,noRDPviewer.
+
+117e65published/updatersverified4/10;TD163markedDONEscoped,queueupdated4/10. TD165UI next after118publication,TD162rejectedpair-split remainsdeferred. FreshGitHubActionsartifactAPIs public+privateboth explicit0artifacts,none deleted. Sourceprototypesneverinstalled.KDEstill117daemon2297924/IME2298008/tray2298081/globalIBus3168326/config5d02...;nativefulltable344PASS15FAIL81BLOCKED/440unchanged. SOLO/noagents/noHarness. Afterfull:strictimport,retained10compiler-artifactbinaries/KDEproof,commit/publicCI/tag/release118,bothactualupdaters,bothannotatedtagmirrors;thencontinue119–123,no filler releases.
+
+--- Prior checkpoints are history ---
+
+# CURRENT —118 minimal safe fallback6GREEN;strict corpus next — 2026-10-30T23:33:03.517886+00:00
+
+4/10 published114–117;stable117e65b63b0,updaters/tags verified. Independent provider prototypeA/B/C REJECTED/archived CACHE/td164-rejected-independent-providers.patch+inventory,NEVERinstalled. All4other runtimefiles/registry/candidates restoredexact117. Scope nowONE productionfile src/typing_rule_graph/rules/fragment.rs +oneactualcoretest/discovery;newownerrelease-1.0.118-fragment-safe-exact-fallback.md,ADR2026-10-31-fragment-safe-exact-fallback-118. NoOpinion fallsbackonlytorealordinarycandidatewithunchangedprefix/fullkeyprojectionandexisting TOKEN plain-layoutsafety;no newword/weights/IDs/targetL2filters. Fullindependence/punctuation unmetcontractsOPEN TD166,do notclaimclosed. TD165KDEmenu queued separately.
+
+ActualsafeREDv1 newcore101/old5PASS;safeGREENv1 samecorePASS/old5publictestsunchangedPASS,strictsource-returnimported.51frozenhashes/live117PIDs/configunchanged. Cargo still117prototype,no118install/bump/fullgateyet. Nextstrictfixed20k safe-quality-v1must satisfyBOTHoldOFF+oldON baselines:no lostcorrectlegacy,OFFexact;RUclean10000/restored>=693/wrong0;ENclean>=9987/restored>=2964/wrong0. CandidateCpartial/source-word/punctuation regressions retainedonlyasfailedexperimentreceipts.
+
+Privategeneric runner run-lay-guarded-phase.py WORKER PHASE [args] handles safeSSHupload/guardedstream/results download;prepare-fragment-release-source.py usespreviouspin/result;strictimporter nowhasexplicitapproved6testsetforsafe-phaseprefix. Nextfullworker release118-fragment-safe-full-worker-v1.py expects3616/34/492isolated/all10zero warnings,ADRnew. NOlocalCargo/GNOMEinstall/restart,SOLO/noHarness/noagents,noRDPviewer. Fullnative344PASS15FAIL81BLOCKED/440unchanged (FFfull116,Chromehistorical).
+
+--- Prior checkpoints are history ---
+
+# CURRENT —118 variant B strict corpus running,117 live protected — 2026-10-30T22:31:26.407642+00:00
+
+Active remote phase release118-fragment-quality-v2,localSSHsession77106. Six focused tests PASS9.198s,debugcompile24.5s,releaseexample149.484s. Existing model/weights frozen; ONLY new source metadata changed Plain→existingContextual policy after rawdiagnostic proved correct pamelia/бесстрашиях candidates were safety-rejected. Corpus requiresBOTHbaselineOFFandacceptedON retention/clean/wrong gates; do not accept OFF-onlyGREEN. No118versionbump/fullgate/install yet. Rawdiagnostic captured1testPASS butwrapperFAILon --nocapture parse;FAILpreserved,notacceptance. LatestremoteSHAdaemon761d3b.../IME5f728b.../globalIBuscb8cca... match117,config5d02/PIDs unchanged. PrototypeB currentfivecandidatefiles only; NO input/routing/owner/verifier/desktop edits. Fullgate118privateworker prepared,notrun. 4/10stable114–117. Fullnative344/15/81 of440 unchanged. SOLO/noHarness/noagents.
+
+--- Prior checkpoints are history ---
+
+# CURRENT — 4/10 published;118 variant A rejected, not installed — 2026-10-30T22:22:21.820359+00:00
+
+Stable117 e65b63b0 published and updater/tags verified.118 six focused tests pass but fixed20k ON quality regresses vs accepted ON: RU406/97 vs693/0; EN2965/105 vs2961/0 restored/wrong. Private quality worker GREEN compares OFF only; DO NOT PROMOTE. Owner/ADR now record strict BOTH-baseline gates. Next inspect raw fragment proposal/safety/scores, not blind FAST early-return edits: common core already collects with keep_fast=true. Five shared candidate files only;47protected routes/model files and KDE117 runtime frozen. No active heavy worker. No local GNOME changes. Fullnative344/15/81 of440 unchanged. Continue ten-release queue SOLO/noHarness/noagents.
+
+--- Prior checkpoints are history ---
+
+# CURRENT —117 published,4/10 done;118 source quality running — 2026-10-30T22:01:44.727948+00:00
+
+Stable117published2026-10-30T21:50:57Z,e65b63b0c5583c30360f8385509f060d2d0d190c,all4CIchecksSUCCESS. Annotatedtagmirrored/verifiedbothremotes;actualinstalledupdaterlocal115→117available,remote117current,both--checkexit0. Proofdocs/development/evidence/release-1.0.117-publication.json (NEWafter118pin,willnotbeoverwritten). No localGNOMEinstall/restart.4/10done. Source1175e39d358...,1327files;10productionbinariesequalinitial117 nativebytes,so no secondinstall. KDEproc2297924/2298008/2298081/globalIBus3168326,config5d02 fragmentON unchanged.
+
+ACTIVE118 (uncommitted,notinstalled):correction-only registry separation,five runtimecandidatefiles +oneisolatedsemanticcoretest/discovery;model/assets/scoringunchanged47hashesfrozen. NewADR2026-10-31-independent-fragment-candidates-118,baselinee65;ownerrelease-1.0.118-independent-fragment-candidates.md. SemanticREDloss4oldtargets+independenthelloabsent;GREENnew6testsPASS (core+5controls),CROOT/release118-fragment-core-green-v1,result importedstrictly. Two new own providers useexisting directional priorities/family/PlainLayoutAutocorrect/Normal safety,legacyFAST andregistrycallbacks direct. No field/desktop routes changed,no newowner/ranker/executor.
+
+Active remote qualityphase release118-fragment-quality-v1,worker release118-fragment-quality-worker-v1.py,exec48250. Datasetoriginal20000SHA89d13ce432d06b479fefb48d6f8b39b49ec2c75ca9d51dca76fd0823c9fb1c26;rawmodel40000Rust/trainerparity. Perlang OFFmustmatcholdcounts;ONmustnotregressclean/restored/wrong andzero lostordinarytargets. Rejectifanyfails,no wordexceptions. No118versionbump/fullbuild/installuntilqualityPASS. Installed117protected. Avoideditingpinnedcoordinationdocs excepthandoff(skiponlywhenreturnedunchanged);117task/queueDONEupdatesdeferreduntil118import toavoidlocaldrift. Publication117proofnewfileis safe.
+
+Next afterquality:importvalidatedsource,fullsource+all10builds,exactKDEbytes/Spacefirst+second native,commitCI/publish118/updater;thenTD165KDEmenu task119.10releasesrequested114–123,6remain. FullnativebaselineFF116165/15/40,Chromehistorical179/0/41;total344/15/81of440.
+
+--- Prior checkpoints are history ---
+
 # CURRENT — final117 source passed; bytes unchanged; commit/CI pending — 2026-10-30T21:30:31.781297+00:00
 
 Still3/10 stable114115116;117 NOT PUBLISHED. Currentfinalsource1327 SHA5e39d3585d3afeb746a4ce758bc84a5ac7d5829b034d439ae9c4f98dd197b256. Fullphase release117-ci-fixture-full-v1 PASS3615/34/491isolated,canonicalexit0,439Python10skips,all10binaries0warnings. All10production SHAidentical to initial117;runningKDE daemon2297924/IME2298008/tray2298081,IBus3168326 andconfig5d02... unchanged. Reuse original117native2controls4flips;do not reinstall/restart matching bytes. No activeheavyworker now. Production source unchanged45frozenfiles;only residuals.rs6test-precondition lines vs75cd,alloriginalassertions/timers restored. Controlledage RED/GREEN and3narrowcontrols verified.

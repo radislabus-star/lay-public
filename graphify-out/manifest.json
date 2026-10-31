@@ -2115,7 +2115,7 @@
     "semantic_hash": ""
   },
   "src/typing_pipeline/candidates.rs": {
-    "mtime": 1793321259.5794215,
+    "mtime": 1793402735.2587419,
     "ast_hash": "10099429337b960871959014723e165e",
     "semantic_hash": ""
   },
@@ -2165,12 +2165,12 @@
     "semantic_hash": "b72be1078a6617aa19c32a0f57d355ce"
   },
   "src/typing_rule_graph/definitions.rs": {
-    "mtime": 1793101956.0813289,
+    "mtime": 1793402735.2587419,
     "ast_hash": "01676ab5cc2d53a14d04e96430a9bf54",
     "semantic_hash": ""
   },
   "src/typing_rule_graph/ids.rs": {
-    "mtime": 1793101956.0813289,
+    "mtime": 1793402735.2587419,
     "ast_hash": "5fb65de94665353ef3280b4da8aace80",
     "semantic_hash": "5fb65de94665353ef3280b4da8aace80"
   },
@@ -2185,7 +2185,7 @@
     "semantic_hash": "04b8d2099c1eb8202e20d5ba81310377"
   },
   "src/typing_rule_graph/rules.rs": {
-    "mtime": 1793321259.5884216,
+    "mtime": 1793402735.2587419,
     "ast_hash": "f2526a33901c641f0e0a85ef749956a3",
     "semantic_hash": ""
   },
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793390152.1925244,
-    "ast_hash": "b3587aff3043ec1ed7b5241e9fab5248",
+    "mtime": 1793404573.6496406,
+    "ast_hash": "71a39731b06bbe9660667c806890c9f6",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,12 +5020,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793390722.5588825,
-    "ast_hash": "f392f4bfdeaf7d54f90deaa65343bee0",
+    "mtime": 1793395251.9369433,
+    "ast_hash": "e3bb34379b5002e56dc00539760f1fef",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793390209.6208572,
+    "mtime": 1793394739.7211761,
     "ast_hash": "84f205d6e41325b079ad8ad05d8f8f99",
     "semantic_hash": ""
   },
@@ -5045,8 +5045,8 @@
     "semantic_hash": ""
   },
   "scripts/test_lanes/discovery.py": {
-    "mtime": 1793389996.8756113,
-    "ast_hash": "f62451f5bfe336f33d3facfd771c8ab8",
+    "mtime": 1793402735.2587419,
+    "ast_hash": "e9175bb2eacffd4525f2727a169cbf41",
     "semantic_hash": ""
   },
   "scripts/test_lanes/execution.py": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793394354.951376,
-    "ast_hash": "da5028b7322faae0ab2cbdc36cf39c7c",
+    "mtime": 1793404573.5346396,
+    "ast_hash": "68aab5218149527465f34d0ae07c0a07",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793394205.5547996,
-    "ast_hash": "b53472f9ddf8165e5c436df972ac2f3f",
+    "mtime": 1793402735.2587419,
+    "ast_hash": "4533df270460bda861a96b1ff817c47e",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9630,8 +9630,8 @@
     "semantic_hash": ""
   },
   "src/typing_rule_graph/rules/fragment.rs": {
-    "mtime": 1793322531.6782355,
-    "ast_hash": "5368cddcae82dfec8d817a9b10326ea0",
+    "mtime": 1793402941.363061,
+    "ast_hash": "85705841e3cc41e962ac48e21f8c4ea6",
     "semantic_hash": ""
   },
   "data/layout_fragments/README.md": {
@@ -9660,8 +9660,8 @@
     "semantic_hash": ""
   },
   "docs/development/ten-release-queue-2026-10-30.md": {
-    "mtime": 1793394205.5547996,
-    "ast_hash": "12ae3f56011b65f63a36efb5e810c9ce",
+    "mtime": 1793403921.0408092,
+    "ast_hash": "e4317b7b16df451eebe1af9a2f10cd6a",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
@@ -9715,8 +9715,8 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.117-debug-config-publication.md": {
-    "mtime": 1793394205.5547996,
-    "ast_hash": "ce4c8033dcfc3ce4f4000ab5c887561e",
+    "mtime": 1793396524.3957298,
+    "ast_hash": "e1dfc9a1c2acc7c73c8e9b9d89c89ee0",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.117-glued-function-chain.md": {
@@ -9730,13 +9730,13 @@
     "semantic_hash": ""
   },
   "tech_debt/163-kde-pacing-debug-config-publication.md": {
-    "mtime": 1793394205.5567997,
-    "ast_hash": "db1f162781b09ea04ade33add8a828a6",
+    "mtime": 1793403921.0408092,
+    "ast_hash": "26d9ebe500ca3c9361c5021811f54b8e",
     "semantic_hash": ""
   },
   "tech_debt/164-fragment-autoflip-blocks-space.md": {
-    "mtime": 1793384070.397113,
-    "ast_hash": "63ffc8b477692db08ffdd016ef020f94",
+    "mtime": 1793396524.3957298,
+    "ast_hash": "a802ae0f070c8edeac35cbb735cca010",
     "semantic_hash": ""
   },
   "tech_debt/165-kde-menu-checkbox-stays-open.md": {
@@ -9745,18 +9745,53 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-ci117-cache-fixture.json": {
-    "mtime": 1793394655.6487541,
-    "ast_hash": "b03e5acaa1e7c8b80a6b79a1b5a1a960",
+    "mtime": 1793396524.3957298,
+    "ast_hash": "5330ee55ece26749b3b626052a940a7e",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.117-tests.json": {
-    "mtime": 1793390722.5588825,
-    "ast_hash": "be76fc8b255fe44440498da4f14a5bed",
+    "mtime": 1793395251.9369433,
+    "ast_hash": "96262cb50569140086e16da6ebdb3b87",
     "semantic_hash": ""
   },
   "docs/development/ci117-completion-cache-fixture.md": {
-    "mtime": 1793394655.6487541,
-    "ast_hash": "ffc243cf1f892cd751a85286a63d7d0c",
+    "mtime": 1793396524.3957298,
+    "ast_hash": "b20ec61e09ead697067a49c75b586c11",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-fragment-safe-exact-fallback-118.json": {
+    "mtime": 1793403921.0408092,
+    "ast_hash": "d7b51c1731e9bc6253aa2ab0bbc6bcfc",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-independent-fragment-candidates-118.json": {
+    "mtime": 1793402735.2587419,
+    "ast_hash": "a2c9806593c0e69338e32f0b22238048",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.117-publication.json": {
+    "mtime": 1793399011.729979,
+    "ast_hash": "a039c28376510b097b3019c34458b104",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.118-fragment-quality.json": {
+    "mtime": 1793403921.0408092,
+    "ast_hash": "d7c7b473618e72aaa3570647d3d10acc",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.118-fragment-safe-exact-fallback.md": {
+    "mtime": 1793404573.5346396,
+    "ast_hash": "50ee512a85860c16e5a88cb8547dfd0d",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.118-independent-fragment-candidates.md": {
+    "mtime": 1793402735.2587419,
+    "ast_hash": "73777ee7c0ddb098ffe20abab76c8693",
+    "semantic_hash": ""
+  },
+  "tech_debt/166-independent-fragment-evidence.md": {
+    "mtime": 1793402735.2587419,
+    "ast_hash": "d160eebb7c794ca1b84857212ee94086",
     "semantic_hash": ""
   }
 }

@@ -1,8 +1,8 @@
 {
   "failure_count": 0,
   "failures": [],
-  "manifest_sha256": "56587f5235195638a249e78f269e927eaf2e18773b985dc09c245543e8d7abb1",
-  "observation_path": "docs/development/evidence/release-1.0.117-tests.json",
-  "observation_sha256": "de817431df90f8de8d3d231fe2f07d342c7582818b919789f09822da5d0173ea",
+  "manifest_sha256": "5c46e07770963ca39fe616bb3a6fae07e30355a029c6d71a703dbb258a5be969",
+  "observation_path": "docs/development/evidence/release-1.0.118-tests.json",
+  "observation_sha256": "791a1c35872631b076be05185d2fa7c119de1553cda0a53ee115d6d7194b169b",
   "schema": "lay.test-known-failures.v1"
 }

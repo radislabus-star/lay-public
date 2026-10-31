@@ -63,6 +63,7 @@ PACKAGE_FIXTURE_PATHS = (
 )
 
 PROCESS_ISOLATED_TESTS = {
+    ("lib:lay", "typing_rule_graph::rules::fragment::tests::fragment_mode_retains_safe_exact_ordinary_layout_candidates"),
     (
         "bin:lay-daemon",
         "exact_ime_tail_replay::firefox_pacing::tests::debug_probe_preserves_published_config_until_explicit_reload",

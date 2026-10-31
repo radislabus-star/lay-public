@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "6c77ea721c50b1c033740e096a61ca7a103335f1c212b1d3fe5336f64fc0eb7d",
-  "manifest_fingerprint": "40e92d77d403b634e1729d97f07e5f8c35f733a1e1248aa085205b92a05eff47",
+  "graph_fingerprint": "04a0971dc77dfa92dff6e045607bb33da2fe40687a6650ccc1895bb10640d837",
+  "manifest_fingerprint": "5c4d7cbb9ecefd7bacccbe3649169b9178408261d9009c3057c47bc769b7feed",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -738,7 +738,7 @@
     "src/typing_rule_graph/priorities.rs": "0a0f15ed580dd56c5062d27a933eb19877bb2b0c891ff141d2cb3f20ddb6501b",
     "src/typing_rule_graph/registry.rs": "31c2a87b82ad2685662d0c2549940f0b7401ed89d25745402b49b9ec2bfc7e4e",
     "src/typing_rule_graph/rules.rs": "fb207c24c31f56f6bdf1103975574c2f1f95e17ea8379d313a93f96f355989a0",
-    "src/typing_rule_graph/rules/fragment.rs": "35e071d41627f1c0601adc5366490076a37787476da5223df1be0d1cb01ba399",
+    "src/typing_rule_graph/rules/fragment.rs": "f9c45100f0edb0cc283a5727927b8adc14335273b83202d14f41552582a34c08",
     "src/typing_rule_graph/rules/helpers.rs": "4b05b251d6b5bbb7eba689cb63c91b0b79ba638920220186f8a20f105fd59bd9",
     "src/typing_rule_graph/rules/typo.rs": "2995359c63d2fbb9ad79093e947bda123f1b0ebb73ee690d3fbd4857a8891dd7",
     "src/typing_rule_graph/types.rs": "048428b5f1e9cb2182ac346651361cab5add4a9b504ad221d4ec79cfc05ebdfc",

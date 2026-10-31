@@ -1,0 +1,85 @@
+{
+  "recorded_at_utc": "2026-10-30T23:45:18.704331+00:00",
+  "scope": "offline fixed20000 common deterministic correction core,not native acceptance",
+  "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release118-fragment-safe-quality-v1/result.json",
+  "tested_source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1327,
+    "sha256": "21c4d6d7ce35c0fb20bcd3cc4a95bc5057296323b6dd872dd913fe3e79dccab5"
+  },
+  "heldout_sha256": "89d13ce432d06b479fefb48d6f8b39b49ec2c75ca9d51dca76fd0823c9fb1c26",
+  "accepted_on_proof_sha256": "8c6a1b0336e778bfce6343491b595acde032474edaa72f72069e385ae5967a7b",
+  "quality_gates": [
+    {
+      "language": "ru",
+      "clean_not_regressed": true,
+      "restoration_not_regressed": true,
+      "wrong_not_increased": true,
+      "no_lost_legacy_targets": true,
+      "off": {
+        "total": 10000,
+        "clean_preserved": 10000,
+        "restored": 390,
+        "wrong": 97,
+        "abstain": 9513
+      },
+      "on": {
+        "total": 10000,
+        "clean_preserved": 10000,
+        "restored": 693,
+        "wrong": 0,
+        "abstain": 9307
+      },
+      "accepted_on": {
+        "total": 10000,
+        "clean_preserved": 10000,
+        "restored": 693,
+        "wrong": 0,
+        "abstain": 9307
+      },
+      "accepted_on_clean_not_regressed": true,
+      "accepted_on_restoration_not_regressed": true,
+      "accepted_on_wrong_not_increased": true
+    },
+    {
+      "language": "en",
+      "clean_not_regressed": true,
+      "restoration_not_regressed": true,
+      "wrong_not_increased": true,
+      "no_lost_legacy_targets": true,
+      "off": {
+        "total": 10000,
+        "clean_preserved": 9979,
+        "restored": 2964,
+        "wrong": 105,
+        "abstain": 6931
+      },
+      "on": {
+        "total": 10000,
+        "clean_preserved": 9987,
+        "restored": 2965,
+        "wrong": 0,
+        "abstain": 7035
+      },
+      "accepted_on": {
+        "total": 10000,
+        "clean_preserved": 9987,
+        "restored": 2961,
+        "wrong": 0,
+        "abstain": 7039
+      },
+      "accepted_on_clean_not_regressed": true,
+      "accepted_on_restoration_not_regressed": true,
+      "accepted_on_wrong_not_increased": true
+    }
+  ],
+  "runtime_modified": false,
+  "raw_model": {
+    "runtime_trainer_comparisons": 40000,
+    "model_bytes": 687981,
+    "cold_us": 378,
+    "warm_median_us": 3.468,
+    "warm_p95_us": 8.369,
+    "rss_high_water": "VmHWM:\t  143496 kB"
+  }
+}

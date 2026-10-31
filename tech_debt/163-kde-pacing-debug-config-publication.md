@@ -1,7 +1,7 @@
 # TD-163 — debug-проверка pacing повторно загружает конфигурацию
 
-Статус: VALIDATED_AWAITING_PUBLICATION. Кандидат 1.0.117;
-исходники/сборка/установленные байты и короткие native-контроли проверены, CI/публикация ещё ожидаются. Владелец: docs/development/release-1.0.117-debug-config-publication.md.
+Статус: DONE_SCOPED_PUBLISHED_1.0.117.
+Исходники, сборка, установленные байты, короткие native-контроли, CI и публикация проверены. Владелец: docs/development/release-1.0.117-debug-config-publication.md.
 
 Карта фактического источника:
 src/bin/lay_daemon/exact_ime_tail_replay.rs::execute
@@ -45,3 +45,5 @@ lay::config::runtime_debug_action_log() читает опубликованны�
 Никаких новых фокусов,кешей,маршрутов доставки,ретраев или тайм-аутов.
 Rollback ограничен строкой leaf и её регрессией; не откатывать конфигурацию
 пользователя и не перезапускать GNOME ради проверки этой задачи.
+
+Публикация подтверждена2026-10-30T21:50:57Z,commit e65b63b0c5583c30360f8385509f060d2d0d190c,annotatedtags bothremotes,all4CI PASS,actual installed updaters bothhosts exit0. Evidence docs/development/evidence/release-1.0.117-publication.json. Scope:use_fast_replay debug probe only;adjacent refusal logger load remains a separate source-only finding.
