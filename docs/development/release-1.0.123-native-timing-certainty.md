@@ -61,3 +61,5 @@ factorypath verified after2/2frozenr19native controls(4flips). Config/layout/
 globalIBus preserved,localGNOME untouched. ActualsavedCLIreplay remains1FAIL
 with3outside-recorded-margin+1overlap andcausalUNKNOWN. No fullmatrix or speedup
 claim. Publication pending;structured final-verification JSON owns details.
+
+Published 2026-10-31T12:23:35Z at https://github.com/radislabus-star/lay-public/releases/tag/v1.0.123. Commit50593607;all4CI/SecurityPASS,identicalannotatedtagmirrors/peeledcommit,bothactualinstalled menuupdaters/sources verified. No local install/restart. Ten requestedstable releases114–123 independentlyreadback fromGitHubAPI.
