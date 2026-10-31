@@ -1,0 +1,17 @@
+{
+  "canonical_invocation_exit": 0,
+  "failures": [],
+  "manifest_sha256": "f8430954c02a8ac258a5baaae847dec24326d2995224c7f6b1397269836da0aa",
+  "process_isolated_selected": 494,
+  "recorded_at_utc": "2026-10-31T07:56:07Z",
+  "runtime_authority_changed": false,
+  "schema": "lay.test-failure-observation.v1",
+  "scope": "complete actual canonical correctness/package execution; every bulk and process-isolated identity verified; native evidence remains separate",
+  "selected": 3617,
+  "source_closure": {
+    "files": 1328,
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "sha256": "565282efa1867e90966cbd1a9882301a7218700458aaf05c436bc0562be1038a"
+  },
+  "targets": 34
+}

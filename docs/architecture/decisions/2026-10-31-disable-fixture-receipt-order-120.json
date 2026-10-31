@@ -1,0 +1,48 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-31-disable-fixture-receipt-order-120",
+  "status": "focused_and_complete_source_gates_verified",
+  "owner": "docs/development/ci120-disable-receipt-order.md",
+  "baseline": "b06a294b51d95e8c19ad25754dcf9b9798a867d7",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "decision": "Use already existing received-stamp-before-consumer ordering in actual_disable positive test helper; preserve negative race controls and all runtime code/deadlines.",
+  "first_failed_transition": "Positive test helper allows engine.disable before observer records real stamp; callback can refuse before local reset. Confirm with controlled inversion.",
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "runtime_change_allowed_paths": [],
+  "helper": {
+    "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "start": "pub(super) async fn actual_disable(",
+    "end": "\nfn factory_message(",
+    "baseline": "pub(super) async fn actual_disable(harness: &mut Harness, engine: &mut LayIbusEngine, serial: u32) {\n    let disable = method_message(\n        DISPATCH_SENDER,\n        serial,\n        TARGET_PATH,\n        ENGINE_INTERFACE,\n        \"Disable\",\n    );\n    send_manually_dispatched_callback(&mut harness.peer, &disable, TARGET_PATH, ENGINE_INTERFACE)\n        .await;\n    let ((), observed) = bounded(future::zip(\n        engine.disable(disable.header()),\n        harness.observer.process_next(),\n    ))\n    .await;\n    assert!(observed.expect(\"lifecycle Disable refusal must not cancel observation\"));\n}\n",
+    "controlled_negative": "pub(super) async fn actual_disable(harness: &mut Harness, engine: &mut LayIbusEngine, serial: u32) {\n    let disable = method_message(\n        DISPATCH_SENDER,\n        serial,\n        TARGET_PATH,\n        ENGINE_INTERFACE,\n        \"Disable\",\n    );\n    send_manually_dispatched_callback(&mut harness.peer, &disable, TARGET_PATH, ENGINE_INTERFACE)\n        .await;\n    // Controlled negative ordering: consume before the real receipt is observed.\n    bounded(engine.disable(disable.header())).await;\n    let observed = bounded(harness.observer.process_next()).await;\n    assert!(observed.expect(\"lifecycle Disable refusal must not cancel observation\"));\n}\n",
+    "approved": "pub(super) async fn actual_disable(harness: &mut Harness, engine: &mut LayIbusEngine, serial: u32) {\n    let disable = method_message(\n        DISPATCH_SENDER,\n        serial,\n        TARGET_PATH,\n        ENGINE_INTERFACE,\n        \"Disable\",\n    );\n    send_manually_dispatched_callback(&mut harness.peer, &disable, TARGET_PATH, ENGINE_INTERFACE)\n        .await;\n    // Positive lifecycle fixtures begin after their real receipt is observed.\n    let observed = bounded(harness.observer.process_next()).await;\n    assert!(observed.expect(\"lifecycle Disable refusal must not cancel observation\"));\n    bounded(engine.disable(disable.header())).await;\n}\n",
+    "sha256": {
+      "baseline": "e618915d40f114d06617c3ca7083b0ba67867634ca4f1e77edc7b2ed2895d3ce",
+      "controlled_negative": "c163a137dabff9efef02ce8cdfa144d9af9a71420b5b08a15e1d1b176ed2a00f",
+      "approved": "b786790c5d0f68973e8eb0ba4ba20b373131fbc4ae3a7e9bc3b6fed905b2bfe5"
+    },
+    "remainder_sha256": "30b81ae9d9374431b73fbb10caa13f899c39e0a688830180d9fdc1696ce8dac4"
+  },
+  "selected_tests": [
+    "context_admission::adapter::tests::word_scope::residuals::residual_missing_or_repeated_disable_revokes_and_completes_local_reset",
+    "context_admission::adapter::tests::word_scope::residuals::residual_later_factory_retires_revoked_transfer_and_recovers_source_free",
+    "context_admission::adapter::tests::word_scope::residuals::td121_completed_release_late_ingress_cannot_revive_the_pre_reset_word",
+    "context_admission::adapter::tests::word_scope::residuals::residual_lifecycle_bad_sender_or_payload_still_stops_observer",
+    "context_admission::adapter::tests::word_scope::residuals::residual_repeated_focus_out_revokes_locally_and_recovers_fresh_unknown_start",
+    "context_admission::adapter::tests::word_scope::terminal_delivery::terminal_delivery_managed_no_apply_space_stays_in_commit_stream_without_receipt"
+  ],
+  "runtime_authority_changed": false,
+  "verification": {
+    "red": "CROOT/release120-disable-order-red-v1/result.json: controlled consumer-before-receipt ordering reproduces original atomic.active assertion, exit101,0.043s. Not unchanged-original-zip proof.",
+    "green": "CROOT/release120-disable-order-green-v1/result.json: all6existing exact identities PASS; all3helper callers plus independent late-ingress/bad-sender/FocusOut controls; no test-body/event/deadline/runtime change.",
+    "full": "CROOT/release120-refusal-full-v4/result.json:3617/3617,1149IME,canonicalexit0. All original test bodies/deadlines and negative controls frozen."
+  }
+}

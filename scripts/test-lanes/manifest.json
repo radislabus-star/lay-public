@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3580,
+    "correctness": 3581,
     "ignored": 45,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 504,
-    "target": 3168
+    "process": 506,
+    "target": 3167
   },
   "package_fixtures": [
     {
@@ -3597,6 +3597,13 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
+      "name": "exact_ime_tail_replay::kde_diagnostics::tests::refusal_debug_probe_preserves_published_config_until_explicit_reload",
+      "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
       "name": "nanda_wave::l2::tests::l2_exposes_l3_phrase_forecast_candidate_when_llmwave_is_enabled",
       "target": "lib:lay"
     },
@@ -3676,6 +3683,13 @@
       "lane": "correctness",
       "name": "space_autocorrect_keeps_existing_public_gate_contract",
       "target": "test:input_gate_space_contract"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "td125_legacy_preedit_tests::td125_level_modifier_wire_order_preserves_owned_word_and_space_lease",
+      "target": "bin:lay-ibus-engine"
     },
     {
       "isolation": "process",
@@ -20111,13 +20125,6 @@
       "kind": "test",
       "lane": "correctness",
       "name": "td125_legacy_preedit_tests::td125_legacy_preedit_word_commits_ready_space_correction_without_delete",
-      "target": "bin:lay-ibus-engine"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "td125_legacy_preedit_tests::td125_level_modifier_wire_order_preserves_owned_word_and_space_lease",
       "target": "bin:lay-ibus-engine"
     },
     {

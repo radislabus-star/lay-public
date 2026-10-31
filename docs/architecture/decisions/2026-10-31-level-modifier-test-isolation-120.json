@@ -1,0 +1,27 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-31-level-modifier-test-isolation-120",
+  "status": "canonical_isolation_verified_complete_gates",
+  "owner": "docs/development/ci120-level-modifier-test-isolation.md",
+  "baseline": "b06a294b51d95e8c19ad25754dcf9b9798a867d7",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C10"
+  ],
+  "decision": "Use existing canonical hermetic process isolation for one prepared global worker/material lease fixture. No assertion/event/deadline/source changes.",
+  "first_failed_transition": "Full-v1 exact committed surface mismatch at final Space; same original case passes fresh canonical-feature process. Exact foreign shared-state writer remains UNKNOWN.",
+  "protected_paths": [
+    "scripts/test_lanes/discovery.py"
+  ],
+  "frozen_test_source_sha256": {
+    "src/bin/lay_ibus_engine/td125_legacy_preedit_tests.rs": "5a3c34cbc727a10cc260a281600604e0dfa6e65c32e1e96a797d61aeb13cec1c"
+  },
+  "runtime_authority_changed": false,
+  "evidence": {
+    "full_failed": "CROOT/release120-refusal-full-v1/result.json",
+    "fresh_control": "CROOT/release120-legacy-lease-isolation-control-v2/result.json",
+    "final_full": "CROOT/release120-refusal-full-v4/result.json:3617PASS/0FAIL,494isolates"
+  }
+}

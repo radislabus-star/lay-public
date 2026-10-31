@@ -3549,12 +3549,10 @@ pub(super) async fn actual_disable(harness: &mut Harness, engine: &mut LayIbusEn
     );
     send_manually_dispatched_callback(&mut harness.peer, &disable, TARGET_PATH, ENGINE_INTERFACE)
         .await;
-    let ((), observed) = bounded(future::zip(
-        engine.disable(disable.header()),
-        harness.observer.process_next(),
-    ))
-    .await;
+    // Positive lifecycle fixtures begin after their real receipt is observed.
+    let observed = bounded(harness.observer.process_next()).await;
     assert!(observed.expect("lifecycle Disable refusal must not cancel observation"));
+    bounded(engine.disable(disable.header())).await;
 }
 
 fn factory_message(serial: u32) -> Message {

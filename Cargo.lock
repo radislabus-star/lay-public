@@ -1100,7 +1100,7 @@ dependencies = [
 
 [[package]]
 name = "lay"
-version = "1.0.119"
+version = "1.0.120"
 dependencies = [
  "arboard",
  "async-io",

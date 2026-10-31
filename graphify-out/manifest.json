@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793417162.8912833,
-    "ast_hash": "fd5415c9eb94afaee366c813b56461fa",
+    "mtime": 1793432167.6496716,
+    "ast_hash": "38d2f49165c7d22b4c64a08eafc9fa5c",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793417912.5404265,
-    "ast_hash": "c643aa5a1e16b8ff992d5cbc1d34ba72",
+    "mtime": 1793430587.0105324,
+    "ast_hash": "7ac8fce6c6da946cc9af9c20db05ad88",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793417221.0697625,
-    "ast_hash": "7436940d75335b1e654156d99f549cb3",
+    "mtime": 1793429896.4527848,
+    "ast_hash": "0ca20380c6c9b44285629022c08f710e",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5045,8 +5045,8 @@
     "semantic_hash": ""
   },
   "scripts/test_lanes/discovery.py": {
-    "mtime": 1793402735.2587419,
-    "ast_hash": "e9175bb2eacffd4525f2727a169cbf41",
+    "mtime": 1793429401.3195124,
+    "ast_hash": "eed543794181f89ac7f55337378a06bf",
     "semantic_hash": ""
   },
   "scripts/test_lanes/execution.py": {
@@ -5415,8 +5415,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1793416719.028597,
-    "ast_hash": "d75368c24985443e8f6b0ea50b8bbbdb",
+    "mtime": 1793432295.4407256,
+    "ast_hash": "77257d07d3780be60c747a55f551bd59",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793420741.7283235,
-    "ast_hash": "e4f0b2a6fcfef250e85460e235695af9",
+    "mtime": 1793432167.5056703,
+    "ast_hash": "73dd12e4581a4f31ebb5e957e443384b",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793415886.5658588,
-    "ast_hash": "2c47e5923097540176085d1a8d631cc7",
+    "mtime": 1793432167.5056703,
+    "ast_hash": "57e27b6e18e6a8aeef6dafad9ff4c748",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9375,8 +9375,8 @@
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-rapid-latency-map-2026-10-29.md": {
-    "mtime": 1793307732.8674786,
-    "ast_hash": "68f17646f0d15b8eaf870e471abd63d6",
+    "mtime": 1793427942.3442945,
+    "ast_hash": "8d14cff277f02f13a221bd06ad0fcb43",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-bounded-replay-pacing.json": {
@@ -9450,8 +9450,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs": {
-    "mtime": 1793292130.214228,
-    "ast_hash": "5dadd6f7304c3b1b3af677e2f79aa2c5",
+    "mtime": 1793428019.1009128,
+    "ast_hash": "f62fc93e1367ed570193a444ba9d0f30",
     "semantic_hash": ""
   },
   "docs/development/kde-exact-replay-refusal-diagnostics-map-2026-10-29.md": {
@@ -9660,8 +9660,8 @@
     "semantic_hash": ""
   },
   "docs/development/ten-release-queue-2026-10-30.md": {
-    "mtime": 1793420741.7293236,
-    "ast_hash": "56a8f2a9aded13633a891c643e36c0ea",
+    "mtime": 1793428120.9897318,
+    "ast_hash": "53dfd228eed88a117c91215fe505ac3c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
@@ -9740,8 +9740,8 @@
     "semantic_hash": ""
   },
   "tech_debt/165-kde-menu-checkbox-stays-open.md": {
-    "mtime": 1793409037.5983682,
-    "ast_hash": "80f18c18bbb18a0e2f2aaf2358aa07bd",
+    "mtime": 1793427942.3442945,
+    "ast_hash": "2565e4c04c595158934a5113e1b4fe77",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-ci117-cache-fixture.json": {
@@ -9815,8 +9815,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-kde-checkbox-menu-119.json": {
-    "mtime": 1793420741.7283235,
-    "ast_hash": "88cea43fe8785721066f54141410c69f",
+    "mtime": 1793427942.3432946,
+    "ast_hash": "6fe58012190210b5dce2efba68b525cd",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.118-publication.json": {
@@ -9845,8 +9845,8 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.119-kde-checkbox-menu.md": {
-    "mtime": 1793420741.7293236,
-    "ast_hash": "036aa2acb3a2e376de20be4ac3ab64c2",
+    "mtime": 1793427942.3442945,
+    "ast_hash": "8d739ce4ae9a4bbd53353aa2e9064ea4",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.119-menu-native.json": {
@@ -9855,8 +9855,48 @@
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.119-tests.json": {
-    "mtime": 1793417912.5394266,
-    "ast_hash": "2958420e23ceeef1dc31d557ebaf9744",
+    "mtime": 1793421537.4595082,
+    "ast_hash": "50a689ba03d1ff4acc1b2cdf7359090e",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-disable-fixture-receipt-order-120.json": {
+    "mtime": 1793432572.9440114,
+    "ast_hash": "07da4dc54ecb9b2e4fc061798668e352",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-kde-refusal-config-120.json": {
+    "mtime": 1793432167.5056703,
+    "ast_hash": "7c04fafc30bf0c1f9e72385fb899635a",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-level-modifier-test-isolation-120.json": {
+    "mtime": 1793429401.1815112,
+    "ast_hash": "baedb3335044f4a3f661065884a38f7b",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.119-publication.json": {
+    "mtime": 1793427942.3442945,
+    "ast_hash": "72a508ab558ec3a5c1bb5eb6ec493559",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.120-tests.json": {
+    "mtime": 1793430587.0095325,
+    "ast_hash": "aa915cd02f88a23a9a01ce273514b425",
+    "semantic_hash": ""
+  },
+  "docs/development/ci120-disable-receipt-order.md": {
+    "mtime": 1793432572.9440114,
+    "ast_hash": "cbe9620e4015c14a772d85d7a6f88277",
+    "semantic_hash": ""
+  },
+  "docs/development/ci120-level-modifier-test-isolation.md": {
+    "mtime": 1793429401.1815112,
+    "ast_hash": "309a92bc946529e75050f9a485d2251b",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.120-kde-refusal-config.md": {
+    "mtime": 1793432572.9440114,
+    "ast_hash": "d088a776df1003feb0cef73f5e22e799",
     "semantic_hash": ""
   }
 }

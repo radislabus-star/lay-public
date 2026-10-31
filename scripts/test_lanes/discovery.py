@@ -63,6 +63,15 @@ PACKAGE_FIXTURE_PATHS = (
 )
 
 PROCESS_ISOLATED_TESTS = {
+    # This fixture retains a process-global worker/material lease across keys.
+    (
+        "bin:lay-ibus-engine",
+        "td125_legacy_preedit_tests::td125_level_modifier_wire_order_preserves_owned_word_and_space_lease",
+    ),
+    (
+        "bin:lay-daemon",
+        "exact_ime_tail_replay::kde_diagnostics::tests::refusal_debug_probe_preserves_published_config_until_explicit_reload",
+    ),
     ("lib:lay", "typing_rule_graph::rules::fragment::tests::fragment_mode_retains_safe_exact_ordinary_layout_candidates"),
     (
         "bin:lay-daemon",

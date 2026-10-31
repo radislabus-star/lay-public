@@ -1,0 +1,91 @@
+{
+  "status": "SOURCE_AND_INSTALLED_NATIVE_CONTROLS_VERIFIED_PUBLICATION_PENDING",
+  "canonical_parent": "b06a294b51d95e8c19ad25754dcf9b9798a867d7",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1328,
+    "sha256": "565282efa1867e90966cbd1a9882301a7218700458aaf05c436bc0562be1038a"
+  },
+  "rust": {
+    "selected": 3617,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 494,
+    "canonical_invocation_exit": 0,
+    "bootstrap_invocation_exit": 0,
+    "manifest_sha256": "f8430954c02a8ac258a5baaae847dec24326d2995224c7f6b1397269836da0aa",
+    "observation_sha256": "7f0ab109f36b4ccda4d83ed174d9d1d9eeb949f9377d0ba8cc995d97742edf0f"
+  },
+  "python": {
+    "passed": 430,
+    "skipped": 10,
+    "total": 440
+  },
+  "release_binaries": 10,
+  "compiler_warnings": 0,
+  "tested_inventory_files": 1332,
+  "running_identity": {
+    "status": "FINAL_RUNNING_IDENTITY_AFTER_NATIVE_VERIFIED",
+    "verified_at": "2026-10-31T08:13:27.742333+00:00",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1328,
+      "sha256": "565282efa1867e90966cbd1a9882301a7218700458aaf05c436bc0562be1038a"
+    },
+    "version": "1.0.120",
+    "verification_only_no_reinstall_or_restart": true,
+    "original_install_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release120-refusal-deployment-v1/result.json",
+    "original_failure": "stale1.0.119 assertion in private verification script;raw FAIL preserved",
+    "before_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release120-refusal-deployment-v1/before.json",
+    "daemon_pid": 535954,
+    "daemon_sha256": "2a8ff8c05b8386fc8092d54a067cfae15c53935894734513d48f32a8cf7075c1",
+    "engine_pid": 536040,
+    "engine_sha256": "b51116c3b3fbf2af5031d5b3178b594df5fc764aa79ea86ec133956438c75196",
+    "engine_inode": 24803136,
+    "tray_pid": 536089,
+    "config_path": "/home/e/.cache/lay/kde-live-20261019/config/lay/config.json",
+    "testing_config_sha256": "5d02dfdaf28f59075f33d1e0ffb72c70fecd69a97208d11f22848c8411d543b3",
+    "saved_config": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release120-refusal-deployment-v1/config-before.json",
+    "installed_binary_hashes_verified": 10,
+    "local_gnome_modified": false,
+    "global_ibus_restarted": false
+  },
+  "native_controls": [
+    {
+      "browser": "chrome",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        84.40618496388197,
+        79.62150895036757
+      ],
+      "seconds": 5.783,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release120-refusal-browser-controls-v1/chrome-roundtrip/result.json",
+      "exit": 0
+    },
+    {
+      "browser": "firefox",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        185.09456189349294,
+        140.53617091849446
+      ],
+      "seconds": 6.635,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release120-refusal-browser-controls-v1/firefox-roundtrip/result.json",
+      "exit": 0
+    }
+  ],
+  "native_config_restored_exactly": true,
+  "full_receipt": "CROOT/release120-refusal-full-v4/result.json",
+  "native_matrix_rescored": false,
+  "runtime_authority_changed": false,
+  "limits": [
+    "Historical native344/15/81of440 unpaired. No claim that15Firefox rapid timingFAIL are fixed.",
+    "Prepared lease fixture exact interfering writer remainsUNKNOWN; isolation supplies its process-level precondition.",
+    "Disable fixture controlled RED is forced callback-before-receipt order, not unchanged-original-zip run.",
+    "Initial install FAIL was a stale expected119number; separate verification confirmed installed120 without reinstall/restart."
+  ]
+}

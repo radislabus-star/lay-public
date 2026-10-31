@@ -1,10 +1,69 @@
-# LATEST119 — final gates/native/loaded bytes PASS; commit and publish next
+# LATEST — 120 source/installed/native verified; commit/CI/publication next
 
-2026-10-31T04:46:57.521879+00:00. Published5/10(v114–118). KDE119finalcandidate installed and verified,not yet committed/pushed/published. Full-v4exit0:3616Rust/34targets/492isolated;Python430PASS10SKIPof440;othergates/MSRV/all10buildPASS0warnings. Tested sourcef4e065cf840f1f440748f620fe9182ae65376e2439bf5e35185fcb87ae69f71e,1328files/1332inventory. Returned source imported with strict preimage/hash checks,newerhandoffpreserved. Final10installed binaries equal freshbuild;active daemon3936773/IME3936914/tray3934974 and UI8aa9cb8b...match tested native candidate. GlobalIBus3168326/config5d02.../LayRU/layout0preserved;no redundantreinstallneeded. Cargo target11471745024bytes under16GiBbudget.
+Updated 2026-10-31T08:16:18.768316+00:00. Work SOLO, no Harness/agents/RDPviewer. Canonical checkout
+/home/ubu/projects/lay-dependency-updates-20261027, branch codex/browser-matrix-repair-20261027,
+HEAD b06a294b (119). Candidate120 is installed on remote KDE; NOT pushed/tagged
+or published yet.6/10requested114–123 published. Local GNOME untouched.
 
-Final menu:process-localKSNI_NO_DBUSMENU and oneQMenu application filter handles nativeKDEprojection;one existing controller apply after menuclose,explicitstopcancels. Native15PASS(8toggles),Qt39PASS,Chrome+FFfrozenr19controls2/2PASS. Native stats8sample median41.512ms,p95/max58.479ms,nottyping/pairedspeedup. Both hint classes and commoninput/owner/verifier/controller/deliverycode unchanged. Private cfg(test) semantic fixtures/budgets fixed with unchangedproduct1msdeadline. Priorfailedvariantsretained;transienttestunitstaleIBUSbindingrepairedonlyownedcandidateunit. Exact finalreceipt docs/development/evidence/release-1.0.119-final-verification.json.
+Runtime leaf ONLY kde/exact_replay_diagnostics.rs: actual published debug flag
+instead of extra diagnostic LayConfig::load; normal backend owner/order same.
+Source-only extracted predicate RED/GREEN2tests documented; scope limits
+explicit. Other edits are test-isolation metadata plus cfg(test)actual_disable
+helper: receive real P2P stamp BEFORE handler, reuse adjacent accepted pattern.
+Controlled inverse order reproduced original atomic.active assertion0.043s;
+GREEN6original tests/all3helpercallers+negativecontrols. All test bodies,
+expected effects,1ms runtime rendezvous,1s fixture bounds unchanged.308other
+integration files+exact residual remainder frozen. Old119semantic checks kept
+via exact approved-helper normalization; no oldADR/testguard weakened.
 
-NEXT commit explicit owned files afterscope/diffcheck;verify committed1332fileinventory against finalsource;pushprivate/publicdevbranch+publicmain,waitall4CI,annotated119tag/publicstable/bothtagmirrors/bothactualinstalledupdaterchecks. Helpernotesready CACHE/release-1.0.119-notes.md;identitymustbe CACHE/release119-committed-source-identity.json. No functionalreruns after identicalbyteverification. Thenmarkpublished6/10 andcontinue substantive nextbug. Noagents/Harness/localGNOMEinstall/restart/RDPviewer. LastPRcheck2026-10-31T04:27:28.850552+00:00:0open. HistoricalfullKDEtable344/15/81of440unchanged.
+FULL-v4 PASS:3617/34targets/494isolates,canonicalexit0,Python430PASS10SKIPof440,
+all17gates incllints/audit50/MSRV1.88bothprofiles/installer/Node. All10release
+compiler-executable artifacts0warnings. Source1328/SHA565282efa1867e90966cbd1a9882301a7218700458aaf05c436bc0562be1038a;
+1332testedsource+metadata inventory. Strict imported73files/preimages, preserved
+newer localhandoff onlybecause remote unchanged. Actual failure variantsv1/v2/v3
+and non-equivalentdefaultfeaturecontrol retained; do not repeat source gates.
+Knownledger expectedfailuresZERO, refreshed from actual full results.
+
+Installed once via release120-refusal-install-v1.py; its stale119versionassert
+reportedFAIL AFTER successful copy/restart. Separate read-only verification
+confirmed120/all10files/loadedbytes, no secondinstall/restart. Prelaunch tomllib
+Python3.10mismatch corrected before mutations. Raw failedreceipt retained.
+Current daemon535954 SHA2a8ff8c05b8386fc8092d54a067cfae15c53935894734513d48f32a8cf7075c1;
+IME536040 SHAb51116c3b3fbf2af5031d5b3178b594df5fc764aa79ea86ec133956438c75196,
+inode24803136;tray536089;globalIBus3168326/config5d02...unchanged,LayRU/layout0.
+Post-native identity receipt CACHE/release120-final-loaded-identity.json.
+Frozenr19 ordinary after-Space roundtrip native controls2/2PASS/4flips:
+Chrome84.406/79.622ms,FF185.095/140.536ms(n2each,unpaired,NO speedup claim).
+HistoricalFF165/15/40+Chrome179/0/41=344/15/81of440 NOT rescored.
+
+Source owner release-1.0.120-kde-refusal-config.md; companion ci120-disable-
+receipt-order.md / ci120-level-modifier-test-isolation.md and theirnewADRs.
+Finalscope initiallyrejected TD163statusdoc asshared; exactmetadata path added
+to new120scope/ADR, no code/test/guard change. Recheck full currentdiff before
+commit. TD165topstatus corrected to actual119published acceptance.
+
+NEXT: scope+whitespace checks, commit exact reviewed source/docs, verify Git
+blobs/executablebits against CACHE/release120-tested-inventory.json (cwdcanonical
+checkout), save CACHE/release120-committed-source-identity.json. Push origin+
+public devbranch and publicmain, wait all4CI/Security, publish120 ONLY after
+identity/CI accepted, previous stable119. Notes CACHE/release-1.0.120-notes.md
+have actual source/native facts and NO pendingmarker. Mirror exact annotated
+tag origin, verify both actual installed updater entrypoints --check. THEN
+continue121–123 genuine fixes, no filler or stopping after120. Private next
+KDE isolation map exists; canonical dev-check rsync --delete is already
+safe for renames, privateoverlay helper alone lacks delete transport. No new
+public tooling bug is claimed from that private limitation. Sound at actual
+turn completion only. LastpublicPR query empty; fresh querybeforepush required.
+
+--- Earlier checkpoints (historical) ---
+
+# LATEST —119published6/10; nextoneFirefoxrapid-after-Spacebaseline
+
+2026-10-31T05:18:45.810504+00:00. v1.0.119published2026-10-31T05:14:02Z,canonicalcommitb06a294b51d95e8c19ad25754dcf9b9798a867d7. All4CI/securityPASS;annotatedtag7430a6d8a5ac26ec6fb1e0e37e2fea1c7fbb8235 identicalorigin/public,peelsb06a294b. Actualinstalled updater --checkPASSboth:local115sees119available,KDE119current. Entrypointsresolveinstalledupdate.sh SHAaebfb65e.../publiclatestAPIverified. No localinstall/restart. SIXofTENrequestedreleases114–123published.119DONE_SCOPED,source/native/publicationreceiptsin docs/development/evidence/. Publisher/mirroringallfinished;doNOTrerun. Workingdocupdatesafterpubawaitnextcommit;runtime/sourcecode unchangedafterb06.
+
+119sourcefull-v4:3616Rust/34targets/492isolated,Python430PASS10SKIPof440,othergates/MSRV/all10build0warnings. Testedf4e065cf840f1f440748f620fe9182ae65376e2439bf5e35185fcb87ae69f71e1328files/1332inventorymatchescommittedblobs/executablebits. All10installedfilesandloadedruntimeequalfinalbuild. KDEdaemon3936773SHAedb16210...,IME3936914SHA11be42ba...,tray3934974source8aa9cb8b...;globalIBus3168326 preserved,config5d02dfda...,LayRU/layout0restored. Cargo target11471745024under16GiB. Finalmenu39Qt/15native/2browsercontrolsPASS,menumed41.512ms,p95/max58.479ms(n8,nottyping). SourceKDEmenuonly+privatecfgtestfixtures;commoninput/owner/verifier/controller/hint/deliveryunchanged,bothInlineHintclasses118byte-identical. KSNIprocessflag+onefilterhandlesnativeprojection;oneconfigapplypermenucloseavoidsstartlimit. OwnedtransienttesttraystaleIBUS_ADDRESSrepairedonlyitsunit;no globalenv/theme/IBusrestart. Failedv1/v3recordsretained.
+
+NEXT:select ONE current119Firefoxnormaltext:rapid-five:space baseline beforeanyinputcode. Frozenr19actorSHA360e6b9a...;childFirefoxshim924b5982...;usefreshactualdaemonGUIenv(no staleIBUS_ADDRESS),own newwindow,unchangedcadence/deadlines,nolearningcleanup. ProductionconfigfragmentTrue/debugFalse. Beforemutatingcode,updateexistingrapid-latencymap/owningpreflightanddependencytree;no guessedsharedroutechanges. Sourcepacingfile alreadyallowsword+Space/NBSP,doNOTreviverejectedoldfastcandidate. Historicalfull116220receipt15FAILalllateTARGET_AFTER_NEXT_GESTURE;all5visiblefirstnormaltextcase,nottextloss. Historicalanalyzerv3CROOT/release120-historical-firefox-analysis-v3/report.json showsactive145n med4.117/p957.367ms,closed120nmed136.061/p95227.389/max272.356ms. Oldmetadata/capturewarnings,firstfailedtransitionUNKNOWN. Newbaselineisrequired;no120nativeinput/sourceedityet. Ifshortpass,establishfreshfullaffectedresult;dontinventpatch/release. HistoricalKDEtable344/15/81of440unchanged. Noagents/Harness/localGNOMEinstall/restart/RDPviewer.
 
 # Current state —118 published;119 KDE menu in progress
 

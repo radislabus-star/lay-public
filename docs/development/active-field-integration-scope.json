@@ -1,17 +1,16 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "685ba6f24840bf994669d0c71fd1c8ea268b9326",
+  "base": "b06a294b51d95e8c19ad25754dcf9b9798a867d7",
   "components": [
     "tooling"
   ],
   "shared_paths": [
-    "scripts/lay-kde-tray.py",
+    "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs",
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json",
-    "tech_debt/164-fragment-autoflip-blocks-space.md",
     "tech_debt/165-kde-menu-checkbox-stays-open.md",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs"
+    "tech_debt/163-kde-pacing-debug-config-publication.md"
   ],
-  "decision": "docs/architecture/decisions/2026-10-31-kde-checkbox-menu-119.json"
+  "decision": "docs/architecture/decisions/2026-10-31-kde-refusal-config-120.json"
 }

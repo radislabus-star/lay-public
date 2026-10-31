@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "b4a81b1531ecdd10d240cc9d5d785a527101ccbf9aca649bbe6176963239a347",
-  "manifest_fingerprint": "0651787ccb11b9bf619723bd9c1faf073fcba7f258899d74b6634382af1eea77",
+  "graph_fingerprint": "a5bf9ae967e03db4e66b4f98bdafd420fcf03e6545b66558ab693aec7029d2ea",
+  "manifest_fingerprint": "456e51bb1b90dea4a00e6d06bd69e385900708f8b0eeb36d7d2fe67d8fbb7ea6",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -39,7 +39,7 @@
     "src/bin/lay_daemon/exact_ime_tail_replay.rs": "e7bbc023b5b39fc3a94ab86ac27b041793da239f2666204cec074a2a9e6c001b",
     "src/bin/lay_daemon/focus_guard.rs": "e7a8478ca964097c781844906813d2221f92b07ecf05a431dd3991a3c9acdfe6",
     "src/bin/lay_daemon/force_layout_hotkeys.rs": "dc8a7d7e630afbeac9b3e0ef331e9bec59f3cfa992b7f29634ffb71ccd51085f",
-    "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs": "77455857555f28a9cb6ed3cc11593b785fee94634c715fc68319cc6253f270c7",
+    "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs": "4bea39d188fcd7ac7ef6ec600083e531eaa24120a35034fb9b770942e9accaff",
     "src/bin/lay_daemon/kde/firefox_replay_pacing.rs": "6c817f71228e8f0fee1da86e74160ebc105dac84c311c95e3056dc10a9678ae0",
     "src/bin/lay_daemon/kde/firefox_replay_receipt.rs": "58685bb1fee16423b3760f6733f03e6b6c53d396444df00d717dd7ab0ab04780",
     "src/bin/lay_daemon/kde/focus_policy.rs": "0e4401d558ad8b931f61792ae6669881c04d4bd10f4b0b96ae4b78e60d47bc0c",
@@ -196,7 +196,7 @@
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/owned_preedit_reset_source.rs": "250cb37498414db2e9c3616fd90020c9c4eeae89378b50f7de1e94f687663321",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/queued_compatibility_focus.rs": "2e80f8aabde1e88e4e248411b88b9c86485ce4f7f3deab4546f7bfa58472f973",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/replay_suppression.rs": "ef953a8d8475021e195107bec83521e4ae6a4cd6d90964284588937c162a5335",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "e024f3b3fb8abfe355a853ad1970e915bc6ddc39dc67b47ab8a3754d9f9b4d71",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": "b8d6592b13b45f4363496b408e1cefcb91868c020c56ec145881be3b87e5e48a",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals/release97_firefox.rs": "05d6db73ca030f0e7849d09ea530c5f65e849626d514eaabbb2bca5cd94506b4",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_owned_source.rs": "d06c9082cf3b19d0878c2a4b747f2909a94a979e1e29c5d88222cbc97650f4e6",
     "src/bin/lay_ibus_engine/context_admission/adapter/tests/stock_surrounding.rs": "631ba58d0a5f304f5cb2442d847c58b2157f6c15344dc31e9af30c1af3f82ea7",
