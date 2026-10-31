@@ -1,16 +1,24 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "b06a294b51d95e8c19ad25754dcf9b9798a867d7",
+  "base": "a9b9bb9fab96f6b6d4a8fa11d5dceb6ccead065b",
   "components": [
-    "tooling"
+    "kde-focus"
   ],
   "shared_paths": [
-    "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs",
+    "src/bin/lay_daemon/kde_focus.rs",
+    "src/bin/lay_daemon/kde_focus/foreground.js",
+    "src/bin/lay_daemon/kde_focus/tests.rs",
+    "src/bin/lay_daemon/layout_kde.rs",
+    "src/bin/lay_daemon/layout_controller/kde_exact.rs",
+    "src/bin/lay_daemon/layout_controller/kde_exact/tests.rs",
+    "src/bin/lay_daemon.rs",
+    "src/bin/lay_ibus_engine.rs",
+    "src/bin/lay_daemon/layout_controller.rs",
+    "scripts/check-architecture.sh",
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json",
-    "tech_debt/165-kde-menu-checkbox-stays-open.md",
-    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
-    "tech_debt/163-kde-pacing-debug-config-publication.md"
+    "tech_debt/163-kde-pacing-debug-config-publication.md",
+    "tech_debt/168-firefox-initial-manual-refusal.md"
   ],
-  "decision": "docs/architecture/decisions/2026-10-31-kde-refusal-config-120.json"
+  "decision": "docs/architecture/decisions/2026-10-31-kde-source-isolation-121.json"
 }

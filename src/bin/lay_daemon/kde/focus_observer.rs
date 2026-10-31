@@ -441,7 +441,7 @@ fn script_source(destination: &str, request: &str) -> String {
         serde_json::json!({
             "destination": destination, "request": request, "path": PATH, "interface": INTERFACE,
         }),
-        include_str!("kde_focus/foreground.js")
+        include_str!("focus_observer/foreground.js")
     )
 }
 
@@ -477,5 +477,5 @@ impl Drop for RuntimeScript {
 }
 
 #[cfg(test)]
-#[path = "kde_focus/tests.rs"]
+#[path = "focus_observer/tests.rs"]
 mod tests;

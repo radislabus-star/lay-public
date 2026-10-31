@@ -1,3 +1,89 @@
+# LATEST —121verified, publication pending;7/10 published
+
+Updated 2026-10-31T09:36:46.512828+00:00. Exact121 source1328SHA556d8b7ccb081cb27bd9591d8b7f518cb5762c3b8e1d0a732db3bd3eedf4cfbb.
+Six KDE moves/four literal seams;51focused/3617Rust/17gates/ten binaries0warnings.
+Remote current121 loaded/hash-verified,all ten installed+factorytargetsamebytes,
+config/mode/globalIBus preserved. LocalGNOME untouched. Initialnative-v1FFFAIL
+retainedTD168,notfixed;120comparison2PASS andrestored121v2controls2PASS.
+No fullmatrix rescore:344/15/81of440. Finalreceipt versioned. Sourceimportdone.
+Next commit/verifyblobs/push/4CI/tag/stable/bothactualinstalled updaterchecks
+andtagmirror. No more tests/builds/install/nativeinput needed for publication.
+After121publishedcontinue122canonicalKDErecipe8currentlyskips40realtests;
+123provisional timingcertainty tooling. Complete10requested,do notstopat121.
+Solo/noagents/Harness/RDP;heavyremote;finalsoundonlywhenactuallyending.
+
+# LATEST — 120 published; 7/10; next KDE physical source boundaries
+
+Updated 2026-10-31T08:50:34.115761+00:00. v1.0.120 published08:47:13Z,
+canonicalcommit a9b9bb9fab96f6b6d4a8fa11d5dceb6ccead065b. All4CI/SecurityPASS;
+annotatedtag050a7443d52f2678a14a4d42e604649fd9226c01 identicalorigin/public and
+peeledcommita9b9 verified. Bothactualinstalled updater --checkPASS: local119
+sees120available;KDE120current. Resolvedsources ~/.local/lib/lay/update.sh on
+bothhosts SHAaebfb65e... /latestpublicAPI checked. No localGNOMEinstall/restart.
+Publisher88171finished;tagmirror/readbackfinished. DoNOTrepeat120publication,
+sourcegates/install/nativeinput. Actual publication proof nowversioned.
+
+Queue7of10published114–120. User sayscontinue121–123,notstopafter120. Next task
+is one cohesive mechanical KDE source-file isolation, from exact120baseline.
+Private plan CACHE/next-kde-isolation-map-draft.json has6moves/4sharedseams with
+expected/normalizedhashes. PreserveRustmodulealiases/parents and functionbodies,
+onlyinclude/pathliterals change. Existingneutraldbus_connection remains shared;
+doNOTduplicate/refactorGNOME behavior. scripts/check-architecture.sh path moves
+with same180lineceiling; newowningADR before any source/guardedit.
+
+Deletiontransport prerequisite: canonicaldev-check alreadyuses marker-owned
+rsync --checksum --delete underlease. Privateoverlay helper lacksdeletions;
+using it blindlywould leaveoldremote source paths. Preferexistingcanonical
+mechanism,or explicitpreimage-verified transport handling;oldpaths mustbeabsent.
+No121code/versionbump yet. Workingdirtyonly120publication/handoff metadata.
+Beforeeditingwriteconsequence/scope/ADR;useexistingcomponent/sourcegates,full
+mandatorychecks/nativecontrols/CI/publication/updaters. No newroutes/owner/cache.
+
+Source120565282ef.../1328,1332inventory/10binaries0warnings,3617/34/494isolates,
+Python430PASS10SKIPof440,17gates. LoadedKDEdaemon535954SHA2a8ff8c0..,
+IME536040SHAb51116c3..,inode24803136;tray536089;globalIBus3168326/config5d02..
+preserved,LayRU/layout0. Native2controls4flipsPASS(unpaired,not5rapid claim).
+HistoricalFF165/15/40+Chrome179/0/41=344/15/81of440 NOTrescored. Timingcertainty
+private evidence confirms oldwire4late reports=3definitelylate+1ambiguous;
+rowstillFAIL, no totals changed. Analyzer receipts.py76–77 unconditionally
+labels late_targets asTARGET_AFTER_NEXT_GESTURE; futureseparatetoolingcandidate.
+
+SOLO/noagents/Harness/RDPviewer,allheavyremote. No completion sound yet;
+onlyatactualturncompletion. Memorycitationfinalrule5241stillapplies.
+
+--- Prior120publication/CI checkpoints are historical below ---
+
+# ARMED — 120 committed/pushed; automatic publisher waits CI
+
+Updated 2026-10-31T08:20:20.009574+00:00. Canonicalcommit a9b9bb9fab96f6b6d4a8fa11d5dceb6ccead065b,
+Cargo120. Pushed origin devbranch, public devbranch and publicmain; all refs
+fast-forwarded fromb06. Git blob/executable-bit verifierPASS:1328source+4release
+metadata files exactlymatch tested565282efa1867e90966cbd1a9882301a7218700458aaf05c436bc0562be1038a;
+Git group-write normalization documented, no code effect. Working source clean
+at push. LastpublicPR queryempty. Source/native/runtime verification below
+COMPLETE; doNOTrepeat builds/tests/install/nativeinput for publication.
+
+Publisher ALREADY ARMED in tool session88171:
+human-safe-run512M wait-publish-verified-release.py1.0.120 a9b9bb9f v1.0.119.
+It waits all4public CI/Security, then creates/pushes annotatedpublictag, publishes
+stable and invokes BOTH actual installed updater --check entrypoints. DoNOT
+start secondpublisher or changeHEAD/source before it completes. Currently
+installer/MSRV/mainchecks inprogress,Securityqueued.6of10published until actual
+APIconfirms120. Afterpublisher success mirror SAME annotatedtagobject toorigin,
+independently readbackboth tagrefs/peeledcommit and actualupdaters/entrypoints.
+Then add actualpublication metadata to queue/owner and continue121–123 genuine
+fixes. No finalturn/soundafter120alone;userasked10. No agents/Harness/RDP.
+
+Cache current artifacts: release120-commit.json,release120-committed-source-identity.json,
+release120-tested-inventory.json,release120-artifact-inspection.json,
+release120-installed-runtime-verified.json,release120-final-loaded-identity.json,
+release120-browser-controls.json. AllCROOT rawFAILs and theirnotes retained.
+Native2controlsPASS/4flips;historical344/15/81 NOT rescored. Remote120realdaemon
+535954,IME536040,tray536089/globalIBus3168326/config5d02..preserved;localGNOME
+untouched. Source17gates/3617Rust/494isolates/430Python+10SKIP/10binaries0warnings.
+
+--- Earlier 120 checkpoint (historical pending-status text below) ---
+
 # LATEST — 120 source/installed/native verified; commit/CI/publication next
 
 Updated 2026-10-31T08:16:18.768316+00:00. Work SOLO, no Harness/agents/RDPviewer. Canonical checkout

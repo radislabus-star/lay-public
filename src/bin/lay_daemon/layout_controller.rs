@@ -15,7 +15,7 @@ mod ibus_bridge;
 mod ime_bridge;
 #[path = "layout_controller/ime_manual_toggle.rs"]
 mod ime_manual_toggle;
-#[path = "layout_controller/kde_exact.rs"]
+#[path = "kde/layout_handoff.rs"]
 mod kde_exact;
 #[path = "layout_controller/reconcile.rs"]
 mod reconcile;

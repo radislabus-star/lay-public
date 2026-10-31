@@ -1,7 +1,7 @@
 # TD-163 — debug-проверка pacing повторно загружает конфигурацию
 
 Статус: DONE_SCOPED_PUBLISHED_1.0.117.
-Отдельный соседний отказной журнал: source/native проверки кандидата1.0.120 завершены; CI/публикация ещё ожидаются. Владелец: docs/development/release-1.0.120-kde-refusal-config.md. Сохранены прежние границы117.
+Отдельный соседний отказной журнал: исправление опубликовано в1.0.120/a9b9bb9f, source/native/CI/tagmirrors/actualupdatersPASS. Владелец: docs/development/release-1.0.120-kde-refusal-config.md. Сохранены прежние границы117.
 Исходники, сборка, установленные байты, короткие native-контроли, CI и публикация проверены. Владелец: docs/development/release-1.0.117-debug-config-publication.md.
 
 Карта фактического источника:

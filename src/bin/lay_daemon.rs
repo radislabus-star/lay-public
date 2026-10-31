@@ -195,7 +195,7 @@ mod native_input;
 mod focus_guard;
 use focus_guard::*;
 
-#[path = "lay_daemon/kde_focus.rs"]
+#[path = "lay_daemon/kde/focus_observer.rs"]
 mod kde_focus;
 
 // ─── Trigger FSM and word-boundary helpers ─────────────────
@@ -243,7 +243,7 @@ use enter_autocorrect_runtime::*;
 
 // ─── Layout, DBus, IME controller ────────────────────────
 
-#[path = "lay_daemon/layout_kde.rs"]
+#[path = "lay_daemon/kde/layout.rs"]
 mod layout_kde;
 
 #[path = "lay_daemon/layout_niri.rs"]

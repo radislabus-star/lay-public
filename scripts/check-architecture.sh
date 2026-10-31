@@ -425,7 +425,7 @@ report_line_budget src/bin/lay_daemon/layout_controller/verify.rs 70
 report_line_budget src/bin/lay_daemon/layout_controller/gnome_dbus.rs 360
 report_line_budget src/bin/lay_daemon/layout_controller/ibus_bridge.rs 100
 report_line_budget src/bin/lay_daemon/layout_controller/ime_bridge.rs 140
-report_line_budget src/bin/lay_daemon/layout_kde.rs 180
+report_line_budget src/bin/lay_daemon/kde/layout.rs 180
 report_line_budget src/bin/lay_daemon/layout_x11.rs 100
 report_line_budget src/bin/lay_daemon/learning_runtime.rs 88
 report_line_budget src/bin/lay_daemon/learning_runtime/log_file.rs 145

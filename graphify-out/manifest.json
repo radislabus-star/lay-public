@@ -15,12 +15,12 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/lay-impl.js": {
-    "mtime": 1793321256.1383996,
+    "mtime": 1793325603.4808438,
     "ast_hash": "4055bc35be7060a9079b89ab478cb213",
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/metadata.json": {
-    "mtime": 1793390112.8962975,
+    "mtime": 1793433978.2526772,
     "ast_hash": "f8e3ea571ca23b3b49226b4aa553baf7",
     "semantic_hash": ""
   },
@@ -40,7 +40,7 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/tray_support.js": {
-    "mtime": 1793390112.8962975,
+    "mtime": 1793433978.252719,
     "ast_hash": "c688a813250c9845456924f29d00d09a",
     "semantic_hash": ""
   },
@@ -65,8 +65,8 @@
     "semantic_hash": ""
   },
   "scripts/check-architecture.sh": {
-    "mtime": 1793101955.9728565,
-    "ast_hash": "a33ef71747f5f74d89b6b9860df96a48",
+    "mtime": 1793437143.597883,
+    "ast_hash": "61649fd0fbe2cfa831f9e42a50f23d35",
     "semantic_hash": ""
   },
   "scripts/check-gnome-extension-runtime.sh": {
@@ -115,7 +115,7 @@
     "semantic_hash": "6e672f9f487025b8cbbb8fa18a2ee88e"
   },
   "scripts/lay-kde-tray.py": {
-    "mtime": 1793420242.468169,
+    "mtime": 1793433978.2650402,
     "ast_hash": "800ff6e18c1f5ee5c32f075e5ed55544",
     "semantic_hash": ""
   },
@@ -175,8 +175,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon.rs": {
-    "mtime": 1793101955.9882135,
-    "ast_hash": "0f0261c097ea8039343c707a758a8032",
+    "mtime": 1793437143.5960197,
+    "ast_hash": "cfa6d6ac2bbf7bffdb677587916e1a8b",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/action_log_runtime.rs": {
@@ -330,8 +330,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller.rs": {
-    "mtime": 1793293344.2628446,
-    "ast_hash": "f15486813c6fe706ea16e19fbb224c82",
+    "mtime": 1793437143.5970466,
+    "ast_hash": "2f22253ebbbfc38622f96b2b730e6c62",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/backend_hint.rs": {
@@ -355,7 +355,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/ime_bridge.rs": {
-    "mtime": 1793293344.2628446,
+    "mtime": 1793293516.0922046,
     "ast_hash": "a84ec5948230a827fb25c4f0899d2262",
     "semantic_hash": ""
   },
@@ -363,11 +363,6 @@
     "mtime": 1793101955.9926517,
     "ast_hash": "24826817b59b37fc639b763f31fb0bde",
     "semantic_hash": ""
-  },
-  "src/bin/lay_daemon/layout_kde.rs": {
-    "mtime": 1793101955.9927995,
-    "ast_hash": "a2d112ade6caaa194bab9bbf5e74f288",
-    "semantic_hash": "a2d112ade6caaa194bab9bbf5e74f288"
   },
   "src/bin/lay_daemon/layout_niri.rs": {
     "mtime": 1793101955.9927995,
@@ -700,7 +695,7 @@
     "semantic_hash": "5999ee2db28cd7cb009ea6e748ace5cd"
   },
   "src/bin/lay_daemon/text_output.rs": {
-    "mtime": 1793279396.1904445,
+    "mtime": 1793279450.308182,
     "ast_hash": "329ea99312a227275f32c540403b6adb",
     "semantic_hash": ""
   },
@@ -710,7 +705,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/text_output/key_emit.rs": {
-    "mtime": 1793279396.1054442,
+    "mtime": 1793279450.308512,
     "ast_hash": "0620ef6e453e1dfa606b6ffbde8462a7",
     "semantic_hash": ""
   },
@@ -730,7 +725,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/trigger_dispatch.rs": {
-    "mtime": 1793293924.4644136,
+    "mtime": 1793294200.4471488,
     "ast_hash": "a2aeea8c66e79cd221bcf135b3bb2c55",
     "semantic_hash": ""
   },
@@ -835,8 +830,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine.rs": {
-    "mtime": 1793101982.1689103,
-    "ast_hash": "8d32ed17a84cba9eda135cd40bad6c6b",
+    "mtime": 1793437143.5961907,
+    "ast_hash": "8d3f40ca4b3bb12ca75ae148a1cb17b5",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/args.rs": {
@@ -845,7 +840,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/bridge.rs": {
-    "mtime": 1793228624.9102893,
+    "mtime": 1793228826.6784492,
     "ast_hash": "b6c637c547c750f5861f23fbefcb0329",
     "semantic_hash": ""
   },
@@ -860,7 +855,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/composition_commit.rs": {
-    "mtime": 1793308576.4446497,
+    "mtime": 1793308709.8051393,
     "ast_hash": "4cc1545980889e55b55ae7a879e4787c",
     "semantic_hash": ""
   },
@@ -950,7 +945,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/tail_memory.rs": {
-    "mtime": 1793304592.626459,
+    "mtime": 1793304655.7026496,
     "ast_hash": "7efb0bebbb33f6ac95d8570f9c88fe65",
     "semantic_hash": ""
   },
@@ -1080,7 +1075,7 @@
     "semantic_hash": "e19ac12518cb9b475326a8966ee685e6"
   },
   "src/config.rs": {
-    "mtime": 1793321256.1904,
+    "mtime": 1793325604.1076052,
     "ast_hash": "8c0be579c3f8bc9ee6052ab8805ed962",
     "semantic_hash": ""
   },
@@ -1090,7 +1085,7 @@
     "semantic_hash": ""
   },
   "src/config/defaults.rs": {
-    "mtime": 1793321256.1904,
+    "mtime": 1793325604.1076512,
     "ast_hash": "337ecf77862d715b23de2e277670a501",
     "semantic_hash": ""
   },
@@ -1105,7 +1100,7 @@
     "semantic_hash": "1180a76d137c96aa31055ce5b8052750"
   },
   "src/config/types.rs": {
-    "mtime": 1793321256.1913998,
+    "mtime": 1793325604.2124956,
     "ast_hash": "5b15ee1ca806306bef0a793ecec53ecd",
     "semantic_hash": ""
   },
@@ -1395,7 +1390,7 @@
     "semantic_hash": ""
   },
   "src/lib.rs": {
-    "mtime": 1793321256.1913998,
+    "mtime": 1793325604.2127683,
     "ast_hash": "7ebef86276b3e132ae5a1ed6387142e7",
     "semantic_hash": ""
   },
@@ -1680,12 +1675,12 @@
     "semantic_hash": "ddca31d84de02e2062a49159d4342cb9"
   },
   "src/phrase_reader/glued_phrase.rs": {
-    "mtime": 1793388401.5504692,
+    "mtime": 1793433978.2661185,
     "ast_hash": "7ff6641b9ee8300830901a0eeb328155",
     "semantic_hash": ""
   },
   "src/phrase_reader/guards.rs": {
-    "mtime": 1793388401.5504692,
+    "mtime": 1793433978.266168,
     "ast_hash": "174be9d0f680f0ba84fbff0bfc8acecb",
     "semantic_hash": ""
   },
@@ -1715,7 +1710,7 @@
     "semantic_hash": "8ee2463eb6503bb01a1df5e7d896ece5"
   },
   "src/phrase_reader_tests.rs": {
-    "mtime": 1793388005.8027236,
+    "mtime": 1793101956.0712776,
     "ast_hash": "f595eb80ff90e6a10ac544175c8d7d91",
     "semantic_hash": ""
   },
@@ -2115,7 +2110,7 @@
     "semantic_hash": ""
   },
   "src/typing_pipeline/candidates.rs": {
-    "mtime": 1793402735.2587419,
+    "mtime": 1793433978.2662125,
     "ast_hash": "10099429337b960871959014723e165e",
     "semantic_hash": ""
   },
@@ -2165,12 +2160,12 @@
     "semantic_hash": "b72be1078a6617aa19c32a0f57d355ce"
   },
   "src/typing_rule_graph/definitions.rs": {
-    "mtime": 1793402735.2587419,
+    "mtime": 1793433978.2662573,
     "ast_hash": "01676ab5cc2d53a14d04e96430a9bf54",
     "semantic_hash": ""
   },
   "src/typing_rule_graph/ids.rs": {
-    "mtime": 1793402735.2587419,
+    "mtime": 1793433978.2662988,
     "ast_hash": "5fb65de94665353ef3280b4da8aace80",
     "semantic_hash": "5fb65de94665353ef3280b4da8aace80"
   },
@@ -2185,7 +2180,7 @@
     "semantic_hash": "04b8d2099c1eb8202e20d5ba81310377"
   },
   "src/typing_rule_graph/rules.rs": {
-    "mtime": 1793402735.2587419,
+    "mtime": 1793433978.2663426,
     "ast_hash": "f2526a33901c641f0e0a85ef749956a3",
     "semantic_hash": ""
   },
@@ -2375,7 +2370,7 @@
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
-    "mtime": 1793321259.7064223,
+    "mtime": 1793325604.214426,
     "ast_hash": "acd49475eb410a97bf59ada24824dbae",
     "semantic_hash": ""
   },
@@ -2475,7 +2470,7 @@
     "semantic_hash": ""
   },
   "AGENTS.md": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793297997.243859,
     "ast_hash": "10107b85a131032e89ef1ce6ccd21408",
     "semantic_hash": ""
   },
@@ -2490,7 +2485,7 @@
     "semantic_hash": ""
   },
   "VERSIONING.md": {
-    "mtime": 1793394205.5547996,
+    "mtime": 1793433978.2508361,
     "ast_hash": "2aa4d371f295d74f8834d614843b405d",
     "semantic_hash": ""
   },
@@ -2935,7 +2930,7 @@
     "semantic_hash": ""
   },
   "tests/fixtures/phrase_reader_glued_keep.txt": {
-    "mtime": 1793388401.551469,
+    "mtime": 1793433978.2667768,
     "ast_hash": "f896f5c97c86b461cff201a1dbe58d2c",
     "semantic_hash": ""
   },
@@ -3225,8 +3220,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793432167.6496716,
-    "ast_hash": "38d2f49165c7d22b4c64a08eafc9fa5c",
+    "mtime": 1793433978.2660534,
+    "ast_hash": "1cffa9c252a0cb58356c52c3353af34c",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -3290,7 +3285,7 @@
     "semantic_hash": ""
   },
   "src/config/runtime_flags.rs": {
-    "mtime": 1793321256.1904,
+    "mtime": 1793325604.1076946,
     "ast_hash": "08ac265f5694b73e7dbde99017e24ce7",
     "semantic_hash": ""
   },
@@ -4350,7 +4345,7 @@
     "semantic_hash": ""
   },
   "extension/lay@radislabus-star.github.io/settings_view.js": {
-    "mtime": 1793321256.1383996,
+    "mtime": 1793325603.4814985,
     "ast_hash": "7293a769ab0de4c997f2bc751a434b47",
     "semantic_hash": ""
   },
@@ -4975,7 +4970,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/exact_ime_tail_replay.rs": {
-    "mtime": 1793293924.388412,
+    "mtime": 1793294200.4466438,
     "ast_hash": "28915ae5668e4b495985f73272c6901f",
     "semantic_hash": ""
   },
@@ -5020,12 +5015,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793430587.0105324,
-    "ast_hash": "7ac8fce6c6da946cc9af9c20db05ad88",
+    "mtime": 1793433978.2651112,
+    "ast_hash": "d195f2e6634f035be4e8c11b4c0ff662",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793429896.4527848,
+    "mtime": 1793433978.2651916,
     "ast_hash": "0ca20380c6c9b44285629022c08f710e",
     "semantic_hash": ""
   },
@@ -5045,7 +5040,7 @@
     "semantic_hash": ""
   },
   "scripts/test_lanes/discovery.py": {
-    "mtime": 1793429401.3195124,
+    "mtime": 1793433978.2654428,
     "ast_hash": "eed543794181f89ac7f55337378a06bf",
     "semantic_hash": ""
   },
@@ -5055,7 +5050,7 @@
     "semantic_hash": ""
   },
   "tests/test_test_lanes.py": {
-    "mtime": 1793377615.021103,
+    "mtime": 1793378743.423611,
     "ast_hash": "5654e8dc60f67f4c800514b380325904",
     "semantic_hash": ""
   },
@@ -5415,12 +5410,12 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1793432295.4407256,
+    "mtime": 1793433978.26564,
     "ast_hash": "77257d07d3780be60c747a55f551bd59",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
-    "mtime": 1793416720.216607,
+    "mtime": 1793433978.2659633,
     "ast_hash": "df6168d32208527eda7e2d1ff38b91dc",
     "semantic_hash": ""
   },
@@ -5520,7 +5515,7 @@
     "semantic_hash": ""
   },
   "DEVELOPMENT.md": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793297997.243859,
     "ast_hash": "1dcadbb5c31257744cc2ae10f77bb221",
     "semantic_hash": ""
   },
@@ -5695,7 +5690,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": {
-    "mtime": 1793308576.4456496,
+    "mtime": 1793308709.8069255,
     "ast_hash": "6c368fcf2eb836543aba70ce2c7a20d4",
     "semantic_hash": ""
   },
@@ -5730,7 +5725,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/authority.rs": {
-    "mtime": 1793228624.9582899,
+    "mtime": 1793228826.680309,
     "ast_hash": "31dd2d8ed097869fe02c6e3f3c2cd86b",
     "semantic_hash": ""
   },
@@ -5740,17 +5735,17 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/mod.rs": {
-    "mtime": 1793101983.4329157,
+    "mtime": 1793231315.2017522,
     "ast_hash": "25f9b12c52ee566208713fd33cddb83e",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/observation.rs": {
-    "mtime": 1793380280.2964115,
+    "mtime": 1793382001.132766,
     "ast_hash": "03912d59ec688b578cf3a36c23ecba99",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/tests.rs": {
-    "mtime": 1793228624.8182883,
+    "mtime": 1793228826.6808798,
     "ast_hash": "ed07c0bffcf2d90af83869a66881829f",
     "semantic_hash": ""
   },
@@ -5790,7 +5785,7 @@
     "semantic_hash": ""
   },
   "scripts/compat/README.md": {
-    "mtime": 1793221236.7122617,
+    "mtime": 1793214683.9057279,
     "ast_hash": "ea8587adc35e308b5c67ff613661afee",
     "semantic_hash": ""
   },
@@ -6990,7 +6985,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/native_cursor_observation.rs": {
-    "mtime": 1793272214.633839,
+    "mtime": 1793272291.4102986,
     "ast_hash": "a778ae545a31f94b22f7675c24c55804",
     "semantic_hash": ""
   },
@@ -7040,7 +7035,7 @@
     "semantic_hash": ""
   },
   "docs/development/td121-core-experiments.md": {
-    "mtime": 1793284610.633238,
+    "mtime": 1793284608.1090264,
     "ast_hash": "d7ec2044b10035270b7f91fea3d2a0be",
     "semantic_hash": ""
   },
@@ -7364,34 +7359,9 @@
     "ast_hash": "2fa24e085d63b2e64b38ec690546ba1a",
     "semantic_hash": ""
   },
-  "src/bin/lay_daemon/kde_focus.rs": {
-    "mtime": 1793101982.1689103,
-    "ast_hash": "d1c31fcbdf7e63055b24bf1f103d45df",
-    "semantic_hash": ""
-  },
-  "src/bin/lay_daemon/kde_focus/foreground.js": {
-    "mtime": 1793101982.1689103,
-    "ast_hash": "e09a3b07384f226c78b2f8bfe5b4f868",
-    "semantic_hash": ""
-  },
-  "src/bin/lay_daemon/kde_focus/tests.rs": {
-    "mtime": 1793276296.6915083,
-    "ast_hash": "617b8827919c356e8feff57908b22c85",
-    "semantic_hash": ""
-  },
   "docs/architecture/decisions/2026-10-18-kde-exact-replay-layout-handoff.json": {
     "mtime": 1793101955.8367987,
     "ast_hash": "7cc6b390805120b916dc0871dab564ef",
-    "semantic_hash": ""
-  },
-  "src/bin/lay_daemon/layout_controller/kde_exact.rs": {
-    "mtime": 1793101955.9926517,
-    "ast_hash": "14bff3d6615791e33c1ca3f4e9bd1b8c",
-    "semantic_hash": ""
-  },
-  "src/bin/lay_daemon/layout_controller/kde_exact/tests.rs": {
-    "mtime": 1793101955.9926517,
-    "ast_hash": "893c648cf676b53318e3a59b3a97b902",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-18-ime-space-kde-layout-backend.json": {
@@ -7480,7 +7450,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/active_composition_space_receipt.rs": {
-    "mtime": 1793380279.3014047,
+    "mtime": 1793382001.132619,
     "ast_hash": "2a3e16cf4b266256e2e488cc3b8c78a2",
     "semantic_hash": ""
   },
@@ -7690,8 +7660,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793432167.5056703,
-    "ast_hash": "73dd12e4581a4f31ebb5e957e443384b",
+    "mtime": 1793436634.1161575,
+    "ast_hash": "1d8c0976fc4cfcbea1dc57268cd6e215",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -7760,12 +7730,12 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/native_input/x11.rs": {
-    "mtime": 1793238104.6451995,
+    "mtime": 1793238311.1333096,
     "ast_hash": "4b162b80311c4cc20a011e6547f48890",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/native_input/x11_tests.rs": {
-    "mtime": 1793238104.6531997,
+    "mtime": 1793238311.1336486,
     "ast_hash": "83b64b134000fbd282a89a8c14e26492",
     "semantic_hash": ""
   },
@@ -8010,17 +7980,17 @@
     "semantic_hash": ""
   },
   "scripts/tests/fixtures/inline-hint-frames-v1.json": {
-    "mtime": 1793285714.0832212,
+    "mtime": 1793285688.2361658,
     "ast_hash": "faa687f8f3c964fb3c6667e527bb7e1f",
     "semantic_hash": ""
   },
   "scripts/tests/test_inline_hint_projection.py": {
-    "mtime": 1793285410.5215592,
+    "mtime": 1793285372.9591064,
     "ast_hash": "21c7a75161f7619e9d2fb9b524971486",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/hint_view.rs": {
-    "mtime": 1793316124.5894148,
+    "mtime": 1793315894.9909782,
     "ast_hash": "ef2b97f6f036495a7c77680bc3905911",
     "semantic_hash": ""
   },
@@ -8225,12 +8195,12 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document.rs": {
-    "mtime": 1793231901.9006135,
+    "mtime": 1793231996.5933697,
     "ast_hash": "b7e883eb4581d02a098bd32d997dd635",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/native_document/bus.rs": {
-    "mtime": 1793310304.5565627,
+    "mtime": 1793310340.8533363,
     "ast_hash": "531bcaed8fc466a9a4ea606ac483e7a8",
     "semantic_hash": ""
   },
@@ -9025,7 +8995,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/layout_controller/ime_bridge/settlement.rs": {
-    "mtime": 1793293344.351845,
+    "mtime": 1793293516.092486,
     "ast_hash": "05e7f18ffcfab72b94a7f30e831e9ebb",
     "semantic_hash": ""
   },
@@ -9050,7 +9020,7 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/terminal.rs": {
-    "mtime": 1793308767.9560852,
+    "mtime": 1793309078.4449978,
     "ast_hash": "829a347eae8c67a169ec94f9836343cb",
     "semantic_hash": ""
   },
@@ -9120,8 +9090,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793432167.5056703,
-    "ast_hash": "57e27b6e18e6a8aeef6dafad9ff4c748",
+    "mtime": 1793437156.204724,
+    "ast_hash": "30b4a27f52aec5f3315f07c6d37daf30",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9140,7 +9110,7 @@
     "semantic_hash": ""
   },
   "scripts/field_integration_scope.py": {
-    "mtime": 1793176583.253376,
+    "mtime": 1793433978.264986,
     "ast_hash": "f1f727d15c9fe354e8b0b994a12ca7be",
     "semantic_hash": ""
   },
@@ -9175,22 +9145,22 @@
     "semantic_hash": ""
   },
   "docs/development/kde-chrome-owned-append-map-2026-10-28.md": {
-    "mtime": 1793221236.7112615,
+    "mtime": 1793195098.979266,
     "ast_hash": "39988eccbfd0a3d1f26c2b213cad37de",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-kde-firefox-existing-client-adapter.json": {
-    "mtime": 1793221236.7112615,
+    "mtime": 1793209072.4010243,
     "ast_hash": "055dc2ac48ab705f912bcb20bf49fb00",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-kde-post-replay-pending-receipt.json": {
-    "mtime": 1793221236.7112615,
+    "mtime": 1793203137.079017,
     "ast_hash": "9e662e99fa9002dcd4bce95a98ab0d29",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-kde-x11-exact-replay-cadence.json": {
-    "mtime": 1793221236.7112615,
+    "mtime": 1793202456.3965957,
     "ast_hash": "557bf0d917e8346b3146c5150b16dac2",
     "semantic_hash": ""
   },
@@ -9200,7 +9170,7 @@
     "semantic_hash": ""
   },
   "scripts/compat/lay-firefox-kde-native": {
-    "mtime": 1793221236.7132616,
+    "mtime": 1793214683.904728,
     "ast_hash": "78f2f90d8dca8a88592c713108355fc2",
     "semantic_hash": ""
   },
@@ -9210,693 +9180,823 @@
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-post-autocorrect-comparison-2026-10-28.md": {
-    "mtime": 1793221236.7122617,
+    "mtime": 1793211538.4541826,
     "ast_hash": "ab11c543a2066a80cbee3422d62f93d8",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-rapid-five-map-2026-10-28.md": {
-    "mtime": 1793221236.7122617,
+    "mtime": 1793201450.1666813,
     "ast_hash": "68829690a44f19f282306b4a04bae896",
     "semantic_hash": ""
   },
   "docs/development/kde-post-replay-receipt-map-2026-10-28.md": {
-    "mtime": 1793221236.7122617,
+    "mtime": 1793203137.0786376,
     "ast_hash": "e6764c9d207029617da0ca92d837e566",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-28-kde-firefox-owned-hint-geometry.json": {
-    "mtime": 1793223883.6301513,
+    "mtime": 1793223819.8615863,
     "ast_hash": "59a07e52cae333a657bab35ce4e2b422",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-client-adapter-2026-10-28-verification.json": {
-    "mtime": 1793221236.7112615,
+    "mtime": 1793211538.4540527,
     "ast_hash": "93a81becc3dfd78008144b3adc2e7e21",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/firefox/hint_geometry.rs": {
-    "mtime": 1793310304.6415634,
+    "mtime": 1793310340.8531184,
     "ast_hash": "3ac5dca423edc8b7b60cca735c33e3d7",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-invisible-input-map-2026-10-28.md": {
-    "mtime": 1793223883.6301513,
+    "mtime": 1793223819.8625865,
     "ast_hash": "89f52575c8ea0500efec6a2b76cbb32c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-preedit-space-reflow.json": {
-    "mtime": 1793225327.6464272,
+    "mtime": 1793225217.213545,
     "ast_hash": "b48a936a4728bada703488461d2faf1a",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-hint-geometry-2026-10-29-verification.json": {
-    "mtime": 1793223883.6311512,
+    "mtime": 1793223819.8615863,
     "ast_hash": "c6dc261555a62680d8c88812ff310cab",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-hint-geometry-protocol.md": {
-    "mtime": 1793223883.6311512,
+    "mtime": 1793223578.263278,
     "ast_hash": "0b31ce9dc01b86fcd362a94d565a335e",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-post-tab-double-shift-map-2026-10-29.md": {
-    "mtime": 1793228434.636251,
+    "mtime": 1793227854.2503319,
     "ast_hash": "8ebb03e726c645e8496c9fd514412c21",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/firefox/presentation.rs": {
-    "mtime": 1793225553.5298064,
+    "mtime": 1793225629.564235,
     "ast_hash": "974536d3f8ddc304bcd783da716bde95",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-processed-native-result.json": {
-    "mtime": 1793228434.636251,
+    "mtime": 1793228433.0341406,
     "ast_hash": "fb648cb5c2e3f8ee6ac6199966d0d09f",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/kde/firefox_replay_receipt.rs": {
-    "mtime": 1793316432.5348291,
+    "mtime": 1793316280.4511197,
     "ast_hash": "4d6e5ff8030aa337299b444c1c67db2e",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-native-result-map-2026-10-29.md": {
-    "mtime": 1793231901.809613,
+    "mtime": 1793230880.206277,
     "ast_hash": "a728f60e1e0c4a23a24eb69aacde2d2b",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-owned-erasure-echo.json": {
-    "mtime": 1793231901.809613,
+    "mtime": 1793231634.6390557,
     "ast_hash": "5a9e914b44733c0e115afcc24025d142",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-owned-preedit-observation.json": {
-    "mtime": 1793231901.809613,
+    "mtime": 1793231634.638765,
     "ast_hash": "a20b98017d2ee96a3c16dd97e699ff1b",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/firefox/preedit_echo.rs": {
-    "mtime": 1793380278.7834013,
+    "mtime": 1793382001.1326928,
     "ast_hash": "9326c1b97a76138bb827531bbbb9a221",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-owned-erasure-echo-map-2026-10-29.md": {
-    "mtime": 1793232887.0099216,
+    "mtime": 1793232870.3147514,
     "ast_hash": "ab716e545c05ba0724851d1bd4e5cf66",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-owned-preedit-observation-map-2026-10-29.md": {
-    "mtime": 1793231901.809613,
+    "mtime": 1793231634.6677961,
     "ast_hash": "8002b797fdf1732c0eef61f718ddffb4",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-x11-freeze-focus.json": {
-    "mtime": 1793238104.554199,
+    "mtime": 1793237771.8662312,
     "ast_hash": "792233282f9499ef826486cc887d64cc",
     "semantic_hash": ""
   },
   "docs/development/kde-live-input-recovery-2026-10-29.md": {
-    "mtime": 1793240945.5381944,
+    "mtime": 1793240751.4098287,
     "ast_hash": "77c488e8a03f219e58e038f7611810a3",
     "semantic_hash": ""
   },
   "docs/development/kde-x11-grab-focus-map-2026-10-29.md": {
-    "mtime": 1793240945.5381944,
+    "mtime": 1793240751.4098287,
     "ast_hash": "0eba99bd67e01e8ab5ef8baabd246143",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/kde/native_input_focus.rs": {
-    "mtime": 1793238104.6301994,
+    "mtime": 1793238311.1329908,
     "ast_hash": "37cce082ba741a60e68a1d63c951d58c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-empty-preedit-return.json": {
-    "mtime": 1793264180.8203633,
+    "mtime": 1793264159.4442887,
     "ast_hash": "b66c5191cdc190e13ad9fef40246f253",
     "semantic_hash": ""
   },
   "docs/development/kde-x11-grab-focus-2026-10-29-verification.json": {
-    "mtime": 1793240945.5381944,
+    "mtime": 1793240944.1109123,
     "ast_hash": "1db17e7c7b279c502349b4be15680574",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-empty-preedit-return-map-2026-10-29.md": {
-    "mtime": 1793269946.0787191,
+    "mtime": 1793269944.5733461,
     "ast_hash": "a2a41ad26db7694a5ae6212166b40480",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-owned-append-caret.json": {
-    "mtime": 1793271256.7911518,
+    "mtime": 1793271246.6573696,
     "ast_hash": "3966c46042f209a5780641a50610e5bb",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-owned-append-caret-map-2026-10-29.md": {
-    "mtime": 1793273945.8692455,
+    "mtime": 1793273247.6563094,
     "ast_hash": "a22c1660c6fec2a617531870fa1a9325",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-closed-word-erasure.json": {
-    "mtime": 1793272643.3631241,
+    "mtime": 1793272631.5389175,
     "ast_hash": "24d431a7d687a66a7d0b0f4aaa686298",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-native-processing-settlement.json": {
-    "mtime": 1793276296.6195078,
+    "mtime": 1793276095.0419438,
     "ast_hash": "f42a95989bfef37439b76860b76cacc3",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-native-processing-settlement-map-2026-10-29.md": {
-    "mtime": 1793276296.6195078,
+    "mtime": 1793276095.0093412,
     "ast_hash": "3445b40ae14749c4b0699c1133fcf7f6",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-rapid-latency.json": {
-    "mtime": 1793279396.1044443,
+    "mtime": 1793277005.2621565,
     "ast_hash": "4c98e84df8dda017e1ec52b75011aff5",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-rapid-latency-map-2026-10-29.md": {
-    "mtime": 1793427942.3442945,
+    "mtime": 1793433978.2522657,
     "ast_hash": "8d14cff277f02f13a221bd06ad0fcb43",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-bounded-replay-pacing.json": {
-    "mtime": 1793280437.8524933,
+    "mtime": 1793280409.3508775,
     "ast_hash": "8c799dfbe296add1f20a212c7761ccfa",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/kde/firefox_replay_pacing.rs": {
-    "mtime": 1793390043.4408922,
+    "mtime": 1793433978.265556,
     "ast_hash": "138ef68591c090480cc6ca1169bc8ef2",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-first-word-tab-map-2026-10-29.md": {
-    "mtime": 1793281837.6742506,
+    "mtime": 1793281666.5180147,
     "ast_hash": "4b91f861ab4b5a2c9d29a170c03e534c",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-open-word-replay-pacing.json": {
-    "mtime": 1793281419.942415,
+    "mtime": 1793281387.3512144,
     "ast_hash": "5760297ce4faa7af45cf550c0e1a5f7a",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-raw-word-phase-pacing.json": {
-    "mtime": 1793281837.6742506,
+    "mtime": 1793281835.9449794,
     "ast_hash": "4c8623fa4e15d154044c11ef9957c485",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-queued-owned-append.json": {
-    "mtime": 1793283537.5321727,
+    "mtime": 1793283209.6407938,
     "ast_hash": "31528be46b06548f913478d77cfc40de",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-queued-owned-append-map-2026-10-29.md": {
-    "mtime": 1793285410.5215592,
+    "mtime": 1793284792.2994733,
     "ast_hash": "2783e143b2d6ee26a70999ff8158687f",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-hint-outline.json": {
-    "mtime": 1793285410.5215592,
+    "mtime": 1793285372.929316,
     "ast_hash": "91fad663d24206c64d24a64986bd54f3",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-hint-outline-map-2026-10-29.md": {
-    "mtime": 1793307732.8674786,
+    "mtime": 1793306914.9698627,
     "ast_hash": "10c56ad2233accab5ec8ce3368edfbce",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-operation-client-binding.json": {
-    "mtime": 1793290143.201321,
+    "mtime": 1793290141.1912875,
     "ast_hash": "4c32e345864353b71f5e47ac858d8fc9",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-rapid-result-retirement.json": {
-    "mtime": 1793289837.3761454,
+    "mtime": 1793287182.6995091,
     "ast_hash": "e0269dbfe1642e064721e252e69ab795",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-operation-client-binding-map-2026-10-29.md": {
-    "mtime": 1793292130.142228,
+    "mtime": 1793291637.65791,
     "ast_hash": "efe17a753ee85a7ceace23317069547b",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-rapid-result-retirement-map-2026-10-29.md": {
-    "mtime": 1793289837.3761454,
+    "mtime": 1793289320.1282084,
     "ast_hash": "fbe9b6a128919c0f4329643963c79c2e",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-exact-replay-refusal-diagnostics.json": {
-    "mtime": 1793292130.142228,
+    "mtime": 1793292092.911986,
     "ast_hash": "7e392092f16b5219363d287bd0c54691",
     "semantic_hash": ""
   },
   "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs": {
-    "mtime": 1793428019.1009128,
+    "mtime": 1793433978.2655094,
     "ast_hash": "f62fc93e1367ed570193a444ba9d0f30",
     "semantic_hash": ""
   },
   "docs/development/kde-exact-replay-refusal-diagnostics-map-2026-10-29.md": {
-    "mtime": 1793293344.2628446,
+    "mtime": 1793292662.797418,
     "ast_hash": "c696ed7374e563e43b4fa814a6fe1147",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-acknowledged-space-readback.json": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793295873.4507542,
     "ast_hash": "86aa2762c81ad4fba570a49deff1a0d1",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-acknowledged-space-readback-map-2026-10-29.md": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793295873.4505062,
     "ast_hash": "7bba4012a55ce1d208b4dea1a5178516",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-offline-native-diagnostics-tooling.json": {
-    "mtime": 1793301392.4435718,
+    "mtime": 1793298930.5074413,
     "ast_hash": "19c4899c77516d94dd3a11ee77f3521f",
     "semantic_hash": ""
   },
   "scripts/lay-diagnose.py": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793298281.3317528,
     "ast_hash": "23c0d0685d6e1e55ccc6142142c7a81d",
     "semantic_hash": ""
   },
   "scripts/native_diagnostics/__init__.py": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793297379.9096754,
     "ast_hash": "de1674b86ce28e30cf2e2fc9fd7e65de",
     "semantic_hash": ""
   },
   "scripts/native_diagnostics/receipts.py": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793297997.2428591,
     "ast_hash": "269877e6038cc5865499e5c149641fbf",
     "semantic_hash": ""
   },
   "scripts/native_diagnostics/wire.py": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793297997.2428591,
     "ast_hash": "60fe98225c79e4059be2a54be2e5d892",
     "semantic_hash": ""
   },
   "scripts/tests/test_native_diagnostics.py": {
-    "mtime": 1793298464.5583398,
+    "mtime": 1793297997.243859,
     "ast_hash": "1fadc304a8dd22d6faeef9d2ea785332",
     "semantic_hash": ""
   },
   "docs/development/native-diagnostics-workflow.md": {
-    "mtime": 1793301392.4435718,
+    "mtime": 1793298930.506441,
     "ast_hash": "446ee0ef9e04d771d5a2ec80548192a8",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-acknowledged-closed-word-pacing.json": {
-    "mtime": 1793304592.625459,
+    "mtime": 1793302945.5073438,
     "ast_hash": "65d7a86daba86494ec2fdf3079556344",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-native-erased-boundary-echo.json": {
-    "mtime": 1793305694.9208088,
+    "mtime": 1793305659.7457926,
     "ast_hash": "622e791a66de6c3c15240ddf336f3747",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/firefox/native_boundary_tests.rs": {
-    "mtime": 1793304946.4764667,
+    "mtime": 1793305009.7008085,
     "ast_hash": "517c11e8e627a6a014e0aa51ed13bc3b",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-firefox-closed-pacing-after-boundary-proof.json": {
-    "mtime": 1793306636.6335683,
+    "mtime": 1793306542.1539419,
     "ast_hash": "ad323221429709d5adb5a4d1eff2c495",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-29-kde-hint-glyph-only-presentation.json": {
-    "mtime": 1793307732.8674786,
+    "mtime": 1793306914.969755,
     "ast_hash": "0488e86fa0cd6a397690f5700bc3b1d9",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-kde-terminal-native-input-mode.json": {
-    "mtime": 1793310146.346082,
+    "mtime": 1793309639.4081688,
     "ast_hash": "051463c796d8afab1049a7b0d4b48c85",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/kde/terminal/native_mode_tests.rs": {
-    "mtime": 1793308767.9560852,
+    "mtime": 1793309078.445227,
     "ast_hash": "8d05f8c2f2a4fdfb10242b305c62ee1a",
     "semantic_hash": ""
   },
   "docs/development/kde-terminal-native-input-mode-map-2026-10-30.md": {
-    "mtime": 1793313618.864875,
+    "mtime": 1793311689.6553235,
     "ast_hash": "fcad247be822e3a2cdbcee27b23a127a",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-kde-firefox-natural-suffix-style.json": {
-    "mtime": 1793313618.864875,
+    "mtime": 1793311578.604089,
     "ast_hash": "79d2847a5c123135d67b9b01104a6d9d",
     "semantic_hash": ""
   },
   "scripts/lay_kde_firefox_hint.py": {
-    "mtime": 1793310304.5565627,
+    "mtime": 1793310189.605708,
     "ast_hash": "a0be56ad77b0e4be03b951da669e155e",
     "semantic_hash": ""
   },
   "scripts/tests/test_kde_firefox_hint.py": {
-    "mtime": 1793310304.5565627,
+    "mtime": 1793310273.2289903,
     "ast_hash": "72b1d5c9cb58fbc029fafb753592d13e",
     "semantic_hash": ""
   },
   "docs/development/kde-firefox-natural-suffix-style-map-2026-10-30.md": {
-    "mtime": 1793313618.864875,
+    "mtime": 1793311578.6045563,
     "ast_hash": "8829869a2130adcf53ff2fc2c03bccf5",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-accepted-kde-publication.json": {
-    "mtime": 1793313618.864875,
+    "mtime": 1793313579.086974,
     "ast_hash": "7254f09fbfab06e5d9c293276b022ed2",
     "semantic_hash": ""
   },
   "tech_debt/evidence/release-1.0.112-accepted.json": {
-    "mtime": 1793313618.9178755,
+    "mtime": 1793313546.4825716,
     "ast_hash": "948d0626f8c56110e8288f31d9de01d5",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.112-publication.md": {
-    "mtime": 1793313618.865875,
-    "ast_hash": "2f536e5026e5ba6f644deab2fa476764",
+    "mtime": 1793318566.3452413,
+    "ast_hash": "4d63aadd933da964fe970aa133b454da",
     "semantic_hash": ""
   },
   "docs/release-1.0.112.md": {
-    "mtime": 1793313618.865875,
+    "mtime": 1793313546.4828494,
     "ast_hash": "c20c59bc46b9d624159e3ed1373d00ed",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-hint-frame-lint-contract.json": {
-    "mtime": 1793316432.5348291,
-    "ast_hash": "a691021bf975e09c80d464d30097e498",
+    "mtime": 1793318566.3454115,
+    "ast_hash": "539ccfe72ac939928e05222b748b7da0",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.112-ci-lint.md": {
-    "mtime": 1793316432.5348291,
-    "ast_hash": "d5ba20ab27604a0c9705710e1fa1edf1",
+    "mtime": 1793318566.3449924,
+    "ast_hash": "ceabdfee36b398c8f33c523b730913cb",
     "semantic_hash": ""
   },
   "data/layout_fragments/model.json": {
-    "mtime": 1793321256.1373994,
+    "mtime": 1793325603.4796443,
     "ast_hash": "fff6d457b81bdfe90574801eebd76a64",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-fragment-layout-contour.json": {
-    "mtime": 1793321256.1373994,
-    "ast_hash": "4b3613afe88fc680f808cd603e5dc72a",
+    "mtime": 1793327984.544108,
+    "ast_hash": "604ebee68a3c33ea3ece02d04003a5d7",
     "semantic_hash": ""
   },
   "examples/fragment_layout_proof.rs": {
-    "mtime": 1793323347.3120122,
+    "mtime": 1793325603.480795,
     "ast_hash": "8051d7c5465ab971f7ed38934f46c7df",
     "semantic_hash": ""
   },
   "scripts/train-layout-fragments.py": {
-    "mtime": 1793321256.1383996,
+    "mtime": 1793325604.1075296,
     "ast_hash": "01619611f57e3fbe01d3ee328be1f5de",
     "semantic_hash": ""
   },
   "src/layout_fragments.rs": {
-    "mtime": 1793321258.243413,
+    "mtime": 1793325604.2126343,
     "ast_hash": "4adf6fed6bf5b0422f6a2de3a1d3ec69",
     "semantic_hash": ""
   },
   "src/layout_fragments/model.rs": {
-    "mtime": 1793321258.241413,
+    "mtime": 1793325604.2126794,
     "ast_hash": "593a5a0c02b868bcd299a890a118875e",
     "semantic_hash": ""
   },
   "src/layout_fragments/tests.rs": {
-    "mtime": 1793321349.2699964,
+    "mtime": 1793325604.2127237,
     "ast_hash": "43ba185a5d5c752ff10c33b9fd9d8113",
     "semantic_hash": ""
   },
   "src/typing_rule_graph/rules/fragment.rs": {
-    "mtime": 1793402941.363061,
+    "mtime": 1793433978.2664294,
     "ast_hash": "85705841e3cc41e962ac48e21f8c4ea6",
     "semantic_hash": ""
   },
   "data/layout_fragments/README.md": {
-    "mtime": 1793323300.5297613,
+    "mtime": 1793325603.4788365,
     "ast_hash": "dd7792537948de1d7b107ff5df439083",
     "semantic_hash": ""
   },
   "docs/development/fragment-layout-contour-2026-10-30.md": {
-    "mtime": 1793323300.5297613,
-    "ast_hash": "71a6dfddfaf635369f3ba3f204143ec8",
+    "mtime": 1793330189.7274816,
+    "ast_hash": "e4181aa61b0893bcbcc9ffc7b05c3a37",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-firefox-closed-pacing-114.json": {
-    "mtime": 1793339819.8834012,
-    "ast_hash": "849abbb888f84cbb759f848489afedf3",
+    "mtime": 1793344193.4335535,
+    "ast_hash": "193801fe65c4387d0bf91f9f594ed9b4",
     "semantic_hash": ""
   },
   "docs/development/evidence/fragment-layout-1.0.113-tests.json": {
-    "mtime": 1793324881.3751802,
+    "mtime": 1793325603.4807007,
     "ast_hash": "ef49f8bdd6b3d3679f481f6073d5e60a",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.114-firefox-closed-pacing.md": {
-    "mtime": 1793342786.53386,
-    "ast_hash": "ba13e6e7ff0d17c6cb94c4a93bf463b1",
+    "mtime": 1793377255.217493,
+    "ast_hash": "93863fcbff740a4c31850914da29a499",
     "semantic_hash": ""
   },
   "docs/development/ten-release-queue-2026-10-30.md": {
-    "mtime": 1793428120.9897318,
-    "ast_hash": "53dfd228eed88a117c91215fe505ac3c",
+    "mtime": 1793436634.115056,
+    "ast_hash": "0516be383a33a1ce23b8085357af1a7f",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
-    "mtime": 1793377615.021103,
-    "ast_hash": "04e436e8492d92144a2bb8036088d874",
+    "mtime": 1793378792.4992127,
+    "ast_hash": "9988392d403dc43c1f5c97bd153d4bbd",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.114-tests.json": {
-    "mtime": 1793343369.602761,
+    "mtime": 1793343865.5252728,
     "ast_hash": "35d496429ac84e66cba6898872bcde02",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.115-compiler-diagnostics.md": {
-    "mtime": 1793377615.021103,
-    "ast_hash": "59ae246c2a2e5edb2ea18d4ef41c515b",
+    "mtime": 1793381141.1610205,
+    "ast_hash": "dc24eabca338b7d12cbba8dd12b178fb",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-firefox-interleaved-prefix-116.json": {
-    "mtime": 1793380772.690592,
-    "ast_hash": "1d3d83f5560e055a165f42f81fd25cb2",
+    "mtime": 1793383754.195603,
+    "ast_hash": "235bf668aebc96a04311d78d6fed43b5",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.115-tests.json": {
-    "mtime": 1793378222.329244,
+    "mtime": 1793378743.310928,
     "ast_hash": "f44f4b41ac343c103d2fd552b694a86b",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.116-firefox-interleaved-prefix.md": {
-    "mtime": 1793380772.690592,
-    "ast_hash": "b822b22b5114e00c20851076406d1acf",
+    "mtime": 1793383754.1957684,
+    "ast_hash": "8870e7cb541c127ee0fb5962e1126874",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-glued-function-chain-117.json": {
-    "mtime": 1793388401.4274685,
+    "mtime": 1793433978.250941,
     "ast_hash": "5160c99e7b4fd34d7311d36cc939dc54",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-kde-debug-config-publication-117.json": {
-    "mtime": 1793394205.5547996,
+    "mtime": 1793433978.2509863,
     "ast_hash": "066a6309cf55ed5f9fa87f691478aee2",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.116-publication.json": {
-    "mtime": 1793386279.8132453,
+    "mtime": 1793433978.2517545,
     "ast_hash": "a2230a58988ff96e37eae607d629e2d7",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.116-tests.json": {
-    "mtime": 1793381376.9802794,
+    "mtime": 1793382001.0640914,
     "ast_hash": "7b102677929a11faac6dc447e8f1aa14",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.117-debug-config-publication.md": {
-    "mtime": 1793396524.3957298,
+    "mtime": 1793433978.2523367,
     "ast_hash": "e1dfc9a1c2acc7c73c8e9b9d89c89ee0",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.117-glued-function-chain.md": {
-    "mtime": 1793388401.4274685,
+    "mtime": 1793433978.2523887,
     "ast_hash": "cea367f31a10bbf7fcfee28f56cd3ae2",
     "semantic_hash": ""
   },
   "tech_debt/162-glued-pronoun-space.md": {
-    "mtime": 1793388401.551469,
+    "mtime": 1793433978.2664928,
     "ast_hash": "39f63e91bac0c6f39d9502f2e5090e24",
     "semantic_hash": ""
   },
   "tech_debt/163-kde-pacing-debug-config-publication.md": {
-    "mtime": 1793408504.787924,
-    "ast_hash": "b0bbaf685668fb4f90c76672238604e3",
+    "mtime": 1793436634.115399,
+    "ast_hash": "e7dac9096b9276a9e56ec57357278a2c",
     "semantic_hash": ""
   },
   "tech_debt/164-fragment-autoflip-blocks-space.md": {
-    "mtime": 1793410694.8416257,
+    "mtime": 1793433978.266579,
     "ast_hash": "deeae694ff402589fa09ad4b535f9be4",
     "semantic_hash": ""
   },
   "tech_debt/165-kde-menu-checkbox-stays-open.md": {
-    "mtime": 1793427942.3442945,
-    "ast_hash": "2565e4c04c595158934a5113e1b4fe77",
+    "mtime": 1793434456.0185394,
+    "ast_hash": "72f4d6a48f4fda8ec5356c62bdbda888",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-ci117-cache-fixture.json": {
-    "mtime": 1793396524.3957298,
+    "mtime": 1793433978.2508934,
     "ast_hash": "5330ee55ece26749b3b626052a940a7e",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.117-tests.json": {
-    "mtime": 1793395251.9369433,
+    "mtime": 1793433978.2518363,
     "ast_hash": "96262cb50569140086e16da6ebdb3b87",
     "semantic_hash": ""
   },
   "docs/development/ci117-completion-cache-fixture.md": {
-    "mtime": 1793396524.3957298,
+    "mtime": 1793433978.25163,
     "ast_hash": "b20ec61e09ead697067a49c75b586c11",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-fragment-safe-exact-fallback-118.json": {
-    "mtime": 1793408504.7869241,
+    "mtime": 1793433978.2510927,
     "ast_hash": "3a0ff6e71dfd1e1606882ccf410f2635",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-independent-fragment-candidates-118.json": {
-    "mtime": 1793402735.2587419,
+    "mtime": 1793433978.2513483,
     "ast_hash": "a2c9806593c0e69338e32f0b22238048",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.117-publication.json": {
-    "mtime": 1793399011.729979,
+    "mtime": 1793433978.2517955,
     "ast_hash": "a039c28376510b097b3019c34458b104",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.118-fragment-quality.json": {
-    "mtime": 1793403921.0408092,
+    "mtime": 1793433978.2518778,
     "ast_hash": "d7c7b473618e72aaa3570647d3d10acc",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.118-fragment-safe-exact-fallback.md": {
-    "mtime": 1793410694.6686234,
+    "mtime": 1793433978.2524343,
     "ast_hash": "f0050cabf21d03f82f373c34a9bfbcaf",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.118-independent-fragment-candidates.md": {
-    "mtime": 1793402735.2587419,
+    "mtime": 1793433978.2524948,
     "ast_hash": "73777ee7c0ddb098ffe20abab76c8693",
     "semantic_hash": ""
   },
   "tech_debt/166-independent-fragment-evidence.md": {
-    "mtime": 1793402735.2587419,
+    "mtime": 1793433978.2666593,
     "ast_hash": "d160eebb7c794ca1b84857212ee94086",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-ibus-fixture-authority-diagnostics-119.json": {
-    "mtime": 1793415886.5658588,
+    "mtime": 1793433978.2511399,
     "ast_hash": "beca94b3056296efe2a04e521cf9eae3",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-ibus-fixture-case-budget-119.json": {
-    "mtime": 1793416719.025597,
+    "mtime": 1793433978.2511823,
     "ast_hash": "4abb2a4ac5c5f5e45348f8bedeb4e2e0",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-ibus-fixture-lifetime-experiment-119.json": {
-    "mtime": 1793415886.5658588,
+    "mtime": 1793433978.251228,
     "ast_hash": "3fd7e51db141de7136b3df889a791dff",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-ibus-semantic-fixture-stamp-order-119.json": {
-    "mtime": 1793417113.053872,
+    "mtime": 1793433978.25127,
     "ast_hash": "81818bd8ccae886705e203923b8663fd",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-kde-checkbox-menu-119.json": {
-    "mtime": 1793427942.3432946,
+    "mtime": 1793433978.251426,
     "ast_hash": "6fe58012190210b5dce2efba68b525cd",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.118-publication.json": {
-    "mtime": 1793410694.6676235,
+    "mtime": 1793433978.2519188,
     "ast_hash": "8c5cb7a31f5edb6a0b099681ae3f5c21",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.118-tests.json": {
-    "mtime": 1793405176.4539533,
+    "mtime": 1793433978.2519612,
     "ast_hash": "550496801e0666ffb2acb9aea6b753a7",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.119-engine-target.json": {
-    "mtime": 1793417113.053872,
+    "mtime": 1793433978.2520058,
     "ast_hash": "f9a4e3efba7f33ab8b8d5146c2d32c08",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.119-fixture-budget-transform.json": {
-    "mtime": 1793416719.0265973,
+    "mtime": 1793433978.2520506,
     "ast_hash": "0d83d16b9b4f336874d498c6977da132",
     "semantic_hash": ""
   },
   "tests/test_kde_menu_persistence.py": {
-    "mtime": 1793420242.468169,
+    "mtime": 1793433978.2668183,
     "ast_hash": "52d82848102b3dd3b2e3f3ebf8fb0090",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.119-kde-checkbox-menu.md": {
-    "mtime": 1793427942.3442945,
+    "mtime": 1793433978.2525444,
     "ast_hash": "8d739ce4ae9a4bbd53353aa2e9064ea4",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.119-menu-native.json": {
-    "mtime": 1793420741.7283235,
+    "mtime": 1793433978.2520988,
     "ast_hash": "36bf126e9e827d9d60b70938d4c9bfb4",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.119-tests.json": {
-    "mtime": 1793421537.4595082,
+    "mtime": 1793433978.2521803,
     "ast_hash": "50a689ba03d1ff4acc1b2cdf7359090e",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-disable-fixture-receipt-order-120.json": {
-    "mtime": 1793432572.9440114,
-    "ast_hash": "07da4dc54ecb9b2e4fc061798668e352",
+    "mtime": 1793434456.018192,
+    "ast_hash": "61d402bf52869fc2df8a0d8c423df211",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-kde-refusal-config-120.json": {
-    "mtime": 1793432167.5056703,
-    "ast_hash": "7c04fafc30bf0c1f9e72385fb899635a",
+    "mtime": 1793434578.7679634,
+    "ast_hash": "ee48ff771d74517994d361e432e24972",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-level-modifier-test-isolation-120.json": {
-    "mtime": 1793429401.1815112,
-    "ast_hash": "baedb3335044f4a3f661065884a38f7b",
+    "mtime": 1793434456.018308,
+    "ast_hash": "4c485399f15da1ceb156d58182b593bf",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.119-publication.json": {
-    "mtime": 1793427942.3442945,
+    "mtime": 1793433978.252142,
     "ast_hash": "72a508ab558ec3a5c1bb5eb6ec493559",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.120-tests.json": {
-    "mtime": 1793430587.0095325,
-    "ast_hash": "aa915cd02f88a23a9a01ce273514b425",
+    "mtime": 1793433978.2522204,
+    "ast_hash": "c631251744f035318ebce55afa90ad23",
     "semantic_hash": ""
   },
   "docs/development/ci120-disable-receipt-order.md": {
-    "mtime": 1793432572.9440114,
+    "mtime": 1793433978.2516742,
     "ast_hash": "cbe9620e4015c14a772d85d7a6f88277",
     "semantic_hash": ""
   },
   "docs/development/ci120-level-modifier-test-isolation.md": {
-    "mtime": 1793429401.1815112,
+    "mtime": 1793433978.2517135,
     "ast_hash": "309a92bc946529e75050f9a485d2251b",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.120-kde-refusal-config.md": {
-    "mtime": 1793432572.9440114,
-    "ast_hash": "d088a776df1003feb0cef73f5e22e799",
+    "mtime": 1793436634.115221,
+    "ast_hash": "74192f6738e4c8da8c7baf80d883aa6a",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-30-release112-ci-observation-binding.json": {
+    "mtime": 1793315083.3124573,
+    "ast_hash": "7e41af62bbdccdc7aed53f56efe52e87",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-kde-source-isolation-121.json": {
+    "mtime": 1793437156.2056267,
+    "ast_hash": "38be91ed63ea8d35fa1cb559befdd9bd",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/fragment-layout-1.0.113-proof.json": {
+    "mtime": 1793327984.5438337,
+    "ast_hash": "9a3952d2e8fe3573bfd8bb892f5dc929",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.114-publication.json": {
+    "mtime": 1793377255.2164931,
+    "ast_hash": "529494bc7cfa10b839f8d565057ef115",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.115-publication.json": {
+    "mtime": 1793381141.160775,
+    "ast_hash": "5f5dc03bdba90033f0891ec5e2cf525d",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.116-native.json": {
+    "mtime": 1793382878.601181,
+    "ast_hash": "e767fd5e744b61f55e225760f68c5af8",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.116-source-gates.json": {
+    "mtime": 1793382226.424969,
+    "ast_hash": "9b80adc70eebdfb95f858cf01df2df22",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.117-verification-final.json": {
+    "mtime": 1793395831.781854,
+    "ast_hash": "f7673e2834930f325388d6285df4c578",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.117-verification.json": {
+    "mtime": 1793391479.0881832,
+    "ast_hash": "26480c4a81c24c47b697906999419a21",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.118-verification.json": {
+    "mtime": 1793407534.4008744,
+    "ast_hash": "39f07f61be8eee643122ffdc13efeed0",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.119-final-verification.json": {
+    "mtime": 1793422017.5211253,
+    "ast_hash": "bb46100b67d0345f5c9bf95ff68afa34",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.120-final-verification.json": {
+    "mtime": 1793434456.0175903,
+    "ast_hash": "19f78e44e02022594f7ba8a70ce38341",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.120-publication.json": {
+    "mtime": 1793436634.1149151,
+    "ast_hash": "074fa9e5799f53222b2cd0b92e7ffc2d",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/focus_observer.rs": {
+    "mtime": 1793437143.4996614,
+    "ast_hash": "bd85e541e8466cb9a2720c4bbf79b53c",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/focus_observer/foreground.js": {
+    "mtime": 1793437143.4998171,
+    "ast_hash": "e09a3b07384f226c78b2f8bfe5b4f868",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/focus_observer/tests.rs": {
+    "mtime": 1793437143.4999433,
+    "ast_hash": "617b8827919c356e8feff57908b22c85",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/layout.rs": {
+    "mtime": 1793437143.5878968,
+    "ast_hash": "a2d112ade6caaa194bab9bbf5e74f288",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/layout_handoff.rs": {
+    "mtime": 1793437143.5957537,
+    "ast_hash": "0bb3039e99b4ad9ff2fc929e7c1ede2f",
+    "semantic_hash": ""
+  },
+  "src/bin/lay_daemon/kde/layout_handoff/tests.rs": {
+    "mtime": 1793437143.5958974,
+    "ast_hash": "893c648cf676b53318e3a59b3a97b902",
+    "semantic_hash": ""
+  },
+  "tech_debt/evidence/release-1.0.112-ci-target-observation.json": {
+    "mtime": 1793315119.5161762,
+    "ast_hash": "32d811aa9d3a445b9a0d320c322c4ac5",
+    "semantic_hash": ""
+  },
+  "docs/development/fragment-layout-release-progress-2026-10-30.md": {
+    "mtime": 1793330189.7284815,
+    "ast_hash": "08c26b2cae5133320483da4e22b1356c",
+    "semantic_hash": ""
+  },
+  "docs/development/kde-firefox-focus-deadline-map-2026-10-30.md": {
+    "mtime": 1793315176.9599426,
+    "ast_hash": "98670dada6905837bce7862802006190",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.112-ci-binding.md": {
+    "mtime": 1793318566.3451383,
+    "ast_hash": "2cef49f3a2db0bd16358754cd37d0238",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.113-publication.md": {
+    "mtime": 1793330189.7274816,
+    "ast_hash": "8eb185f4d2a97b681c48510d0b9bf7a2",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.121-kde-source-isolation.md": {
+    "mtime": 1793437339.5537434,
+    "ast_hash": "005837622df1981786a7f85dcc4a9c09",
+    "semantic_hash": ""
+  },
+  "tech_debt/167-chrome-first-space-evidence.md": {
+    "mtime": 1793407534.4011357,
+    "ast_hash": "d1cf9b7180b449c566997d56bcb67341",
     "semantic_hash": ""
   }
 }

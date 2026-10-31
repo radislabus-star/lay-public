@@ -332,5 +332,5 @@ impl Io for Session {
 }
 
 #[cfg(test)]
-#[path = "kde_exact/tests.rs"]
+#[path = "layout_handoff/tests.rs"]
 mod tests;

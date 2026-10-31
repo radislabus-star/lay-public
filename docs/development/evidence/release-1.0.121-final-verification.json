@@ -1,0 +1,143 @@
+{
+  "status": "SOURCE_AND_INSTALLED_CONTROLS_VERIFIED_INITIAL_NATIVE_FAILURE_RETAINED_PUBLICATION_PENDING",
+  "canonical_parent": "a9b9bb9fab96f6b6d4a8fa11d5dceb6ccead065b",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1328,
+    "sha256": "556d8b7ccb081cb27bd9591d8b7f518cb5762c3b8e1d0a732db3bd3eedf4cfbb"
+  },
+  "rust": {
+    "selected": 3617,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 494,
+    "canonical_invocation_exit": 0,
+    "bootstrap_invocation_exit": 0,
+    "manifest_sha256": "f8430954c02a8ac258a5baaae847dec24326d2995224c7f6b1397269836da0aa",
+    "observation_sha256": "1b7b82b978613210464f9137499826aa76283d057f337fc9ad2ce7b94388c8b8"
+  },
+  "python": {
+    "passed": 430,
+    "skipped": 10,
+    "total": 440
+  },
+  "release_binaries": 10,
+  "compiler_warnings": 0,
+  "tested_inventory_files": 1332,
+  "running_identity": {
+    "status": "FINAL_RUNNING_IDENTITY_AFTER_NATIVE_VERIFIED",
+    "verification_only_no_reinstall_or_restart": true,
+    "verified_at": "2026-10-31T09:34:38.207030+00:00",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1328,
+      "sha256": "556d8b7ccb081cb27bd9591d8b7f518cb5762c3b8e1d0a732db3bd3eedf4cfbb"
+    },
+    "version": "1.0.121",
+    "daemon_pid": 825033,
+    "daemon_sha256": "a82c35563ab81b53b5b040b001ac716c37c77b846111b526dbdd3a82fff2d80b",
+    "engine_pid": 825125,
+    "engine_sha256": "e25fe4b4efd65518ce4b4e6b702b15378029fdaa7106cd1a39e3dbe30c89863c",
+    "engine_inode": 24802918,
+    "tray_pid": 825224,
+    "config_sha256": "5d02dfdaf28f59075f33d1e0ffb72c70fecd69a97208d11f22848c8411d543b3",
+    "installed_binary_hashes_verified": 10,
+    "factory_binary_sha256": "e25fe4b4efd65518ce4b4e6b702b15378029fdaa7106cd1a39e3dbe30c89863c",
+    "factory_path_unchanged": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "local_gnome_modified": false,
+    "global_ibus_restarted": false,
+    "deployment_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-isolation-deployment-v2/result.json",
+    "native_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-isolation-browser-controls-v2/result.json"
+  },
+  "native_controls": [
+    {
+      "browser": "chrome",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        103.18339103832841,
+        81.85011497698724
+      ],
+      "seconds": 5.129,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-isolation-browser-controls-v2/chrome-roundtrip/result.json",
+      "exit": 0
+    },
+    {
+      "browser": "firefox",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        205.06695797666907,
+        200.6821888498962
+      ],
+      "seconds": 6.536,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-isolation-browser-controls-v2/firefox-roundtrip/result.json",
+      "exit": 0
+    }
+  ],
+  "initial_native_controls_retained": [
+    {
+      "browser": "chrome",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        76.78194693289697,
+        81.76112594082952
+      ],
+      "seconds": 5.983,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-isolation-browser-controls-v1/chrome-roundtrip/result.json",
+      "exit": 0
+    },
+    {
+      "browser": "firefox",
+      "name": "roundtrip",
+      "status": "FAIL",
+      "error": "{'expected': 'ghbdtn ', 'actual': {'caret': 7, 'dom_html': None, 'focused': True, 'geometry': {'dpr': 1, 'innerHeight': 761, 'innerWidth': 1490, 'outerHeight': 856, 'outerWidth': 1500, 'screenX': 0, 'screenY': 0, 'scrollY': 0, 'viewport': {'scale': 1, 'x': 0, 'y': 0}}, 'now': 4263, 'raw_text': 'привет ', 'rect': {'x': 452.75, 'y': 285.45001220703125}, 'rendered_text': None, 'rich': False, 'screen': {'x': 5, 'y': 95}, 'selection': False, 'text': 'привет '}}",
+      "latencies_ms": [],
+      "seconds": 7.49,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-isolation-browser-controls-v1/firefox-roundtrip/result.json",
+      "exit": 1
+    }
+  ],
+  "baseline120_controls": [
+    {
+      "browser": "chrome",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        103.73917501419783,
+        45.296236872673035
+      ],
+      "seconds": 5.885,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-ab-baseline120-browser-controls-v2/chrome-roundtrip/result.json",
+      "exit": 0
+    },
+    {
+      "browser": "firefox",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        182.4323928449303,
+        172.15906782075763
+      ],
+      "seconds": 6.633,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release121-ab-baseline120-browser-controls-v2/firefox-roundtrip/result.json",
+      "exit": 0
+    }
+  ],
+  "native_config_restored_exactly": true,
+  "full_receipt": "CROOT/release121-isolation-full-v2/result.json",
+  "native_matrix_rescored": false,
+  "runtime_authority_changed": false,
+  "limits": [
+    "Initial Firefox ManualToggleV3 NotHandled remains unexplained/TD168;later passes do not erase it.",
+    "120/121 comparison is unpaired and not a timing/root-cause proof.",
+    "Historical344PASS15FAIL81BLOCKEDof440 unchanged. No complete native acceptance claim.",
+    "Ordinary held Shift source contracts passed; no separate native held-Shift requalification in this release."
+  ]
+}

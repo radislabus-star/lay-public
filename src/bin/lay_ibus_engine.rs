@@ -30,7 +30,7 @@ mod hint_view;
 mod ibus_interface;
 #[path = "lay_ibus_engine/kde/mod.rs"]
 mod kde;
-#[path = "lay_daemon/kde_focus.rs"]
+#[path = "lay_daemon/kde/focus_observer.rs"]
 mod kde_focus;
 #[path = "lay_ibus_engine/key_decode.rs"]
 mod key_decode;
