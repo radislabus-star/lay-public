@@ -16,6 +16,35 @@ SPEC.loader.exec_module(component)
 
 
 class ComponentChecks(unittest.TestCase):
+    def test_kde_focus_covers_the_actual_implementation_in_both_binaries(self):
+        manifest = json.loads(component.MANIFEST.read_text())
+        families = ((component.DAEMON, "kde_focus::tests::"),
+                    (component.ENGINE, "kde_focus::tests::"),
+                    (component.DAEMON, "layout_controller::kde_exact::tests::"),
+                    (component.DAEMON, "focus_guard::"),
+                    (component.DAEMON, "tests::layout_backend::"))
+        expected = set()
+        for target, prefix in families:
+            rows = {(r["target"], r["name"]) for r in manifest["tests"]
+                    if r["target"] == target and r["name"].startswith(prefix)
+                    and r["lane"] in {"correctness", "package"}}
+            self.assertTrue(rows, (target, prefix))
+            expected.update(rows)
+        actual = {(r["target"], r["name"])
+                  for r in component.select_rows(manifest, "kde-focus")}
+        self.assertEqual(expected, actual)
+
+    def test_kde_focus_refuses_a_missing_implementation_family(self):
+        manifest = json.loads(component.MANIFEST.read_text())
+        for target, prefix in ((component.DAEMON, "kde_focus::tests::"),
+                               (component.ENGINE, "kde_focus::tests::"),
+                               (component.DAEMON, "layout_controller::kde_exact::tests::")):
+            with self.subTest(target=target, prefix=prefix):
+                incomplete = {"tests": [r for r in manifest["tests"]
+                    if not (r["target"] == target and r["name"].startswith(prefix))]}
+                with self.assertRaisesRegex(ValueError, "empty component selector"):
+                    component.select_rows(incomplete, "kde-focus")
+
     def test_each_recipe_selects_nonzero_canonical_test_identities(self):
         manifest = json.loads(component.MANIFEST.read_text())
         for name in component.RECIPES:

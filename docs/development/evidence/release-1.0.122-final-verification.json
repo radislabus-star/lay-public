@@ -1,0 +1,106 @@
+{
+  "status": "SOURCE_AND_INSTALLED_CONTROLS_VERIFIED_PUBLICATION_PENDING",
+  "canonical_parent": "9f0a158bb4c53bef2c61560075a9b62ce0fabdac",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1328,
+    "sha256": "742e0997215caef5a73a3113e9e2aa160e970ad529a4fdc5d5e514ef400875a3"
+  },
+  "rust": {
+    "selected": 3617,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 494,
+    "canonical_invocation_exit": 0,
+    "bootstrap_invocation_exit": 0,
+    "manifest_sha256": "f8430954c02a8ac258a5baaae847dec24326d2995224c7f6b1397269836da0aa",
+    "observation_sha256": "f8d10c6fc82748db0a296d935257b3ee937bf901c393c6753487f859fa93c4bb"
+  },
+  "python": {
+    "passed": 432,
+    "skipped": 10,
+    "total": 442
+  },
+  "release_binaries": 10,
+  "compiler_warnings": 0,
+  "tested_inventory_files": 1332,
+  "focused": {
+    "unit_passed": 5,
+    "canonical_selected": 48,
+    "canonical_passed": 48,
+    "worker_seconds": 2.7956256319303066,
+    "red": {
+      "run": 2,
+      "failures": 4,
+      "errors": 0,
+      "skipped": 0
+    },
+    "red_selected": 8,
+    "green_receipt": "CROOT/release122-kde-component-green-v1/result.json",
+    "red_receipt": "CROOT/release122-kde-component-red-v1/result.json"
+  },
+  "frozen_other_source_files": 1323,
+  "running_identity": {
+    "status": "FINAL_RUNNING_IDENTITY_AFTER_NATIVE_VERIFIED",
+    "verification_only_no_reinstall_or_restart": true,
+    "verified_at": "2026-10-31T10:41:40.720557+00:00",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1328,
+      "sha256": "742e0997215caef5a73a3113e9e2aa160e970ad529a4fdc5d5e514ef400875a3"
+    },
+    "version": "1.0.122",
+    "daemon_pid": 1057006,
+    "daemon_sha256": "4f7d6d88510c79073a058ae5a6597d2714c49de5e6f8867436cdb83e035fdb0a",
+    "engine_pid": 1057091,
+    "engine_sha256": "ae252532a3f42e9660d9e57e23374832da0f5c00fc28c4ad51fd5f09cb51c365",
+    "engine_inode": 24803184,
+    "tray_pid": 1057217,
+    "config_sha256": "5d02dfdaf28f59075f33d1e0ffb72c70fecd69a97208d11f22848c8411d543b3",
+    "installed_binary_hashes_verified": 10,
+    "factory_binary_sha256": "ae252532a3f42e9660d9e57e23374832da0f5c00fc28c4ad51fd5f09cb51c365",
+    "factory_path_unchanged": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "local_gnome_modified": false,
+    "global_ibus_restarted": false,
+    "deployment_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release122-kde-component-deployment-v1/result.json",
+    "native_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release122-kde-component-browser-controls-v1/result.json"
+  },
+  "native_controls": [
+    {
+      "browser": "chrome",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        81.61365892738104,
+        74.53922787681222
+      ],
+      "seconds": 5.935,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release122-kde-component-browser-controls-v1/chrome-roundtrip/result.json",
+      "exit": 0
+    },
+    {
+      "browser": "firefox",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        238.42402384616435,
+        195.6807009410113
+      ],
+      "seconds": 6.584,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release122-kde-component-browser-controls-v1/firefox-roundtrip/result.json",
+      "exit": 0
+    }
+  ],
+  "native_config_restored_exactly": true,
+  "full_receipt": "CROOT/release122-kde-component-full-v1/result.json",
+  "native_matrix_rescored": false,
+  "runtime_authority_changed": false,
+  "limits": [
+    "Tooling coverage fix;all runtime source bodies unchanged.",
+    "Historical KDE344/15/81of440 unchanged;two controls do not replace full acceptance.",
+    "TD168initialFirefoxNotHandled remainsOPEN;this release does not claim a fix.",
+    "Latencies are unpaired n2/browser;no speedup claim."
+  ]
+}

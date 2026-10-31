@@ -3220,8 +3220,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793433978.2660534,
-    "ast_hash": "1cffa9c252a0cb58356c52c3353af34c",
+    "mtime": 1793437389.2181413,
+    "ast_hash": "2fa1911d4de76ecf2cf10216f4aa25e3",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5015,12 +5015,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793433978.2651112,
-    "ast_hash": "d195f2e6634f035be4e8c11b4c0ff662",
+    "mtime": 1793438153.8983197,
+    "ast_hash": "161b447f7884d7a55b55aa840f1c4cf2",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793433978.2651916,
+    "mtime": 1793437465.3117523,
     "ast_hash": "0ca20380c6c9b44285629022c08f710e",
     "semantic_hash": ""
   },
@@ -7660,8 +7660,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793436634.1161575,
-    "ast_hash": "1d8c0976fc4cfcbea1dc57268cd6e215",
+    "mtime": 1793441703.0495472,
+    "ast_hash": "7fb984a406c5a40d242c4c6da70f8446",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9090,8 +9090,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793437156.204724,
-    "ast_hash": "30b4a27f52aec5f3315f07c6d37daf30",
+    "mtime": 1793441703.0485473,
+    "ast_hash": "c818b94cae0ee3f4d919aa28c8300bcf",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9100,8 +9100,8 @@
     "semantic_hash": ""
   },
   "scripts/check-lay-component.py": {
-    "mtime": 1793176583.253031,
-    "ast_hash": "2c547032e7e866e64561bb1b5717900e",
+    "mtime": 1793441740.1078513,
+    "ast_hash": "aceb45600f26c648821251986753f7a2",
     "semantic_hash": ""
   },
   "scripts/check-lay-component.sh": {
@@ -9115,8 +9115,8 @@
     "semantic_hash": ""
   },
   "tests/test_component_checks.py": {
-    "mtime": 1793176583.331661,
-    "ast_hash": "4fcb6be62cc7ce67cc1ee25e24cdf8be",
+    "mtime": 1793441703.0495472,
+    "ast_hash": "ab82f3ab290abdabcd7beb091177e33a",
     "semantic_hash": ""
   },
   "tests/test_field_integration_scope.py": {
@@ -9630,8 +9630,8 @@
     "semantic_hash": ""
   },
   "docs/development/ten-release-queue-2026-10-30.md": {
-    "mtime": 1793436634.115056,
-    "ast_hash": "0516be383a33a1ce23b8085357af1a7f",
+    "mtime": 1793441703.0495472,
+    "ast_hash": "c2fbe728d508662ab6a5ce3326392c8d",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
@@ -9875,8 +9875,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-kde-source-isolation-121.json": {
-    "mtime": 1793437156.2056267,
-    "ast_hash": "38be91ed63ea8d35fa1cb559befdd9bd",
+    "mtime": 1793441703.0485473,
+    "ast_hash": "a6e6b772ceb2cd589e9fa30f8eea2f6c",
     "semantic_hash": ""
   },
   "docs/development/evidence/fragment-layout-1.0.113-proof.json": {
@@ -9990,13 +9990,38 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.121-kde-source-isolation.md": {
-    "mtime": 1793437339.5537434,
-    "ast_hash": "005837622df1981786a7f85dcc4a9c09",
+    "mtime": 1793441703.0495472,
+    "ast_hash": "abfad1d2889c207c4b4ec459eec99dcb",
     "semantic_hash": ""
   },
   "tech_debt/167-chrome-first-space-evidence.md": {
     "mtime": 1793407534.4011357,
     "ast_hash": "d1cf9b7180b449c566997d56bcb67341",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-kde-component-coverage-122.json": {
+    "mtime": 1793441703.0485473,
+    "ast_hash": "ffc9f2356f2fa8dca0e416d098e8fb78",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.121-publication.json": {
+    "mtime": 1793441703.0485473,
+    "ast_hash": "84d152593ba8b8dc58b40f1f463d5f2f",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.121-tests.json": {
+    "mtime": 1793438153.8973196,
+    "ast_hash": "80589be7c51b2b94b4bef160e7774f06",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.122-kde-component-coverage.md": {
+    "mtime": 1793441827.0905652,
+    "ast_hash": "6adef8692e7676107ef38e9a0ddf40e9",
+    "semantic_hash": ""
+  },
+  "tech_debt/169-kde-short-check-coverage.md": {
+    "mtime": 1793441703.0495472,
+    "ast_hash": "58f77f4889eb551d7d4d45cdcdd55197",
     "semantic_hash": ""
   }
 }

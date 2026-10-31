@@ -76,3 +76,5 @@ No root-cause or complete native acceptance claim. Loaded hashes/config/mode
 and existing factory path verified after native controls;globalIBus preserved.
 No localGNOME install/restart. Latencies are unpaired n2/browser;no speedup claim.
 Publication pending; see versioned final-verification JSON for every outcome.
+
+Published 2026-10-31T10:05:20Z at https://github.com/radislabus-star/lay-public/releases/tag/v1.0.121. Commit9f0a158b;all4CI/SecurityPASS,identicalannotatedtagmirrors/peeledcommit verified. BothactualinstalledupdatersPASS:local119sees121available,KDE121current. Resolvedsources/installedmenucallers verified;no local install/restart. InitialTD168failure remainsOPEN.

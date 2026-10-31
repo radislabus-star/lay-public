@@ -1,24 +1,13 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "a9b9bb9fab96f6b6d4a8fa11d5dceb6ccead065b",
+  "base": "9f0a158bb4c53bef2c61560075a9b62ce0fabdac",
   "components": [
-    "kde-focus"
+    "tooling"
   ],
   "shared_paths": [
-    "src/bin/lay_daemon/kde_focus.rs",
-    "src/bin/lay_daemon/kde_focus/foreground.js",
-    "src/bin/lay_daemon/kde_focus/tests.rs",
-    "src/bin/lay_daemon/layout_kde.rs",
-    "src/bin/lay_daemon/layout_controller/kde_exact.rs",
-    "src/bin/lay_daemon/layout_controller/kde_exact/tests.rs",
-    "src/bin/lay_daemon.rs",
-    "src/bin/lay_ibus_engine.rs",
-    "src/bin/lay_daemon/layout_controller.rs",
-    "scripts/check-architecture.sh",
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json",
-    "tech_debt/163-kde-pacing-debug-config-publication.md",
-    "tech_debt/168-firefox-initial-manual-refusal.md"
+    "tech_debt/169-kde-short-check-coverage.md"
   ],
-  "decision": "docs/architecture/decisions/2026-10-31-kde-source-isolation-121.json"
+  "decision": "docs/architecture/decisions/2026-10-31-kde-component-coverage-122.json"
 }
