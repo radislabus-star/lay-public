@@ -1,13 +1,15 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "9f0a158bb4c53bef2c61560075a9b62ce0fabdac",
+  "base": "5c6eee98698f1bbd1187f31434bea80d7569d98e",
   "components": [
     "tooling"
   ],
   "shared_paths": [
     "scripts/test-lanes/manifest.json",
     "scripts/test-lanes/known_failures.json",
-    "tech_debt/169-kde-short-check-coverage.md"
+    "tech_debt/169-kde-short-check-coverage.md",
+    "tech_debt/170-native-clock-margin-diagnostics.md",
+    "scripts/native_diagnostics/receipts.py"
   ],
-  "decision": "docs/architecture/decisions/2026-10-31-kde-component-coverage-122.json"
+  "decision": "docs/architecture/decisions/2026-10-31-native-timing-certainty-123.json"
 }

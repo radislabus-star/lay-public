@@ -19,10 +19,10 @@ Source7d9787bf,CI41104503630/Security41104503608PASS,both installed updatersPASS
 6.DONE119 TD165 KDE menu,published2026-10-31T05:14:02Z,b06a294b. Qt39/native15/browsercontrols2PASS;full3616/34/492/all10zero-warning binaries;4CI/tagmirrors/bothactualupdatersPASS. Local115notmodified,KDE119.
 7.DONE120 published2026-10-31T08:47:13Z,a9b9bb9f.3617/34/494source/Python430+10SKIP/all10zero-warning/installednative2controlsPASS;4CI,identicalannotatedtags bothremotes and bothactualinstalledupdatersPASS. Source565282ef..;local119notmodified,KDE120.
 8.DONE121 published2026-10-31T10:05:20Z,9f0a158b. KDE source isolation6moves/4literal seams;51focused/3617Rust/17gates/ten zero-warning binaries. InitialnativeFFFAIL retainedTD168;120comparison2PASS/restored1212PASS. All4CI,bothactualupdaters,identicaltagmirrors verified.
-9.CANDIDATE122 TD169 canonicalkde-focus coverage8→48. REDconfirmed/GREEN5unit+48canonical;3617Rust/17gates/all10zero-warning/loaded122/native2controls verified. CI/publicationpending.
-10.Provisional: native timing diagnosis must distinguish clock uncertainty from proved late targets; no actor/cadence or PASS/FAIL rescore.
+9.DONE122 published2026-10-31T11:11:30Z,5c6eee98. TD169 shortKDEcoverage8→48,RED/GREEN/3617Rust/442Python/17gates/all10zero-warning/loaded122/native2controlsPASS. All4CI/tagmirrors/bothactualupdaters verified.
+10.CANDIDATE123 TD170 margin-aware offline native diagnosis and27-case CIintegration. CanonicalRED/GREEN/actualsavedCLIkeepsFAIL1;3617Rust/469Python/17gates/all10zero-warning/loaded123/native2controls verified. CI/publicationpending.
 10real releases requested114–123;pending slots are provisional,no filler tags.
-Completed and published in this queue:8/10.
+Completed and published in this queue:9/10.
 
 Native table344PASS15FAIL81BLOCKED/440;
 Firefox116=165/15/40,Chrome historical=179/0/41. Unpaired;4 timing PASS becameFAIL; no causal speedup claim.

@@ -3220,8 +3220,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793437389.2181413,
-    "ast_hash": "2fa1911d4de76ecf2cf10216f4aa25e3",
+    "mtime": 1793441876.9569745,
+    "ast_hash": "8ca5db2158bd7d96b79b0933fa9ac1b3",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5015,12 +5015,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793438153.8983197,
-    "ast_hash": "161b447f7884d7a55b55aa840f1c4cf2",
+    "mtime": 1793442640.4862373,
+    "ast_hash": "d8a84cd331cfa51448b070432ffd90f4",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793437465.3117523,
+    "mtime": 1793441952.7835968,
     "ast_hash": "0ca20380c6c9b44285629022c08f710e",
     "semantic_hash": ""
   },
@@ -7660,8 +7660,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793441703.0495472,
-    "ast_hash": "7fb984a406c5a40d242c4c6da70f8446",
+    "mtime": 1793445662.5500932,
+    "ast_hash": "24686910e2fe81e0d3c778c526267e70",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9090,8 +9090,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793441703.0485473,
-    "ast_hash": "c818b94cae0ee3f4d919aa28c8300bcf",
+    "mtime": 1793445879.8489127,
+    "ast_hash": "afc748cee9255b2edd45a8009d51a7bd",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9455,8 +9455,8 @@
     "semantic_hash": ""
   },
   "scripts/native_diagnostics/receipts.py": {
-    "mtime": 1793297997.2428591,
-    "ast_hash": "269877e6038cc5865499e5c149641fbf",
+    "mtime": 1793445879.8489127,
+    "ast_hash": "5c3b92c7dc1fbe1e91e12188eecb3b91",
     "semantic_hash": ""
   },
   "scripts/native_diagnostics/wire.py": {
@@ -9465,8 +9465,8 @@
     "semantic_hash": ""
   },
   "scripts/tests/test_native_diagnostics.py": {
-    "mtime": 1793297997.243859,
-    "ast_hash": "1fadc304a8dd22d6faeef9d2ea785332",
+    "mtime": 1793445662.5530932,
+    "ast_hash": "706c5e7e0a9bef481193381cca46b080",
     "semantic_hash": ""
   },
   "docs/development/native-diagnostics-workflow.md": {
@@ -9630,8 +9630,8 @@
     "semantic_hash": ""
   },
   "docs/development/ten-release-queue-2026-10-30.md": {
-    "mtime": 1793441703.0495472,
-    "ast_hash": "c2fbe728d508662ab6a5ce3326392c8d",
+    "mtime": 1793445662.5500932,
+    "ast_hash": "236139f618cf0e53b20fababd97f0245",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
@@ -10000,8 +10000,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-kde-component-coverage-122.json": {
-    "mtime": 1793441703.0485473,
-    "ast_hash": "ffc9f2356f2fa8dca0e416d098e8fb78",
+    "mtime": 1793445662.5490932,
+    "ast_hash": "86594a27dbcccdeba23067ded8d69ebb",
     "semantic_hash": ""
   },
   "docs/development/evidence/release-1.0.121-publication.json": {
@@ -10015,13 +10015,43 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.122-kde-component-coverage.md": {
-    "mtime": 1793441827.0905652,
-    "ast_hash": "6adef8692e7676107ef38e9a0ddf40e9",
+    "mtime": 1793445662.5500932,
+    "ast_hash": "8b595766444428262aa1f5603c6ce412",
     "semantic_hash": ""
   },
   "tech_debt/169-kde-short-check-coverage.md": {
-    "mtime": 1793441703.0495472,
-    "ast_hash": "58f77f4889eb551d7d4d45cdcdd55197",
+    "mtime": 1793445662.5530932,
+    "ast_hash": "a8a02d75b914d078eab0cd52b056c2e3",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-native-timing-certainty-123.json": {
+    "mtime": 1793445879.8479128,
+    "ast_hash": "df53fd63adc50589450dfda42853aa83",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.122-publication.json": {
+    "mtime": 1793445662.5500932,
+    "ast_hash": "ec145d5fe2486c2153bb89aaaa95695e",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.122-tests.json": {
+    "mtime": 1793442640.4852374,
+    "ast_hash": "4f2fc656f76286930d9505f17000ca32",
+    "semantic_hash": ""
+  },
+  "tests/test_native_diagnostics_suite.py": {
+    "mtime": 1793445662.5540931,
+    "ast_hash": "7b88f11c5f648ce4d09f28133804484f",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.123-native-timing-certainty.md": {
+    "mtime": 1793445978.9957395,
+    "ast_hash": "8caa5851669a6d17f5cc57df9d70d175",
+    "semantic_hash": ""
+  },
+  "tech_debt/170-native-clock-margin-diagnostics.md": {
+    "mtime": 1793445662.5540931,
+    "ast_hash": "ccbe3840e14dc88b798cbd2c3b807b88",
     "semantic_hash": ""
   }
 }

@@ -49,3 +49,5 @@ Remote122installed,all10installed hashes andactualloadeddaemon/IME/factorypath
 verified after2/2frozenr19native controls(4flips). Config/layout/globalIBus
 preserved,localGNOME untouched. No complete-matrix/speedup claim;TD168OPEN.
 Publication pending. Full structured evidence: release-1.0.122-final-verification.json.
+
+Published 2026-10-31T11:11:30Z at https://github.com/radislabus-star/lay-public/releases/tag/v1.0.122. Commit5c6eee98;all4CI/SecurityPASS,identicaltagmirrors/peeledcommit,bothactualinstalled menuupdaters/sources verified. Local119sees122available,KDE122current;no local install/restart.

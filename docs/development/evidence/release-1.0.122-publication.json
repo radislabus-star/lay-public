@@ -1,0 +1,152 @@
+{
+  "publication": {
+    "status": "STABLE_PUBLISHED",
+    "version": "1.0.122",
+    "canonical_commit": "5c6eee98698f1bbd1187f31434bea80d7569d98e",
+    "tag": "v1.0.122",
+    "tag_object": "f8db0aeb33b7db1a4a45f007c4d25b513101e336",
+    "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.122",
+    "published_at": "2026-10-31T11:11:30Z",
+    "draft": false,
+    "prerelease": false,
+    "assets": [],
+    "ci": [
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41194674893/job/124518341007"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41194015904/job/124516422532"
+      },
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41194015904/job/124516422450"
+      },
+      {
+        "name": "Public installer regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41194015904/job/124516422230"
+      }
+    ],
+    "updater": "PASS"
+  },
+  "updater": {
+    "status": "PASS",
+    "published_version": "1.0.122",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.119",
+        "stable": "1.0.122",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.119\nстабильный релиз: 1.0.122\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.119 → 1.0.122\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.122",
+        "stable": "1.0.122",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.122\nстабильный релиз: 1.0.122\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-31T11:11:33.659453+00:00"
+  },
+  "tag_mirrors": {
+    "status": "IDENTICAL_ANNOTATED_TAGS_AND_PEELED_COMMIT_VERIFIED",
+    "verified_at": "2026-10-31T11:13:32.169715+00:00",
+    "refs": {
+      "origin": {
+        "refs/tags/v1.0.122": "f8db0aeb33b7db1a4a45f007c4d25b513101e336",
+        "refs/tags/v1.0.122^{}": "5c6eee98698f1bbd1187f31434bea80d7569d98e"
+      },
+      "public": {
+        "refs/tags/v1.0.122": "f8db0aeb33b7db1a4a45f007c4d25b513101e336",
+        "refs/tags/v1.0.122^{}": "5c6eee98698f1bbd1187f31434bea80d7569d98e"
+      }
+    },
+    "canonical_commit": "5c6eee98698f1bbd1187f31434bea80d7569d98e"
+  },
+  "entrypoints": {
+    "verified_at": "2026-10-31T11:13:25.142818+00:00",
+    "local": {
+      "entrypoint": "/home/ubu/.local/bin/lay-update",
+      "resolved": "/home/ubu/.local/lib/lay/update.sh",
+      "sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "latest_api_in_source": true,
+      "installed_menu_launch": [
+        {
+          "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+          "line": 249,
+          "text": "const updater = `${GLib.get_home_dir()}/.local/bin/lay-update`;"
+        },
+        {
+          "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+          "line": 252,
+          "text": "throw new Error('Не найден lay-update. Переустанови Lay.');"
+        },
+        {
+          "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+          "line": 256,
+          "text": "catch (error) { onError('Не удалось выполнить обновление или открыть терминал. Запусти lay-update в терминале.'); }"
+        },
+        {
+          "path": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+          "line": 275,
+          "text": "const updater = GLib.get_home_dir() + '/.local/bin/lay-update';"
+        }
+      ]
+    },
+    "kde": {
+      "entrypoint": "/home/e/.local/bin/lay-update",
+      "resolved": "/home/e/.local/lib/lay/update.sh",
+      "sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "latest_api_in_source": true,
+      "installed_menu_launch": [
+        "[str(Path.home() / \".local/bin/lay-update\"), action],",
+        "return None, \"Не удалось запустить lay-update.\"",
+        "[str(Path.home() / \".local/bin/lay-update\"), \"--menu\"],",
+        "QMessageBox.warning(None, \"Обновление Lay\", \"Не удалось запустить lay-update. Переустанови Lay.\")"
+      ]
+    },
+    "source_sha256_equal": true,
+    "latest_stable_check": {
+      "status": "PASS",
+      "published_version": "1.0.122",
+      "checks": {
+        "local": {
+          "exit": 0,
+          "installed": "1.0.119",
+          "stable": "1.0.122",
+          "stdout": "=== проверка обновлений ===\nустановлено: 1.0.119\nстабильный релиз: 1.0.122\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.119 → 1.0.122\n",
+          "stderr": "",
+          "mode": "--check",
+          "apply": false
+        },
+        "remote": {
+          "exit": 0,
+          "installed": "1.0.122",
+          "stable": "1.0.122",
+          "stdout": "=== проверка обновлений ===\nустановлено: 1.0.122\nстабильный релиз: 1.0.122\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+          "stderr": "",
+          "mode": "--check",
+          "apply": false
+        }
+      },
+      "local_install_or_restart": false,
+      "checked_at": "2026-10-31T11:11:33.659453+00:00"
+    }
+  }
+}

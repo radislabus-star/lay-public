@@ -37,7 +37,84 @@ def reply(serial=1, stamp=150, member="VisibleTailV4", sender=":1.2", **values):
                 at_unix_us=stamp, **values)
 
 
+def timing_bundle(targets, margin):
+    data = bundle()
+    row = data["actor"]["rows"][0]
+    row["clock_mapping_uncertainty_ms"] = margin
+    row["error"] = repr(dict(late_targets=targets, clock_mapping_uncertainty_ms=margin))
+    return data
+
+
 class ReceiptTests(unittest.TestCase):
+    def test_clock_real_signed_margin_is_reported_without_rescoring(self):
+        targets = [dict(target=0, observed=1624619.069164337, next_gesture_start=1624619.071254356),
+                   dict(target=1, observed=1624619.304164337, next_gesture_start=1624619.285153015),
+                   dict(target=2, observed=1624619.578164337, next_gesture_start=1624619.497839205),
+                   dict(target=3, observed=1624619.7351643369, next_gesture_start=1624619.708878938)]
+        result = receipts.summarize(timing_bundle(targets, 3.2047820277512074))
+        self.assertIn("target_ordering", result["rapid_timing"]["space"])
+        self.assertEqual(result["rapid_timing"]["space"]["target_ordering"],
+            dict(after_recorded_margin=3, overlaps_recorded_margin=1,
+                 before_recorded_margin=0, unverified=0, comparisons=4, unverified_rows=0))
+        self.assertEqual(result["counts"], dict(PASS=0, FAIL=1, BLOCKED=1, NOT_TESTED=0))
+        self.assertEqual(result["cases"][0]["assertion"], "TARGET_AFTER_NEXT_GESTURE")
+        self.assertAlmostEqual(result["cases"][0]["target_timing"]["targets"][0]["delta_ms"], -2.09001917, places=5)
+        self.assertIn("TARGET_TIMING_UNCERTAIN", result["warnings"])
+
+    def test_clock_overlap_and_exact_boundary_keep_original_failure(self):
+        for observed, next_start, margin in ((100.0, 100.001, 2.0), (101.25, 101.0, 250.0)):
+            with self.subTest(observed=observed):
+                result = receipts.summarize(timing_bundle([dict(target=0, observed=observed, next_gesture_start=next_start)], margin))
+                self.assertEqual(result["cases"][0]["assertion"], "TARGET_WITHIN_CLOCK_MARGIN")
+                self.assertEqual(result["counts"]["FAIL"], 1)
+                self.assertEqual(result["rapid_timing"]["space"]["target_ordering"]["overlaps_recorded_margin"], 1)
+
+    def test_clock_before_margin_exposes_inconsistent_assertion(self):
+        result = receipts.summarize(timing_bundle([dict(target=0, observed=100.0, next_gesture_start=101.0)], 2.0))
+        self.assertEqual(result["cases"][0]["assertion"], "TIMING_ASSERTION_INCONSISTENT")
+        self.assertEqual(result["counts"]["FAIL"], 1)
+        self.assertIn("TARGET_TIMING_INCONSISTENT", result["warnings"])
+
+    def test_clock_missing_invalid_or_unparseable_evidence_stays_unverified(self):
+        valid = [dict(target=0, observed=101.0, next_gesture_start=100.0)]
+        cases = []
+        missing = timing_bundle(valid, 2.0)
+        missing["actor"]["rows"][0].pop("clock_mapping_uncertainty_ms")
+        missing["actor"]["rows"][0]["error"] = repr(dict(late_targets=valid))
+        cases.append(missing)
+        cases.extend(timing_bundle(valid, margin) for margin in (-1.0, True, None, float("nan")))
+        mismatch = timing_bundle(valid, 2.0); mismatch["actor"]["rows"][0]["clock_mapping_uncertainty_ms"] = 3.0; cases.append(mismatch)
+        for bad in (dict(target=True, observed=101.0, next_gesture_start=100.0),
+                    dict(target=0, observed="private-user-text", next_gesture_start=100.0),
+                    dict(target=0, observed=1e308, next_gesture_start=0.0)):
+            cases.append(timing_bundle([bad], 2.0))
+        for error in ("{'late_targets': [", "{'late_targets': [" + "0" * 9000 + "]}"):
+            data = timing_bundle(valid, 2.0); data["actor"]["rows"][0]["error"] = error; cases.append(data)
+        deep = timing_bundle(valid, 2.0)
+        deep["actor"]["rows"][0]["error"] = '{"late_targets":' + "[" * 1100 + "0" + "]" * 1100 + "}"
+        cases.append(deep)
+        oversized = timing_bundle(valid, 2.0)
+        oversized["actor"]["rows"][0]["error"] = dict(late_targets=valid * 65, clock_mapping_uncertainty_ms=2.0)
+        cases.append(oversized)
+        cases.append(timing_bundle([], 2.0))
+        for index, data in enumerate(cases):
+            with self.subTest(index=index):
+                result = receipts.summarize(data)
+                self.assertEqual(result["cases"][0]["assertion"], "TARGET_TIMING_UNVERIFIED")
+                self.assertEqual(result["counts"]["FAIL"], 1)
+                self.assertNotIn("private-user-text", json.dumps(result, allow_nan=False))
+
+    def test_clock_duplicate_and_private_fields_do_not_hide_capture_gaps(self):
+        target = dict(target=0, observed=101.0, next_gesture_start=100.0)
+        data = timing_bundle([target, dict(target, private="private-user-text")], 2.0)
+        result = receipts.summarize(data)
+        self.assertIn("target_ordering", result["rapid_timing"]["space"])
+        ordering = result["rapid_timing"]["space"]["target_ordering"]
+        self.assertEqual((ordering["after_recorded_margin"], ordering["unverified"]), (1, 1))
+        self.assertIn("CAUSAL_CAPTURE_INCOMPLETE", result["warnings"])
+        self.assertEqual(result["causal_evidence"]["first_failed_transition"], "UNKNOWN_REQUIRES_CORRELATED_EVENTS")
+        self.assertNotIn("private-user-text", json.dumps(result, allow_nan=False))
+
     def test_keeps_failure_block_and_missing_latency_coverage(self):
         result = receipts.summarize(bundle())
         self.assertEqual(result["counts"], dict(PASS=0, FAIL=1, BLOCKED=1, NOT_TESTED=0))

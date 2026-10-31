@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from collections import Counter, defaultdict
+import ast
 import hashlib
 import json
 import math
@@ -63,7 +64,67 @@ def load_bundle(path):
             "verification": read_json(verification) if verification.is_file() else {}}
 
 
-def assertion_class(row):
+def _timing_number(value):
+    if type(value) not in (int, float):
+        return None
+    try:
+        return value if math.isfinite(value) else None
+    except OverflowError:
+        return None
+
+
+def target_timing_evidence(row):
+    """Qualify a saved assertion by its recorded clock margin, preserving verdicts."""
+    error = row.get("error", "")
+    prefix = isinstance(error, str) and error.lstrip().startswith(("{'late_targets':", '{"late_targets":'))
+    payload = error if isinstance(error, dict) else None
+    if isinstance(error, str) and len(error) <= 8192 and error.lstrip().startswith("{"):
+        try:
+            payload = json.loads(error)
+        except (ValueError, TypeError, RecursionError):
+            try:
+                payload = ast.literal_eval(error)
+            except (ValueError, TypeError, SyntaxError, RecursionError):
+                payload = None
+    if not (isinstance(payload, dict) and "late_targets" in payload):
+        if not prefix:
+            return None
+        payload = {}
+    margins = [_timing_number(source["clock_mapping_uncertainty_ms"])
+               for source in (row, payload) if "clock_mapping_uncertainty_ms" in source]
+    margin = margins[0] if margins and all(m is not None and m >= 0 and m == margins[0] for m in margins) else None
+    counts = dict(after_recorded_margin=0, overlaps_recorded_margin=0,
+                  before_recorded_margin=0, unverified=0)
+    entries = payload.get("late_targets")
+    entries = entries if isinstance(entries, list) and len(entries) <= 64 else []
+    targets, seen = [], set()
+    for entry in entries:
+        entry = entry if isinstance(entry, dict) else {}
+        target = entry.get("target")
+        valid_id = type(target) is int and target >= 0 and target not in seen
+        if type(target) is int and target >= 0:
+            seen.add(target)
+        observed = _timing_number(entry.get("observed"))
+        next_start = _timing_number(entry.get("next_gesture_start"))
+        delta = _timing_number((observed - next_start) * 1000) if valid_id and observed is not None and next_start is not None and observed >= 0 and next_start >= 0 else None
+        interval = [delta - margin, delta + margin] if delta is not None and margin is not None else None
+        if interval is not None and all(_timing_number(v) is not None for v in interval):
+            state = ("after_recorded_margin" if delta > margin else
+                     "before_recorded_margin" if delta < -margin else "overlaps_recorded_margin")
+        else:
+            state, interval = "unverified", None
+        counts[state] += 1
+        targets.append(dict(target=target if type(target) is int and target >= 0 else None,
+                            delta_ms=delta, interval_ms=interval, state=state))
+    assertion = ("TARGET_AFTER_NEXT_GESTURE" if counts["after_recorded_margin"] else
+                 "TARGET_TIMING_UNVERIFIED" if counts["unverified"] or not targets else
+                 "TIMING_ASSERTION_INCONSISTENT" if counts["before_recorded_margin"] else
+                 "TARGET_WITHIN_CLOCK_MARGIN")
+    return dict(assertion=assertion, counts=counts, targets=targets, clock_margin_ms=margin,
+                scope="Recorded mapping margin; not a calibrated physical error bound or causal proof.")
+
+
+def assertion_class(row, target_timing=None):
     error = str(row.get("error", ""))
     if row["status"] == "BLOCKED":
         if "TD137:" in error:
@@ -73,8 +134,9 @@ def assertion_class(row):
         if "native/DOM text disagreement" in error:
             return "OBSERVERS_DISAGREE"
         return "UNCLASSIFIED_BLOCK"
-    if error.startswith("{'late_targets':") or error.startswith('{"late_targets":'):
-        return "TARGET_AFTER_NEXT_GESTURE"
+    timing = target_timing if target_timing is not None else target_timing_evidence(row)
+    if timing is not None:
+        return timing["assertion"]
     if error.startswith("{'expected':") or error.startswith('{"expected":'):
         return "EXPECTED_TARGET_ASSERTION"
     return "UNCLASSIFIED_FAILURE"
@@ -150,15 +212,32 @@ def summarize(bundle):
     groups = defaultdict(list)
     cases = []
     latency_groups = defaultdict(list)
+    ordering_groups = defaultdict(Counter)
+    timing_uncertain = timing_inconsistent = False
     for row, identity in zip(rows, identities):
         case = {k: safe_label(row[k]) for k in CASE_KEYS}
         case.update(id=digest(identity), status=row["status"])
         if row["status"] in ("FAIL", "BLOCKED"):
-            case["assertion"] = assertion_class(row)
+            evidence = target_timing_evidence(row) if row["status"] == "FAIL" else None
+            case["assertion"] = assertion_class(row, evidence)
+            if evidence is not None:
+                case["target_timing"] = evidence
+                counters = evidence["counts"]
+                incomplete = bool(counters["unverified"] or evidence["assertion"] == "TARGET_TIMING_UNVERIFIED")
+                timing_uncertain |= bool(counters["overlaps_recorded_margin"] or incomplete)
+                timing_inconsistent |= bool(counters["before_recorded_margin"])
+                if row["name"] == "rapid-five":
+                    ordering_groups[row["word"]].update(counters)
+                    ordering_groups[row["word"]]["comparisons"] += len(evidence["targets"])
+                    ordering_groups[row["word"]]["unverified_rows"] += int(incomplete)
             groups[(row["status"], case["assertion"], case["name"], case["word"])].append(case)
         cases.append(case)
         if row["name"] == "rapid-five":
             latency_groups[row["word"]].append(row)
+    if timing_uncertain:
+        warnings.append("TARGET_TIMING_UNCERTAIN")
+    if timing_inconsistent:
+        warnings.append("TARGET_TIMING_INCONSISTENT")
     failures = [r for r in rows if r["status"] == "FAIL"]
     anchor_count = sum(r.get("native_trace_complete") is True for r in failures)
     if anchor_count != len(failures) or controller.get("trace_complete") is not True:
@@ -172,6 +251,8 @@ def summarize(bundle):
         timing[safe_label(word)] = dict(expected_samples=target, observed_samples=len(valid),
             invalid_samples=len(values) - len(valid), median_ms=statistics.median(valid) if valid else None,
             p95_ms=valid[math.ceil(len(valid) * .95) - 1] if valid else None, max_ms=max(valid) if valid else None)
+        if word in ordering_groups:
+            timing[safe_label(word)]["target_ordering"] = dict(ordering_groups[word])
     source = verification.get("source", {})
     source = sha(source.get("sha256")) if isinstance(source, dict) else None
     if not source:

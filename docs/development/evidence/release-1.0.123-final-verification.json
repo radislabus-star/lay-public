@@ -1,0 +1,126 @@
+{
+  "status": "SOURCE_AND_INSTALLED_CONTROLS_VERIFIED_PUBLICATION_PENDING",
+  "canonical_parent": "5c6eee98698f1bbd1187f31434bea80d7569d98e",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1329,
+    "sha256": "24fbb98d13b4d9a2f139e9a7bc65780f34a48147de33e12f720c8506f7e48fcd"
+  },
+  "rust": {
+    "selected": 3617,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 494,
+    "canonical_invocation_exit": 0,
+    "bootstrap_invocation_exit": 0,
+    "manifest_sha256": "f8430954c02a8ac258a5baaae847dec24326d2995224c7f6b1397269836da0aa",
+    "observation_sha256": "fe3f136f3c3891d8b4d647d4a174dbc4910362b6347769f1dd4895559c1b5aaa"
+  },
+  "python": {
+    "passed": 459,
+    "skipped": 10,
+    "total": 469
+  },
+  "release_binaries": 10,
+  "compiler_warnings": 0,
+  "tested_inventory_files": 1333,
+  "focused": {
+    "unit_passed": 27,
+    "old_test_bodies_unchanged": 22,
+    "red": {
+      "run": 27,
+      "failures": 19,
+      "errors": 0,
+      "skipped": 0,
+      "failed_methods": [
+        "test_clock_before_margin_exposes_inconsistent_assertion",
+        "test_clock_duplicate_and_private_fields_do_not_hide_capture_gaps",
+        "test_clock_missing_invalid_or_unparseable_evidence_stays_unverified",
+        "test_clock_overlap_and_exact_boundary_keep_original_failure",
+        "test_clock_real_signed_margin_is_reported_without_rescoring"
+      ]
+    },
+    "green_worker_seconds": 1.2294580249581486,
+    "actual_saved_counts": {
+      "PASS": 0,
+      "FAIL": 1,
+      "BLOCKED": 0,
+      "NOT_TESTED": 0
+    },
+    "actual_target_ordering": {
+      "after_recorded_margin": 3,
+      "overlaps_recorded_margin": 1,
+      "before_recorded_margin": 0,
+      "unverified": 0,
+      "comparisons": 4,
+      "unverified_rows": 0
+    },
+    "green_receipt": "CROOT/release123-native-timing-green-v1/result.json",
+    "red_receipt": "CROOT/release123-native-timing-red-v1/result.json"
+  },
+  "frozen_other_files": 1338,
+  "running_identity": {
+    "status": "FINAL_RUNNING_IDENTITY_AFTER_NATIVE_VERIFIED",
+    "verification_only_no_reinstall_or_restart": true,
+    "verified_at": "2026-10-31T11:51:05.018755+00:00",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1329,
+      "sha256": "24fbb98d13b4d9a2f139e9a7bc65780f34a48147de33e12f720c8506f7e48fcd"
+    },
+    "version": "1.0.123",
+    "daemon_pid": 1295162,
+    "daemon_sha256": "a6645394e3d323702897286685a5a3cb0f7aa1dd148650f3d641e12f4e37e0d4",
+    "engine_pid": 1295327,
+    "engine_sha256": "b765fde82d7f49418b0175880a0eb97aed1dde0ba5321524c60307e668c94a06",
+    "engine_inode": 24803207,
+    "tray_pid": 1295384,
+    "config_sha256": "5d02dfdaf28f59075f33d1e0ffb72c70fecd69a97208d11f22848c8411d543b3",
+    "installed_binary_hashes_verified": 10,
+    "factory_binary_sha256": "b765fde82d7f49418b0175880a0eb97aed1dde0ba5321524c60307e668c94a06",
+    "factory_path_unchanged": "/home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine",
+    "local_gnome_modified": false,
+    "global_ibus_restarted": false,
+    "deployment_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release123-native-timing-deployment-v1/result.json",
+    "native_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release123-native-timing-browser-controls-v1/result.json"
+  },
+  "native_controls": [
+    {
+      "browser": "chrome",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        80.81567287445068,
+        70.08330710232258
+      ],
+      "seconds": 5.987,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release123-native-timing-browser-controls-v1/chrome-roundtrip/result.json",
+      "exit": 0
+    },
+    {
+      "browser": "firefox",
+      "name": "roundtrip",
+      "status": "PASS",
+      "error": null,
+      "latencies_ms": [
+        190.36057498306036,
+        164.69741403125226
+      ],
+      "seconds": 6.583,
+      "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release123-native-timing-browser-controls-v1/firefox-roundtrip/result.json",
+      "exit": 0
+    }
+  ],
+  "native_config_restored_exactly": true,
+  "full_receipt": "CROOT/release123-native-timing-full-v1/result.json",
+  "native_matrix_rescored": false,
+  "runtime_authority_changed": false,
+  "limits": [
+    "Recorded clock mapping margin is an estimate,not a calibrated physical error bound or causal proof.",
+    "Original actor verdicts/counts/IDs/cadence/deadlines preserved;real saved row stillFAIL1.",
+    "Historical KDE344/15/81of440 unchanged;two controls do not replace full acceptance.",
+    "TD168initialFirefoxNotHandled andTD166independentfragment/TD162gluedpronoun evidence remainunresolved.",
+    "Latencies are unpaired n2/browser;no speedup claim."
+  ]
+}
