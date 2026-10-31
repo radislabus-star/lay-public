@@ -1,0 +1,363 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-31-ibus-semantic-fixture-stamp-order-119",
+  "status": "accepted_for_test_only_neighbor_contract_alignment",
+  "owner": "docs/development/release-1.0.119-kde-checkbox-menu.md",
+  "baseline": "685ba6f24840bf994669d0c71fd1c8ea268b9326",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C10"
+  ],
+  "decision": "Semantic helpers receive their real observer stamp before invoking the consumer,exactly like existing word_scope.rs::legacy_key. Dedicated rendezvous/late/missing-stamp tests and product wait deadline stay unchanged.",
+  "first_failed_transition": "Atomic/legacy-at/FocusOut semantic fixtures race consumer and observer;missing the product rendezvous changes the initial authority state before assertions. Existing legacy_key documents and already avoids this scheduler race.",
+  "runtime_change_allowed_paths": [],
+  "test_change_allowed_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs"
+  ],
+  "frozen_unselected_test_source": {
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
+      "exclusions": [
+        {
+          "start": "fn td121_native_reset_ack_requires_whole_current_confirmed_effect(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "async fn legacy_key_at(",
+          "end": "\n#[derive"
+        },
+        {
+          "start": "pub(super) async fn actual_focus_out(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn accepted_full_delayed_prefix_echo_cannot_change_external_context(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn accepted_full_receipts_then_delayed_prefix_recover_only_next_exact_manual_route(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn c06_native_backspace_carry_cannot_accept_before_fresh_exact_client_confirmation(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn c06_native_backspace_refuses_unconfirmed_drift_selection_and_whole_erase(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn c06_native_backspace_retype_first_and_later_words_uses_fresh_client_receipts(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn c09_acquisition_completion_delivery_preserves_guarded_state_after_interface_wait(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn c09_post_install_mode_refuses_revoked_or_mismatched_owner(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn confirmed_native_append_delayed_prefix_next_exact_receipt_restores_manual_route(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn delayed_focus_out_after_later_word_revocation_preserves_successor_stamps(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_bridge_accepts_shift_received_before_marker_and_dispatches_it_once(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_bridge_readonly_shift_does_not_exempt_other_input_or_lifecycle(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_first_word_space_retires_published_preedit_before_exact_receipt(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_initial_delayed_prefix_cannot_survive_contradiction_or_input_gap(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_native_replay_append_preserves_reset_lineage_until_exact_tail(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_owned_closing_space_reset_preserves_only_confirmed_held_boundary(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_published_preedit_retention_refuses_unproved_or_contradictory_snapshots(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_replay_reset_receipt_rejects_revoked_scope_and_context(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_reset_alt_preparation_cannot_accept_across_intervening_gaps(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_reset_suffix_frame_and_tab_refuse_unconfirmed_or_invalid_receipts(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_retired_preedit_survives_next_publication_until_exact_append_receipt(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_revoked_release_retirement_cannot_hide_effects_gaps_or_foreign_content(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_shortened_preedit_does_not_erase_prior_stale_surface_witness(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_source_free_first_word_after_space_delegates_exact_tail(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_zero_width_space_after_caret_requires_fresh_exact_receipt(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn firefox_zero_width_space_then_owned_append_requires_new_exact_token(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_receipt(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_bridge_consumer_refuses_ingress_after_the_fence(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_bridge_fence_refuses_received_unsettled_key_or_focus_out(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_delayed_old_revocation_cannot_clean_up_different_path_successor(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_legacy_enter_backspace_revokes_beyond_the_observed_mirror(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_lifecycle_bad_sender_or_payload_still_stops_observer(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_missing_or_repeated_disable_revokes_and_completes_local_reset(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_pending_get_rejects_unrelated_or_malformed_content_type_without_revival(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_ready_transfer_rejects_same_owner_revocation_before_take(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_repeated_focus_out_after_reset_or_content_type_revocation_survives(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_reset_rereceipt_failures_never_delete_gui_text(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn residual_taken_transfer_rejects_same_owner_revocation_before_install(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn retained_strict_prefix_next_receipt_refuses_contradiction_or_identity_gap(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn surrounding_without_refresh_owned_preedit_rejects_stale_token_and_selection(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_acknowledged_owned_space_preserves_receipt_across_one_reset(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_confirmed_native_erasure_survives_one_late_reset_without_new_ssi(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_confirmed_reset_before_managed_release_retains_existing_authority(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_deferred_completion_cannot_survive_frame_revocation(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_deferred_completion_is_inert_with_legacy_test_output(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_delayed_activation_revalidates_nonce_and_lifecycle(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_exact_receipt_publishes_cached_current_suffix_before_alt(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_inactive_completion_waits_for_matching_handled_release(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_known_owned_preedit_retains_all_refusal_guards(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_late_boundary_receipt_cannot_restore_contradiction_or_intervening_input(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_late_managed_letter_release_cannot_erase_prior_word_proof(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_managed_reset_observation_is_first_effect_only_and_exact(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_marked_owned_preedit_refuses_missing_or_foreign_birth_proof(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_marked_prefix_rereceipt_cannot_revive_stale_or_foreign_birth_proof(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_erasure_reset_ack_is_one_use_across_actual_refresh(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_erasure_reset_ack_is_spent_without_snapshot_or_output(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_erasure_reset_ack_rejects_observer_content_change_back(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_erasure_reset_ack_requires_current_confirmed_identity(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_erasure_reset_ack_requires_first_whole_receipt(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_reset_ack_is_one_use_across_identical_actual_ssi(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_reset_ack_is_spent_even_without_snapshot_or_output(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_native_reset_ack_rejects_observer_ahead_content_type_change_back(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_non_effectful_completion_routes_cannot_promote_unknown_start(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_overlapping_handled_releases_publish_only_the_latest_completion(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td121_settled_native_replay_full_receipt_survives_one_late_reset(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td159_committed_layout_completes_across_same_activation_word_reset(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td159_fresh_focus_manual_source_cannot_revive_after_receipt_change_or_reset(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td159_fresh_focus_manual_source_rejects_unproved_or_edited_fields(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td159_fresh_focus_manual_source_requires_only_current_explicit_gesture(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td159_fresh_focus_target_observation_preserves_only_exact_manual_transfer(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn td159_fresh_focus_target_observation_rejects_different_or_unproved_field(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn test29_detached_reset_returns_exact_unknown_object_reply(",
+          "end": "\n#[test]"
+        },
+        {
+          "start": "fn transient_boundary_tab_rejects_changed_surface_or_authority(",
+          "end": "\n#[test]"
+        }
+      ],
+      "sha256": "525d0165dd5380342a74797ab62363fa1ab871a82eb2a2c2d436b87c0c6993a6"
+    },
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
+      "exclusions": [
+        {
+          "start": "async fn atomic_callback(",
+          "end": "\nfn prior_from"
+        }
+      ],
+      "sha256": "90f13b60e164ee875553e671655809b0212a613d5a4fc674081961e63b9d0efd"
+    }
+  },
+  "frozen_deadline": {
+    "path": "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs",
+    "bounded_source_sha256": "09691e2c24dd78e72c95018486125393b4df8b88dc86fa3750e8edfb6c70675a",
+    "callback_budget_decl": "const CALLBACK_BUDGET: Duration = Duration::from_secs(1);"
+  },
+  "runtime_authority_changed": false,
+  "verification": {
+    "focused_semantic_order": "23/24;4/4 formerly failing positiveAtomic/Firefox/FocusOut cases PASS;oneaggregate timeout",
+    "matrix_budget_support": "2026-10-31-ibus-fixture-case-budget-119.json",
+    "status": "ENGINE_TARGET_PENDING"
+  },
+  "rejected_lifetime_experiment": "32A/2FAIL versus32B/5FAIL;no benefit. All registry cleanup/selectors and temporarycase diagnostics removed;atomic.rs unchanged.",
+  "canonical_engine_result": {
+    "status": "CANONICAL_ENGINE_TARGET_GREEN",
+    "selected": 1149,
+    "failures": 0,
+    "seconds": 235.688,
+    "receipt": "docs/development/evidence/release-1.0.119-engine-target.json"
+  }
+}

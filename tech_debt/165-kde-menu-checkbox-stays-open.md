@@ -1,3 +1,5 @@
+Status: FOCUSED_GREEN_119_FULL_RELEASE_PENDING. Owner: docs/development/release-1.0.119-kde-checkbox-menu.md. Real Qt RED/GREEN39/39 + extended checks; native installed acceptance still pending.
+
 # TD165 — меню KDE закрывается после каждого переключателя
 
 Приоритет P2,отдельно от функциональности автопереворота. Зарегистрировано по сообщению пользователя 2026-10-30T18:11:30Z. Статус USER_REPORTED_UX_REQUEST_NOT_VERIFIED.
@@ -9,3 +11,5 @@
 План минимальной правки: воспроизвести один переключатель; изменить только локальную обработку checkable-действия/состояния меню доступным штатным способом. Не добавлять второе меню,новый трей или владелец настроек. Состояние должно подтверждаться существующим конфигом/DBus; сохранение открытого меню не должно повторно переключать галочку,срывать фокус ввода или подавлять обычные действия.
 
 Проверить несколько разных галочек подряд,выключение и включение обратно,фактическое состояние после повторного открытия,Escape/клик снаружи и действие открытия настроек. Зафиксировать точный KDE/программу/байты и краткую проверку настоящего меню; source UI-тест сам по себе не является физическим PASS. GNOME,все IME/коррекционные маршруты и механизм применения настроек заморожены. Отдельный релиз после GREEN и обязательных выпускных проверок.
+
+Final119implementation verified,publishing pending:KDEQt5native15PASS,Qt39PASS,Chrome/FFcontrols2PASS,full3616/34/492 and10zero-warning binaries. One application menu filter and batched config application;shared input/controller/rendering unchanged. Receipt docs/development/evidence/release-1.0.119-final-verification.json. Qt6native remains untested.

@@ -280,20 +280,61 @@ def main() -> int:
         print(status_text())
         return 0
 
+    # KDE must present this process's menu, so checkbox events stay local.
+    # This affects only KStatusNotifierItem menu export, not the Qt theme.
+    os.environ["KSNI_NO_DBUSMENU"] = "1"
+
     try:
-        from PyQt6.QtCore import QObject, QPoint, QTimer, Qt, pyqtSlot
+        from PyQt6.QtCore import QEvent, QObject, QPoint, QTimer, Qt, pyqtSlot
         from PyQt6.QtDBus import QDBusConnection, QDBusInterface, QDBusPendingCallWatcher, QDBusPendingReply, QDBusServiceWatcher
         from PyQt6.QtGui import QAction, QActionGroup, QColor, QCursor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPixmap
         from PyQt6.QtWidgets import QApplication, QLabel, QMenu, QMessageBox, QSystemTrayIcon
     except ImportError:
         try:
-            from PyQt5.QtCore import QObject, QPoint, QTimer, Qt, pyqtSlot
+            from PyQt5.QtCore import QEvent, QObject, QPoint, QTimer, Qt, pyqtSlot
             from PyQt5.QtDBus import QDBusConnection, QDBusInterface, QDBusPendingCallWatcher, QDBusPendingReply, QDBusServiceWatcher
             from PyQt5.QtGui import QColor, QCursor, QFont, QFontDatabase, QFontMetrics, QIcon, QPainter, QPixmap
             from PyQt5.QtWidgets import QAction, QActionGroup, QApplication, QLabel, QMenu, QMessageBox, QSystemTrayIcon
         except ImportError as exc:
             print(f"lay-kde-tray: install PyQt6 or PyQt5: {exc}", file=sys.stderr)
             return 1
+
+    class CheckboxMenuFilter(QObject):
+        """Keep switches open in both source and KDE platform menus."""
+
+        def __init__(self, parent: QObject, menu_hidden: Any) -> None:
+            super().__init__(parent)
+            self.menu_hidden = menu_hidden
+
+        @staticmethod
+        def _is_checkbox(action: Any) -> bool:
+            if action is None or not action.isEnabled() or not action.isCheckable() or action.menu():
+                return False
+            group = action.actionGroup()
+            return group is None or not group.isExclusive()
+
+        def eventFilter(self, watched: QObject, event: Any) -> bool:
+            if not isinstance(watched, QMenu):
+                return False
+            kind = getattr(QEvent, "Type", QEvent)
+            if event.type() == kind.MouseButtonRelease:
+                button = getattr(Qt, "MouseButton", Qt)
+                action = watched.actionAt(event.pos())
+                if event.button() == button.LeftButton and self._is_checkbox(action):
+                    action.trigger()
+                    event.accept()
+                    return True
+            elif event.type() == kind.KeyPress:
+                key = getattr(Qt, "Key", Qt)
+                action = watched.activeAction()
+                if event.key() in (key.Key_Space, key.Key_Return, key.Key_Enter) and self._is_checkbox(action):
+                    if not event.isAutoRepeat():
+                        action.trigger()
+                    event.accept()
+                    return True
+            elif event.type() == kind.Hide:
+                QTimer.singleShot(0, self.menu_hidden)
+            return False
 
     class InlineHintView(QObject):
         SERVICE = "io.github.radislabus_star.LayIme"
@@ -386,7 +427,11 @@ def main() -> int:
             # must survive tray destruction, including with kitty and xterm.
             self.update_process: subprocess.Popen[bytes] | None = None
             self.input_access_process: subprocess.Popen[bytes] | None = None
+            self.config_reload_pending = False
             self.menu = QMenu()
+            self.checkbox_menu_filter = CheckboxMenuFilter(self.app, self._flush_menu_config)
+            self.app.installEventFilter(self.checkbox_menu_filter)
+            self.app.aboutToQuit.connect(self._flush_menu_config)
             self.tray = QSystemTrayIcon(self._icon(daemon_active()), self.app)
             self.tray.activated.connect(self._activated)
             self.timer = QTimer()
@@ -472,6 +517,7 @@ def main() -> int:
             self.menu.addAction(updates)
 
             auto_update = QAction("Автообновление", self.menu)
+            self.auto_update_action = auto_update
             auto_update.setCheckable(True)
             state, error = auto_update_control("--auto-status")
             auto_update.setChecked(state is True)
@@ -521,14 +567,27 @@ def main() -> int:
             cfg = load_config()
             cfg[key] = value
             save_config(cfg)
-            runtime_control("restart")
-            self._build_menu()
+            self.config_reload_pending = True
+            self._refresh_status()
+
+        def _flush_menu_config(self) -> None:
+            if not self.config_reload_pending or any(
+                isinstance(widget, QMenu) and widget.isVisible() for widget in self.app.topLevelWidgets()
+            ):
+                return
+            self.config_reload_pending = False
+            if not runtime_control("restart"):
+                QMessageBox.warning(None, "Lay", "Настройки сохранены, но применить их к работающему Lay не удалось.")
+            self._refresh_status()
 
         def _set_enabled(self, enabled: bool) -> None:
+            self.config_reload_pending = False
             runtime_control("start" if enabled else "stop")
-            self._build_menu()
+            self._refresh_status()
 
         def _control_daemon(self, operation: str) -> None:
+            if operation == "stop":
+                self.config_reload_pending = False
             detail = "Контроллер вернул ошибку."
             try:
                 succeeded = runtime_control(f"daemon-{operation}")
@@ -562,7 +621,9 @@ def main() -> int:
             state, error = auto_update_control("--auto-enable" if enabled else "--auto-disable")
             if state is None:
                 QMessageBox.warning(None, "Автообновление Lay", error)
-            self._build_menu()
+                state, _ = auto_update_control("--auto-status")
+            self.auto_update_action.setChecked(state is True)
+            self.auto_update_action.setEnabled(state is not None)
 
         def _open_updates(self) -> None:
             if self.update_process is not None and self.update_process.poll() is None:

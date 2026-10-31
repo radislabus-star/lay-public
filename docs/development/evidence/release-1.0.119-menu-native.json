@@ -1,0 +1,256 @@
+{
+  "native_menu": {
+    "status": "NATIVE_MENU_PASS_CONFIG_AND_LAYOUT_RESTORED",
+    "rows": [
+      {
+        "name": "left-open",
+        "popup_xid": "46137350",
+        "owner_pid": 3934974,
+        "milliseconds": 339.811
+      },
+      {
+        "name": "fragment_layout_autoflip",
+        "value": false,
+        "keyboard": false,
+        "milliseconds": 58.479,
+        "runtime_ready_ms": 215.736,
+        "popup_xid": "46137350",
+        "daemon_pid": 3906119,
+        "engine_pid": 3907409,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "fragment_layout_autoflip",
+        "value": true,
+        "keyboard": false,
+        "milliseconds": 40.484,
+        "runtime_ready_ms": 178.509,
+        "popup_xid": "46137350",
+        "daemon_pid": 3906119,
+        "engine_pid": 3907409,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "outside-dismiss",
+        "pass": true
+      },
+      {
+        "name": "left-menu-one-apply",
+        "pass": true,
+        "milliseconds": 1520.789,
+        "daemon_pid": 3935681,
+        "engine_pid": 3935800,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "right-open",
+        "popup_xid": "46137376",
+        "owner_pid": 3934974,
+        "milliseconds": 268.72
+      },
+      {
+        "name": "typing_assist",
+        "value": false,
+        "keyboard": false,
+        "milliseconds": 41.514,
+        "runtime_ready_ms": 186.019,
+        "popup_xid": "46137376",
+        "daemon_pid": 3935681,
+        "engine_pid": 3935800,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "auto_replace",
+        "value": false,
+        "keyboard": false,
+        "milliseconds": 41.51,
+        "runtime_ready_ms": 210.536,
+        "popup_xid": "46137376",
+        "daemon_pid": 3935681,
+        "engine_pid": 3935800,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "typing_assist",
+        "value": true,
+        "keyboard": false,
+        "milliseconds": 51.897,
+        "runtime_ready_ms": 203.343,
+        "popup_xid": "46137376",
+        "daemon_pid": 3935681,
+        "engine_pid": 3935800,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "auto_replace",
+        "value": true,
+        "keyboard": false,
+        "milliseconds": 42.669,
+        "runtime_ready_ms": 205.759,
+        "popup_xid": "46137376",
+        "daemon_pid": 3935681,
+        "engine_pid": 3935800,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "fragment_layout_autoflip",
+        "value": false,
+        "keyboard": true,
+        "milliseconds": 16.813,
+        "runtime_ready_ms": 167.814,
+        "popup_xid": "46137376",
+        "daemon_pid": 3935681,
+        "engine_pid": 3935800,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "fragment_layout_autoflip",
+        "value": true,
+        "keyboard": true,
+        "milliseconds": 13.067,
+        "runtime_ready_ms": 102.898,
+        "popup_xid": "46137376",
+        "daemon_pid": 3935681,
+        "engine_pid": 3935800,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "escape-dismiss",
+        "pass": true
+      },
+      {
+        "name": "right-menu-one-apply",
+        "pass": true,
+        "milliseconds": 1444.729,
+        "daemon_pid": 3936349,
+        "engine_pid": 3936508,
+        "tray_pid": 3934974,
+        "ibus_pid": 3168326,
+        "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+        "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+        "engine_inode": 24803113
+      },
+      {
+        "name": "right-reopen",
+        "popup_xid": "46137376",
+        "owner_pid": 3934974,
+        "milliseconds": 177.953
+      }
+    ],
+    "input": "native RFB;physical evdev NOT_TESTED",
+    "scope": "KDE existing tray checkbox popup;no native ordinary-command/master/auto-update mutation",
+    "tray_pid": 3934974,
+    "tray_sha256": "8aa9cb8b608e6ec8b619b71e866b3189d08a77321f185abd46f9f67a64087c0d",
+    "icon_point": [
+      1362,
+      878
+    ],
+    "live_after_restoration": {
+      "daemon_pid": 3936773,
+      "engine_pid": 3936914,
+      "tray_pid": 3934974,
+      "ibus_pid": 3168326,
+      "engine_sha256": "11be42baf198d6425679ee45196577b817b6f1470f74d3feebec26dcfde2ab9a",
+      "daemon_sha256": "edb16210554f165f1d7ae032e0ad967cd618de0cde2b073e5d1b4304e6bbaecf",
+      "engine_inode": 24803113
+    },
+    "config_restored_sha256": "5d02dfdaf28f59075f33d1e0ffb72c70fecd69a97208d11f22848c8411d543b3",
+    "global_ibus_preserved": true
+  },
+  "menu_confirmation": {
+    "samples": 8,
+    "median_ms": 41.512,
+    "p95_nearest_rank_ms": 58.479,
+    "max_ms": 58.479,
+    "scope": "native RFB checkbox confirmation;not typing latency or paired speedup"
+  },
+  "browser_controls": {
+    "status": "PASS",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1328,
+      "sha256": "9a7d21ef2d7441d349b07c9ec6d04a8fa469fb6f37396cde19de1d6eaf88adde"
+    },
+    "scope": "2 frozen native RFB after-Space roundtrip controls after KDE menu mutations;separate from historical full matrix",
+    "rows": [
+      {
+        "browser": "chrome",
+        "name": "roundtrip",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          81.30432502366602,
+          98.22322498075664
+        ],
+        "seconds": 5.028,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release119-menu-browser-controls-v1/chrome-roundtrip/result.json",
+        "exit": 0
+      },
+      {
+        "browser": "firefox",
+        "name": "roundtrip",
+        "status": "PASS",
+        "error": null,
+        "latencies_ms": [
+          180.49588100984693,
+          202.22629816271365
+        ],
+        "seconds": 6.684,
+        "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release119-menu-browser-controls-v1/firefox-roundtrip/result.json",
+        "exit": 0
+      }
+    ],
+    "actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "parent_actor_sha256": "360e6b9a0735fef75aba16c8d89d57d1e9447bf0cf5603c70213227843c24913",
+    "config_restored_exactly": true,
+    "global_ibus_restarted": false
+  },
+  "native_matrix_rescored": false,
+  "launcher_prerequisite": {
+    "status": "OWNED_TRANSIENT_TRAY_LAUNCH_BINDING_REPAIRED_NOT_RESTARTED",
+    "path": "/run/user/1000/systemd/user/lay-kde-tray-candidate-20261021.service.d/99-kde-live-current-session.conf",
+    "before_sha256": "6ede76f887ede22a2c197bcf1e274fab24b091de8807084b30b6841c57573723",
+    "after_sha256": "0eb2370b03c1cff55eb64e8a16306bb25278d9cc5fe07433c50796ee0794fa68",
+    "change": "UnsetEnvironment=IBUS_ADDRESS;default display discovery as in active daemon",
+    "global_ibus_pid_preserved": 3168326,
+    "daemon_pid_preserved": 3906119,
+    "engine_pid_preserved": 3907409,
+    "global_environment_modified": false
+  }
+}

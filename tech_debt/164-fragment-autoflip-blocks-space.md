@@ -1,3 +1,5 @@
+Status: DONE_SCOPED_118_PUBLISHED. Stable118/685ba6f2 published2026-10-31T01:16:37Z; all4CI, both tags and actual installed updaters verified. Safe exact ordinary-candidate retention only. Full independent providers remain TD166; initial native Chrome first-Space transient remains TD167.
+
 Статус на 2026-10-31T00:45:34.400532+00:00: VALIDATED_SAFE_EXACT_FALLBACK_118, публикация ожидается. Исправлена узкая потеря обычного безопасного точного кандидата; полная независимость и покрытие перенесены в открытую TD166. Начальный native-отказ Chrome сохранён в TD167. Не считать эти части закрытыми. Владелец: docs/development/release-1.0.118-fragment-safe-exact-fallback.md.
 
 # TD164 — контур по фрагментам блокирует обычный автопереворот

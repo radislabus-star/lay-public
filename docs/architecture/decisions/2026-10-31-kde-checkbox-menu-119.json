@@ -1,0 +1,163 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-31-kde-checkbox-menu-119",
+  "status": "accepted_for_scoped_ui_experiment",
+  "owner": "docs/development/release-1.0.119-kde-checkbox-menu.md",
+  "baseline": "685ba6f24840bf994669d0c71fd1c8ea268b9326",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C06",
+    "C10"
+  ],
+  "decision": "Use existing QSystemTrayIcon/contextMenu and canonical QAction callbacks. Set only process-local KSNI_NO_DBUSMENU=1 so KDE renders its platform menu in the Lay process. One application QObject filter keeps nonexclusive checkboxes open in both source and KDE platform QMenu; normal commands/radio/dismissal remain Qt-owned. Save each checkbox immediately,coalesce config application until all menus close;one existing runtime_control(restart) per menu interaction. Explicit service stop cancels pending application.",
+  "first_failed_transition": "Actual Qt5.15.3 loads KDEPlasmaPlatformTheme/KF5Notifications5.92,not generic Qt DBus tray. Even contextMenu(None) leaves native SNI /MenuBar and KDE default menu;source QMenu subclass is bypassed by platform projections.",
+  "runtime_change_allowed_paths": [
+    "scripts/lay-kde-tray.py"
+  ],
+  "test_change_allowed_paths": [
+    "tests/test_kde_menu_persistence.py",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs"
+  ],
+  "protected_paths": [
+    "scripts/lay-kde-tray.py",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json",
+    "tech_debt/164-fragment-autoflip-blocks-space.md",
+    "tech_debt/165-kde-menu-checkbox-stays-open.md",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs"
+  ],
+  "frozen_existing_integration_sha256": {
+    "data/layout_fragments/model.bin": "28dc04cccc131c0b78167758982402ae519509d98bc9f0abcff22782286cdca9",
+    "scripts/compat/README.md": "6d1b3b149238ec7189b870ac0ae52ebaa294085b2abbeb90fda0833ffc26b1be",
+    "scripts/compat/lay-firefox-kde-native": "9a1bf20557beda0f9fb83990e6d580950d5364c54904d47c8c7f6215ca9e7ea8",
+    "scripts/lay-diagnose.py": "d20c7b9154e6a7df4e66090119013bda0bf89e0fa28eeab3e1ab376459aba235",
+    "scripts/lay-runtime-control.sh": "92843cc812c6fe2203a770aa50df36a46c98a36f6c20bc0ae751f14fde4ae1e4",
+    "scripts/native_diagnostics/__init__.py": "76ecedbd434d7d44bb072e8155a9f00283268592100c2bf1e6295a22d8ee5f02",
+    "scripts/native_diagnostics/receipts.py": "975e820dea2c162c393a04b784738548838e3b22956150c0ccde702986fbded5",
+    "scripts/native_diagnostics/wire.py": "fc5a4da556e374292206c5775a92fb66ea625e0ac9b0a4576dfcf22057e439f0",
+    "scripts/tests/fixtures/inline-hint-frames-v1.json": "cd37ee4d8c84eb356a4ad0d44672c4bc486516fda654f99afb3825c7c4e32f2d",
+    "scripts/tests/test_inline_hint_projection.py": "641568df26d89e48b3d8553178c9f373644c1dcc757005d3729937c947a063e3",
+    "src/bin/lay_daemon/exact_ime_tail_replay.rs": "e7bbc023b5b39fc3a94ab86ac27b041793da239f2666204cec074a2a9e6c001b",
+    "src/bin/lay_daemon/kde/exact_replay_diagnostics.rs": "77455857555f28a9cb6ed3cc11593b785fee94634c715fc68319cc6253f270c7",
+    "src/bin/lay_daemon/kde/firefox_replay_pacing.rs": "6c817f71228e8f0fee1da86e74160ebc105dac84c311c95e3056dc10a9678ae0",
+    "src/bin/lay_daemon/kde/firefox_replay_receipt.rs": "58685bb1fee16423b3760f6733f03e6b6c53d396444df00d717dd7ab0ab04780",
+    "src/bin/lay_daemon/kde/native_input_focus.rs": "a27cb934325aa49d7673330ab9e81dc17b27ae9d504423d60b8cb8e7c522b7ba",
+    "src/bin/lay_daemon/kde_focus/tests.rs": "95f2d6d0950f69d58f252561f177a752361334e401f75c95867ae486c1722c1c",
+    "src/bin/lay_daemon/layout_controller.rs": "eecb1ce31f72e77649ed100e97ebfcb9a1f520f478ff76878fbf6af2c1966f11",
+    "src/bin/lay_daemon/layout_controller/ime_bridge.rs": "30cb60cef521fc1253c63e7df627eb3aa0308fccf2c2fa5d49cf322fe8da6bc5",
+    "src/bin/lay_daemon/layout_controller/ime_bridge/settlement.rs": "6d9df5c57c682c6a50be2cb823eeef747adcc5d49272f9e1531d09e9686def21",
+    "src/bin/lay_daemon/native_input/x11.rs": "7ef567bd827fe545d3d2dfac31dc0773e7aedec4f02d023ed248f16a9fae30c7",
+    "src/bin/lay_daemon/native_input/x11_tests.rs": "388c467096b829b3e2117cf998844dc656efb215d400cedafaacc9384a1d7bf1",
+    "src/bin/lay_daemon/text_output.rs": "ca8c01650a83f954c33f10089a72a17671e4740035ee60856ec2db42e93c8c53",
+    "src/bin/lay_daemon/text_output/key_emit.rs": "bbdca040ae42ef134f8f21c92e7607cfd823c499531e12f378e3e237f7c8bdf6",
+    "src/bin/lay_daemon/trigger_dispatch.rs": "00ed3c795268a47391d2928fb098a18a5172cd8f764b7dc094b1d486c1cb9eb8",
+    "src/bin/lay_ibus_engine/bridge.rs": "b45348e5ea212a6136e5d338060bb241ebd7ffd06a56739ea73e462e8194d698",
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/terminal_delivery.rs": "c343d20c61aa4f8994427bd21aefea83691e1a7cff7d3d7ebf9085a35f8dbe20",
+    "src/bin/lay_ibus_engine/hint_view.rs": "92bd8ae2040f4fccbb777287c5bf4b0dfccb60139d8855f22e63f0fa99000171",
+    "src/bin/lay_ibus_engine/kde/firefox/hint_geometry.rs": "806ea98cdfb911c5e2403a0647fe49d7c5acf553f449045b85414c9eaea5498e",
+    "src/bin/lay_ibus_engine/kde/firefox/native_boundary_tests.rs": "93b7d8974cef6df45125e6463f16598e2b9e53d6490fc3c6c66c0bc0755a37b3",
+    "src/bin/lay_ibus_engine/kde/firefox/presentation.rs": "365b1000c28b99afe609f0a144e82e8be5123aa0fa54f225368ed70fb55e1244",
+    "src/bin/lay_ibus_engine/kde/native_document.rs": "c411e135431fb27edd8a96471addca889a4c99ce6a092aab5ff71175781a31fe",
+    "src/bin/lay_ibus_engine/precognition_worker.rs": "ba5c4fb858e09ee096be5fb14682365a66aaa046a35bebbd55709d2b688c159b",
+    "src/bin/lay_ibus_engine/tail_memory.rs": "f75d27c11c944a3ffc773d58cc829a1d272b096745348068af95598fce235337",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs": "150f88e52c3d8552e40d9352b313e22661b8ab5f58f8e8db59583e00283582ac",
+    "src/bin/lay_ibus_engine/window_interaction/native_cursor_observation.rs": "97a0a2197406f7aa089e6b7c90119a402f048fb2fdd8ab56827fc5e5cb165717",
+    "src/bin/lay_ibus_engine/window_interaction/tests.rs": "76f0c5ed0a406c054e3508f94d95abd8510edbfc4e8cc1afc02595c2eddf32f0",
+    "src/layout_fragments.rs": "bd1fa249ee6f208f5c002ef2daab189a5e36c566df99aa3cdb75fd884476691f",
+    "src/layout_fragments/model.rs": "419a622f0b80b73cd3e22d57f99dc6a21155a3ff13dcbf9abefd51033152cba4",
+    "src/nanda_wave/candidate_gate.rs": "ca7e26c1e263788e6a80439c6db2602ebccb123562e755c82c828ff5ed2462ab",
+    "src/nanda_wave/candidate_gate/cache.rs": "e073f3d01e004707084056c70f67db546940e0df8b6c474a3c7549fd90e9eb66",
+    "src/nanda_wave/usage_prior.rs": "e69cf2497e0b79caef69af62253d1f6778bac538ef83757b15f62b5d469b78f3",
+    "src/phrase_lexicon.rs": "c60c7054d41c8ea405ff9c5f7b1f945c31f7cef6fbab91e7ddd175759227ef9a",
+    "src/ru_typo.rs": "794808979f8fdcb081e0889a04636261cd095ffc3a892c633cf660faad3c4571",
+    "src/ru_typo/coverage.rs": "7a4833af16afc53f2e17050bb80f7bf689f6bd0639e3e93f73f0d5ee31f3ff4a",
+    "src/text_case.rs": "f90fa0a4f891fdbcbd67eed4f05b22e92dbaa95621c4a9a9b8ee9d945c140513",
+    "src/typing_cpu/runtime.rs": "ab3c2d1a3fc156e65462e2eec45c7591f9747ccabb10f171530f3992a65c79ec",
+    "src/typing_pipeline/candidates.rs": "453e386938d6ce079dca60d719665c291f5631e2fd52e32bc7af2f86848bc2e6",
+    "src/typing_pipeline/engine.rs": "e1d90990f84113d9fa37e2abceba6d66ffc4de81f6fbbd993e02154f1fdd25c3",
+    "src/typing_rule_graph/definitions.rs": "4605c96559d22d1adef9fe7254068e04a581848f50f7456d7014e6b0ff03d05f",
+    "src/typing_rule_graph/ids.rs": "1c7b438dc7552b7fc743c7c4852c589c57417a613e80cc780f431920df2e9592",
+    "src/typing_rule_graph/rules.rs": "fb207c24c31f56f6bdf1103975574c2f1f95e17ea8379d313a93f96f355989a0",
+    "src/typing_rule_graph/rules/fragment.rs": "f9c45100f0edb0cc283a5727927b8adc14335273b83202d14f41552582a34c08",
+    "src/bin/lay_ibus_engine/context_admission/rendezvous.rs": "c80355fe1c054b399c984d26a3fd84ea451fa52f8df13196ee232051c38d1496"
+  },
+  "runtime_authority_changed": false,
+  "scope_note": "KDE tray UI and declared transient test-launcher prerequisite only. Core correction,input,observation,ownership,hint,Tab,Space,DoubleShift,delivery and common controller code frozen. Native Qt5 acceptance required;Qt6 native NOT_TESTED.",
+  "verification": {
+    "status": "FINAL_SOURCE_NATIVE_AND_LOADED_BYTES_VERIFIED_PUBLICATION_PENDING",
+    "native_browser_matrix": "historical344/15/81 of440; not rescored by menu checks",
+    "red": "release119-menu-red-v2",
+    "focused": "release119-menu-green-v2",
+    "focused_tests": 39,
+    "extended": "release119-menu-extended-v1",
+    "native_popup": "release119-native-popup-observation-v1.json",
+    "qt_version": "5.15.3",
+    "pyqt_version": "5.15.6",
+    "qt6_native": "NOT_TESTED",
+    "native_right_baseline": "release119-right-click-baseline.json",
+    "full_v1": "FAIL:3actual process-isolated IBus tests; no release promotion",
+    "projected_red": "release119-menu-projected-red-v1",
+    "projected_green": "release119-menu-projected-green-v1",
+    "batch_red": "release119-menu-batch-red-v1",
+    "batch_green": "release119-menu-batch-green-v1",
+    "native": "release119-menu-native-v4",
+    "native_checks": 15,
+    "browser_controls": "2/2PASS;normal text after-Space roundtrip only",
+    "full_v3": "PASS3616/34/492/all10zero warnings;before final projected/batched GUI fix",
+    "final_tray_sha256": "8aa9cb8b608e6ec8b619b71e866b3189d08a77321f185abd46f9f67a64087c0d",
+    "full_v4": "PASS3616/34/492;all10build0warnings;canonicalexit0",
+    "python": "430PASS10SKIPof440",
+    "source_sha256": "f4e065cf840f1f440748f620fe9182ae65376e2439bf5e35185fcb87ae69f71e",
+    "final_receipt": "docs/development/evidence/release-1.0.119-final-verification.json"
+  },
+  "frozen_hint_sections_sha256": {
+    "InlineHintProjection": "bb0af601aa9293935b1b754b239d98d2b7a5798571fbac067ce591fbb75a2e8c",
+    "InlineHintView": "a4fec239915e320aa367a20639bb0f4917af1449a0f7404ae0bd1e6e35015107"
+  },
+  "supporting_decisions": [
+    "docs/architecture/decisions/2026-10-31-ibus-fixture-case-budget-119.json",
+    "docs/architecture/decisions/2026-10-31-ibus-fixture-authority-diagnostics-119.json",
+    "docs/architecture/decisions/2026-10-31-ibus-fixture-lifetime-experiment-119.json",
+    "docs/architecture/decisions/2026-10-31-ibus-semantic-fixture-stamp-order-119.json"
+  ],
+  "process_environment_scope": {
+    "KSNI_NO_DBUSMENU": "1 in this KDE tray process only;no system/user-manager/session configuration or Qt platform/theme change",
+    "input_related_environment": "unchanged",
+    "children": "existing controller/settings launch behavior preserved;flag concerns only KStatusNotifierItem menu export"
+  },
+  "alternatives": [
+    {
+      "solution": "process-local KSNI flag and one menu event filter",
+      "score": 9,
+      "reason": "Existing KDE opt-out and existing QAction bridge;no additional tray/protocol/theme"
+    },
+    {
+      "solution": "force generic Qt platform theme",
+      "score": 2,
+      "reason": "Would change protected hint rendering/theme beyond menu scope;rejected"
+    },
+    {
+      "solution": "custom SNI D-Bus implementation",
+      "score": 3,
+      "reason": "Duplicates existing tray protocol and increases scope;rejected"
+    }
+  ],
+  "upstream_native_backend_sources": [
+    "https://github.com/KDE/plasma-integration/blob/Plasma/5.24/src/platformtheme/kdeplatformsystemtrayicon.cpp",
+    "https://github.com/KDE/knotifications/blob/v5.92.0/src/kstatusnotifieritem.cpp"
+  ],
+  "followup_first_failed_transition": "Native-v3 keeps both menus open,but sixth immediate config restart hits existing systemd StartLimitBurst;daemon thenfailed. Journal proves start-limit-hit. Existing restart command does not start an inactive daemon;recovered via existing daemon-start then start,original config/layout restored.",
+  "test_launcher_prerequisite": {
+    "owner": "existing transient candidate tray unit only",
+    "file": "/run/user/1000/systemd/user/lay-kde-tray-candidate-20261021.service.d/99-kde-live-current-session.conf",
+    "repair": "remove stale inherited IBUS_ADDRESS from this test unit using UnsetEnvironment;use existing display-based address discovery to the same live IBus process3168326",
+    "global_environment_change": false,
+    "qt_theme_change": false,
+    "input_route_code_change": false,
+    "comparison_scope": "native launcher precondition repair;not paired performance evidence"
+  }
+}

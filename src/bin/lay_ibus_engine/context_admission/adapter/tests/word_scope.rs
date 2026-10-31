@@ -770,33 +770,31 @@ async fn atomic_callback(
         "ProcessKeyEventAtomicV1",
     );
     send_manually_dispatched_callback(&mut harness.peer, &key, TARGET_PATH, ENGINE_INTERFACE).await;
-    bounded(async {
-        let (proposal, observed) = future::zip(
-            crate::window_interaction::WindowInteraction::process_atomic_key(
-                engine,
-                &key.header(),
-                keyval,
-                keycode,
-                state,
-                (
-                    transaction,
-                    ENVELOPE_MUTTER_FRAME,
-                    ENVELOPE_CLIENT,
-                    ENVELOPE_FOCUS_EPOCH,
-                    ENVELOPE_CONTEXT,
-                    ENVELOPE_LEASE,
-                    vec![8; 32],
-                ),
-                td120_test_atomic_capability(),
-                prior,
+    assert!(bounded(harness.observer.process_next())
+        .await
+        .expect("atomic key observer result"));
+    bounded(
+        crate::window_interaction::WindowInteraction::process_atomic_key(
+            engine,
+            &key.header(),
+            keyval,
+            keycode,
+            state,
+            (
+                transaction,
+                ENVELOPE_MUTTER_FRAME,
+                ENVELOPE_CLIENT,
+                ENVELOPE_FOCUS_EPOCH,
+                ENVELOPE_CONTEXT,
+                ENVELOPE_LEASE,
+                vec![8; 32],
             ),
-            harness.observer.process_next(),
-        )
-        .await;
-        assert!(observed.unwrap(), "observer must receive the real callback");
-        proposal.unwrap()
-    })
+            td120_test_atomic_capability(),
+            prior,
+        ),
+    )
     .await
+    .expect("ProcessKeyEventAtomicV1 result")
 }
 
 fn prior_from(proposal: &AtomicProposal, transaction: u64) -> (u8, u64, Vec<u8>) {

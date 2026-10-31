@@ -1,0 +1,100 @@
+{
+  "status": "STABLE_PUBLISHED",
+  "version": "1.0.118",
+  "canonical_commit": "685ba6f24840bf994669d0c71fd1c8ea268b9326",
+  "tag": "v1.0.118",
+  "tag_object": "9f199b313d9f7dac1012aada22b4601162f6c3a7",
+  "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.118",
+  "published_at": "2026-10-31T01:16:37Z",
+  "draft": false,
+  "prerelease": false,
+  "assets": [],
+  "ci": [
+    {
+      "name": "Rust 1.97.1, tray, and extension checks",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41152421525/job/124391726769"
+    },
+    {
+      "name": "Public installer regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41152421525/job/124391726729"
+    },
+    {
+      "name": "Rust 1.88.0 MSRV",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41152421525/job/124391726597"
+    },
+    {
+      "name": "RustSec vulnerabilities and unsoundness",
+      "status": "completed",
+      "conclusion": "success",
+      "html_url": "https://github.com/radislabus-star/lay-public/actions/runs/41152421260/job/124391726036"
+    }
+  ],
+  "updater": "PASS",
+  "tag_mirrors": {
+    "origin": [
+      "9f199b313d9f7dac1012aada22b4601162f6c3a7\trefs/tags/v1.0.118",
+      "685ba6f24840bf994669d0c71fd1c8ea268b9326\trefs/tags/v1.0.118^{}"
+    ],
+    "public": [
+      "9f199b313d9f7dac1012aada22b4601162f6c3a7\trefs/tags/v1.0.118",
+      "685ba6f24840bf994669d0c71fd1c8ea268b9326\trefs/tags/v1.0.118^{}"
+    ]
+  },
+  "actual_installed_updaters": {
+    "status": "PASS",
+    "published_version": "1.0.118",
+    "checks": {
+      "local": {
+        "exit": 0,
+        "installed": "1.0.115",
+        "stable": "1.0.118",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.115\nстабильный релиз: 1.0.118\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.115 → 1.0.118\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      },
+      "remote": {
+        "exit": 0,
+        "installed": "1.0.118",
+        "stable": "1.0.118",
+        "stdout": "=== проверка обновлений ===\nустановлено: 1.0.118\nстабильный релиз: 1.0.118\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\n✓ обновлений нет, установлена актуальная стабильная версия\n",
+        "stderr": "",
+        "mode": "--check",
+        "apply": false
+      }
+    },
+    "local_install_or_restart": false,
+    "checked_at": "2026-10-31T01:16:40.636147+00:00"
+  },
+  "installed_entrypoints": {
+    "local": {
+      "entrypoint": "/home/ubu/.local/bin/lay-update",
+      "resolved": "/home/ubu/.local/lib/lay/update.sh",
+      "sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "lines": 137,
+      "relevant_dispatch": [
+        "                gnome-terminal) exec \"$terminal\" --wait -- bash -c \"$terminal_command\" lay-update-menu \"$SCRIPT\" ;;",
+        "                konsole) exec \"$terminal\" --separate -e bash -c \"$terminal_command\" lay-update-menu \"$SCRIPT\" ;;",
+        "                kgx) exec \"$terminal\" -- bash -c \"$terminal_command\" lay-update-menu \"$SCRIPT\" ;;",
+        "                wezterm) exec \"$terminal\" start -- bash -c \"$terminal_command\" lay-update-menu \"$SCRIPT\" ;;",
+        "                *) exec \"$terminal\" -e bash -c \"$terminal_command\" lay-update-menu \"$SCRIPT\" ;;",
+        "exec 9>\"$state_dir/update.lock\"",
+        "api=\"${LAY_UPDATE_RELEASE_API:-https://api.github.com/repos/radislabus-star/lay-public/releases/latest}\"",
+        "repository=\"${LAY_UPDATE_REPOSITORY_URL:-https://github.com/radislabus-star/lay-public.git}\""
+      ]
+    },
+    "remote": {
+      "entrypoint": "/home/e/.local/bin/lay-update",
+      "resolved": "/home/e/.local/lib/lay/update.sh",
+      "sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "source_api": "https://api.github.com/repos/radislabus-star/lay-public/releases/latest",
+      "verification": "independent SSH readback2026-10-31;actual --check stdout in updater receipt"
+    }
+  }
+}

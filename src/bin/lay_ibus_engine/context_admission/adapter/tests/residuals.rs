@@ -64,10 +64,10 @@ pub(super) async fn td121_release_with_order(
 
 #[test]
 fn td121_acknowledged_owned_space_preserves_receipt_across_one_reset() {
-    zbus::block_on(bounded(async {
-        for boundary in [' ', '\u{a0}'] {
-            for prefix in ["", "prefix "] {
-                for observer_first in [false, true] {
+    for boundary in [' ', '\u{a0}'] {
+        for prefix in ["", "prefix "] {
+            for observer_first in [false, true] {
+                zbus::block_on(bounded(async {
                     let mut harness = cycle09_harness().await;
                     let mut engine = new_engine(&harness);
                     start_source_free_unknown(&mut harness, &mut engine).await;
@@ -167,17 +167,17 @@ fn td121_acknowledged_owned_space_preserves_receipt_across_one_reset() {
                                 .as_v3()
                         )
                     );
-                }
+                }));
             }
         }
-    }));
+    }
 }
 
 #[test]
 fn td121_confirmed_reset_before_managed_release_retains_existing_authority() {
-    zbus::block_on(bounded(async {
-        for observer_first in [true, false] {
-            for prefix in ["", "prefix "] {
+    for observer_first in [true, false] {
+        for prefix in ["", "prefix "] {
+            zbus::block_on(bounded(async {
                 let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
                 let mut engine = initial_observed_tail_reset_with_content_type(
                     &mut harness,
@@ -279,9 +279,9 @@ fn td121_confirmed_reset_before_managed_release_retains_existing_authority() {
                     outcome,
                     Ok(lay::manual_toggle::ImeManualToggleOutcome::DelegateExactImeTail.as_v3()),
                 );
-            }
+            }));
         }
-    }));
+    }
 }
 
 #[test]
@@ -364,8 +364,8 @@ fn td121_current_metadata_unproved_release_only_retires_the_handled_press() {
 
 #[test]
 fn td121_late_managed_letter_release_cannot_erase_prior_word_proof() {
-    zbus::block_on(bounded(async {
-        for observer_first in [false, true] {
+    for observer_first in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = cycle09_harness().await;
             let mut engine = known_engine(&mut harness).await;
             engine.config.auto_replace = false;
@@ -430,8 +430,8 @@ fn td121_late_managed_letter_release_cannot_erase_prior_word_proof() {
                 .await
             );
             cycle09_assert_no_local_text_effect(&mut harness).await;
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -741,8 +741,8 @@ fn td121_completed_release_late_ingress_cannot_revive_the_pre_reset_word() {
 
 #[test]
 fn td121_confirmed_native_erasure_survives_one_late_reset_without_new_ssi() {
-    zbus::block_on(bounded(async {
-        for external_prefix in ["", "prefix ", "前 一 "] {
+    for external_prefix in ["", "prefix ", "前 一 "] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine =
                 initial_observed_tail_reset(&mut harness, 63_000, &[('a', 30), ('b', 48)]).await;
@@ -801,8 +801,8 @@ fn td121_confirmed_native_erasure_survives_one_late_reset_without_new_ssi() {
             assert!(engine.committed_tail.pending_completion_learning.is_none());
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
             cycle09_assert_no_local_text_effect(&mut harness).await;
-        }
-    }));
+        }));
+    }
 }
 
 async fn td121_native_erasure_before_shortened_receipt() -> (Harness, LayIbusEngine) {
@@ -830,15 +830,15 @@ async fn td121_native_erasure_before_shortened_receipt() -> (Harness, LayIbusEng
 
 #[test]
 fn td121_native_erasure_reset_ack_requires_first_whole_receipt() {
-    zbus::block_on(bounded(async {
-        for (surface, caret, anchor) in [
-            ("PREFIX a", 8, 8),
-            ("prefix ax", 9, 9),
-            ("a", 1, 1),
-            ("prefix a", 8, 7),
-            ("prefix a", 7, 7),
-            ("prefix ab", 9, 9),
-        ] {
+    for (surface, caret, anchor) in [
+        ("PREFIX a", 8, 8),
+        ("prefix ax", 9, 9),
+        ("a", 1, 1),
+        ("prefix a", 8, 7),
+        ("prefix a", 7, 7),
+        ("prefix ab", 9, 9),
+    ] {
+        zbus::block_on(bounded(async {
             let (mut harness, mut engine) = td121_native_erasure_before_shortened_receipt().await;
             cycle09_surrounding_receipt(&mut harness, &mut engine, surface, caret, anchor).await;
             // Even a later exact actual observation cannot rearm the effect
@@ -852,14 +852,14 @@ fn td121_native_erasure_reset_ack_requires_first_whole_receipt() {
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             cycle09_assert_no_local_text_effect(&mut harness).await;
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_native_erasure_reset_ack_is_one_use_across_actual_refresh() {
-    zbus::block_on(bounded(async {
-        for refresh_before_reset in [false, true] {
+    for refresh_before_reset in [false, true] {
+        zbus::block_on(bounded(async {
             let (mut harness, mut engine) = td121_native_erasure_before_shortened_receipt().await;
             exact_surrounding_receipt(&mut harness, &mut engine, "prefix a").await;
             if refresh_before_reset {
@@ -875,8 +875,8 @@ fn td121_native_erasure_reset_ack_is_one_use_across_actual_refresh() {
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             cycle09_assert_no_local_text_effect(&mut harness).await;
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -900,22 +900,22 @@ fn td121_native_erasure_reset_before_receipt_carries_only_inert_effect() {
 
 #[test]
 fn td121_native_erasure_reset_ack_requires_current_confirmed_identity() {
-    zbus::block_on(bounded(async {
-        for refusal in [
-            "missing_snapshot",
-            "revision",
-            "epoch",
-            "focus",
-            "lease",
-            "layout",
-            "selection",
-            "off_end",
-            "prefix",
-            "sensitive",
-            "capabilities",
-            "raw_capabilities_change_back",
-            "visible_preedit",
-        ] {
+    for refusal in [
+        "missing_snapshot",
+        "revision",
+        "epoch",
+        "focus",
+        "lease",
+        "layout",
+        "selection",
+        "off_end",
+        "prefix",
+        "sensitive",
+        "capabilities",
+        "raw_capabilities_change_back",
+        "visible_preedit",
+    ] {
+        zbus::block_on(bounded(async {
             let (mut harness, mut engine) = td121_native_erasure_before_shortened_receipt().await;
             exact_surrounding_receipt(&mut harness, &mut engine, "prefix a").await;
             assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
@@ -953,14 +953,14 @@ fn td121_native_erasure_reset_ack_requires_current_confirmed_identity() {
             );
             assert!(engine.committed_tail.pending_completion_learning.is_none());
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_native_erasure_reset_ack_rejects_observer_content_change_back() {
-    zbus::block_on(bounded(async {
-        for changes in [vec![(1, 0)], vec![(8, 0)], vec![(1, 0), (0, 0)]] {
+    for changes in [vec![(1, 0)], vec![(8, 0)], vec![(1, 0), (0, 0)]] {
+        zbus::block_on(bounded(async {
             let (mut harness, mut engine) = td121_native_erasure_before_shortened_receipt().await;
             exact_surrounding_receipt(&mut harness, &mut engine, "prefix a").await;
             let mut serial = 63_120;
@@ -990,14 +990,14 @@ fn td121_native_erasure_reset_ack_rejects_observer_content_change_back() {
             }
             cycle09_assert_no_local_text_effect(&mut harness).await;
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_native_erasure_reset_ack_is_spent_without_snapshot_or_output() {
-    zbus::block_on(bounded(async {
-        for missing_output in [false, true] {
+    for missing_output in [false, true] {
+        zbus::block_on(bounded(async {
             let (mut harness, mut engine) = td121_native_erasure_before_shortened_receipt().await;
             exact_surrounding_receipt(&mut harness, &mut engine, "prefix a").await;
             if missing_output {
@@ -1026,8 +1026,8 @@ fn td121_native_erasure_reset_ack_is_spent_without_snapshot_or_output() {
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             cycle09_assert_no_local_text_effect(&mut harness).await;
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -1180,8 +1180,8 @@ fn td121_confirmed_native_replay_survives_one_late_reset_without_new_ssi() {
 
 #[test]
 fn td121_settled_native_replay_full_receipt_survives_one_late_reset() {
-    zbus::block_on(bounded(async {
-        for external_prefix in ["", "prefix ", "前 一 "] {
+    for external_prefix in ["", "prefix ", "前 一 "] {
+        zbus::block_on(bounded(async {
             let mut serial = 61_800;
             // Unlike observer-ahead callbacks, all native press/releases have
             // settled before the initial Reset. The existing generic receipt
@@ -1210,14 +1210,14 @@ fn td121_settled_native_replay_full_receipt_survives_one_late_reset() {
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
             cycle09_assert_no_local_text_effect(&mut harness).await;
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_native_reset_ack_is_one_use_across_identical_actual_ssi() {
-    zbus::block_on(bounded(async {
-        for refresh_before_reset in [false, true] {
+    for refresh_before_reset in [false, true] {
+        zbus::block_on(bounded(async {
             let mut serial = 61_400;
             let (mut harness, mut engine, _, _, _) =
                 firefox_observer_ahead_six_inserts(&mut serial).await;
@@ -1239,32 +1239,33 @@ fn td121_native_reset_ack_is_one_use_across_identical_actual_ssi() {
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             cycle09_assert_no_local_text_effect(&mut harness).await;
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_native_reset_ack_requires_whole_current_confirmed_effect() {
     for settled in [false, true] {
-        zbus::block_on(bounded(async {
-            for refusal in [
-                "no_snapshot",
-                "stale_revision",
-                "tail_epoch",
-                "focus",
-                "lease",
-                "layout_generation",
-                "selection",
-                "off_caret",
-                "changed_prefix",
-                "sensitive",
-                "capability_loss",
-                "raw_preedit_capability_change_back",
-                "scope_pair_mismatch",
-                "expired_scope",
-                "visible_preedit",
-                "native_backspace",
-            ] {
+        // Each independent peer/engine fixture keeps the same callback budget.
+        for refusal in [
+            "no_snapshot",
+            "stale_revision",
+            "tail_epoch",
+            "focus",
+            "lease",
+            "layout_generation",
+            "selection",
+            "off_caret",
+            "changed_prefix",
+            "sensitive",
+            "capability_loss",
+            "raw_preedit_capability_change_back",
+            "scope_pair_mismatch",
+            "expired_scope",
+            "visible_preedit",
+            "native_backspace",
+        ] {
+            zbus::block_on(bounded(async {
                 let mut serial = 61_500;
                 let (mut harness, mut engine) = if settled {
                     firefox_replay_prefix_with_reset(&mut serial, 3, false, "prefix ").await
@@ -1367,15 +1368,15 @@ fn td121_native_reset_ack_requires_whole_current_confirmed_effect() {
                 );
                 assert!(engine.committed_tail.pending_completion_learning.is_none());
                 assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-            }
-        }));
+            }));
+        }
     }
 }
 
 #[test]
 fn td121_native_reset_ack_rejects_observer_ahead_content_type_change_back() {
-    zbus::block_on(bounded(async {
-        for changes in [vec![(1, 0)], vec![(8, 0)], vec![(1, 0), (0, 0)]] {
+    for changes in [vec![(1, 0)], vec![(8, 0)], vec![(1, 0), (0, 0)]] {
+        zbus::block_on(bounded(async {
             let mut serial = 61_600;
             let (mut harness, mut engine, _, _, _) =
                 firefox_observer_ahead_six_inserts(&mut serial).await;
@@ -1411,14 +1412,14 @@ fn td121_native_reset_ack_rejects_observer_ahead_content_type_change_back() {
             }
             cycle09_assert_no_local_text_effect(&mut harness).await;
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_native_reset_ack_is_spent_even_without_snapshot_or_output() {
-    zbus::block_on(bounded(async {
-        for missing_output in [false, true] {
+    for missing_output in [false, true] {
+        zbus::block_on(bounded(async {
             let mut serial = 61_700;
             let (mut harness, mut engine, _, _, _) =
                 firefox_observer_ahead_six_inserts(&mut serial).await;
@@ -1450,8 +1451,8 @@ fn td121_native_reset_ack_is_spent_even_without_snapshot_or_output() {
             assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             cycle09_assert_no_local_text_effect(&mut harness).await;
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -1542,20 +1543,20 @@ fn td121_confirmed_managed_append_reset_keeps_only_the_original_observation() {
 
 #[test]
 fn td121_managed_reset_observation_is_first_effect_only_and_exact() {
-    zbus::block_on(bounded(async {
-        for refusal in [
-            "reset_before_receipt",
-            "second_reset",
-            "released",
-            "overlapping_press",
-            "selection",
-            "off_caret",
-            "contradictory_receipt",
-            "sensitive",
-            "capability_loss",
-            "native_backspace",
-            "layout_generation",
-        ] {
+    for refusal in [
+        "reset_before_receipt",
+        "second_reset",
+        "released",
+        "overlapping_press",
+        "selection",
+        "off_caret",
+        "contradictory_receipt",
+        "sensitive",
+        "capability_loss",
+        "native_backspace",
+        "layout_generation",
+    ] {
+        zbus::block_on(bounded(async {
             let mut serial = 60_300;
             let (mut harness, mut engine, path, _, _) =
                 firefox_observer_ahead_six_inserts(&mut serial).await;
@@ -1656,8 +1657,8 @@ fn td121_managed_reset_observation_is_first_effect_only_and_exact() {
                 "routing must stay separate: {refusal}"
             );
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -1929,14 +1930,14 @@ fn td121_literal_boundary_retains_observed_tail_through_late_reset_prefixes() {
 
 #[test]
 fn td121_late_boundary_receipt_cannot_restore_contradiction_or_intervening_input() {
-    zbus::block_on(bounded(async {
-        for loss in [
-            "wrong_prefix",
-            "selection",
-            "focus_out",
-            "backspace",
-            "printable",
-        ] {
+    for loss in [
+        "wrong_prefix",
+        "selection",
+        "focus_out",
+        "backspace",
+        "printable",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine =
                 td121_observed_append_then_unconfirmed_space(&mut harness, 25_300, "ab").await;
@@ -1982,8 +1983,8 @@ fn td121_late_boundary_receipt_cannot_restore_contradiction_or_intervening_input
                 engine.committed_tail.pending_completion_learning.is_none(),
                 "{loss}"
             );
-        }
-    }));
+        }));
+    }
 }
 
 struct Td121CompletionMemory {
@@ -2333,8 +2334,8 @@ fn td121_pending_reset_schedules_material_without_publication_authority() {
 #[test]
 fn td121_inactive_completion_waits_for_matching_handled_release() {
     let _memory = td121_prime_completion_material();
-    zbus::block_on(bounded(async {
-        for observer_first in [true, false] {
+    for observer_first in [true, false] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td121_pending_current_completion(&mut harness).await;
             assert!(engine.layout_gesture.handled_press_keycodes.contains(&36));
@@ -2383,16 +2384,16 @@ fn td121_inactive_completion_waits_for_matching_handled_release() {
             );
             assert!(engine.committed_tail.pending_completion_learning.is_none());
             engine.cancel_precognition_display_generation();
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_deferred_completion_is_inert_with_legacy_test_output() {
     use crate::output::{EngineOutput, TestEngineOutput};
     let _memory = td121_prime_completion_material();
-    zbus::block_on(bounded(async {
-        for entrance in ["background", "selected", "refresh", "cursor"] {
+    for entrance in ["background", "selected", "refresh", "cursor"] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td121_pending_current_completion(&mut harness).await;
             assert!(td121_current_completion_receipt(&mut harness, &mut engine)
@@ -2475,15 +2476,15 @@ fn td121_deferred_completion_is_inert_with_legacy_test_output() {
             );
             assert!(!engine.composition.preedit_dirty);
             engine.cancel_precognition_display_generation();
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_overlapping_handled_releases_publish_only_the_latest_completion() {
     let _memory = td121_prime_completion_material();
-    zbus::block_on(bounded(async {
-        for releases in [[36, 32], [32, 36]] {
+    for releases in [[36, 32], [32, 36]] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td121_pending_current_completion(&mut harness).await;
             assert!(td121_current_completion_receipt(&mut harness, &mut engine)
@@ -2550,28 +2551,28 @@ fn td121_overlapping_handled_releases_publish_only_the_latest_completion() {
             assert!(engine.layout_gesture.handled_press_keycodes.is_empty());
             assert!(engine.committed_tail.pending_completion_learning.is_none());
             engine.cancel_precognition_display_generation();
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_deferred_completion_cannot_survive_frame_revocation() {
     use crate::output::{EngineOutput, TestEngineOutput};
     let _memory = td121_prime_completion_material();
-    zbus::block_on(bounded(async {
-        for change in [
-            "focus",
-            "owner",
-            "layout",
-            "config",
-            "capability",
-            "epoch",
-            "tail",
-            "selection",
-            "contradiction",
-            "retire",
-            "reset",
-        ] {
+    for change in [
+        "focus",
+        "owner",
+        "layout",
+        "config",
+        "capability",
+        "epoch",
+        "tail",
+        "selection",
+        "contradiction",
+        "retire",
+        "reset",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td121_pending_current_completion(&mut harness).await;
             assert!(td121_current_completion_receipt(&mut harness, &mut engine)
@@ -2644,15 +2645,15 @@ fn td121_deferred_completion_cannot_survive_frame_revocation() {
             assert!(engine.selected_precognition_suffix().is_none(), "{change}");
             assert!(engine.committed_tail.pending_completion_learning.is_none());
             engine.cancel_precognition_display_generation();
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
     let _memory = td121_prime_completion_material();
-    zbus::block_on(bounded(async {
-        for retain_reset_lineage in [true, false] {
+    for retain_reset_lineage in [true, false] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td121_pending_current_completion_with_compute_and_reset_lineage(
                 &mut harness,
@@ -2698,7 +2699,7 @@ fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
                         .is_some_and(|text| !text.is_empty()));
                 }
                 engine.cancel_precognition_display_generation();
-                continue;
+                return;
             }
             assert_eq!(engine.selected_precognition_suffix().as_deref(), Some("верка"), "exact client receipt must publish already-computed current material before the next key callback");
             assert!(!engine.composition.preedit_display_only_pending);
@@ -2723,8 +2724,8 @@ fn td121_exact_receipt_publishes_cached_current_suffix_before_alt() {
             assert_eq!(engine.committed_tail.buffer, "проверка ");
             assert!(engine.context_word_is_known());
             engine.cancel_precognition_display_generation();
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -2795,9 +2796,9 @@ fn manual_typed_key_message(
 
 #[test]
 fn firefox_bridge_accepts_shift_received_before_marker_and_dispatches_it_once() {
-    zbus::block_on(bounded(async {
-        for (keyval, keycode) in [(KEY_LEFT_SHIFT, 42), (crate::protocol::KEY_RIGHT_SHIFT, 54)] {
-            for state in [0, RELEASE_MASK] {
+    for (keyval, keycode) in [(KEY_LEFT_SHIFT, 42), (crate::protocol::KEY_RIGHT_SHIFT, 54)] {
+        for state in [0, RELEASE_MASK] {
+            zbus::block_on(bounded(async {
                 let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
                 let mut engine = initial_observed_tail_reset(
                     &mut harness,
@@ -2881,9 +2882,9 @@ fn firefox_bridge_accepts_shift_received_before_marker_and_dispatches_it_once() 
                     .adapter
                     .revalidate(&engine.live_context_token().unwrap()));
                 assert!(drain_output_to_proof(&mut harness).await.is_empty());
-            }
+            }));
         }
-    }));
+    }
 }
 
 #[test]
@@ -3083,19 +3084,19 @@ fn firefox_bridge_publication_survives_shift_received_after_reset_suffix_binding
 
 #[test]
 fn firefox_bridge_readonly_shift_does_not_exempt_other_input_or_lifecycle() {
-    zbus::block_on(bounded(async {
-        for (member, keyval, keycode, state) in [
-            ("ProcessKeyEvent", 'a' as u32, 30, 0),
-            ("ProcessKeyEvent", 'a' as u32, 30, RELEASE_MASK),
-            ("ProcessKeyEvent", KEY_LEFT_ALT, 64, 0),
-            ("ProcessKeyEvent", KEY_LEFT_ALT, 64, RELEASE_MASK),
-            ("ProcessKeyEvent", KEY_TAB, 15, 0),
-            ("ProcessKeyEvent", KEY_LEFT, 105, 0),
-            ("ProcessKeyEventAtomicV1", KEY_LEFT_SHIFT, 42, 0),
-            ("ProcessKeyEventAtomicV1", KEY_LEFT_SHIFT, 42, RELEASE_MASK),
-            ("malformed", KEY_LEFT_SHIFT, 42, 0),
-            ("FocusOut", KEY_LEFT_SHIFT, 42, 0),
-        ] {
+    for (member, keyval, keycode, state) in [
+        ("ProcessKeyEvent", 'a' as u32, 30, 0),
+        ("ProcessKeyEvent", 'a' as u32, 30, RELEASE_MASK),
+        ("ProcessKeyEvent", KEY_LEFT_ALT, 64, 0),
+        ("ProcessKeyEvent", KEY_LEFT_ALT, 64, RELEASE_MASK),
+        ("ProcessKeyEvent", KEY_TAB, 15, 0),
+        ("ProcessKeyEvent", KEY_LEFT, 105, 0),
+        ("ProcessKeyEventAtomicV1", KEY_LEFT_SHIFT, 42, 0),
+        ("ProcessKeyEventAtomicV1", KEY_LEFT_SHIFT, 42, RELEASE_MASK),
+        ("malformed", KEY_LEFT_SHIFT, 42, 0),
+        ("FocusOut", KEY_LEFT_SHIFT, 42, 0),
+    ] {
+        zbus::block_on(bounded(async {
             // Preserve the original typed_key_message wire types. The manual
             // builder must not let integer keycodes default to signed i32.
             let (keyval, keycode, state): (u32, u32, u32) = (keyval, keycode, state);
@@ -3191,8 +3192,8 @@ fn firefox_bridge_readonly_shift_does_not_exempt_other_input_or_lifecycle() {
             }
             assert_eq!(engine.committed_tail.buffer, " ");
             assert!(drain_output_to_proof(&mut harness).await.is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -3303,15 +3304,13 @@ pub(super) async fn actual_focus_out(
     let path = engine.path.clone();
     let focus_out = method_message(DISPATCH_SENDER, serial, &path, ENGINE_INTERFACE, "FocusOut");
     send_manually_dispatched_callback(&mut harness.peer, &focus_out, &path, ENGINE_INTERFACE).await;
-    let ((), observed) = bounded(future::zip(
-        engine.focus_out(focus_out.header()),
-        harness.observer.process_next(),
-    ))
-    .await;
     assert!(
-        observed.expect("repeated FocusOut must not cancel the observer"),
+        bounded(harness.observer.process_next())
+            .await
+            .expect("repeated FocusOut must not cancel the observer"),
         "observer stream remains live after repeated FocusOut"
     );
+    bounded(engine.focus_out(focus_out.header())).await;
 }
 
 #[test]
@@ -3407,8 +3406,8 @@ fn residual_repeated_focus_out_revokes_locally_and_recovers_fresh_unknown_start(
 
 #[test]
 fn delayed_focus_out_after_later_word_revocation_preserves_successor_stamps() {
-    zbus::block_on(bounded(async {
-        for later_event in ["Reset", "Set"] {
+    for later_event in ["Reset", "Set"] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = known_engine(&mut harness).await;
             let old_token = engine.live_context_token().unwrap();
@@ -3499,14 +3498,14 @@ fn delayed_focus_out_after_later_word_revocation_preserves_successor_stamps() {
                 harness.adapter.revalidate(&new_token),
                 "{later_event} from the old owner must not revoke the successor"
             );
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn residual_repeated_focus_out_after_reset_or_content_type_revocation_survives() {
-    zbus::block_on(bounded(async {
-        for content_type in [false, true] {
+    for content_type in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = known_engine(&mut harness).await;
             let old_token = engine.live_context_token().unwrap();
@@ -3536,8 +3535,8 @@ fn residual_repeated_focus_out_after_reset_or_content_type_revocation_survives()
             let state = engine.shared.lock().unwrap();
             assert!(state.active_path.is_none());
             assert!(state.context_owner_generation.is_none());
-        }
-    }));
+        }));
+    }
 }
 
 pub(super) async fn actual_disable(harness: &mut Harness, engine: &mut LayIbusEngine, serial: u32) {
@@ -3585,13 +3584,12 @@ async fn legacy_key_at(
     send_manually_dispatched_callback(&mut harness.peer, &key, path, ENGINE_INTERFACE).await;
     let emitter = zbus::object_server::SignalEmitter::new(&harness.connection, path)
         .expect("legacy signal emitter");
-    let (handled, observed) = bounded(future::zip(
-        engine.process_key_event(key.header(), emitter, keyval, keycode, state),
-        harness.observer.process_next(),
-    ))
-    .await;
-    assert!(observed.expect("legacy key observer result"));
-    handled.expect("legacy ProcessKeyEvent result")
+    assert!(bounded(harness.observer.process_next())
+        .await
+        .expect("legacy key observer result"));
+    bounded(engine.process_key_event(key.header(), emitter, keyval, keycode, state))
+        .await
+        .expect("legacy ProcessKeyEvent result")
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -4305,9 +4303,9 @@ fn td121_default_bridge_refuses_marker_after_its_own_deadline() {
 
 #[test]
 fn td121_delayed_activation_revalidates_nonce_and_lifecycle() {
-    zbus::block_on(bounded(async {
-        for native in [false, true] {
-            for revoke in [false, true] {
+    for native in [false, true] {
+        for revoke in [false, true] {
+            zbus::block_on(bounded(async {
                 let mut harness = default_budget_harness().await;
                 let (nonce, old_deadline) =
                     hold_default_activation_marker(&mut harness, native).await;
@@ -4329,15 +4327,15 @@ fn td121_delayed_activation_revalidates_nonce_and_lifecycle() {
                     !revoke,
                     "native={native}, revoke={revoke}"
                 );
-            }
+            }));
         }
-    }));
+    }
 }
 
 #[test]
 fn residual_pending_get_rejects_unrelated_or_malformed_content_type_without_revival() {
-    zbus::block_on(bounded(async {
-        for invalid in 0..3 {
+    for invalid in 0..3 {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = known_engine(&mut harness).await;
             let old_token = engine.live_context_token().unwrap();
@@ -4386,8 +4384,8 @@ fn residual_pending_get_rejects_unrelated_or_malformed_content_type_without_revi
             assert!(!reducer.marker(generation, nonce, set.recv_position()));
             assert!(reducer.consume().is_none());
             assert!(reducer.consume_source_free_activation().is_none());
-        }
-    }));
+        }));
+    }
 }
 
 async fn empty_factory_stale_focus_case(predecessor_bound: bool) {
@@ -5020,8 +5018,8 @@ fn residual_later_factory_retires_revoked_transfer_and_recovers_source_free() {
 
 #[test]
 fn residual_missing_or_repeated_disable_revokes_and_completes_local_reset() {
-    zbus::block_on(bounded(async {
-        for opened_handoff in [false, true] {
+    for opened_handoff in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = known_engine(&mut harness).await;
             let old_token = engine.live_context_token().unwrap();
@@ -5040,18 +5038,18 @@ fn residual_missing_or_repeated_disable_revokes_and_completes_local_reset() {
             assert!(!engine.composition.preedit_visible);
             assert!(!engine.context_word_is_known());
             assert!(!harness.adapter.revalidate(&old_token));
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn residual_lifecycle_bad_sender_or_payload_still_stops_observer() {
-    zbus::block_on(bounded(async {
-        for (sender, member) in [
-            (":1.999", "FocusOut"),
-            (":1.999", "Disable"),
-            (DISPATCH_SENDER, "FocusOutId"),
-        ] {
+    for (sender, member) in [
+        (":1.999", "FocusOut"),
+        (":1.999", "Disable"),
+        (DISPATCH_SENDER, "FocusOutId"),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let engine = known_engine(&mut harness).await;
             let old_token = engine.live_context_token().unwrap();
@@ -5070,14 +5068,14 @@ fn residual_lifecycle_bad_sender_or_payload_still_stops_observer() {
                     .await,
                 Err(AdapterError::Cancelled)
             ));
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn residual_delayed_old_revocation_cannot_clean_up_different_path_successor() {
-    zbus::block_on(bounded(async {
-        for member in ["FocusOut", "Disable"] {
+    for member in ["FocusOut", "Disable"] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut old = known_engine(&mut harness).await;
             let old_owner = old.context_owner.clone().unwrap();
@@ -5139,14 +5137,14 @@ fn residual_delayed_old_revocation_cannot_clean_up_different_path_successor() {
                 "{member}"
             );
             assert!(harness.adapter.revalidate(&successor_token), "{member}");
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn residual_bridge_fence_refuses_received_unsettled_key_or_focus_out() {
-    zbus::block_on(bounded(async {
-        for member in ["ProcessKeyEvent", "FocusOut"] {
+    for member in ["ProcessKeyEvent", "FocusOut"] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = known_engine(&mut harness).await;
             assert!(
@@ -5172,8 +5170,8 @@ fn residual_bridge_fence_refuses_received_unsettled_key_or_focus_out() {
                     "settlement restores bridge reads"
                 );
             }
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -5248,8 +5246,8 @@ fn td121_visible_tail_denial_is_passive_until_the_exact_callback_settles() {
 
 #[test]
 fn residual_bridge_consumer_refuses_ingress_after_the_fence() {
-    zbus::block_on(bounded(async {
-        for member in ["ProcessKeyEvent", "FocusOut"] {
+    for member in ["ProcessKeyEvent", "FocusOut"] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let engine = known_engine(&mut harness).await;
             let token = bridge_fence(&mut harness).await.unwrap();
@@ -5265,8 +5263,8 @@ fn residual_bridge_consumer_refuses_ingress_after_the_fence() {
                 "{member}"
             );
             assert_eq!(engine.committed_tail.buffer, " ");
-        }
-    }));
+        }));
+    }
 }
 
 async fn leave_context(harness: &mut Harness, engine: &mut LayIbusEngine) {
@@ -5736,16 +5734,16 @@ fn firefox_reset_retains_known_word_or_closed_observed_tail() {
 
 #[test]
 fn residual_reset_rereceipt_failures_never_delete_gui_text() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "mismatch",
-            "selection",
-            "changed_prefix_receipt",
-            "navigation",
-            "focus_out",
-            "caps9",
-            "sensitive",
-        ] {
+    for gap in [
+        "mismatch",
+        "selection",
+        "changed_prefix_receipt",
+        "navigation",
+        "focus_out",
+        "caps9",
+        "sensitive",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = observer_first_reset_unknown_tail(&mut harness, 8_700).await;
 
@@ -5793,8 +5791,8 @@ fn residual_reset_rereceipt_failures_never_delete_gui_text() {
                 engine.context_reset_rereceipt.is_none(),
                 "{gap} must not retain a reusable receipt"
             );
-        }
-    }));
+        }));
+    }
 }
 
 async fn initial_observed_tail_reset(
@@ -5989,21 +5987,21 @@ fn firefox_initial_delayed_prefix_recovers_only_after_append_reset_and_exact_rec
 
 #[test]
 fn firefox_initial_delayed_prefix_cannot_survive_contradiction_or_input_gap() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "wrong_text",
-            "selection",
-            "empty",
-            "cursor_inside",
-            "duplicate_prefix",
-            "navigation",
-            "backspace",
-            "boundary",
-            "focus_out",
-            "caps9",
-            "sensitive",
-            "stale_owner",
-        ] {
+    for gap in [
+        "wrong_text",
+        "selection",
+        "empty",
+        "cursor_inside",
+        "duplicate_prefix",
+        "navigation",
+        "backspace",
+        "boundary",
+        "focus_out",
+        "caps9",
+        "sensitive",
+        "stale_owner",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(
                 &mut harness,
@@ -6060,8 +6058,8 @@ fn firefox_initial_delayed_prefix_cannot_survive_contradiction_or_input_gap() {
             );
             engine = bridge_toggle_refused_without_text_effect(&mut harness, engine).await;
             assert!(engine.context_reset_rereceipt.is_none(), "{gap}");
-        }
-    }));
+        }));
+    }
 }
 
 fn set_fixture_append_completion(engine: &mut LayIbusEngine, suffix: &str) {
@@ -6179,13 +6177,13 @@ fn firefox_observed_reset_after_release_preserves_prefix_in_both_callback_orders
 
 #[test]
 fn firefox_revoked_release_retirement_cannot_hide_effects_gaps_or_foreign_content() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "effectful",
-            "same_revocation_missing_key",
-            "foreign_owner",
-            "sensitive",
-        ] {
+    for gap in [
+        "effectful",
+        "same_revocation_missing_key",
+        "foreign_owner",
+        "sensitive",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(
                 &mut harness,
@@ -6297,8 +6295,8 @@ fn firefox_revoked_release_retirement_cannot_hide_effects_gaps_or_foreign_conten
                 "{gap}"
             );
             let _ = bridge_toggle_refused_without_text_effect(&mut harness, engine).await;
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -6521,22 +6519,22 @@ async fn publish_fixture_document_preedit_completion(
 
 #[test]
 fn firefox_published_preedit_retention_refuses_unproved_or_contradictory_snapshots() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "unpublished",
-            "over_bound",
-            "wrong_surface",
-            "wrong_prefix",
-            "selection",
-            "wrong_cursor",
-            "left_continuation",
-            "stale_owner",
-            "sensitive",
-            "tab_while_stale",
-            "reset_after_publication",
-            "replaced_publication",
-            "unchanged_receipt",
-        ] {
+    for gap in [
+        "unpublished",
+        "over_bound",
+        "wrong_surface",
+        "wrong_prefix",
+        "selection",
+        "wrong_cursor",
+        "left_continuation",
+        "stale_owner",
+        "sensitive",
+        "tab_while_stale",
+        "reset_after_publication",
+        "replaced_publication",
+        "unchanged_receipt",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(
                 &mut harness,
@@ -6619,8 +6617,8 @@ fn firefox_published_preedit_retention_refuses_unproved_or_contradictory_snapsho
                 "{gap}"
             );
             let _ = bridge_toggle_refused_without_text_effect(&mut harness, engine).await;
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -6767,21 +6765,21 @@ fn firefox_confirmed_reset_alt_preparation_preserves_receipt_until_actual_append
 
 #[test]
 fn firefox_reset_alt_preparation_cannot_accept_across_intervening_gaps() {
-    zbus::block_on(bounded(async {
-        for (alt, code) in [
-            (KEY_LEFT_ALT, 64),
-            (KEY_RIGHT_ALT, 108),
-            (KEY_ISO_LEVEL3_SHIFT, 108),
+    for (alt, code) in [
+        (KEY_LEFT_ALT, 64),
+        (KEY_RIGHT_ALT, 108),
+        (KEY_ISO_LEVEL3_SHIFT, 108),
+    ] {
+        for gap in [
+            "command",
+            "navigation",
+            "focus_out",
+            "sensitive",
+            "stale_owner",
+            "wrong_text",
+            "reset",
         ] {
-            for gap in [
-                "command",
-                "navigation",
-                "focus_out",
-                "sensitive",
-                "stale_owner",
-                "wrong_text",
-                "reset",
-            ] {
+            zbus::block_on(bounded(async {
                 let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
                 let mut engine = initial_observed_tail_reset(
                     &mut harness,
@@ -6829,25 +6827,25 @@ fn firefox_reset_alt_preparation_cannot_accept_across_intervening_gaps() {
                     "{gap}"
                 );
                 assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-            }
+            }));
         }
-    }));
+    }
 }
 
 #[test]
 fn firefox_reset_suffix_frame_and_tab_refuse_unconfirmed_or_invalid_receipts() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "unconfirmed",
-            "wrong_text",
-            "selection",
-            "changed_external_prefix",
-            "navigation",
-            "focus_out",
-            "caps9",
-            "sensitive",
-            "stale_owner",
-        ] {
+    for gap in [
+        "unconfirmed",
+        "wrong_text",
+        "selection",
+        "changed_external_prefix",
+        "navigation",
+        "focus_out",
+        "caps9",
+        "sensitive",
+        "stale_owner",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(
                 &mut harness,
@@ -6896,16 +6894,16 @@ fn firefox_reset_suffix_frame_and_tab_refuse_unconfirmed_or_invalid_receipts() {
                     )),
                 "{gap}"
             );
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset() {
-    zbus::block_on(bounded(async {
-        for (base, confirmed_prefix, appended, appended_code) in
-            [(9_100, "abcd", 'e', 18), (9_300, "a", 'b', 48)]
-        {
+    for (base, confirmed_prefix, appended, appended_code) in
+        [(9_100, "abcd", 'e', 18), (9_300, "a", 'b', 48)]
+    {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut engine).await;
@@ -7011,19 +7009,19 @@ fn firefox_fresh_surrounding_after_confirmed_append_rearms_next_reset() {
             engine = bridge_delegate_exact_without_gui_edit(&mut harness, engine).await;
             assert!(engine.context_reset_rereceipt.is_none());
             assert!(!engine.consume_context_reset_rereceipt_for_exact_manual_handoff());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn firefox_shortened_preedit_does_not_erase_prior_stale_surface_witness() {
-    zbus::block_on(bounded(async {
-        for (appended, keycode, stale_surface, matches_prior, accept_with_tab) in [
-            ('d', 32, "abcdef", true, false),
-            ('d', 32, "abcdef", true, true),
-            ('d', 32, "abcxef", false, false),
-            ('x', 45, "abcdef", false, false),
-        ] {
+    for (appended, keycode, stale_surface, matches_prior, accept_with_tab) in [
+        ('d', 32, "abcdef", true, false),
+        ('d', 32, "abcdef", true, true),
+        ('d', 32, "abcxef", false, false),
+        ('x', 45, "abcdef", false, false),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(
                 &mut harness,
@@ -7093,8 +7091,8 @@ fn firefox_shortened_preedit_does_not_erase_prior_stale_surface_witness() {
                     assert!(matches!(disposition, Ok((0, _)) | Err(_)));
                 }
             }
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -7134,15 +7132,15 @@ fn firefox_zero_width_visible_completion_tab_appends_once_with_space() {
 
 #[test]
 fn transient_boundary_tab_rejects_changed_surface_or_authority() {
-    zbus::block_on(bounded(async {
-        for fault in [
-            "no_publication",
-            "different_suffix",
-            "hidden_preedit",
-            "new_tail_epoch",
-            "different_right_text",
-            "selection",
-        ] {
+    for fault in [
+        "no_publication",
+        "different_suffix",
+        "hidden_preedit",
+        "new_tail_epoch",
+        "different_right_text",
+        "selection",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(&mut harness, 9_518, &[('a', 30)]).await;
             exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
@@ -7193,19 +7191,19 @@ fn transient_boundary_tab_rejects_changed_surface_or_authority() {
             );
             assert_eq!(engine.committed_tail.buffer, "a", "{fault}");
             engine.cancel_precognition_display_generation();
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn firefox_zero_width_space_after_caret_requires_fresh_exact_receipt() {
-    zbus::block_on(bounded(async {
-        for (surface, cursor, anchor, retain) in [
-            ("a\u{200b}", 1, 1, true),
-            ("ax", 1, 1, false),
-            ("a\u{200b}x", 1, 1, false),
-            ("a\u{200b}", 1, 0, false),
-        ] {
+    for (surface, cursor, anchor, retain) in [
+        ("a\u{200b}", 1, 1, true),
+        ("ax", 1, 1, false),
+        ("a\u{200b}x", 1, 1, false),
+        ("a\u{200b}", 1, 0, false),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(&mut harness, 9_520, &[('a', 30)]).await;
             exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
@@ -7248,26 +7246,26 @@ fn firefox_zero_width_space_after_caret_requires_fresh_exact_receipt() {
                 assert!(legacy_key(&mut harness, &mut engine, 9_522, KEY_TAB, 15, 0).await);
                 td121_expect_legacy_commit_text(&mut harness.peer, "bc ").await;
             }
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn firefox_zero_width_space_then_owned_append_requires_new_exact_token() {
-    zbus::block_on(bounded(async {
-        for (surface, cursor, anchor, retain) in [
-            ("axbc", 2, 2, true),
-            // Firefox can keep the *old* displayed completion in place while
-            // the caret advances for the owned key, with one editor sentinel
-            // still following that retired publication.
-            ("abc\u{200b}", 2, 2, true),
-            ("axbd", 2, 2, false),
-            ("axbcq", 2, 2, false),
-            ("abd\u{200b}", 2, 2, false),
-            ("abc\u{200b}q", 2, 2, false),
-            ("abc\u{200b}", 2, 1, false),
-            ("axbc", 2, 1, false),
-        ] {
+    for (surface, cursor, anchor, retain) in [
+        ("axbc", 2, 2, true),
+        // Firefox can keep the *old* displayed completion in place while
+        // the caret advances for the owned key, with one editor sentinel
+        // still following that retired publication.
+        ("abc\u{200b}", 2, 2, true),
+        ("axbd", 2, 2, false),
+        ("axbcq", 2, 2, false),
+        ("abd\u{200b}", 2, 2, false),
+        ("abc\u{200b}q", 2, 2, false),
+        ("abc\u{200b}", 2, 1, false),
+        ("axbc", 2, 1, false),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(&mut harness, 9_530, &[('a', 30)]).await;
             exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
@@ -7310,8 +7308,8 @@ fn firefox_zero_width_space_then_owned_append_requires_new_exact_token() {
                 exact_surrounding_receipt(&mut harness, &mut engine, "axd").await;
                 assert!(engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             }
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -7562,13 +7560,13 @@ fn firefox_manual_toggle_defers_until_the_client_replies_after_rpc() {
 
 #[test]
 fn firefox_retired_preedit_survives_next_publication_until_exact_append_receipt() {
-    zbus::block_on(bounded(async {
-        for (appended, code, next_preedit, surface, anchor, retain) in [
-            ('b', 48, "c", "abbc", 2, true),
-            ('x', 45, "yz", "axbc", 2, true),
-            ('x', 45, "yz", "axbd", 2, false),
-            ('x', 45, "yz", "axbc", 1, false),
-        ] {
+    for (appended, code, next_preedit, surface, anchor, retain) in [
+        ('b', 48, "c", "abbc", 2, true),
+        ('x', 45, "yz", "axbc", 2, true),
+        ('x', 45, "yz", "axbd", 2, false),
+        ('x', 45, "yz", "axbc", 1, false),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(&mut harness, 9_540, &[('a', 30)]).await;
             exact_surrounding_receipt(&mut harness, &mut engine, "a").await;
@@ -7607,8 +7605,8 @@ fn firefox_retired_preedit_survives_next_publication_until_exact_append_receipt(
                     )),
                 "a stale publication cannot authorize text mutation"
             );
-        }
-    }));
+        }));
+    }
 }
 
 pub(crate) async fn assert_window_interaction_reset_rereceipt_contract() {
@@ -8822,8 +8820,8 @@ fn residual_established_owner_reset_burst_rearms_on_first_real_boundary() {
 
 #[test]
 fn residual_ready_transfer_rejects_same_owner_revocation_before_take() {
-    zbus::block_on(bounded(async {
-        for content_type in [false, true] {
+    for content_type in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let _source = ready_transfer(&mut harness).await;
             let old_outcome = harness
@@ -8840,14 +8838,14 @@ fn residual_ready_transfer_rejects_same_owner_revocation_before_take() {
                     .pending_activation_for(&engine_path(TARGET_PATH)),
                 Some(ActivationOutcome::ResetUnknown(_))
             ));
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn residual_taken_transfer_rejects_same_owner_revocation_before_install() {
-    zbus::block_on(bounded(async {
-        for content_type in [false, true] {
+    for content_type in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut source = ready_transfer(&mut harness).await;
             let outcome = harness
@@ -8887,8 +8885,8 @@ fn residual_taken_transfer_rejects_same_owner_revocation_before_install() {
                 .adapter
                 .pending_activation_for(&engine_path(TARGET_PATH))
                 .is_none());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -8949,8 +8947,8 @@ fn residual_reset_unknown_witness_is_not_revived_by_foreign_or_focus_out() {
 
 #[test]
 fn residual_legacy_enter_backspace_revokes_beyond_the_observed_mirror() {
-    zbus::block_on(bounded(async {
-        for enter in [KEY_ENTER, KEY_KP_ENTER] {
+    for enter in [KEY_ENTER, KEY_KP_ENTER] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut engine).await;
@@ -8995,8 +8993,8 @@ fn residual_legacy_enter_backspace_revokes_beyond_the_observed_mirror() {
                 engine.context_word_is_known(),
                 "a new actual boundary restores authority"
             );
-        }
-    }));
+        }));
+    }
 }
 
 async fn retained_boundary_literal_keys(
@@ -9581,8 +9579,8 @@ fn c06_owned_backspace_cannot_repair_external_epoch_or_revoked_start() {
 
 #[test]
 fn surrounding_without_refresh_owned_preedit_rejects_stale_token_and_selection() {
-    zbus::block_on(bounded(async {
-        for stale_token in [false, true] {
+    for stale_token in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut engine).await;
@@ -9612,8 +9610,8 @@ fn surrounding_without_refresh_owned_preedit_rejects_stale_token_and_selection()
             set_fixture_append_completion(&mut engine, "bc");
             assert!(!engine.context_owns_active_preedit_append_completion());
             assert!(!engine.context_owns_active_preedit_manual_toggle());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -10066,8 +10064,8 @@ fn td121_successful_completion_release_settles_its_append_and_boundary_effect() 
 
 #[test]
 fn td121_non_effectful_completion_routes_cannot_promote_unknown_start() {
-    zbus::block_on(bounded(async {
-        for route in ["no-change", "unhandled", "rejected"] {
+    for route in ["no-change", "unhandled", "rejected"] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut serial = 13_000;
             let (suffix, snapshot) = match route {
@@ -10106,8 +10104,8 @@ fn td121_non_effectful_completion_routes_cannot_promote_unknown_start() {
             assert_eq!(engine.committed_tail.buffer, "abc", "{route}");
             assert!(!engine.context_word_is_known(), "{route}");
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -10399,12 +10397,12 @@ async fn td159_fresh_focus_source(harness: &mut Harness) -> LayIbusEngine {
 
 #[test]
 fn td159_fresh_focus_manual_source_requires_only_current_explicit_gesture() {
-    zbus::block_on(bounded(async {
-        for (text, expected_tail) in [
-            ("abcdef", "abcdef"),
-            ("test, abcdef", "abcdef"),
-            ("hello ", "hello "),
-        ] {
+    for (text, expected_tail) in [
+        ("abcdef", "abcdef"),
+        ("test, abcdef", "abcdef"),
+        ("hello ", "hello "),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td159_fresh_focus_source(&mut harness).await;
             exact_surrounding_receipt(&mut harness, &mut engine, text).await;
@@ -10452,26 +10450,26 @@ fn td159_fresh_focus_manual_source_requires_only_current_explicit_gesture() {
                 engine.layout_gesture.layout_is_ru,
                 expected_tail,
             ));
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td159_fresh_focus_manual_source_rejects_unproved_or_edited_fields() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "selection",
-            "interior",
-            "missing_callback",
-            "missing_capability",
-            "sensitive",
-            "composition",
-            "preedit",
-            "quarantine",
-            "atomic",
-            "oversized",
-            "control_edit",
-        ] {
+    for gap in [
+        "selection",
+        "interior",
+        "missing_callback",
+        "missing_capability",
+        "sensitive",
+        "composition",
+        "preedit",
+        "quarantine",
+        "atomic",
+        "oversized",
+        "control_edit",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td159_fresh_focus_source(&mut harness).await;
             exact_surrounding_receipt(&mut harness, &mut engine, "prefix abcdef").await;
@@ -10514,14 +10512,14 @@ fn td159_fresh_focus_manual_source_rejects_unproved_or_edited_fields() {
             assert!(!engine.context_word_is_known(), "{gap}");
             assert!(!engine.exact_snapshot_manual_source_is_current(), "{gap}");
             assert!(engine.committed_tail.buffer.is_empty(), "{gap}");
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td159_fresh_focus_manual_source_cannot_revive_after_receipt_change_or_reset() {
-    zbus::block_on(bounded(async {
-        for reset in [false, true] {
+    for reset in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = td159_fresh_focus_source(&mut harness).await;
             exact_surrounding_receipt(&mut harness, &mut engine, "prefix abcdef").await;
@@ -10542,8 +10540,8 @@ fn td159_fresh_focus_manual_source_cannot_revive_after_receipt_change_or_reset()
                 "reset={reset}: {result:?}"
             );
             assert!(!engine.context_word_is_known());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -10582,13 +10580,13 @@ fn td159_fresh_focus_manual_source_same_field_transfer_uses_exact_replay_contrac
 
 #[test]
 fn td159_fresh_focus_target_observation_preserves_only_exact_manual_transfer() {
-    zbus::block_on(bounded(async {
-        for (text, hints) in [
-            ("abcdef", 0),
-            ("prefix abcdef", 0),
-            ("πrefix abcdef", 0),
-            ("prefix abcdef", 2048),
-        ] {
+    for (text, hints) in [
+        ("abcdef", 0),
+        ("prefix abcdef", 0),
+        ("πrefix abcdef", 0),
+        ("prefix abcdef", 2048),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = cycle09_harness().await;
             let mut source = td159_fresh_focus_source(&mut harness).await;
             source.set_content_type_state(0, hints);
@@ -10650,42 +10648,42 @@ fn td159_fresh_focus_target_observation_preserves_only_exact_manual_transfer() {
             assert_eq!(suppression, Ok(true));
             assert!(cycle09_exact_suppression_is_armed(&target));
             assert!(!target.context_word_is_known());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn td159_fresh_focus_target_observation_rejects_different_or_unproved_field() {
-    zbus::block_on(bounded(async {
-        for (snapshot, after_focus) in [
-            // FocusIn retires observations delivered before it. Even an exact
-            // old tuple must not count as this activation's current snapshot.
-            (
-                Some(SurroundingTextSnapshot::new("prefix abcdef".into(), 13, 13)),
-                false,
-            ),
-            (
-                Some(SurroundingTextSnapshot::new("other abcdef".into(), 12, 12)),
-                true,
-            ),
-            (
-                Some(SurroundingTextSnapshot::new("prefix abcdef".into(), 13, 7)),
-                true,
-            ),
-            (
-                Some(SurroundingTextSnapshot::new(
-                    "prefix abcdef later".into(),
-                    13,
-                    13,
-                )),
-                true,
-            ),
-            (
-                Some(SurroundingTextSnapshot::new("prefix abcdeg".into(), 13, 13)),
-                true,
-            ),
-            (None, false),
-        ] {
+    for (snapshot, after_focus) in [
+        // FocusIn retires observations delivered before it. Even an exact
+        // old tuple must not count as this activation's current snapshot.
+        (
+            Some(SurroundingTextSnapshot::new("prefix abcdef".into(), 13, 13)),
+            false,
+        ),
+        (
+            Some(SurroundingTextSnapshot::new("other abcdef".into(), 12, 12)),
+            true,
+        ),
+        (
+            Some(SurroundingTextSnapshot::new("prefix abcdef".into(), 13, 7)),
+            true,
+        ),
+        (
+            Some(SurroundingTextSnapshot::new(
+                "prefix abcdef later".into(),
+                13,
+                13,
+            )),
+            true,
+        ),
+        (
+            Some(SurroundingTextSnapshot::new("prefix abcdeg".into(), 13, 13)),
+            true,
+        ),
+        (None, false),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = cycle09_harness().await;
             let mut source = td159_fresh_focus_source(&mut harness).await;
             cycle09_surrounding_receipt(&mut harness, &mut source, "prefix abcdef", 13, 13).await;
@@ -10710,8 +10708,8 @@ fn td159_fresh_focus_target_observation_rejects_different_or_unproved_field() {
             assert_eq!(visible.0, "passive:unknown-context");
             assert!(visible.1.is_empty());
             assert!(!visible.6);
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -11190,25 +11188,25 @@ fn td121_marked_owned_word_accepts_repeated_actual_unchanged_prefix_receipt() {
 
 #[test]
 fn td121_marked_prefix_rereceipt_cannot_revive_stale_or_foreign_birth_proof() {
-    zbus::block_on(bounded(async {
-        for reset_before_space_release in [false, true] {
-            for gap in [
-                "tail_epoch",
-                "revision",
-                "missing_snapshot",
-                "birth",
-                "focus",
-                "lease",
-                "layout",
-                "capability_cycle",
-                "owner_revoked",
-                "prefix_cycle",
-                "right_context_cycle",
-                "caret_cycle",
-                "selection_cycle",
-                "display_pending",
-                "dirty",
-            ] {
+    for reset_before_space_release in [false, true] {
+        for gap in [
+            "tail_epoch",
+            "revision",
+            "missing_snapshot",
+            "birth",
+            "focus",
+            "lease",
+            "layout",
+            "capability_cycle",
+            "owner_revoked",
+            "prefix_cycle",
+            "right_context_cycle",
+            "caret_cycle",
+            "selection_cycle",
+            "display_pending",
+            "dirty",
+        ] {
+            zbus::block_on(bounded(async {
                 let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
                 let caps = 41 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH;
                 let (mut engine, _) = td121_owned_legacy_word_with_closing_space_reset(
@@ -11280,28 +11278,28 @@ fn td121_marked_prefix_rereceipt_cannot_revive_stale_or_foreign_birth_proof() {
                         .all(|(text, _, visible, _)| !visible || text.is_empty()),
                     "{gap}"
                 );
-            }
+            }));
         }
-    }));
+    }
 }
 
 #[test]
 fn td121_marked_owned_preedit_refuses_missing_or_foreign_birth_proof() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "birth",
-            "snapshot",
-            "revision",
-            "focus",
-            "lease",
-            "layout",
-            "capability_cycle",
-            "preedit_capability",
-            "prefix",
-            "caret",
-            "selection",
-            "owner_revoked",
-        ] {
+    for gap in [
+        "birth",
+        "snapshot",
+        "revision",
+        "focus",
+        "lease",
+        "layout",
+        "capability_cycle",
+        "preedit_capability",
+        "prefix",
+        "caret",
+        "selection",
+        "owner_revoked",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let caps = 41 | crate::window_interaction::IBUS_CAP_LAY_EXACT_SURROUNDING_REFRESH;
             let (mut engine, _) =
@@ -11354,8 +11352,8 @@ fn td121_marked_owned_preedit_refuses_missing_or_foreign_birth_proof() {
                     .all(|(text, _, visible, _)| !visible || text.is_empty()),
                 "{gap}"
             );
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -11440,25 +11438,25 @@ fn td121_known_start_owned_preedit_uses_one_manual_word_mode() {
 
 #[test]
 fn td121_known_owned_preedit_retains_all_refusal_guards() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "sealed",
-            "atomic",
-            "sensitive",
-            "marker",
-            "selection",
-            "legacy",
-            "mirror",
-            "hidden",
-            "dirty",
-            "display",
-            "empty",
-            "caret",
-            "scope",
-            "token",
-            "admission",
-            "revoked",
-        ] {
+    for gap in [
+        "sealed",
+        "atomic",
+        "sensitive",
+        "marker",
+        "selection",
+        "legacy",
+        "mirror",
+        "hidden",
+        "dirty",
+        "display",
+        "empty",
+        "caret",
+        "scope",
+        "token",
+        "admission",
+        "revoked",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let (mut engine, _) = td121_known_start_owned_legacy_word(&mut harness).await;
             assert!(engine.context_owns_active_preedit_manual_toggle());
@@ -11511,8 +11509,8 @@ fn td121_known_owned_preedit_retains_all_refusal_guards() {
                 "{gap}: {:?}",
                 effects.preedit_updates
             );
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -11764,8 +11762,8 @@ fn td121_known_owned_manual_word_supersedes_preceding_space_layout_request() {
 
 #[test]
 fn td159_committed_layout_completes_across_same_activation_word_reset() {
-    zbus::block_on(bounded(async {
-        for reset_during_switch in [false, true] {
+    for reset_during_switch in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let (engine, mut serial) = td121_known_start_owned_legacy_word(&mut harness).await;
             let (mut engine, outcome, effects) =
@@ -11822,8 +11820,8 @@ fn td159_committed_layout_completes_across_same_activation_word_reset() {
                 "committed forward layout must survive word Reset without old word authority",
             );
             cycle09_assert_no_local_text_effect(&mut harness).await;
-        }
-    }));
+        }));
+    }
 }
 
 pub(super) async fn cycle09_visible_tail(
@@ -13533,17 +13531,17 @@ fn firefox_observer_first_native_insert_reset_rejects_focus_out() {
 
 #[test]
 fn firefox_native_replay_append_preserves_reset_lineage_until_exact_tail() {
-    zbus::block_on(bounded(async {
-        for (prefix_chars, delayed_receipt, external_prefix) in [
-            (1, false, "prefix "),
-            (1, true, "prefix "),
-            (2, false, "prefix "),
-            (2, true, "prefix "),
-            (1, false, ""),
-            (1, true, ""),
-            (2, false, ""),
-            (2, true, ""),
-        ] {
+    for (prefix_chars, delayed_receipt, external_prefix) in [
+        (1, false, "prefix "),
+        (1, true, "prefix "),
+        (2, false, "prefix "),
+        (2, true, "prefix "),
+        (1, false, ""),
+        (1, true, ""),
+        (2, false, ""),
+        (2, true, ""),
+    ] {
+        zbus::block_on(bounded(async {
             let mut serial = 15_000;
             let (mut harness, mut engine) = firefox_replay_prefix_with_reset(
                 &mut serial,
@@ -13621,8 +13619,8 @@ fn firefox_native_replay_append_preserves_reset_lineage_until_exact_tail() {
             let (engine, tail) = cycle09_visible_tail(&mut harness, engine).await;
             assert!(cycle09_tail_is_authoritative(&tail, &path, true, "фис"));
             assert!(!engine.context_word_is_known());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -16008,8 +16006,8 @@ fn td121_inherited_mid_caret_keeps_narrow_scope_without_whole_prefix() {
 
 #[test]
 fn firefox_source_free_first_word_after_space_delegates_exact_tail() {
-    zbus::block_on(bounded(async {
-        for reset_before_toggle in [false, true] {
+    for reset_before_toggle in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = cycle09_harness().await;
             let mut source = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut source).await;
@@ -16065,8 +16063,8 @@ fn firefox_source_free_first_word_after_space_delegates_exact_tail() {
                 false,
                 "abc ",
             ));
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -16095,23 +16093,23 @@ fn firefox_inert_off_caret_replay_rejects_future_observed_prefix() {
 
 #[test]
 fn firefox_owned_closing_space_reset_preserves_only_confirmed_held_boundary() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "exact",
-            "released",
-            "second_reset",
-            "missing_snapshot",
-            "revision",
-            "epoch",
-            "selection",
-            "foreign_text",
-            "navigation",
-            "command",
-            "content",
-            "awaiting_append",
-            "visible_preedit",
-            "observer_late_reset",
-        ] {
+    for gap in [
+        "exact",
+        "released",
+        "second_reset",
+        "missing_snapshot",
+        "revision",
+        "epoch",
+        "selection",
+        "foreign_text",
+        "navigation",
+        "command",
+        "content",
+        "awaiting_append",
+        "visible_preedit",
+        "observer_late_reset",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = cycle09_harness().await;
             let mut source = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut source).await;
@@ -16243,7 +16241,7 @@ fn firefox_owned_closing_space_reset_preserves_only_confirmed_held_boundary() {
             }
             if gap != "exact" {
                 firefox_assert_no_recovered_manual_authority(&mut harness, source, gap).await;
-                continue;
+                return;
             }
             assert_eq!(source.client_context.surrounding_text_snapshot, original);
             assert_eq!(
@@ -16292,18 +16290,18 @@ fn firefox_owned_closing_space_reset_preserves_only_confirmed_held_boundary() {
             )
             .await;
             assert_eq!(second, Ok(false), "a source lease cannot be acquired twice");
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn firefox_first_word_space_retires_published_preedit_before_exact_receipt() {
-    zbus::block_on(bounded(async {
-        for (retired_surface, cursor, expected_retention) in [
-            ("abcdefgh", 1, true),
-            ("abcxefgh", 1, false),
-            ("abcdefgh", 0, false),
-        ] {
+    for (retired_surface, cursor, expected_retention) in [
+        ("abcdefgh", 1, true),
+        ("abcxefgh", 1, false),
+        ("abcdefgh", 0, false),
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = cycle09_harness().await;
             let mut source = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut source).await;
@@ -16359,7 +16357,7 @@ fn firefox_first_word_space_retires_published_preedit_before_exact_receipt() {
                 .await;
             if !expected_retention {
                 assert!(source.context_reset_rereceipt.is_none());
-                continue;
+                return;
             }
             assert!(
                 source.context_reset_rereceipt.is_some(),
@@ -16383,23 +16381,23 @@ fn firefox_first_word_space_retires_published_preedit_before_exact_receipt() {
                 false,
                 "a "
             ));
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn firefox_replay_reset_receipt_rejects_revoked_scope_and_context() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "wrong_key",
-            "command",
-            "local_scope_removed",
-            "shared_scope_removed",
-            "expired",
-            "selection",
-            "capability_loss",
-            "focus_out",
-        ] {
+    for gap in [
+        "wrong_key",
+        "command",
+        "local_scope_removed",
+        "shared_scope_removed",
+        "expired",
+        "selection",
+        "capability_loss",
+        "focus_out",
+    ] {
+        zbus::block_on(bounded(async {
             let mut serial = 15_200;
             let (mut harness, mut engine) =
                 firefox_replay_prefix_with_reset(&mut serial, 2, true, "prefix ").await;
@@ -16461,8 +16459,8 @@ fn firefox_replay_reset_receipt_rejects_revoked_scope_and_context() {
                 "{gap}: {disposition:?}"
             );
             assert!(!cycle09_exact_handoff_is_live(&engine), "{gap}");
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -17154,8 +17152,8 @@ fn c09_transfer_caps9_release_publishes_installed_mode_without_surrounding() {
 
 #[test]
 fn c09_post_install_mode_refuses_revoked_or_mismatched_owner() {
-    zbus::block_on(bounded(async {
-        for loss in ["revoked", "path", "shared_path", "shared_generation"] {
+    for loss in ["revoked", "path", "shared_path", "shared_generation"] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = new_engine(&harness);
             start_source_free_unknown(&mut harness, &mut engine).await;
@@ -17207,8 +17205,8 @@ fn c09_post_install_mode_refuses_revoked_or_mismatched_owner() {
                 "must not publish stale mode or request a stale snapshot: {loss}"
             );
             assert_eq!(engine.layout_gesture.layout_is_ru, before_mode);
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
@@ -17452,8 +17450,8 @@ fn assert_single_auxiliary_hide(effects: &[zbus::Message]) {
 
 #[test]
 fn c06_native_backspace_retype_first_and_later_words_uses_fresh_client_receipts() {
-    zbus::block_on(bounded(async {
-        for (later_word, russian) in [(false, false), (true, false), (false, true), (true, true)] {
+    for (later_word, russian) in [(false, false), (true, false), (false, true), (true, true)] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let (mut engine, prefix) =
                 c06_native_confirmed_prefix_fixture(&mut harness, 22_000, later_word, russian)
@@ -17534,14 +17532,14 @@ fn c06_native_backspace_retype_first_and_later_words_uses_fresh_client_receipts(
                 .all(|e| e.header().member().unwrap().as_str() != "DeleteSurroundingText"));
             assert_eq!(engine.committed_tail.buffer, format!("{prefix}xyz "));
             assert!(engine.composition.preedit_suffix.is_empty());
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn c06_native_backspace_carry_cannot_accept_before_fresh_exact_client_confirmation() {
-    zbus::block_on(bounded(async {
-        for fresh_before_tab in [true, false] {
+    for fresh_before_tab in [true, false] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let (mut engine, _) =
                 c06_native_confirmed_prefix_fixture(&mut harness, 23_000, false, false).await;
@@ -17576,24 +17574,24 @@ fn c06_native_backspace_carry_cannot_accept_before_fresh_exact_client_confirmati
                 assert!(engine.context_reset_rereceipt.is_none());
                 assert!(!engine.context_reset_rereceipt_exact_manual_handoff_allowed());
             }
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn c06_native_backspace_refuses_unconfirmed_drift_selection_and_whole_erase() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "unconfirmed",
-            "wrong_text",
-            "selection",
-            "middle_caret",
-            "epoch",
-            "focus",
-            "capability",
-            "whole",
-            "repeat",
-        ] {
+    for gap in [
+        "unconfirmed",
+        "wrong_text",
+        "selection",
+        "middle_caret",
+        "epoch",
+        "focus",
+        "capability",
+        "whole",
+        "repeat",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let keys: &[(char, u32)] = if gap == "whole" {
                 &[('a', 30)]
@@ -17645,8 +17643,8 @@ fn c06_native_backspace_refuses_unconfirmed_drift_selection_and_whole_erase() {
                 !engine.context_reset_rereceipt_exact_manual_handoff_allowed(),
                 "gap {gap}"
             );
-        }
-    }));
+        }));
+    }
 }
 
 // Private NOT_RUN append to the already-combined observer-first fixture.
@@ -18422,11 +18420,11 @@ async fn strict_prefix_v10_confirmed_appends(
 
 #[test]
 fn confirmed_native_append_delayed_prefix_next_exact_receipt_restores_manual_route() {
-    zbus::block_on(bounded(async {
-        for keys in [
-            [('a', 30), ('b', 48), ('c', 46), ('d', 32)],
-            [('ф', 0), ('и', 0), ('с', 0), ('в', 0)],
-        ] {
+    for keys in [
+        [('a', 30), ('b', 48), ('c', 46), ('d', 32)],
+        [('ф', 0), ('и', 0), ('с', 0), ('в', 0)],
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let (mut engine, full, _) =
                 strict_prefix_v10_confirmed_appends(&mut harness, 48_000, &keys, true, 0).await;
@@ -18450,18 +18448,18 @@ fn confirmed_native_append_delayed_prefix_next_exact_receipt_restores_manual_rou
                 &expected_tail
             ));
             assert_eq!(engine.committed_tail.buffer, expected_tail);
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn accepted_full_receipts_then_delayed_prefix_recover_only_next_exact_manual_route() {
-    zbus::block_on(bounded(async {
-        for receipts in [1, 3] {
-            for keys in [
-                [('a', 30), ('b', 48), ('c', 46), ('d', 32)],
-                [('ф', 0), ('и', 0), ('с', 0), ('в', 0)],
-            ] {
+    for receipts in [1, 3] {
+        for keys in [
+            [('a', 30), ('b', 48), ('c', 46), ('d', 32)],
+            [('ф', 0), ('и', 0), ('с', 0), ('в', 0)],
+        ] {
+            zbus::block_on(bounded(async {
                 let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
                 let (mut engine, full, _) = strict_prefix_v10_confirmed_appends(
                     &mut harness,
@@ -18486,9 +18484,9 @@ fn accepted_full_receipts_then_delayed_prefix_recover_only_next_exact_manual_rou
                 ));
                 assert_eq!(engine.committed_tail.buffer, expected);
                 assert!(engine.context_reset_rereceipt.is_none());
-            }
+            }));
         }
-    }));
+    }
 }
 
 #[test]
@@ -18552,15 +18550,15 @@ fn confirmed_full_receipt_refresh_refuses_context_or_identity_contradiction() {
 
 #[test]
 fn accepted_full_delayed_prefix_echo_cannot_change_external_context() {
-    zbus::block_on(bounded(async {
-        for guard in [
-            "changed_prefix_context",
-            "changed_final_context",
-            "right_context_added_after_prefix",
-            "right_context_removed_before_prefix",
-            "missing_previous_before_prefix",
-            "missing_prefix_before_full",
-        ] {
+    for guard in [
+        "changed_prefix_context",
+        "changed_final_context",
+        "right_context_added_after_prefix",
+        "right_context_removed_before_prefix",
+        "missing_previous_before_prefix",
+        "missing_prefix_before_full",
+    ] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let keys = [('a', 30), ('b', 48), ('c', 46), ('d', 32)];
             let (mut engine, full, _) =
@@ -18608,22 +18606,22 @@ fn accepted_full_delayed_prefix_echo_cannot_change_external_context() {
                 .await;
             }
             firefox_assert_no_recovered_manual_authority(&mut harness, engine, guard).await;
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn retained_strict_prefix_next_receipt_refuses_contradiction_or_identity_gap() {
-    zbus::block_on(bounded(async {
-        for gap in [
-            "wrong_surface",
-            "selection",
-            "revision_gap",
-            "new_focus",
-            "sensitive",
-            "key_gap",
-            "no_original_confirmation",
-        ] {
+    for gap in [
+        "wrong_surface",
+        "selection",
+        "revision_gap",
+        "new_focus",
+        "sensitive",
+        "key_gap",
+        "no_original_confirmation",
+    ] {
+        zbus::block_on(bounded(async {
             let keys = [('a', 30), ('b', 48), ('c', 46), ('d', 32)];
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let (mut engine, full, stale) = strict_prefix_v10_confirmed_appends(
@@ -18701,14 +18699,14 @@ fn retained_strict_prefix_next_receipt_refuses_contradiction_or_identity_gap() {
             );
             let engine = bridge_toggle_refused_without_text_effect(&mut harness, engine).await;
             assert!(engine.context_reset_rereceipt.is_none(), "{gap}");
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn test29_detached_reset_returns_exact_unknown_object_reply() {
-    zbus::block_on(bounded(async {
-        for serial in [19_315, 19_415] {
+    for serial in [19_315, 19_415] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine =
                 initial_observed_tail_reset(&mut harness, 19_300, &[('a', 30), ('x', 45)]).await;
@@ -18757,8 +18755,8 @@ fn test29_detached_reset_returns_exact_unknown_object_reply() {
                 Some("org.freedesktop.DBus.Error.UnknownObject")
             );
             assert!(reply.header().member().is_none());
-        }
-    }));
+        }));
+    }
 }
 
 // PRIVATE append-only fragment for adapter::tests::word_scope::residuals.
@@ -19570,21 +19568,21 @@ async fn c09_acquisition_completion_delivery_guard_case(case: &'static str) {
 
 #[test]
 fn c09_acquisition_completion_delivery_preserves_guarded_state_after_interface_wait() {
-    zbus::block_on(bounded(async {
-        for case in ["atomic_active", "foreign_adapter", "consumed_grant"] {
+    for case in ["atomic_active", "foreign_adapter", "consumed_grant"] {
+        zbus::block_on(bounded(async {
             c09_acquisition_completion_delivery_guard_case(case).await;
-        }
-    }));
+        }));
+    }
 }
 
 #[test]
 fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_receipt() {
-    zbus::block_on(bounded(async {
-        for (keys, suffix) in [
-            (vec![('a', 30), ('b', 48), ('c', 46)], "de"),
-            (vec![('ф', 0), ('и', 0), ('с', 0)], "ка"),
-        ] {
-            for suppressed in [false, true] {
+    for (keys, suffix) in [
+        (vec![('a', 30), ('b', 48), ('c', 46)], "de"),
+        (vec![('ф', 0), ('и', 0), ('с', 0)], "ка"),
+    ] {
+        for suppressed in [false, true] {
+            zbus::block_on(bounded(async {
                 let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
                 let mut engine = initial_observed_tail_reset(&mut harness, 62_000, &keys).await;
                 let word = keys.iter().map(|key| key.0).collect::<String>();
@@ -19726,17 +19724,17 @@ fn native_space_observed_boundary_retains_strict_predecessor_until_exact_reset_r
                 assert!(cycle09_tail_is_authoritative(
                     &tail, &path, false, &expected
                 ));
-            }
+            }));
         }
-    }));
+    }
 }
 
 // Private native Space transport discriminator. This fixture does not prove
 // that a browser applies the returned physical key or that a later Tab succeeds.
 #[test]
 fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit() {
-    zbus::block_on(bounded(async {
-        for suppressed in [false, true] {
+    for suppressed in [false, true] {
+        zbus::block_on(bounded(async {
             let mut harness = bootstrap_harness_with_budget(CALLBACK_BUDGET).await;
             let mut engine = initial_observed_tail_reset(
                 &mut harness,
@@ -19869,8 +19867,8 @@ fn native_space_legacy_no_apply_and_manual_suppression_close_scope_without_edit(
             );
             let (_, tail) = cycle09_visible_tail(&mut harness, engine).await;
             assert!(cycle09_tail_is_authoritative(&tail, &path, false, "abc "));
-        }
-    }));
+        }));
+    }
 }
 
 #[test]

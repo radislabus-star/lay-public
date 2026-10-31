@@ -1,0 +1,18 @@
+{
+  "status": "CANONICAL_ENGINE_TARGET_GREEN",
+  "checked_at": "2026-10-31T03:24:54.651220+00:00",
+  "all_tests": {
+    "selected": 1149,
+    "failures": 0,
+    "seconds": 235.688,
+    "canonical_executor": "run_target including process isolation"
+  },
+  "runtime_processes_unchanged": true,
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1328,
+    "sha256": "5bccc710663ca6fb5b4d80dc333e44f35fb135947885beaf0081ef32f29d51a0"
+  },
+  "receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release119-engine-target-v1/result.json",
+  "scope": "source test evidence only; no native menu acceptance or installation"
+}

@@ -1,0 +1,27 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-31-ibus-fixture-lifetime-experiment-119",
+  "status": "rejected_no_improvement_not_implemented",
+  "owner": "docs/development/release-1.0.119-kde-checkbox-menu.md",
+  "baseline": "685ba6f24840bf994669d0c71fd1c8ea268b9326",
+  "runtime_change_allowed_paths": [],
+  "test_change_allowed_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "selected_function": "residual_atomic_unsubmitted_input_revokes_an_already_observed_prefix",
+  "decision": "Compare original fixture lifecycle with discarding only this ended fixture pending transition AFTER all original assertions. Existing atomic pending registry/production methods unchanged. Temporary cfg(test) selector removed before promotion.",
+  "evidence": "atomic.rs pending_transitions is process-global keyedbyengine.path;P2P new_engine reuses TARGET_PATH;adjacent atomic.rs test engine helper generates NEXT_PATH. Diagnostic actual failures:live tokentrue,terminal executortrue,observed_suffix0;another failed before proposalREADY.",
+  "runtime_authority_changed": false,
+  "verification": {
+    "receipt": "release119-fixture-lifetime-ab-v1",
+    "A": {
+      "runs": 32,
+      "failures": 2
+    },
+    "B": {
+      "runs": 32,
+      "failures": 5
+    },
+    "temporary_changes_removed": true
+  }
+}

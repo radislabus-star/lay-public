@@ -1,0 +1,29 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "2026-10-31-ibus-fixture-authority-diagnostics-119",
+  "status": "completed_diagnostic_instrumentation_removed",
+  "owner": "docs/development/release-1.0.119-kde-checkbox-menu.md",
+  "baseline": "685ba6f24840bf994669d0c71fd1c8ea268b9326",
+  "runtime_change_allowed_paths": [],
+  "test_change_allowed_paths": [
+    "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs"
+  ],
+  "selected_functions": [
+    "firefox_completed_boundary_replay_waits_for_final_exact_receipt",
+    "residual_atomic_unsubmitted_input_revokes_an_already_observed_prefix"
+  ],
+  "decision": "Record existing refusal facts only after a test predicate has already failed;capture cheap predecessor fields before erasure. No changed assertions/authority/deadlines or runtime code. Fixed diagnostic repetitions,not retries until PASS.",
+  "runtime_authority_changed": false,
+  "verification": {
+    "status": "8fixedruns_recorded_2FirefoxFAIL_4AtomicPASS",
+    "receipt": "release119-refusal-diagnostic-v1",
+    "first_loss": "Both reproduced Firefox failures:pre-erasure predecessor/replay slots alreadyNone;live token remains true. Probe capability transition before next printable.",
+    "next": "fixed4rounds of1Firefox+4Atomic per round;no retries untilPASS",
+    "root": "semantic helper ordering differs from existing legacy_key;no product deadline/runtime change"
+  },
+  "invariants": [
+    "C01",
+    "C03",
+    "C10"
+  ]
+}

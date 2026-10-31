@@ -15,8 +15,8 @@ Real E0425 RED/GREEN,3611Rust/439Python/all10release binaries0warnings verified.
 Source7d9787bf,CI41104503630/Security41104503608PASS,both installed updatersPASS.
 37module/3614canonical/all10buildPASS;nativeFF165/15/40,controls2/2PASS.
 4.DONE 117 TD163,published2026-10-30T21:50:57Z,e65b63b0,3615Rust/all10zero-warning binaries/native2controls/4CI/bothupdaters/tag mirrors verified.
-5.ACTIVE 118 TD164 safe exact ordinary fallback;oneproductionfile,actualRED/GREEN and strictfixed20k dualbaselinePASS.Fullsource/all10/native/CI/publicationnext. Rejected independent migration remainsOPEN TD166 stage2.
-6.QUEUED FOR LATER TD165 P2: KDE checkbox menu closes after each toggle; separate UI-only task, no implementation yet.
+5.DONE118 TD164 safe exact ordinary fallback,published2026-10-31T01:16:37Z,685ba6f2.All4CI/annotated tag mirrors/actual installed updaters PASS.Native initial5/1 and later defaultChrome2/2 recorded honestly; TD166/167 remainOPEN.
+6.ACTIVE119 TD165 KDE menu:finalQt39PASS,native15PASS,browsercontrols2PASS. Projected native menus share onefilter;configapply coalescedperpopup. Full-v3passed3616/all10;finalGUIneedsfull-v4. Notpublished.
 7.DEFERRED TD162 тыего→ты его:unaccepted variantsA/B rejected. Full real false-positive
 corpus caught таможе→там оже. Both words have identical current booleanpart/
 reference/hot evidence;need independently calibrated pair proof,no exceptions.
@@ -24,7 +24,7 @@ reference/hot evidence;need independently calibrated pair proof,no exceptions.
 9.Private IBus fixture setup rejects unknown context with fragmentflagON/OFF.
 10.GNOME Chrome hint appearance:read-only map before any scoped correction.
 10real releases requested114–123;pending slots are provisional,no filler tags.
-Completed and published in this queue:4/10.
+Completed and published in this queue:5/10.
 
 Native table344PASS15FAIL81BLOCKED/440;
 Firefox116=165/15/40,Chrome historical=179/0/41. Unpaired;4 timing PASS becameFAIL; no causal speedup claim.

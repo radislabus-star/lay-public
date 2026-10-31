@@ -115,8 +115,8 @@
     "semantic_hash": "6e672f9f487025b8cbbb8fa18a2ee88e"
   },
   "scripts/lay-kde-tray.py": {
-    "mtime": 1793321256.1383996,
-    "ast_hash": "ef9126d5b16c788cddc336c4bc8de06e",
+    "mtime": 1793420242.468169,
+    "ast_hash": "800ff6e18c1f5ee5c32f075e5ed55544",
     "semantic_hash": ""
   },
   "scripts/lay-runtime-control.sh": {
@@ -3225,8 +3225,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1793404573.6496406,
-    "ast_hash": "71a39731b06bbe9660667c806890c9f6",
+    "mtime": 1793417162.8912833,
+    "ast_hash": "fd5415c9eb94afaee366c813b56461fa",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5020,13 +5020,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1793395251.9369433,
-    "ast_hash": "e3bb34379b5002e56dc00539760f1fef",
+    "mtime": 1793417912.5404265,
+    "ast_hash": "c643aa5a1e16b8ff992d5cbc1d34ba72",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1793394739.7211761,
-    "ast_hash": "84f205d6e41325b079ad8ad05d8f8f99",
+    "mtime": 1793417221.0697625,
+    "ast_hash": "7436940d75335b1e654156d99f549cb3",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -5415,13 +5415,13 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/residuals.rs": {
-    "mtime": 1793394503.8440287,
-    "ast_hash": "2ab3122494b8caf1dc574d1e8e9981a0",
+    "mtime": 1793416719.028597,
+    "ast_hash": "d75368c24985443e8f6b0ea50b8bbbdb",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/adapter/tests/word_scope.rs": {
-    "mtime": 1793101983.4219155,
-    "ast_hash": "db9e95e6a85c403c097d5b0f1de55b06",
+    "mtime": 1793416720.216607,
+    "ast_hash": "df6168d32208527eda7e2d1ff38b91dc",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/context_admission/ordered_merge.rs": {
@@ -7690,8 +7690,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1793404573.5346396,
-    "ast_hash": "68aab5218149527465f34d0ae07c0a07",
+    "mtime": 1793420741.7283235,
+    "ast_hash": "e4f0b2a6fcfef250e85460e235695af9",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9120,8 +9120,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1793402735.2587419,
-    "ast_hash": "4533df270460bda861a96b1ff817c47e",
+    "mtime": 1793415886.5658588,
+    "ast_hash": "2c47e5923097540176085d1a8d631cc7",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -9660,8 +9660,8 @@
     "semantic_hash": ""
   },
   "docs/development/ten-release-queue-2026-10-30.md": {
-    "mtime": 1793403921.0408092,
-    "ast_hash": "e4317b7b16df451eebe1af9a2f10cd6a",
+    "mtime": 1793420741.7293236,
+    "ast_hash": "56a8f2a9aded13633a891c643e36c0ea",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-compiler-diagnostics-115.json": {
@@ -9730,18 +9730,18 @@
     "semantic_hash": ""
   },
   "tech_debt/163-kde-pacing-debug-config-publication.md": {
-    "mtime": 1793403921.0408092,
-    "ast_hash": "26d9ebe500ca3c9361c5021811f54b8e",
+    "mtime": 1793408504.787924,
+    "ast_hash": "b0bbaf685668fb4f90c76672238604e3",
     "semantic_hash": ""
   },
   "tech_debt/164-fragment-autoflip-blocks-space.md": {
-    "mtime": 1793396524.3957298,
-    "ast_hash": "a802ae0f070c8edeac35cbb735cca010",
+    "mtime": 1793410694.8416257,
+    "ast_hash": "deeae694ff402589fa09ad4b535f9be4",
     "semantic_hash": ""
   },
   "tech_debt/165-kde-menu-checkbox-stays-open.md": {
-    "mtime": 1793384070.397113,
-    "ast_hash": "1c58613f0dabadea4ea838572841ef09",
+    "mtime": 1793409037.5983682,
+    "ast_hash": "80f18c18bbb18a0e2f2aaf2358aa07bd",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-30-ci117-cache-fixture.json": {
@@ -9760,8 +9760,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-fragment-safe-exact-fallback-118.json": {
-    "mtime": 1793403921.0408092,
-    "ast_hash": "d7b51c1731e9bc6253aa2ab0bbc6bcfc",
+    "mtime": 1793408504.7869241,
+    "ast_hash": "3a0ff6e71dfd1e1606882ccf410f2635",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-31-independent-fragment-candidates-118.json": {
@@ -9780,8 +9780,8 @@
     "semantic_hash": ""
   },
   "docs/development/release-1.0.118-fragment-safe-exact-fallback.md": {
-    "mtime": 1793404573.5346396,
-    "ast_hash": "50ee512a85860c16e5a88cb8547dfd0d",
+    "mtime": 1793410694.6686234,
+    "ast_hash": "f0050cabf21d03f82f373c34a9bfbcaf",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.118-independent-fragment-candidates.md": {
@@ -9792,6 +9792,71 @@
   "tech_debt/166-independent-fragment-evidence.md": {
     "mtime": 1793402735.2587419,
     "ast_hash": "d160eebb7c794ca1b84857212ee94086",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-ibus-fixture-authority-diagnostics-119.json": {
+    "mtime": 1793415886.5658588,
+    "ast_hash": "beca94b3056296efe2a04e521cf9eae3",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-ibus-fixture-case-budget-119.json": {
+    "mtime": 1793416719.025597,
+    "ast_hash": "4abb2a4ac5c5f5e45348f8bedeb4e2e0",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-ibus-fixture-lifetime-experiment-119.json": {
+    "mtime": 1793415886.5658588,
+    "ast_hash": "3fd7e51db141de7136b3df889a791dff",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-ibus-semantic-fixture-stamp-order-119.json": {
+    "mtime": 1793417113.053872,
+    "ast_hash": "81818bd8ccae886705e203923b8663fd",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-10-31-kde-checkbox-menu-119.json": {
+    "mtime": 1793420741.7283235,
+    "ast_hash": "88cea43fe8785721066f54141410c69f",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.118-publication.json": {
+    "mtime": 1793410694.6676235,
+    "ast_hash": "8c5cb7a31f5edb6a0b099681ae3f5c21",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.118-tests.json": {
+    "mtime": 1793405176.4539533,
+    "ast_hash": "550496801e0666ffb2acb9aea6b753a7",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.119-engine-target.json": {
+    "mtime": 1793417113.053872,
+    "ast_hash": "f9a4e3efba7f33ab8b8d5146c2d32c08",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.119-fixture-budget-transform.json": {
+    "mtime": 1793416719.0265973,
+    "ast_hash": "0d83d16b9b4f336874d498c6977da132",
+    "semantic_hash": ""
+  },
+  "tests/test_kde_menu_persistence.py": {
+    "mtime": 1793420242.468169,
+    "ast_hash": "52d82848102b3dd3b2e3f3ebf8fb0090",
+    "semantic_hash": ""
+  },
+  "docs/development/release-1.0.119-kde-checkbox-menu.md": {
+    "mtime": 1793420741.7293236,
+    "ast_hash": "036aa2acb3a2e376de20be4ac3ab64c2",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.119-menu-native.json": {
+    "mtime": 1793420741.7283235,
+    "ast_hash": "36bf126e9e827d9d60b70938d4c9bfb4",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.119-tests.json": {
+    "mtime": 1793417912.5394266,
+    "ast_hash": "2958420e23ceeef1dc31d557ebaf9744",
     "semantic_hash": ""
   }
 }

@@ -1,0 +1,50 @@
+{
+  "status": "FINAL_SOURCE_AND_RUNNING_CANDIDATE_VERIFIED_PUBLICATION_PENDING",
+  "source": {
+    "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+    "files": 1328,
+    "sha256": "f4e065cf840f1f440748f620fe9182ae65376e2439bf5e35185fcb87ae69f71e"
+  },
+  "rust": {
+    "selected": 3616,
+    "targets": 34,
+    "failures": 0,
+    "process_isolated_selected": 492,
+    "canonical_invocation_exit": 0,
+    "manifest_sha256": "5c46e07770963ca39fe616bb3a6fae07e30355a029c6d71a703dbb258a5be969",
+    "observation_sha256": "4ee9575ccf4738d6dfcc6bce0cfc5abcff6e3422f0a0bcf9d134caebc98e752b"
+  },
+  "python": {
+    "selected": 440,
+    "passed": 430,
+    "skipped": 10,
+    "failed": 0
+  },
+  "focused_qt_passed": 39,
+  "native_menu_passed": 15,
+  "native_browser_controls_passed": 2,
+  "release_binaries": 10,
+  "compiler_warnings": 0,
+  "tested_inventory_files": 1332,
+  "running_identity": {
+    "status": "FINAL_BUILD_MATCHES_TESTED_NATIVE_CANDIDATE",
+    "source": {
+      "git_head": "a8fbda3cd529286d9417728f4dde099458439dc1",
+      "files": 1328,
+      "sha256": "f4e065cf840f1f440748f620fe9182ae65376e2439bf5e35185fcb87ae69f71e"
+    },
+    "binaries_verified": 10,
+    "installed_binary_differences": [],
+    "daemon_pid": 3936773,
+    "engine_pid": 3936914,
+    "tray_pid": 3934974,
+    "global_ibus_pid": 3168326,
+    "tray_sha256": "8aa9cb8b608e6ec8b619b71e866b3189d08a77321f185abd46f9f67a64087c0d",
+    "config_sha256": "5d02dfdaf28f59075f33d1e0ffb72c70fecd69a97208d11f22848c8411d543b3",
+    "native_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release119-menu-native-v4/result.json",
+    "no_reinstallation_needed": true
+  },
+  "full_receipt": "/home/e/projects/lay-development-runner/kde-install-control-20261020/release119-menu-full-v4/result.json",
+  "native_matrix_rescored": false,
+  "runtime_authority_changed": false
+}
