@@ -97,7 +97,7 @@ evdev = "0.13"
 zbus = "5.15.0"
 # Stock IBus emits lifecycle signals under its reserved bus-daemon name.
 zbus_names = { version = "=4.3.2", features = ["ibus-bus-daemon"] }
-x11rb = { version = "0.13", features = ["xkb", "xinput", "xtest"] }
+x11rb = { version = "0.14", features = ["xkb", "xinput", "xtest"] }
 libc = "0.2"
 libm = "=0.2.16"
 zstd = "0.14"
