@@ -1,3 +1,76 @@
+## Completed: Lay 1.0.124 — 2026-11-09T23:30:20.930515+00:00
+
+The isolated letter-fragment task has reached its stable release. No pending
+runtime implementation or installation remains for this task. Existing native
+compatibility failures are explicitly retained below; this is not an all-client
+PASS. Historical checkpoints after this section are superseded evidence, not
+instructions to resume old experiments.
+
+- Stable release: https://github.com/radislabus-star/lay-public/releases/tag/v1.0.124
+- Published at 2026-11-09T23:23:04Z; release ID 439761658. Latest, not draft,
+  not prerelease, independently read back from the public API.
+- Canonical code commit: 702fb6afe6a0eec98ce879983b3b54b03250819f.
+- Annotated tag object: 37103074f12bea31406d8e73241d5e1ee7ca5929. Origin and
+  public tag objects and peeled commits match. Keep this tag on the code commit.
+- Four public CI jobs passed: installer, MSRV 1.88.0, RustSec, and Rust 1.97.1
+  with complete correctness/package, lint, syntax, CLI, release and ngram checks.
+- Exact frozen source: 1,338 files, SHA-256
+  6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5.
+  All ten frozen artifacts63/65 are byte-identical. Full local/remote release
+  gate64 applies to this exact source. This metadata-only publication record
+  does not change it or reopen functional verification.
+- Both actual installed menu entrypoints returned success with installed
+  1.0.123, stable 1.0.124, update available. Mode was --check; apply=false.
+  User obtains versions through the menu. No forced primary installation.
+- New fragment feature on KDE: Chrome108/0/12 and Firefox108/0/12
+  PASS/FAIL/structural BLOCKED, 240 total. Primary GNOME:32 physical mode/word
+  transitions plus3 native Tab/held-Shift cases independently verified.
+- Ordinary KDE browser suite remains329 PASS /59 FAIL /52 BLOCKED of440:
+  Firefox143/51/26; Chrome186/8/26. Failed observations were not waived.
+  Immediate-Space layout conversion with fragments ON passes16 supported
+  fields, with4 structural URL/email blocks; it is a subset of that suite.
+- Matched comparisons:33 observations by first shared failure class;
+  12 strict terminal placement checks;6 primary GTK Space cases. Persistent
+  failures reproduce on exact originally installed123. The primary Space
+  fixtures retain the same typos in124 ON/OFF and123 OFF; equality is not
+  successful correction. Do not generalize one class representative to all59.
+- A nonzero hint rectangle is insufficient: strict Kitty placement fails
+  first/second word in allthree configurations; Konsole passes both in allthree.
+  Epoch-based coordinate retention passed7 source tests but failed native
+  placement. It was rejected and exactly reverted in two source files and
+  the active scope. Do not revive it without independent native position proof.
+- Source evidence:3,650 Rust correctness/package plus11 performance;467
+  headless Python cases plus10 graphical and2 real-system cases;28 owned-Xvfb
+  opt-ins; allten installables, lints, architecture, installer and actual MSRV.
+  Seventeen research/live opt-ins were not invoked. Raw failed whole graphical
+  and legacy-producer diagnostics remain separate from independent proofs.
+
+Publication and update-discovery receipt:
+`docs/development/evidence/release-1.0.124-publication.json`.
+Complete scoped verification and known limits:
+`docs/development/evidence/release-1.0.124-verification.json` and
+`docs/development/release-1.0.124-letter-fragments.md`.
+The final publication receipt also exists in C/publication-final-1.0.124.json.
+C is /home/ubu/.cache/lay/development/letter-fragment-request-20261102.
+Work was SOLO, without agents or Harness. Private origin/main47fe54e6 was
+preserved. Publication-only documentation can follow the code commit without
+retagging or repeating accepted source/native tests. Finish with branch/tag
+readback and the configured half-volume completion sound.
+
+## Historical checkpoints — superseded
+
+## CURRENT 2026-11-09T23:28:29.462031+00:00: STABLE1.0.124 PUBLISHED; CI4/4PASS; installed updaters both123→124; metadata-only followup
+
+Code702fb6afe6a0eec98ce879983b3b54b03250819f; tagv1.0.124 object37103074f12bea31406d8e73241d5e1ee7ca5929 identicalorigin/public andpeeledcode702. Stablepublicrelease439761658 published2026-11-09T23:23:04Z, URLhttps://github.com/radislabus-star/lay-public/releases/tag/v1.0.124, draftfalse/prereleasefalse/latestverified. CI installer/MSRV1.88/RustSec/Rust1.97+tray+extension allPASS. Both REAL installed menu entrypoints lay-update --check return0 installed1.0.123 stable1.0.124 available; applyfalse. No forcedinstallation. Local andremote menus resolve actual installed updater scriptSHAAebfb65..., stableGitHubAPI; remote trayPID1271545 active(aliaslay-kde-tray, resolvesNov2bundle .py). Earlier auditexpected.pyargvwaswrong; no tray failure/restart.
+
+Source1338SHA6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5 exactlyfrozen65/full64 remains unchanged bythispublication-onlydocs. Currentfeature216P0F24structuralB/240 +primaryGTK35 independentlyverified. OrdinaryKDE440 remains329P59F52B, NOTPASS; classbaseline33/strictplacement12/primarySpace6 comparisonscomplete andrawfailuresretained. Immediate-Space layout16P0F4B withinordinarysuite. Source3650Rust+11perf/467headlessPython+10GUI+2system/28ownedXvfb/alltenbuilds/MSRV/lints/arch allP;17research/live optinsnotinvoked. Coordinate-epoch experimentREJECTED_NATIVE,2sources/scoperestoredexactB65; do not revivebasedonlocalwordmetadata. No newruntimeeditneededforpublication.
+
+Publicationreceipt docs/development/evidence/release-1.0.124-publication.json; completeknownlimits release-1.0.124-letter-fragments.md+verification.json. C/publication-final-1.0.124.json exactAPI/updaterevidence. Finalremaining: commit/push ONLY thesepublication/owningdocs withacceptedfunctionalproof reuse, verifybranchheads/tag/latest andcleanstatus, finalcheckpoint, completionsoundthenfinalRussianreport. TagmustremainCODE702; docscommitcanfollowwithoutretag. Privateorigin/main47fe54e6 preserve. SOLO/noagents/noHarness/noquestions. Userinstallsviamenu. MemorycitationlastMEMORY.md5193-5197 rollout01a115ea-09f2-7003-81c5-26037edf60eb.
+
+## CURRENT 2026-11-09T22:56:25.477810+00:00: code702fb6af pushed; public CI3/4PASS, Rust1.97 stillrunning; no tag/release yet
+
+Codecommit702fb6afe6a0eec98ce879983b3b54b03250819f now originfeature/publicfeature/publicmain, privateoriginmain47fe54e6 preserved. Postcommit source1338 SHA6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5 exactly equals frozen65/full64 (onlygithead changed). PublicCI source run42715425381,security42715425643: installerPASS,MSRV1.88PASS,RustSecPASS, Rust1.97 checkjob129495573112 RUNNING. Waitall4beforetag/release. Rawcheckreceipt C/public-ci-current-1.0.124.json. No permanentinstall, source123 restoredbothhosts. Finalletter-native216P0F24B/240; ordinary329P59F52B/440 retained, baseline33+strictplacement12+primarySpace6 comparisons complete. Rejectedcoordinateexperiment exactlyreverted; currentSourceHintView/KdeTerminal have no diff. No more runtime edits planned. Final publication docs-onlyfollowup can reuse accepted functional evidence; do not rerun unchanged broadtests.
+
 ## CURRENT 2026-11-09T22:44:13.500615+00:00: final source restored exactly B65; all bounded comparisons completed; prepare124 commit/CI/publication
 
 SOLO/noHarness/noagents/noquestions; continue through publication, no final yet. No commit/push/tag/release/permanentinstall so far. B76 coordinate retention REJECTED_NATIVE_PLACEMENT, exact2sources+scope reverted to prechange74, CURRENTSOURCE48→46 protected paths restored. Local source1338 SHA6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5 matches frozen65/full64; allten63/65 binaries byte-equal. Do not reintroduce epoch-retention: current local word does NOT prove postpaint coordinates. Native77 disproved it despite GREEN7 source tests. Final source has NO hint_view.rs or kde/terminal.rs diff.

@@ -1,0 +1,131 @@
+{
+  "status": "STABLE_PUBLISHED_AND_UPDATE_DISCOVERY_VERIFIED",
+  "version": "1.0.124",
+  "canonical_commit": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+  "source": {
+    "git_head": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+    "files": 1338,
+    "sha256": "6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5"
+  },
+  "tag": "v1.0.124",
+  "tag_object": "37103074f12bea31406d8e73241d5e1ee7ca5929",
+  "tag_mirrors": {
+    "origin": {
+      "refs/tags/v1.0.124": "37103074f12bea31406d8e73241d5e1ee7ca5929",
+      "refs/tags/v1.0.124^{}": "702fb6afe6a0eec98ce879983b3b54b03250819f"
+    },
+    "public": {
+      "refs/tags/v1.0.124": "37103074f12bea31406d8e73241d5e1ee7ca5929",
+      "refs/tags/v1.0.124^{}": "702fb6afe6a0eec98ce879983b3b54b03250819f"
+    }
+  },
+  "url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.124",
+  "published_at": "2026-11-09T23:23:04Z",
+  "draft": false,
+  "prerelease": false,
+  "target_commitish": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+  "latest_id_verified": 439761658,
+  "ci": [
+    {
+      "name": "RustSec vulnerabilities and unsoundness",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/42715425643/job/129495573845"
+    },
+    {
+      "name": "Rust 1.97.1, tray, and extension checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/42715425381/job/129495573112"
+    },
+    {
+      "name": "Public installer regressions",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/42715425381/job/129495573046"
+    },
+    {
+      "name": "Rust 1.88.0 MSRV",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+      "url": "https://github.com/radislabus-star/lay-public/actions/runs/42715425381/job/129495572648"
+    }
+  ],
+  "recorded_at": "2026-11-09T23:28:29.457681+00:00",
+  "permanent_primary_installation": false,
+  "updater": {
+    "status": "PASS",
+    "scope": "actual installed menu entrypoints --check; update discovery, not an applied installation",
+    "primary": {
+      "status": "PASS",
+      "entrypoint": "/home/ubu/.local/bin/lay-update",
+      "resolved": "/home/ubu/.local/lib/lay/update.sh",
+      "script_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "exit": 0,
+      "installed": "1.0.123",
+      "stable": "1.0.124",
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.123\nстабильный релиз: 1.0.124\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.123 → 1.0.124\n",
+      "stderr": "",
+      "mode": "--check",
+      "apply": false,
+      "checked_at": "2026-11-09T23:25:47.994061+00:00"
+    },
+    "kde": {
+      "status": "PASS",
+      "entrypoint": "/home/e/.local/bin/lay-update",
+      "resolved": "/home/e/.local/lib/lay/update.sh",
+      "script_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "exit": 0,
+      "installed": "1.0.123",
+      "stable": "1.0.124",
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.123\nстабильный релиз: 1.0.124\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.123 → 1.0.124\n",
+      "stderr": "",
+      "mode": "--check",
+      "apply": false,
+      "checked_at": "2026-11-09T23:25:48.206304+00:00"
+    },
+    "entrypoints": {
+      "primary": {
+        "host": "primary-gnome",
+        "entrypoint": "/home/ubu/.local/bin/lay-update",
+        "resolved": "/home/ubu/.local/lib/lay/update.sh",
+        "sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+        "menu_source": "/home/ubu/.local/share/gnome-shell/extensions/lay@radislabus-star.github.io/tray_support.js",
+        "menu_calls_entrypoint": [
+          {
+            "line": 254,
+            "source": "const updater = `${GLib.get_home_dir()}/.local/bin/lay-update`;"
+          },
+          {
+            "line": 280,
+            "source": "const updater = GLib.get_home_dir() + '/.local/bin/lay-update';"
+          }
+        ],
+        "latest_api_in_source": true
+      },
+      "kde": {
+        "host": "remote-kde",
+        "entrypoint": "/home/e/.local/bin/lay-update",
+        "resolved": "/home/e/.local/lib/lay/update.sh",
+        "sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+        "menu_pid": 1271545,
+        "menu_source": "/home/e/.local/lib/lay/runtime-control-full-restart-20261102/lay-kde-tray.py",
+        "menu_calls_entrypoint": [
+          {
+            "line": 112,
+            "source": "[str(Path.home() / \".local/bin/lay-update\"), action],"
+          },
+          {
+            "line": 641,
+            "source": "[str(Path.home() / \".local/bin/lay-update\"), \"--menu\"],"
+          }
+        ],
+        "latest_api_in_source": true
+      }
+    }
+  }
+}

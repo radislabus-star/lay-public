@@ -55,3 +55,16 @@ The historical failures and incomplete probes above are retained as historical e
 The unchanged full120 native actor completed on KDE/Chrome and KDE/Firefox: each108PASS,0FAIL,12structuralBLOCKED,0NOT_TESTED. Each selected letter case checks first/second word, both directions, two manual returns and the next physical glyph, across ten fields and three modes. The12 blocks per browser are exactly URL/email second-word ASCII-space sanitization before input. Parent receipt: /home/e/projects/lay-development-runner/letter-fragment-final-native-v65-20261110/RESULT.json. Private mutable learning and source-model hashes were verified; installed123 runtime/config/layout were restored. No permanent installation or publication is established by this result.
 
 Primary GNOME acceptance on the same current runtime bytes separately verifies32/32 physical eight-model transitions plus3/3 Tab/held-Shift controls; independent negative controls20+6 reject malformed evidence. The raw Tab actor legacy producer assertion remains FAIL and is not silently rewritten as PASS. Native standard220-per-browser and ordinary terminal coverage are separate gates; their outcome is still pending.
+
+## Publication and remaining compatibility scope
+
+Stable1.0.124 tag points to code702fb6af, exact frozen65 source. Four publicCI
+jobs PASS; the two actual installed menu updater entrypoints both detect
+installed123→stable124 without applying installation. New-feature native
+acceptance is216PASS0FAIL24structuralBLOCKED/240, primaryGTK35 separately
+verified. Ordinary440 remains329PASS59FAIL52BLOCKED;33 matched class controls,
+strict terminal placement12 and primarySpace6 comparisons retain all failures.
+Immediate-Space layout conversion with fragmentsON passes16 supported fields
+and has4 structuralblocks. A local-epoch presentation policy was rejected and
+exactly reverted; no such policy survives in code702. See the versioned release
+verification and publication reports for exact scopes. No all-client PASS claim.

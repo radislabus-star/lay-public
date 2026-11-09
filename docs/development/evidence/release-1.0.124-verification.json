@@ -2,7 +2,7 @@
   "schema": "lay.release-verification.v1",
   "version": "1.0.124",
   "status": "SOURCE_AND_FRAGMENT_NATIVE_VERIFIED_WITH_EXISTING_NATIVE_LIMITS",
-  "recorded_at": "2026-11-09T22:42:03.711669+00:00",
+  "recorded_at": "2026-11-09T23:30:20.928495+00:00",
   "source": {
     "git_head": "4fae57d50b031984c1e0ddc8796e78e142b2a595",
     "files": 1338,
@@ -265,7 +265,7 @@
     }
   },
   "permanent_primary_installation": false,
-  "published": false,
+  "published": true,
   "limitations": [
     "Ordinary KDE browser suite remains FAIL:329PASS59FAIL52structuralBLOCKED/440; failed rows are not waived or recounted as PASS.",
     "Comparison33 covers one exact representative per shared failure class, not all59 failures individually. Stable correction/rapid failures reproduce on original123; sporadic cases remain raw failures.",
@@ -5928,5 +5928,21 @@
     ],
     "profile": "same previously verified managed IME profile; private models and learning; current124 ON/OFF vs exact original123 OFF",
     "legacy_route_attempt_78_retained": true
+  },
+  "publication_receipt": "docs/development/evidence/release-1.0.124-publication.json",
+  "canonical_code_commit": "702fb6afe6a0eec98ce879983b3b54b03250819f",
+  "ordinary_immediate_space_layout_controls": {
+    "scope": "normal mode, ghbdtn followed immediately by Space, fragment option ON, all ten fields in each browser; subset of already retained ordinary440 suite",
+    "chrome": {
+      "PASS": 8,
+      "FAIL": 0,
+      "BLOCKED": 2
+    },
+    "firefox": {
+      "PASS": 8,
+      "FAIL": 0,
+      "BLOCKED": 2
+    },
+    "blocked": "HTML URL/email sanitizes required trailing ASCII Space before input"
   }
 }

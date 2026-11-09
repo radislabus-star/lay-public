@@ -1,11 +1,15 @@
 # Lay 1.0.124: letter-triggered layout correction
 
-Status: source and new-feature native gates completed; matched native baseline
-comparisons completed. Public CI and publication are pending. The ordinary
-compatibility suite retains known failures; this is bounded feature evidence.
+Stable 1.0.124 published on 2026-11-09 at 23:23:04 UTC, code commit
+`702fb6afe6a0eec98ce879983b3b54b03250819f`. All four public CI jobs PASS;
+both installed menu updaters detect 123 → 124. Installation was not applied.
+The ordinary compatibility suite retains known failures; this is bounded
+feature evidence. Publication and updater readback are recorded in
+[release-1.0.124-publication.json](evidence/release-1.0.124-publication.json).
 
 The optional fragment detector now runs on an alphabetic key's paired release.
-It proposes an ENG ↔ RU conversion while the word is being typed. It calls the
+It scores alphabetic tokens of 3–32 characters and proposes an ENG ↔ RU
+conversion while the word is being typed. It calls the
 existing word-conversion operation with `Fragment` provenance. Space continues
 through the ordinary correction rules; enabling the option cannot replace their
 candidate generation or veto their decisions. The default remains off.
@@ -71,8 +75,8 @@ GNOME and KDE. Neither change replaces the correction or delivery architecture.
   cases independently verified. Twenty plus six controlled malformed-evidence
   cases were rejected. The raw Tab actor's legacy producer assertion remains a
   separate failed diagnostic; its independent native verifier passes.
-- GNOME latency, 32 transitions: second physical Shift press to first native
-  replacement, measured on one monotonic clock. Median bounds 12.535–14.545 ms,
+- GNOME latency, 32 transitions: second physical Shift press to the first matching native GTK text/preedit
+  event, measured on one monotonic clock (not a pixel-paint timestamp). Median bounds 12.535–14.545 ms,
   nearest-rank p95 bounds 89.818–91.827 ms, maximum bounds 95.780–97.796 ms.
   These are GTK/GNOME observations, not a universal latency claim.
 
@@ -124,6 +128,8 @@ machine-readable evidence, including raw failure statuses and skipped scopes,
 is [release-1.0.124-verification.json](evidence/release-1.0.124-verification.json).
 No canonical source failure is waived; the source failure ledger remains empty.
 
-Public CI, identical annotated tags, stable release API and installed updater
-checks must complete before publication is reported as successful. The primary
-machine receives releases through its updater rather than forced installation.
+Public CI, identical annotated tags, the stable release API and installed updater
+readback all completed. The primary machine receives releases through its updater
+rather than forced installation. Ordinary immediate-Space layout conversion
+with fragments ON passes16/16 supported fields (plus 4 structural URL/email
+blocks); this is a subset of the retained ordinary440 suite.
