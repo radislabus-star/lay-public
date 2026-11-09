@@ -86,6 +86,25 @@ impl LayImeBridge {
         self.can_replace_committed_tail_inner(backspaces).await
     }
 
+    #[zbus(name = "CompleteFragmentWordModeV1")]
+    async fn complete_fragment_word_mode_v1(
+        &self,
+        expected_suffix: String,
+        expected_epoch: u64,
+        expected_path: String,
+        expected_is_ru: bool,
+        target_is_ru: bool,
+    ) -> fdo::Result<bool> {
+        self.complete_fragment_word_mode_inner(
+            expected_suffix,
+            expected_epoch,
+            expected_path,
+            expected_is_ru,
+            target_is_ru,
+        )
+        .await
+    }
+
     #[zbus(name = "SuppressNextAutocorrect")]
     async fn suppress_next_autocorrect(&self) -> fdo::Result<bool> {
         self.suppress_next_autocorrect_inner().await

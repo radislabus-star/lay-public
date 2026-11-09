@@ -45,6 +45,7 @@ import {
     openDiagnosticsLog,
     openInputAccess,
     applyInputChannel,
+    fullRestart,
     restartDaemon,
     saveConfig,
     startDaemon,
@@ -124,6 +125,17 @@ class LayIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         this.menu.addMenuItem(this._enabledSwitchItem());
+        this.menu.addAction('Полный перезапуск Lay', () => {
+            const process = fullRestart();
+            if (!process) {
+                Main.notifyError('Lay', 'Не удалось запустить полный перезапуск');
+                return;
+            }
+            process.wait_check_async(null, (child, result) => {
+                try { child.wait_check_finish(result); }
+                catch (error) { Main.notifyError('Lay: ошибка перезапуска', String(error)); }
+            });
+        });
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         this.menu.addMenuItem(this._layoutSwitchItem());
         this.menu.addMenuItem(this._inputModeMenu());

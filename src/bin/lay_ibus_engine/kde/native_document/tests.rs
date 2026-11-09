@@ -221,7 +221,337 @@ fn observed_native_engine() -> (LayIbusEngine, NativeDocumentBinding) {
     )
 }
 
-fn observed_native_engine_with_completeness(
+fn fragment_native_result() -> LayIbusEngine {
+    let (mut engine, _) = observed_native_engine();
+    engine.config.fragment_layout_autoflip = true;
+    engine.config.auto_switch_layout = true;
+    engine.committed_tail.buffer = "прив".into();
+    engine.arm_exact_visible_postcondition_from_surrounding_dispatch(
+        Instant::now(),
+        None,
+        None,
+        SurroundingTextSnapshot::new("прив".into(), 4, 4),
+    );
+    engine
+}
+
+#[test]
+fn fragment_native_mode_carries_only_transport_until_an_actual_result_arrives() {
+    let mut engine = fragment_native_result();
+    let source = engine
+        .client_context
+        .native_document_binding
+        .clone()
+        .unwrap();
+    engine
+        .client_context
+        .native_document_binding
+        .as_mut()
+        .unwrap()
+        .hint_geometry = Some(NativeHintGeometry {
+        snapshot: engine
+            .client_context
+            .surrounding_text_snapshot
+            .clone()
+            .unwrap(),
+        rect: [10, 20, 30, 40],
+    });
+    let original = engine
+        .committed_tail
+        .pending_visible_postcondition
+        .clone()
+        .unwrap();
+    let token = engine.context_token.clone();
+    let scope = engine.context_word_scope;
+    let ticket = engine
+        .capture_fragment_native_mode_continuation(true)
+        .unwrap()
+        .unwrap();
+    engine
+        .finish_fragment_native_mode_continuation(ticket)
+        .unwrap();
+    let pending = engine
+        .committed_tail
+        .pending_visible_postcondition
+        .as_ref()
+        .unwrap();
+    assert!(engine.layout_gesture.layout_is_ru);
+    assert_eq!(engine.committed_tail.epoch, original.dispatched_epoch);
+    assert_eq!(pending.dispatched_at, original.dispatched_at);
+    assert_eq!(pending.snapshot, original.snapshot);
+    assert_eq!(
+        pending.expected_external_snapshot,
+        original.expected_external_snapshot
+    );
+    assert_eq!(pending.feedback, original.feedback);
+    assert_eq!(pending.layout_sync_text, original.layout_sync_text);
+    assert_eq!(engine.context_token, token);
+    assert_eq!(engine.context_word_scope, scope);
+    assert!(!observer::current(&engine, &source));
+    let carried = engine
+        .client_context
+        .native_document_binding
+        .clone()
+        .unwrap();
+    assert!(observer::current(&engine, &carried));
+    assert!(carried.hint_geometry.is_none());
+    assert!(observer::needs_subscription(&engine, &carried));
+    assert!(!engine.native_document_is_current());
+    assert_eq!(
+        engine.text_target_edit_route(4),
+        TextTargetEditRoute::Unsupported
+    );
+    assert!(engine.native_observation_failed("native_selection_present"));
+    assert!(!engine.native_document_is_current());
+    assert!(engine.install_native_document(Observation {
+        binding: carried.for_result(&engine),
+        snapshot: original.expected_external_snapshot.unwrap(),
+    }));
+    engine.observe_native_document_postcondition();
+    assert!(engine
+        .committed_tail
+        .pending_visible_postcondition
+        .is_none());
+    assert!(!engine.context_word_is_known());
+}
+
+#[test]
+fn fragment_native_mode_rejects_stale_owners_receipts_and_unrelated_mode_changes() {
+    for changed in [
+        "focus",
+        "lease",
+        "layout",
+        "mode",
+        "epoch",
+        "field",
+        "bus",
+        "peer",
+        "window",
+        "active_path",
+        "token",
+        "intent",
+        "sealed",
+        "privacy",
+        "atomic",
+        "option_off",
+        "autoswitch_off",
+        "gnome",
+        "receipt",
+        "snapshot",
+        "expected",
+        "selection",
+        "source_epoch",
+        "no_pending",
+        "no_native",
+        "ordinary_mode_owner",
+    ] {
+        let mut engine = fragment_native_result();
+        let ticket = engine
+            .capture_fragment_native_mode_continuation(true)
+            .unwrap()
+            .unwrap();
+        match changed {
+            "focus" => engine.client_context.focus_serial += 1,
+            "lease" => engine.client_context.runtime_owner_lease_identity += 1,
+            "layout" => engine.layout_gesture.layout_generation += 1,
+            "mode" => engine.layout_gesture.layout_is_ru = true,
+            "epoch" => engine.committed_tail.epoch += 1,
+            "field" => {
+                engine
+                    .client_context
+                    .native_document_binding
+                    .as_mut()
+                    .unwrap()
+                    .identity
+                    .field = "/other".try_into().unwrap()
+            }
+            "bus" => engine
+                .client_context
+                .native_document_binding
+                .as_mut()
+                .unwrap()
+                .identity
+                .bus
+                .push('x'),
+            "peer" => engine
+                .client_context
+                .native_document_binding
+                .as_mut()
+                .unwrap()
+                .identity
+                .owner
+                .push('x'),
+            "window" => engine
+                .client_context
+                .native_document_binding
+                .as_mut()
+                .unwrap()
+                .identity
+                .desktop
+                .identity
+                .push('x'),
+            "active_path" => engine.shared.lock().unwrap().active_path = None,
+            "token" => engine.context_token = None,
+            "intent" => {
+                assert!(engine
+                    .context_admission
+                    .as_ref()
+                    .unwrap()
+                    .revoke_layout_intent(&ticket.intent));
+            }
+            "sealed" => engine.context_handoff_sealed = true,
+            "privacy" => {
+                engine.client_context.content_purpose = super::super::IBUS_INPUT_PURPOSE_PASSWORD
+            }
+            "atomic" => engine.atomic.active = true,
+            "option_off" => engine.config.fragment_layout_autoflip = false,
+            "autoswitch_off" => engine.config.auto_switch_layout = false,
+            "gnome" => engine.config.layout_backend = "gnome".into(),
+            "receipt" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .dispatched_at += Duration::from_millis(1)
+            }
+            "snapshot" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .snapshot
+                    .visible_tail_hash ^= 1
+            }
+            "expected" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .expected_external_snapshot =
+                    Some(SurroundingTextSnapshot::new("иной".into(), 4, 4))
+            }
+            "selection" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .expected_external_snapshot
+                    .as_mut()
+                    .unwrap()
+                    .anchor_pos = 0
+            }
+            "source_epoch" => {
+                engine
+                    .client_context
+                    .native_document_binding
+                    .as_mut()
+                    .unwrap()
+                    .tail_epoch += 1
+            }
+            "no_pending" => engine.committed_tail.pending_visible_postcondition = None,
+            "no_native" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .native_document = None
+            }
+            "ordinary_mode_owner" => {
+                engine
+                    .committed_tail
+                    .pending_visible_postcondition
+                    .as_mut()
+                    .unwrap()
+                    .layout_sync_text = Some("прив".into())
+            }
+            _ => unreachable!(),
+        }
+        let epoch = engine.committed_tail.epoch;
+        let generation = engine.layout_gesture.layout_generation;
+        assert!(
+            engine
+                .finish_fragment_native_mode_continuation(ticket)
+                .is_err(),
+            "{changed}"
+        );
+        assert_eq!(engine.committed_tail.epoch, epoch, "{changed}");
+        assert_eq!(
+            engine.layout_gesture.layout_generation, generation,
+            "{changed}"
+        );
+    }
+}
+
+#[test]
+fn fragment_native_mode_capture_cannot_replace_an_absent_or_inexact_result() {
+    let (engine, _) = observed_native_engine();
+    assert!(engine
+        .capture_fragment_native_mode_continuation(true)
+        .unwrap()
+        .is_none());
+    let mut engine = fragment_native_result();
+    engine
+        .committed_tail
+        .pending_visible_postcondition
+        .as_mut()
+        .unwrap()
+        .expected_external_snapshot = None;
+    assert!(engine
+        .capture_fragment_native_mode_continuation(true)
+        .is_err());
+}
+
+#[test]
+fn fragment_native_mode_carry_does_not_confirm_a_mismatch_or_extend_expiry() {
+    for expired in [false, true] {
+        let mut engine = fragment_native_result();
+        engine
+            .committed_tail
+            .pending_visible_postcondition
+            .as_mut()
+            .unwrap()
+            .dispatched_at -= if expired {
+            Duration::from_secs(2)
+        } else {
+            Duration::from_millis(600)
+        };
+        let ticket = engine
+            .capture_fragment_native_mode_continuation(true)
+            .unwrap()
+            .unwrap();
+        engine
+            .finish_fragment_native_mode_continuation(ticket)
+            .unwrap();
+        let binding = engine
+            .client_context
+            .native_document_binding
+            .clone()
+            .unwrap();
+        assert!(engine.install_native_document(Observation {
+            binding,
+            snapshot: SurroundingTextSnapshot::new(
+                if expired { "прив" } else { "иной" }.into(),
+                4,
+                4
+            ),
+        }));
+        assert_eq!(
+            engine.observe_visible_postcondition(),
+            if expired {
+                crate::window_interaction::OutcomeProof::ExistingPostconditionCensored
+            } else {
+                crate::window_interaction::OutcomeProof::ExistingPostconditionMismatch
+            }
+        );
+    }
+}
+
+pub(super) fn observed_native_engine_with_completeness(
     completeness: crate::context_admission::WordCompleteness,
 ) -> (LayIbusEngine, NativeDocumentBinding) {
     observed_native_engine_with_component(completeness, "lay-ime-us")

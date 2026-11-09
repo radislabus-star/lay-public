@@ -50,6 +50,9 @@ pub enum ImeManualToggleOutcome {
     NotHandled,
     DelegateDaemon,
     DelegateExactImeTail,
+    /// Same exact-tail executor; the open fragment word needs identity-bound
+    /// decoder completion while retaining its selected engine.
+    DelegateExactImeTailWordMode,
     /// The same physical gesture is waiting for its focused client's exact
     /// surrounding-text receipt. No text or layout action has completed.
     AwaitingExactSnapshot,
@@ -70,6 +73,7 @@ impl ImeManualToggleOutcome {
             Self::NotHandled
             | Self::DelegateDaemon
             | Self::DelegateExactImeTail
+            | Self::DelegateExactImeTailWordMode
             | Self::AwaitingExactSnapshot => None,
             Self::Handled {
                 target_layout_is_ru,
@@ -82,6 +86,7 @@ impl ImeManualToggleOutcome {
             Self::NotHandled
             | Self::DelegateDaemon
             | Self::DelegateExactImeTail
+            | Self::DelegateExactImeTailWordMode
             | Self::AwaitingExactSnapshot => (false, false),
             Self::Handled {
                 target_layout_is_ru,
@@ -97,6 +102,7 @@ impl ImeManualToggleOutcome {
             } => (1, target_layout_is_ru),
             Self::DelegateDaemon => (2, false),
             Self::DelegateExactImeTail => (3, false),
+            Self::DelegateExactImeTailWordMode => (5, false),
             Self::AwaitingExactSnapshot => (4, false),
         }
     }
@@ -108,6 +114,7 @@ impl ImeManualToggleOutcome {
             (2, false) => Ok(Self::DelegateDaemon),
             (3, false) => Ok(Self::DelegateExactImeTail),
             (4, false) => Ok(Self::AwaitingExactSnapshot),
+            (5, false) => Ok(Self::DelegateExactImeTailWordMode),
             _ => Err("invalid ManualToggleV3 outcome"),
         }
     }
@@ -318,6 +325,10 @@ mod tests {
             (false, false)
         );
         assert_eq!(
+            ImeManualToggleOutcome::DelegateExactImeTailWordMode.as_legacy_v2(),
+            (false, false)
+        );
+        assert_eq!(
             ImeManualToggleOutcome::AwaitingExactSnapshot.as_legacy_v2(),
             (false, false)
         );
@@ -333,6 +344,7 @@ mod tests {
             ImeManualToggleOutcome::NotHandled,
             ImeManualToggleOutcome::DelegateDaemon,
             ImeManualToggleOutcome::DelegateExactImeTail,
+            ImeManualToggleOutcome::DelegateExactImeTailWordMode,
             ImeManualToggleOutcome::AwaitingExactSnapshot,
             ImeManualToggleOutcome::handled(false),
             ImeManualToggleOutcome::handled(true),
@@ -345,6 +357,7 @@ mod tests {
         assert!(ImeManualToggleOutcome::from_v3(2, true).is_err());
         assert!(ImeManualToggleOutcome::from_v3(3, true).is_err());
         assert!(ImeManualToggleOutcome::from_v3(4, true).is_err());
-        assert!(ImeManualToggleOutcome::from_v3(5, false).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(5, true).is_err());
+        assert!(ImeManualToggleOutcome::from_v3(6, false).is_err());
     }
 }

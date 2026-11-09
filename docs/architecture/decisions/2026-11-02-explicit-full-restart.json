@@ -1,0 +1,28 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "explicit-full-restart-2026-11-02",
+  "status": "ACCEPTED_USER_REQUEST",
+  "owner": "docs/development/full-restart-2026-11-02.md",
+  "reason": "The user accepted the restored local 1.0.123 runtime and explicitly requested the same complete restart from a menu button.",
+  "decision": "Add an explicit full-restart command to the existing runtime controller and both tray menus. Run its lifecycle worker in a separate transient user unit. Reuse the current desktop selection, layout restoration and managed IME helpers. Ordinary restart, channel changes and daemon-only controls retain their existing semantics.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "scripts/lay-runtime-control.sh",
+    "scripts/lay-full-restart.sh",
+    "scripts/lay-kde-tray.py",
+    "extension/lay@radislabus-star.github.io/lay-impl.js",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "guard_change": "None. Existing quick-restart source and behavioral guards remain required. The separate explicit worker is allowed to restart IBus only when the IME backend is selected.",
+  "verification_evidence": "docs/development/full-restart-2026-11-02.md",
+  "not_tested": "No new browser matrix or native KDE acceptance is implied by lifecycle/source checks. The user's local 1.0.123 acceptance remains separate.",
+  "verification": "Source and live/diagnostic receipts, exact measured scope and remaining gates are recorded in docs/development/full-restart-2026-11-02.md."
+}

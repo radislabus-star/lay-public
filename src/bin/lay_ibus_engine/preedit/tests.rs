@@ -3559,6 +3559,103 @@ fn late_worker_retires_the_display_exactly_once() {
 }
 
 #[test]
+fn late_worker_preserves_typed_preedit_and_caret_without_committing_or_granting_authority() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+
+    for backend in ["kde", "gnome"] {
+        for legacy in [false, true] {
+            for (typed, cursor) in [("hello", 5), ("прив", 2)] {
+                let mut engine = LayIbusEngine::new(
+                    "/test/late-owned".into(),
+                    Arc::new(Mutex::new(Default::default())),
+                    false,
+                    true,
+                    LayConfig {
+                        layout_backend: backend.into(),
+                        ..Default::default()
+                    },
+                );
+                engine.composition.buffer = typed.into();
+                engine.composition.cursor = cursor;
+                engine.composition.legacy_word_preedit_active = true;
+                engine.composition.preedit_visible = true;
+                engine.composition.preedit_suffix = "later".into();
+                engine.composition.preedit_candidates = vec!["later".into()];
+                engine.composition.preedit_display_only_pending = true;
+                engine.committed_tail.buffer = format!("prior {typed}");
+                let epoch = engine.committed_tail.epoch;
+                let scope = engine.context_word_scope;
+                let generation = engine.layout_gesture.layout_generation;
+                let mut observed = TestEngineOutput {
+                    legacy_transport: legacy,
+                    ..Default::default()
+                };
+                assert!(zbus::block_on(
+                    engine.retire_late_precognition(&mut EngineOutput::test(&mut observed))
+                )
+                .unwrap());
+                assert_eq!(
+                    observed.preedit_updates,
+                    [(typed.into(), cursor as u32, true, PREEDIT_MODE_CLEAR)],
+                    "{backend}/{legacy}"
+                );
+                assert!(engine.composition.preedit_visible);
+                assert_eq!(engine.composition.buffer, typed);
+                assert_eq!(engine.composition.cursor, cursor);
+                assert_eq!(engine.committed_tail.buffer, format!("prior {typed}"));
+                assert_eq!(engine.committed_tail.epoch, epoch);
+                assert_eq!(engine.context_word_scope, scope);
+                assert!(engine.context_token.is_none());
+                assert_eq!(engine.layout_gesture.layout_generation, generation);
+                assert!(engine.composition.preedit_candidates.is_empty());
+                assert!(engine.composition.preedit_suffix.is_empty());
+                assert!(!engine.composition.preedit_display_only_pending);
+                assert!(observed.committed_texts.is_empty());
+                assert!(observed.surrounding_deletes.is_empty());
+                assert!(observed.input_mode_updates.is_empty());
+            }
+        }
+    }
+}
+
+#[test]
+fn late_worker_owned_publication_failure_keeps_text_and_never_replays_an_edit() {
+    use crate::output::{EngineOutput, TestEngineOutput};
+    let mut engine = LayIbusEngine::new(
+        "/test/late-owned-failure".into(),
+        Arc::new(Mutex::new(Default::default())),
+        false,
+        true,
+        LayConfig::default(),
+    );
+    engine.composition.buffer = "hello".into();
+    engine.composition.cursor = 5;
+    engine.committed_tail.buffer = "hello".into();
+    engine.composition.preedit_visible = true;
+    engine.composition.preedit_display_only_pending = true;
+    let epoch = engine.committed_tail.epoch;
+    let mut observed = TestEngineOutput {
+        fail_preedit_publication: true,
+        ..Default::default()
+    };
+    assert!(zbus::block_on(
+        engine.retire_late_precognition(&mut EngineOutput::test(&mut observed))
+    )
+    .is_err());
+    assert_eq!(engine.composition.buffer, "hello");
+    assert_eq!(engine.committed_tail.buffer, "hello");
+    assert_eq!(engine.committed_tail.epoch, epoch);
+    let count = observed.effects.len();
+    assert!(!zbus::block_on(
+        engine.retire_late_precognition(&mut EngineOutput::test(&mut observed))
+    )
+    .unwrap());
+    assert_eq!(observed.effects.len(), count);
+    assert!(observed.committed_texts.is_empty());
+    assert!(observed.surrounding_deletes.is_empty());
+}
+
+#[test]
 fn visible_precognition_starts_with_first_letter_and_remains_ready() {
     let mut engine = LayIbusEngine::new(
         "/test".to_string(),

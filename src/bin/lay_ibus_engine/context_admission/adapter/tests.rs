@@ -349,7 +349,7 @@ fn td121_false_global_mode_refuses_authority_and_literal_delivery_is_exact() {
         )
         .await;
         assert!(observed.unwrap());
-        let handled = handled.unwrap();
+        let handled = handled.unwrap().handled();
         assert_exact_literal_delivery(&connection, &mut peer, TARGET_PATH, handled, "a").await;
         assert_eq!(engine.committed_tail.buffer, if handled { "a" } else { "" });
         assert!(engine.composition.buffer.is_empty());
@@ -791,7 +791,7 @@ fn td121_unverified_bootstrap_failure_is_bounded_and_fresh_literal_has_no_transf
         )
         .await;
         assert!(observed.unwrap());
-        let handled = handled.unwrap();
+        let handled = handled.unwrap().handled();
         assert_exact_literal_delivery(
             &fresh.connection,
             &mut fresh.peer,
@@ -1636,7 +1636,7 @@ fn td121_legacy_letters_and_space_settle_exactly_before_held_get_release() {
                     )
                     .await;
                     assert!(observed.unwrap());
-                    let handled = handled.unwrap();
+                    let handled = handled.unwrap().handled();
                     let expected = char::from_u32(keyval).unwrap().to_string();
                     assert_exact_literal_delivery(
                         &harness.connection,
@@ -2890,7 +2890,7 @@ fn td121_pending_acquisition_owner_loss_rejects_late_completion_and_fresh_litera
         )
         .await;
         assert!(observed.unwrap());
-        let handled = handled.unwrap();
+        let handled = handled.unwrap().handled();
         assert_exact_literal_delivery(
             &fresh.connection,
             &mut fresh.peer,

@@ -455,6 +455,7 @@ async fn run_received_legacy_key(
     bounded(engine.process_key_event(key.header(), emitter, keyval, keycode, state))
         .await
         .expect("legacy ProcessKeyEvent result")
+        .handled()
 }
 
 async fn legacy_key(
@@ -480,6 +481,7 @@ async fn legacy_key(
     bounded(engine.process_key_event(key.header(), emitter, keyval, keycode, state))
         .await
         .expect("legacy ProcessKeyEvent result")
+        .handled()
 }
 
 pub(super) fn assert_input_mode_update(

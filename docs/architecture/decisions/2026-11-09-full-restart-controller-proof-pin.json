@@ -1,0 +1,23 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "id": "full-restart-controller-proof-pin-2026-11-09",
+  "status": "ACCEPTED_USER_REQUEST",
+  "owner": "docs/development/full-restart-2026-11-02.md",
+  "reason": "All34Python modules exposed one stale whole-file SHA after already authorized additive full-restart command. User explicitly requests all necessary fixes and full testing without further permission questions.",
+  "decision": "Advance only the whole-file proof pin for the existing authorized full-restart dispatcher. Retain strict equality for entire current runtime controller. Add reverse-projection proof: remove precisely new helper/import gate, dispatch and usage token; remaining bytes must equal the accepted v1.0.123 whole-file SHA. Controlled legacy-dispatch mutation must fail the original pin. No runtime source or route modification.",
+  "invariants": [
+    "C01",
+    "C05",
+    "C08",
+    "C10"
+  ],
+  "protected_paths": [
+    "tests/test_release_live_install_controller.py"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "guard_change": "Explicit proof receipt update, not a waiver: current whole-file SHA066d844db60ff54818e0ca3c4daeb830b28e84587df14a04c6a405bc6ae62192 plus preexisting whole-file SHA92843cc812c6fe2203a770aa50df36a46c98a36f6c20bc0ae751f14fde4ae1e4. Existing lifecycle assertions unchanged; new projection strengthens preservation proof.",
+  "verification_evidence": "docs/development/full-restart-2026-11-02.md",
+  "verification": "RED remote letter-fragment-full-gate-v44-20261109/all-python-unit-tests.log:478tests,1stale-SHAfailure,12skips. Focused new positive/controlled-negative and complete Python/Rust/release gates required.",
+  "not_tested": "No runtime installation or native acceptance follows from a source proof pin. Existing native receipts remain separate."
+}

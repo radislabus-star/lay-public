@@ -1,9 +1,13 @@
 //! Optional RU/EN layout evidence from overlapping byte fragments.
 //!
 //! This module has no field, IME, config, training or output authority. Its result
-//! is consumed by existing automatic candidate preparation and common admission.
+//! feeds the separate letter trigger and common decision/admission contracts.
 
+mod letter;
 mod model;
+pub use letter::{on_letter, FragmentLayoutRequest};
+#[cfg(test)]
+mod letter_tests;
 #[cfg(test)]
 mod tests;
 

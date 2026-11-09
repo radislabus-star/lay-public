@@ -5,8 +5,8 @@ export const CONFIG_PATH = GLib.getenv('LAY_CONFIG_PATH')
     || GLib.get_home_dir() + '/.config/lay/config.json';
 export const RECENT_ACTIONS_PATH = GLib.get_home_dir() + '/.local/share/lay/recent_actions.jsonl';
 export const PROJECT_DIR = GLib.get_home_dir() + '/projects/lay';
-export const APP_VERSION = '1.0.117';
-export const APP_RELEASE_DATE = '2026-10-30';
+export const APP_VERSION = '1.0.124';
+export const APP_RELEASE_DATE = '2026-11-02';
 export const APP_URL = 'https://github.com/radislabus-star/lay-public';
 export const APP_ICON_NAME = 'input-keyboard-symbolic';
 export const PANEL_ICON_SIZE = 14;
@@ -210,7 +210,12 @@ function runtimeControl(action, argument = null) {
     const args = [GLib.get_home_dir() + '/.local/bin/lay-runtime-control', action];
     if (argument)
         args.push(argument);
-    try { Gio.Subprocess.new(args, Gio.SubprocessFlags.NONE); } catch(e) {}
+    try { return Gio.Subprocess.new(args, Gio.SubprocessFlags.NONE); } catch(e) {}
+    return null;
+}
+
+export function fullRestart() {
+    return runtimeControl('full-restart');
 }
 
 export function restartDaemon() {

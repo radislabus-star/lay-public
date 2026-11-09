@@ -22,6 +22,8 @@ mod display;
 mod engine;
 #[path = "lay_ibus_engine/factory.rs"]
 mod factory;
+#[path = "lay_ibus_engine/fragment_layout.rs"]
+mod fragment_layout;
 #[path = "lay_ibus_engine/gnome/mod.rs"]
 mod gnome;
 #[path = "lay_ibus_engine/hint_view.rs"]

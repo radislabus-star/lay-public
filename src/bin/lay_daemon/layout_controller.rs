@@ -7,6 +7,8 @@ use super::{active_layout_backend, active_text_backend, layout_kde, layout_niri,
 
 #[path = "layout_controller/backend_hint.rs"]
 mod backend_hint;
+#[path = "layout_controller/fragment_word_mode.rs"]
+mod fragment_word_mode;
 #[path = "layout_controller/gnome_dbus.rs"]
 mod gnome_dbus;
 #[path = "layout_controller/ibus_bridge.rs"]
@@ -34,6 +36,7 @@ pub(super) use verify::verify_current_layout;
 pub(super) enum ExactReplayLayoutHandoff {
     Gnome { initial_layout_is_ru: bool },
     Kde(kde_exact::Handoff),
+    FragmentWordMode(fragment_word_mode::Handoff),
 }
 
 pub(super) fn prepare_kde_layout_once_for_manual_replay(
@@ -50,6 +53,7 @@ impl ExactReplayLayoutHandoff {
                 initial_layout_is_ru,
             } => activate_gnome_layout_once(*initial_layout_is_ru),
             Self::Kde(handoff) => handoff.restore_once(),
+            Self::FragmentWordMode(handoff) => handoff.restore_once(),
         };
         if let Err(error) = result {
             log(&format!(
@@ -68,6 +72,15 @@ pub(super) fn capture_ime_delegated_tail_lease(
 
 pub(super) fn capture_ime_committed_tail_replay() -> Result<ImeCommittedTailReplay, String> {
     ime_bridge::capture_committed_tail_replay()
+}
+
+pub(super) fn activate_fragment_word_mode_for_exact_replay(
+    lease: &ImeDelegatedTailLease,
+    target_is_ru: bool,
+    window: &str,
+) -> Result<ExactReplayLayoutHandoff, String> {
+    fragment_word_mode::activate(lease, target_is_ru, window)
+        .map(ExactReplayLayoutHandoff::FragmentWordMode)
 }
 
 pub(super) fn wait_for_ime_committed_tail_settlement(

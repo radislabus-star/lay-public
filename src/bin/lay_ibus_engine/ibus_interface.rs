@@ -7,6 +7,7 @@ use zbus::zvariant::Value;
 
 use super::atomic::{AtomicCapability, AtomicEnvelope, AtomicPriorReceipt};
 use super::engine::{LayIbusEngine, SurroundingTextSnapshot};
+use super::fragment_layout::reply::KeyEventReply;
 use super::output::{AtomicProposal, EngineOutput};
 use super::protocol::{
     has_command_modifier, is_accept_completion_with_space_key, is_key_press, is_shift_key,
@@ -27,10 +28,22 @@ impl LayIbusEngine {
         keyval: u32,
         keycode: u32,
         state: u32,
-    ) -> fdo::Result<bool> {
+    ) -> fdo::Result<KeyEventReply> {
         let mut output = EngineOutput::legacy(&emitter);
-        WindowInteraction::process_legacy_key(self, &header, &mut output, keyval, keycode, state)
-            .await
+        let fragment_release = self.capture_fragment_letter_release(keyval, keycode, state);
+        let handled = WindowInteraction::process_legacy_key(
+            self,
+            &header,
+            &mut output,
+            keyval,
+            keycode,
+            state,
+        )
+        .await?;
+        if let Some(release) = fragment_release {
+            return Ok(Box::pin(self.fragment_letter_key_reply(&emitter, release, handled)).await);
+        }
+        Ok(KeyEventReply::Plain(handled))
     }
 
     #[zbus(name = "ProcessKeyEventAtomicV1")]

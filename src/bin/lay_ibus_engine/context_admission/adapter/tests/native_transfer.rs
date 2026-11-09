@@ -47,7 +47,7 @@ async fn establish_known_source(
     ))
     .await;
     assert!(observed.unwrap());
-    assert!(!handled.unwrap());
+    assert!(!handled.unwrap().handled());
     super::word_scope::expect_legacy_native_space(
         harness,
         &source,
@@ -107,7 +107,8 @@ async fn type_active_known_word(
         let handled = source
             .process_key_event(key.header(), emitter, u32::from(character), keycode, 0)
             .await
-            .unwrap();
+            .unwrap()
+            .handled();
         let expected = character.to_string();
         assert_exact_literal_delivery(
             &harness.connection,
@@ -574,7 +575,7 @@ fn td125_cursor_zero_cancellation_cannot_resettle_known_start_authority() {
         ))
         .await;
         assert!(observed.unwrap());
-        assert!(!handled.unwrap());
+        assert!(!handled.unwrap().handled());
         for expected in ["UpdatePreeditText", "HidePreeditText"] {
             let signal = bounded(next_peer_message(&mut harness.peer)).await;
             assert_eq!(signal.header().member().unwrap().as_str(), expected);
@@ -701,7 +702,8 @@ fn td121_e0_e1_e2_delayed_handlers_install_only_latest_and_reject_late_e1_frame(
         let handled = e1
             .process_key_event(tab.header(), emitter, KEY_TAB, 15, 0)
             .await
-            .unwrap();
+            .unwrap()
+            .handled();
         assert!(!handled);
         assert!(literal_effects(&harness.connection, &mut harness.peer, E1)
             .await
@@ -838,7 +840,8 @@ async fn controlled_material_transfer_case(native_context: &str, serial: u32) {
     let tab_handled = source
         .process_key_event(tab.header(), emitter, KEY_TAB, 15, 0)
         .await
-        .unwrap();
+        .unwrap()
+        .handled();
     assert!(!tab_handled);
     assert!(
         literal_effects(&harness.connection, &mut harness.peer, SOURCE_PATH)
@@ -859,7 +862,8 @@ async fn controlled_material_transfer_case(native_context: &str, serial: u32) {
     let space_handled = source
         .process_key_event(space.header(), emitter, KEY_SPACE, 57, 0)
         .await
-        .unwrap();
+        .unwrap()
+        .handled();
     assert_exact_literal_delivery(
         &harness.connection,
         &mut harness.peer,

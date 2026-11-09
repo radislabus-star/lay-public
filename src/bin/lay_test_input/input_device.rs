@@ -2,6 +2,25 @@ use evdev::{uinput::VirtualDevice, AttributeSet, EventType, InputEvent, KeyCode}
 use std::thread::sleep;
 use std::time::Duration;
 
+fn emit_key(dev: &mut VirtualDevice, code: u16, value: i32) -> std::io::Result<()> {
+    if value == 1 {
+        if let Err(error) = super::desktop_probe::require_test_client_focus() {
+            // Key-up must remain possible after focus is lost, including when
+            // a held modifier was pressed in the original test-owned field.
+            for modifier in [
+                KeyCode::KEY_LEFTSHIFT,
+                KeyCode::KEY_LEFTCTRL,
+                KeyCode::KEY_LEFTALT,
+                KeyCode::KEY_RIGHTALT,
+            ] {
+                let _ = dev.emit(&[InputEvent::new(EventType::KEY.0, modifier.code(), 0)]);
+            }
+            return Err(error);
+        }
+    }
+    dev.emit(&[InputEvent::new(EventType::KEY.0, code, value)])
+}
+
 pub(crate) fn build_virtual_keyboard() -> std::io::Result<VirtualDevice> {
     let mut keys = AttributeSet::new();
     let all = [
@@ -76,9 +95,9 @@ pub(crate) fn build_virtual_keyboard() -> std::io::Result<VirtualDevice> {
 }
 
 pub(crate) fn tap(dev: &mut VirtualDevice, code: u16) -> std::io::Result<()> {
-    dev.emit(&[InputEvent::new(EventType::KEY.0, code, 1)])?;
+    emit_key(dev, code, 1)?;
     sleep(Duration::from_millis(10));
-    dev.emit(&[InputEvent::new(EventType::KEY.0, code, 0)])?;
+    emit_key(dev, code, 0)?;
     Ok(())
 }
 
@@ -144,9 +163,9 @@ pub(crate) fn tap_with_hold(
     code: u16,
     hold_ms: u64,
 ) -> std::io::Result<()> {
-    dev.emit(&[InputEvent::new(EventType::KEY.0, code, 1)])?;
+    emit_key(dev, code, 1)?;
     sleep(Duration::from_millis(hold_ms));
-    dev.emit(&[InputEvent::new(EventType::KEY.0, code, 0)])?;
+    emit_key(dev, code, 0)?;
     Ok(())
 }
 
@@ -155,11 +174,11 @@ pub(crate) fn hold_tap(
     hold_code: u16,
     tap_code: u16,
 ) -> std::io::Result<()> {
-    dev.emit(&[InputEvent::new(EventType::KEY.0, hold_code, 1)])?;
+    emit_key(dev, hold_code, 1)?;
     sleep(Duration::from_millis(20));
     tap(dev, tap_code)?;
     sleep(Duration::from_millis(20));
-    dev.emit(&[InputEvent::new(EventType::KEY.0, hold_code, 0)])?;
+    emit_key(dev, hold_code, 0)?;
     Ok(())
 }
 
@@ -169,14 +188,14 @@ pub(crate) fn hold_two_tap(
     second_hold_code: u16,
     tap_code: u16,
 ) -> std::io::Result<()> {
-    dev.emit(&[InputEvent::new(EventType::KEY.0, first_hold_code, 1)])?;
+    emit_key(dev, first_hold_code, 1)?;
     sleep(Duration::from_millis(10));
-    dev.emit(&[InputEvent::new(EventType::KEY.0, second_hold_code, 1)])?;
+    emit_key(dev, second_hold_code, 1)?;
     sleep(Duration::from_millis(10));
     tap(dev, tap_code)?;
     sleep(Duration::from_millis(10));
-    dev.emit(&[InputEvent::new(EventType::KEY.0, second_hold_code, 0)])?;
+    emit_key(dev, second_hold_code, 0)?;
     sleep(Duration::from_millis(10));
-    dev.emit(&[InputEvent::new(EventType::KEY.0, first_hold_code, 0)])?;
+    emit_key(dev, first_hold_code, 0)?;
     Ok(())
 }

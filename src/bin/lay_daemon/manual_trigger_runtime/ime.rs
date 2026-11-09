@@ -76,6 +76,19 @@ fn run_ime_manual_toggle() -> ImeManualToggleDispatch {
                 }
             }
         }
+        Ok(ImeManualToggleOutcome::DelegateExactImeTailWordMode) => {
+            match capture_ime_committed_tail_replay() {
+                Ok(replay) => {
+                    ImeManualToggleDispatch::ReplayExactImeTail(replay.with_fragment_word_mode())
+                }
+                Err(error) => {
+                    log(&format!(
+                        "fragment exact-tail capture refused before replay: {error}"
+                    ));
+                    ImeManualToggleDispatch::RejectExactImeTailCapture
+                }
+            }
+        }
         Ok(ImeManualToggleOutcome::NotHandled) => {
             log("· physical manual trigger blocked by focused IME owner");
             ImeManualToggleDispatch::Complete(None)

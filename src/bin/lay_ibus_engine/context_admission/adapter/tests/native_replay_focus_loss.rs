@@ -325,7 +325,8 @@ fn native_replay_refocus_cycles_do_not_swallow_backspace_after_owner_revocation(
             let handled = engine
                 .process_key_event(message.header(), emitter, KEY_BACKSPACE, 14, 0)
                 .await
-                .unwrap();
+                .unwrap()
+                .handled();
             if invalid_binding.is_none() {
                 assert!(
                 !handled,

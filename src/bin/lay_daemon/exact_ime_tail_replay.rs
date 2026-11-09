@@ -106,6 +106,7 @@ pub(super) fn execute_exact_ime_tail_replay(
     input_isolated: bool,
     replay: ImeCommittedTailReplay,
 ) -> Option<bool> {
+    let fragment_word_mode = replay.needs_fragment_word_mode();
     let (plan, lease) = replay.into_parts();
     let may_retain = lease.allows_personalization();
     let source_path = lease.expected_source_path().to_string();
@@ -154,11 +155,20 @@ pub(super) fn execute_exact_ime_tail_replay(
         return None;
     }
 
-    let layout_handoff = match activate_target_layout_once_for_exact_replay(
-        lease.initial_layout_is_ru(),
-        plan.target_layout_is_ru,
-        &focused_window,
-    ) {
+    let layout_result = if fragment_word_mode {
+        super::activate_fragment_word_mode_for_exact_replay(
+            &lease,
+            plan.target_layout_is_ru,
+            &focused_window,
+        )
+    } else {
+        activate_target_layout_once_for_exact_replay(
+            lease.initial_layout_is_ru(),
+            plan.target_layout_is_ru,
+            &focused_window,
+        )
+    };
+    let layout_handoff = match layout_result {
         Ok(handoff) => handoff,
         Err(error) => {
             log_replay_error(

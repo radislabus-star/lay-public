@@ -1,3 +1,777 @@
+## CURRENT 2026-11-09T22:44:13.500615+00:00: final source restored exactly B65; all bounded comparisons completed; prepare124 commit/CI/publication
+
+SOLO/noHarness/noagents/noquestions; continue through publication, no final yet. No commit/push/tag/release/permanentinstall so far. B76 coordinate retention REJECTED_NATIVE_PLACEMENT, exact2sources+scope reverted to prechange74, CURRENTSOURCE48→46 protected paths restored. Local source1338 SHA6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5 matches frozen65/full64; allten63/65 binaries byte-equal. Do not reintroduce epoch-retention: current local word does NOT prove postpaint coordinates. Native77 disproved it despite GREEN7 source tests. Final source has NO hint_view.rs or kde/terminal.rs diff.
+
+Full source gate64PASS still applies EXACTcurrentcode:3650correctness/package+11performance,467Python headless+12SKIP with10GUI/2real optins separate,28ownedXvfb,allteninstallables,lints,architecture,actualMSRV1.88. Nativefragment65 COMPLETE216P0F24structuralB/240; GNOME35 independentnativePASS; rawTabproducerFAIL retained. Ordinarybrowser66 COMPLETE329P59F52B/440 (FF143/51/26;Chrome186/8/26), NEVER wholePASS. Matched69 COMPLETE33 observations collapse persistent failures by first shared class, original123 reproduces rank and rapid refusals. Stronger strictplacement80 COMPLETE12:Kittyfirst/secondFAIL124ON/124OFF/original123OFF;Konsolefirst/secondPASSallthree. Nonzero rect oldpositives canoverlaptypedletters, notplacementacceptance. Renderer71onlyprivatefixed; retainedraws67/72/77/80. PrimarySpace79/80 COMPLETE6 actualphysicalGTKcases:both errorclasses retainidenticaltypo124ON/OFF/original123OFF; functionalcorrectiontargetsFAILallthree, equalityonly. Original123sources/mode/installedhashes restoredbothhosts; no permanentinstall. Raw78mis-profiled/producerFAIL preserved too.
+
+Releaseacceptance is BOUNDED OPTIONAL LETTER FEATURE, not allLaydefects fixed. docs/development/release-1.0.124-letter-fragments.md +evidence/release-1.0.124-verification.json contain all rawfailed verdicts/limits; C/release-1.0.124-notes-draft.md finalized honestly. Scope/canon local79PASS. Next cleanmetadata/source review then COMMIT/PUSHfeature origin+public/publicmainfastforward (privateorigin/main47fe54e6 preserve), waitpublicCI, annotated124tagboth, stablepublicrelease, check actualinstalled menu updater --checkbothhosts. No forceprimaryinstall; userupdatesmenu. Recordpublicationreceipt/docs-onlyfollowup afteractualsuccess, reuse functionalsourceproof. Completion soundONLYtrueend; memorycitationlastMEMORY.md5193-5197 rollout01a115ea-09f2-7003-81c5-26037edf60eb.
+
+## CURRENT 2026-11-09T22:25:30.632926+00:00: B65 fragment240 complete; ordinary440 FAIL baseline-comparison33; bounded KDE hint experiment GREEN7/build76 RUNNING
+
+SOLO/noagents/noHarness/noquestions; user authorizes necessary fixes and all tests through release124, keep working. No commit/push/tag/release/permanent installation. Original123 restored both hosts. Remote current job is freeze-kde-hint-v76.py, exec session43281, log C/freeze-kde-hint-v76.launch.log; do not edit R source while its source closure assertion/build is running.
+
+Full source/release64 PASS and GNOME35 native belong to B63/B65 exact same ten binaries. Final LOCAL=REMOTE B65 source is1338 SHA6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5. Earlier f0a differs ONLY generated architecture_graph_receipt graph binding; eight actual final generated files fetched in milestone70, allten runtime bytes63/65 independently equal. B65 native fragments COMPLETE Chrome108P0F12structuralB/120 and Firefox108P0F12structuralB/120, each two manual returns+nextglyph.
+
+NEW completed ordinary native66: Chrome186PASS8FAIL26structuralB/220; Firefox143PASS51FAIL26structuralB/220; total329/59/52/440. Never claim whole Lay passes. Matched native69 COMPLETE33 observations:124 ON,124 OFF,exact originally installed123 OFF for each first shared failure class. Rank/correction and rapid-five refusals reproduce on original123; raw failures all retained. Single KittyhintON initiallyFAIL whileOFF124/123PASS, but these nonzero-rect verdicts are NOT placement acceptance (see screenshot).
+
+Private terminal fixture bug: redraw full text containing leading newline from current cursor moved y18px per letter. Actor71 fixes only child renderer with fixed screen origin; all keyboard/oracle functions initially unchanged. Native72 firstKittyhint/Tab passes all3matched modes, fullKitty8P2F(tab-second no geometry,Space etbya),Konsole9P1F(Space). Space ranks no_apply on original123 too. Saved C/kitty-hint-before-epoch-v72.png visually proves old positive nonzero-rect hint actually overlaps typed letters (onlyp+erity visible), so strengthen placement oracle; do not relabel old whole tests PASS.
+
+BOUNDED NEW SOURCE EXPERIMENT, after map/ADR/preflight: src/bin/lay_ibus_engine/hint_view.rs stores read-only tail_epoch in cursor geometry and can retain it only via KDE policy; src/bin/lay_ibus_engine/kde/terminal.rs checksKDE+existingnative qualification+sameepoch+existing currentfocus/activation coordinate. Existing clear/wake retained for stale/missing geometry, GNOME, other paths. No text writer, Space, detector or output permission changes. Activeprotectedpaths48 (prior46+these2), decision docs/architecture/decisions/2026-11-10-kde-current-terminal-hint-coordinate.json; owner docs/development/kde-terminal-hint-coordinate-map-2026-11-10.md. Exactprechange backup C/kde-hint-prechange-v74 contains both2sources+oldscope. RED74 fresh geometry present then erased None vs expectedSome, actualRusttestFAIL (no compileerror). GREEN75 seven hint_view testsPASS including oldepoch/focus/missingadmission/GNOME negatives, no text/tail/scope/mode mutations. Current source catalog/empty ledger still B65! Refresh atomically ONLY if native short proof supports this change. Do NOT publish unverified candidate.
+
+Next: await freeze76 (allten compiler-artifact retained diagnostics). Prepared private actor/control76 single and full: input functions exactly71, stronger tab_case asserts hinted x follows actual rawPTY text from empty-paragraph client coordinate anchor; first+second expectedx=anchorx+len(lastline)*cellwidth. Anchor captured BEFORE prefix. Same1.2s hintdeadline/target/input. Short current76 Kitty/ Konsole first+second hint/Tab +screenshots FIRST. Need new coordinator (none yet). If this one bounded experiment fails actual placement, reject/revert only these2sources+scope from prechange74 and preserve raw evidence; do not wander into delivery. FrozenB65 source/fullgates remain safe fallback. If passes, add nonterminal/no-edit-permission negative controls as needed, refreshmanifest+emptyledger together, graphupdate, fullrelease/lint/MSRV gates, freeze exactfinal10, fresh supported fragment240 and primary35 plus terminalplacement acceptance; old B65native cannot certify changed bytes.
+
+C=/home/ubu/.cache/lay/development/letter-fragment-request-20261102, R=/home/e/projects/lay-development-runner/letter-fragment-release-20261102. W actual checkout samebranch/HEAD4fae57d5. Separate 20CPU24Ghigh28Gmax1Gswap dedicated remote lease, RUST_TEST_THREADS1; primary human-safe-run1536M tasks192, no bypass. Never run forbidden oldliveconfig cleanup. Native runs use normal installed models +private10learningpaths, exact PID/SHA and original123 restoration. No forced primary install; updater only. Source and final evidence draft docs/development/release-1.0.124-letter-fragments.md +evidence/release-1.0.124-verification.json currently PENDING, must update/reconcile after this source experiment.
+
+Publication still pending: source/scoped evidence, precise known limits, commit and pushoriginfeature/publicfeature + publicmain fastforward (privateorigin/main47fe54e6 must NOT overwrite), publicCI, sameannotated124tag bothremotes, stablepublicreleaseAPI, actualinstalled menu updaters --check on both hosts must discover124. Finalsound ONLYtrueend via codex-turn-done-sound, nofinalnow. Memorycitation final last MEMORY.md5193-5197/rollout01a115ea-09f2-7003-81c5-26037edf60eb.
+
+## CURRENT 2026-11-09T21:42:44+00:00: source release gate64 PASS; frozen65 fragment240 complete; GNOME35 actual PASS
+
+SOLO, no Harness, no questions, continue through tested release124. Same accepted checkout/branch/HEAD; no commit/push/tag/release/permanent installation yet. Original123 restored both hosts. All ten installables frozen in remote letter-fragment-final-candidate-v65-20261110; actual IME/daemon/input bytes identical to primary-tested63. Final source1338 SHA6ae8643762400ebc7c4fc3cc37f0abd73fb153ebd3ceeab71b1eb77663d5b3b5; post-gate64 graph binding metadata fetched in milestone70. All ten63/65 runtime binaries are independently byte-identical. Earlier f0a hash belongs to63 before final graph-binding refresh.
+
+Full source/release gate64 PASS: 479 Python headless467PASS12SKIP; 3650 Rust correctness/package and11performance PASS; default/research strict lints, architecture, all10release installables, ownedXvfb28, public installer/binary contracts, actual Rust1.88 both all-target checks PASS. GUI10 separately PASS(v52 raw whole run remains FAIL7 private-bus fixture guard failures); two real system opt-ins PASS(v60). No waived tests. Source inventory3706, known_failures empty; historical dead-code baselines117/129 unchanged.
+
+KDE final-native65 COMPLETE: Chrome108PASS0FAIL12structuralBLOCKED/120; Firefox108PASS0FAIL12structuralBLOCKED/120. Four letter cases(first/second,both directions) x10fields x3modes; each two manual returns and physical next-glyph verification. Exact24 structural blocks are URL/email second-word whitespace sanitization, never PASS. Actual frozen bytes, normal installed models with private mutable learning, field and runtime restoration verified. Receipt /home/e/projects/lay-development-runner/letter-fragment-final-native-v65-20261110/RESULT.json SUPPORTED_PASS_WITH_STRUCTURAL_BLOCKS.
+
+Primary GNOME current63/65 bytes: native eight-model32/32 and Tab-first/second + held-Shift3/3 independently verified,20+6 negative oracle controls. Raw Tab actor legacy assertion FAIL retained separately. Latency32 samples second physical Shift PRESS to first native replacement: median12.535-14.545ms, p95 89.818-91.827ms, max95.780-97.796ms; syscall timing bounds, GTK/GNOME scope only. Original123 installed files/InputMode/source/engine restored.
+
+Next running: native-terminals-v67.py (ordinary DesktopExec Kitty/Konsole10each, same65 bytes; preserve failures including old fast Space prefetch). Then prepared native-standard-v66.py standard220each Chrome/Firefox with intermediate rapid-five oracle. Serialize KDE native suites. No further production changes planned absent a newly proved causal defect. Final source review, precise release notes/evidence, commit feature branch to origin/public + public main fastforward, CI, annotated124 tag/stable public release, installed updater --check must discover124. Do not overwrite private origin/main or force primary installation. Completion sound only at actual end.
+
+## CURRENT 2026-11-09T21:18:02.742379+00:00: last-native-readiness fix GREEN25+actual Chrome1PASS;fullgate64RUNNING;GNOME63RUNNING
+
+SOLO/noagents/noHarness/noquestions/noendearly. No commit/push/tag/release/permanentinstall. Latestuserenvironment date2026-11-10 Istanbul; sourceexperimentsdates09/10byrunID. ActiveWsamebranchHEAD4fae57d5;installed/restoredoriginal123bothhosts. C=/home/ubu/.cache/lay/development/letter-fragment-request-20261102,R=/home/e/projects/lay-development-runner/letter-fragment-release-20261102.
+
+v59FULLB58bothcomplete:Firefox108PASS0FAIL12exactstructuralB;Chrome107PASS1FAIL12exactstructuralB,0NOTTESTeach; originals/config/maps/modelsrestoredPASS. Rootletter-fragment-final-native-v59-20261109. Table215P1F24B/240. Oneoldremainingprivateiframe-richEN-RUsecondrawghbdtn:postreplysourceReadsshowactualcursor==tailchars11,known/frame/exact_managed/nativecurrent truebutwholeprefixreadinessfalse. Existingnative_managed_readout_is_currentalreadyhandlesoldseparatornormalization. Readsource beforeedits; no newwait/owner/queue/adapterchange.
+
+NewADR2026-11-09-fragment-current-native-word-readiness.json isactiveDecision,same46protectedpaths. Owningmapfragment-letter-reply-order-map-2026-11-09.md. ProductionONLYfragment_layout.rs: onePRIVATEread-readinesspredicate current_external_snapshot_agrees_with_owned_tail OR(KDE && context_word_is_known && existingnative_managed_readout_is_current). UseSAMEpredicateinitialpendingcheckandboundedrefreshloopbreak. Comment:observationonly;fullframe/request-source/current-authority/DecisionCore/verifier/singlewriterstillmandatory. UnknownStartfallbackunchanged;GNOME/terminalnewbranchnegative. NOeditobservation.rs/authority.rs/tailmemory.rs orotheradapters. Groundedcurrentwordproofnotpermission.
+
+Newtestreply/tests.rsonefunction(+1catalog),exactcurrentNativeBinding/fullFrame/nativeRange/freshpostCommitreceipt positivebeforeassert. Initialredv61fixturelackedcapbits—NOTcausalproof;reusedadjacentset_client_capabilities(41). MEANINGFULREDv61bASCIIsameprefixpasses/NBSPtoSpacefailsONLYoldpendingguardafterallpreconditionspass. GREENC62newnegativeownerNoneincorrectlyremovedcachedownerwhilecanonicaltokenstillvalid;correctednegativeusingexistingrevoke_context_wordatendAFTERotherclones,notruntimeguardchange. GREENv62b25/25PASS inclselection/wrongword/stalereceipt/focus/lease/epoch/layout/token/scope/binding/privacy/sealed/GNOMEandactualcanonicalrevocation. ExistingUnknownStartrefusalteststillPASS. No testloosened.
+
+DIAGNOSTICv63realprivateiframe-richEN-RUsecondsourcecompiled/currentfieldPASS1/1,2manualreturns+physicaldecoder,beforeSpace;latency22.464msONESAMPLE;119otherfullsuitecasesNOTTESTEDbythisdiagnostic. SourceRTorig123/config/maps/modelsrestorationPASS. Rootletter-fragment-word-ready-v63-20261110/RESULT.json. v63preflight:write-manifest3706,updateUNCHANGEDemptyknownledgerbindingBEFOREgraph,graphfresh,all10compiler-artifactbinsfrozen. Ledgernow56ce40aba2b3263311c42377ab669e83c3f63605ca82f7b5ab212353578386c9;failures[]/count0/oldacceptedobservationSHAsamefe3f... . No newwaiver. CandidateB63 remoteletter-fragment-final-candidate-v63-20261110;source1338SHAf0a1010f57a6bfbb1e0c9aa697788ea0b1205c6dc9a5736e6c6fa343ffd8ae10;IMEa69654a20d29496d0cd08de35fbc8486c195c2a302b4276e4264cffcf52e132f;daemon57aaf3.../input3676...unchanged. LocalC/primary-candidate-v63SHAverified3bins;8generatedfilesfetchedW.
+
+ShortactorcoverageBUGfixedPRIVATEtoolonlynative-letter-selected-actor-v62.py: --onlyexpected_rows1takesprecedenceover--fragment-suite120;explicitcoverage_scope/unselected_full_suite_rows119. ALLfunctionAST(input/setup/target/observer/actions)IDENTICALtor24v49. Full120actorUNCHANGED. Oldv54/v54bcoverageFAILreceiptsretained. Shortcontroller native-letter-short-control-v63.pysameprivate-model/restorationlifecycle.
+
+RUNNING sourcefullgate64:exec66530,teeC/full-gate-v64.launch.log,remoteletter-fragment-full-gate-v64-20261110/RESULT.json. Graph+all479PythonPASS(12skip),nowcanonicalfullRust3650+11perf/currentstrictlints/allbins/CLI/ngram,then28ownedXvfb(UNIQUEv64namespace),publicissue/install-binarysmokes,realRust1.88toolchainandbothall-targetdefault/researchchecks,targetbudget. RootTargetwas4.514GB/12GBbeforejob,MSRVcacheabsentsoampledisk. AllheavyremoteD20CPU28GBonelease. DON'Tlaunchremoteotherheavy/nativeuntil66530finishes. InitialprematurelaunchscriptnotyetrsyncedFAILwasorchestrationonly,separatelogretained;waitedcopy24598completedthenactual64running. DoNOTrepeatthiserror:sequentialdependenciesMUSTwaitexecsessionbeforelaunch.
+
+RUNNING primaryGNOME35onB63:exec46422,guard1536M/tasks192/actualhumanjobcgroup;C/gnome-proof-v63.py +teeC/gnome-proof-v63.launch.log. SameinputTSVs/fixedsampler(v58cDROPunusedVisibleTailV3RPC;twoREQUIREDstandardGNOMEpropertiesstillbothqueried); unchangedverify-gnome-native.py+20negativecontrols,32intermediatephysical/uinput/nativeWord/decoder/modes. Thenfirst+secondTab/heldShift3andprivateindependentverify-gnome-tab-v63.py+6controls. ALLsupportfilenamesv63/v63b;actualB63foldernotB58. EarlierB58GNOME35PASSretained;v58rawfirstsampler63/64globalFAILdueUNUSEDshiftreleaseTailRPCretained,strictcheckerNEVERweakened. Primaryoriginal123mustrestore;no permanentprimaryinstall.
+
+PreparedANDuploaded C/native-final-v65.py+freeze-current-v65.py:REQUIREsourcegate64PASS;freezeall10B65compilerartifacts,compare3runtimeSHAswithB63;thenUNCHANGEDfullfragment120Chrome+Firefox(r24actorv49controller),strict108P0F12exactstructuralBeach onlypass;keeprawBLOCKED. Rootfinal-native-v65-20261110,modesnormal/private/fullscreen10fields4lettercasesincl2manualreturns+decoder. IfB65bits==B63reuseGNOME63physicalproof;ifdifferentneednewbyteproof. Sourcegraphcompiledreceiptmayaffectbytes;neverguessequality. DO NOTrebuildduringinstall.
+
+Afterfeature65supported0FAIL:standard220eachbrowserusingpreparednative-standard-control-v60.py(r49sameactorremovefragment-suiteonly,expected220);no fullcurrentstandardyet(oldv26notcurrent). NeedordinaryDesktopExecKitty/Konsole10knownlinecases/oldfastSpaceON-OFFnormalpositive; C/native-terminal-features-control-v47.pytakesLAY_NATIVE_TERMINALkitty/konsole andcandidateenv,clonelearningprivate,actualDesktopExecnoinjectedIMEflags. Forbiddenolderkde-terminal-native-mode-native-v1.pyMUTATESLIVEconfig,neverrun. PositivesKnowStartonlyphysicalEnterAFTERsourceselection;CtrlAresetunknownbydesignandmustnotweakenC03. OldKonsole37ms/charSpaceetbyaFAILbothONandOFFprefetch_not_ready,notfeaturegate;preserveoldfailedproofandnormal100mspositiveifneeded. No literalruntimewordexceptions. Existingv47Konsole9P1oldfastF,Kittyextendednotrun;v44both2Plegacy5open+5closed.
+
+Systemoptinsv60BOTHrealcgroupdescendant/L11transientownedunitPASS;installedfilesunchanged. GUIv52actual10casesPASSunderownedXvfb/privatebus;whole479mixed470P7resourcefixtureF2skipretained(contextprivatebusunavailableactualmanager),notproductPASS. Combinedwithfreshheadless467P12skip+2realoptins givesall479uniquePythoncovered. No GUI/guard/controllercodechangedbylatestRusthelper;reusecurrentevidence. Sourcev57bwholePASS3649+11perf+10bin+28xvfb,old0waivers;notnewsource64substitute.
+
+Beforepublishneedcurrentfullgates+actualsupportednative/ABI/version/artifact/source review,accuratereleasenotes/source124alreadyset. UserprimaryupdatesONLYmenu,neverforceinstallprimary. Actualinstalledupdater--checkv123baselinePASS;AFTERpublicationmustdiscover124usinginstalledupdaterandverifyGitHubtag/sourceversion. StablelatestAPIlastverified123published2026-10-31T12:23:35Z;remoteactivebranchHEAD4fae57d5same. Don'treviveoldPR/issue/Harnesswork. FinalsoundONLYtrulyfinished:codex-turn-done-sound withWcwd;mandatorymemorycitationLASTMEMORY.md5193-5197 rollout01a115ea-09f2-7003-81c5-26037edf60eb.
+
+## CURRENT 2026-11-09T20:53:56.892516+00:00: final sourcev57bPASS;B58 frozen;GNOME35PASS;Chrome107/1/12;Firefoxv59RUNNING
+
+SOLO/noHarness/noagents/noquestions, persist currentfragmenttask throughrelease. NOcommit/push/release/permanentinstall. Original123restoredprimaryandChromeKDE. exec53712 isRUNNINGfullnativev59 (Chromecomplete/restoredPASS,Firefoxrunning). Sourcegatev57 failedONLYledger binding AFTERall3649Rusttests0fail/sourceunchanged. Fixedonly known_failures.json manifest_sha256 old74a79...→77208b2744251a19191d9b69d3ca12c897382da422d4b8e82648a3e23e072e9a,failures[]/count0/oldobservationSHApreserved; owningADRexplicitlyrecordsstrictmetadata repair. Actualcanonicalgatev57bFULLPASS733.6s incl3649Rust+11perf,strictlints,all10installablebuilds,28ownedXvfb,budgets. Prefix479Python(467P12skip) reusedfromv57 becausecodeunchanged. Systemoptinsv60 BOTHrealcgroup/L11transientservicePASS; installedfilesunchanged. Togetherwith10actualGUIcasesv52,unique479Pythoncoveragecomplete; retainv52mixed7resourcefixtureFAILunderprivatebus separately. No rule/testweakened.
+
+B58 remote final-candidate-v58-20261109/RESULT.json andlocalC/primary-candidate-v58. Current source1338files SHAa458e5798d7982014589912e10f3196bb093048358c7d720c3e9ea8366daa131,HEAD4fae57d5. IME43cc12403e4a62196c605fcbee71aee6f01e8a40c739e83dc82813f4d5751dd0; daemon57aaf3e090d7fcfc67b1b777fdc366ca47aae5bbbaf95faf79d107dfba337e8f; input3676bd0d8761426951071d26c08b67e8ba231c047a4e753526954eaef4866258. All8generatedfilesfetchedW. B58stilldiagnosticuntilmandatorynative.
+
+PrimaryGNOME B58: firstv58raw4cases allOK/restored123 butindependentoracleFAILbecause63/64samplerrows,1unusedVisibleTailV3diagnosticdeadlineerror; missingpair7shift-release(RUclosed),all32requireddecoder-probemoderowspresent. DoNOTclearrawerror orweakenverifier. Sampler-onlyv58c REMOVEDunusedVisibleTailV3query; stilltwoactualstandardGNOMEproperties,unchangedphysicalTSVs/verifier/assertions. NamesALLnewv58c exceptBremainprimary-candidate-v58. Rerun4casesrawPASS,unchangedstrictverify-gnome-native.py+20negativecontrolsPASS32/32. EvidenceC/gnome-gtk-eight-model-v58c-20261109/NATIVE_ACCEPTANCE.json. Actualfirst+secondTab/heldShift B58rawPASSandindependentC/verify-gnome-tab-v58.pyPASS3/3+6negativecontrols; evidencegnome-gtk-tab-shift-v58b-20261109/NATIVE_ACCEPTANCE.json. Tabpress→visibleboundsfirst2.417–4.503ms,second0.949–2.959ms. Bothmodel/originalsource/engine/filesrestorationPASS. SourceRustunchangedbyallmeasurementfixes. CompletionbeepNOTdone.
+
+NEW fullChromeB58v59 result107PASS/1FAIL/12structuralBLOCKED/0NOTTEST/120. Exactold3failidentitiesallPASSnow. OnlyFAILrow78 PRIVATE iframe-rich letter-en-ru-second(auto expectedтестпривет remainsтестghbdtn). Complete/detailedtrace +RESTORATIONPASS rootR/../letter-fragment-final-native-v59-20261109/chrome. Firefoxsame120RUNNINGunderexec53712; don'tmutateRsource/startotherremoteheavyuntilitfinishes/restores. LatestcompleteFFold108/0/12;currenttable215/1/24of240mixedgenerationsclearlylabelled.
+
+ResidualCAUSEnewdistinguishingproof: row78haspost-reply ibus_letter_fragment_reply atEpoch1220and1222;boththen native_observation_pending. Intermediate5requestcorrectlycancelledby6thinput(reply_scope_changed). BUT lastfreshread actual_cursor11/localtailchars11,native_binding_current=true,native_document_current=true,known=true,exact_managed=true,frame_available=true,manual_word_current=true;stillpending. This isNOTjustoneletterbehindanymore. Featurepre-readguardand2-readlooprequire current_external_snapshot_agrees_with_owned_tail (entireoldprefix). Currentexactnativewordcanalreadybevalidwhileolderseparatornormalized. Actualsourceexistingkde/native_document.rs::native_managed_readout_is_current explicitlydocumentsChromeolderseparatornormalization; delegatesexact_managed_surrounding_word_is_current (window_interaction/observation.rs1072:ManagedCommit,noprivacy/atomic/composition,latestpostcommitreceiptmatchingfocus/epoch/revision,liveToken,exactsuffix+bothwordboundaries). FreshreadbeforewordchangecurrentNativeRangeexecutable. NeedreuseEXISTINGwordproofONLYasfeatureREADINESS,stillrequireKnownStart/fullcaptureFrame/unchangedverifier/samewriter. Don'tclaimliteralNBSPcausefullyobserved:localprefixcodepointsnotlogged;wholeprefixmismatchwithvalidcurrentwordproved. No morewaiting/newqueue/owner/adapterrewrite. Likelyminimalhelperinfragment_layout.rs: current_external_snapshot_agrees... OR (backendKDE && context_word_is_known && native_managed_readout_is_current);useSAMEhelperinpendingpredicateandrefreshloopbreak. Existingcapture_fragment_layout_frame fallbackforUnknownStartstillunchangedwhole-tail;mandatorycompleteFrame/route+input_frame_authority+WordLayoutOrigin::Fragmentexistingwriterremain. GNOMEnewbranchmuststayexcluded. FirstTDDactualKnownNativeword+olderseparatorreflow REDcurrentpendingguard/GREENreuse; negativesstale/unknown/selection/wrongword/focus/epoch/nativebinding/privacy. BEFOREeditmap/ADRexactscope(existingfragmentparentandtests,nosharedtailmemoryedit),thenfocusedsource/shortfailedrowfirst,fullcurrentgates/native. C09currentlyscope46alreadyallowsfragmentparent. Newtest+1 requireswrite-manifestANDemptyledgerbindingbeforearchitecture/fullgate;don'trepeatv57metadataoversight.
+
+Sourceplaces:fragment_layout.rs224captureFrame,~300pendinghelper,2-readloop. window_interaction/observation.rs1072exact_managed...1110suffix+boundaries;native_document.rs529native_managed_readout...535,read_with_owned_append_resamplingexisting80msdeadlineifneeded(butresidualiswholeprefixveto). authority.rs988text_target_edit_route factsnative_range_supported=native_document_is_current. native_document/tests.rs2451separatorreflowexistinggeneralfixture. ReuseexistingtestfixtureLayIbusEngine::fragment_reply_test_fixture() (testonly) fromnative_document;ManagedCommitSnapshotFloortypecanfindactualsetterbeforeguessing. Don'tinventedpathsearches:rg--filesFIRST! Severalguessfield_edit*,key_event.rs/client_context.rs causedtoolrgexit2, NOTproducterrors.
+
+AnalyzercommanddirFAILEDINVALID_EVIDENCE becausecustomcontrollercaselayoutnotrecognized; existinganalyzer load_bundle supportsFILEwithrows+expected_rows. Correctnextcommand scripts/lay-diagnose.py report <chrome/case/result.json> --output <newCdir>;readwarnings. Priorwrongdiroutputanalysis-v59-chromenotcreatedprobably,usenewname. No assertionchanged.
+
+PreparedbutUNRUN: C/native-standard-control-v60.py(r24actorunchanged,removefragment-suite,argmanifest220);C/native-final-v59.py currentusesB58noextrafreezeassertv57bPASS;C/system-optins-v60.pydone. Needcurrentstandard220bothbrowserstomeetprotocol,ordinaryDesktopExecKitty/Konsoleknownline10controls+positiveSpaceON/OFFnormalvsold37msfastdebt;MSRV1.88actualtoolchaininstalledoptionalCIcompat. Don'treviveoldissues/dependencytasks. Neednewactualinstalledupdater--checkdiscovers124AFTERpublication,noforcedprimaryinstall. FinalsoundONLYtruecompletion, memorycitationlast.
+
+## CURRENT 2026-11-09T20:12:20.664032+00:00: reply ordering implemented;1179IMEPASS;full final gatev57RUNNING
+
+SOLO/noagents/noHarness/noquestions. Active W lay-dependency-updates-20261027,HEAD4fae57d5; branch codex/browser-matrix-repair-20261027. Stable/public+restoredinstalled123bothhosts. Source124unpublished. No commit/push/release/permanentinstallation. Latestuser authorizes allnecessarychanges/alltests, persist throughrelease.
+
+Current complete fragment matrices remainFirefox108P0F12structuralB/120 (v44+email6v51);Chrome105P3F12structuralB/120(v51). TwoChromeautomaticsecondword failures provednative snapshot oneletterbehind untilkeyreply. ThirdnormaltextEN-RUsecondmanualmissnotyetexplained. Map/ADR:fragment-letter-reply-order-map-2026-11-09.md and2026-11-09-fragment-native-letter-reply-order.json; scope46paths. Newfragment_layout/reply.rs usespinnedzbusResponseDispatchNotifierbool(no wirechange), SAMEengine viaObjectServer,get_mut,metadataonlyowner/focus/lease/tailEpoch/text/mode/token stamps; refactoredoldguards/proposal/apply reused, existingfreshnativeproof+samewordflip/verifier/writer. DefersONLYpositive managedKDE native pending, neverSpace/OFF/GNOME/terminal/ownedpreedit. Newreply5sourcecontrols incl20invalidations,exactboolwire/privatebus/staledocument. ExistingfiveRustdirectcalltestfiles unwrapbool viahandled,behaviorassertionspreserved; existingnativefixture reusedbytest-onlyhelper in2alreadyauthorizedfiles. No protectedsourceguard weakened.
+
+Sourcev53c24/24PASS;v53d1179/1179IMEPASS(159.84stest,176.08stotal). v54 frozen10installables DIAGNOSTIC_ONLY_NOT_PROMOTABLE; includesOLDgraphv53 compiledreceipt,sofinalgraphbytesneednewfreeze. v54bactualnormaliframe-rich RU-ENsecondselectedrowPASS44.08ms,2manualreturns/physicaldecoder PASS;controllerwholeFAIL ONLYbecauseactorwith --fragment-suite+--only requires120rowsbutselected1. RawFAIL+restorationPASS retained. Donot rerun/alterthisactor'scoverage assertion; run unchangedFULL120 instead. v54firstattemptselectednamebad->0rows, retained. Newsource/reply jobset scriptsunder C.
+
+RUNNING remote fullgate /home/e/projects/lay-development-runner/letter-fragment-full-gate-v57-20261109/RESULT.json; localC/full-gate-v57.launch.log,exec10688. Strictdefault/researchlintsPASS71.6s, manifestrefreshPASS(new3705tests expected),finalarchitecturegraphPASS55.2s,all479PythonPASS(with12skip), nowfull-release-gate includesallRust+11perf andallreleasebins. ThenownedXvfb28andbudget. DoNOToverlapremoteheavy/nativeleases. One dedicated20CPU28GBguard. No newsourceeditsplannedwhilegate.
+
+Aftergate: runprepared C/freeze-current-v58.py underguard -> remote final-candidate-v58; actual all10compiler-artifact copies, fullgatev57pointer, diagnosticstatusuntilnative. Fetch8generatedgraph/testmanifestfilesfromR intoW, andB58RESULT+IME/daemon/input toC/primary-candidate-v58; verifySHA. Currentarchreceiptcontainsgraph+sourcefingerprints compiledintobins, soearlierB54native iscausalshort proofONLY; finalnative usesB58bytes. GNOMEwrappers/spec alreadyprepared withALLv42namessafelyreplacedv58:C/gnome-eight-model-v58.py,gnome-tab-shift-model-v58b.py,gnome-eight-model-v58-verify-spec.json. Sameinputwrapperv38readsactualbinaryfromenvB58(nohardcodedoldbytes). Primaryhuman-safe-runcheck1536M/tasks192PASS(12GiBavailable); neverpermanentprimaryinstall. Usecorrectv58support filenames; don'trepeatoldv43overwritebug. VerifyGNOME32actualuinput/native/modeswithverify-gnome-native.py+20negativecontrols; Tab/heldShift3separateactual proofneeded.
+
+Nextremote fullfragment120each: UNCHANGED native-letter-fields-control-v49.py (r24actor) withenvLAY_NATIVE_BROWSER,LAY_NATIVE_RUNnewdir,LAY_NATIVE_CASE=standard,LAY_NATIVE_CANDIDATE_RECEIPT=B58/RESULT.json,LAY_NATIVE_DIAGNOSTIC_DAEMON=1. RawactorBLOCKEDfor12URL/email2ndword cases isstructural; don'ttreataswholePASS. Require108supportedPASS,0FAIL,exact12structuralB; keepobservationalblocksunknown. Thenappropriate standard220each/termKittyandKonsoleknownline/Tab/heldShift/fastOFF-ONmatches asnecessary. Existingstandardv26historical,notcurrent. Allcontrollersprivate models/configs andrestoreoriginal123; neverforbiddenoldterminalwrapperthatwritesliveconfig.
+
+GUIv52ownedXvfb/privatebus ran479,470P7F2SKIP; all7Fresource-guardfixtures(realuser-managerqueriedfromprivatebus). EXACT10GUIcases allPASS(6InputAccessUi,1KdeInputAccessUi,1KdeDaemonMenu,1KdeCheckboxMenu,1SettingsUi). RawwholeFAILretained. NoGUIcodechanged; canreusecomponentproofwithout rerunning. Preparedv55GUIscriptnotrun/unneeded. Remaining2optins realcgroup andL11systemd; runafterheavyjobunderrealbus, ownprivateleases, noinheritACTIVEforcgroup subjectguard. Tests.createONLYowntransientunits/sleepprocesses,nolivesocket/modeltouch. Fullsourcegateheadless12skipneedscombineGUI10+2optins foruniqueall479coverage.
+
+Terminalproofv47/v48: correctKnownStartrequiresphysicalEnterAFTERsourceselection; CtrlAresetleavesUnknownStart deliberatelyguarded. Konsole9P1oldfastSpaceF, ordinaryKitty/Konsole2Peach legacy5open+5closed; Kittyextendednotrun. Old37ms/charSpace etbya→tebyaFAILwithFragmentONandOFF(prefetch_not_ready), preserveoldshareddebt/no literalwordfix. Fixednormal100mspositiveON/OFFcontrolmayclarify. OldFirefoxrapidprefix2P1F notfixed; rejectedKWinreusev43exactlyreverted3files. Donotretrythatoptimization.
+
+Publishonlyaftermandatorygates/nativecomplete. FreshGitHubAPIlatestv123published2026-10-31T12:23:35Z,targetmain; remoteactivebranchHEADsame4fae57d5. Actualprimaryinstalled updater --checkv123baselinePASS; mustverifydiscovers124AFTERpublication, noforcedprimaryinstall. Noissuecomments/dependencyworkactive. FinalsoundONLYtrueendusingcodex-turn-done-sound; mandatorymemorycitationMEMORY.md5193-5197 rollout01a115ea-09f2-7003-81c5-26037edf60eb.
+
+## CURRENT 2026-11-09T19:15:00.275180+00:00: mandatory full gatePASS; final frozen v50; Chrome120running
+
+SOLO/noHarness/noagents, no questions; authorized all necessary fixes/all tests through release. No commit/push/tag/release/permanent Rust installation. Original123 restored both hosts between owned tests. R=/home/e/projects/lay-development-runner/letter-fragment-release-20261102, C=/home/ubu/.cache/lay/development/letter-fragment-request-20261102. Continue current fragment task, not historicalwave/PRwork.
+
+FULL GATEPASS remote letter-fragment-full-gate-v45-20261109/RESULT.json (907s). All34Python modules479total=467PASS/12SKIP; all mandatory Rust correctness/package3644 +performance11 PASS, strictdefault/researchlintsPASS, format/architecture/node/python/shell/CLI/ngram/allreleasebinsPASS; actual10installablebinary buildPASS. Actual current isolatedXvfb resource guards28/28PASS remote letter-fragment-owned-xvfb-v45-20261109. BudgetbeforeafterPASS. No runtime install.
+
+AllPython initially foundstale whole-file SHA for alreadyauthorized fullRestart dispatcher. FIX only tests/test_release_live_install_controller.py: advance full-file pin92843...→066d84... and ADD reverse-projection test stripping only new helper/import gate/dispatch/usage token to recover exact acceptedv123bytes. Controlled old-dispatch mutation mustfail oldpin. NewADR2026-11-09-full-restart-controller-proof-pin.json; ownerfull-restart doc updated. BothfocusedcontrolsPASS, fullPython479PASSwith12skips. No runtimecodechange. Activefieldscope narrowed to39paths/tooling/approvedword-mode-delegation ADR after rejectedv43focusreuse; scopePASS.
+
+FINALFROZEN candidate remote letter-fragment-final-candidate-v50-20261109/RESULT.json, BUILT_FROZEN_NOT_INSTALLED,1336files source580ea4e28534ead2f2ce29d8f546bb40863ca7307a949f02e36bf005e60f854f, HEAD4fae57d5 working124. All10installables resolvedfromfresh actualCargo compiler-artifact JSON; records/files retained. Actual IME/daemon/input bytes EXACTv44/v42: IMEa49d131e9d9bef72fc4f2aab5ea3b46e64a323a02d2ed262baffcb63bd5e577a; daemon57aaf3e090d7fcfc67b1b777fdc366ca47aae5bbbaf95faf79d107dfba337e8f; input3676bd0d8761426951071d26c08b67e8ba231c047a4e753526954eaef4866258. Thus v42GNOME32/32,Tab3 and freshv42closed8 andKDEshort10 are same executable bytes, not newbuildassumption. Need fetchfinal8generated files +RESULT localandverifycurrent sourceclosure beforecommit. Canonicalmanifest3700=3608correctness+36package+11perf+45ignored, failures[]; no waiver.
+
+Firefox native fragment120 COMPLETED raw105PASS/0FAIL/15BLOCKED, remote letter-fragment-field-modes-firefox-v44-20261109. CORRECTIONtoolderhead:3email observationblocks were NORMAL en-ru-first, PRIVATE ru-en-first, FULLSCREEN ru-en-first (NOT en-ru inallmodes). EveryautomaticbeforeSpace passed normal+private emailcases; mismatchoccurred during laternative/manual snapshots.12otherblocks URL/emailsecondword whitespace sanitation.
+
+Read-only PRIVATE observerr24(fileC/native-letter-fields-actor-v49.py) nowbracketsDOM-native-DOM whenDOMcaretAPIabsent. Target retries OBSERVATION ONLY within ORIGINAL2s, retains100mssettle; pendingafterfirsttargetmatch/stabledivergence/wrongfocus/selection/caret/lateread reject; never input/editretry. Focusguard requiresactualwindow+DOMfocused+nativefocused without unnecessarytextreadmidmutation. Diagnosticper-letter snapshot mayrecordinflight; finaltargetstillrequiresconsistentnative. ASTequal10physicalinput/setuphelpers vsr23. MeaningfulRED oldobserverrejectstornread and9negativecontrols; firstprivate test run had2classificationerrors, fixed acceptance deadlinecheck position (no tests weakened). All9PASS remote oracle-and-chrome-v51/oracle-controls.log. Retainfailed v50raw.
+
+Actual email6(recheckbothdirections firstwordx3modes) PASS6/6 withsamefrozenv50runtime/modelprivatefixture; remote letter-fragment-oracle-and-chrome-v51-20261109/email-six/RESULT.json. Covers3previousBLOCKED identities plus3oldPASS, no doublecount. AggregateFirefox newfragmentmatrix108PASS/0FAIL/12structuralBLOCKED/0NOTTEST of120 using raw105+3closedblocks. Originalraw105/15 notrewritten. Oldstandard220matrix NEVERreplacedbyfragment120.
+
+RUNNINGNOW Chrome120 via private samecontroller/r24/finalv50 frozen, root remote letter-fragment-oracle-and-chrome-v51-20261109/chrome120; parentreceipt rootRESULT; exec58436; C/native-oracle-and-chrome-v51.launch.log. Same remote20CPU/28Gguard sharedlease. No otherheavy/native job untilrestorationPASS. Checkcase/result partialcounts and parentROOT forfinalstatus. Header nameofcontroller remains defaultletter... butactualscope120anddenomchecked. Standard controller sourceC/native-letter-fields-control-v49.py.
+
+Pending: Chrome120, graphical12Python skipclosure via OWNEDXvfb+PRIVATEdbus (allUItests mockcommands/privateconfig; neveronlive71). Explicit realcgroup test and transientL11unit test canbe run separately afterheavyjob; ResourceGuardTests.test_real_cgroup_kills_new_session_descendant itself launchesrealguard, so doNOT run with inherited LAY_RESOURCE_GUARD_ACTIVE=1 (wouldskiptestsubject guard). Itusesownprivatelease andtiny sleep; no rejectionbypass. L11test createsonlyunique lay-l11-release-... testbashunit, cleanupownunit. Names/flagsin tests/test_resource_guard.py and tests/test_release_live_install_controller.py. RerunGUImodulesunder xvfb-run dbus-run-session with child-only GTK_IM_MODULE/QT_IM_MODULE compose, IBUS_ADDRESSunset, privateseparatebus; no primaryGNOMEchanges.
+
+Terminal native: bothordinaryDesktopExecKDEKitty/Konsole legacy2/2(5open+5closed+physicalnextglyph each), no injectedIMEflags, allprivatecandidate/modeldata, originalsrestored. Konsole extendedv479PASS/1oldfastSpaceFAIL:4letterfirst/second/direction+2manualreturns/decodereach,2Tab,heldShift(singleXTestsource),2legacyfive. Positivefirstword ONLY physicalEnterestablishesKnownStart; customCtrlAresetunknown is deliberate guardednegative, MUSTNOT weaken C03/promoteUnknownStart. Plaininitialr44/v45 failures retained; no sourcefixclaimed. Source existingnegative fragment_unknown_literal_without_current_native_word_stays_read_only. FinalKonsoleimage C/terminal-visual-v47/konsole-hint-first.png visuallyPASS typedпровnormal, ghostеритьwhiteblackaligned. Kittyextendedfeaturesnotrun.
+
+Measured old shared fastSpace defect: Konsole physical37ms/char etbya→tebya didNOTcorrect withFragmentONorOFF, bothprefetch_not_ready, Spacecallback~3.5ms. Receipt remote letter-fragment-terminal-space-on-off-v48-20261109. Notnewfeatureblocking, notfixed, no literal runtimeexception or extra correctionwait. Could test predefinedNORMAL100ms/char alongsidefastbaseline for positiveON/OFF L2Space and addpositiveSpace-layout control beforepublishing. Preserveoldfail, doNOT replaceit with slowPASS. NeedfeatureKittyknownline controls, GTK/Qt relevantchecks, source-admission review and release notes with limitations. OldFirefox rapid120ms-gap prefix still2PASS/1FAIL; KDEcode-reuseoptimization REJECTED exact3filesreverted andscope3removed, sourceprivatearchive+ADRkeepfailedproof. DoNOTresume.
+
+ActualinstalledPRIMARY updater --checkPASS sourcepublicAPI stablev1.0.123=installed123, C/installed-updater-baseline-v123-20261109.log. APIlatest freshv123published2026-10-31T12:23:35Z,assets[]. Needactualinstalledmenuowner+updater stable124 discovery AFTERpublish too; neverprimaryforceinstall. Sourceversion124 unpublished. CurrentopenPR78ureq/77libc/76x11rb read-onlytriage, recheckbeforepush. No merging. No notifications/comments sent.
+
+Nextreleasework: closemandatory native/UI; consideractualsourcefullRestart onREMOTEonlywithOwnsActiveTextfalse since newUIbuttonincluded(usesoriginalinstalled123, samebinarydata; noinstall); primaryGNOMEfullrestartnotauthorizedasextraneousnewwork. No publicationwithunfinishedrequiredgates. Fullsourceall10builtreceiptgreen; metadata/docs-onlychangesdonotreopenruntime. Nativeevidence/profile/modelinputs/bytesseparate. Finalsoundonlytrueend using codex-turn-done-sound. Memorycitation requiredlast:MEMORY.md5193-5197 rollout01a115ea-09f2-7003-81c5-26037edf60eb.
+
+## CURRENT 2026-11-09T18:44:14.786326+00:00: v44 exact v42 binaries; Firefox fragment120 complete; full source gate running
+
+SOLO/noHarness/noagents/no questions; latest user authorizes all necessary fixes/all tests through release, do not stop. R=/home/e/projects/lay-development-runner/letter-fragment-release-20261102; C=/home/ubu/.cache/lay/development/letter-fragment-request-20261102. No commit/push/release/permanent installation; original123 restored both hosts.
+
+v44 remote letter-fragment-word-mode-v44-20261109/RESULT.json: architecture+lints+27IME+10protocol+3input+15focus eachbinary+actual3releasebins PASS.3700inventory restored after rejection exactly12v43-only tests; no existing tests waived. Runtime bytes EXACTv42: IMEa49d131e9d9bef72fc4f2aab5ea3b46e64a323a02d2ed262baffcb63bd5e577a; daemon57aaf3e090d7fcfc67b1b777fdc366ca47aae5bbbaf95faf79d107dfba337e8f; input3676bd0d8761426951071d26c08b67e8ba231c047a4e753526954eaef4866258. Source1336 SHA6ff51f343d5213b1419d6d82d560c1027e92865912f0a91f29e9d78fc870abcd. Local C/primary-candidate-v44 retained;8canonicalgenerated files fetched local. Exact3KDEobserver files restored to v42 after meaningful regressionAB; also removed rejected3paths/kde-focus component from active field scope, returned to approved word-mode-delegation ADR39paths. Scope checkPASS.
+
+ACTUAL native v44 model-correct KDE Firefox fragment field/mode matrix COMPLETE105PASS/0FAIL/15BLOCKED/0NOTTEST of120. Receipt remote letter-fragment-field-modes-firefox-v44-20261109/RESULT.json and case/result.json.4letter cases(first/second,EN-RU/RU-EN)x10fieldsx3modes(normal/private/fullscreen). Every case includes2manualreturns+physicaldecoder probes.12BLOCKED URL/email second-word trailingSpace unsupported;3email snapshot BLOCKED in different direction/mode cases (corrected in latest head). No writer retry or waived client proof. Runtime/config/models restoredPASS. This is NEW fragment matrix120, not old standard220. Chrome new120 NOTRUN. Private r23 actor native-letter-fields-actor-v44.py preserves r22 native writers/oracles and adds explicit suite dispatch; native-letter-fields-control-v44.py same private normal-model lifecycle. Source working binary frozen124 remains diagnostic until gates.
+
+Actual ordinary launcher terminal legacy controls remote letter-fragment-terminal-konsole-v44 and -kitty-v44: each2PASS/0FAIL,5flips open+5closed+nextglyph; ordinary desktopExec, no test IME launch overrides, private candidate. Lower stock109rawPTY actor reused; no shell/send. Existing oldwrapper mutatesliveconfig and remains FORBIDDEN. New private native-terminal-control/actor-v44 validate private daemonPID/SHA but retain original client HOME/DesktopExec.
+
+Expanded terminal tests: v44/v45raw FAILs retained. Firstword after custom Ctrl+A clear was UnknownStart (explicit trace callback_settlement unknown_start; actual native result staysliteral; existing source negative test fragment_unknown_literal_without_current_native_word_stays_read_only requires this). It is unsafe to promote unknown start. New v47 uses actual physical Enter AFTER source selection to establish existing KnownStart, no Space before first-word detector. KONSOLE v47 feature10:9PASS/1FAIL:4first/second/direction fragment+2manualreturns/decoder each; Tabfirst/second; ordinary heldShift using SAME XTest keyboard;5legacy open+closed. Sole Space typo etbya FAIL. Positive firstword is first word of NEWLINE, not arbitrary focus/afterCtrlA. Source not changed/guards notweakened. Terminal normal styling visually inspected C/terminal-visual-v47/konsole-hint-first.png: typedпров ordinary, onlyерить whitebackgroundblackletters aligned. No presentation code edits.
+
+Meaningful ON/OFF comparison remote letter-fragment-terminal-space-on-off-v48-20261109: etbya fails SAME with fragmentsON/OFF; bothstatusprefetch_not_ready, Spacecallback3.5ms, final worker notready. Old shared prefetch defect, not proved fragment regression. No runtime fix, literal exception or enlarged correction wait. Keep as measured existing debt, not PASS. Native-terminal-features-control/actor-v47.py correct knownline setup; single-control/actor-v48.py supports LAY_TERMINAL_FEATURE_ONLY and preserves fails; space-on-off-v48.py2matched runs private no sharedlearningwrite. Native word-flip letter latency clamps0 because visible result may precede LAST keyrelease; DO NOT claimzero-latency; classic terminal timings89-116ms are SECONDShift press→PTY result, not release.
+
+RUNNING NOW remote full-gate-v44 via guard20CPU/28G, exec3829, log C/full-gate-v44.launch.log. Script C/full-gate-v44.py adds ALL34Python unittest modules before canonical fullRust correctness/package/perf+strictlints+ngram+allinstallablebinary build/budgets. Native all stopped, originals123 restored. Inspect result before next heavy job, no parallel native on same display. Python may reveal whole-file SHAguard for legitimate new fullrestart dispatcher; do not blindly update/waive guard, audit exact old/new and use required ADR if change.
+
+Next: finish fullgate; improve READ-ONLY private email oracle if proven non-atomic DOM/AT-SPI read (current snapshot readsDOMthenNative once and immediatelyBLOCKS on mismatch while client changes; email lacksDOMselectionAPI). Preserve raw105/15, no fakePASS. Proposed bounded bracket DOM-native-DOM, retry OBSERVATION ONLY under existing target2s deadline, never edit retry/newwait; stabledivergence/wrongfocus/late mutation remainsreject. Add meaningfulnegativecontrols to protectoracle. One emailcase before broadChrome120; reuse physical helpers unchanged. Then Chrome120, Kittyknownline feature controls/OFF Spacepositive, neededGTK/Qt controls; final frozen exactsource/fullgate/updater stable discovery beforepublish. OldFirefoxrapid2PASS/1FAIL remains known old issue; do not resume rejected KDEfocusreuse. Main feature task letteronlyreuseexistingflip, Spaceuntouched; no scopecreep into all historicalwave/research. Soundonly trueend via codex-turn-done-sound.
+
+## CURRENT 2026-11-09T18:11:44.364923+00:00: v43 optimization rejected; exact v42 KDE provider restored
+
+Native same-model/same-order AB proves regression: v43Firefox prefix1PASS/2FAIL with newfocus deadline errors; immediate v42 comparison2PASS/1FAIL. v43 source42focus controls/24hot+32idle live readingsPASS does not override actualnative failure. Reject only this experiment:3KDE focus files restored to independently verified v42 SHA via HEAD; no fragment/Space/writer changes reverted. Rejected source privately retained C/rejected-kde-focus-reuse-v43-source; ADR/map records results. v43 IME5a17f64e / daemon9be7b1f8 remain frozen rejected, never promote. v44 regen/lints/inventory/build underway to restore baseline source closure and eliminate exactly12tests belonging only to rejected code. Existing tests not waived.
+
+Primary v43 rerun failed RUclosed: current GTK context native activation generation3 emitted marker but neverpublished; literaltypedtextremainedруддщ and all8manualRPCs rejectedbridgeadmission. This is not proved to be caused by KDE-only code. Independent immediate v42 RUclosed8/8 actualnative proof PASS with exact original123 restored; C/gnome-gtk-eight-model-v42-closed-comparison-20261109/NATIVE_ACCEPTANCE.json. Other v42 original32/32 acceptance remains dated. v43 rawFAIL preserved. Private wrapper naming bug wrote v43 modes/restoration under v42support filenames; copied exact currentdata to v43 names, fixed all v43 filenames. Original v42 NATIVE_ACCEPTANCE and rawGTK/physical traces unchanged, but oldv42 modes support file displaced; do not re-run original verifier claiming its old supportfile unchanged.
+
+Fresh GitHub read-only check2026-11-09:openPR78ureq3.5.1,77libc0.2.191,76x11rb0.14.0. No merge/update/comment.
+
+Next: finishv44 freeze; compare production bytes to v42 before reuse of native proof; mandatory full source/package/perf/installablebinary gates and native browser/terminal/currentfeature controls remain. Old rapidseries failure (120ms gap, ~210ms gestures, ~200ms completion) is notfixed. No current fullbrowsermatrix or release/push/install. SOLO/noHarness/noagents/noquestions.
+
+## CURRENT 2026-11-09 17:57 UTC: v43 bounded KDE focus-code reuse experiment
+
+SOLO/no Harness/no agents, no questions, work through release. v42 model-correct fragment/native baseline preserved below. Exact new source scope is3KDE focus files only, declared ADR `2026-11-09-kde-fresh-focus-query-reuse.json`. Existing authenticated fresh-active proof unchanged; short-lived loaded code only is reused. Current one Pending, same deadlines/nonce/sender/UUID/KWin owner checks; no cached window/second word owner/writer/gesture queue. New NextRequest uses one cancellable waiter on existing ingress; precise one-shot timer only frees unique code resource (required because Qt drops failed DBus callbacks).
+
+Source meaningful RED retained: old2loads vs1expected. Source controls21PASS/0FAIL/1explicit-live ignored. Actual KWin5.24.7 live24read-only benchmarkPASS:median0.645ms,p951.331,max7.077coldincluded; independent resource-cleanup-after-drop proofPASS. Installed/config hashes unchanged. Receipts C/kde-focus-code-reuse-third-v43.log and remote kde-live-focus-v43-20261109/{RESULT.json,cargo.log}. Source warnings from isolated target are historical3dead_code, not strict lint verdict.
+
+Next: v43 architecture/strict lints/exact inventory+12tests/bothbinary focus controls/build3releasebins; same r22 prefix3 native case MUST improve2PASS1FAIL before broader gates. If no native benefit or regression reject this experiment only, preservev42 feature. v43 no release artifact/native acceptance yet. All live originals123 restored.
+
+## CURRENT 2026-11-09T17:03:43.194150+00:00: v42 native model-correct checks; KDE rapid-series bottleneck
+
+Continue SOLO, no Harness/agents, no permission questions. User requires fixes/all tests through release; do not stop early. No commit/push/tag/release/permanent Rust installation. Installed/restored accepted123 remains both hosts. C=/home/ubu/.cache/lay/development/letter-fragment-request-20261102; W=this checkout; R=/home/e/projects/lay-development-runner/letter-fragment-release-20261102.
+
+Current source1336files SHAeb785fcb6387d0dfea5fc34f6d4e91fefaa06368a77208d50f0478aeda0d0807, HEAD4fae57d5, working124. Local and remote EXACT source closure verified after normalizing only3group-write bits0644 (contents already identical); receipt C/source-closure-diff-v42.json. Canonical8generated files fetched. Frozen remote letter-fragment-word-mode-v42-20261109/RESULT.json / local C/primary-candidate-v42. IMEa49d131e9d9bef72fc4f2aab5ea3b46e64a323a02d2ed262baffcb63bd5e577a and daemon57aaf3e090d7fcfc67b1b777fdc366ca47aae5bbbaf95faf79d107dfba337e8f are EXACTLY the v39 production bytes; input3676bd0d8761426951071d26c08b67e8ba231c047a4e753526954eaef4866258 changed after unchanged test module moved to EOF. Source architecture/lints27IME+10protocol+3input+actual3 release bins PASS, no new warning.3700tests=3608correctness+36package+11performance+45ignored, no waivers/removals. Full v39 correctness/package3644+performance11 PASS; its full gate then found new type visibility warning. Fixed ONLY new Handoff pub(crate), and moved unchanged injector tests after production items for Clippy; v42 strict lints PASS. Final full current release gate/all installed binaries/updater still pending.
+
+v39 closed-word fix: native v38 AFTER-Space failure reproduced; only two new Fragment manual-mode predicates now match exact final token+all literal closing whitespace. RED before fix and GREEN27 controls. No Space handler/writer change. ADR/map updated before fix. Existing scope includes all changed paths; no source edit since v42 beyond permissions/generated files.
+
+CRITICAL test-fixture finding: old private HOME plus empty10memory overrides omitted installed L2 lexical model, so Nanda flags ON alone did NOT certify full-model behavior. Old native isolated/manual evidence remains scoped. Corrected ONLY private test setup with C/model_fixture.py: clone actual installed lexical62MB, phase/L3base+relative composite manifest/L4 files into private learning preserving filenames, explicit read-only installed L2/L1.1 model directories, actual before/after source hashes. No live model/config/history writes. Primary bridge with real models needs bounded name-owner readiness instead of original fixed0.8s; corrected private wrapper ONLY, no runtime source change. Raw preflight/false-counter failures retained.
+
+ACTUAL model-correct GNOME GTK C10: C/gnome-gtk-eight-model-v42-20261109/NATIVE_ACCEPTANCE.json PASS32/32, four cases8each (both directions, open+closed), exact physical counts, every native text/preedit target and next-letter decoder +standard InputMode BEFORE next actual pair,20 negative oracle controls. Config+PID+runtime SHA pinned. C/gnome-gtk-tab-shift-v42b-20261109/NATIVE_ACCEPTANCE.json PASS3: Tab first+second word, offered candidate before actual Tab, exactly one appended Space/focus preserved; five physical uppercase Shifts/all HELLO prefixes. Tab press→native result bounds0.58–3.06ms; narrow profiled scope only. Original uppercase raw minimum-ibus-key projection falsely reports0; actual owned preedit clearly shows all typed uppercase prefixes. Do NOT call it passthrough; the raw trace counter is not all physical keys. Original raw FAIL retained. All primary123 source/engine/InputState restored, installed files unchanged, model sources unchanged. Current originalIME2a4c636a... . No primary actor now.
+
+ACTUAL KDE current model-correct short feature suite PASS10/10: remote letter-fragment-models-feature-suite-v42-20261109/RESULT.json. Chrome5 andFirefox5 in ordinary text field: four first/second/directions before Space, two manual returns+physical next-letter decoder each; OFF inert before Space AND old Space flip still works. One exact Chrome-first receipt reused from letter-fragment-models-chrome-first-v42-20261109,9new scenarios. Private coherent same-config frozen daemon+IME, source models unchanged and installed123/mapping/IBusparent restored after EVERY case. Remaining field types/native terminal/full browser matrices NOT yet current42 evidence.
+
+Remaining KDE Firefox rapid failure confirmed model-correct in remote letter-fragment-models-prefix3-firefox-v42-20261109: consecutive-two androundtrip PASS; rapid-five FAIL only3/5transitions. Ordinary latency218–230ms, next gestures209–220ms apart; existing safe acquisition refuses queued Shift(no guard weakening). First raw errors preserve writer safety. Do not drop Shift, weaken pending/held guards or add retry/queue. Fast Firefox pacing ALREADY true; DBus connection ALREADY cached. Do not repeat those fixes. strace child-only process profile (remote *v42-traced-20261109) proves CLI engine request20–35ms but perturbs roundtrip346–421ms, so not unprofiled performance proof. All restored; no source changes.
+
+Better passive metadata-only monitor (no message body/text) remote letter-fragment-models-prefix3-firefox-v42-bus-profile-20261109/RESULT.json preserves229/209ms and same2PASS/1FAIL. Only candidate PID bus names monitored. C/native-one-models-v42-bus-profile.py, C/analyze-owned-bus.py; remote RPC_TIMING_ANALYSIS.json:1284paired calls,147 KWin focus script load/run/unload cycles,92fromdaemon/55fromIME. Load median1.667ms,run1.166ms; focus cycles per successive admitted operation2,11,22,28,20,30,0,0,5 (includes inter-gesture/decoder work; not exclusive critical-path attribution). Concrete source src/bin/lay_daemon/kde/focus_observer.rs Client::read_in() creates private tempJS in XDG_RUNTIME_DIR, authenticates KWin unique owner+fresh nonce+deadline+UUID, loadScript/run, exact response, unload, owner recheck. NO fsync. Both binaries reuse this KDE observer. Identity binds busGUID/KWinowner/provider lifetime/UUID; kde/desktop/window_identity.rs relies on this exact proof. Do not replace it with generic X11/window cache/bypass without explicit new map/ADR and equivalent proof. No KDE performance source edit yet. Current read-only introspection probes installed KWin /KWin methods/version to see whether an existing faster fresh query is possible; investigate before code. Graph query focused module completed.
+
+No heavy job/native actor active after bus-profile completion (exec43555 may need final poll only). Native profile52758 completeFAIL; other old exec sessions closed. Check actual processes before new heavy launch. Remote commands through existing dedicated20CPU resource guard +cargo guard; primary heavy via human-safe-run1536M/tasks192. No blocking waits>60s. Keep Russian concrete updates<=60s, native tables scope-labelled. Current short KDE table Chrome5PASS/0FAIL; Firefox5/0; rapid separate2PASS/1FAIL. Old220 matrices not replaced by10short cases.
+
+Next: analyze installed KWin capability, map minimum KDE-only observation optimization preserving fresh authenticated proof, RED/GREEN then same prefix3 and8intermediates before full suites. Also native terminals via existing owned raw-PTY actor (old wrapper C/../browser-matrix-repair-20261027/kde-terminal-native-mode-native-v1.py MUTATES LIVE CONFIG/hardcodes oldPIDs—DO NOT RUN; extract/reuse only underlying release109-stock-five-v2.py actor after review with current private lifecycle). Final full source/installable builds/native/updater required before publication. Sound only true end via codex-turn-done-sound. No final while work remains.
+
+## CURRENT MILESTONE: v38 native GNOME C10 PASS16/16, next closed-word/OFF/KDE controls
+
+User authorizes necessary fixes and all tests without repeated questions. Continue SOLO, no agents/Harness, no final stop before remaining gates. Accepted123 remains installed/restored both hosts. No publication/installation. Main source W=/home/ubu/projects/lay-dependency-updates-20261027; remote R=/home/e/projects/lay-development-runner/letter-fragment-release-20261102. All current code synced; local canonical generated files fetched from remote (inventory3698). No heavy job currently running.
+
+v38 mode-origin integration source gates PASS:25/25 IME,10/10 manual protocol library tests,342/342 full daemon,3/3 test-input, Python isolation, architecture and actual3 release bins. Receipt remote letter-fragment-word-mode-v38-20261109/RESULT.json, source a898968b81f9fa803267e9e50b1f5019560aedd17b1d60ca0a1dd86d644dc465. Frozen IME8d529557cfec0ae839e637b94a42f91b005d8a261e882e2c33d2f5e85aa254d8, daemon57aaf3e090d7fcfc67b1b777fdc366ca47aae5bbbaf95faf79d107dfba337e8f, input641ab16997d636431d1c476c08e2ae594eeb2795383c28fa478cb6113354ed43. Primary copied immutable C/primary-candidate-v38 (C=/home/ubu/.cache/lay/development/letter-fragment-request-20261102). Current compiler/control session27338 COMPLETED; source-control26136 COMPLETED25PASS. v37 failed only ambiguous Result type in new daemon helper; v38 annotates Result<(),String), no guard weakening.
+
+REAL native GNOME50.1 GTK eight-pair acceptance PASS16/16: C/gnome-gtk-eight-v38-20261109/ACCEPTANCE.json. Eight physical pairs PER direction,16 intermediate full words plus16 physical next-letter decoders and standard GNOME CurrentInputMode property correct. Word observed before NEXT actual uinput Shift press, minimum lead180ms. Bounded clock calibration, actual uinput write trace through child-only strace, client Gtk JSONL, exact live bridge PID/IME bytes/config before-after. Latency measured44.2–77.2ms under strace; no unprofiled/global performance claim. Exact original IME2a4c..., original source/engine/state and installed daemon/IME files restored, verified in C/gnome-gtk-eight-v38-restoration.json. Case profile Nanda/precognition/autoreplaceOFF isolates letters; normal correction/hints still need controls.
+
+Raw old final/count smoke reports FAIL7/8 producer traces, NOT functional failure: trace file ring is capped500*1024 in src/debug_log.rs and clipped first gesture (both files511xxxB). Original raw RECEIPT.json FAIL retained. Independent C10 ACCEPTANCE explicitly cites raw incomplete producer trace and checks stronger actual physical/native semantics. DO NOT fake extra producer traces, raise production log cap, or relabel raw receipt PASS. For subsequent native runs, replace producer-id count with mandatory independent C10 evidence or collect complete RPC observations outside bounded ring. Existing Case.expected_manual_toggles is optional trace-count contract; do not use it as an oracle for8 native conversions. C10 scope is the independent actual-client artifact, not that producer count.
+
+Tool detail: strace6.19 installed primary. -xx also HEX-ENCODES FD paths: decode \xNN path before comparing /dev/uinput. Writes ARE present (no need writev change/retest): write(3<\x2f...<char10:223>>,\x00...,24). struct input_event <qqHHi is24bytes. strace wall time+duration mapped to monotonic using per-case *.uinput.clock.json and restoration clock_after, conservative2ms uncertainty. Physical shift code42, z44, enter28. Validate [1,0,1,0]*8, native exact alternating9 states including seed, expected word+z/я probe in each physical gesture window, independent standard InputMode sample phase=decoder-probe, actual-runtime-pins stable. Current acceptance analyser was run inline; preserve/make reusable BEFORE repeating tests. Native trace clock integrity is sufficient; no raster/pixel assertion made.
+
+Private main scripts: gnome-eight-existing-smoke-v38.py (reuses repo runtime_smoke, actual pins, standard-mode observer), gnome-input-traced-v38.py (ONLY own child, --kill-on-exit, requires binary path andSHA env, own GTK PID/title guard remains in Rust), physical TSV fragment_en_eight.tsv /fragment_ru_eight.tsv. Current interval is existing double_shift pre220+80intrapair+120settle+decoder probes (~400–550ms per pair). All8 words precede next actual pair. For stronger rapid cadence expose the EXISTING double_shift_fast through TSV test parser (minimal tooling-only source addition+ADR/scope) or use existing built-in scenario; do not invent a second injector. Current physical result is honest sequential8, not120ms burst. Existing KDE rapid-five normal-word failure still unresolved.
+
+Implemented mode-origin integration details are in accepted ADR2026-11-09-fragment-word-mode-delegation.json and map. New field in existing LayoutGestureState stamps successful Fragment request's layout_generation; a normal mode change invalidates stamp. Old functions/writers/guards remain, only tagged exact-tail replay layout step calls mode-only bridge then OLD post-layout lease/suppression/delete/insert/result logic. First v35 handoff table24/25 failed owner=None; fixed new helper to require exact active path (outer bridge already did), v36+v38 all25PASS. Marker preserved for explicit manual cleanup after checkboxOFF; no old Space callback added. MODE API currently refuses closed words and new tag helper requires !tail.ends_whitespace; next native AFTER-SPACE case may expose whether old Space completion already aligns source or needs manual-origin handling for closed suffix. Do not expand speculatively: first test active-success -> Space -> manual sameword. If needed, only manual-origin handling, NEVER invoke detector/mode from Space. Old last_tail_token_range(&buffer).map(|(start,_)|&buffer[start..]) (used in old suppression) includes closing separator; last_tail_token_text strips it. Keep one separator and full old lease verification.
+
+v33 full-stack automatic source switch remains REJECTED (lost open-word admission), reverted; never repeat. Its independent owned-preedit refusal guard/test remains useful/current. Current source has stable-source mode method, no source activation in fragment automatic completion. Recent source/constructor14paths covered exact scope/ADR. No actual text-delivery route added; new V3 status5,false uses SAME ReplayExactImeTail/writer. Older daemon safely rejects unknown5; full bundle/update verification required. New bridge method CompleteFragmentWordModeV1 mode-only, old handoff+source/epoch/suffix/actual mode+fresh token/snapshot guards.
+
+Next: preserve native acceptance parser as small reusable test tool + negative oracles (final-only falsePASS, wrong/late decoder/property, missing physical key evidence). Then active-to-Space/manual and checkboxOFF cleanup, true rapid8 using existing fast test helper, normal Nanda/hints/Space/inverse, supported GNOME applications and same-byte KDE letter/8-return controls. KDE old normal-word rapid issue proven queued Shift events during grab;28/28 owned-Xvfb resource tests passed earlier v33 before current ABI changes, rerun when relevant. Then full release source/build gates (correctness3642+11performance,45ignored registered;28 ignored can actually execute,17 prerequisite-specific), coherent browser/terminal matrices as required, publish/update tests. Last full source gate v26PASS3637+11 is OLD, not current full gate. Historical raw matrices Chrome170/16/34,Firefox127/61/32 profile caveat; do not replace them with scoped GTK passes.
+
+## LATEST 2026-11-09: mode-origin integration implemented, source controls compiling
+
+User: all necessary fixes and all tests, no repeated questions, continue solo to completion; no Harness or agents. No permanent Rust install/publication. Accepted123 restored on primary GNOME and remote KDE after every completed native test. Active work is letter-only fragment mode and its manual return, not old dependency/issues queues.
+
+IMPORTANT: v33 automatic GNOME full-stack experiment REJECTED. It aligned selected source but lost context admission for the still-open word; native eight-pair FAIL both directions (0/16 actual conversions), actual bytes737af... . v27 stable-engine eight-pair also FAIL (source mismatch in daemon). v33 raw smoke correctly fails0/8 delegation; v27 raw final/count smoke PASS is NOT C10 acceptance (independent ACCEPTANCE.json FAIL). Full-stack branch and changed transport assertions reverted in local and remote source. Keep new independent owned-preedit refusal guard/test. Do not repeat that workaround, weaken admission, activate an engine for an uncommitted fragment or fake IME ownership.
+
+The proven integration gap: existing daemon exact-tail writer expects selected source aligned with mode; new automatic fragment keeps engine stable. Existing source switch cannot carry open-word authority. New narrow ADR docs/architecture/decisions/2026-11-09-fragment-word-mode-delegation.json and exact field scope BEFORE edits. Map docs/development/fragment-word-mode-delegation-map-2026-11-09.md. The same exact-tail plan/lease/verifier/writer and input isolation remain. Only marked Fragment manual return gets mode-only completion via existing complete_fragment_word_mode operation, then old post-layout validation/suppression/output.
+
+NEW current source, NOT YET PROVEN:
+- manual_toggle.rs adds typed DelegateExactImeTailWordMode, V3 status5,false; old0–4/V2 unchanged.
+- engine/state_groups.rs one optional fragment_word_mode_generation in existing LayoutGestureState, stamped ONLY after successful Fragment request. Existing unrelated mode changes advance layout_generation and invalidate stamp. No owner/cache/queue.
+- authority.rs emits new origin only after the existing admitted request returns exact-tail delegation and fragment_manual_return_has_mode_origin() proves current real origin on GNOME.
+- bridge.rs CompleteFragmentWordModeV1 forwards to new window_interaction/fragment_word_mode.rs. Receiver binds live bridge token, source path, old epoch/suffix, initial mode, current exact manual handoff and independent existing snapshot provenance. Refuses owned/selected/stale/foreign/closed/unknown words. Uses same mode-only operation, keeps source/word epoch; stamp carried for pre-write rollback. No positive text receipt.
+- daemon manual_trigger_runtime/ime.rs still returns ReplayExactImeTail; layout_controller/ime_bridge.rs adds metadata bool defaultfalse and mode RPC wrapper. New layout_controller/fragment_word_mode.rs holds old lease for layout-only activation/pre-write restoration. exact_ime_tail_replay.rs switches only layout-completion step on this flag; old output operations unchanged. trigger_dispatch.rs preserves flag for an already-existing queued gesture, no new queue.
+- All exact source paths declared in active-field scope (including new generation field). Scope currently accepts broad user authorization; no new questions.
+
+ACTIVE remote process: guarded source controls run /home/e/projects/lay-development-runner/letter-fragment-word-mode-controls-v35-20261109/RESULT.json, private driver suffix-source-regression-v35.py. Inspect result first. It expects25 IME controls (previous23+2 new handoff identity/mode-only roundtrip tests). Tool session2172. Initial launch raced unfinished SCP and did not start; SCP80440 then completed, current2172 actually compiles. No source/native test FAIL may be hidden. Mode integration has not been built/installed or run natively yet.
+
+Current remote source R=/home/e/projects/lay-development-runner/letter-fragment-release-20261102. Primary checkout W=/home/ubu/projects/lay-dependency-updates-20261027, branch codex/browser-matrix-repair-20261027 HEAD4fae57d50b031984c1e0ddc8796e78e142b2a595, metadata124 unpublished. CWD /home/ubu/projects/lay is old; ALWAYS set workdir W for formatting/git/source commands.
+
+Canonical REMOTE manifest currently3696 (3604 correctness,36package,11performance,45ignored); new2 handoff tests NOT registered yet. New public enum extends existing protocol tests without new names. Next inventory expected +2 exactly (names fragment_manual_mode_requires_current_origin_and_exact_existing_handoff, fragment_manual_mode_roundtrip_changes_no_word_epoch_or_writer), no removed tests/failure waivers. Mode-origin tests must verify actual origin missing/old generation and OFF cleanup; boolean mode mismatch alone is not origin. Full final source/build gate pending after current changes.
+
+Native resource proof NEW: 28/28 ignored X11 tests executed on per-test disposable owned Xvfb, allPASS in letter-fragment-owned-xvfb-v33-20261109/RESULT.json. This tests daemon v29 diagnostic body, before new mode-origin integration. Never run them on live :71.17 other ignored tests remain prerequisites-specific. Current raw matrices remain Chrome170/16/34,Firefox127/61/32 under partly inconsistent test profiles; exact123baseline129/58/33 shares46 failures. Do not claim release acceptance or subtract targeted passes from those totals. Older historical table344/15/81 is older scope.
+
+KDE old rapid failure: native first3 standard rows2PASS/1FAIL, same on123. v29 logger proves both busy_input/batch_pending and acquisition_boundary containing4 queued LEFT SHIFT events (2down/2up,0other). Keep all events and original safety gates. Still unresolved. Future timing diagnosis/queue correctness must be scoped, no blind retry/drop/guard waiver.
+
+GNOME actual client infrastructure exists and works under human-safe-run1536M/tasks192 (requires free shared admission). Existing runtime_smoke, newly opt-in own PID/title guard in test injector, Gtk native text/preedit/key-release JSONL. Private gnome-eight-existing-smoke-v33.py has actual bridge PID/loaded SHA/config pins per case and independent standard GNOME CurrentInputMode observer. It uses private config Nanda/precognition/autoreplaceOFF solely to isolate letters; not normal correction acceptance. Both old23/native runs restored original IME2a4c636a3be959ce096754909599a202146b7711157c2563e6980f5c8909d429, source and IBus. Before new primary test OwnsActiveText must befalse; previous attempts refused safely. Do not close occupied user text. Native first2 letter-only/next-physical-decoder v27 passed but eighth return acceptance failed. No current candidate native proof yet.
+
+Next after source controls: repair only actual compile/test failures, obtain architecture/current inventory/protocol+daemon controls, freeze all3 release artifacts in new immutable receipt; no tests with stale artifact. Copy exact bytes into NEW private primary directory, adapt eight script to new paths/run IDs, run SAME failing GNOME8 and independent acceptance16 intermediate changes/decoder/real standard InputMode; never accept final equality. Also check afterSpace/OFF cleanup when active proof passes. Extend source scope only via ADR within user's broad authorization; no asking unless materially unrelated/destructive. Then KDE same-binary short/native controls, cold ordinary Space/inverse, terminal actual fields, final full release gates/update/release. No stopping on incomplete testing.
+
+## CURRENT 2026-11-09: native GNOME letters PASS, KDE rapid acquisition diagnosed
+
+User authorized all necessary fixes/all tests without further questions. SOLO; no Harness or agents. No permanent Rust installation, commit/push/publication. Working124 unpublished; installed accepted123 on both machines. Continue to completion, do not relabel incomplete native gates.
+
+Production IME remains exact frozen v26 SHA922f8ded4c01c5ae0d3d30e6a7b529d0b0bcd5030ba1cc1e5cc222a8b8756f4b even after v27 tooling and v28 diagnostics. Full source gate v26 PASS:3637 correctness/package+11performance;45ignored. Current canonical inventory3695 after exactly2 test-injector identity tests, source full gate needs final refresh after later changes.
+
+Current primary GNOME50.1 real GTK + virtual physical keyboard proof PASS2/2: ENG→RU beforeSpace then physicalz→я; RU→ENG thenz→z. Private profile Nanda/precognition/autoreplace OFF to isolate letters, decoder actual. Client-native JSONL separately records text and preedit. Receipt /home/ubu/.cache/lay/development/letter-fragment-request-20261102/gnome-gtk-native-v27-20261109/RECEIPT.json; restoration sibling gnome-gtk-native-v27-restoration.json confirms exact installed IME2a4c..., original source, IBus engine and state. Earlier attempts refused before mutation for occupied word/incorrect private cgroup assertion; those are not runtime tests. human-safe-run1536M now admits. Before any next primary test check OwnsActiveText again; never terminate occupied user text. Existing runtime_smoke reused, no new production GNOME change.
+
+Native full standard220, private Nanda-ON IME profile: Chrome170PASS/16FAIL/34BLOCKED(actor r20 old hardcoded Tab); Firefox127/61/32(actor r21 genuine observed Tab). Exact installed123 baseline Firefox129/58/33 with46shared failed cells. Prefix matters: isolated v26Firefox rapid5 PASS5.9–8.3ms; first3 standard rows PASS2/FAIL1 in repeated consistent-participant diagnostics. Earlier private profile aligned IME only, not daemon; new diagnostic controller aligns frozen daemon+IME config/learning and captures daemon debug. Do not reuse those earlier matrices as coherent release acceptance.
+
+New source tools only4files: optional per-key own GTK PID/title guard in lay_test_input/{desktop_probe,input_device}.rs and runtime_smoke/execution.py; optional exclusive Gtk text/preedit/key-release recorder in gtk_entry_capture.py. ADR native-smoke-client-evidence. 3/3 input tests+Python isolation+architecture PASS; new input bin641ab...; v27 daemon3fa484... .
+
+KDE rapid root stage PROVEN in v28: acquisition_boundary refusal, grabbed=true, batch_pending=false, pending_events2/4, epochs7/8. Existing guard refuses input that arrived during acquisition; do NOT weaken/drop/retry. Need identify queued event class before behavior fix. Failure-only diagnostic in src/bin/lay_daemon/native_input/x11.rs gated KDE AND published debug_action_log, all old predicates/resource/error kinds unchanged. ADR kde-native-grab-diagnostic. Added counts for pending Shift press/release vs other; v29 build is RUNNING under remote guard (read /home/e/projects/lay-development-runner/letter-fragment-grab-stage-v29-20261109/RESULT.json). Next same saved first3 native Firefox diagnostic with consistent daemon/IME and v29 receipt. v28 restored both123 runtimes and config/map PASS. v27 controller restoration initially forgot to restart original daemon service; immediate independent recovery SHAa664... PASS in daemon-recovery.json, original FAIL retained. Controller now starts service before old full restart and verifies both bytes.
+
+Private controllers local+remote cache letter-fragment-request-20261102: native-one.py (LAY_NATIVE_DIAGNOSTIC_DAEMON=1 requires frozen daemon artifact; prefix3 preserves exact first3 standard rows), native-letter-actor.py r22, grab-stage-build-v29.py. Actual test source remote /home/e/projects/lay-development-runner/letter-fragment-release-20261102. Installed files never overwritten. Remote guard dedicated-20cpu serializes native tests/builds. No concurrent actors on same desktop.
+
+Pending: precise KDE rapid event cause/fix, cold ordinary Space readiness/inverse, modern GNOME eight pairs+per-pair native modes/icon/decoder, terminal actual windows, canonical final full source/build and native acceptance, publish/update verification. 28 ignored source X11 tests can run on a NEW owned Xvfb with LAY_OWNED_X11_TEST=1; do not point them at live :71. Remaining ignored classes need prerequisite-specific classification. Not all ignored are ordinary release tests. No test weakened or failure waiver added.
+
+## CURRENT v26 source release gate PASS; native controls in progress
+
+Source:3637/3637correctness+package,11/11performance;45ignored honest. Fullgate
+letter-fragment-full-source-gate-v26-20261109/RESULT.json PASS (687.2s). Final
+IMEhash matches frozenv26. Letter short10 PASS. See owner for exact receipts.
+Private learning isolation added only to private actor/controller (10 paths,
+four negative validation controls). First inverse test could not apply because
+cloned live KDE profile disables Nanda; exact installed123 baseline agrees.
+Keep both FAILs. Current test explicitly enables Nanda only in new private
+profile: letter-fragment-native-private-nanda-inverse-chrome-v26-20261109.
+Read result before next native test. Actorhash changed for genuine isolation;
+do not reuse earlier actor/config receipts to certify new profile. No new
+runtime source changes. GNOME50.1 native still blocked by local shared RAM
+reservations at4G/2G; do not bypass or throttle other jobs. No Rust installation,
+commit, push or publication. User authorized fixes/all tests without questions.
+
+## LATEST v26 — saved Firefox return verification running
+
+New approved preedit follow-up uses only retire_pending_precognition instead of
+late clear. REDv25 proves invisible-owned-letters bug;26/26 focused and architecture
+PASS, inventory3693. FrozenSHA922f8ded4c01c5ae0d3d30e6a7b529d0b0bcd5030ba1cc1e5cc222a8b8756f4b.
+Native saved Firefox RU-ENfirst: letter-fragment-native-mode-firefox-return-v26-20261109.
+Read receipt, then same-binary short10 only ifgreen; earlier v24 short10 is6/1/3.
+User says complete all fixes/tests without repeated questions. Preserve scoped
+ADRs and do not publish incomplete gates. Installed123 remains unchanged.
+
+## CURRENT v24 NATIVE FIRST CASE PASS — 2026-11-09
+
+Same-binary short10 is running: letter-fragment-native-mode-short10-v24-20261109.
+First Chrome fastEN-RU casePASS beforeSpace, decoderRU,24.623ms(n=1), exact123
+restorationPASS. FrozenSHA5b74e46d6dd3f47f2d9266f396a7a32596f8a7ef43e7501c4c780a8053e45464,
+sourcef8fa47004ab0e6fdaea84d0a0edd72bbf9915b1e3ea8e5fbb769e233373413b9.
+Architecture/current inventory3691 and23focusedPASS, protected230files and all
+old native/layout-sync bodies123-identical. Source/native receipts listed in
+letter-only-fragment-request-2026-11-02.md. No publication, install or primary
+GNOME mutation; final gates and supportedGNOME native remain pending.
+Do not repeat the first case under another binary or count older buildPASS.
+
+## ACTIVE — approved native result continuation, 2026-11-09
+
+The user explicitly approved only native_document.rs and native_document/tests.rs
+(reply call_bd15088f4ce44e2ea69c3d76d5e10589). The new owning ADR is
+2026-11-09-fragment-native-mode-continuation.json; field scope passes.
+Current source controls v24:19/19PASS (15 existing fragment/lease +4 new native
+owner tests). The negative owner test covers26 independent invalidations.
+The first compile had a test import error; v23 had18/19PASS because a new test
+expected Rejected instead of the existing pending/mismatch/censored contract.
+Both receipts are retained; only the new test was corrected, no verifier change.
+New entry preserves one pending receipt's original epoch/time/snapshot/feedback
+across the successful mode operation, drops geometry/snapshot, re-arms the
+existing observer and supplies no edit proof. Old native functions unchanged.
+Next: architecture/current inventory23focused gate, freeze diagnostic binary,
+saved Chrome fast first-word case. No long native matrix before short green.
+Installed1.0.123 remains accepted; no permanent Rust install or publication.
+The earlier full IME1162/1163 failure and supportedGNOME native gate remain open.
+
+## ACTIVE — approved separate current-word mode entry, 2026-11-09
+
+LATEST v20:15/15 focused PASS. Remove v19's incorrect quiet-input bridge wrapper:
+ContextAdmission.revalidate_bridge deliberately rejects when later letters are
+pending. Use the existing automatic InputFrame/DecisionCore/verifier request
+directly AFTER the unchanged canonical paired release. Also remove mode's
+redundant second bridge settlement: the writer already settled its newer epoch.
+No shared guard, old function, writer, observer or desktop body is changed.
+v20 frozen SHAa51cf303799c8ed7c90ece77bd87fde4c38a77c28b5a3d1b2e3301dc79542624,
+build letter-fragment-native-automatic-frame-v20-20261109. Active one-case
+native run letter-fragment-native-automatic-frame-chrome-first-20261109.
+Read that result, then short10 ONLY if native green; analyze FAIL before retry.
+
+All-current IME1162PASS/1FAIL of1163 in letter-fragment-post-release-all-ime-20261109:
+existing process-isolated td125_level_modifier_wire_order_preserves_owned_word_and_space_lease
+kept literal. Same-artifact/same canonical isolated case PASS in
+letter-fragment-modifier-isolated-20261109 (0.39s). Keep the full failure; no
+waiver or test/runtime change for this separate unresolved intermittent result.
+Full final gates pending. No Rust install, commit/push/release or primary action.
+Canonical inventory still needs exactly SIX added test names.
+
+Previous v19:15/15 focused controls PASS. New automatic trigger moved ONLY inside
+the two already scoped new-integration files: ibus_interface.rs now captures a
+paired letter before WindowInteraction::process_legacy_key and invokes
+fragment_layout::request_fragment_after_letter_release AFTER that unchanged
+key boundary returns. Both old internal inserted hooks and diagnostic metadata
+removed. Reason: the protected early text-inert release at observation.rs6255
+is a SECOND producer of managed_release and bypassed the old inner hook after
+the first two letters. Do not weaken or edit that early boundary. New request
+uses the existing live-token ContextBridgeOutput pattern (also used by existing
+held_replay_boundary.rs); ticket is callback-local trigger data, never word
+authority. Focus/pair retirement/handled/native/frame/admission guards retained.
+Space never produces a ticket. Existing C08/C09/output/desktop files unchanged.
+
+Current remote frozen build: letter-fragment-native-post-release-v19-20261109,
+SHA0e94ef993062375b4fba1e23306137b2220823415734aca78fc3819b462d96b0.
+Source9895520724291f73c0d52ef253d629c4553d361cf6fd456cc600497103e2a2cf.
+Active guarded script first runs all current IME tests into
+letter-fragment-post-release-all-ime-20261109, then saved Chrome EN-to-RU
+fast first-word actor into letter-fragment-native-post-release-chrome-first-20261109.
+Next read those results, diagnose any FAIL before another experiment. If green,
+same-binary short10 then ordinary Space/Tab/rapid/manual/terminal controls.
+Canonical inventory needs exactly SIX new test names (previous five plus
+fragment_release_request_survives_early_retirement_but_not_focus_or_pair_loss).
+No primary GNOME mutation, Rust installation, commit, push or publication yet.
+All private native restorations after the IBus-policy fix restore123 successfully.
+
+Previous v17: source14/14 PASS after a meaningful red/green regression proving
+that mode completion must preserve the existing writer's dispatched epoch.
+New caller previously published the tail twice (pending9 -> actual11 in native
+v16), invalidating the pending native selection protection and producing
+mixed-script "привtт" at fast input. This is a NEW CALLER bug; do not repair it by
+changing the protected observer/writer/decoder. v17 removes both publications,
+uses existing bridge settlement without another epoch, and, for native pending
+results only, awaits the original exact postcondition through at most two
+existing reads BEFORE changing the mode. No fake acknowledgement or write retry.
+Current build: letter-fragment-native-dispatch-epoch-v17-20261109. Next: same
+saved Chrome EN-to-RU first-word failure, then same-binary short10. If not green,
+analyze exact next refusal before editing; do not release or run a broad gate
+to cover a known native failure. Manifest still needs exactly FIVE added test
+names (four prior mode controls plus the new dispatched-epoch invariant).
+
+Previous v16 checkpoint: source13/13 controls passed before the caller-only read2
+experiment. Native v15 retained f6b2026ad605883fb3b3e739a5fd1b44b62667091b1da03ff60c4004e7bbf45e.
+Chrome EN-to-RU first and Firefox EN-to-RU first passed before Space with two
+manual returns; Chrome RU-to-EN first reproducibly refused a stale actual
+snapshot one character behind. v15's failure independently pins the SAME live
+candidate PID/hash and unchanged private config through actor completion, with
+enabled hook booleans. Thus do not chase a hypothetical config/daemon replacement
+as this failure's cause. Common verifier correctly refuses; do not weaken it.
+
+Current v16 is building under remote guard (source dir letter-fragment-release-20261102,
+build receipt dir letter-fragment-native-caller-read2-v16-20261109). Only new
+fragment_layout.rs now requests at most two existing bounded observations within
+the SAME positive letter callback; no timer/observer starts a proposal, no write
+retry, no protected observer rewrite. First rerun the saved failing Chrome
+RU-to-EN first-word case, then same-binary ten-case batch. Temporary release
+instrumentation removed; new hook logic unchanged. All post-policy native
+restorations PASS, installed Rust123 remains on KDE and primary GNOME.
+
+Private controller is /home/e/.cache/lay/development/letter-fragment-request-20261102/native-one.py.
+It MUST keep live IBus use-system-keyboard-layout=true in its PRIVATE keyfile
+backend; otherwise ibus CLI resets the physical us/ru map. It now also verifies
+actual candidate config route/hash and post-actor bridge PID/hash even on FAIL.
+Retain all original failures and their diagnostics; do not label the earlier
+incomplete restoration as passing (separate recovery receipt exists). Full
+current source/native release gates remain pending.232 protected files and all
+old layout_sync bodies were compared byte for byte with123: unchanged. Latest
+source-scope receipt37files PASS; generated local graph still needs remote sync.
+
+User explicitly approved ONLY the separate existing-operation entry in
+layout_sync.rs for Fragment and manual return. Owning ADR2026-11-09 and exact
+scope updated BEFORE implementation; only one protected source added. Do not
+change old layout-sync functions/branches or desktop adapters. Caller mode
+publication and decoder promotion stay in new fragment_layout.rs; committed
+caller and its unfinished-mode manual return use existing verified text writing.
+See current top section of docs/development/letter-only-fragment-request-2026-11-02.md.
+No runtime/install/release acceptance yet. Installed remote daemon/IME123.
+
+## Previous audit — shared layout-sync bodies remain frozen
+
+2026-11-05 user explicitly reiterated caller analysis BEFORE shared changes.
+The preceding layout_sync.rs expansion request is suspended, not accepted or
+proved necessary. Do not resume it as the active implementation plan.
+Read the current caller-audit section at the top of
+docs/development/letter-only-fragment-request-2026-11-02.md.
+
+Established mismatch: committed_tail.rs1177 NEW Fragment caller takes mode
+ownership with with_caller_layout_postcondition, then calls a full-stack
+manual-mode switch while letters continue. Existing text writer is already
+reused. Existing owned-preedit operation is correctly selected by shift.rs288
+for genuine IME ownership; it cannot be borrowed for committed Chrome text.
+InputMode/decoder alone leaves KDE's native group and daemon mode inconsistent.
+Group-only primitive exists privately, but its exposed engine entrypoint is
+owned-preedit-guarded. Do not invent ownership, manual intent or a new route.
+No global impossibility or stable123 shared defect is established by this
+audit. Next: prove an admissible existing caller entrypoint for committed
+open-word mode, or precisely report the missing capability before any edit.
+
+This audit changed only owning docs/handoff. No Rust, runtime, installation,
+config, service or exact protected-file scope changes. Prior native v13PASS /
+v14FAIL and red8PASS2FAIL of10 were reread, not rerun. Matrix unchanged.
+
+## Previous proposal — C09 scope expansion, suspended pending caller audit
+
+2026-11-05: ordinary conversion works per user; the fragment mode is the task.
+Local daemon/IME are verified live/installed123; saved fragment flag=false;
+no config or runtime mutation. A separate exact layout_sync.rs decision was
+requested asynchronously under the frozen-field rule and remains unanswered.
+Only tests in the already allowed fragment_layout.rs changed: no mid-word
+engine replacement, native InputMode plus KDE group, and reconciliation when
+returning to the selected factory. Remote TDD red is 8PASS/2FAIL of10, expected
+failures at these exact transitions, receipt letter-fragment-c09-red-20261105.
+No protected production file was edited and no candidate was installed.
+
+Independent preflight-v11 completed: architecture graph/canon PASS, actual
+manifest3681(3589correctness/36package/11performance/45ignored), focused13/13PASS.
+Generated graph/binding/receipt and manifest/zero-waiver binding fetched locally.
+Protected-source equality and remote source-scope35files PASS. Actual installed
+menu updaters on both hosts exit0: installed123/lateststable123, no installation.
+Do not run release gates/builds merely to certify the known failing native
+variant. An explicit asynchronous decision is pending for ONE extra protected
+source, layout_sync.rs; no answer means no dependent implementation/install.
+
+No fragment candidate is installed/published. KDE full-restart MENU is installed
+and was visually/service-verified; its KDE lifecycle action was not invoked.
+Both installed Rust runtimes remain123; primary GNOME has not been changed.
+
+Current diagnostic source (candidate124) passes1157IME tests and9focused mode /
+suffix / stale controls, but native v14 rejects its synchronous engine switch:
+151614us, partial receipt, Chrome final `приве`. Previous async variant also
+lost letters in Firefox. Both are rejected; DO NOT install/tag/release or repeat
+mid-word engine replacement. Frozen v11 artifact SHA7de672b6...; exact receipts
+remote letter-fragment-native-v14-caller-mode-20261102, source gate
+letter-fragment-caller-mode-all-ime-20261102. Scope/writers/reducers/desktop
+bodies remain unchanged; layout_sync.rs has ZERO diff from123.
+
+Best native owned-word behavior was v10/a05c6669...: Firefox early conversion,
+two manual shifts, next-letter and actual KDE group PASS in v13 after restoring
+the ALREADY SAVED us,ru keyboard map. Config SHAf57ba809 unchanged; original
+runtime map was onlyru, exact dump preserved in configured-keymap receipt. No
+settings-file edit or IBus restart. Existing actor now checks native mapping
+before typing, verifies actual group before decoder, and controller restores
+the original list/group. Earlier Chrome5text/decoder PASSs did not verify the
+physical group; strict short-v10 catches that new C09 failure.
+
+Required next decision is detailed in owner's "C09 boundary decision" section:
+allow ONLY additional src/bin/lay_ibus_engine/layout_sync.rs for existing group /
+InputMode current-word completion, no engine replacement while typing, and
+KDE same-factory group reconciliation. No text writer/state/owner/verifier /
+desktop adapter body or legacyGNOME behavior changes. New tests stay in the
+already allowed fragment_layout.rs. Until explicit decision, continue only
+independent source/graph/inventory work; no protected implementation/install.
+Final native GNOME45+ is also pending; remote shell42.9 unsupported. Full browser
+table unchanged165/15/40Firefox,179/0/41Chrome of440. No final sound yet.
+All active/running labels below are historical. Exact owner:
+docs/development/letter-only-fragment-request-2026-11-02.md.
+
+## Previous milestone — Chrome short5/5PASS; Firefox open-word preparation repair
+
+Native short-v9 retained candidate SHA264afcde...: all five Chrome cases PASS
+(both directions/word positions, modeOFF + ordinary Space, manual round trips
+and physical XTest decoder probes). Firefox first ENG→RU FAIL with `привт`:
+NEW fragment path commits the four-letter prefix and starts background engine
+handoff; next `е` is decoded but lost during focus/engine conflict. Receipt
+letter-fragment-native-short-v9-20261102/firefox-letter-en-ru-first/RESULT.json;
+saved analysis retains FAIL/eight warnings. Remaining four NOT_TESTED.
+
+Same existing ownership checks show only display_pending=true prevents the
+owned-preedit transaction. NEW adapter now retires pending prediction through
+existing retire_pending_precognition ONLY for a positive proposal/current exact
+legacy preedit, then revalidates its input frame. The already authorized shared
+word-flip seam lets Fragment use existing replace_verified_owned_preedit with
+protect=false. No preedit.rs/layout_sync.rs/reader/owner/writer/desktop body is
+changed; no manual-intent grant. This corrects the earlier commit-first choice,
+without a new route or a generic guard relaxation.
+
+Current tool session47070 runs all1156affected IME source tests against this
+repair; output remote letter-fragment-owned-preedit-all-ime-20261102/RESULT.json.
+Await it, build NEW diagnostic variant using cached build-native-diagnostic.py,
+then rerun ONLY the saved Firefox failure. If green complete remaining short
+cases, reuse Chrome evidence only where relevant source did not change; final
+release/graph/manifest/native gates still pending. All native wrappers restored
+accepted123; no permanent fragment install/publication or primaryGNOME change.
+RemoteGNOME42.9 remains unsupported for current45+ bridge native acceptance.
+Full browser table still165/15/40Firefox and179/0/41Chrome of440total.
+Exact owner: docs/development/letter-only-fragment-request-2026-11-02.md.
+All active/running labels below refer to historical steps.
+
+## Previous milestone — exact fragment suffix repaired; native follow-up pending
+
+KDE full-restart tray is still the installed script bundle, PID3962487; actual
+service/link/label rechecked on November2. Rust runtime remains123. No fragment
+installation/publication or primary GNOME mutation occurred.
+
+Native v8 physical-letter Chrome first ENG→RU PASS, including both manual
+round trips and physical decoder probes. Short batch: first RU→ENG PASS,
+second ENG→RU FAIL, remaining seven NOT_TESTED. Exact first failure is NEW
+request's expected full buffer versus existing executor's exact replaced-word
+snapshot: expected `тест ghbd`, actual `ghbd`. No write occurred.
+Saved analyzer retains FAIL1/eight metadata warnings; full trace/controller
+pins are separate evidence. No complete-matrix total changed.
+
+One argument in the authorized fragment arm of committed_tail.rs now uses the
+sealed action's original token instead of the whole buffer. Existing nearby
+candidate acceptance already follows this contract. No protected owner,
+writer, observation/desktop adapter or generic guard changed. New source
+regression reproduces the old second-word failure; after fix2/2PASS (eight
+desktop/direction/word-position combinations plus unknown-literal control).
+Receipts remote letter-fragment-suffix-regression-{before,before2,after}-20261102.
+
+Native-v9 proves the expected-suffix repair reached the next existing guard:
+no_proven_delete_backend. NEW adapter skipped its existing native observation
+when KnownStart already supplied a frame, despite no executable edit route.
+Only that new caller's condition now requires a frame AND the existing
+text_target_edit_route/can_execute capability, otherwise requests the same
+bounded reader once. No reader/writer/ownership body or generic guard changed.
+Complete affected IME selection now PASS1156/1156,177.88s including build,
+remote letter-fragment-backend-all-ime-20261102/RESULT.json. The preceding
+suffix-all-ime run was1155PASS/1FAIL in a new test fixture that omitted the
+SurroundingText capability; fixed its setup and asserts Some before invoking
+the detector. Preserve earlier FAILs, all eight focused controls then PASS.
+Next: retain a NEW diagnostic124 artifact from actual Cargo record, run the
+one failed native second-word case, then short10case set. Old v7/v8 retained
+binary and previous v5 full gate do not certify this source. After short native
+green, format, regenerate actual test manifest/zero-waiver binding and graph,
+run final full release/locked10binary gates. Remote GNOME42.9 cannot certify
+current45+ bridge; primary GNOME remains untouched. Native physical evdev is
+NOT_TESTED; adapted actor uses existing XTest physical X11 codes for letters
+and RFB for focus/gestures, with actual DOM/AT-SPI/scope/PID/inode checks.
+
+Owner: docs/development/letter-only-fragment-request-2026-11-02.md.
+Everything labeled current/running below is historical.
+
+## Previous milestone — native fragment-purpose admission; candidate not installed
+
+Current source includes a narrow NEW-origin admission repair under native test.
+Earlier v5 full release gate COMPLETED PASS:3622source +11performance checks,
+strict lints, architecture, all release bins and explicit10installed-binary build.
+That evidence predates the current native admission edit and is not its release
+acceptance. Retained v5 complete binary set is immutable and reports1.0.124.
+
+RUNNING native tool session48473: one Chrome first-word control against
+letter-fragment-native-admission-v7-20261102/lay-ibus-engine, SHA
+412a1e1fd78a9a12806ce551457140eef42b48619bf6734b095806a58d5f4505.
+Receipt directory letter-fragment-native-v6-admission-20261102. Poll the session.
+This is DIAGNOSTIC_ONLY_NOT_PROMOTABLE, not an installation or release.
+The wrapper restores123 through the existing controller and independently
+verifies loaded/installed bytes, config and unchanged IBus PID. Wait/reap its
+candidate child before the sole-process check (fixed a prior observer false
+timeout). Primary local GNOME has not been changed.
+
+Proven first failure in v3/v4/v5: six native presses/releases, zero command
+modifiers, literal DOMghbdtn; the NEW adapter rejects every release because it
+uses a Space-specific frame, while UnknownStart and actual native reads coexist.
+No writer/reader-body fix is justified. New fragment_layout.rs now combines the
+existing current native binding + both actual word boundaries/full-tail agreement
++ current scoped readout identity; it does NOT promote UnknownStart or use a
+manual grant. Pure positive proposal may reuse WindowInteraction's existing
+observation only with empty composition and no pending postcondition/Space work.
+shift.rs's NEW Fragment gate uses that bounded frame and bypasses only the
+manual-only unknown-word branch. Generic Space, state.rs, readers, owners,
+reducers, output, desktop adapters remain unchanged. Added one unknown-literal
+negative test and pending-postcondition control; actual manifest/full checks need
+refresh after this behavioral repair if native control is green. Do not weaken
+generic guards or change protected source bodies to rescue a failure.
+KDE full-restart menu is installed and visually confirmed; its lifecycle action
+has not been invoked on KDE. Both Rust runtimes remain accepted1.0.123.
+
+Candidate metadata is1.0.124. Independent real Git source/build worktree:
+/home/e/projects/lay-development-runner/letter-fragment-release-20261102.
+Its target directory must remain separate from the LIVE shared factory target.
+BaseHEAD4fae57d50b031984c1e0ddc8796e78e142b2a595 imported by verified base.bundle;
+official snapshot2290files SHA020dbb501f2c504fe239fe50277def38bc5ad47e909c3cd05820aca19968df55
+verified before metadata overlay. No124 install, tag or release exists.
+
+Initial architecture WATCH was FIXED without guard changes: admission now
+lives in existing decision.rs and reuses from_verified_action with the actual
+candidate/report; the redundant new decision submodule was removed.
+Latest graph/binding/receipt and actual manifest3678tests were fetched locally.
+Inventory:3586correctness/36package/11performance/45ignored, zero failure waivers.
+
+Actual fixed streaming proof40,000cases: clean wrong flips12/20000, no repeated
+reversals; wrong-layout early restoration5235/10000RU and7575/10000EN; others
+abstain and retain ordinary Space correction. Do not claim perfect quality or
+full L1 restoration proof. Rejected aggressive policy had283clean false flips;
+no threshold sweep, training, model bytes or dictionary was changed. Optimized
+detector347901calls: median2237ns/p954269ns/max178607ns; cold946408ns;
+standalone probe peak6400KiB, not whole-runtime RSS or native GUI latency.
+Receipt: remote letter-fragment-open-proof-20261102-v5-production/RESULT.json.
+
+Next: finish full gate + locked installed-binary build, then use the existing
+frozen native RFB actor for BEFORE-Space first/second words, both directions,
+OFF controls and Space/Tab/Shift controls on KDE. Actor v2 needs only new case
+definitions; preserve its ownership, PID/inode assertions and native focus.
+Old113 deployment scripts are historical; do not run them. The current factory
+executes LIVE shared-target/release/lay-ibus-engine123, so never build over it.
+Native installation/restoration must independently verify installed, factory and
+loaded bytes. No candidate installation, primary GNOME mutation or publication
+has occurred. Remote GNOME is Shell42.9 and cannot load current45+ Lay bridge;
+its existing103files do not establish current GNOME acceptance. Do not upgrade
+GNOME or alter primary input settings to force a PASS. Historical native browser
+table stays Firefox165/15/40, Chrome179/0/41 of440total.
+All active/current labels below this milestone refer to historical work only.
+Exact owner/evidence: docs/development/letter-only-fragment-request-2026-11-02.md.
+
+## Previous milestone — focused fragment repair PASS
+
+Private candidate-boxed-boundary-v5 COMPLETED6/6PASS, including the OLD isolated residual at DEFAULT stack and all5new tests. Compile33.44s, tests0.191s. The two forwarding APIs now Box::pin the same existing operation, following native_document's established storage boundary. This fixed the transitive async/poll stack regression with no writer/owner/layout/old-test changes. Source file hashes verified against local checkout before/after. Parent direct-forward v4 was insufficient; its FAILED and GDB evidence retained.
+
+NEXT launched from current canonical checkout: full affected IME dev-check --target bin:lay-ibus-engine (session ID is in newest tool output; update this header on result). Library run-uie85788 remains1870/1870PASS because library dependencies/source unchanged. No new fragment runtime installation/release yet. Local real updater --check PASS: installed123/latest stable123.
+
+## Historical narrow candidate control — direct Future forwarding
+
+Baseline comparison COMPLETED: public123 production source passes the same default-stack residual in0.113s; candidate fails. Current measured future sizes are1264bytes(optional),16768bytes(key),7600bytes(word flip). Replaced only the two newly added async FORWARDING wrappers (shift.rs manual-toggle-with-disposition and committed_tail.rs toggle-with-disposition) with synchronous functions returning the SAME operation Future directly, explicit borrow lifetimes. No state, writer, ownership or layout helper changed. Code has been remotely formatted; compilation/test of these two signatures is pending.
+
+ACTIVE tool session94937: a six-case focused diagnostic under the existing remote dedicated20cpu guard, Cargo discovery and hermetic run_target. Path /home/e/projects/lay-development-runner/letter-fragment-controls-20261102/candidate-forwarding-v3. It clones the canonical workspace, applies ONLY the two forwarding edits, and verifies EVERY Rust source file plus Cargo/model/test inventory SHA against the current local checkout. Selected:5new fragment tests + the unchanged isolated residual. This is not full affected-gate/native acceptance. Poll returned session94937. If green, run canonical dev-check --target bin:lay-ibus-engine once; library1870PASS remains valid because library source did not change.
+
+Private helper exact bytes: local ~/.cache/lay/development/letter-fragment-request-20261102/focused-probe.py; remote same cache. Full source hash map forwarding-source-hashes.json. The prior .cache probe prep failures are retained; actual baseline/current diagnostics now execute under projects, outside the canonical sandbox cache mask. No candidate runtime has been installed or published; remote menu-only installation remains correct.
+
+## Historical diagnostic update — baseline comparison
+
+Latest tool session65124 is running the narrow baseline control, after prior source checks completed. Remote directory /home/e/projects/lay-development-runner/letter-fragment-controls-20261102/baseline123-control-v2. Poll this session. It uses project dedicated20cpu resource/Cargo guards and existing hermetic test-lane functions, not a new runtime path. Production src and Cargo+scripts are restored from actual public v1.0.123 commit5059360769266e55e3f393ba28eb57d6d5969d5c inside that PRIVATE control copy only; actual working checkout is untouched. Baseline tar SHA91c12b53d6fdf1d083be02c0f76db65f9d114d9ec711a7db13505ff69f1f2999. It compiles only the IME test target and runs ONLY the unchanged isolated failing residual test. This is a causal baseline control, not release/native acceptance.
+
+Current new-source metadata probe already PASS: optional fragment future1264bytes, ordinary key future16768bytes, existing flip operation future7600bytes. Thus do not assume a massive future type without evidence. GDB lacked usable DWARF type names; use measured Rust sizes. The first preparation attempt in .cache failed BEFORE baseline compilation (sandbox masks .cache/lay and nested SSH heredoc quotes were stripped). Corrected script was transferred as a file; new control is under projects, outside that mask. Failed receipts retained.
+
+If tagged baseline passes, investigate added async forwarding poll frames in shift.rs and committed_tail.rs (new with-disposition wrappers) rather than edit ownership/output or raise RUST_MIN_STACK. They can potentially forward the existing Future synchronously, retaining APIs and all branch semantics; measure/test before claiming. If baseline also fails, this is not sufficient evidence of a fragment regression: analyze the exact baseline failure before modifying production. Do not repeat another full3050test run until this focused comparison distinguishes the cause.
+
+## Historical preflight — letter-only fragment implementation, 2026-11-02
+
+The user explicitly requests the previously agreed LETTER-only detector for BOTH GNOME and KDE. KDE full-restart menu was missing because the old tray was still loaded; the three verified menu/control scripts are now installed on KDE, live tray3962487 active and SNI registered. Native screenshot confirms «Полный перезапуск Lay» under «Lay включён», version123. No KDE full lifecycle restart invoked. Runtime Rust binaries remain accepted123. See full-restart-2026-11-02.md and local ~/.cache/lay/development/full-restart-20261102/kde-live-menu.png.
+
+Current fragment owner/preflight/ADR: docs/development/letter-only-fragment-request-2026-11-02.md and docs/architecture/decisions/2026-11-02-letter-only-fragment-request.json. EXACT source boundary sealed in active-field-integration-scope.json, immutable base4fae57d50b031984c1e0ddc8796e78e142b2a595. Do NOT restore rejected124 stash. No Harness or agents.
+
+New code: library layout_fragments/letter.rs creates an exact automatic request through existing DecisionCore new child decision/fragment_layout.rs, using unchanged687981byte model and Boundary::Open, initial conservative margin16. Boundary typing_rule_graph/rules/fragment.rs now ALWAYS calls the preceding legacy rule, regardless of flag. New IME fragment_layout.rs validates current frame/word and submits WordLayoutOrigin::Fragment to existing shift.rs operation. Fragment skips manual undo and Space suppression. Owned composition uses the existing verified commit + automatic layout sync; committed tail uses existing automatic request + selected winner/exact tail. Protected state/output/preedit/layout_sync/desktop/daemon mechanism files UNCHANGED. Hooks now ONLY paired managed-letter release and existing paired native-letter release, not press/Space/Enter. Normal feature-OFF paths must skip the adapter outside its async call.
+
+Remote source checks: run-n92lfyf6 compilation PASS34.90s, then stale process-isolation registry. run-vsai6qx9 exposed two incorrect NEW test fixtures (active_path missing; password transition clears buffer) and an OLD isolated residual stack overflow. Fixtures corrected without weakening production. run-wxpyjdiu: all three new IME tests PASS; bulk681PASS0FAIL; old isolated td121_repeated_closed_source_retains_scope_across_delayed_erasure_receipts still stack-overflows (log remote run-p2kgkT/tests/logs/process/...). Box::pin ONLY new admitted request future initially did not prove fix. Replanned in owner: add actual future-size bounded test, move managed trigger to release to avoid atomic Delete-before-Commit ordering, and skip native adapter completely on flagOFF. DO NOT raise RUST_MIN_STACK or weaken old test. Latest code after those refinements has NOT run IME checks yet.
+
+COMPLETED library check run-uie85788:1870/1870PASS175.3s. Latest IME check run-38o0v0a1: all5new testsPASS, bulk683PASS0FAIL; same isolated default-stack residual still aborts. No native build/install yet. New IME source includes two extra tests (real paired letter vs Space/Enter/unpaired release and <=16KiB adapter future with directly written size metadata). Manifest manually declared their exact names; future actual discovery still required. Previous actual discovery had3047rows(1156IME+1891lib); new expected total3049. Test discovery isolation entries replaced obsolete boundary flag tests with two config-mutating invariance tests. Manifest sorted through existing canonical(); default limits/gates intact.
+
+Next: finish library check, run latest IME exact/source check and resolve OLD residual stack overflow using measured future sizes/baseline comparison, not blind edits. Then inspect complete diff/frozen mechanisms, build candidate ONLY after source checks, native GNOME/KDE with existing actor, first/second word and BOTH directions BEFORE Space; Space typo correction remains active, Tab/Shift/Double Shift controls. Existing full KDE matrix344/15/81of440 is HISTORICAL, not changed. New fragment code NOT installed or released on either desktop.
+
+Important native-build risk: remote live IME has been launched from /home/e/projects/lay-td119-gate-v1/target/release/lay-ibus-engine and old factory could also point to that cache. Verify actual factory exec before any release build; do not overwrite a live factory path accidentally while building. Use an isolated candidate release target if needed. Old private native helper's restoration proof was previously wrong; never trust its reported restoration without independent installed/live/factory byte parity.
+
+Open PR API checked2026-11-02T02:38:15+03:00: none. Graphify/human-headroom skill static scans were refused by shared local RAM guard; do not claim clear scans or bypass them. Heavy work only remotely through existing dedicated20cpu/24Gsoft28Ghard/1Gswap/T512 guards. Graph refresh still pending remotely. Completion sound hook required at true completion only, half-volume.
+
+## Next patch — user-confirmed inclusion
+
+The user confirmed that the installed full-restart menu feature must be included in the next patch. Include the existing verified GNOME/KDE menu changes, runtime-controller full-restart action and lifecycle worker, tests and owning ADR. The preceding local GNOME implementation is accepted; retain its exact verified source and evidence. KDE native GUI acceptance remains untested. This confirmation does not request immediate publication or restore the rejected fragment experiment.
+
+## CURRENT — full restart menu installed and checked — 2026-11-01T23:27:19.773770+00:00
+
+User confirmed the preceding local GNOME 1.0.123 runtime works excellently and requested complete restart from a menu button. That diagnostic is CLOSED by user acceptance; do not resume its old failure hunt. Current task complete: new top-level `Полный перезапуск Lay` is installed in GNOME; KDE menu source has the same action, no remote KDE installation was done.
+
+The existing controller now has an explicit full-restart command which launches a separate transient user unit and imports the original desktop/layout helpers. Automatic/quick restart remains unchanged. New lifecycle worker resets current L1.1 socket owner, L3, daemon, IBus/managed IME, GNOME extension; restores RU/EN and drops the retired IBus socket address only in its own environment. No Rust/input/correction/display/delivery source, model or browser setting was changed.
+
+Verified source: 9 new Python tests,12 existing startup tests,19 canonical remote tray-contract tests PASS; Bash/JS syntax and exact source scope PASS. Local actual Qt menu test could not run: PyQt5/PyQt6 absent (8 daemon-shell PASS,1 GUI ERROR; separate persistence test SKIP). Graphify scan/update refused shared RAM admission; no bypass and no fresh graph claim. No new release/commit/publication.
+
+Actual installed controller cycle PASS in6819ms. New current PIDs: IBus1761828, daemon1761913, IME1762198, L1.1 1762230, L3 1761914. All component hashes equal preceding123 bytes; loaded IME/CLI/tray123, GNOME+IBus LayRU, fresh L1.1 socket owner verified. Menu label is observed in live GNOME tree. Hidden AT-SPI item had no action; cycle used the exact CLI command behind the menu, not a claimed physical click. No browser foreground/input or new native matrix.
+
+Installed entry ~/.local/bin/lay-runtime-control points to ~/.local/lib/lay/runtime-control-full-restart-20261102/lay-runtime-control.sh, with its adjacent lay-full-restart.sh. Original symlink and GNOME modules backed up in ~/.cache/lay/development/full-restart-20261102/before-install and staged-install.json. Owning doc docs/development/full-restart-2026-11-02.md; canonical source check run-h1vdvwzm; live receipts in that cache directory. All older runtime PID statements below are historical.
+
+Queued future task remains letter-only fragment detector → existing flip with typed origin; Space ignored; no delivery rewrite. Do not restore the rejected124 stash.
+
+## Current local GNOME recovery / Chrome diagnostic — 2026-11-01T22:44:27.090632+00:00
+
+User reports all right-column test controls failing on installed 1.0.123. Requested a complete local Lay restart, then explicitly required Chrome to remain in the background. No remote work is authorized for this local diagnostic. No Lay runtime source edit or installation was made in this turn.
+
+Completed authorized restart of IBus, L1.1, L3 and daemon; reloaded the installed GNOME extension. Current PIDs: IBus 1343894, L1.1 1344087, L3 1343949, daemon 1344025, IME 1345111. CLI/live IME/tray all report 1.0.123; live and installed IME SHA-256 both 2a4c636a3be959ce096754909599a202146b7711157c2563e6980f5c8909d429. GNOME and IBus both Lay RU. Keyboard device access and L1.1 socket present. Fragment option remains OFF; no config edit. Earlier PID references below are superseded.
+
+Controlled local Chrome was opened using the existing chrome-agent launcher/profile, debug port 9222. Standard route verification has a false mismatch against flattened argv; the already registered chrome-agent-flat-argv route verifies PASS against the exact command fragments and owner PID 1369312. Its owned ten-field fixture is open. After user prohibited bringing Chrome forward, no more focus activation or native key injection was performed. Background DOM inspection found all ten controls editable, neither disabled nor read-only. A 45-second passive observation recorded ZERO input/gesture events; native Double Shift/Tab/autocorrection remain NOT TESTED after restart, and the reported defect is NOT resolved by evidence. Do not claim native PASS, causality, speedup or a source fix. Do not substitute CDP-dispatched keys for native Lay acceptance.
+
+Receipts: /home/ubu/.cache/lay/development/local-chrome-123-check (before/after runtime identities, restart steps, actual foreground-window identity before the background restriction, background fields, passive observation summary). Current source differences remain the prior two GNOME tray version strings plus this handoff; no restoration of rejected fragment experiment. Static graphify skill scan could not run because the shared resource guard rejected admission; no bypass, graph query, build or source test was performed.
+
+Next queued task remains below and must not start until this diagnostic is settled: separate letter-only fragment detector requests the existing flip mechanism with typed origin; ignores Space and does not rewrite delivery.
+
+## Next task explicitly queued by user — letter-only fragment detector
+
+The local 1.0.123 diagnostic is closed by user acceptance. The requested full-restart menu action is implemented and locally verified; the following fragment task remains queued and has not started.
+
+Then: letter insertion → separate fragment detector → request to the already existing word-layout flip mechanism with a typed origin marker. Space continues to invoke the previous functions; the fragment detector ignores Space and must not block its functions. Do not rewrite delivery or input routes for the detector. Map the existing entrypoint and exact allowed files before coding. The rejected unpublished 1.0.124 experiment remains archived.
+
+# CURRENT — user rollback completed, stable1.0.123 — 2026-11-01T21:45:07.003394+00:00
+
+The user explicitly requested rollback after rejecting the unpublished fragment
+integration and changes to established input/delivery paths. DO NOT resume the
+old1.0.124 experiment, restore its stash or continue its queued release plan.
+The implementation of that experiment was NOT accepted or published.
+
+Source rollback:
+- Checkout /home/ubu/projects/lay-dependency-updates-20261027, branch
+  codex/browser-matrix-repair-20261027, HEAD4fae57d50b031984c1e0ddc8796e78e142b2a595.
+- This HEAD differs from publicv1.0.123 commit5059360769266e55e3f393ba28eb57d6d5969d5c
+  only in publication/evidence documents. Runtime source equals stable123.
+-57 tracked changes restored and28 untracked experiment files preserved in
+  stashb2a0786bfed29e90e4736dcadce22ee183a67593. Every saved source file hash
+  verified against the stash. No reset/forcepush/tag/release/build.
+- Complete rollback receipt and patch: /home/ubu/.cache/lay/development/fragment-letter-only-20261031/rollback-to-123-20261101T213602Z/rollback.json.
+  Four ignored generated graph cache outputs preserved there and retired;
+  tracked graph/source receipts restored with the baseline.
+
+Completed separate user request: fix GNOME tray showing117 while application123.
+Both accepted source and installed extension had static APP_VERSION117 and
+metadata117. Only metadata version fields and APP_VERSION changed to123.
+Only GNOME extension reloaded via existing check-gnome-extension-runtime.sh;
+actual loaded DBusVersion123 confirmed. Primary daemon1651569 andIME1651666
+PIDs/SHA256 unchanged. No main GNOME binary installation/restart, no IBus restart.
+Receipt /home/ubu/.cache/lay/development/fragment-letter-only-20261031/rollback-to-123-20261101T213602Z/gnome-tray-version/verification.json.
+Current source code changes are ONLY these two version-metadata files plus
+this current handoff. No fragment/controller/observer/layout/shared route changes.
+
+Remote KDE rollback verification found a real restoration defect in the private
+native helper: installedIME123 but live factory124 after restoring an older
+factory cache; its earlier intermediate restoration booleans did not certify
+final live bytes. Do not reuse that helper for acceptance until restoration is
+fixed and independently reviewed in a separately authorized task.
+Explicit user rollback completed using existing source path, installed123 copied
+to factory cache and only candidate factory restarted. First activation raced
+registration (raw RESTORATION_INCOMPLETE preserved); subsequent normal activation
+succeeded. Final remoteIME3617885 reports123; live/installed/factory hashes ALL
+b765fde82d7f49418b0175880a0eb97aed1dde0ba5321524c60307e668c94a06.
+Remote daemon/globalIBus/config unchanged, source lay-ime-ru restored.
+Final remote receipt /home/e/.cache/lay/development/fragment-letter-only-20261031/
+user-rollback-runtime123-20261101T214324Z/final-verification.json.
+Fragment option is OFF in both primaryGNOME and remoteKDE, checked not changed.
+
+User's required future design (not newly implemented):
+1. Only insertion of a letter invokes fragment detection. Space/Enter do not
+   invoke it; it cannot disable, intercept, cancel or block ordinary Space rules.
+2. Detection submits a request to the ALREADY EXISTING layout conversion
+   mechanism; reuse its established owner/verifier/executor and delivery.
+3. Necessary feature-specific behavior uses an explicit typed origin flag
+   at a narrow documented seam. Do not rewrite existing paths to fit a new
+   feature or make a parallel field/word owner or replacement backend.
+4. Map exact existing command entrypoint and affected files before another
+   implementation. User rejects broad shared-route changes.
+
+No new implementation is running. StableGitHub and installed primaryCLI123
+verified current. No124 publication. Completion sound is required at turn end.
+
+--- Pre-experiment stable handoff (historical) ---
+
 # COMPLETE —10/10 stable releases published and verified
 
 Updated 2026-10-31T12:27:04.686164+00:00. All requested114–123 independentlyreadbackAPI/stable. Latest123published2026-10-31T12:23:35Z,releasecommit5059360769266e55e3f393ba28eb57d6d5969d5c,identicalannotatedtagdc576872048f6867ac6b0858e6491ffa5e9878d5onorigin/public. All4releaseCI andbothactualinstalled menuupdaters/sourcesPASS. Local122sees123available;remote123current. No agentlocalinstall/restart. Source1329+4metadata1333matches24fbb98d,test3617Rust/469Python(459PASS10SKIP)/17gates/tenzero-warning. Loadedremoteall10+daemon/IME/factoryverifiedafter2nativecontrols/4flips.

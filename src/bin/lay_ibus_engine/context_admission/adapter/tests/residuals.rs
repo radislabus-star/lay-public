@@ -52,7 +52,8 @@ pub(super) async fn td121_release_with_order(
             RELEASE_MASK,
         )
         .await
-        .unwrap();
+        .unwrap()
+        .handled();
     if !observer_first {
         assert!(harness.observer.process_next().await.unwrap());
     }
@@ -700,7 +701,8 @@ fn td121_completed_release_late_ingress_cannot_revive_the_pre_reset_word() {
                 RELEASE_MASK
             )
             .await
-            .unwrap());
+            .unwrap()
+            .handled());
         assert!(harness.observer.process_next().await.unwrap());
         engine
             .reset(
@@ -3061,7 +3063,8 @@ fn firefox_bridge_publication_survives_shift_received_after_reset_suffix_binding
                 assert!(!engine
                     .process_key_event(key.header(), emitter, keyval, keycode, state)
                     .await
-                    .unwrap());
+                    .unwrap()
+                    .handled());
                 assert_eq!(engine.committed_tail.buffer, "abc");
                 assert_eq!(engine.committed_tail.epoch, epoch);
                 assert_eq!(engine.live_context_token().as_ref(), Some(&published_token));
@@ -3588,6 +3591,7 @@ async fn legacy_key_at(
     bounded(engine.process_key_event(key.header(), emitter, keyval, keycode, state))
         .await
         .expect("legacy ProcessKeyEvent result")
+        .handled()
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -12422,7 +12426,8 @@ async fn cycle09_factory_handoff_with_capabilities(
                     key.2,
                 )
                 .await
-                .unwrap());
+                .unwrap()
+                .handled());
             assert!(target.live_context_token().is_some());
             assert!(crate::tail_memory::take_accepted_completion_feedback().is_empty());
         }
@@ -12561,7 +12566,8 @@ async fn firefox_observed_key_callback(
     let handled = engine
         .process_key_event(message.header(), emitter, key.0, key.1, key.2)
         .await
-        .unwrap();
+        .unwrap()
+        .handled();
     handled
 }
 
@@ -13197,7 +13203,8 @@ async fn firefox_dispatch_deferred_native_key(
     let handled = engine
         .process_key_event(message.header(), emitter, key.0, key.1, key.2)
         .await
-        .unwrap();
+        .unwrap()
+        .handled();
     // UnknownObject replies were already consumed by exact serial at ingress.
     // A validated native replay must not emit CommitText/DeleteSurroundingText.
     cycle09_assert_no_local_text_effect(harness).await;
@@ -17970,7 +17977,8 @@ async fn firefox_replay_before_deferred_reset(
                     key.2,
                 )
                 .await
-                .unwrap();
+                .unwrap()
+                .handled();
             let effects = super::terminal_delivery::legacy_effects(&mut harness).await;
             assert!(
                 effects.iter().all(|effect| {

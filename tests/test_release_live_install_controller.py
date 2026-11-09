@@ -29,6 +29,9 @@ CONTROLLER_DELTA_SHA256 = (
     "e3ec4f97d914c752f00fbff3250bc1be622aa27d7bcbcc1f7cb43f810d587321"
 )
 RUNTIME_CONTROLLER_SHA256 = (
+    "066d844db60ff54818e0ca3c4daeb830b28e84587df14a04c6a405bc6ae62192"
+)
+PRE_FULL_RESTART_RUNTIME_CONTROLLER_SHA256 = (
     "92843cc812c6fe2203a770aa50df36a46c98a36f6c20bc0ae751f14fde4ae1e4"
 )
 
@@ -1310,6 +1313,30 @@ rollback_abort "ROLLBACK_TEST=FAIL"
             re.compile(r"rm[^\n]+(?:L11_CAPTURED_SOCKET|lay-l11[.]sock)"),
         )
         self.assertEqual(RUNTIME_CONTROLLER_SHA256, file_sha256(RUNTIME_CONTROLLER))
+
+    def test_full_restart_retains_exact_preexisting_runtime_controller(self) -> None:
+        source = RUNTIME_CONTROLLER.read_text(encoding="utf-8")
+        marker = "launch_full_restart() {\n"
+        self.assertEqual(source.count(marker), 1)
+        start = source.index(marker)
+        end = source.index('case "${1:-status}" in\n', start)
+        original = source[:start] + source[end:]
+        dispatch = "    full-restart)\n        launch_full_restart\n        ;;\n"
+        self.assertEqual(original.count(dispatch), 1)
+        original = original.replace(dispatch, "", 1)
+        self.assertEqual(original.count("|full-restart|channel"), 1)
+        original = original.replace("|full-restart|channel", "|channel", 1)
+        self.assertEqual(
+            PRE_FULL_RESTART_RUNTIME_CONTROLLER_SHA256,
+            hashlib.sha256(original.encode("utf-8")).hexdigest(),
+        )
+        # A changed legacy dispatch must still fail the original exact pin.
+        changed = original.replace("    restart)\n", "    broken-restart)\n", 1)
+        self.assertNotEqual(original, changed)
+        self.assertNotEqual(
+            PRE_FULL_RESTART_RUNTIME_CONTROLLER_SHA256,
+            hashlib.sha256(changed.encode("utf-8")).hexdigest(),
+        )
 
     def test_l11_term_requires_exact_executable_hash_and_six_field_argv(self) -> None:
         lifecycle = l11_lifecycle_functions()

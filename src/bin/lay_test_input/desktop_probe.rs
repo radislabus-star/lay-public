@@ -7,6 +7,74 @@ use std::time::{Duration, Instant};
 
 static INITIAL_LAYOUT_ALREADY_SET: AtomicBool = AtomicBool::new(false);
 
+fn expected_test_client(
+    pid: Option<&str>,
+    title: Option<&str>,
+) -> Result<Option<(u32, String)>, String> {
+    match (pid, title) {
+        (None, None) => Ok(None),
+        (Some(pid), Some(title)) if !title.is_empty() => {
+            let pid = pid.parse::<u32>().map_err(|_| "invalid test client PID")?;
+            if pid == 0 {
+                return Err("test client PID must be nonzero".into());
+            }
+            Ok(Some((pid, title.into())))
+        }
+        _ => Err("test focus requires both a PID and a nonempty title".into()),
+    }
+}
+
+fn test_client_matches(raw: &str, expected: &(u32, String)) -> bool {
+    let Ok(value) = serde_json::from_str::<serde_json::Value>(raw) else {
+        return false;
+    };
+    let pid = value["pid"]
+        .as_u64()
+        .or_else(|| value["pid"].as_str()?.parse::<u64>().ok());
+    pid == Some(u64::from(expected.0)) && value["title"].as_str() == Some(&expected.1)
+}
+
+/// Optional admission for the test injector, never a production focus owner.
+pub(crate) fn require_test_client_focus() -> std::io::Result<()> {
+    let pid = env::var("LAY_TEST_EXPECT_FOCUS_PID").ok();
+    let title = env::var("LAY_TEST_EXPECT_FOCUS_TITLE").ok();
+    let expected =
+        expected_test_client(pid.as_deref(), title.as_deref()).map_err(std::io::Error::other)?;
+    let Some(expected) = expected else {
+        return Ok(());
+    };
+    let observed: Result<String, String> = zbus::block_on(futures_lite::future::race(
+        async {
+            let connection = zbus::Connection::session()
+                .await
+                .map_err(|e| e.to_string())?;
+            let proxy = zbus::Proxy::new(
+                &connection,
+                "org.gnome.Shell",
+                "/io/github/radislabus_star/LayDaemon",
+                "io.github.radislabus_star.LayDaemon",
+            )
+            .await
+            .map_err(|e| e.to_string())?;
+            proxy
+                .call("FocusedWindowInfo", &())
+                .await
+                .map_err(|e| e.to_string())
+        },
+        async {
+            async_io::Timer::after(Duration::from_millis(150)).await;
+            Err("test client focus observation timed out".into())
+        },
+    ));
+    let raw = observed.map_err(std::io::Error::other)?;
+    if !test_client_matches(&raw, &expected) {
+        return Err(std::io::Error::other(
+            "focused window is not the exact test client",
+        ));
+    }
+    Ok(())
+}
+
 pub(crate) fn activate_layout(id: &str) {
     if env::var("LAY_TEST_IME_ENGINE")
         .ok()
@@ -307,4 +375,48 @@ fn kde_layout_index(qdbus: &str, id: &str) -> Option<usize> {
     parse_kde_layouts_list(&text)
         .into_iter()
         .position(|layout| layout == id)
+}
+
+#[cfg(test)]
+mod test_client_focus_tests {
+    use super::{expected_test_client, test_client_matches};
+
+    #[test]
+    fn injector_focus_is_optional_but_partial_or_invalid_admission_is_rejected() {
+        assert_eq!(expected_test_client(None, None).unwrap(), None);
+        for (pid, title) in [
+            (Some("12"), None),
+            (None, Some("test")),
+            (Some("0"), Some("test")),
+            (Some("-1"), Some("test")),
+            (Some("4294967296"), Some("test")),
+            (Some("12"), Some("")),
+        ] {
+            assert!(expected_test_client(pid, title).is_err());
+        }
+    }
+
+    #[test]
+    fn injector_focus_requires_both_native_pid_and_exact_title() {
+        let expected = expected_test_client(Some("12"), Some("owned test"))
+            .unwrap()
+            .unwrap();
+        for raw in [
+            r#"{"pid":"12","title":"owned test"}"#,
+            r#"{"pid":12,"title":"owned test"}"#,
+        ] {
+            assert!(test_client_matches(raw, &expected));
+        }
+        for raw in [
+            r#"{"pid":13,"title":"owned test"}"#,
+            r#"{"pid":12,"title":"another window"}"#,
+            r#"{"pid":12}"#,
+            r#"{"title":"owned test"}"#,
+            r#"{"pid":12.5,"title":"owned test"}"#,
+            "null",
+            "not json",
+        ] {
+            assert!(!test_client_matches(raw, &expected));
+        }
+    }
 }

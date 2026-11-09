@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3581,
+    "correctness": 3614,
     "ignored": 45,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
-    "process": 506,
-    "target": 3167
+    "process": 507,
+    "target": 3199
   },
   "package_fixtures": [
     {
@@ -3716,7 +3716,14 @@
       "isolation": "process",
       "kind": "test",
       "lane": "correctness",
-      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_retains_safe_exact_ordinary_layout_candidates",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_option_cannot_replace_or_veto_space_layout_rules",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "process",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "typing_rule_graph::rules::fragment::tests::fragment_option_preserves_complete_boundary_decisions",
       "target": "lib:lay"
     },
     {
@@ -6194,6 +6201,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "desktop_probe::test_client_focus_tests::injector_focus_is_optional_but_partial_or_invalid_admission_is_rejected",
+      "target": "bin:lay-test-input"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "desktop_probe::test_client_focus_tests::injector_focus_requires_both_native_pid_and_exact_title",
+      "target": "bin:lay-test-input"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "diagnostics_are_observational_and_enablement_has_one_explicit_owner",
       "target": "test:tray_ui_contract"
     },
@@ -6917,6 +6938,181 @@
       "lane": "correctness",
       "name": "focus_guard::kde_consumer_tests::kde_provider_error_invalidates_and_pauses_instead_of_retaining_old_focus",
       "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::reply::tests::fragment_known_native_word_readiness_preserves_an_observed_older_prefix",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::reply::tests::fragment_notifier_is_silent_until_the_bool_response_is_dispatched",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::reply::tests::fragment_only_positive_pending_native_requests_defer_the_reply",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::reply::tests::fragment_reply_dispatch_does_not_supply_a_document_receipt",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::reply::tests::fragment_reply_has_the_identical_bool_signature_and_body",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::reply::tests::fragment_reply_metadata_cannot_survive_changed_input_or_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_committed_mode_entry_never_switches_source_for_owned_preedit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_committed_word_verifies_only_its_exact_suffix_and_preserves_context",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_detector_future_keeps_a_bounded_callback_stack_frame",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_disabled_boundaries_sensitive_and_stale_requests_have_no_effect",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_manual_mode_preserves_exact_closed_suffix",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_manual_mode_rejects_mismatched_closed_suffix",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_manual_mode_requires_current_origin_and_exact_existing_handoff",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_manual_mode_roundtrip_changes_no_word_epoch_or_writer",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_mode_completion_preserves_the_existing_dispatched_result_epoch",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_mode_entry_rejects_stale_and_revoked_intent_without_effects",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_mode_failure_after_committed_text_reports_partial_without_retry",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_mode_publication_or_kde_failure_never_promotes_decoder_or_retries",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_mode_return_does_not_intercept_off_or_closed_words",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_origin_cannot_apply_an_old_proposal_to_another_word",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_real_key_release_requires_a_paired_letter_and_ignores_space",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_release_request_survives_early_retirement_but_not_focus_or_pair_loss",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_request_reuses_verified_commit_in_both_desktops_and_directions",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_return_to_selected_source_reconciles_only_a_changed_kde_group",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_unknown_literal_without_current_native_word_stays_read_only",
+      "target": "bin:lay-ibus-engine"
     },
     {
       "isolation": "target",
@@ -8709,6 +8905,34 @@
       "lane": "correctness",
       "name": "layout_controller::tests::verify_layout_retry_uses_all_attempts_on_failure",
       "target": "bin:lay-daemon"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::letter_tests::fragment_letter_decision_preserves_current_support_and_requires_known_target",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::letter_tests::fragment_letter_request_changes_decoder_during_both_directions_without_space",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::letter_tests::fragment_letter_request_ignores_boundaries_short_mixed_and_technical_tokens",
+      "target": "lib:lay"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "layout_fragments::letter_tests::fragment_letter_request_uses_automatic_exact_layout_authority",
+      "target": "lib:lay"
     },
     {
       "isolation": "target",
@@ -17737,6 +17961,20 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
+      "name": "preedit::tests::late_worker_owned_publication_failure_keeps_text_and_never_replays_an_edit",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "preedit::tests::late_worker_preserves_typed_preedit_and_caret_without_committing_or_granting_authority",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
       "name": "preedit::tests::late_worker_retires_the_display_exactly_once",
       "target": "bin:lay-ibus-engine"
     },
@@ -23085,41 +23323,6 @@
       "isolation": "target",
       "kind": "test",
       "lane": "correctness",
-      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_obeys_master_switch_and_protected_context",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_off_preserves_legacy_dispatch_and_other_rules",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_preserves_previous_words_case_and_punctuation",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_projects_physical_edge_letters_before_stripping_punctuation",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
-      "name": "typing_rule_graph::rules::fragment::tests::fragment_mode_reuses_short_english_target_context_requirement",
-      "target": "lib:lay"
-    },
-    {
-      "isolation": "target",
-      "kind": "test",
-      "lane": "correctness",
       "name": "typing_scene::tests::identity_domains_are_stable_and_separate",
       "target": "lib:lay"
     },
@@ -24528,6 +24731,34 @@
       "kind": "test",
       "lane": "correctness",
       "name": "window_interaction::native_document::tests::chrome_activation_policy_does_not_probe_gnome",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::fragment_native_mode_capture_cannot_replace_an_absent_or_inexact_result",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::fragment_native_mode_carries_only_transport_until_an_actual_result_arrives",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::fragment_native_mode_carry_does_not_confirm_a_mismatch_or_extend_expiry",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::native_document::tests::fragment_native_mode_rejects_stale_owners_receipts_and_unrelated_mode_changes",
       "target": "bin:lay-ibus-engine"
     },
     {

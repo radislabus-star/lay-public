@@ -72,7 +72,8 @@ PROCESS_ISOLATED_TESTS = {
         "bin:lay-daemon",
         "exact_ime_tail_replay::kde_diagnostics::tests::refusal_debug_probe_preserves_published_config_until_explicit_reload",
     ),
-    ("lib:lay", "typing_rule_graph::rules::fragment::tests::fragment_mode_retains_safe_exact_ordinary_layout_candidates"),
+    ("lib:lay", "typing_rule_graph::rules::fragment::tests::fragment_option_cannot_replace_or_veto_space_layout_rules"),
+    ("lib:lay", "typing_rule_graph::rules::fragment::tests::fragment_option_preserves_complete_boundary_decisions"),
     (
         "bin:lay-daemon",
         "exact_ime_tail_replay::firefox_pacing::tests::debug_probe_preserves_published_config_until_explicit_reload",

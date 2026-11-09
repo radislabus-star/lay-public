@@ -310,6 +310,30 @@ apply_channel() {
     esac
 }
 
+launch_full_restart() {
+    local worker manager_bus key
+    local -a environment=()
+    worker="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/lay-full-restart.sh"
+    [ -f "$worker" ] || { echo "Не найден контроллер полного перезапуска: $worker" >&2; return 1; }
+    manager_bus="unix:path=${XDG_RUNTIME_DIR:-/run/user/$(id -u)}/bus"
+    for key in DISPLAY WAYLAND_DISPLAY XAUTHORITY XDG_RUNTIME_DIR \
+        DBUS_SESSION_BUS_ADDRESS XDG_CURRENT_DESKTOP XDG_SESSION_DESKTOP \
+        DESKTOP_SESSION XDG_CONFIG_HOME XDG_DATA_HOME GTK_IM_MODULE QT_IM_MODULE XMODIFIERS; do
+        if [ "${!key+x}" ]; then
+            environment+=("--setenv=$key=${!key}")
+        fi
+    done
+    # This worker must survive the calling tray and the IBus service it resets.
+    DBUS_SESSION_BUS_ADDRESS="$manager_bus" systemd-run --user --collect --no-block \
+        --unit=lay-full-restart.service --description="Lay: полный перезапуск" \
+        --property=Type=exec "${environment[@]}" /bin/bash "$worker"
+}
+
+# The explicit full-restart worker imports the same desktop/layout helpers.
+if [[ "${BASH_SOURCE[0]}" != "$0" ]]; then
+    return 0
+fi
+
 case "${1:-status}" in
     start)
         user_systemctl start lay-daemon.service
@@ -326,6 +350,9 @@ case "${1:-status}" in
         else
             stop_ime
         fi
+        ;;
+    full-restart)
+        launch_full_restart
         ;;
     daemon-start|daemon-stop|daemon-restart)
         # Explicit daemon controls must not cycle IBus or change input sources.
@@ -352,7 +379,7 @@ case "${1:-status}" in
         timeout 1s ibus engine || true
         ;;
     *)
-        echo "usage: lay-runtime-control {daemon-start|daemon-stop|daemon-restart|daemon-is-active|start|stop|restart|channel [ime|uinput|auto]|status}" >&2
+        echo "usage: lay-runtime-control {daemon-start|daemon-stop|daemon-restart|daemon-is-active|start|stop|restart|full-restart|channel [ime|uinput|auto]|status}" >&2
         exit 2
         ;;
 esac

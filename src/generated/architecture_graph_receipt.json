@@ -3,7 +3,7 @@
     {
       "evidence": [
         "src/typing_transition/candidate.rs:L12:L2CandidateLattice",
-        "src/typing_transition/decision.rs:L103:.evaluate_candidates()",
+        "src/typing_transition/decision.rs:L201:.evaluate_candidates()",
         "src/typing_transition/decision.rs:L61:TransitionDecisionCore",
         "src/typing_transition/decision/live_field.rs:L44:TransitionDecisionCore",
         "src/typing_transition/live_candidate.rs:L106:TransitionDecisionCore",
@@ -37,8 +37,8 @@
     },
     {
       "evidence": [
-        "src/bin/lay_daemon/layout_controller.rs:L339:call_replace_text()",
-        "src/bin/lay_daemon/layout_controller.rs:L369:try_ime_replace_tail()",
+        "src/bin/lay_daemon/layout_controller.rs:L352:call_replace_text()",
+        "src/bin/lay_daemon/layout_controller.rs:L382:try_ime_replace_tail()",
         "src/bin/lay_daemon/text_output/replacement.rs:L78:apply_text_replacement_pipeline()",
         "src/text_edit/executor.rs:L108:AuthorizedEdit",
         "src/text_edit/executor.rs:L139:authorize_backend_edit()"
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:73049",
-        "graph_nodes:28615"
+        "graph_links:73403",
+        "graph_nodes:28856"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "9f25e11727c455390552206a4772422a992782d323f1d4bbb3ee8585b8a4d88a",
-  "graph_fingerprint": "73b9a419a7627d79c638b04b136b830be87041ce6e0677698cbfc42aaa83edc5",
-  "graph_links": 73049,
-  "graph_nodes": 28615,
+  "graph_binding_fingerprint": "92d52d0557370653ef974e96e43ad19200bf0bc0ad542ec61cc480caa9aacee7",
+  "graph_fingerprint": "69fe29d48cbd6222945ab85974bada644b4d60be367fd1a03839739488d307af",
+  "graph_links": 73403,
+  "graph_nodes": 28856,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "340d0a30c4bda6ce82ffc090c2110a19aee94c2a6bc3357007251556c7b709ab",
+  "source_fingerprint": "c1bee59224f0fbbbe92f3e800dfe1dea92a40dc281b7d7dfa03b615be28645f7",
   "verdict": "PASS"
 }

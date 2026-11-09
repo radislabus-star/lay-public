@@ -106,6 +106,47 @@ impl LayIbusEngine {
         self.sync_layout_for_text_blocking(text);
     }
 
+    /// Complete the new caller's current-word mode without replacing this
+    /// engine. Text authority remains with the existing verified caller.
+    pub(super) fn sync_layout_for_fragment_word_mode(
+        &self,
+        target_is_ru: bool,
+        token: Option<LayoutIntentToken>,
+    ) -> Result<(), String> {
+        if !self.config.auto_switch_layout
+            || token != self.live_layout_intent_token()
+            || self.context_admission_required
+                && (self.context_admission.is_none() || token.is_none())
+        {
+            return Err("fragment mode has no enabled current layout intent".into());
+        }
+        let backend = self.config.active_layout_backend();
+        let dispatch = dispatch_direct_layout_switch(
+            backend,
+            target_is_ru,
+            ime_engine_for_layout(target_is_ru),
+            self.context_admission.clone(),
+            token,
+            |request| {
+                if backend == LayoutBackend::Kde {
+                    request.switch_owned_preedit_group(|| {
+                        layout_switch_worker().request_is_current(request)
+                    })
+                } else {
+                    // The caller publishes the existing native InputMode.
+                    Ok(())
+                }
+            },
+        );
+        if dispatch.promotes_decoder() {
+            Ok(())
+        } else {
+            Err(format!(
+                "fragment current-word layout refused: {dispatch:?}"
+            ))
+        }
+    }
+
     pub(super) fn sync_layout_for_owned_preedit(&self, target_is_ru: bool) -> Result<(), String> {
         let backend = self.config.active_layout_backend();
         if backend != LayoutBackend::Kde {

@@ -83,6 +83,104 @@ impl Default for TransitionDecisionPolicy {
 }
 
 impl TransitionDecisionCore {
+    /// Open-prefix input-mode selection, sealed by the same decision owner.
+    pub(crate) fn decide_fragment_layout(
+        token: &str,
+        current_layout_is_ru: bool,
+        analysis: &crate::layout_fragments::Analysis,
+    ) -> Option<crate::layout_fragments::FragmentLayoutRequest> {
+        use crate::layout_fragments::{FragmentLayoutRequest, Selection, Status};
+        use crate::text_edit::{
+            plan_decision_transition_edit, plan_text_replacement, DecisionTransitionEditInput,
+            TransitionOperator,
+        };
+
+        let (target_layout_is_ru, target, winner, other) = match analysis.selection {
+            Selection::Russian => (
+                true,
+                &analysis.russian,
+                analysis.russian_score,
+                analysis.english_score,
+            ),
+            Selection::English => (
+                false,
+                &analysis.english,
+                analysis.english_score,
+                analysis.russian_score,
+            ),
+            _ => return None,
+        };
+        if target_layout_is_ru == current_layout_is_ru || target == token {
+            return None;
+        }
+        // A larger opposing score cannot erase positive current-prefix support.
+        // Only the model's Known target state can admit this optional early
+        // conversion; other words retain the ordinary boundary contour.
+        let margin = i64::from(winner.total) - i64::from(other.total);
+        if winner.status != Status::Known
+            || other.status == Status::Known
+            || other.total > 0
+            || winner.total <= 0
+            || margin < 16
+            || crate::word_recognizer::is_protected_ascii_token(token)
+            || (!target_layout_is_ru
+                && crate::layout_autoswitch::english_layout_target_requires_context(target))
+            || crate::nanda_wave::cached_usage_prior_snapshot()
+                .changes_protected_word(token, target)
+        {
+            return None;
+        }
+        let report = action::verify_action_operator(
+            token,
+            target,
+            TypingErrorClass::WrongLayout,
+            CandidateOrigin::Layout,
+        );
+        if !report.verifier_passed
+            || report.left_context_changed
+            || report.changed_tokens != 1
+            || report.edit_operator != TransitionOperator::LayoutProjection
+        {
+            return None;
+        }
+        let event = TypingErrorEvent {
+            original: token.to_owned(),
+            core: token.to_owned(),
+            current_word: token.to_owned(),
+            input_class: TypingErrorClass::WrongLayout,
+        };
+        let candidate = UnifiedCorrectionCandidate::new(
+            target.clone(),
+            CorrectionDecisionSource::Deterministic,
+            CandidateOrigin::Layout,
+            "letter_fragment_layout",
+            TypingErrorClass::WrongLayout,
+            CandidateGateDecision {
+                action: CandidateGateAction::Eligible,
+                reason: "decisive_open_prefix_layout",
+            },
+        );
+        let receipt = DecisionTransitionReceipt::from_verified_action(&event, &candidate, report);
+        let plan = plan_text_replacement(token, target)?;
+        let action = plan_decision_transition_edit(
+            DecisionTransitionEditInput {
+                source: "letter-fragment-layout",
+                // Exact keyboard projection, not a calibrated language probability.
+                confidence_milli: 1_000,
+                from_text: token,
+                to_text: target,
+                plan,
+                selected_source_id: Some("letter_fragment_layout"),
+                selected_error_class: Some("wrong_layout"),
+            },
+            &receipt,
+        );
+        Some(FragmentLayoutRequest {
+            action,
+            target_layout_is_ru,
+        })
+    }
+
     pub(crate) fn decide_visible_text_transition(
         state: &crate::text_edit::VisibleFieldState,
         candidate: crate::text_edit::LatentTextTransitionCandidate,

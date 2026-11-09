@@ -163,9 +163,18 @@ impl ImeDelegatedTailLease {
 pub(crate) struct ImeCommittedTailReplay {
     plan: ManualTogglePlan,
     lease: ImeDelegatedTailLease,
+    fragment_word_mode: bool,
 }
 
 impl ImeCommittedTailReplay {
+    pub(crate) fn with_fragment_word_mode(mut self) -> Self {
+        self.fragment_word_mode = true;
+        self
+    }
+
+    pub(crate) fn needs_fragment_word_mode(&self) -> bool {
+        self.fragment_word_mode
+    }
     pub(crate) fn into_parts(self) -> (ManualTogglePlan, ImeDelegatedTailLease) {
         (self.plan, self.lease)
     }
@@ -367,7 +376,11 @@ fn committed_tail_replay_from_v3_reply(
         reason: "lease_validation",
         detail,
     })?;
-    Ok(ImeCommittedTailReplay { plan, lease })
+    Ok(ImeCommittedTailReplay {
+        plan,
+        lease,
+        fragment_word_mode: false,
+    })
 }
 
 fn delegated_tail_lease_from_reply(
@@ -569,6 +582,31 @@ pub(super) fn suppress_next_autocorrect_v2(
         )
         .map_err(|error| error.to_string())?;
     reply
+        .body()
+        .deserialize::<bool>()
+        .map_err(|error| error.to_string())
+}
+
+pub(super) fn complete_fragment_word_mode(
+    lease: &ImeDelegatedTailLease,
+    expected_is_ru: bool,
+    target_is_ru: bool,
+) -> Result<bool, String> {
+    dbus_connection()?
+        .call_method(
+            Some(IME_DBUS_DEST),
+            IME_DBUS_PATH,
+            Some(IME_DBUS_INTERFACE),
+            "CompleteFragmentWordModeV1",
+            &(
+                lease.expected_suffix(),
+                lease.expected_epoch(),
+                lease.expected_source_path(),
+                expected_is_ru,
+                target_is_ru,
+            ),
+        )
+        .map_err(|error| error.to_string())?
         .body()
         .deserialize::<bool>()
         .map_err(|error| error.to_string())
@@ -1060,6 +1098,10 @@ mod delegated_tail_tests {
             "/field/7\u{1f}gtk-entry",
         ))
         .expect("exact committed-tail replay");
+        assert!(!replay.needs_fragment_word_mode());
+        let marked = replay.clone().with_fragment_word_mode();
+        assert!(marked.needs_fragment_word_mode());
+        assert_eq!(replay.clone().into_parts(), marked.into_parts());
         let (plan, lease) = replay.into_parts();
 
         assert_eq!(plan.edit.original_tail, "prefix ghjdthrf ");

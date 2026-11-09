@@ -1591,12 +1591,7 @@ impl LayIbusEngine {
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
     ) -> fdo::Result<bool> {
-        if !self.composition.preedit_display_only_pending {
-            return Ok(false);
-        }
-        self.cancel_precognition_display_generation();
-        self.clear_preedit(emitter).await?;
-        Ok(true)
+        self.retire_pending_precognition(emitter).await
     }
 
     fn advance_precognition_candidate(&mut self, step: isize) -> bool {

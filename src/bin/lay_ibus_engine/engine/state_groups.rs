@@ -107,6 +107,8 @@ impl CompositionState {
 pub(crate) struct LayoutGestureState {
     pub(crate) layout_is_ru: bool,
     pub(crate) layout_generation: u64,
+    /// Origin metadata for the current mode, never authority over word text.
+    pub(crate) fragment_word_mode_generation: Option<u64>,
     pub(crate) shift_active: bool,
     pub(crate) shift_used_as_modifier: bool,
     pub(crate) shift_pressed_at: Option<Instant>,
@@ -131,6 +133,7 @@ impl LayoutGestureState {
         Self {
             layout_is_ru,
             layout_generation,
+            fragment_word_mode_generation: None,
             shift_active: false,
             shift_used_as_modifier: false,
             shift_pressed_at: None,

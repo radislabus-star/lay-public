@@ -4,7 +4,11 @@
 from __future__ import annotations
 
 import argparse
+import json
+import os
 import sys
+import time
+from pathlib import Path
 
 import gi
 
@@ -33,7 +37,40 @@ class EntryCapture(Gtk.Application):
         label.set_xalign(0)
         entry = Gtk.Entry()
 
+        if os.environ.get("LAY_GTK_ENTRY_CAPTURE_NATIVE") == "1":
+            # Native client signals, separate from the engine's output trace.
+            # Exclusive creation prevents one case from overwriting another.
+            trace = Path(os.environ["LAY_IBUS_TRACE_PATH"]).with_suffix(".gtk-native.jsonl")
+            self._native_log = trace.open("x", encoding="utf-8")
+            delegate = entry.get_delegate()
+
+            def observe(kind: str, preedit: str | None = None, keyval: int | None = None) -> None:
+                self._native_log.write(json.dumps({
+                    "kind": kind,
+                    "monotonic_ns": time.monotonic_ns(),
+                    "pid": os.getpid(),
+                    "title": self._title,
+                    "text": entry.get_text(),
+                    "caret": entry.get_position(),
+                    "active": window.is_active(),
+                    "focused": delegate.has_focus(),
+                    "preedit": preedit,
+                    "keyval": keyval,
+                }, ensure_ascii=False) + "\n")
+                self._native_log.flush()
+
+            entry.connect("changed", lambda _entry: observe("changed"))
+            delegate.connect("preedit-changed", lambda _text, preedit: observe("preedit", preedit))
+            window.connect("notify::is-active", lambda *_args: observe("window-active"))
+            keys = Gtk.EventControllerKey.new()
+            keys.set_propagation_phase(Gtk.PropagationPhase.CAPTURE)
+            keys.connect("key-released", lambda _keys, keyval, *_args: observe("key-release", keyval=keyval))
+            entry.add_controller(keys)
+            self._native_observe = observe
+
         def done(_entry: Gtk.Entry) -> None:
+            if hasattr(self, "_native_observe"):
+                self._native_observe("accepted")
             if self._show_position:
                 print(
                     f"{_entry.get_text()}\tpos={_entry.get_position()}",

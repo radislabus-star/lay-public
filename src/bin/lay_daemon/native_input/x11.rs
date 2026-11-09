@@ -440,10 +440,36 @@ impl Input {
         self.grab_with_client_focus(kde_client_focus::required(crate::active_layout_backend()))
     }
 
+    fn transient_grab_refusal(&self, stage: &str) -> io::Error {
+        if crate::active_layout_backend() == lay::desktop::LayoutBackend::Kde
+            && lay::config::runtime_debug_action_log()
+        {
+            lay::debug_log::append_private_line(
+                lay::debug_log::ibus_runtime_trace_path()
+                    .with_file_name("kde_exact_replay_debug.jsonl"),
+                serde_json::json!({
+                    "kind": "kde_native_grab_refusal",
+                    "monotonic": format!("{:?}", std::time::Instant::now()),
+                    "pid": std::process::id(),
+                    "stage": stage,
+                    "grabbed": self.grabbed,
+                    "batch_pending": self.batch_pending,
+                    "pending_events": self.pending.len(),
+                    "pending_shift_down": self.pending.iter().filter(|e| e.code() == KeyCode::KEY_LEFTSHIFT.code() && e.value() == 1).count(),
+                    "pending_shift_up": self.pending.iter().filter(|e| e.code() == KeyCode::KEY_LEFTSHIFT.code() && e.value() == 0).count(),
+                    "pending_other": self.pending.iter().filter(|e| e.code() != KeyCode::KEY_LEFTSHIFT.code()).count(),
+                    "epoch": self.epoch.load(Ordering::Acquire),
+                })
+                .to_string(),
+            );
+        }
+        io::ErrorKind::WouldBlock.into()
+    }
+
     fn grab_with_client_focus(&mut self, retain_client_focus: bool) -> io::Result<()> {
         let acquisition_epoch = self.epoch.load(Ordering::Acquire);
         if self.grabbed || self.batch_pending || !self.pending.is_empty() {
-            return Err(io::ErrorKind::WouldBlock.into());
+            return Err(self.transient_grab_refusal("busy_input"));
         }
         if !self.valid.load(Ordering::Acquire) {
             return Err(err("X11 input revoked"));
@@ -460,7 +486,7 @@ impl Input {
             .iter()
             .any(|b| *b != 0)
         {
-            return Err(io::ErrorKind::WouldBlock.into());
+            return Err(self.transient_grab_refusal("held_key"));
         }
         let focus = self
             .conn
@@ -550,7 +576,7 @@ impl Input {
                 || !self.pending.is_empty()
                 || self.epoch.load(Ordering::Acquire) != acquisition_epoch
             {
-                return Err(io::ErrorKind::WouldBlock.into());
+                return Err(self.transient_grab_refusal("acquisition_boundary"));
             }
             if let Some(maps) = prepared_maps.take() {
                 self.replay.lock().map_err(err)?.maps = Some(maps);
@@ -558,7 +584,7 @@ impl Input {
                 self.activate_replay()?;
             }
             if self.epoch.load(Ordering::Acquire) != acquisition_epoch || !self.pending.is_empty() {
-                return Err(io::ErrorKind::WouldBlock.into());
+                return Err(self.transient_grab_refusal("replay_activation"));
             }
             Ok(())
         })();

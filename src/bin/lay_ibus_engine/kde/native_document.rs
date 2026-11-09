@@ -22,6 +22,16 @@ mod preparation;
 #[path = "native_document/tests.rs"]
 mod tests;
 
+#[cfg(test)]
+impl crate::engine::LayIbusEngine {
+    pub(crate) fn fragment_reply_test_fixture() -> (Self, zbus::Connection) {
+        let (engine, binding) = tests::observed_native_engine_with_completeness(
+            crate::context_admission::WordCompleteness::KnownStart,
+        );
+        (engine, binding.connection)
+    }
+}
+
 use super::desktop::FocusedWindow;
 use super::SurroundingTextSnapshot;
 use crate::context_admission::AdmissionToken;
@@ -128,6 +138,113 @@ pub(super) struct NativeSnapshot {
 pub(crate) struct Observation {
     binding: NativeDocumentBinding,
     pub(super) snapshot: SurroundingTextSnapshot,
+}
+
+/// Callback-local continuation of one dispatched result, never an edit grant.
+pub(crate) struct FragmentNativeModeContinuation {
+    source: NativeDocumentBinding,
+    pending: crate::engine::PendingVisiblePostcondition,
+    intent: crate::context_admission::LayoutIntentToken,
+    source_is_ru: bool,
+    target_is_ru: bool,
+}
+
+impl LayIbusEngine {
+    pub(crate) fn capture_fragment_native_mode_continuation(
+        &self,
+        target_is_ru: bool,
+    ) -> NativeResult<Option<FragmentNativeModeContinuation>> {
+        let Some(pending) = self
+            .committed_tail
+            .pending_visible_postcondition
+            .as_ref()
+            .filter(|pending| pending.native_document.is_some())
+        else {
+            return Ok(None);
+        };
+        let source = self
+            .client_context
+            .native_document_binding
+            .as_ref()
+            .ok_or("fragment_native_source_missing")?;
+        let expected = pending.native_document.as_ref().unwrap();
+        let intent = self
+            .live_layout_intent_token()
+            .ok_or("fragment_native_intent_missing")?;
+        if !self.config.fragment_layout_autoflip
+            || !self.config.auto_switch_layout
+            || self.context_handoff_sealed
+            || !source.observation_owner_is_current(self)
+            || !observer::current(self, source)
+            || !source.same_observation_owner(expected)
+            || !expected.is_current(self)
+            || pending.dispatched_epoch != self.committed_tail.epoch
+            || pending
+                .expected_external_snapshot
+                .as_ref()
+                .is_none_or(|s| s.has_selection() || s.cursor_pos as usize > s.text.chars().count())
+            || pending.snapshot.selection.is_some()
+            || pending.space_boundary_commit.is_some()
+            || pending.layout_sync_text.is_some()
+        {
+            return Err("fragment_native_result_changed");
+        }
+        Ok(Some(FragmentNativeModeContinuation {
+            source: source.clone(),
+            pending: pending.clone(),
+            intent,
+            source_is_ru: self.layout_gesture.layout_is_ru,
+            target_is_ru,
+        }))
+    }
+
+    /// Call only after the caller's InputMode and group operation succeeded.
+    /// Recheck before promoting mode so no unrelated generation can be carried.
+    pub(crate) fn finish_fragment_native_mode_continuation(
+        &mut self,
+        ticket: FragmentNativeModeContinuation,
+    ) -> NativeResult<()> {
+        let current = self
+            .capture_fragment_native_mode_continuation(ticket.target_is_ru)?
+            .ok_or("fragment_native_result_missing")?;
+        if current.intent != ticket.intent
+            || !current.source.same_observation_owner(&ticket.source)
+            || current.source.token != ticket.source.token
+            || current.source.tail_epoch != ticket.source.tail_epoch
+            || current.source_is_ru != ticket.source_is_ru
+            || current.pending.snapshot != ticket.pending.snapshot
+            || current.pending.dispatched_epoch != ticket.pending.dispatched_epoch
+            || current.pending.dispatched_at != ticket.pending.dispatched_at
+            || current.pending.expected_suffix != ticket.pending.expected_suffix
+            || current.pending.expected_external_snapshot
+                != ticket.pending.expected_external_snapshot
+        {
+            return Err("fragment_native_continuation_stale");
+        }
+        // This is the existing mode promotion, after its own successful group
+        // operation. No await or other owner runs between validation and carry.
+        self.set_layout_is_ru(ticket.target_is_ru);
+        let mut binding = current.source.for_result(self);
+        binding.observer = None;
+        binding.last_display_frame = None;
+        self.client_context.native_document_binding = Some(binding.clone());
+        self.client_context.surrounding_text_snapshot = None;
+        self.committed_tail
+            .pending_visible_postcondition
+            .as_mut()
+            .unwrap()
+            .native_document = Some(binding);
+        // Expected text, snapshot identity, dispatch time and feedback stay on
+        // the same original receipt. Only an actual read can confirm it.
+        Ok(())
+    }
+
+    pub(crate) async fn arm_fragment_native_mode_observer(
+        &mut self,
+        output: &crate::output::EngineOutput<'_, '_>,
+    ) {
+        observer::arm(self, output).await;
+    }
 }
 
 impl NativeDocumentBinding {

@@ -1084,18 +1084,44 @@ impl LayIbusEngine {
             .map_err(Into::into)
     }
 
-    pub(super) async fn toggle_committed_tail_target_with_disposition(
+    pub(super) fn toggle_committed_tail_target_with_disposition<'a, 'out, 'bus>(
+        &'a mut self,
+        emitter: &'a mut EngineOutput<'out, 'bus>,
+    ) -> impl std::future::Future<
+        Output = Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure>,
+    >
+           + 'a
+           + use<'a, 'out, 'bus>
+    where
+        'out: 'a,
+        'bus: 'a,
+    {
+        Box::pin(
+            self.toggle_committed_tail_target_from(emitter, super::shift::WordLayoutOrigin::Manual),
+        )
+    }
+
+    pub(super) async fn toggle_committed_tail_target_from(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
+        origin: super::shift::WordLayoutOrigin<'_>,
     ) -> Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure> {
-        let Some(plan) = self.committed_tail_toggle_plan() else {
+        let Some(mut plan) = self.committed_tail_toggle_plan() else {
             return Ok((None, ExecutionReceipt::Rejected));
         };
+        if !origin.matches_plan(&plan) {
+            return Ok((None, ExecutionReceipt::Rejected));
+        }
+        plan.suppress_next_autocorrect = origin.is_manual();
+        let fragment_word_mode = !origin.is_manual() || self.fragment_word_mode_return_needed();
         if emitter.is_legacy()
             && self.text_target_edit_route(plan.backspaces)
                 == TextTargetEditRoute::ExactSurroundingText
             && self.client_context.surrounding_text_snapshot.is_none()
         {
+            if !origin.is_manual() {
+                return Ok((None, ExecutionReceipt::Rejected));
+            }
             self.layout_gesture.pending_manual_toggle = !self.layout_gesture.pending_manual_toggle;
             let (stage, receipt) = if self.layout_gesture.pending_manual_toggle {
                 emitter.require_surrounding_text().await.map_err(|source| {
@@ -1118,21 +1144,53 @@ impl LayIbusEngine {
             ));
             return Ok((Some(self.layout_gesture.layout_is_ru), receipt));
         }
-        if self.content_allows_personalization() {
+        if origin.is_manual() && self.content_allows_personalization() {
             trace::record_manual_toggle_plan(&plan);
         }
-        let handled = self
-            .replace_committed_tail_with_effect_progress(
-                emitter,
-                CommittedTailReplaceRequest::ime_manual_toggle(
+        let request = match origin {
+            super::shift::WordLayoutOrigin::Manual => {
+                let request = CommittedTailReplaceRequest::ime_manual_toggle(
                     plan.backspaces,
                     plan.replacement.clone(),
                     plan.suppress_next_autocorrect,
-                ),
-            )
+                );
+                if fragment_word_mode {
+                    request.with_caller_layout_postcondition()
+                } else {
+                    request
+                }
+            }
+            super::shift::WordLayoutOrigin::Fragment(fragment) => {
+                CommittedTailReplaceRequest::ime_autocorrect(
+                    plan.backspaces,
+                    plan.replacement.clone(),
+                )
+                .with_caller_layout_postcondition()
+                .with_winner_action(fragment.action().clone())
+                .with_expected_tail(VisibleTailSnapshot::new(
+                    VisibleTailSource::ImeCommittedTail,
+                    fragment.action().from_text().to_owned(),
+                    Some(self.path.clone()),
+                    self.committed_tail.epoch,
+                ))
+            }
+        };
+        let handled = self
+            .replace_committed_tail_with_effect_progress(emitter, request)
             .await?;
         if handled {
-            self.trace_key("double_shift_committed_tail", 0, 0, true, None);
+            if fragment_word_mode {
+                Box::pin(self.complete_fragment_word_mode(emitter, plan.target_layout_is_ru))
+                    .await
+                    .map_err(|source| {
+                        LocalExecutionFailure::new(LocalEffectProgress::CommitDispatched, source)
+                    })?;
+            }
+            if origin.is_manual() {
+                self.trace_key("double_shift_committed_tail", 0, 0, true, None);
+            } else {
+                self.trace_key("letter_fragment_committed_tail", 0, 0, true, None);
+            }
         }
         Ok((
             handled.then_some(plan.target_layout_is_ru),
@@ -1249,6 +1307,7 @@ impl LayIbusEngine {
         emitter: &mut EngineOutput<'_, '_>,
         complete_manual_layout: bool,
     ) -> Result<Option<bool>, LocalExecutionFailure> {
+        let fragment_word_mode = self.fragment_word_mode_return_needed();
         let boundary_elided_snapshot = self.pending_ime_auto_undo_uses_boundary_elided_snapshot();
         let causal_precondition_snapshot =
             self.pending_ime_auto_undo_uses_causal_precondition_snapshot();
@@ -1278,7 +1337,7 @@ impl LayIbusEngine {
         .with_expected_tail(expected_tail)
         .with_boundary_elided_external_snapshot(boundary_elided_snapshot)
         .with_recorded_boundary_precondition(recorded_precondition);
-        if complete_manual_layout {
+        if complete_manual_layout || fragment_word_mode {
             request = request.with_caller_layout_postcondition();
         }
         if let Some(forward) = pending.boundary_forward_action.as_ref() {
@@ -1310,7 +1369,13 @@ impl LayIbusEngine {
             }
         };
         if handled {
-            if complete_manual_layout {
+            if fragment_word_mode {
+                Box::pin(self.complete_fragment_word_mode(emitter, target_layout_is_ru))
+                    .await
+                    .map_err(|source| {
+                        LocalExecutionFailure::new(LocalEffectProgress::CommitDispatched, source)
+                    })?;
+            } else if complete_manual_layout {
                 self.sync_layout_after_manual_toggle(&pending.original);
             }
             self.record_reverted_system_apply(

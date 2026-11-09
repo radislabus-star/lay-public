@@ -11,6 +11,29 @@ use super::output::EngineOutput;
 use super::trace;
 use super::window_interaction::{ExecutionReceipt, LocalEffectProgress, LocalExecutionFailure};
 
+#[derive(Clone, Copy)]
+pub(super) enum WordLayoutOrigin<'a> {
+    Manual,
+    Fragment(&'a lay::layout_fragments::FragmentLayoutRequest),
+}
+
+impl WordLayoutOrigin<'_> {
+    pub(super) fn is_manual(self) -> bool {
+        matches!(self, Self::Manual)
+    }
+
+    pub(super) fn matches_plan(self, plan: &lay::manual_toggle::ManualTogglePlan) -> bool {
+        match self {
+            Self::Manual => true,
+            Self::Fragment(request) => {
+                request.action().from_text() == plan.edit.original_token
+                    && request.action().to_text() == plan.replacement
+                    && request.target_layout_is_ru() == plan.target_layout_is_ru
+            }
+        }
+    }
+}
+
 impl LayIbusEngine {
     pub(super) async fn manual_toggle_active_text_target(
         &mut self,
@@ -22,11 +45,38 @@ impl LayIbusEngine {
             .map_err(Into::into)
     }
 
-    pub(super) async fn manual_toggle_active_text_target_with_disposition(
+    pub(super) fn manual_toggle_active_text_target_with_disposition<'a, 'out, 'bus>(
+        &'a mut self,
+        emitter: &'a mut EngineOutput<'out, 'bus>,
+    ) -> impl std::future::Future<
+        Output = Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure>,
+    >
+           + 'a
+           + use<'a, 'out, 'bus>
+    where
+        'out: 'a,
+        'bus: 'a,
+    {
+        // As in native_document's async boundary, keep the operation state out
+        // of every enclosing input/protocol future; allocate only for a flip.
+        Box::pin(self.request_word_layout_flip(emitter, WordLayoutOrigin::Manual))
+    }
+
+    pub(super) async fn request_word_layout_flip(
         &mut self,
         emitter: &mut EngineOutput<'_, '_>,
+        origin: WordLayoutOrigin<'_>,
     ) -> Result<(Option<bool>, ExecutionReceipt), LocalExecutionFailure> {
         let owned_preedit_at_entry = self.context_owns_active_preedit_manual_toggle();
+        if !origin.is_manual()
+            && (!self.config.fragment_layout_autoflip
+                || !self.config.auto_switch_layout
+                || !self.content_allows_text_assistance()
+                || self.committed_tail.autocorrect_suppression.is_some()
+                || self.capture_fragment_layout_frame().is_none())
+        {
+            return Ok((None, ExecutionReceipt::Rejected));
+        }
         if !owned_preedit_at_entry && !self.composition.buffer.is_empty() && trace::enabled() {
             self.trace_marked_preedit_binding_refusal("manual_entry");
             trace::record(format!(
@@ -50,7 +100,7 @@ impl LayIbusEngine {
                 self.context_admission.as_ref().zip(self.context_token.as_ref()).is_some_and(|(admission, token)| admission.revalidate(token)),
             ));
         }
-        if !self.context_word_is_known() && !owned_preedit_at_entry {
+        if origin.is_manual() && !self.context_word_is_known() && !owned_preedit_at_entry {
             self.clear_preedit_completion_state();
             if self.context_allows_manual_toggle() {
                 // An explicit request uses a proved terminal suffix or a
@@ -112,7 +162,7 @@ impl LayIbusEngine {
         // PROTECTED USER CONTRACT: an immediate double Shift after autocorrect
         // restores the exact recorded input before any layout/manual toggle.
         // Keep this first; typing_transition_authority_contract enforces order.
-        if self.defer_pending_ime_auto_undo_until_visible() {
+        if origin.is_manual() && self.defer_pending_ime_auto_undo_until_visible() {
             trace::record_auto_undo_retry("requested_exact_snapshot");
             if let Some(connection) = emitter.connection() {
                 connection
@@ -140,11 +190,13 @@ impl LayIbusEngine {
                 ExecutionReceipt::LocalPending,
             ));
         }
-        if let Some(target_layout_is_ru) = self
-            .undo_last_ime_autocorrect_with_effect_progress(emitter)
-            .await?
-        {
-            return Ok((Some(target_layout_is_ru), ExecutionReceipt::LocalComplete));
+        if origin.is_manual() {
+            if let Some(target_layout_is_ru) = self
+                .undo_last_ime_autocorrect_with_effect_progress(emitter)
+                .await?
+            {
+                return Ok((Some(target_layout_is_ru), ExecutionReceipt::LocalComplete));
+            }
         }
         let authority = self.manual_toggle_authority();
         match authority {
@@ -152,17 +204,24 @@ impl LayIbusEngine {
                 if self.terminal_committed_tail_executor_available()
                     || self.native_manual_word_is_current()
                     || self.atomic.speculation && !emitter.is_legacy()
+                    || !origin.is_manual()
                 {
-                    trace::record(if self.atomic.speculation {
+                    trace::record(if !origin.is_manual() {
+                        r#"{"kind":"ibus_fragment_layout_dispatch","source":"ime_committed_tail","executor":"existing_automatic_tail_operation"}"#
+                    } else if self.atomic.speculation {
                         r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"atomic_frame"}"#
                     } else if self.native_manual_word_is_current() {
                         r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"native_exact_range_commit"}"#
                     } else {
                         r#"{"kind":"ibus_manual_toggle_dispatch","source":"ime_committed_tail","executor":"terminal_erase_commit"}"#
                     });
-                    return self
-                        .toggle_committed_tail_target_with_disposition(emitter)
-                        .await;
+                    return if origin.is_manual() {
+                        self.toggle_committed_tail_target_with_disposition(emitter)
+                            .await
+                    } else {
+                        self.toggle_committed_tail_target_from(emitter, origin)
+                            .await
+                    };
                 }
                 self.prepare_exact_manual_toggle_layout_handoff();
                 trace::record(
@@ -172,6 +231,9 @@ impl LayIbusEngine {
                 return Ok((None, ExecutionReceipt::DelegatedExactImeTail));
             }
             ManualToggleAuthority::DaemonWordBuffer => {
+                if !origin.is_manual() {
+                    return Ok((None, ExecutionReceipt::Rejected));
+                }
                 self.defer_committed_tail_manual_toggle_to_daemon();
                 trace::record(
                     r#"{"kind":"ibus_manual_toggle_delegation","source":"daemon_word_buffer"}"#,
@@ -181,21 +243,42 @@ impl LayIbusEngine {
             }
             ManualToggleAuthority::ImeActiveComposition => {}
         }
-        let Some(plan) = plan_manual_toggle(ManualToggleRequest {
+        let Some(mut plan) = plan_manual_toggle(ManualToggleRequest {
             visible_tail: VisibleTail::ime_active_composition(&self.composition.buffer),
             current_layout_is_ru: self.layout_gesture.layout_is_ru,
             preserve_trailing_whitespace: false,
         }) else {
             return Ok((None, ExecutionReceipt::Rejected));
         };
-        if self.content_allows_personalization() {
+        if !origin.matches_plan(&plan) {
+            return Ok((None, ExecutionReceipt::Rejected));
+        }
+        plan.suppress_next_autocorrect = origin.is_manual();
+        if !origin.is_manual()
+            && !owned_preedit_at_entry
+            && self.layout_gesture.layout_is_ru
+                != self
+                    .client_context
+                    .factory_engine_profile
+                    .initial_layout_is_ru()
+        {
+            // This legacy commit would itself finish a previous mode by
+            // switching engines. Do not dispatch it from an open-word trigger.
+            return Ok((None, ExecutionReceipt::Rejected));
+        }
+        if origin.is_manual() && self.content_allows_personalization() {
             trace::record_manual_toggle_plan(&plan);
         }
         let original = self.composition.buffer.clone();
         let Some(replacement_plan) = plan_text_replacement(&original, &plan.replacement) else {
             return Ok((None, ExecutionReceipt::Rejected));
         };
-        let action = plan_ime_manual_toggle_edit(&original, &plan.replacement, replacement_plan);
+        let action = match origin {
+            WordLayoutOrigin::Manual => {
+                plan_ime_manual_toggle_edit(&original, &plan.replacement, replacement_plan)
+            }
+            WordLayoutOrigin::Fragment(request) => request.action().clone(),
+        };
         if self.content_allows_personalization() {
             lay::action_log::record_candidate_edit_action_before_apply(
                 &action,
@@ -224,7 +307,17 @@ impl LayIbusEngine {
             .map_err(|source| {
                 LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
             })?;
-            self.trace_key("double_shift_owned_preedit_input_mode", 0, 0, true, None);
+            self.trace_key(
+                if origin.is_manual() {
+                    "double_shift_owned_preedit_input_mode"
+                } else {
+                    "letter_fragment_owned_preedit_input_mode"
+                },
+                0,
+                0,
+                true,
+                None,
+            );
             return Ok((
                 Some(plan.target_layout_is_ru),
                 ExecutionReceipt::LocalComplete,
@@ -240,8 +333,20 @@ impl LayIbusEngine {
             LocalExecutionFailure::new(LocalEffectProgress::CursorOrPreedit, source)
         })?;
         self.retire_legacy_word_preedit_ownership_if_empty();
-        self.sync_layout_after_manual_toggle(&plan.replacement);
-        self.trace_key("double_shift_commit", 0, 0, true, None);
+        if origin.is_manual() {
+            self.sync_layout_after_manual_toggle(&plan.replacement);
+        } else {
+            Box::pin(self.complete_fragment_word_mode(emitter, plan.target_layout_is_ru))
+                .await
+                .map_err(|source| {
+                    LocalExecutionFailure::new(LocalEffectProgress::CommitDispatched, source)
+                })?;
+        }
+        if origin.is_manual() {
+            self.trace_key("double_shift_commit", 0, 0, true, None);
+        } else {
+            self.trace_key("letter_fragment_commit", 0, 0, true, None);
+        }
         Ok((
             Some(plan.target_layout_is_ru),
             ExecutionReceipt::LocalComplete,

@@ -1,5 +1,8 @@
 use super::execution::ExecutionReceipt;
 use super::{TextTargetAuthority, WindowInteraction, WindowRejectReason};
+
+#[path = "fragment_word_mode.rs"]
+mod fragment_word_mode;
 /// Shared output-backend capability selector for committed-text targets.
 ///
 /// GUI targets must expose SurroundingText and an exact current snapshot before
@@ -887,6 +890,13 @@ impl LayImeBridge {
             ImeManualToggleOutcome::AwaitingExactSnapshot
         } else {
             manual_toggle_outcome_from_execution(target_layout_is_ru, execution)
+        };
+        let outcome = if outcome == ImeManualToggleOutcome::DelegateExactImeTail
+            && engine.fragment_manual_return_has_mode_origin()
+        {
+            ImeManualToggleOutcome::DelegateExactImeTailWordMode
+        } else {
+            outcome
         };
         let (status, target_layout_is_ru) = outcome.as_v3();
         crate::trace::record(format!(

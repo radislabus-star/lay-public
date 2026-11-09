@@ -76,6 +76,11 @@ def run_case(
                 env=dialog_env,
             )
             time.sleep(focus_delay)
+            if os.environ.get("LAY_TEST_REQUIRE_FOCUSED_CLIENT") == "1":
+                if dialog != "gtk-entry-capture":
+                    raise RuntimeError("exact test focus admission requires the owned GTK field")
+                sender_env["LAY_TEST_EXPECT_FOCUS_PID"] = str(dialog_proc.pid)
+                sender_env["LAY_TEST_EXPECT_FOCUS_TITLE"] = f"Lay runtime smoke: {case.name}"
             sender = processes.spawn(
                 "sender",
                 [str(input_bin), case.name],

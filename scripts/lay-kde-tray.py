@@ -476,6 +476,9 @@ def main() -> int:
             enabled.setChecked(daemon_active())
             enabled.triggered.connect(self._set_enabled)
             self.menu.addAction(enabled)
+            full_restart = QAction("Полный перезапуск Lay", self.menu)
+            full_restart.triggered.connect(self._full_restart)
+            self.menu.addAction(full_restart)
             daemon_menu = self.menu.addMenu("Демон Lay")
             self.daemon_actions = {}
             for operation, label in (("start", "Запустить демон"),
@@ -584,6 +587,11 @@ def main() -> int:
             self.config_reload_pending = False
             runtime_control("start" if enabled else "stop")
             self._refresh_status()
+
+        def _full_restart(self) -> None:
+            self.config_reload_pending = False
+            if not runtime_control("full-restart"):
+                QMessageBox.warning(None, "Lay", "Не удалось запустить полный перезапуск Lay.")
 
         def _control_daemon(self, operation: str) -> None:
             if operation == "stop":

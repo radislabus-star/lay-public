@@ -116,26 +116,34 @@ pub(super) fn run_exact_ime_tail_replay(
                     ));
                     return None;
                 }
-                match await_same_gesture_exact_receipt(try_ime_manual_toggle) {
-                    Ok(ImeManualToggleOutcome::DelegateExactImeTail) => {}
-                    Ok(ImeManualToggleOutcome::Handled {
-                        target_layout_is_ru,
-                    }) => return Some(target_layout_is_ru),
-                    Ok(other) => {
-                        super::log(&format!(
-                            "warning: queued Double Shift IME admission rejected: {other:?}"
-                        ));
-                        return None;
-                    }
-                    Err(error) => {
-                        super::log(&format!(
-                            "warning: queued Double Shift IME admission failed: {error}"
-                        ));
-                        return None;
-                    }
-                }
+                let fragment_word_mode =
+                    match await_same_gesture_exact_receipt(try_ime_manual_toggle) {
+                        Ok(ImeManualToggleOutcome::DelegateExactImeTail) => false,
+                        Ok(ImeManualToggleOutcome::DelegateExactImeTailWordMode) => true,
+                        Ok(ImeManualToggleOutcome::Handled {
+                            target_layout_is_ru,
+                        }) => return Some(target_layout_is_ru),
+                        Ok(other) => {
+                            super::log(&format!(
+                                "warning: queued Double Shift IME admission rejected: {other:?}"
+                            ));
+                            return None;
+                        }
+                        Err(error) => {
+                            super::log(&format!(
+                                "warning: queued Double Shift IME admission failed: {error}"
+                            ));
+                            return None;
+                        }
+                    };
                 let replay = match capture_ime_committed_tail_replay() {
-                    Ok(replay) => replay,
+                    Ok(replay) => {
+                        if fragment_word_mode {
+                            replay.with_fragment_word_mode()
+                        } else {
+                            replay
+                        }
+                    }
                     Err(error) => {
                         super::log(&format!(
                             "warning: queued Double Shift exact tail capture failed: {error}"
