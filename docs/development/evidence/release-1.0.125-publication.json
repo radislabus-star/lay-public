@@ -1,0 +1,87 @@
+{
+  "schema": "lay.release-publication.v1",
+  "version": "1.0.125",
+  "recorded_at": "2026-11-10T10:10:54.661173+00:00",
+  "code_commit": "8695d9c96f8e68248182f3c0de893f8a2b2dcfb0",
+  "tag_object": "1c00f4ea4c552c872f46c2e8dc2e8e0cf2dc5eda",
+  "annotated_tag_identical_origin_public": true,
+  "release": {
+    "id": 440199326,
+    "tag_name": "v1.0.125",
+    "html_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.125",
+    "published_at": "2026-11-10T10:09:02Z",
+    "draft": false,
+    "prerelease": false
+  },
+  "latest_release_api_id": 440199326,
+  "latest_website": {
+    "requested": "https://github.com/radislabus-star/lay-public/releases/latest",
+    "status": 200,
+    "final_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.125"
+  },
+  "code_ci": {
+    "check_runs": [
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473247/job/129749109866",
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473022/job/129749105459",
+        "name": "Public installer regressions",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473022/job/129749105448",
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473022/job/129749105014",
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed"
+      }
+    ],
+    "total_count": 4
+  },
+  "installed_menu_owner_readbacks": {
+    "primary": {
+      "at": "2026-11-10T10:09:58.518567+00:00",
+      "host": "primary-gnome",
+      "updater_path": "/home/ubu/.local/lib/lay/update.sh",
+      "updater_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+      "mode": "--check",
+      "apply": false,
+      "exit": 0,
+      "elapsed_s": 0.5919017321430147,
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.123\nстабильный релиз: 1.0.125\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.123 → 1.0.125\n",
+      "stderr": ""
+    },
+    "kde": {
+      "at": "2026-11-10T10:09:58.900467+00:00",
+      "host": "remote-kde",
+      "updater_path": "/home/e/.local/lib/lay/update.sh",
+      "updater_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+      "mode": "--check",
+      "apply": false,
+      "exit": 0,
+      "elapsed_s": 0.6816330091096461,
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.124\nстабильный релиз: 1.0.125\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.124 → 1.0.125\n",
+      "stderr": ""
+    }
+  },
+  "updater_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+  "source_closure": {
+    "files": 1338,
+    "sha256": "f79d39f81734e4e873923fa552d9c11e014fc8725d23626b18191ab0b7df2f63"
+  },
+  "binary_installation": false,
+  "input_service_restart": false,
+  "native_matrix_for125": "NOT_RUN; input code unchanged, historical124 evidence remains scoped",
+  "private_origin_main_expected": "47fe54e6d05e5a6e4360d890f667cf3e65ce90f6",
+  "verification": "docs/development/evidence/release-1.0.125-verification.json"
+}

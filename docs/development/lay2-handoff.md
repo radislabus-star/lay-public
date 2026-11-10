@@ -1,38 +1,60 @@
-## Current: updater HTTP403 repair / 1.0.125 candidate — 2026-11-10
+## Completed: stable updater repair / Lay 1.0.125 — 2026-11-10
 
-User reports fragment conversion only after Space and cannot update to124.
-Fresh primary inspection: installed/running123, fragment=true, exact one daemon
-and IME; loaded hashes match installed. Tag123 has no letter caller. Exact
-retained124 native logs show ghbd->прив and рудд->hell before Space. Installed
-updater then reproduces API403/remaining0 while official website resolves124.
-Narrow fix ONLY update.sh adds official same-repository HTTPS HEAD fallback on
-default API403/429. No IME/Rust/input/config/service changes. Original-source
-RED3/5subcases, reviewed GREEN37 updater/installer tests; canon/syntax PASS.
-At08:46UTC installed updater alone was atomically bootstrapped under its lock,
-stock beforeSHAaebfb65..., reviewed afterSHAb7c05b3...; actual installed --check
-finds123->124 in1.08s while API403. No binary install/restart. Script124 would
-overwrite this repair, so125 metadata candidate is prepared for permanent
-distribution. Release checks PASS: source3650, canonical3650+11performance,
-475Python+12envSKIP, allten125 installables, architecture/lints/CLI/ngram/installer
-and actualMSRV1.88 bothmodes. Source1338 SHA
-f79d39f81734e4e873923fa552d9c11e014fc8725d23626b18191ab0b7df2f63
-matches local/remote; full2317-file ledger also seals rootupdate/extension.
-Codecommit/CI/tag/publication still pending. SOLO,
-no agents/Harness/questions. Preserve primary user's menu update preference.
-Owning analysis: docs/development/fragment124-update-rate-limit-2026-11-10.md;
-ADR2026-11-10-stable-update-rate-limit.json; notes docs/release-1.0.125.md.
-Prior complete ordinary KDE matrix remains329P59F52B/440; no new native claim.
-At09:12UTC KDE updater-only bootstrap also verified; CLIthere124 but activeIME
-stilloriginal123SHAb765fde8 (ordinaryupdaterpreservesinput). No runtime restart.
-GraphAST update REJECTED_WATCH because3unchanged sinks lostcapability edges;
-rawgraph/reportretained, acceptedRustgraphrestored, PASS-onlyreceiptrecomputed
-forCargometadata. No guard/runtimerulechanged. Newscopebasee334 closes old46
-seams and allows onlyupdate.sh,generatedreceipt,trayversion/date +tooling.
-Devreport /home/ubu/.cache/lay/development/run-cyg_x58o/RESULT.json; fullreport
-C/updater125-release-RESULT.json, remote updater125-release-gate-20261110/RESULT.json.
-Nextcommit/push origin+publicfeature/publicmain, preserveprivateoriginmain47fe54e6;
-wait4CIgreen, tag125both, stablepublicrelease, actualinstalled--checkbothhosts,
-publicationdocs-onlyfollowup then completionsound. No forcedprimaryinstall.
+The user's Space-only fragment report and blocked124 update were traced to
+actual deployment: primary installed/running123 with flag=true; tag123 has no
+letter caller. Exact retained124 native logs show ghbd->прив and рудд->hell
+before Space. Later KDE inspection found CLI124 but original123 IME bytes;
+ordinary updates retain active input, so loaded bytes must be checked separately.
+The existing explicit full-restart action loads new IME after user updates.
+
+Stable125 published2026-11-10T10:09:02Z, release440199326:
+https://github.com/radislabus-star/lay-public/releases/tag/v1.0.125
+Code8695d9c96f8e68248182f3c0de893f8a2b2dcfb0; annotated tag object
+1c00f4ea4c552c872f46c2e8dc2e8e0cf2dc5eda identicalorigin/public and peels to
+that code. Allfour public CI jobs PASS (run42792473022 +security42792473247).
+The only production behavior change from124 is update.sh: default official
+API403/429 may use same-repository HTTPS latest-release redirect, strict tag
+validation and unchanged exact-tag/no-downgrade/confirmation/source guards.
+No .rs changes. Cargo/tray version/date are125; generated receipt metadata only.
+
+- Original updater RED3tests/5subcases; reviewed updater/installer GREEN37.
+- Remote development source3650 PASS; canonical release3650 correctness/package
+  +11performance,475 headlessPython+12environmentSKIP, allten actual125
+  installables, actualMSRV1.88 bothlocked modes, architecture/lint/CLI/ngram/
+  installer PASS. Frozen source1338 SHA
+  f79d39f81734e4e873923fa552d9c11e014fc8725d23626b18191ab0b7df2f63
+  matches local/remote; complete2317-file ledger seals rootupdater/extension too.
+- Rootupdater SHA b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836.
+  Script-only bootstrap under existing lock on bothhosts, exact reviewed bytes.
+  Actual installed --check afterpublication: primary123->125 in0.592s,
+  KDE124->125 in0.682s, bothexit0/applyfalse. Latest API/website select125.
+  No binary install, live config/model/learning modification or service restart.
+  User obtains versions through menu; do not force primary installation.
+- AST graph update was REJECTED_WATCH (three unchanged sinks lost capability
+  edges). Rawgraph/report retained. Accepted Rustgraph/sourcebinding restored;
+  existing PASS-only receipt refreshed forCargometadata. No runtime/guard change.
+- New taskscope basee334f2f4 closes previous46 input seams. Only exact updater,
+  generatedreceipt,trayversion/date sharedfiles +tooling allowed. No new input
+  integration authority. Re-declare the next actual task before runtime edits.
+- No fresh125 native acceptance claimed. Latest ordinaryKDE matrix remains
+  Firefox143/51/26, Chrome186/8/26 PASS/FAIL/BLOCKED:329/59/52 of440. This
+  updater patch does not repair those existing client failures.
+
+Owning analysis: docs/development/fragment124-update-rate-limit-2026-11-10.md.
+Notes: docs/release-1.0.125.md. Complete evidence:
+docs/development/evidence/release-1.0.125-verification.json and
+release-1.0.125-publication.json in the same directory. C is
+/home/ubu/.cache/lay/development/letter-fragment-request-20261102;
+fullreceipt C/updater125-release-RESULT.json, devreceipt
+/home/ubu/.cache/lay/development/run-cyg_x58o/RESULT.json.
+
+The scoped updater task has reached stable publication; no runtime implementation
+or installation is pending. Publication-only documentation follows the code
+commit without retagging or repeating accepted gates. Final Git/API/readback
+receipt is C/updater125-final-readback.json. A future task starts from a new
+concrete user issue and its preflight, not these superseded checkpoints.
+Private origin/main47fe54e6 is preserved. SOLO/noagents/noHarness/noquestions.
+Historical sections below do not restart completed experiments.
 
 ## Completed: Lay 1.0.124 — 2026-11-09T23:30:20.930515+00:00
 

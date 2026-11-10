@@ -122,7 +122,14 @@ locked all-target modes. Source closure1,338 files SHA
 `f79d39f81734e4e873923fa552d9c11e014fc8725d23626b18191ab0b7df2f63`
 matches local/remote. The complete frozen2317-file ledger separately includes
 root `update.sh` and extension metadata and was verified before/after the run.
-Public CI and publication remain pending. Complete evidence:
+Public CI4/4 passed on code8695d9c9. Stable125 was published at10:09:02 UTC;
+annotated tag1c00f4ea points to that code in both repositories. The latest API
+and official website independently select125. Actual installed check-only
+entrypoints report primary123->125 in0.592s and KDE124->125 in0.682s, exit0.
+No input-runtime installation or service restart accompanied these checks.
+Publication receipt:
+[release-1.0.125-publication.json](evidence/release-1.0.125-publication.json).
+Complete source/build evidence:
 [release-1.0.125-verification.json](evidence/release-1.0.125-verification.json).
 
 The pre-release mechanical scope check caught the still-active completed124

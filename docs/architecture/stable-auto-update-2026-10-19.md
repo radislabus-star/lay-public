@@ -100,6 +100,12 @@ The controlled updater/installer regressions pass37/37. Release build and
 publication evidence are tracked separately in [1.0.125 notes](../release-1.0.125.md).
 No IME/correction/desktop-field authority changes in this repair.
 
+Stable125 publication completed2026-11-10T10:09:02Z after allfour public code
+CI jobs passed. Both actual installed updater entrypoints discover125 with
+exit0: primary123->125 in0.592s, KDE124->125 in0.682s; apply=false. The root
+updater bytes match the reviewed/published script. Latest API and the official
+website agree. [Publication receipt](../development/evidence/release-1.0.125-publication.json).
+
 ## Proof plan and boundaries
 
 Remote isolated executable updater tests cover latest-stable discovery from an

@@ -4,7 +4,7 @@
   "recorded_at": "2026-11-10T09:35:03.745922+00:00",
   "scope": "stable update discovery only; no Rust input/correction or field integration behavior change from124",
   "source_build_status": "PASS",
-  "publication_status": "PENDING_CI",
+  "publication_status": "PUBLISHED",
   "base": "e334f2f45681ca3b8d81fb68af56dee6dee7a12a",
   "compiled_source": {
     "git_head": "4fae57d50b031984c1e0ddc8796e78e142b2a595",
@@ -232,5 +232,36 @@
   "permanent_binary_installation": false,
   "live_config_changed": false,
   "learning_or_models_changed": false,
-  "delivery_routes_changed": false
+  "delivery_routes_changed": false,
+  "code_commit": "8695d9c96f8e68248182f3c0de893f8a2b2dcfb0",
+  "publication_receipt": "docs/development/evidence/release-1.0.125-publication.json",
+  "public_code_ci": {
+    "check_runs": [
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473247/job/129749109866",
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473022/job/129749105459",
+        "name": "Public installer regressions",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473022/job/129749105448",
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed"
+      },
+      {
+        "conclusion": "success",
+        "details_url": "https://github.com/radislabus-star/lay-public/actions/runs/42792473022/job/129749105014",
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed"
+      }
+    ],
+    "total_count": 4
+  }
 }

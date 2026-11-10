@@ -1,9 +1,12 @@
 # Lay 1.0.125: stable updates under GitHub API rate limits
 
-Source/build gates completed on2026-11-10. Public CI and stable publication are
-separate promotion gates. No input-runtime installation is performed by this
-development task. The user continues obtaining stable versions through the
-menu updater.
+Stable1.0.125 was published on2026-11-10 at10:09:02 UTC, code commit
+`8695d9c96f8e68248182f3c0de893f8a2b2dcfb0`.
+[Public release](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.125).
+Allfour public CI jobs PASS. Both actual installed updaters discover125:
+primary123->125 in0.592s; KDE124->125 in0.682s. Both were check-only.
+No input-runtime installation or restart is performed by this development task.
+The user continues obtaining stable versions through the menu updater.
 
 The updater previously stopped on GitHub API HTTP 403, leaving the user's
 running version at1.0.123 even after the letter-triggered1.0.124 was published.
@@ -59,7 +62,9 @@ extractor. The new task scope closes the prior46 input-integration seams.
 
 Complete source/build and bootstrap evidence:
 [release-1.0.125-verification.json](development/evidence/release-1.0.125-verification.json).
-Public CI and stable publication are not inferred from these source results.
+Public CI, identical annotated tags, latest-release API/website and actual
+installed-menu-owner readbacks were independently verified. Receipt:
+[release-1.0.125-publication.json](development/evidence/release-1.0.125-publication.json).
 
 Latest complete ordinary KDE matrix remains329 PASS /59 FAIL /52 BLOCKED of440
 (Firefox143/51/26, Chrome186/8/26). This updater change does not repair or rerun
