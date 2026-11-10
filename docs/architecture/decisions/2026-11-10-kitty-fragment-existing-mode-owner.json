@@ -1,0 +1,24 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "For a fragment request in a proven native GNOME terminal, preserve the existing committed-tail writer's layout-postcondition ownership. Use its unchanged background layout completion instead of opting into caller-owned in-place InputMode completion. Bind the new native GNOME fragment caller to the existing scoped output settlement, using its current token and unchanged bridge revalidation before any output; this records each writer epoch in the sole admission reducer.",
+  "reason": "Native 125 proves internal RU/desktop US after a successful fragment replacement. The first candidate's synchronous stack operation corrects visible continuation but leaves IBus at XKB fallback and loses admission; candidate-short4 is rejected despite 1183 source tests. Existing committed-tail completion already schedules the checked layout operation after the callback, with committed-layout intent. The new fragment caller must use that existing operation. Candidate2 passed native two-word continuation, but eight manual returns changed only the two letters typed after the engine switch. The trace proves source_seal_precondition tail_epoch_matches=false: the fragment executes after key settlement and published output without the existing output scope. The adjacent KDE native postcondition already uses begin_context_bridge_output for a current-token result after its original callback.",
+  "verification": "Exercise the actual fragment committed-tail operation and verify one unchanged terminal text delivery plus its existing deferred background layout postcondition in both directions. Keep managed GNOME/KDE controls and boundary, authority, disabled-mode tests. Verify candidate native continuation, second word and manual returns; restore installed runtime. Full required gates before publication. Add an admitted-engine regression for the output epoch, stale authority and commit failure. Never use a blocking bridge fence inside the key callback, accept pending input, or weaken source sealing. Native full-word eight-return and fast-key controls remain mandatory. Refresh the discovered manifest for the two new tests and bind the unchanged empty failure ledger; no new waiver. Run the mandatory architecture graph refresh, full release gate and all installable builds. Version-only126 metadata and release documentation accompany the repair.",
+  "not_tested": "Native acceptance is limited to actual primary Kitty/GNOME. Broader browser/other-terminal native matrices were not rerun. Candidate3 passed1182 focused IME tests and four native scenarios/19 ordered assertions; complete126 source/build/installer/MSRV gates passed separately.",
+  "invariants": [
+    "C01",
+    "C03",
+    "C05",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/fragment_layout.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

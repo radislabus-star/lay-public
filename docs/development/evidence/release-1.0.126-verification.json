@@ -1,0 +1,376 @@
+{
+  "schema": "lay.release-verification.v1",
+  "version": "1.0.126",
+  "recorded_at": "2026-11-10T15:39:08.983765+00:00",
+  "scope": "letter-fragment continuation and complete manual return in native GNOME terminals; native acceptance in actual primary Kitty",
+  "source_build_status": "PASS",
+  "publication_status": "AWAITING_PUBLIC_CI_AND_PUBLICATION",
+  "base": "a73529c0aa30891993691525b63118e78097b319",
+  "compiled_source": {
+    "git_head": "4fae57d50b031984c1e0ddc8796e78e142b2a595",
+    "files": 1338,
+    "sha256": "ac4f49e121237b19096d48bc465156d719c5a275c08f6641cc0e780e352309c3"
+  },
+  "compiled_source_head_note": "Remote Git metadata is historical. The frozen request source_head and complete file ledger identify the checked source; local and remote closure count/SHA match.",
+  "full_snapshot": {
+    "local_request": "/home/ubu/.cache/lay/development/run-tp6k0t5c/request.json",
+    "remote_request": "/home/e/projects/lay-development-runner/run-wAaRru/request.json",
+    "source_head": "a73529c0aa30891993691525b63118e78097b319",
+    "files": 2323,
+    "archive_sha256": "3b9c66df12f7c7a28c57128ec901594cf233c88f96a26bbd27d236d19c50f14a",
+    "all_file_hashes_and_modes_verified_before_after": true
+  },
+  "canonical_release_gate": {
+    "status": "PASS",
+    "rust_correctness_package": {
+      "passed": 3652,
+      "failed": 0,
+      "correctness": 3616,
+      "package": 36
+    },
+    "rust_performance": {
+      "passed": 11,
+      "failed": 0
+    },
+    "headless_python": {
+      "passed": 475,
+      "skipped_environment": 12,
+      "total": 487
+    },
+    "msrv": "actual Rust1.88.0 locked all-targets default and research-tools PASS",
+    "all_ten_installable_builds": "PASS; actual compiler-artifact.executable records, retained bytes and version lay1.0.126",
+    "commands": [
+      {
+        "name": "budget-before",
+        "exit": 0,
+        "elapsed_s": 0.10362752014771104,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/budget-before.log"
+      },
+      {
+        "name": "all-headless-python",
+        "exit": 0,
+        "elapsed_s": 41.038556025829166,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/all-headless-python.log"
+      },
+      {
+        "name": "full-release-gate",
+        "exit": 0,
+        "elapsed_s": 1032.7825327101164,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/full-release-gate.log"
+      },
+      {
+        "name": "all-installable-builds",
+        "exit": 0,
+        "elapsed_s": 0.29915193980559707,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/all-installable-builds.log"
+      },
+      {
+        "name": "public-installer-issues",
+        "exit": 0,
+        "elapsed_s": 13.94277026830241,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/public-installer-issues.log"
+      },
+      {
+        "name": "binary-install-contract",
+        "exit": 0,
+        "elapsed_s": 0.3590953219681978,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/binary-install-contract.log"
+      },
+      {
+        "name": "msrv-identity",
+        "exit": 0,
+        "elapsed_s": 0.20511006191372871,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/msrv-identity.log"
+      },
+      {
+        "name": "msrv-default",
+        "exit": 0,
+        "elapsed_s": 22.049324214924127,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/msrv-default.log"
+      },
+      {
+        "name": "msrv-research",
+        "exit": 0,
+        "elapsed_s": 22.282423180062324,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/msrv-research.log"
+      },
+      {
+        "name": "budget-after",
+        "exit": 0,
+        "elapsed_s": 0.12248167907819152,
+        "log": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/budget-after.log"
+      }
+    ],
+    "receipt": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/RESULT.json",
+    "elapsed_seconds": 1134.4398481501266
+  },
+  "artifacts": {
+    "lay-nanda-wave-train": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-nanda-wave-train",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-nanda-wave-train",
+      "sha256": "bbcf3e72e38ea3b76472d1721d4ac5d036f01351a5a28d1adbf725bfa9e2b447"
+    },
+    "lay-nanda-wave-eval": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-nanda-wave-eval",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-nanda-wave-eval",
+      "sha256": "2afb4652dcfd27f4d99d279621ad32c6bc215981bb37c0edcd0434dcf8b91e6c"
+    },
+    "lay-daemon": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-daemon",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-daemon",
+      "sha256": "49b7e36d3d85c696ce851af0c4fac4bc2b538684cfecf4ce7cc8276637239743"
+    },
+    "lay-ngram-corpus": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-ngram-corpus",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-ngram-corpus",
+      "sha256": "6b0da4fd76fb9d397afcaed4134e84650421225ff593bec184ff6e5c0744d2a5"
+    },
+    "lay-ibus-engine": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-ibus-engine",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-ibus-engine",
+      "sha256": "2c568d6c29c7e8939b2c06b719d9db56d9e35840baa9abf83d15e6dc8af5aa6b"
+    },
+    "lay-memory-report": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-memory-report",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-memory-report",
+      "sha256": "39cc94247e5e8f126b06b519d9710ba282b68fb2af763f51b12b3bfa73719532"
+    },
+    "lay-l11-restore": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-l11-restore",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-l11-restore",
+      "sha256": "75b595883b68916e5304c7a51b1e173b2eb36738b9e0bfcdf8684cce97c7f4da"
+    },
+    "lay-l11-serve": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-l11-serve",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-l11-serve",
+      "sha256": "47914ef73f8fe934f747c133bb1459d7a71ea0f5e36a766446136611352ce3ff"
+    },
+    "lay-test-input": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-test-input",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay-test-input",
+      "sha256": "f29b70bd4cefc29e947f3af78599f9a823fdade1694dc29d393335e972967901"
+    },
+    "lay": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay",
+      "retained": "/home/e/projects/lay-development-runner/kitty126-release-gate-20261110/artifacts/lay",
+      "sha256": "1bd2c1358cd59d3bd4620f1b71036937d586c7d3c7354dee4d9e56954dc6f13f"
+    }
+  },
+  "native_kitty": {
+    "status": "SCOPED_NATIVE_PASS_RELEASE_PENDING",
+    "at": "2026-11-10T15:03:31.770032+00:00",
+    "scenarios": [
+      {
+        "scenario": "manual",
+        "verdict": "PASS",
+        "assertions": 11,
+        "receipt": "/home/ubu/.cache/lay/development/kitty-fragment-runtime-20261110/candidate3-manual/RESULT.json",
+        "restoration": {
+          "engine_count": 1,
+          "original_bytes_loaded": true,
+          "installed_unchanged": true,
+          "config_unchanged": true,
+          "source_restored": true,
+          "engine_restored": true,
+          "model_sources_unchanged": true
+        }
+      },
+      {
+        "scenario": "fast",
+        "verdict": "PASS",
+        "assertions": 1,
+        "receipt": "/home/ubu/.cache/lay/development/kitty-fragment-runtime-20261110/candidate3-fast/RESULT.json",
+        "restoration": {
+          "engine_count": 1,
+          "original_bytes_loaded": true,
+          "installed_unchanged": true,
+          "config_unchanged": true,
+          "source_restored": true,
+          "engine_restored": true,
+          "model_sources_unchanged": true
+        }
+      },
+      {
+        "scenario": "continuation",
+        "verdict": "PASS",
+        "assertions": 4,
+        "receipt": "/home/ubu/.cache/lay/development/kitty-fragment-runtime-20261110/candidate3-continuation/RESULT.json",
+        "restoration": {
+          "engine_count": 1,
+          "original_bytes_loaded": true,
+          "installed_unchanged": true,
+          "config_unchanged": true,
+          "source_restored": true,
+          "engine_restored": true,
+          "model_sources_unchanged": true
+        }
+      },
+      {
+        "scenario": "off-space",
+        "verdict": "PASS",
+        "assertions": 3,
+        "receipt": "/home/ubu/.cache/lay/development/kitty-fragment-runtime-20261110/candidate3-off-space/RESULT.json",
+        "restoration": {
+          "engine_count": 1,
+          "original_bytes_loaded": true,
+          "installed_unchanged": true,
+          "config_unchanged": true,
+          "source_restored": true,
+          "engine_restored": true,
+          "model_sources_unchanged": true
+        }
+      }
+    ],
+    "automatic_request_duration": {
+      "n": 4,
+      "median_ms": 0.272,
+      "p95_ms": 0.442,
+      "max_ms": 0.442,
+      "samples_ms": [
+        0.175,
+        0.255,
+        0.289,
+        0.442
+      ]
+    },
+    "manual_rpc_duration": null,
+    "timing_scope": "Engine request/RPC elapsed time, not full physical-key-to-pixel latency.",
+    "candidate": {
+      "status": "SOURCE_BUILD_PASS_NATIVE_NOT_TESTED",
+      "at": "2026-11-10T14:56:04.067298+00:00",
+      "source": {
+        "git_head": "4fae57d50b031984c1e0ddc8796e78e142b2a595",
+        "files": 1338,
+        "sha256": "3146d01b6e49d989670d44e6f4d191620fba524c67d789fc8fee5a27c1984017"
+      },
+      "focused_gate": "/home/e/projects/lay-development-runner/run-qtwGlI/RESULT.json",
+      "installed": false,
+      "artifact": {
+        "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-ibus-engine",
+        "retained": "/home/e/projects/lay-development-runner/kitty-fragment-candidate3-20261110/lay-ibus-engine",
+        "sha256": "afce5fed6a7b41071726cb72bf92548d8d746f274d7c15b56df55e432fa9ea7b"
+      },
+      "seconds": 77.821
+    },
+    "rust_files": {
+      "src/bin/lay_ibus_engine/committed_tail.rs": "6c291fd59f56744d5491962f938d590aad0d00d88a9a7b0395574d65775bd61c",
+      "src/bin/lay_ibus_engine/fragment_layout.rs": "589f7979f1c90f51698d8db39f25d33912328bb9dd1020c9e541f6305c926123"
+    }
+  },
+  "native_source_reuse": {
+    "status": "PASS",
+    "at": "2026-11-10T15:20:08.067228+00:00",
+    "native_candidate": "candidate3",
+    "all_rust_sources_byte_identical": true,
+    "dependencies_identical_version_only_cargo_changes": true,
+    "generated_architecture_json_refreshed": true,
+    "candidate_request": "/home/ubu/.cache/lay/development/run-cxw3cbuc/request.json",
+    "release_request": "/home/ubu/.cache/lay/development/run-tp6k0t5c/request.json",
+    "note": "Native candidate125 and release126 have identical Rust source/dependency implementations. All126 artifacts must still be built and verified by the full release gate."
+  },
+  "terminal_transition_timing": {
+    "recorded_at": "2026-11-10T15:27:04.821721+00:00",
+    "samples": [
+      {
+        "scenario": "candidate3-manual",
+        "from": "ghbd",
+        "to": "прив",
+        "elapsed_ms": 10.426
+      },
+      {
+        "scenario": "candidate3-continuation",
+        "from": "ghbd",
+        "to": "прив",
+        "elapsed_ms": 11.252
+      },
+      {
+        "scenario": "candidate3-continuation",
+        "from": "привет рудд",
+        "to": "привет hell",
+        "elapsed_ms": 10.799
+      }
+    ],
+    "median_ms": 10.799,
+    "scope": "raw terminal child state timestamps: observed complete wrong-layout prefix to its replacement; not full hardware-key-to-pixel latency",
+    "n": 3,
+    "observer_cadence_ms": 20,
+    "timestamps": "from child save(), not observer polling time"
+  },
+  "independent_review": {
+    "status": "PASS",
+    "score": 9,
+    "out_of": 10,
+    "observed_at": "2026-11-10T15:21:21.330205+00:00",
+    "reviewer": "kitty_fragment_cold_review_20261110",
+    "context": "independent read-only review without parent conversation",
+    "baseline": "a73529c0aa30891993691525b63118e78097b319",
+    "findings_requiring_changes": [],
+    "reviewed_sha256": {
+      "src/bin/lay_ibus_engine/committed_tail.rs": "6c291fd59f56744d5491962f938d590aad0d00d88a9a7b0395574d65775bd61c",
+      "src/bin/lay_ibus_engine/fragment_layout.rs": "589f7979f1c90f51698d8db39f25d33912328bb9dd1020c9e541f6305c926123"
+    },
+    "checks": [
+      "native GNOME isolation",
+      "existing writer owns deferred layout",
+      "live bridge validation before output",
+      "RAII completion and error/cancellation revocation",
+      "new regression effects and negative controls"
+    ],
+    "independent_native_execution": false,
+    "independent_test_execution": false
+  },
+  "graph_refresh": {
+    "verdict": "PASS",
+    "nodes": 28914,
+    "links": 73486,
+    "checks_passed": 11,
+    "rust_sources_bound": 792,
+    "log": "/home/e/projects/lay-development-runner/kitty126-architecture.log",
+    "guard_changes": false,
+    "manual_edge_repair": false
+  },
+  "source_scope": {
+    "schema": "lay.field-integration-scope.v1",
+    "base": "a73529c0aa30891993691525b63118e78097b319",
+    "components": [
+      "gnome"
+    ],
+    "shared_paths": [
+      "src/bin/lay_ibus_engine/committed_tail.rs",
+      "src/bin/lay_ibus_engine/fragment_layout.rs",
+      "scripts/test-lanes/manifest.json",
+      "scripts/test-lanes/known_failures.json"
+    ],
+    "decision": "docs/architecture/decisions/2026-11-10-kitty-fragment-existing-mode-owner.json"
+  },
+  "rust_implementation_files": [
+    "src/bin/lay_ibus_engine/committed_tail.rs"
+  ],
+  "rust_test_files": [
+    "src/bin/lay_ibus_engine/fragment_layout.rs"
+  ],
+  "permanent_binary_installation": false,
+  "delivery_transport_changed": false,
+  "models_or_learning_changed": false,
+  "gnome_runtime_before_after_probes": "installed125 restored; original stale loaded123 was replaced through the existing authorized full-restart operation before diagnosis",
+  "latest_ordinary_kde_matrix_unchanged": {
+    "firefox": {
+      "pass": 143,
+      "fail": 51,
+      "blocked": 26,
+      "total": 220
+    },
+    "chrome": {
+      "pass": 186,
+      "fail": 8,
+      "blocked": 26,
+      "total": 220
+    }
+  },
+  "limits": [
+    "Native acceptance is Kitty/GNOME only, not all terminals or desktop/client routes.",
+    "Historical browser matrix is not a126 native verdict.",
+    "Timing measures terminal state replacement and engine request execution, not hardware-key-to-pixel latency.",
+    "Twelve headless Python environment skips and45 classified ignored Rust identities are not counted as passed."
+  ]
+}

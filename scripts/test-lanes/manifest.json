@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3614,
+    "correctness": 3616,
     "ignored": 45,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 507,
-    "target": 3199
+    "target": 3201
   },
   "package_fixtures": [
     {
@@ -7070,6 +7070,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "fragment_layout::tests::fragment_mode_return_does_not_intercept_off_or_closed_words",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_native_gnome_output_settles_its_epoch_and_clears_scope",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "fragment_layout::tests::fragment_native_gnome_terminal_keeps_existing_writer_layout_completion",
       "target": "bin:lay-ibus-engine"
     },
     {

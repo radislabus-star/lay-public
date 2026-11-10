@@ -540,6 +540,126 @@ mod tests {
     }
 
     #[test]
+    fn fragment_native_gnome_terminal_keeps_existing_writer_layout_completion() {
+        for (input, expected, is_ru) in [("ghbdtn", "привет", false), ("руддщ", "hello", true)]
+        {
+            let mut engine = composing("gnome", true, "", is_ru);
+            engine.set_content_type_state(crate::engine::IBUS_INPUT_PURPOSE_TERMINAL, 0);
+            engine.client_context.cursor_cell_width = 8;
+            engine.committed_tail.buffer = input.into();
+            assert!(engine.context_word_is_known());
+            engine.composition.preedit_visible = false;
+            assert!(engine.uses_native_terminal_input());
+            // Existing layout-action capture seam: observe the writer's
+            // postcondition without invoking a real desktop from a unit test.
+            engine.atomic.speculation = true;
+            let mut observed = TestEngineOutput {
+                legacy_transport: true,
+                ..Default::default()
+            };
+            // Test the caller/writer ownership boundary. The physical actor
+            // separately checks the letter trigger and current field read.
+            let request =
+                lay::layout_fragments::on_letter(input, input.chars().last().unwrap(), is_ru)
+                    .unwrap();
+            let result = zbus::block_on(engine.toggle_committed_tail_target_from(
+                &mut EngineOutput::test(&mut observed),
+                WordLayoutOrigin::Fragment(&request),
+            ))
+            .unwrap();
+            assert_eq!(result, (Some(!is_ru), ExecutionReceipt::LocalComplete));
+            assert_eq!(engine.committed_tail.buffer, expected);
+            assert_eq!(
+                observed.committed_texts,
+                ["\u{7f}".repeat(input.chars().count()) + expected]
+            );
+            assert!(observed.surrounding_deletes.is_empty());
+            assert!(observed.input_mode_updates.is_empty());
+            assert!(matches!(
+                engine.atomic.deferred_layout_actions.as_slice(),
+                [crate::engine::DeferredLayoutAction::Background {
+                    target_is_ru,
+                    ..
+                }] if *target_is_ru == !is_ru
+            ));
+            assert_eq!(engine.layout_gesture.layout_is_ru, !is_ru);
+            assert!(engine.committed_tail.autocorrect_suppression.is_none());
+            assert!(!engine.layout_gesture.pending_manual_toggle);
+        }
+    }
+
+    #[test]
+    fn fragment_native_gnome_output_settles_its_epoch_and_clears_scope() {
+        use crate::context_admission::{
+            ActivationOutcome, ContextAdmissionAdapter, WordCompleteness,
+        };
+
+        for control in ["current", "revoked", "commit-failure"] {
+            let path = "/engine/fragment_native_settlement";
+            let (adapter, grant, _peer) = ContextAdmissionAdapter::test_established(
+                path,
+                "/org/freedesktop/IBus/InputContext_fragment_native",
+                WordCompleteness::KnownStart,
+                17,
+            );
+            let mut engine = LayIbusEngine::new_from_component(
+                path.into(),
+                Arc::new(Mutex::new(Default::default())),
+                Some(adapter.clone()),
+                "lay-ime-us",
+                true,
+                composing("gnome", true, "", false).config,
+            );
+            assert!(engine.install_context_activation(ActivationOutcome::SourceFree(grant)));
+            engine.set_content_type_state(crate::engine::IBUS_INPUT_PURPOSE_TERMINAL, 0);
+            engine.client_context.cursor_cell_width = 8;
+            engine.committed_tail.buffer = "руддщ".into();
+            // Target the selected factory: exercise real output settlement
+            // without starting a desktop worker in this unit regression.
+            engine.set_layout_is_ru(true);
+            let token = engine.live_context_token().unwrap();
+            if control == "revoked" {
+                assert!(adapter.revoke_current_owner(engine.context_owner.as_ref().unwrap()));
+            }
+            let mut observed = TestEngineOutput {
+                legacy_transport: true,
+                fail_commit: control == "commit-failure",
+                ..Default::default()
+            };
+            let request = lay::layout_fragments::on_letter("руддщ", 'щ', true).unwrap();
+            let result = zbus::block_on(engine.toggle_committed_tail_target_from(
+                &mut EngineOutput::test(&mut observed),
+                WordLayoutOrigin::Fragment(&request),
+            ));
+            assert!(engine.context_bridge_token.is_none(), "{control}");
+            match control {
+                "current" => {
+                    assert_eq!(
+                        result.unwrap(),
+                        (Some(false), ExecutionReceipt::LocalComplete)
+                    );
+                    assert_eq!(engine.committed_tail.buffer, "hello");
+                    assert_eq!(observed.committed_texts, ["\u{7f}".repeat(5) + "hello"]);
+                    // This read-only existing query checks the reducer's exact
+                    // settled epoch as well as the unchanged live token.
+                    assert!(adapter
+                        .exact_replay_source_token(&token, engine.committed_tail.epoch)
+                        .is_some());
+                }
+                "revoked" => {
+                    assert_eq!(result.unwrap(), (None, ExecutionReceipt::Rejected));
+                    assert!(observed.effects.is_empty());
+                }
+                "commit-failure" => {
+                    assert!(result.is_err());
+                    assert!(!adapter.revalidate(&token));
+                }
+                _ => unreachable!(),
+            }
+        }
+    }
+
+    #[test]
     fn fragment_return_to_selected_source_reconciles_only_a_changed_kde_group() {
         for backend in ["gnome", "kde"] {
             for source_is_ru in [false, true] {

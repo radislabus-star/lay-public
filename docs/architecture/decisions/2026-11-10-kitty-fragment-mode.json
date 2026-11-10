@@ -1,0 +1,12 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Within the new fragment mode entry only, test reuse of the existing checked layout-stack operation for proven GNOME native terminals; keep managed GNOME and KDE behavior unchanged.",
+  "reason": "After the stale 123 IME was replaced by the user's installed 125 through the existing full restart, native Kitty proved letter conversion before Space but subsequent letters retained the previous desktop layout. Readbacks prove internal RU versus selected GNOME/IBus US.",
+  "verification": "RED/GREEN exact IME tests for both directions, managed/atomic GNOME and KDE exclusion, disabled and authority refusal, unchanged text/epoch, then exact candidate native continuation and manual-return checks with restoration. Full required gates before publication.",
+  "not_tested": "Candidate source and native behavior are unverified at preflight. Existing ordinary browser FAIL and BLOCKED counts remain unchanged. Earlier general GNOME source-switch rejection remains applicable outside this proven native-terminal scope.",
+  "invariants": ["C01", "C03", "C05", "C07", "C09", "C10"],
+  "protected_paths": ["src/bin/lay_ibus_engine/layout_sync.rs", "src/bin/lay_ibus_engine/layout_sync/tests.rs"],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

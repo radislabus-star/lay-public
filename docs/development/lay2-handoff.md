@@ -1,3 +1,57 @@
+## Active: Kitty letter-fragment continuation — 2026-11-10
+
+Accepted checkout: this branch, baseline a73529c0, primary installed125.
+The old loaded123 IME was replaced only through the existing full-restart
+operation; no permanent candidate installation. Loaded125 hash is recorded in
+`docs/development/kitty-fragment-mode-2026-11-10.md`.
+Evidence root: `/home/ubu/.cache/lay/development/kitty-fragment-runtime-20261110/`.
+One implementation owner, no Harness2. Independent read-only review completed.
+Only current Kitty issue; do not revive other queues.
+
+Candidate1 direct source switch rejected (IBus fallback/admission failure);
+layout_sync source/tests restored to baseline. Candidate2 preserves existing
+writer layout ownership for native GNOME: 1181/1181 source checks PASS and
+actual two-word before-Space continuation PASS. Eight manual returns FAIL:
+привет -> привtn. First source seal has tail_epoch_matches=false because the
+new letter caller publishes text after key settlement without output settlement.
+
+Current candidate3 changes only committed_tail.rs and adds fragment_layout.rs
+tests. It uses existing begin_context_bridge_output for that native GNOME
+fragment caller, revalidates the current token before output, and retains the
+existing writer/worker. Adjacent KDE native postcondition uses the same scope.
+No reducer, delivery, Space, KDE or managed GNOME implementation changes.
+Two focused regressions PASS; removing the output scope makes the new exact
+settled-epoch assertion FAIL. Revocation/failing-output controls included.
+Full focused IME gate PASS1182/1182. Candidate3 native PASS: four scenarios,
+19 ordered assertions covering both directions/two words, eight complete manual
+returns, fast typing and fragment-OFF Space. All installed125/config/source/model
+restoration checks PASS. Exact receipts in candidate3-native-acceptance.json.
+Independent cold review 9/10, no required fixes; no independent physical claim.
+Candidate IME SHA afce5fed6a7b41071726cb72bf92548d8d746f274d7c15b56df55e432fa9ea7b.
+
+Release126 manifest and architecture refresh PASS. Frozen request local
+run-tp6k0t5c / remote run-wAaRru. All runtime Rust files and dependencies match
+the native candidate; only version metadata and generated evidence changed.
+Full gate PASS at /home/e/projects/lay-development-runner/kitty126-release-gate-20261110:
+3652/3652 correctness/package,11/11performance,475Python PASS/12environmentSKIP,
+lints and adapter regressions PASS; all ten126 binaries, installer and actual
+Rust1.88 default/research all-targets PASS. Total1134.44s. Frozen2323file ledger,
+compiled1338file SHA ac4f49e121237b19096d48bc465156d719c5a275c08f6641cc0e780e352309c3.
+Local controller log: kitty-fragment-runtime-20261110/release126-gate.launch.log.
+Next: commit/push/CI/tag/release, verify actual
+updater discovery. Primary125 remains installed; no forced candidate install.
+Initial126 short gate stopped at Cargo cache12GiB budget (not a test failure).
+Removed2.95GiB of unused pre-Nov10 debug Lay artifacts only; all release/live
+executables and current-day debug artifacts preserved. Repeat short gate.
+No release before mandatory gates. Analyzer lay-diagnose rejects terminal
+receipts (browser-only support); retained trace supplies direct evidence.
+Temporary remote resources require safe restoration after builds, exact paths
+in owning record. Historical KDE: 329 PASS / 59 FAIL / 52 BLOCKED of 440.
+Resource note: vdo-audio-summary.service is a SYSTEM unit, not a user unit.
+Its PID3261319 is still active with3.47GBcurrent/3.23GBanon; do not restore the
+old3GiBmax while below its live allocation. Temporary properties are runtime
+only (5GiBhigh/6GiBmax). Remove our unused2GiBswap after all heavy gates finish.
+
 ## Completed: stable updater repair / Lay 1.0.125 — 2026-11-10
 
 The user's Space-only fragment report and blocked124 update were traced to

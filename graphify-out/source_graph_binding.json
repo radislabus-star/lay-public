@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "69fe29d48cbd6222945ab85974bada644b4d60be367fd1a03839739488d307af",
-  "manifest_fingerprint": "5c10cb650ea78e74890190c92690f679899f952e45012336bcf54ac1371a361f",
+  "graph_fingerprint": "0624f557124c495a1a2db4bbf7b824346d556d54e1c51d6187095cec81cd4908",
+  "manifest_fingerprint": "00f33131a52706b39c5c6e17c847a288e664307e43ec905b9efb1dd2a57b4444",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -176,7 +176,7 @@
     "src/bin/lay_ibus_engine/atomic/proof.rs": "413340f20d246b25b63b0bcd83d8b021fe720d00d8a07328ebc8fc10ef6c0634",
     "src/bin/lay_ibus_engine/bridge.rs": "fe11143544f3f284120466783c959e66cdd687559c9b7a685f34b203bae5f49f",
     "src/bin/lay_ibus_engine/bridge_policy.rs": "262a6b81e4e3e548df03bbc4b7cf61a1ce2d235df1a83a674e9f59ba88c6a401",
-    "src/bin/lay_ibus_engine/committed_tail.rs": "14d40db0eb0b24d692016038205b30f6bfdff66f262051dede2533fdc70614a5",
+    "src/bin/lay_ibus_engine/committed_tail.rs": "6c291fd59f56744d5491962f938d590aad0d00d88a9a7b0395574d65775bd61c",
     "src/bin/lay_ibus_engine/composition_commit.rs": "6e1793bca9258705c9b5ed43a587d694d417972ff761d3c2912d06ba0f513172",
     "src/bin/lay_ibus_engine/composition_edit.rs": "4d78a92b72b45b14a53c46c2890d28a06328a3c1d5f2faca9f05c54b70f7cc77",
     "src/bin/lay_ibus_engine/context_admission.rs": "c7181c59ead67e9958392879b7d7a249237ff2f7abe0934b000812b769b9900e",
@@ -214,7 +214,7 @@
     "src/bin/lay_ibus_engine/engine/state_groups.rs": "0e3f313735af17245972a3977e53445e99f24f76eccf5177129a1edc041d54cc",
     "src/bin/lay_ibus_engine/engine/types.rs": "683ffb443ea59e8ce60809ece6fc09f18a15bf365675793d70c847f4ed1aa8d6",
     "src/bin/lay_ibus_engine/factory.rs": "a8689eb19364f60d3c37631455189adcc2fbe802452b2e6d90f24feef84f732b",
-    "src/bin/lay_ibus_engine/fragment_layout.rs": "5b642235f890f2a56d31e1285166c8c98fb5531ea5914474be5ccf9affbc5cae",
+    "src/bin/lay_ibus_engine/fragment_layout.rs": "589f7979f1c90f51698d8db39f25d33912328bb9dd1020c9e541f6305c926123",
     "src/bin/lay_ibus_engine/fragment_layout/reply.rs": "f3fbd20eadc7baf811c009d0e9c2ac46ef6646577d391361d956480b687e97ff",
     "src/bin/lay_ibus_engine/fragment_layout/reply/tests.rs": "45490706b6e7c754f8eaa0aecbe0a80a467eb3054970a767b390be1fc0d66bd9",
     "src/bin/lay_ibus_engine/gnome/desktop.rs": "961191b247bff4a2222aca8364f4bdb7820910dc557868859621e152cf536581",

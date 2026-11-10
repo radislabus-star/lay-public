@@ -1,13 +1,14 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "e334f2f45681ca3b8d81fb68af56dee6dee7a12a",
+  "base": "a73529c0aa30891993691525b63118e78097b319",
   "components": [
-    "tooling"
+    "gnome"
   ],
   "shared_paths": [
-    "update.sh",
-    "src/generated/architecture_graph_receipt.json",
-    "extension/lay@radislabus-star.github.io/tray_support.js"
+    "src/bin/lay_ibus_engine/committed_tail.rs",
+    "src/bin/lay_ibus_engine/fragment_layout.rs",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
   ],
-  "decision": "docs/architecture/decisions/2026-11-10-stable-update-rate-limit.json"
+  "decision": "docs/architecture/decisions/2026-11-10-kitty-fragment-existing-mode-owner.json"
 }

@@ -17,7 +17,11 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.125`
+- `1.0.126`
+
+1.0.126 fixes letter-fragment continuation in native GNOME terminals: the existing
+writer completes the keyboard layout and its scoped output retains the whole
+word across the engine change. See [release notes](docs/release-1.0.126.md).
 
 1.0.125 repairs stable update discovery when GitHub's unauthenticated API is
 rate-limited. The official latest-release redirect preserves the same repository

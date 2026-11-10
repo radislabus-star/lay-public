@@ -1113,7 +1113,14 @@ impl LayIbusEngine {
             return Ok((None, ExecutionReceipt::Rejected));
         }
         plan.suppress_next_autocorrect = origin.is_manual();
-        let fragment_word_mode = !origin.is_manual() || self.fragment_word_mode_return_needed();
+        // Native GNOME terminal keys use the compositor layout. Keep the
+        // existing writer's queued layout completion for this caller; an
+        // in-place InputMode update only changes the managed IME decoder.
+        let native_gnome_terminal = self.config.active_layout_backend()
+            == lay::desktop::LayoutBackend::Gnome
+            && self.uses_native_terminal_input();
+        let fragment_word_mode = (!origin.is_manual() || self.fragment_word_mode_return_needed())
+            && !native_gnome_terminal;
         if emitter.is_legacy()
             && self.text_target_edit_route(plan.backspaces)
                 == TextTargetEditRoute::ExactSurroundingText
@@ -1161,23 +1168,51 @@ impl LayIbusEngine {
                 }
             }
             super::shift::WordLayoutOrigin::Fragment(fragment) => {
-                CommittedTailReplaceRequest::ime_autocorrect(
+                let request = CommittedTailReplaceRequest::ime_autocorrect(
                     plan.backspaces,
                     plan.replacement.clone(),
                 )
-                .with_caller_layout_postcondition()
                 .with_winner_action(fragment.action().clone())
                 .with_expected_tail(VisibleTailSnapshot::new(
                     VisibleTailSource::ImeCommittedTail,
                     fragment.action().from_text().to_owned(),
                     Some(self.path.clone()),
                     self.committed_tail.epoch,
-                ))
+                ));
+                if fragment_word_mode {
+                    request.with_caller_layout_postcondition()
+                } else {
+                    request
+                }
             }
         };
-        let handled = self
-            .replace_committed_tail_with_effect_progress(emitter, request)
-            .await?;
+        let handled = if !origin.is_manual()
+            && native_gnome_terminal
+            && self.context_bridge_token.is_none()
+        {
+            // This letter's key callback has already settled. Reuse the
+            // existing output scope so the writer's new tail epoch also
+            // reaches admission before the layout handoff seals its source.
+            let token = self.live_context_token();
+            if self.context_admission_required
+                && !token.as_ref().is_some_and(|token| {
+                    self.context_admission
+                        .as_ref()
+                        .is_some_and(|admission| admission.revalidate_bridge(token))
+                })
+            {
+                return Ok((None, ExecutionReceipt::Rejected));
+            }
+            let mut output_scope = self.begin_context_bridge_output(token.as_ref());
+            let handled = output_scope
+                .replace_committed_tail_with_effect_progress(emitter, request)
+                .await?;
+            output_scope.complete();
+            handled
+        } else {
+            self.replace_committed_tail_with_effect_progress(emitter, request)
+                .await?
+        };
         if handled {
             if fragment_word_mode {
                 Box::pin(self.complete_fragment_word_mode(emitter, plan.target_layout_is_ru))
