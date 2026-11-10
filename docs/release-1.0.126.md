@@ -1,5 +1,9 @@
 # Lay 1.0.126: letter-fragment continuation in native GNOME terminals
 
+Published on 2026-11-10: [stable v1.0.126](https://github.com/radislabus-star/lay-public/releases/tag/v1.0.126).
+Code commit `cd61dadc`; all four public CI checks passed. Both actual installed
+updaters detect 1.0.125 → 1.0.126 without applying the update.
+
 With letter-fragment autoflip enabled, a native GNOME terminal could change
 `ghbd` to `прив` before Space but type following keys in the old layout.
 The new fragment caller now retains the existing writer's layout completion.

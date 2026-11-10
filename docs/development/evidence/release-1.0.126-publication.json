@@ -1,0 +1,102 @@
+{
+  "schema": "lay.release-publication.v1",
+  "version": "1.0.126",
+  "recorded_at": "2026-11-10T16:14:12.562673+00:00",
+  "status": "PUBLISHED_AND_UPDATER_VERIFIED",
+  "code_commit": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+  "annotated_tag_object": "6175ad9ccccff6b6128183aa2a6cca78616fdf7b",
+  "refs_at_publication": {
+    "origin": {
+      "refs/heads/codex/browser-matrix-repair-20261027": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+      "refs/heads/main": "47fe54e6d05e5a6e4360d890f667cf3e65ce90f6",
+      "refs/tags/v1.0.126": "6175ad9ccccff6b6128183aa2a6cca78616fdf7b",
+      "refs/tags/v1.0.126^{}": "cd61dadc689b7819b34c23163a7759fd7fe15ab0"
+    },
+    "public": {
+      "refs/heads/codex/browser-matrix-repair-20261027": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+      "refs/heads/main": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+      "refs/tags/v1.0.126": "6175ad9ccccff6b6128183aa2a6cca78616fdf7b",
+      "refs/tags/v1.0.126^{}": "cd61dadc689b7819b34c23163a7759fd7fe15ab0"
+    }
+  },
+  "release": {
+    "id": 440595717,
+    "tag_name": "v1.0.126",
+    "published_at": "2026-11-10T16:11:57Z",
+    "html_url": "https://github.com/radislabus-star/lay-public/releases/tag/v1.0.126",
+    "draft": false,
+    "prerelease": false
+  },
+  "public_code_ci": {
+    "total": 4,
+    "passed": 4,
+    "checks": [
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847032868/job/129937173805"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847033199/job/129937173698"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847032868/job/129937173476"
+      },
+      {
+        "name": "Public installer regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847032868/job/129937173121"
+      }
+    ]
+  },
+  "compiled_source": {
+    "git_head": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+    "files": 1338,
+    "sha256": "ac4f49e121237b19096d48bc465156d719c5a275c08f6641cc0e780e352309c3"
+  },
+  "actual_installed_updater_checks": {
+    "primary": {
+      "at": "2026-11-10T16:13:12.516461+00:00",
+      "host": "primary-gnome",
+      "updater_path": "/home/ubu/.local/lib/lay/update.sh",
+      "updater_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+      "mode": "--check",
+      "apply": false,
+      "exit": 0,
+      "elapsed_s": 0.6679168739356101,
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.125\nстабильный релиз: 1.0.126\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.125 → 1.0.126\n",
+      "stderr": ""
+    },
+    "kde": {
+      "at": "2026-11-10T16:13:12.853882+00:00",
+      "host": "remote-kde",
+      "updater_path": "/home/e/.local/lib/lay/update.sh",
+      "updater_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+      "mode": "--check",
+      "apply": false,
+      "exit": 0,
+      "elapsed_s": 0.6961244042031467,
+      "stdout": "=== проверка обновлений ===\nустановлено: 1.0.125\nстабильный релиз: 1.0.126\nисточник: https://api.github.com/repos/radislabus-star/lay-public/releases/latest\nДоступно обновление: 1.0.125 → 1.0.126\n",
+      "stderr": ""
+    }
+  },
+  "binary_installation": false,
+  "post_acceptance_input_restart": false,
+  "tag_replaced": false,
+  "force_push": false,
+  "private_origin_main_preserved": true,
+  "source_verification": "docs/development/evidence/release-1.0.126-verification.json",
+  "resource_cleanup_receipt": "/home/ubu/.cache/lay/development/kitty-fragment-runtime-20261110/resource-cleanup.json"
+}

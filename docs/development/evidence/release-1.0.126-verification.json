@@ -4,7 +4,7 @@
   "recorded_at": "2026-11-10T15:39:08.983765+00:00",
   "scope": "letter-fragment continuation and complete manual return in native GNOME terminals; native acceptance in actual primary Kitty",
   "source_build_status": "PASS",
-  "publication_status": "AWAITING_PUBLIC_CI_AND_PUBLICATION",
+  "publication_status": "PUBLISHED",
   "base": "a73529c0aa30891993691525b63118e78097b319",
   "compiled_source": {
     "git_head": "4fae57d50b031984c1e0ddc8796e78e142b2a595",
@@ -372,5 +372,41 @@
     "Historical browser matrix is not a126 native verdict.",
     "Timing measures terminal state replacement and engine request execution, not hardware-key-to-pixel latency.",
     "Twelve headless Python environment skips and45 classified ignored Rust identities are not counted as passed."
-  ]
+  ],
+  "code_commit": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+  "publication_receipt": "docs/development/evidence/release-1.0.126-publication.json",
+  "public_code_ci": {
+    "total": 4,
+    "passed": 4,
+    "checks": [
+      {
+        "name": "Rust 1.88.0 MSRV",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847032868/job/129937173805"
+      },
+      {
+        "name": "RustSec vulnerabilities and unsoundness",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847033199/job/129937173698"
+      },
+      {
+        "name": "Rust 1.97.1, tray, and extension checks",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847032868/job/129937173476"
+      },
+      {
+        "name": "Public installer regressions",
+        "status": "completed",
+        "conclusion": "success",
+        "head_sha": "cd61dadc689b7819b34c23163a7759fd7fe15ab0",
+        "url": "https://github.com/radislabus-star/lay-public/actions/runs/42847032868/job/129937173121"
+      }
+    ]
+  }
 }

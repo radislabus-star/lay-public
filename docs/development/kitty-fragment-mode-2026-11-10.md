@@ -213,3 +213,17 @@ the version-only Cargo changes and generated architecture JSON are recorded.
 The release gate builds real126 executables separately from native acceptance.
 Detailed portable record: evidence/release-1.0.126-verification.json.
 Publication still requires GitHub CI and final updater discovery.
+
+## Publication completed
+
+Stable v1.0.126 published2026-11-10T16:11:57Z, release440595717.
+Code cd61dadc689b7819b34c23163a7759fd7fe15ab0; annotated tag
+6175ad9ccccff6b6128183aa2a6cca78616fdf7b matches origin/public and peels to that code.
+Public CI4/4 PASS (source run42847032868, security run42847033199).
+Actual installed updater on both hosts:125->126, exit0/applyfalse;
+primary0.668s and KDE0.696s. No permanent binary install for this repair.
+Publication details: evidence/release-1.0.126-publication.json.
+Our temporary2GiB swap was removed after builds. The unrelated system service's
+5GiB/6GiB runtime memory limits remain: its current allocation exceeds its old
+3GiB maximum, so forcing that limit back would endanger the active process.
+Private cleanup receipt: kitty-fragment-runtime-20261110/resource-cleanup.json.
