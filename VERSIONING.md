@@ -17,7 +17,12 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.124`
+- `1.0.125`
+
+1.0.125 repairs stable update discovery when GitHub's unauthenticated API is
+rate-limited. The official latest-release redirect preserves the same repository
+and exact-tag installation checks. Input/correction source is unchanged from
+1.0.124; see [release notes](docs/release-1.0.125.md).
 
 1.0.97 preserves verified KDE closed-word replay after an ordinary new-word
 letter is erased, including one owned Space/NBSP presentation transition.

@@ -1,0 +1,12 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Permit the stable updater's official default GitHub API endpoint to use the same repository's canonical HTTPS latest-release redirect only after HTTP 403 or 429.",
+  "reason": "The user's 123 to 124 update was blocked by a freshly reproduced GitHub API rate limit, while the official latest-release website resolved successfully to v1.0.124. Preserve public stable release authority without credentials or changes to the input runtime.",
+  "verification": "Run actual update.sh in isolated homes with controlled HTTP responses before and after the repair. Cover exact-tag apply, no downgrade, real menu entrypoints, invalid/untrusted redirects, custom API isolation and unavailable fallback. Independently verify the installed updater's bytes and read-only live discovery.",
+  "not_tested": "No new native field, rendering, latency, correction quality or input-route acceptance follows from updater checks. Permanent primary binary installation remains the user's menu operation.",
+  "invariants": ["C01", "C09", "C10"],
+  "protected_paths": ["update.sh", "tests/test_update_menu.py", "src/generated/architecture_graph_receipt.json", "extension/lay@radislabus-star.github.io/tray_support.js"],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

@@ -81,6 +81,25 @@ Maintenance: reuse `update.sh`, `install.sh`, the existing tray adapters, and tw
 systemd unit files. Remove the implicit development-upstream release discovery;
 keep explicit `--source-only` isolated. No scheduler inside either tray.
 
+## Rate-limit repair — 2026-11-10
+
+The official default API can exhaust GitHub's anonymous request allowance and
+return403 while the release website remains available. After403/429 only,
+`update.sh` may resolve the same repository's official HTTPS `/releases/latest`
+redirect with HEAD. Accept only the exact repository's `/releases/tag/vX.Y.Z`
+URL, preserving the existing exact-tag fetch, source-version comparison and
+no-downgrade checks. A custom API, another host/repository, an unresolved URL,
+prerelease-shaped version or unavailable fallback never becomes a current
+release result. Display the discovery source actually used. No authentication,
+HTML scraper, persistent cache or second installer is added.
+
+Decision: [2026-11-10-stable-update-rate-limit.json](decisions/2026-11-10-stable-update-rate-limit.json).
+The preflight and independently verified installed-script discovery are in
+[fragment124-update-rate-limit-2026-11-10.md](../development/fragment124-update-rate-limit-2026-11-10.md).
+The controlled updater/installer regressions pass37/37. Release build and
+publication evidence are tracked separately in [1.0.125 notes](../release-1.0.125.md).
+No IME/correction/desktop-field authority changes in this repair.
+
 ## Proof plan and boundaries
 
 Remote isolated executable updater tests cover latest-stable discovery from an

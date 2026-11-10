@@ -1,3 +1,39 @@
+## Current: updater HTTP403 repair / 1.0.125 candidate — 2026-11-10
+
+User reports fragment conversion only after Space and cannot update to124.
+Fresh primary inspection: installed/running123, fragment=true, exact one daemon
+and IME; loaded hashes match installed. Tag123 has no letter caller. Exact
+retained124 native logs show ghbd->прив and рудд->hell before Space. Installed
+updater then reproduces API403/remaining0 while official website resolves124.
+Narrow fix ONLY update.sh adds official same-repository HTTPS HEAD fallback on
+default API403/429. No IME/Rust/input/config/service changes. Original-source
+RED3/5subcases, reviewed GREEN37 updater/installer tests; canon/syntax PASS.
+At08:46UTC installed updater alone was atomically bootstrapped under its lock,
+stock beforeSHAaebfb65..., reviewed afterSHAb7c05b3...; actual installed --check
+finds123->124 in1.08s while API403. No binary install/restart. Script124 would
+overwrite this repair, so125 metadata candidate is prepared for permanent
+distribution. Release checks PASS: source3650, canonical3650+11performance,
+475Python+12envSKIP, allten125 installables, architecture/lints/CLI/ngram/installer
+and actualMSRV1.88 bothmodes. Source1338 SHA
+f79d39f81734e4e873923fa552d9c11e014fc8725d23626b18191ab0b7df2f63
+matches local/remote; full2317-file ledger also seals rootupdate/extension.
+Codecommit/CI/tag/publication still pending. SOLO,
+no agents/Harness/questions. Preserve primary user's menu update preference.
+Owning analysis: docs/development/fragment124-update-rate-limit-2026-11-10.md;
+ADR2026-11-10-stable-update-rate-limit.json; notes docs/release-1.0.125.md.
+Prior complete ordinary KDE matrix remains329P59F52B/440; no new native claim.
+At09:12UTC KDE updater-only bootstrap also verified; CLIthere124 but activeIME
+stilloriginal123SHAb765fde8 (ordinaryupdaterpreservesinput). No runtime restart.
+GraphAST update REJECTED_WATCH because3unchanged sinks lostcapability edges;
+rawgraph/reportretained, acceptedRustgraphrestored, PASS-onlyreceiptrecomputed
+forCargometadata. No guard/runtimerulechanged. Newscopebasee334 closes old46
+seams and allows onlyupdate.sh,generatedreceipt,trayversion/date +tooling.
+Devreport /home/ubu/.cache/lay/development/run-cyg_x58o/RESULT.json; fullreport
+C/updater125-release-RESULT.json, remote updater125-release-gate-20261110/RESULT.json.
+Nextcommit/push origin+publicfeature/publicmain, preserveprivateoriginmain47fe54e6;
+wait4CIgreen, tag125both, stablepublicrelease, actualinstalled--checkbothhosts,
+publicationdocs-onlyfollowup then completionsound. No forcedprimaryinstall.
+
 ## Completed: Lay 1.0.124 — 2026-11-09T23:30:20.930515+00:00
 
 The isolated letter-fragment task has reached its stable release. No pending

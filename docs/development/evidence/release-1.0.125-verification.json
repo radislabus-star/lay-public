@@ -1,0 +1,236 @@
+{
+  "schema": "lay.release-verification.v1",
+  "version": "1.0.125",
+  "recorded_at": "2026-11-10T09:35:03.745922+00:00",
+  "scope": "stable update discovery only; no Rust input/correction or field integration behavior change from124",
+  "source_build_status": "PASS",
+  "publication_status": "PENDING_CI",
+  "base": "e334f2f45681ca3b8d81fb68af56dee6dee7a12a",
+  "compiled_source": {
+    "git_head": "4fae57d50b031984c1e0ddc8796e78e142b2a595",
+    "files": 1338,
+    "sha256": "f79d39f81734e4e873923fa552d9c11e014fc8725d23626b18191ab0b7df2f63"
+  },
+  "compiled_source_head_note": "Remote Git metadata is historical/synthetic; frozen request source_head is e334f2f4 plus declared125 changes. Local and remote closure file count and SHA match.",
+  "full_snapshot": {
+    "local_request": "/home/ubu/.cache/lay/development/run-cyg_x58o/request.json",
+    "remote_request": "/home/e/projects/lay-development-runner/run-6wGAlF/request.json",
+    "source_head": "e334f2f45681ca3b8d81fb68af56dee6dee7a12a",
+    "files": 2317,
+    "archive_sha256": "33be0149fd4ea83d00ea7628bc13e2d2302174f13aa170df02b858302d6959cb",
+    "all_file_hashes_and_modes_verified_before_after": true,
+    "includes_root_updater_and_extension_metadata": true
+  },
+  "updater_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+  "regressions": {
+    "old_source_red_tests": 3,
+    "old_source_red_failed_subcases": 5,
+    "reviewed_updater_installer_passed": 37,
+    "red_log": "/home/ubu/.cache/lay/development/letter-fragment-request-20261102/updater403-red.log",
+    "green_log": "/home/ubu/.cache/lay/development/letter-fragment-request-20261102/updater403-green.log"
+  },
+  "development_gate": {
+    "status": "PASS",
+    "selected_rust_correctness_package": 3650,
+    "receipt": "/home/ubu/.cache/lay/development/run-cyg_x58o/RESULT.json"
+  },
+  "canonical_release_gate": {
+    "status": "PASS",
+    "rust_correctness_package": 3650,
+    "rust_performance": 11,
+    "headless_python": {
+      "passed": 475,
+      "skipped_environment": 12,
+      "total": 487
+    },
+    "msrv": "actual1.88.0; both locked all-target checks PASS",
+    "all_ten_installable_builds": "PASS",
+    "commands": [
+      {
+        "name": "budget-before",
+        "exit": 0,
+        "elapsed_s": 0.0928491409868002,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/budget-before.log"
+      },
+      {
+        "name": "all-headless-python",
+        "exit": 0,
+        "elapsed_s": 40.396958956029266,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/all-headless-python.log"
+      },
+      {
+        "name": "full-release-gate",
+        "exit": 0,
+        "elapsed_s": 1033.302334036678,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/full-release-gate.log"
+      },
+      {
+        "name": "all-installable-builds",
+        "exit": 0,
+        "elapsed_s": 0.37330907909199595,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/all-installable-builds.log"
+      },
+      {
+        "name": "public-installer-issues",
+        "exit": 0,
+        "elapsed_s": 13.246848952025175,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/public-installer-issues.log"
+      },
+      {
+        "name": "binary-install-contract",
+        "exit": 0,
+        "elapsed_s": 0.3566706092096865,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/binary-install-contract.log"
+      },
+      {
+        "name": "msrv-identity",
+        "exit": 0,
+        "elapsed_s": 0.17722945706918836,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/msrv-identity.log"
+      },
+      {
+        "name": "msrv-default",
+        "exit": 0,
+        "elapsed_s": 22.303709800820798,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/msrv-default.log"
+      },
+      {
+        "name": "msrv-research",
+        "exit": 0,
+        "elapsed_s": 22.407396113034338,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/msrv-research.log"
+      },
+      {
+        "name": "budget-after",
+        "exit": 0,
+        "elapsed_s": 0.11227356689050794,
+        "log": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/budget-after.log"
+      }
+    ],
+    "receipt": "/home/ubu/.cache/lay/development/letter-fragment-request-20261102/updater125-release-RESULT.json"
+  },
+  "artifacts": {
+    "lay-nanda-wave-train": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-nanda-wave-train",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-nanda-wave-train",
+      "sha256": "60a923f4218f4b16acc13edd90757e1130e87d1939680f79b7aa8b4108fbfe50"
+    },
+    "lay-nanda-wave-eval": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-nanda-wave-eval",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-nanda-wave-eval",
+      "sha256": "4d20dc55483d0da2c1b4e437f4b14608b29bc7ae373716544907bb75a9047bbf"
+    },
+    "lay-daemon": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-daemon",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-daemon",
+      "sha256": "769fd01fa1150278c560c39a9db87920729f4e04978516f09fc9ca6d2bd9fc8d"
+    },
+    "lay-test-input": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-test-input",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-test-input",
+      "sha256": "39340676675a886188e7dccf386a2d9f7b691d9cfadb8382bfd12f6bd8910acf"
+    },
+    "lay-l11-restore": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-l11-restore",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-l11-restore",
+      "sha256": "1f74c843bf82323e70a1f126996ea651088eaf8d194680e4088df58cf1038eef"
+    },
+    "lay-memory-report": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-memory-report",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-memory-report",
+      "sha256": "dd32a49e3776092deee9ebf0d96185624b7fcb4c0b15319a086305441b78b77c"
+    },
+    "lay-l11-serve": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-l11-serve",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-l11-serve",
+      "sha256": "85df909edcef63846afb15a55d77a99dcc0c3dc712d14d9c379e09e9a15277b8"
+    },
+    "lay": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay",
+      "sha256": "23939c30a1b175d8f70037ddb88ba6b4060c7de468f77ffe0fea9924a3748792"
+    },
+    "lay-ngram-corpus": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-ngram-corpus",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-ngram-corpus",
+      "sha256": "fd491d7be864d9e4f7cf01ce2834ada0a53ce72783e62169f13a72526b71ac2a"
+    },
+    "lay-ibus-engine": {
+      "compiler_artifact": "/home/e/projects/lay-development-runner/letter-fragment-release-20261102/target/release/lay-ibus-engine",
+      "retained": "/home/e/projects/lay-development-runner/updater125-release-gate-20261110/artifacts/lay-ibus-engine",
+      "sha256": "eca7fb3e35a3be91db62a5210e66788f30ff202e4e9f4aa63e908edfcd5e71e5"
+    }
+  },
+  "installed_updater_script_bootstrap": {
+    "primary": {
+      "at": "2026-11-10T08:46:33.580984+00:00",
+      "kind": "updater-script-only-bootstrap",
+      "installed_script": "/home/ubu/.local/lib/lay/update.sh",
+      "before_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "after_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+      "matches_reviewed_source": true,
+      "backup": "/home/ubu/.cache/lay/development/letter-fragment-request-20261102/updater403-installed-original.sh",
+      "binary_installation": false,
+      "service_restart": false,
+      "live_config_changed": false
+    },
+    "kde": {
+      "at": "2026-11-10T09:12:41.763901+00:00",
+      "kind": "updater-script-only-bootstrap",
+      "installed_script": "/home/e/.local/lib/lay/update.sh",
+      "before_sha256": "aebfb65ecec2003adda575bd1bc3a5881df2b8eb1e1f5e47a768367be0e7abae",
+      "after_sha256": "b7c05b3eff7199cadca53d8403482dd6ca4c957e5cc396dc511721e9d6b2d836",
+      "matches_reviewed_source": true,
+      "backup": "/home/e/.cache/lay/development/letter-fragment-request-20261102/updater403-installed-original.sh",
+      "binary_installation": false,
+      "service_restart": false,
+      "live_config_changed": false
+    }
+  },
+  "live_discovery_before_publication": {
+    "primary": "123 -> stable124 via website after realAPI403, exit0,1.08s",
+    "kde": "installed124 == stable124, exit0; actual installed updater script verified"
+  },
+  "runtime_snapshot_note": "Primary observed123/123/123. KDE CLI observed124 with exact old123 IME SHA b765fde8; ordinary update retains active IME. No input-runtime installation/restart performed by this task.",
+  "source_diff": {
+    "rust_rs_files": 0,
+    "generated_receipt": "source fingerprint refreshed for Cargo125 metadata",
+    "gnome_tray": "version/date constants only"
+  },
+  "graph_update": {
+    "ast_attempt": "REJECTED_WATCH",
+    "reason": "three unchanged mutation sinks lost capability edges during AST regeneration",
+    "retained_report": "/home/ubu/.cache/lay/development/letter-fragment-request-20261102/updater125-architecture-failure.json",
+    "retained_graph": "/home/ubu/.cache/lay/development/letter-fragment-request-20261102/updater125-rejected-ast-graph.tar.gz",
+    "promoted_graph": "unchanged accepted124 curated graph and Rust binding; existing PASS-only receipt refreshed for Cargo metadata",
+    "guards_changed": false
+  },
+  "scope_contract": {
+    "base": "e334f2f45681ca3b8d81fb68af56dee6dee7a12a",
+    "shared_paths": [
+      "update.sh",
+      "src/generated/architecture_graph_receipt.json",
+      "extension/lay@radislabus-star.github.io/tray_support.js"
+    ],
+    "owning_decision": "docs/architecture/decisions/2026-11-10-stable-update-rate-limit.json"
+  },
+  "native_tests_for125": "NOT_RUN; no native input change; do not relabel124 results",
+  "latest_ordinary_kde_matrix_unchanged": {
+    "firefox": {
+      "PASS": 143,
+      "FAIL": 51,
+      "BLOCKED": 26,
+      "total": 220
+    },
+    "chrome": {
+      "PASS": 186,
+      "FAIL": 8,
+      "BLOCKED": 26,
+      "total": 220
+    }
+  },
+  "permanent_binary_installation": false,
+  "live_config_changed": false,
+  "learning_or_models_changed": false,
+  "delivery_routes_changed": false
+}

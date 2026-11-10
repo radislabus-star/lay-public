@@ -8,6 +8,7 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import textwrap
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -106,6 +107,122 @@ class UpdateMenuTests(unittest.TestCase):
         result = self.update('--check', expected=1)
         self.assertIn('Ошибка проверки', result.stderr)
         self.assertNotIn('обновлений нет', result.stdout)
+
+    def rate_limited_http(self, *, code=403, final_url=None, latest_code=200):
+        """Execute the actual shell/inline Python with only HTTP substituted."""
+        self.env.pop('LAY_UPDATE_RELEASE_API', None)
+        (self.home / 'http-fixture.json').write_text(json.dumps(dict(
+            api_code=code, latest_code=latest_code,
+            final_url=final_url or
+            'https://github.com/radislabus-star/lay-public/releases/tag/v0.0.2')))
+        (self.home / 'http-calls').write_text('')
+        wrapper = self.bin / 'python3'
+        wrapper.write_text(f'#!{sys.executable}\n' + textwrap.dedent(r'''
+            import io, json, os, sys, urllib.error, urllib.request
+            from pathlib import Path
+            from unittest.mock import patch
+            home = Path(os.environ['HOME'])
+            fixture = json.loads((home / 'http-fixture.json').read_text())
+            latest = 'https://github.com/radislabus-star/lay-public/releases/latest'
+            class Response(io.BytesIO):
+                def geturl(self):
+                    return fixture['final_url']
+            def open_http(request, timeout):
+                url = request.full_url
+                with (home / 'http-calls').open('a') as log:
+                    log.write(json.dumps([url, request.get_method()]) + '\n')
+                code = fixture['latest_code'] if url == latest else fixture['api_code']
+                if code != 200:
+                    raise urllib.error.HTTPError(url, code, 'fixture', {}, None)
+                return Response(b'')
+            source = sys.stdin.read()
+            assert sys.argv[1] == '-'
+            sys.argv = sys.argv[1:]
+            with patch('urllib.request.urlopen', side_effect=open_http):
+                exec(compile(source, '<actual updater>', 'exec'), {'__name__': '__main__'})
+        '''))
+        wrapper.chmod(0o755)
+
+    def http_calls(self):
+        return [json.loads(line) for line in (self.home / 'http-calls').read_text().splitlines()]
+
+    def test_api_rate_limit_uses_official_latest_release_without_installing(self):
+        for code in (403, 429):
+            with self.subTest(code=code):
+                self.rate_limited_http(code=code)
+                result = self.update('--check')
+                self.assertIn('0.0.1 → 0.0.2', result.stdout)
+                self.assertIn('источник: https://github.com/radislabus-star/lay-public/releases/latest',
+                              result.stdout)
+                self.assertEqual(self.http_calls(), [
+                    ['https://api.github.com/repos/radislabus-star/lay-public/releases/latest', 'GET'],
+                    ['https://github.com/radislabus-star/lay-public/releases/latest', 'HEAD']])
+                self.assertFalse(self.cache.exists())
+                self.assertFalse((self.home / 'installed').exists())
+                self.assertFalse((self.home / 'runtime-calls').exists())
+
+    def test_rate_limit_fallback_applies_the_exact_verified_tag(self):
+        self.rate_limited_http()
+        self.update('--automatic', input='')
+        self.assertEqual('--update', (self.home / 'installed').read_text())
+        self.assertEqual(self.git('rev-parse', 'v0.0.2^{}', cwd=self.origin),
+                         self.git('rev-parse', 'HEAD', cwd=self.cache))
+
+    def test_rate_limit_fallback_never_downgrades(self):
+        for version in ('0.0.2', '0.0.10'):
+            with self.subTest(version=version):
+                self.rate_limited_http()
+                self.script('lay', f'echo "lay {version}"')
+                self.update('--automatic', input='')
+                self.assertFalse((self.home / 'installed').exists())
+                self.assertFalse((self.home / 'runtime-calls').exists())
+
+    def test_rate_limit_fallback_rejects_untrusted_or_unresolved_redirects(self):
+        for url in (
+            'https://github.com/radislabus-star/lay-public/releases/latest',
+            'http://github.com/radislabus-star/lay-public/releases/tag/v0.0.2',
+            'https://github.com.evil.invalid/radislabus-star/lay-public/releases/tag/v0.0.2',
+            'https://github.com/another-owner/lay-public/releases/tag/v0.0.2',
+            'https://github.com/radislabus-star/another-repo/releases/tag/v0.0.2',
+            'https://github.com/radislabus-star/lay-public/releases/tag/v0.0.2-beta',
+            'https://github.com/radislabus-star/lay-public/releases/tag/v0.0.2?tag=v9.9.9',
+            'https://github.com/radislabus-star/lay-public/releases/tag/v0.0.2#other',
+        ):
+            with self.subTest(url=url):
+                self.rate_limited_http(final_url=url)
+                result = self.update('--automatic', expected=1)
+                self.assertNotIn('обновлений нет', result.stdout)
+                self.assertFalse(self.cache.exists())
+                self.assertFalse((self.home / 'installed').exists())
+
+    def test_custom_api_error_cannot_switch_to_the_official_repository(self):
+        self.rate_limited_http()
+        self.env['LAY_UPDATE_RELEASE_API'] = 'https://example.invalid/custom/releases/latest'
+        self.update('--check', expected=1)
+        self.assertEqual(len(self.http_calls()), 1)
+
+    def test_unrelated_api_error_does_not_hide_failure(self):
+        for code in (401, 404, 500):
+            with self.subTest(code=code):
+                self.rate_limited_http(code=code)
+                result = self.update('--check', expected=1)
+                self.assertNotIn('обновлений нет', result.stdout)
+                self.assertEqual(len(self.http_calls()), 1)
+
+    def test_unavailable_fallback_never_reports_a_current_release(self):
+        self.rate_limited_http(latest_code=503)
+        result = self.update('--check', expected=1)
+        self.assertNotIn('обновлений нет', result.stdout)
+        self.assertFalse(self.cache.exists())
+
+    def test_rate_limit_fallback_is_usable_from_both_desktop_menus(self):
+        for desktop in ('GNOME', 'KDE'):
+            with self.subTest(desktop=desktop):
+                self.rate_limited_http()
+                self.terminal(desktop)
+                result = self.update('--menu', input='n\n')
+                self.assertIn('0.0.1 → 0.0.2', result.stdout)
+                self.assertFalse((self.home / 'installed').exists())
 
     def test_invalid_release_and_installed_versions_are_errors(self):
         for data in (dict(tag_name='v0.0.2', draft=True, prerelease=False),

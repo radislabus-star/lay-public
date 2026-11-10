@@ -57,29 +57,48 @@ api="${LAY_UPDATE_RELEASE_API:-https://api.github.com/repos/radislabus-star/lay-
 repository="${LAY_UPDATE_REPOSITORY_URL:-https://github.com/radislabus-star/lay-public.git}"
 source_dir="${XDG_DATA_HOME:-$HOME/.local/share}/lay/update-source"
 release="$(python3 - "$api" "$installed" <<'PY'
-import json, re, sys, urllib.request
+import json, re, sys, urllib.error, urllib.request
 try:
-    request = urllib.request.Request(sys.argv[1], headers={
+    source = sys.argv[1]
+    request = urllib.request.Request(source, headers={
         "Accept": "application/vnd.github+json", "User-Agent": "Lay-updater"})
-    with urllib.request.urlopen(request, timeout=20) as response:
-        data = json.load(response)
-    tag = data.get("tag_name", "")
-    if data.get("draft") is not False or data.get("prerelease") is not False:
-        raise ValueError("ответ не является стабильным опубликованным релизом")
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            data = json.load(response)
+    except urllib.error.HTTPError as error:
+        if (source != "https://api.github.com/repos/radislabus-star/lay-public/releases/latest"
+                or error.code not in (403, 429)):
+            raise
+        source = "https://github.com/radislabus-star/lay-public/releases/latest"
+        print(f"GitHub API недоступен (HTTP {error.code}); проверка по официальной странице релизов.",
+              file=sys.stderr)
+        request = urllib.request.Request(source, method="HEAD", headers={
+            "User-Agent": "Lay-updater", "Cache-Control": "no-cache"})
+        with urllib.request.urlopen(request, timeout=20) as response:
+            match = re.fullmatch(
+                r"https://github\.com/radislabus-star/lay-public/releases/tag/(v[0-9]+\.[0-9]+\.[0-9]+)",
+                response.geturl())
+        if match is None:
+            raise ValueError("не удалось подтвердить официальный тег стабильного релиза")
+        tag = match.group(1)
+    else:
+        tag = data.get("tag_name", "")
+        if data.get("draft") is not False or data.get("prerelease") is not False:
+            raise ValueError("ответ не является стабильным опубликованным релизом")
     if not re.fullmatch(r"v[0-9]+\.[0-9]+\.[0-9]+", tag):
         raise ValueError("некорректный тег стабильного релиза")
     if not re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", sys.argv[2]):
         raise ValueError("не удалось определить установленную версию")
     latest = tuple(map(int, tag[1:].split(".")))
     current = tuple(map(int, sys.argv[2].split(".")))
-    print(tag, tag[1:], "new" if latest > current else "current" if latest == current else "newer")
+    print(tag, tag[1:], "new" if latest > current else "current" if latest == current else "newer", source)
 except Exception as error:
     print(f"Ошибка проверки стабильного релиза: {error}", file=sys.stderr)
     sys.exit(1)
 PY
 )"
-read -r tag version relation <<<"$release"
-printf '=== проверка обновлений ===\nустановлено: %s\nстабильный релиз: %s\nисточник: %s\n' "$installed" "$version" "$api"
+read -r tag version relation source <<<"$release"
+printf '=== проверка обновлений ===\nустановлено: %s\nстабильный релиз: %s\nисточник: %s\n' "$installed" "$version" "$source"
 if [[ "$relation" == current ]]; then
     echo "✓ обновлений нет, установлена актуальная стабильная версия"; exit 0
 elif [[ "$relation" == newer ]]; then
