@@ -1,3 +1,99 @@
+## Closed: earlier fragment recognition rejected — 2026-11-13
+
+User explicitly chose to preserve quality and reject the early-prefix variant.
+Candidate A increased original clean false flips12->57/20000. B's frozen offline
+filter allowed djk->вол on letter3, but increased clean errors by1/20000 in BOTH
+original and fresh evaluations. Both are rejected; do not tune or ship them.
+Production decision and its letter tests are restored exactly to baseline
+ffe94e1a. No installed bytes, model, configuration, input route or service were
+changed. Stable126 remains the runtime reference; no new release from this task.
+
+The maintained offline proof calls the existing production entry only; rejected
+filter/report modes and source patches are archived privately. The comparator
+now rejects new per-word corruption/reversals, and the runner requires freshly
+compiled Lay bytes to prevent rsync-mtime cache reuse. Remote comparator4/4,
+rustfmt and the simplified offline example's locked compile check passed.
+Owning evidence and closure receipts:
+`docs/development/fragment-early-recognition-2026-11-13.md`.
+The following read-only diagnosis is historical; the owning document supersedes
+its proposed experiment and records the prior compiled streaming proof.
+
+Upstream readback at2026-11-13T07:35:11Z: open PR78 ureq2.12.1->3.5.1,
+PR77 libc0.2.190->0.2.191 and PR76 x11rb0.13.2->0.14.0. Read-only triage;
+no dependency, merge, closure or contributor message was performed.
+
+## Read-only analysis: late fragment recognition — 2026-11-13
+
+User asks whether more weights would permit earlier letter recognition. Current
+installed126 and loaded IME2155528 still match SHA5cf26855fa8deead77c6dee59b013182f78791fe6081380a3ad1b885db77dc9d;
+both autoflip flags are true. No code, model, settings or runtime changes made.
+`layout_fragments/letter.rs:33` rejects fewer than3 letters. The fragment-only
+DecisionCore entry (`typing_transition/decision.rs:119`) requires Known target,
+nonpositive current support, positive target support, margin>=16 and protections.
+It also calls `layout_autoswitch/english.rs:6`: English targets<=3 letters need
+the technical lexicon exception; wo/wor are not in that lexicon.
+
+Read-only inspection of serialized model28dc04cc... gives wo/currentцщ sums
+9/-14 (margin23, Known), wor/currentцщк19/-29 (margin48, Known), but the first
+is below the length floor and the second meets the short-English veto. Native
+Nov12 receipt independently shows цщкд -> worl on letter4. For при/currentghb,
+29/-29 gives margin58 but no Known record; прив/currentghbd is Known. This
+inspection is arithmetic over model records, not execution of DecisionCore or
+fresh native acceptance. Receipt:
+`/home/ubu/.cache/lay/development/fragment-early-recognition-20261113/weight-inspection.json`.
+
+Model has40000 fragments/687981bytes,120000training surfaces per language.
+Trainer includes start fragments but its heldout scorer and proof example use
+Closed words; existing published quality does not establish early-prefix safety.
+Recommended next scoped experiment: calibrate fragment-prefix admission using
+the existing decision owner; first evaluate strong3-letter proposals without
+changing the shared completed-English-word helper. Prove clean-prefix retention
+and first-trigger letter distribution on heldout RU/EN before considering2-letter
+admission or a larger model. Preserve Space, letter release timing, input owners,
+verifier, transport and GNOME/KDE client mechanisms. No implementation begun.
+
+Follow-up example supplied by user: `djk` (start of волшебник). Embedded records
+give вол +25, djk -25, margin50>=16, but neither interpretation is Known. Thus
+the explicit Known-target requirement blocks this3-letter proposal. All inspected
+prefixes of волшебник also lack Known; from the sixth physical key the wrong-layout
+token contains comma (б key), additionally failing on_letter's all-alphabetic
+token requirement. These are detector/decision constraints, not transport proof.
+The proposal must address calibrated prefix evidence in both directions;
+removing only the short-English target condition would not fix djk. Evidence:
+`/home/ubu/.cache/lay/development/fragment-early-recognition-20261113/djk-weight-inspection.json`.
+
+## Runtime follow-up: Kitty `file цщкдв` — 2026-11-12
+
+The user reported that automatic conversion and Double Shift did not work in
+primary GNOME Kitty. Installed release was126 but IME PID1749669 still executed
+deleted125 bytes (SHA9cf89abafc22c47aa16c4f064308f360bb68dab77d178cf97d7493a6463fd905).
+After OwnsActiveText=false, the existing installed full-restart action completed
+successfully. IME PID2155528 now matches the user's installed126 bytes, SHA
+5cf26855fa8deead77c6dee59b013182f78791fe6081380a3ad1b885db77dc9d. No build,
+installation, source repair or delivery change was needed. Configuration is
+byte-identical to before the restart.
+
+Actual existing Kitty/Wayland process161163, owned raw PTY, physical uinput:
+one verified two-phase scenario,16/16 ordered text-state assertions PASS in
+20.081seconds. After `file `, both desktop and IBus were verified LayRU before
+typing physical `world`. Word conversion occurred before Space; eight active
+whole-word Double Shift flips, two after the boundary, and two on the third
+word passed. Final text `file world world `; original focus/source/engine and
+config restored. This is scoped native Kitty evidence, not a new browser matrix
+or a key-to-pixel latency measurement.
+
+An earlier diagnostic was INVALID_SETUP: its TSV `layout lay-ime-ru` command
+used a helper expecting `ru`, selecting ordinary XKB. Its mixed-word output
+must not be treated as a product failure. The corrected actor uses the existing
+desktop helpers with readback before input. The browser-only lay-diagnose
+reporter rejects this terminal receipt format; no browser totals were changed.
+Evidence: `/home/ubu/.cache/lay/development/kitty-world-20261112/`, especially
+`before.json`, `after-restart.json`, `invalid-first-probe.json`,
+`world-verified-layout126/RESULT.json`, and `final-readback.json`.
+
+The initial GitHub check found two open issues,73 COSMIC support and74 Flatpak,
+both without comments; latest stable126. No issue comments/status were changed.
+
 ## Completed: Kitty letter fragments / stable Lay 1.0.126 — 2026-11-10
 
 Accepted checkout: this branch. Code cd61dadc689b7819b34c23163a7759fd7fe15ab0.

@@ -2215,7 +2215,7 @@
     "semantic_hash": ""
   },
   "src/typing_transition/decision.rs": {
-    "mtime": 1793585777.0488307,
+    "mtime": 1794555125.5760417,
     "ast_hash": "173f84e7579d6d316a3ff6936ed38efd",
     "semantic_hash": ""
   },
@@ -3220,8 +3220,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1794301069.0592692,
-    "ast_hash": "cc307adecf9a15a89cf555f27aaa87b9",
+    "mtime": 1794323782.0293424,
+    "ast_hash": "14f317e9a1342b48ce13eecab106378d",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5015,12 +5015,12 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1794258466.8921754,
-    "ast_hash": "3022b2b64ed1b014c42d8495df5a4541",
+    "mtime": 1794323654.7528265,
+    "ast_hash": "5286f02722e37380e9d376c12a66ec6e",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1794323605.405014,
+    "mtime": 1794323633.2152877,
     "ast_hash": "d124b8d86d1ad4dc9cbcc0747ab3a509",
     "semantic_hash": ""
   },
@@ -7660,8 +7660,8 @@
     "semantic_hash": ""
   },
   "docs/development/lay2-handoff.md": {
-    "mtime": 1794323494.2558546,
-    "ast_hash": "473c78249c51b89b7c937eddf7308679",
+    "mtime": 1794555248.504782,
+    "ast_hash": "1620f359d699b1df4330bca489fe2c7f",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-10-20-kde-explicit-daemon-controls.json": {
@@ -9090,8 +9090,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1794323011.7529356,
-    "ast_hash": "2309bfd2e1d41c3a74f02545ccfa3d0a",
+    "mtime": 1794555125.5750418,
+    "ast_hash": "bd9a2c2017b09d1edd1809cabd1df085",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -10105,7 +10105,7 @@
     "semantic_hash": ""
   },
   "src/layout_fragments/letter_tests.rs": {
-    "mtime": 1793585777.4138317,
+    "mtime": 1794555125.5760417,
     "ast_hash": "a7bbb6f7b0599c65cb45f79762cef5f9",
     "semantic_hash": ""
   },
@@ -10240,8 +10240,8 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-11-10-kitty-fragment-existing-mode-owner.json": {
-    "mtime": 1794323011.7530732,
-    "ast_hash": "375e534be5951104f029eb9e43706359",
+    "mtime": 1794325193.9366076,
+    "ast_hash": "1fb33f2086a1d679e9bcb394b3b1971b",
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-11-10-kitty-fragment-mode.json": {
@@ -10285,8 +10285,8 @@
     "semantic_hash": ""
   },
   "docs/development/kitty-fragment-mode-2026-11-10.md": {
-    "mtime": 1794323494.2568545,
-    "ast_hash": "dda47f2c1bf8af74517e811e7974e78d",
+    "mtime": 1794327319.1763904,
+    "ast_hash": "016600199b35ff9a28910ccc33916dc9",
     "semantic_hash": ""
   },
   "docs/development/release-1.0.124-letter-fragments.md": {
@@ -10300,8 +10300,43 @@
     "semantic_hash": ""
   },
   "docs/release-1.0.126.md": {
-    "mtime": 1794323011.7708707,
-    "ast_hash": "93c09f439b4a0dd1d7555132b849e577",
+    "mtime": 1794327319.1753905,
+    "ast_hash": "309386b16a1c5bff235796d09508b622",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-11-13-fragment-early-evidence.json": {
+    "mtime": 1794555125.5750418,
+    "ast_hash": "8ac67fccd6f5131fedcd9020e13e8e4b",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.126-publication.json": {
+    "mtime": 1794327252.5628445,
+    "ast_hash": "e7f178e066749142600ebbf832f0c631",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.126-verification.json": {
+    "mtime": 1794327252.5631635,
+    "ast_hash": "3182460739921091990cbf3c25fcdd33",
+    "semantic_hash": ""
+  },
+  "examples/fragment_prefix_proof.rs": {
+    "mtime": 1794555125.5760417,
+    "ast_hash": "017dc1d595fbb5c0d525845fb6b7d833",
+    "semantic_hash": ""
+  },
+  "scripts/proof/fragment-prefix-quality.py": {
+    "mtime": 1794553912.1775343,
+    "ast_hash": "a78817c9a4953eeb0182812d8a75dfb8",
+    "semantic_hash": ""
+  },
+  "tests/test_fragment_prefix_quality.py": {
+    "mtime": 1794553912.1785343,
+    "ast_hash": "395f7ba33026dc5bc2072a7feba99b6c",
+    "semantic_hash": ""
+  },
+  "docs/development/fragment-early-recognition-2026-11-13.md": {
+    "mtime": 1794555248.504782,
+    "ast_hash": "f5f9188d6372679a5ae9bc8f357bd3f3",
     "semantic_hash": ""
   }
 }

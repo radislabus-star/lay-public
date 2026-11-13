@@ -1,0 +1,18 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Reject candidates A and B and preserve the accepted letter-fragment decision. Restore both experimental runtime/test hunks exactly to baseline. Retain only offline proof tooling and evidence; no runtime promotion or release.",
+  "reason": "User explicitly requested earlier recognition after djk was shown to have RU +25 / EN -25 but no Known target marker. Existing evidence documents why blindly removing support guards is rejected. This task changes correction decision evidence, not field integration.",
+  "verification": "Actual compiled baseline and A streaming proof: original clean false flips12/20000 versus57/20000. B offline feasibility:13/20000 original and12/20000 fresh, each one error above its baseline. User explicitly rejected the quality tradeoff. Exact source restoration, offline comparator checks and architecture refresh close the rejected experiment. See docs/development/fragment-early-recognition-2026-11-13.md for receipts and proof boundaries.",
+  "not_tested": "No new installed runtime, native client matrix, complete release build or runtime implementation of B. No claim that offline results establish physical-client acceptance or real-world error rates.",
+  "invariants": ["C01", "C02", "C05", "C07", "C10"],
+  "protected_paths": [
+    "src/typing_transition/decision.rs",
+    "src/layout_fragments/letter_tests.rs",
+    "examples/fragment_prefix_proof.rs",
+    "scripts/proof/fragment-prefix-quality.py",
+    "tests/test_fragment_prefix_quality.py"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

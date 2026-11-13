@@ -1,14 +1,12 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "a73529c0aa30891993691525b63118e78097b319",
+  "base": "ffe94e1a8828d743b520ad7c852e65c366356cd3",
   "components": [
-    "gnome"
+    "tooling"
   ],
   "shared_paths": [
-    "src/bin/lay_ibus_engine/committed_tail.rs",
-    "src/bin/lay_ibus_engine/fragment_layout.rs",
-    "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json"
+    "examples/fragment_prefix_proof.rs",
+    "scripts/proof/fragment-prefix-quality.py"
   ],
-  "decision": "docs/architecture/decisions/2026-11-10-kitty-fragment-existing-mode-owner.json"
+  "decision": "docs/architecture/decisions/2026-11-13-fragment-early-evidence.json"
 }
