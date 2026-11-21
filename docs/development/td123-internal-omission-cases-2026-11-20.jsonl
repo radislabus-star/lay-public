@@ -1,0 +1,69 @@
+{"id":"omission-1","group":"omission","input":"услить","expected":"усилить","mode":"frame"}
+{"id":"omission-2","group":"omission","input":"испрвить","expected":"исправить","mode":"frame"}
+{"id":"omission-3","group":"omission","input":"улучшть","expected":"улучшить","mode":"frame"}
+{"id":"omission-4","group":"omission","input":"устновить","expected":"установить","mode":"frame"}
+{"id":"omission-5","group":"omission","input":"опечтки","expected":"опечатки","mode":"frame"}
+{"id":"omission-6","group":"omission","input":"кторое","expected":"которое","mode":"frame"}
+{"id":"omission-7","group":"omission","input":"докумнты","expected":"документы","mode":"frame"}
+{"id":"omission-8","group":"omission","input":"проврка","expected":"проверка","mode":"frame"}
+{"id":"omission-9","group":"omission","input":"средсва","expected":"средства","mode":"frame"}
+{"id":"omission-10","group":"omission","input":"сегодя","expected":"сегодня","mode":"frame"}
+{"id":"omission-11","group":"omission","input":"подготвка","expected":"подготовка","mode":"frame"}
+{"id":"omission-12","group":"omission","input":"сотруники","expected":"сотрудники","mode":"frame"}
+{"id":"omission-13","group":"omission","input":"резултат","expected":"результат","mode":"frame"}
+{"id":"omission-14","group":"omission","input":"опредлить","expected":"определить","mode":"frame"}
+{"id":"omission-15","group":"omission","input":"даные","expected":"данные","mode":"frame"}
+{"id":"omission-16","group":"omission","input":"настроки","expected":"настройки","mode":"frame"}
+{"id":"omission-17","group":"omission","input":"условя","expected":"условия","mode":"frame"}
+{"id":"omission-18","group":"omission","input":"прдложение","expected":"предложение","mode":"frame"}
+{"id":"omission-19","group":"omission","input":"коррекця","expected":"коррекция","mode":"frame"}
+{"id":"omission-20","group":"omission","input":"рабтает","expected":"работает","mode":"frame"}
+{"id":"omission_context-21","group":"omission_context","input":"что нужно услить","expected":"усилить","mode":"frame"}
+{"id":"omission_context-22","group":"omission_context","input":"текст нужно устновить","expected":"установить","mode":"frame"}
+{"id":"omission_context-23","group":"omission_context","input":"нужно улучшть","expected":"улучшить","mode":"frame"}
+{"id":"omission_context-24","group":"omission_context","input":"нужно испрвить","expected":"исправить","mode":"frame"}
+{"id":"omission_context-25","group":"omission_context","input":"исправить опечтки","expected":"опечатки","mode":"frame"}
+{"id":"omission_context-26","group":"omission_context","input":"подтвердите докумнты","expected":"документы","mode":"frame"}
+{"id":"omission_context-27","group":"omission_context","input":"делаем проврку","expected":"проверку","mode":"frame"}
+{"id":"omission_context-28","group":"omission_context","input":"прочитайте это прдложение","expected":"предложение","mode":"frame"}
+{"id":"clean-29","group":"clean","input":"усилит","expected":"усилит","mode":"frame"}
+{"id":"clean-30","group":"clean","input":"привезу","expected":"привезу","mode":"frame"}
+{"id":"clean-31","group":"clean","input":"криптой","expected":"криптой","mode":"frame"}
+{"id":"clean-32","group":"clean","input":"крипта","expected":"крипта","mode":"frame"}
+{"id":"clean-33","group":"clean","input":"пишем","expected":"пишем","mode":"frame"}
+{"id":"clean-34","group":"clean","input":"воде","expected":"воде","mode":"frame"}
+{"id":"clean-35","group":"clean","input":"короче","expected":"короче","mode":"frame"}
+{"id":"clean-36","group":"clean","input":"должен","expected":"должен","mode":"frame"}
+{"id":"clean-37","group":"clean","input":"которое","expected":"которое","mode":"frame"}
+{"id":"clean-38","group":"clean","input":"документы","expected":"документы","mode":"frame"}
+{"id":"clean-39","group":"clean","input":"настройки","expected":"настройки","mode":"frame"}
+{"id":"clean-40","group":"clean","input":"средства","expected":"средства","mode":"frame"}
+{"id":"clean-41","group":"clean","input":"полностью","expected":"полностью","mode":"frame"}
+{"id":"clean-42","group":"clean","input":"отпечатки","expected":"отпечатки","mode":"frame"}
+{"id":"clean-43","group":"clean","input":"улучшать","expected":"улучшать","mode":"frame"}
+{"id":"clean-44","group":"clean","input":"услать","expected":"услать","mode":"frame"}
+{"id":"clean-45","group":"clean","input":"усыновить","expected":"усыновить","mode":"frame"}
+{"id":"clean-46","group":"clean","input":"набираю","expected":"набираю","mode":"frame"}
+{"id":"clean-47","group":"clean","input":"нужно","expected":"нужно","mode":"frame"}
+{"id":"clean-48","group":"clean","input":"быть","expected":"быть","mode":"frame"}
+{"id":"clean-49","group":"clean","input":"расчет","expected":"расчет","mode":"frame"}
+{"id":"clean-50","group":"clean","input":"сегодня","expected":"сегодня","mode":"frame"}
+{"id":"clean-51","group":"clean","input":"эффект","expected":"эффект","mode":"frame"}
+{"id":"clean-52","group":"clean","input":"проверишь","expected":"проверишь","mode":"frame"}
+{"id":"clean-53","group":"clean","input":"тестирование","expected":"тестирование","mode":"frame"}
+{"id":"clean-54","group":"clean","input":"коррекция","expected":"коррекция","mode":"frame"}
+{"id":"clean-55","group":"clean","input":"плачу криптой","expected":"криптой","mode":"frame"}
+{"id":"clean-56","group":"clean","input":"мы привезу","expected":"привезу","mode":"frame"}
+{"id":"other_typo-57","group":"other_typo","input":"етбя","expected":"тебя","mode":"frame"}
+{"id":"other_typo-58","group":"other_typo","input":"рабоатет","expected":"работает","mode":"frame"}
+{"id":"other_typo-59","group":"other_typo","input":"настрокйки","expected":"настройки","mode":"frame"}
+{"id":"other_typo-60","group":"other_typo","input":"услть","expected":"усилить","mode":"frame"}
+{"id":"boundary_positive-61","group":"boundary_positive","input":"должн ыбыть","expected":"должны быть","mode":"rank"}
+{"id":"boundary_positive-62","group":"boundary_positive","input":"сейча сна","expected":"сейчас на","mode":"rank"}
+{"id":"boundary_positive-63","group":"boundary_positive","input":"допусти мнабираю","expected":"допустим набираю","mode":"rank"}
+{"id":"boundary_positive-64","group":"boundary_positive","input":"расчет ыприблизительные","expected":"расчеты приблизительные","mode":"rank"}
+{"id":"left_control-65","group":"left_control","input":"что нужно услить","expected":"что нужно усилить","mode":"rank"}
+{"id":"left_control-66","group":"left_control","input":"очень надо услить","expected":"очень надо усилить","mode":"rank"}
+{"id":"left_control-67","group":"left_control","input":"нужно устновить","expected":"нужно установить","mode":"rank"}
+{"id":"left_control-68","group":"left_control","input":"хочу усилить","expected":"хочу усилить","mode":"rank"}
+{"id":"left_control-69","group":"left_control","input":"плачу криптой","expected":"плачу криптой","mode":"rank"}
