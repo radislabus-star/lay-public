@@ -1,16 +1,11 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "187434f576e5a120a52d5e77083371220da507f4",
+  "base": "c1f098936a16c98867068137d689474fece25714",
   "components": [
-    "correction"
+    "tooling"
   ],
   "shared_paths": [
-    "src/typing_transition/decision/admission.rs",
-    "data/lexicon/russian_infinitive_aspect_context.tsv",
-    "extension/lay@radislabus-star.github.io/tray_support.js",
-    "Cargo.lock",
-    "scripts/test-lanes/manifest.json",
-    "scripts/test-lanes/known_failures.json"
+    "src/main.rs"
   ],
-  "decision": "docs/architecture/decisions/2026-11-21-release-admission-rustix-and-test-inventory.json"
+  "decision": "docs/architecture/decisions/2026-11-21-explicit-selection-clipboard.json"
 }

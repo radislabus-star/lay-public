@@ -17,12 +17,19 @@ use lay::{config, correction_core, dict, llm, typing_assist, typing_context};
     about = "Keyboard layout switcher and typing helper"
 )]
 struct Args {
-    /// Текст для конвертации (если пусто — читаем stdin или --clipboard).
+    /// Текст для конвертации (если пусто — читаем stdin, буфер или выделение).
     text: Vec<String>,
 
     /// Читать из/писать в буфер обмена.
     #[arg(short, long)]
     clipboard: bool,
+
+    /// Перевести выделенный текст и положить результат в буфер обмена.
+    #[arg(long, conflicts_with_all = [
+        "clipboard", "text", "smart", "explain_correct", "restore_word",
+        "compare_candidate_routes"
+    ])]
+    selection: bool,
 
     /// Принудительно использовать LLM (даже если словарь дал хороший результат).
     #[arg(short, long)]
@@ -76,18 +83,25 @@ impl CandidateRouteArg {
 fn main() {
     let args = Args::parse();
 
-    let text = if args.clipboard {
-        match read_clipboard() {
+    let clipboard_output = args.clipboard || args.selection;
+    let text = if clipboard_output {
+        match read_clipboard(args.selection) {
             Ok(t) => t,
             Err(e) => {
-                eprintln!("⚠ не удалось прочитать буфер: {e}");
+                if args.selection {
+                    eprintln!("⚠ не удалось прочитать выделенный текст: {e}");
+                } else {
+                    eprintln!("⚠ не удалось прочитать буфер: {e}");
+                }
                 process::exit(1);
             }
         }
     } else if !args.text.is_empty() {
         args.text.join(" ")
     } else if io::stdin().is_terminal() {
-        eprintln!("Использование: lay <текст>  |  lay --clipboard  |  echo '...' | lay");
+        eprintln!(
+            "Использование: lay <текст>  |  lay --clipboard  |  lay --selection  |  echo '...' | lay"
+        );
         process::exit(1);
     } else {
         let mut s = String::new();
@@ -96,7 +110,11 @@ fn main() {
     };
 
     if text.trim().is_empty() {
-        process::exit(0);
+        if args.selection {
+            eprintln!("⚠ выделение не содержит текста");
+            process::exit(1);
+        }
+        return;
     }
 
     if args.explain_correct {
@@ -160,7 +178,7 @@ fn main() {
 
     let (result, method) = convert(&text, &args);
 
-    if args.clipboard {
+    if clipboard_output {
         if let Err(e) = write_clipboard(&result) {
             eprintln!("⚠ не удалось записать в буфер: {e}");
             process::exit(1);
@@ -633,11 +651,54 @@ fn convert(text: &str, args: &Args) -> (String, &'static str) {
     (dict_result, "dict")
 }
 
-fn read_clipboard() -> Result<String, Box<dyn std::error::Error>> {
+fn read_clipboard(selection: bool) -> Result<String, Box<dyn std::error::Error>> {
     let mut cb = arboard::Clipboard::new()?;
+    if selection {
+        #[cfg(target_os = "linux")]
+        {
+            use arboard::{GetExtLinux, LinuxClipboardKind};
+            return Ok(cb.get().clipboard(LinuxClipboardKind::Primary).text()?);
+        }
+        #[cfg(not(target_os = "linux"))]
+        return Err("чтение выделения поддерживается в Linux".into());
+    }
     Ok(cb.get_text()?)
 }
 
+#[cfg(target_os = "linux")]
+fn write_clipboard(text: &str) -> Result<(), Box<dyn std::error::Error>> {
+    use std::io::Write;
+    use std::process::{Command, Stdio};
+
+    // X11 clipboard data belongs to its owner. The installed xclip
+    // continues serving requests after the Lay command returns.
+    let mut child = Command::new("xclip")
+        .args(["-selection", "clipboard", "-in", "-silent"])
+        .stdin(Stdio::piped())
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .spawn()
+        .map_err(|error| {
+            if error.kind() == io::ErrorKind::NotFound {
+                io::Error::new(error.kind(), "Установите xclip для записи в буфер")
+            } else {
+                error
+            }
+        })?;
+    let written = child
+        .stdin
+        .take()
+        .expect("xclip stdin is piped")
+        .write_all(text.as_bytes());
+    let status = child.wait()?;
+    written?;
+    if !status.success() {
+        return Err(format!("xclip завершился с ошибкой ({status})").into());
+    }
+    Ok(())
+}
+
+#[cfg(not(target_os = "linux"))]
 fn write_clipboard(text: &str) -> Result<(), Box<dyn std::error::Error>> {
     let mut cb = arboard::Clipboard::new()?;
     cb.set_text(text.to_string())?;

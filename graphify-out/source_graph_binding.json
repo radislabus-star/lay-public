@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "91fcab585c0e9f8ba0b3124b10c38e17a5d9904bb99e08ecf918912ed9eed86c",
-  "manifest_fingerprint": "a8e1e4a6dcaa30a3e7cca4c78940bbb58f803463f35eb2b6e3fe79601718354d",
+  "graph_fingerprint": "3b5b9a98ec5c1fd6e159d7b1cc211f8759ed70e99f5e612a7bae91ae53f6f155",
+  "manifest_fingerprint": "ac51401b86468c753784dc667819bfe407017e2e2d2af21cb079e2f2c5fb25d3",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -413,7 +413,7 @@
     "src/llm_backend/direct.rs": "c85f42de2131988754040e66e9612ca995ffa8094d990dd50cc8cc69c641ed89",
     "src/llm_backend/http.rs": "bb1e921defe55f695391f1b4002391fd9d9c77122a290e452cbaaa2925cf1f24",
     "src/llm_tests.rs": "4b9768d8e3c756f38cf47e40d16e6eb63146a9726f957f891e8e821b3175fa3e",
-    "src/main.rs": "7b3e270341f176aaad9e21fa386c6835425df336ae70adb74f3a2127818cea4d",
+    "src/main.rs": "2bffdf5577f4a1b26cd8e48ba7992ac9365792d2f0e200a3c699f19571ff181a",
     "src/manual_toggle.rs": "69d635e72347d4172a774f8452704d8ed466abe8d71f9eebe77a2b19928a80b6",
     "src/mixed_script_repair.rs": "f282f8fa890fabd7a4f8ef8a96f4f37eee002d31eaa1aa4536ac27980fe85f86",
     "src/nanda_wave/candidate_gate.rs": "ca7e26c1e263788e6a80439c6db2602ebccb123562e755c82c828ff5ed2462ab",

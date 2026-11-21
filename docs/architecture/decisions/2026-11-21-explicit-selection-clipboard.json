@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Expose explicit selected-text keyboard projection in the CLI and retain its clipboard result through the existing Linux package dependency xclip.",
+  "reason": "Issue #81 asks to recover a selected span. In v1.0.127, a private GTK3 Entry on Xvfb reproduced the issue example through copy/convert/paste: ARBoard's short-lived CLI owner exits before paste and reports success although no clipboard manager retained the new text. The ordinary IME tail verifier refuses external selection and the KDE observer rejects selected ranges.",
+  "base": "c1f098936a16c98867068137d689474fece25714",
+  "verification": "On a separate runner use an actual GTK3 Entry with selection and X11 clipboards, including both conversion directions, prefix and suffix preservation, exit/readback after clipboard ownership transfer, old --clipboard, and unavailable PRIMARY. Check CLI help and existing source and public release gates on exact candidate bytes.",
+  "not_tested": "This validates the explicit command on X11 only. No direct Double Shift selection mutation or cause of the reporter's intermittent layout switch is certified. Wayland depends on the client's PRIMARY export to XWayland.",
+  "invariants": [
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/main.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false,
+  "rollback": "Revert the isolated CLI change. The IME, daemon, GNOME/KDE adapters, configuration, models, installer and services are outside the scope.",
+  "previous_decision": "docs/architecture/decisions/2026-11-21-release-admission-rustix-and-test-inventory.json"
+}
