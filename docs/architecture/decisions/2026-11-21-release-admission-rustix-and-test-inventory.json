@@ -1,0 +1,31 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Patch rustix to 1.1.6 and refresh the canonical test target inventory.",
+  "reason": "RUSTSEC-2026-0486 blocks the release. Cargo already discovered example:fragment_prefix_proof on public main, but the frozen target inventory omitted it.",
+  "verification": "The generated target inventory adds the existing example and preserves all 3,708 test rows. The known-failure inventory remains empty and binds to the regenerated manifest. The only changed crate version is rustix. Rebuild all ten release binaries and run GitHub CI and Security.",
+  "not_tested": "No new native desktop acceptance is inferred.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "Cargo.lock",
+    "data/lexicon/russian_infinitive_aspect_context.tsv",
+    "extension/lay@radislabus-star.github.io/metadata.json",
+    "extension/lay@radislabus-star.github.io/tray_support.js",
+    "scripts/test-lanes/known_failures.json",
+    "scripts/test-lanes/manifest.json",
+    "src/nanda_wave/l3_phrase_gate.rs",
+    "src/nanda_wave/l3_phrase_gate/infinitive_aspect.rs",
+    "src/nanda_wave/lexical_phase/runtime.rs",
+    "src/typing_transition/decision/admission.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false,
+  "previous_decision": "docs/architecture/decisions/2026-11-21-publish-context-autocorrection.json"
+}

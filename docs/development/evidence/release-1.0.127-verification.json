@@ -2,7 +2,34 @@
   "schema": "lay.release-verification.v1",
   "version": "1.0.127",
   "recorded_at": "2026-11-21T11:40:41+03:00",
-  "build": {
+  "source": {
+    "base": "187434f576e5a120a52d5e77083371220da507f4",
+    "verified_runtime_sha256": {
+      "src/nanda_wave/lexical_phase/runtime.rs": "07d5070353a18f102b7766dc9b66152d41e25cf22d11fbbd28489ec060871cd8",
+      "src/typing_transition/decision/admission.rs": "ba93c4c3d237e715864db909a55bdbde3dfeacd756ff1b0f528367a36f6e14c6",
+      "src/nanda_wave/l3_phrase_gate.rs": "dd895647a34422165359cd43563488135315f471329745894d6e60b03970ae18",
+      "src/nanda_wave/l3_phrase_gate/infinitive_aspect.rs": "38fc8387a2151faeab94c7d90dd42acb5fb1b5e97b261a7ba246e1242e32a22b",
+      "data/lexicon/russian_infinitive_aspect_context.tsv": "7892178ba8dc3cd2fee9851a4b6aa5dc7c475d70301f09d126140a1cb32c6699"
+    },
+    "architecture": "PASS",
+    "field_scope": "PASS"
+  },
+  "retained_source_checks": {
+    "selected": 3652,
+    "failures": 0,
+    "verdict": "PASS",
+    "source_archive_sha256": "0c11bf70565b3ec73d8320a62217e5d07df7843a31f5ff9c138e9fbf4ca2376a",
+    "reuse": "The checked correction and corpus files are byte-identical."
+  },
+  "context_comparison": {
+    "requests": 242,
+    "new_correct": 13,
+    "new_wrong": 0,
+    "independent_labelled_gains": 7,
+    "new_correct_within_80_ms": 13
+  },
+  "scope": "Russian missing-letter contexts and the earlier TD-123 correction-only changes. The installer build uses the release profile. Browser matrix coverage is historical.",
+  "initial_build": {
     "status": "PASS",
     "profile": "release --locked --features research-tools",
     "command": "scripts/build-release-binaries.sh",
@@ -50,33 +77,21 @@
         "bytes": 2167552,
         "sha256": "3f8e3fadb1e7420a6840bbd10c5491259411ee8315d728decbec1f9dcbbc8eb4"
       }
-    }
-  },
-  "source": {
-    "base": "187434f576e5a120a52d5e77083371220da507f4",
-    "verified_runtime_sha256": {
-      "src/nanda_wave/lexical_phase/runtime.rs": "07d5070353a18f102b7766dc9b66152d41e25cf22d11fbbd28489ec060871cd8",
-      "src/typing_transition/decision/admission.rs": "ba93c4c3d237e715864db909a55bdbde3dfeacd756ff1b0f528367a36f6e14c6",
-      "src/nanda_wave/l3_phrase_gate.rs": "dd895647a34422165359cd43563488135315f471329745894d6e60b03970ae18",
-      "src/nanda_wave/l3_phrase_gate/infinitive_aspect.rs": "38fc8387a2151faeab94c7d90dd42acb5fb1b5e97b261a7ba246e1242e32a22b",
-      "data/lexicon/russian_infinitive_aspect_context.tsv": "7892178ba8dc3cd2fee9851a4b6aa5dc7c475d70301f09d126140a1cb32c6699"
     },
-    "architecture": "PASS",
-    "field_scope": "PASS"
+    "release_admission": "SUPERSEDED_BY_LOCKED_RUSTIX_SECURITY_FIX"
   },
-  "retained_source_checks": {
-    "selected": 3652,
-    "failures": 0,
-    "verdict": "PASS",
-    "source_archive_sha256": "0c11bf70565b3ec73d8320a62217e5d07df7843a31f5ff9c138e9fbf4ca2376a",
-    "reuse": "The checked correction and corpus files are byte-identical."
-  },
-  "context_comparison": {
-    "requests": 242,
-    "new_correct": 13,
-    "new_wrong": 0,
-    "independent_labelled_gains": 7,
-    "new_correct_within_80_ms": 13
-  },
-  "scope": "Russian missing-letter contexts and the earlier TD-123 correction-only changes. The installer build uses the release profile. Browser matrix coverage is historical."
+  "release_gate_corrections": {
+    "initial_candidate": "08de26e283425a225aca69133c94c413aabe6903",
+    "rustsec": {
+      "id": "RUSTSEC-2026-0486",
+      "package": "rustix",
+      "from": "1.1.4",
+      "to": "1.1.6"
+    },
+    "test_inventory": {
+      "rows_preserved": 3708,
+      "added_target": "example:fragment_prefix_proof"
+    },
+    "final_build_receipt": "The final build and CI are recorded with the stable GitHub release."
+  }
 }

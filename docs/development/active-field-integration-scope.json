@@ -7,7 +7,10 @@
   "shared_paths": [
     "src/typing_transition/decision/admission.rs",
     "data/lexicon/russian_infinitive_aspect_context.tsv",
-    "extension/lay@radislabus-star.github.io/tray_support.js"
+    "extension/lay@radislabus-star.github.io/tray_support.js",
+    "Cargo.lock",
+    "scripts/test-lanes/manifest.json",
+    "scripts/test-lanes/known_failures.json"
   ],
-  "decision": "docs/architecture/decisions/2026-11-21-publish-context-autocorrection.json"
+  "decision": "docs/architecture/decisions/2026-11-21-release-admission-rustix-and-test-inventory.json"
 }

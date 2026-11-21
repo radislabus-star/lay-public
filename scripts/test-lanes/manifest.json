@@ -192,6 +192,9 @@
       "target": "example:fragment_layout_proof"
     },
     {
+      "target": "example:fragment_prefix_proof"
+    },
+    {
       "target": "lib:lay"
     },
     {

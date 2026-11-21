@@ -3220,8 +3220,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1795249899.4569411,
-    "ast_hash": "1c25eef04f023eb2b9b174de70596827",
+    "mtime": 1795250084.1382492,
+    "ast_hash": "ac998d62bbe84c4a77e2c2029aef8cc3",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5015,13 +5015,13 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1795249899.4126909,
-    "ast_hash": "5286f02722e37380e9d376c12a66ec6e",
+    "mtime": 1795251152.0764942,
+    "ast_hash": "2c77f93fbc9dd99bff333465c72580fb",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
-    "mtime": 1795249899.4139407,
-    "ast_hash": "d124b8d86d1ad4dc9cbcc0747ab3a509",
+    "mtime": 1795251152.073171,
+    "ast_hash": "79bb55db179078dbcc1bcbda1f4e7a96",
     "semantic_hash": ""
   },
   "scripts/test_lanes/__init__.py": {
@@ -9090,8 +9090,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1795249899.858617,
-    "ast_hash": "0e9468a521339e92d0c456d02f1d4404",
+    "mtime": 1795251183.4685419,
+    "ast_hash": "cd96c7be9f7e489db087636ea0a5bbc4",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -10370,13 +10370,23 @@
     "semantic_hash": ""
   },
   "docs/development/td123-internal-omission-2026-11-20.md": {
-    "mtime": 1795249900.1775453,
-    "ast_hash": "ffb161492273ade4e5f3981ae6e64e84",
+    "mtime": 1795251152.076996,
+    "ast_hash": "af38037bc1c0c1146f88e679e494e70e",
     "semantic_hash": ""
   },
   "docs/release-1.0.127.md": {
-    "mtime": 1795249900.1775453,
-    "ast_hash": "6a0c99d9fb91aaa58ef0781ac0fc3735",
+    "mtime": 1795251152.076996,
+    "ast_hash": "56e2e670feb956b19155c3456c5a647b",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-11-21-release-admission-rustix-and-test-inventory.json": {
+    "mtime": 1795251183.4684513,
+    "ast_hash": "bcdba10524060da32dd96cd12a17d074",
+    "semantic_hash": ""
+  },
+  "docs/development/evidence/release-1.0.127-verification.json": {
+    "mtime": 1795251152.0768254,
+    "ast_hash": "c578bdfbb6685260ea21641e995433af",
     "semantic_hash": ""
   }
 }
