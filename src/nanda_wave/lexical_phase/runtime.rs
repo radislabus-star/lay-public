@@ -1746,26 +1746,27 @@ fn reconstruction_lane_reserve(
     let mut reserve = candidates
         .iter()
         .filter(|candidate| candidate.reconstructed)
-        .cloned()
+        .map(|candidate| {
+            // These values are immutable for this invocation. Computing them
+            // inside the comparator repeats the same edit-distance work.
+            (
+                damerau_levenshtein(surface, &candidate.word),
+                candidate.word.chars().count().abs_diff(input_len),
+                candidate,
+            )
+        })
         .collect::<Vec<_>>();
-    reserve.sort_by(|left, right| {
-        let left_distance = damerau_levenshtein(surface, &left.word);
-        let right_distance = damerau_levenshtein(surface, &right.word);
-        left_distance
-            .cmp(&right_distance)
-            .then_with(|| {
-                right
-                    .word
-                    .chars()
-                    .count()
-                    .abs_diff(input_len)
-                    .cmp(&left.word.chars().count().abs_diff(input_len))
-            })
-            .then_with(|| right.score.cmp(&left.score))
-            .then_with(|| right.phase_coherence_milli.cmp(&left.phase_coherence_milli))
-            .then_with(|| left.rank.cmp(&right.rank))
-            .then_with(|| left.word.cmp(&right.word))
-    });
+    reserve.sort_by(
+        |(left_distance, left_delta, left), (right_distance, right_delta, right)| {
+            left_distance
+                .cmp(right_distance)
+                .then_with(|| right_delta.cmp(left_delta))
+                .then_with(|| right.score.cmp(&left.score))
+                .then_with(|| right.phase_coherence_milli.cmp(&left.phase_coherence_milli))
+                .then_with(|| left.rank.cmp(&right.rank))
+                .then_with(|| left.word.cmp(&right.word))
+        },
+    );
     let capacity = limit.min(max_reserve);
     let mut selected = Vec::with_capacity(capacity);
     let mut covered_distances = Vec::new();
@@ -1773,24 +1774,23 @@ fn reconstruction_lane_reserve(
     // Preserve one center from each edit-distance wave. Otherwise the many
     // cheap one-letter variants can erase a real two-letter restoration before
     // L2/L3 has a chance to compare complete lexical centers.
-    for candidate in &reserve {
-        let distance = damerau_levenshtein(surface, &candidate.word);
-        if !covered_distances.contains(&distance) {
-            covered_distances.push(distance);
-            selected.push(candidate.clone());
+    for (distance, _, candidate) in &reserve {
+        if !covered_distances.contains(distance) {
+            covered_distances.push(*distance);
+            selected.push((*candidate).clone());
             if selected.len() == capacity {
                 return selected;
             }
         }
     }
-    for candidate in reserve {
+    for (_, _, candidate) in reserve {
         if selected
             .iter()
             .any(|existing| existing.word == candidate.word)
         {
             continue;
         }
-        selected.push(candidate);
+        selected.push(candidate.clone());
         if selected.len() == capacity {
             break;
         }

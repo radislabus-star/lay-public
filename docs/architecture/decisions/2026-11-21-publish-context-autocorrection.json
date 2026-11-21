@@ -1,0 +1,27 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Package the verified TD-123 correction changes as Lay 1.0.127 on the existing public main and align the CLI, package and GNOME version metadata.",
+  "reason": "The installed trial and the 3,652 selected source checks passed the correction scope. Main has since added research evidence without modifying runtime code. The release must retain both lines of work.",
+  "verification": "Byte-check the five runtime and corpus files against the installed trial and its source gate. Inspect the version/date-only metadata diff, refresh architecture evidence, build the complete locked installer binary set, and require CI, security and stable updater discovery.",
+  "not_tested": "This release does not certify a new native browser matrix or universal context quality.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/nanda_wave/lexical_phase/runtime.rs",
+    "src/typing_transition/decision/admission.rs",
+    "src/nanda_wave/l3_phrase_gate.rs",
+    "src/nanda_wave/l3_phrase_gate/infinitive_aspect.rs",
+    "data/lexicon/russian_infinitive_aspect_context.tsv",
+    "extension/lay@radislabus-star.github.io/metadata.json",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
+  ],
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

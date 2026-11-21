@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Apply the existing left-word protection before publishing a moved-prefix pair to the shared lattice. For the overlapping case with an attested left input, no exact new left surface and no existing morphological exception, the producer must withhold the pair. Continue considering single-token candidates in the same decision core.",
+  "reason": "On the installed 1.0.126, the synthetic input 'что нужно услить ' produces a boundary readout with clean left input, zero mass gain, no exact center for the new left surface and failed direct-apply permission. The compatibility producer already withholds the pair. The typed proposal forwards the same pair, where the attested Space boundary lane can admit it on approximate form support. The current-token restoration survives in the candidate pool. Prevent this unsupported pair from competing without overriding genuine one-word ties.",
+  "verification": "Use the recorded 1.0.126 RED and one existing boundary-owner regression body. Verify common input-gate selection for the fixed omission, shifted-boundary and clean controls. Compare preexisting agreement, protected and ambiguous cases in the frozen development set; preserve the shared verifier and execution contracts.",
+  "not_tested": "An ambiguity between two valid repairs is not settled by this change. No installed or client acceptance is claimed until measured.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/nanda_wave/lexical_phase/runtime.rs",
+    "src/phrase_reader/moved_prefix.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

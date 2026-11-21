@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Reuse edit distance and character-count difference for each identical input/candidate pair within one reconstruction reserve evaluation. Keep the stable comparator, coverage, limits and results.",
+  "reason": "Correction and display already share per-token L2 material. The earlier archived profile found repeated distance work in reconstruction_lane_reserve. Reuse the reviewed byte-identical change on the released 1.0.126 base to reduce work without adding a cache or touching input delivery.",
+  "verification": "Compare only the declared lexical source hunk, run the canonical library checks and pair identical inputs for correction readiness and surfaces. Reuse the previous ordered 224-row parity evidence for the identical hunk and validate the released-base cohort again before native acceptance.",
+  "not_tested": "A smaller computation time alone does not prove readiness at Space, a changed client outcome, or release acceptance.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C03",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/nanda_wave/lexical_phase/runtime.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}

@@ -1,5 +1,7 @@
 use super::llmwave::{self, LlmWaveMemory, LlmWaveNextTokenScore};
 
+mod infinitive_aspect;
+
 #[derive(Debug, Clone, PartialEq)]
 pub(crate) struct L3PhraseGateReport {
     pub(crate) decision: L3PhraseGateDecision,
@@ -54,6 +56,7 @@ fn evaluate_candidates_with_phase(
         super::context_phase::readout_default_candidates(original, replacements),
     );
     apply_context_recurrence_certificate(original, replacements, &mut reports);
+    infinitive_aspect::apply(original, replacements, &mut reports);
     reports
 }
 
@@ -167,10 +170,11 @@ fn apply_context_recurrence_certificate(
         .max(1);
     for index in indices {
         let existing = reports[index].take();
-        reports[index] = Some(context_recurrence_report(
+        reports[index] = Some(context_certificate_report(
             existing.as_ref(),
             support,
             sentence_context.len(),
+            ContextCertificate::Recurrence,
         ));
     }
 }
@@ -203,16 +207,34 @@ fn same_lexical_script(left: &str, right: &str) -> bool {
             && right.chars().all(|ch| ch.is_ascii_alphabetic()))
 }
 
-fn context_recurrence_report(
+enum ContextCertificate {
+    Recurrence,
+    InfinitiveAspect,
+}
+
+fn context_certificate_report(
     existing: Option<&L3PhraseGateReport>,
     support: usize,
     width: usize,
+    certificate: ContextCertificate,
 ) -> L3PhraseGateReport {
+    let (source, relation, reason) = match certificate {
+        ContextCertificate::Recurrence => (
+            "context_recurrence_certificate",
+            "l3_context_recurrence_certificate",
+            "l3_unique_context_recurrence",
+        ),
+        ContextCertificate::InfinitiveAspect => (
+            "infinitive_aspect_certificate",
+            "l3_infinitive_aspect_certificate",
+            "l3_unique_adjacent_infinitive_aspect",
+        ),
+    };
     const SCORE: f32 = 0.72;
     const POSITIVE_MICRO: i64 = 720_000;
     L3PhraseGateReport {
         decision: L3PhraseGateDecision::Support,
-        source: "context_recurrence_certificate",
+        source,
         score: existing
             .map(|report| report.score)
             .unwrap_or_default()
@@ -252,9 +274,9 @@ fn context_recurrence_report(
         relation_class: existing
             .map(|report| report.relation_class)
             .filter(|relation| *relation != 0)
-            .unwrap_or_else(|| super::phase_field::hash_text("l3_context_recurrence_certificate")),
+            .unwrap_or_else(|| super::phase_field::hash_text(relation)),
         pairwise_certified: true,
-        reason: "l3_unique_context_recurrence",
+        reason,
     }
 }
 
@@ -666,7 +688,8 @@ mod tests {
                         L3PhraseGateDecision::Support,
                         L3PhraseGateDecision::Suppress,
                     ] {
-                        let mut independent = context_recurrence_report(None, 2, 3);
+                        let mut independent =
+                            context_certificate_report(None, 2, 3, ContextCertificate::Recurrence);
                         independent.source = "independent_phase";
                         independent.reason = "independent_phase_evidence";
                         independent.decision = decision;
@@ -758,7 +781,7 @@ mod tests {
     fn two_edit_recurrence_never_overrides_target_suppression_on_any_alias() {
         let original = "картина нужна ткртина ";
         let replacement = "картина нужна картина ";
-        let mut suppressed = context_recurrence_report(None, 1, 2);
+        let mut suppressed = context_certificate_report(None, 1, 2, ContextCertificate::Recurrence);
         suppressed.decision = L3PhraseGateDecision::Suppress;
         for suppression_index in [0, 1] {
             let replacements = [replacement, replacement];

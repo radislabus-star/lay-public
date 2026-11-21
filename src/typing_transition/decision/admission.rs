@@ -240,6 +240,20 @@ pub(super) fn candidate_has_apply_authority(
         );
         return false;
     }
+    if unsupported_boundary_shift_competes_with_omission(
+        event,
+        candidate_index,
+        candidates,
+        evaluations,
+    ) {
+        debug_decision_reject(
+            candidate,
+            "unsupported_left_shift_competes_with_omission",
+            bayes.posterior,
+            bayes.risk,
+        );
+        return false;
+    }
     let high_precision_boundary_shift =
         hard_structural_veto::high_precision_boundary_shift(event, candidate, evaluation);
     if let Some(reason) = hard_structural_veto::boundary_shift_rejection(
@@ -520,6 +534,73 @@ pub(super) fn suggest_boundary_allows_authority_evaluation(
         && hard_structural_veto::verified_tail_boundary_shift(event, candidate, evaluation)
 }
 
+/// Geometry can preserve both candidates, but a lossless shift does not
+/// establish that an already attested left word gains a valid new ending.
+fn unsupported_boundary_shift_competes_with_omission(
+    event: &TypingErrorEvent,
+    boundary_index: usize,
+    candidates: &[UnifiedCorrectionCandidate],
+    evaluations: &[CandidateDecisionEvaluation],
+) -> bool {
+    let boundary = &candidates[boundary_index];
+    let evaluation = &evaluations[boundary_index];
+    if evaluation.action.edit_operator != verifier::EditTransitionOperator::BoundaryShift
+        || !evaluation.action.verifier_passed
+        || evaluation.signals.l3_pairwise_certified
+        || evaluation.transition.l4_signed_signal.exact_positive()
+    {
+        return false;
+    }
+    let before = crate::correction_core::normalized_correction_words(&event.original);
+    let after = crate::correction_core::normalized_correction_words(&boundary.replacement);
+    let ([.., original_left, original_word], [.., expanded_left, _]) =
+        (before.as_slice(), after.as_slice())
+    else {
+        return false;
+    };
+    use crate::russian_lexicon::has_clean_russian_surface_certificate;
+    if before.len() != after.len()
+        || original_left == expanded_left
+        || !cyrillic_letters_only(original_word)
+        || !has_clean_russian_surface_certificate(original_left)
+        || has_clean_russian_surface_certificate(original_word)
+    {
+        return false;
+    }
+    // Morphological plausibility can support a proposal, but it is not a
+    // witnessed surface with which to extend an already attested word.
+    if crate::russian_lexicon::is_exact_reference_russian_word(expanded_left)
+        || crate::hot_field::HotFieldSnapshot::current()
+            .surface_phase_readout(expanded_left)
+            .exact_center
+        || crate::lexicon::is_user_protected_word(expanded_left)
+    {
+        return false;
+    }
+    let original_len = original_word.chars().count();
+    candidates.iter().zip(evaluations).any(|(candidate, row)| {
+        candidate.error_class == TypingErrorClass::MissingLetter
+            && matches!(
+                candidate.gate.action,
+                CandidateGateAction::Eligible | CandidateGateAction::SuggestOnly
+            )
+            && row.action.edit_operator == verifier::EditTransitionOperator::ReplaceCurrentWord
+            && row.action.verifier_passed
+            && row.action.changed_tokens == 1
+            && !row.action.left_context_changed
+            && last_replacement_word(&candidate.replacement).is_some_and(|replacement| {
+                let replacement = replacement.to_lowercase();
+                cyrillic_letters_only(&replacement)
+                    && crate::russian_typo_candidates::inserted_char_position_for_missing_letter(
+                        original_word,
+                        &replacement,
+                    )
+                    .is_some_and(|(position, _)| position > 0 && position < original_len)
+                    && has_clean_russian_surface_certificate(&replacement)
+            })
+    })
+}
+
 /// Closing-Space rule, evaluated after ordinary ordering. The caller preserves
 /// grounded lexical authority and existing lossless selections.
 /// Exact vocabulary evidence settles this lossless boundary operation; phase
@@ -572,6 +653,10 @@ pub(super) fn attested_space_boundary_admission(
                 && evaluation.signals.l4_hidden_certificate_valid
                 && evaluation.signals.l4_hidden_disposition
                     == crate::nanda_wave::l4_hidden_state::L4HiddenDisposition::Rejected)
+        {
+            continue;
+        }
+        if unsupported_boundary_shift_competes_with_omission(event, index, candidates, evaluations)
         {
             continue;
         }

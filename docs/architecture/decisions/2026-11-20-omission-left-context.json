@@ -1,0 +1,23 @@
+{
+  "reason": "Use independently observed governing-verb aspect as evidence for two retained one-insertion infinitives in the same left context.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/nanda_wave/l3_phrase_gate.rs",
+    "src/nanda_wave/l3_phrase_gate/infinitive_aspect.rs",
+    "data/lexicon/russian_infinitive_aspect_context.tsv"
+  ],
+  "not_tested": "This preflight asserts no physical client acceptance, workload latency improvement or model promotion.",
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "models_changed": false,
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Add a bounded L3 evidence source for an independently observed aspect contrast among two canonical infinitive candidates. Preserve existing context evidence, candidate construction, decision owner, verifier and output.",
+  "verification": "Observe both opposite aspect forms and the complete stable prefix. Compare the frozen 22 contextual probes, 146 labelled heldout rows and prior 69 correction controls on exact baseline and candidate. Require no new false edits or control regression. Use the existing canonical affected-source gates and an exact-profile install build."
+}

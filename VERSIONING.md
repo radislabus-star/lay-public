@@ -17,7 +17,9 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.126`
+- `1.0.127`
+
+1.0.127 uses the observed left context to resolve selected missing-letter ambiguities. It also reuses edit distances and rejects unsupported expansions of an attested left word. See [release notes](docs/release-1.0.127.md).
 
 1.0.126 fixes letter-fragment continuation in native GNOME terminals: the existing
 writer completes the keyboard layout and its scoped output retains the whole

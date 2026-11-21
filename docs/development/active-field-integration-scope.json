@@ -1,12 +1,13 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "ffe94e1a8828d743b520ad7c852e65c366356cd3",
+  "base": "187434f576e5a120a52d5e77083371220da507f4",
   "components": [
-    "tooling"
+    "correction"
   ],
   "shared_paths": [
-    "examples/fragment_prefix_proof.rs",
-    "scripts/proof/fragment-prefix-quality.py"
+    "src/typing_transition/decision/admission.rs",
+    "data/lexicon/russian_infinitive_aspect_context.tsv",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
   ],
-  "decision": "docs/architecture/decisions/2026-11-13-fragment-early-evidence.json"
+  "decision": "docs/architecture/decisions/2026-11-21-publish-context-autocorrection.json"
 }

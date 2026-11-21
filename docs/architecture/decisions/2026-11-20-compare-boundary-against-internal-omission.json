@@ -1,0 +1,22 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "decision": "Keep the existing moved-prefix proposals. In both admissions inside the common decision, require independent context evidence for a boundary shift that adds a letter to a certified left word without exact evidence for the new form when a verified single internal insertion for the current word competes. Morphology alone does not attest the new form for this comparison. The omission candidate retains its existing authority.",
+  "reason": "The generator-side guard caused a real coverage regression to 168/188 proposed within the fixed boundary corpus (required 98 percent). Restore the generator. The installed trace identifies the weak shift as an ordinary ranked winner, and the attested-boundary fallback can reconsider the same candidate when ordinary admission refuses. A shared condition at both existing admissions preserves the lattice and prevents both releases of an unsupported pair.",
+  "verification": "Preserve run-NcS20Y with 3089/3090 and the fixed A/B rejecting the producer change. Re-run the unchanged proposal corpus and all affected library and IME authorities. Repeat the same frozen 69-case A/B including the original false shift and precision controls; reuse the exact baseline binary. Check that the two positive boundaries and the typed proposal cohort are retained, and that neither SafetyGate nor verifier changes.",
+  "not_tested": "A viable internal omission contender can still need context and be left unchanged. No heldout quality promotion, real desktop acceptance or installation is claimed by this source check.",
+  "invariants": [
+    "C01",
+    "C02",
+    "C05",
+    "C06",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/nanda_wave/lexical_phase/runtime.rs",
+    "src/typing_transition/decision/admission.rs"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "models_changed": false
+}
