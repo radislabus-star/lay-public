@@ -1,6 +1,6 @@
 use lay::text_edit::{
     authorize_backend_edit, plan_committed_tail_full_token_replacement, plan_manual_edit,
-    EditActionKind, TextEditBackend,
+    plan_manual_selection_layout_edit, EditActionKind, TextEditBackend,
 };
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -15,6 +15,19 @@ fn public_text_edit_gate_keeps_manual_replacement_behind_backend_capability() {
     let authorization = authorize_backend_edit(TextEditBackend::Daemon, action);
     assert!(authorization.allow_execute);
     assert!(authorization.into_authorized().is_some());
+
+    for (from, to) in [
+        ("[jxtim ddtcnb", "хочешь ввести"),
+        ("хочешь ввести", "[jxtim ddtcnb"),
+    ] {
+        let selection =
+            plan_manual_selection_layout_edit(from).expect("explicit literal selection edit");
+        let plan = selection.plan().expect("full selection plan");
+        assert_eq!(plan.insert, to);
+        let legacy = plan_manual_edit("contract-test", 1_000, from, to, plan.clone(), 2);
+        assert!(!legacy.allow_apply());
+        assert!(authorize_backend_edit(TextEditBackend::Ime, selection).allow_execute);
+    }
 }
 
 #[test]

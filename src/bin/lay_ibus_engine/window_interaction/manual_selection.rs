@@ -182,9 +182,6 @@ mod tests {
                 assert_eq!(plan.insert, to);
                 assert_eq!(plan.backspaces, 13);
                 assert_eq!((plan.move_left, plan.move_right), (0, 0));
-                let legacy =
-                    lay::text_edit::plan_manual_edit("fixture", 1_000, from, to, plan.clone(), 2);
-                assert!(!legacy.allow_apply());
             }
         }
     }

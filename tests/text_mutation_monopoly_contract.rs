@@ -641,6 +641,10 @@ fn typed_authority_mints_have_only_named_runtime_callers() {
             "plan_ime_manual_toggle_edit(",
             &["src/bin/lay_ibus_engine/shift.rs"][..],
         ),
+        (
+            "plan_manual_selection_layout_edit(",
+            &["src/bin/lay_ibus_engine/window_interaction/manual_selection.rs"][..],
+        ),
     ];
 
     for path in source_files("src/bin") {

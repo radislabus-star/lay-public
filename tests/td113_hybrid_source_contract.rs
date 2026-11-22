@@ -33,6 +33,47 @@ fn sha256(path: &Path) -> String {
         .collect()
 }
 
+fn assert_manual_selection_successor(
+    artifact: &str,
+    predecessor_record: &str,
+    path: &str,
+    predecessor_sha: &str,
+    predecessor_mode: &str,
+) {
+    const DECISION: &str =
+        "docs/architecture/decisions/2026-11-22-manual-editable-selection-contracts.json";
+    let root = Path::new(ROOT);
+    assert_eq!(
+        sha256(&root.join(DECISION)),
+        "cb673105ee8de7e3a1c7ad7f2ddcb1f2a065ea339df2577b8ecb77e790f65c43"
+    );
+    let decision: serde_json::Value =
+        serde_json::from_str(&read(DECISION)).expect("manual selection successor decision");
+    assert_eq!(decision["schema"], "lay.architecture-decision.v1");
+    assert_eq!(decision["runtime_authority_changed"], false);
+    assert_eq!(decision["delivery_routes_changed"], false);
+    let binding = &decision["protected_successors"][artifact];
+    let predecessor = &binding["predecessor"];
+    assert_eq!(predecessor["record"], predecessor_record);
+    assert_eq!(
+        predecessor["record_sha256"],
+        sha256(&root.join(predecessor_record))
+    );
+    assert_eq!(predecessor["path"], path);
+    assert_eq!(predecessor["sha256"], predecessor_sha);
+    assert_eq!(predecessor["mode"], predecessor_mode);
+    let successor = &binding["successor"];
+    assert_eq!(successor["path"], predecessor["path"]);
+    assert_eq!(successor["mode"], predecessor["mode"]);
+    let live_path = root.join(path);
+    assert_eq!(successor["sha256"], sha256(&live_path));
+    assert_eq!(
+        live_path.metadata().unwrap().permissions().mode() & PROTECTED_MODE_BITS,
+        u32::from_str_radix(predecessor_mode, 8).expect("protected successor mode")
+            & PROTECTED_MODE_BITS
+    );
+}
+
 #[test]
 fn td113_live_adapters_share_the_hybrid_mode_mapper() {
     let core = read("src/correction_core.rs");
@@ -235,6 +276,18 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             continue;
         }
 
+        if baseline_id == "text-edit-safety" {
+            assert_eq!(baseline["path"], "../../src/text_edit/safety.rs");
+            assert_manual_selection_successor(
+                baseline_id,
+                "tech_debt/evidence/td113-implementation-preflight-v4.json",
+                "src/text_edit/safety.rs",
+                baseline["expect"]["sha256"].as_str().unwrap(),
+                baseline["expect"]["mode"].as_str().unwrap(),
+            );
+            continue;
+        }
+
         if baseline_id == "text-edit-gate" {
             const DECISION: &str =
                 "docs/architecture/decisions/2026-10-07-space-boundary-authority-scope.json";
@@ -336,15 +389,12 @@ fn td113_unsuperseded_protected_artifacts_match_the_v4_preflight_baseline() {
             let observed_successor = &observed_binding["successor"];
             assert_eq!(observed_successor["path"], client_successor["path"]);
             assert_eq!(observed_successor["mode"], client_successor["mode"]);
-            let successor_path = Path::new(ROOT).join("src/text_edit/gate.rs");
-            assert_eq!(
-                observed_successor["sha256"].as_str(),
-                Some(sha256(&successor_path).as_str())
-            );
-            assert_eq!(
-                successor_path.metadata().unwrap().permissions().mode() & PROTECTED_MODE_BITS,
-                u32::from_str_radix(observed_successor["mode"].as_str().unwrap(), 8).unwrap()
-                    & PROTECTED_MODE_BITS
+            assert_manual_selection_successor(
+                baseline_id,
+                OBSERVED_SPACE_DECISION,
+                "src/text_edit/gate.rs",
+                observed_successor["sha256"].as_str().unwrap(),
+                observed_successor["mode"].as_str().unwrap(),
             );
             continue;
         }

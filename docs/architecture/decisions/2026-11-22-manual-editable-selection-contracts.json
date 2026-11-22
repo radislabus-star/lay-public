@@ -1,0 +1,54 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "base": "c40d29a8aece5187d0f20484b009c377929d80f4",
+  "previous_decision": "docs/architecture/decisions/2026-11-22-manual-editable-selection.json",
+  "decision": "Bind the exact SafetyGate and text-edit planner already reviewed in the manual GTK3 selection task to their protected predecessors. Keep the frozen legacy artifacts and use the same byte and mode checks for both explicit successors.",
+  "reason": "The full install gate found two incomplete proof bindings. TD-113 correctly rejected the changed safety source and would reject the changed planner. The mint scan also saw a call located exclusively in the selection module's unit test. Move its legacy refusal assertion into the existing public-gate contract and constrain the new specialized mint to its existing owner.",
+  "verification": "Check both predecessor chains, exact successor digests and executable modes. Preserve the legacy refusal for a multiword keyboard projection and assert the same literal projection through the explicit-selection constructor. Run the full changed gate and the named physical owner tests. The runtime binary remains the package built from c40d29a8.",
+  "not_tested": "A successful source gate alone does not confirm a physical gesture. Local installation awaits the actual GTK3 hardware case.",
+  "invariants": [
+    "C04",
+    "C05",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs",
+    "tests/td113_hybrid_source_contract.rs",
+    "tests/text_edit_gate_contract.rs",
+    "tests/text_mutation_monopoly_contract.rs",
+    "scripts/test-lanes/known_failures.json"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "protected_successors": {
+    "text-edit-safety": {
+      "predecessor": {
+        "record": "tech_debt/evidence/td113-implementation-preflight-v4.json",
+        "record_sha256": "1c05cbed41785db7a5dae3e31f7d5e1b2d3c5dde17c312f20dfc0a8ce3b12c44",
+        "path": "src/text_edit/safety.rs",
+        "sha256": "941b0f4345a2b57e2a4edfc4cd0b1badfc3d4e02bfa41c7b1c1237ec974348f9",
+        "mode": "0664"
+      },
+      "successor": {
+        "path": "src/text_edit/safety.rs",
+        "sha256": "dbc36fc8eabc206f3b2249fa23c4e220bf64c59846cea6429b67e9703379ad24",
+        "mode": "0664"
+      }
+    },
+    "text-edit-gate": {
+      "predecessor": {
+        "record": "docs/architecture/decisions/2026-10-18-observed-space-pair-presentation.json",
+        "record_sha256": "f06460f84218877fa3991e81cc6e1cc772137340b87c099cc39a377418006da2",
+        "path": "src/text_edit/gate.rs",
+        "sha256": "6ed5eda0f5ad0a25c61a2c81a9cf7b33711db127fc9e217edf56c934a2fc286f",
+        "mode": "0664"
+      },
+      "successor": {
+        "path": "src/text_edit/gate.rs",
+        "sha256": "a78b476a409ced86f1be15c0bc3e0ad2e0ea6b4f0f3cb5fc129118d7cc7c74eb",
+        "mode": "0664"
+      }
+    }
+  }
+}

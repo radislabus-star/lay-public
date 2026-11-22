@@ -1,7 +1,7 @@
 {
   "failure_count": 0,
   "failures": [],
-  "manifest_sha256": "3e65d741b3a31df89f93986d056b6ebac6d58402ed1c8adaab40d63cea908733",
+  "manifest_sha256": "fc221a7ce5d25ae0a52f4cdfddbe904f103f48f598534fd147acb7f422f43329",
   "observation_path": "docs/development/evidence/release-1.0.123-tests.json",
   "observation_sha256": "fe3f136f3c3891d8b4d647d4a174dbc4910362b6347769f1dd4895559c1b5aaa",
   "schema": "lay.test-known-failures.v1"
