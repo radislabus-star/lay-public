@@ -1,7 +1,6 @@
 use super::desktop::{self, FocusedWindow};
 use super::native_document::{bounded, verify_manual_selection};
 use super::{ExecutionReceipt, SurroundingTextSnapshot, WindowInteraction};
-use crate::bridge::LayImeBridge;
 use crate::context_admission::AdmissionToken;
 use crate::engine::LayIbusEngine;
 use crate::output::EngineOutput;
@@ -49,70 +48,89 @@ fn selected_text(snapshot: &SurroundingTextSnapshot, (start, end): (u32, u32)) -
     )
 }
 
-impl LayImeBridge {
-    pub(super) async fn manual_selection_outcome(
-        &self,
-        engine: &mut LayIbusEngine,
-        token: Option<&AdmissionToken>,
-        path: &str,
-        output: &mut EngineOutput<'_, '_>,
-    ) -> fdo::Result<Option<ImeManualToggleOutcome>> {
-        let Some(snapshot) = engine.client_context.surrounding_text_snapshot.as_ref() else {
-            return Ok(None);
-        };
-        let rejected = Some(ImeManualToggleOutcome::NotHandled);
-        let unverified = snapshot
-            .has_selection()
-            .then_some(ImeManualToggleOutcome::NotHandled);
-        if !selection_admitted(engine) || !self.bridge_token_is_live(engine, token) {
-            return Ok(unverified);
+pub(super) struct ManualSelectionObservation {
+    snapshot: SurroundingTextSnapshot,
+    backend: LayoutBackend,
+    focus_serial: u64,
+    owner_lease: u64,
+    observation_revision: u64,
+    layout_generation: u64,
+    tail_epoch: u64,
+}
+
+impl ManualSelectionObservation {
+    pub(super) fn capture(engine: &LayIbusEngine) -> Option<Self> {
+        if !selection_admitted(engine) {
+            return None;
         }
-        let backend = engine.config.active_layout_backend();
+        let context = &engine.client_context;
+        Some(Self {
+            snapshot: context.surrounding_text_snapshot.clone()?,
+            backend: engine.config.active_layout_backend(),
+            focus_serial: context.focus_serial,
+            owner_lease: context.runtime_owner_lease_identity,
+            observation_revision: context.surrounding_observation_revision,
+            layout_generation: engine.layout_gesture.layout_generation,
+            tail_epoch: engine.committed_tail.epoch,
+        })
+    }
+
+    pub(super) fn is_current(&self, engine: &LayIbusEngine) -> bool {
+        let context = &engine.client_context;
+        selection_admitted(engine)
+            && engine.config.active_layout_backend() == self.backend
+            && context.focus_serial == self.focus_serial
+            && context.runtime_owner_lease_identity == self.owner_lease
+            && context.surrounding_observation_revision == self.observation_revision
+            && context.surrounding_text_snapshot.as_ref() == Some(&self.snapshot)
+            && engine.layout_gesture.layout_generation == self.layout_generation
+            && engine.committed_tail.epoch == self.tail_epoch
+    }
+
+    pub(super) async fn read(&self) -> Option<VerifiedManualSelection> {
         let deadline = Instant::now() + SELECTION_OBSERVATION_BUDGET;
         let verification = bounded(deadline, async {
-            let before = focused_window(backend, deadline)
+            let before = focused_window(self.backend, deadline)
                 .await
                 .ok_or("manual_selection_missing_window")?;
-            let Some(range) = verify_manual_selection(before.clone(), snapshot).await? else {
+            let Some(range) = verify_manual_selection(before.clone(), &self.snapshot).await? else {
                 return Ok(None);
             };
-            if focused_window(backend, deadline).await.as_ref() != Some(&before) {
+            if focused_window(self.backend, deadline).await.as_ref() != Some(&before) {
                 return Err("manual_selection_window_changed");
             }
-            Ok(selected_text(snapshot, range))
+            Ok(selected_text(&self.snapshot, range))
         })
         .await;
-        let selected = match verification {
-            Ok(Some(selected)) => selected,
-            Ok(None) => return Ok(unverified),
+        match verification {
+            Ok(selected) => selected.map(|selected| VerifiedManualSelection { selected }),
             Err(reason) => {
                 crate::trace::record(format!(
                     r#"{{"kind":"ibus_manual_selection","stage":"rejected","reason":"{reason}"}}"#
                 ));
-                return Ok(unverified);
+                None
             }
-        };
-        if self.active_path().as_deref() != Some(path) || !self.bridge_token_is_live(engine, token)
-        {
-            return Ok(rejected);
         }
+    }
+}
 
-        let layout_is_ru = engine.layout_gesture.layout_is_ru;
-        let mut engine = engine.begin_context_bridge_output(token);
-        let result = WindowInteraction::execute_manual_selection(
-            &mut engine,
-            VerifiedManualSelection { selected },
-            output,
-        )
+pub(super) async fn dispatch(
+    engine: &mut LayIbusEngine,
+    token: Option<&AdmissionToken>,
+    selection: VerifiedManualSelection,
+    output: &mut EngineOutput<'_, '_>,
+) -> fdo::Result<ImeManualToggleOutcome> {
+    let layout_is_ru = engine.layout_gesture.layout_is_ru;
+    let mut engine = engine.begin_context_bridge_output(token);
+    let result = WindowInteraction::execute_manual_selection(&mut engine, selection, output)
         .await
         .map_err(fdo::Error::from)?;
-        engine.complete();
-        if result != ExecutionReceipt::LocalComplete {
-            return Ok(rejected);
-        }
-        crate::trace::record(r#"{"kind":"ibus_manual_selection","stage":"commit_dispatched"}"#);
-        Ok(Some(ImeManualToggleOutcome::handled(layout_is_ru)))
+    engine.complete();
+    if result != ExecutionReceipt::LocalComplete {
+        return Ok(ImeManualToggleOutcome::NotHandled);
     }
+    crate::trace::record(r#"{"kind":"ibus_manual_selection","stage":"commit_dispatched"}"#);
+    Ok(ImeManualToggleOutcome::handled(layout_is_ru))
 }
 
 fn selection_admitted(engine: &LayIbusEngine) -> bool {

@@ -2360,13 +2360,13 @@
     "semantic_hash": "cf3e32fc12dd75b89ab1aa1998e63839"
   },
   "tests/text_edit_gate_contract.rs": {
-    "mtime": 1795362095.7802851,
-    "ast_hash": "0b63552b6b8666a1f2798cc79dbe9b55",
+    "mtime": 1795372951.5930126,
+    "ast_hash": "7731b899d5783125ebd4731a70aa4ac6",
     "semantic_hash": ""
   },
   "tests/text_mutation_monopoly_contract.rs": {
-    "mtime": 1795362095.7812853,
-    "ast_hash": "d69dc7cdf273648de5bc974ee6bff42a",
+    "mtime": 1795372951.5930126,
+    "ast_hash": "3546b3c9869f35c26fbe06b9bbbe66fb",
     "semantic_hash": ""
   },
   "tests/tray_ui_contract.rs": {
@@ -3220,8 +3220,8 @@
     "semantic_hash": ""
   },
   "src/generated/architecture_graph_receipt.json": {
-    "mtime": 1795363946.5994048,
-    "ast_hash": "f9ad8ce841851e907d7abcc997d49a93",
+    "mtime": 1795373198.7774978,
+    "ast_hash": "ce4668a59d7c616ae5af0b2f03c5ea39",
     "semantic_hash": ""
   },
   "src/russian_lexicon/forms/backed.rs": {
@@ -5015,8 +5015,8 @@
     "semantic_hash": ""
   },
   "scripts/test-lanes/known_failures.json": {
-    "mtime": 1795362095.641283,
-    "ast_hash": "2c77f93fbc9dd99bff333465c72580fb",
+    "mtime": 1795372951.5930126,
+    "ast_hash": "dfbfd981e620535dcb697a8569f2f6d3",
     "semantic_hash": ""
   },
   "scripts/test-lanes/manifest.json": {
@@ -5155,8 +5155,8 @@
     "semantic_hash": ""
   },
   "tests/td113_hybrid_source_contract.rs": {
-    "mtime": 1795362095.778261,
-    "ast_hash": "57fbfa12c44817290c24f752d0bcad5d",
+    "mtime": 1795372981.7009175,
+    "ast_hash": "119827c06afe6c3fc001b6d613aec68b",
     "semantic_hash": ""
   },
   "tech_debt/113-restore-hybrid-nanda-autocorrect.md": {
@@ -5725,8 +5725,8 @@
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/authority.rs": {
-    "mtime": 1795363465.671251,
-    "ast_hash": "fc38a3a71b275d269044aa25d51fd908",
+    "mtime": 1795374210.637163,
+    "ast_hash": "fb8a1ae05dfbb59951d143b515d4c679",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/execution.rs": {
@@ -9090,8 +9090,8 @@
     "semantic_hash": ""
   },
   "docs/development/active-field-integration-scope.json": {
-    "mtime": 1795363304.8050268,
-    "ast_hash": "29cbf6baad4bb0644fa9adc1a64df369",
+    "mtime": 1795374055.8564222,
+    "ast_hash": "3f136f7cb6a7be3f35017bfade8af008",
     "semantic_hash": ""
   },
   "scripts/check-field-integration-scope.py": {
@@ -10395,13 +10395,13 @@
     "semantic_hash": ""
   },
   "docs/architecture/decisions/2026-11-22-manual-editable-selection.json": {
-    "mtime": 1795364786.6054626,
-    "ast_hash": "08019a3194ab5d55b5a21a55e7484adc",
+    "mtime": 1795365522.714376,
+    "ast_hash": "4c2d9525d09a6948bc156699d70f2e71",
     "semantic_hash": ""
   },
   "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs": {
-    "mtime": 1795363504.3123791,
-    "ast_hash": "f3fb65aba3c377a8736945fc4175f87a",
+    "mtime": 1795374098.6652129,
+    "ast_hash": "aae603aabcc3d517b907b3a9170ddde7",
     "semantic_hash": ""
   },
   "docs/development/issue-81-selection-clipboard-2026-11-21.md": {
@@ -10412,6 +10412,16 @@
   "docs/release-1.0.128.md": {
     "mtime": 1795362095.551142,
     "ast_hash": "830b56c7f6377d0a6e439db613091274",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-11-22-manual-editable-selection-contracts.json": {
+    "mtime": 1795372902.6336467,
+    "ast_hash": "995bef793d3f4e655fbfee7976661c68",
+    "semantic_hash": ""
+  },
+  "docs/architecture/decisions/2026-11-22-manual-selection-nonblocking-observation.json": {
+    "mtime": 1795374165.972625,
+    "ast_hash": "70502fff7f9b68486753aaf9111fb2ff",
     "semantic_hash": ""
   }
 }

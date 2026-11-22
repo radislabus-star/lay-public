@@ -772,12 +772,42 @@ impl LayImeBridge {
             );
         }
         if accept_editable_selection && super::manual_selection::has_document_snapshot(&engine) {
-            let mut output = EngineOutput::legacy(emitter);
-            if let Some(outcome) = self
-                .manual_selection_outcome(&mut engine, token.as_ref(), &path, &mut output)
-                .await?
+            let cached_selection = engine
+                .client_context
+                .surrounding_text_snapshot
+                .as_ref()
+                .is_some_and(|snapshot| snapshot.has_selection());
+            if let Some(observation) =
+                super::manual_selection::ManualSelectionObservation::capture(&engine)
+                    .filter(|_| self.bridge_token_is_live(&engine, token.as_ref()))
             {
-                return Ok(outcome);
+                // GTK can be waiting synchronously on the final Shift callback
+                // before it can answer the accessibility read.
+                drop(engine);
+                let selection = observation.read().await;
+                engine = iface_ref.get_mut().await;
+                if self.active_path().as_deref() != Some(path.as_str())
+                    || !self.bridge_token_is_live(&engine, token.as_ref())
+                    || !observation.is_current(&engine)
+                {
+                    crate::trace::record(
+                        r#"{"kind":"ibus_manual_selection","stage":"rejected","reason":"source_changed_during_read"}"#,
+                    );
+                    return Ok(ImeManualToggleOutcome::NotHandled);
+                }
+                if let Some(selection) = selection {
+                    let mut output = EngineOutput::legacy(emitter);
+                    return super::manual_selection::dispatch(
+                        &mut engine,
+                        token.as_ref(),
+                        selection,
+                        &mut output,
+                    )
+                    .await;
+                }
+            }
+            if cached_selection {
+                return Ok(ImeManualToggleOutcome::NotHandled);
             }
         }
         // A layout handoff can deliver cursor geometry before admission Ready.

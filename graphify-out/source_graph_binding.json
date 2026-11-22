@@ -1,6 +1,6 @@
 {
-  "graph_fingerprint": "39e43c92c6f93b3baca37de8ad2b8e029a98e99c0914757a33659bc2129ad473",
-  "manifest_fingerprint": "b55bba42b9b26ab1523460afded9474a10bddbbeaebb4166081f10e22ee89fda",
+  "graph_fingerprint": "997652e0f5cab76667b39e9304b5fb562a20a01323658cb6878a809de58ea2b2",
+  "manifest_fingerprint": "5382db07b5805348037bb90eaf8e24aaa167fcc4f65052b5d0eedf80b1afe709",
   "rust_sources": {
     "src/action_log.rs": "0d75bb29e4518ef77a3f02555eea889fd3fda2e8e4cd3ea2173351d0e78a4ac2",
     "src/action_log_tests.rs": "a09cfd712afd8ea8e26c11cd1c1af7d6c39880e7689a941fac044d3c8d9301fa",
@@ -278,11 +278,11 @@
     "src/bin/lay_ibus_engine/text.rs": "6c5ba23b51fc53ee6d7fb08a9234e4012bd426f46793c33feee60bbf3238e599",
     "src/bin/lay_ibus_engine/text/attrs.rs": "f9094625e690387ab834238e6742f8a89be2e1123e8c3380b80acd8827e0fc9e",
     "src/bin/lay_ibus_engine/trace.rs": "b474a3664a87d66f4158582591089492df9cade75e6e295fdf94c65acaf046f3",
-    "src/bin/lay_ibus_engine/window_interaction/authority.rs": "f172c9fee0f8018b3a187ca11bc59cdf747ad76b7810877fa11e77d8e9624c2e",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs": "19ec14c52183d8a07030cb787f23f9455ce30a439478724f1bae1c63b80a2838",
     "src/bin/lay_ibus_engine/window_interaction/desktop.rs": "728bd75c4dde5206591fac570dba6d4df1fe84bb66473b874b4bd154dba8abd8",
     "src/bin/lay_ibus_engine/window_interaction/execution.rs": "5b01d329f758147528e7b0efa61e4c9eda3c7a6d460ed48b445c3bb073bac542",
     "src/bin/lay_ibus_engine/window_interaction/fragment_word_mode.rs": "de07dc1350bf0978789dafe2f5c0a6b7542553f59d5415cd4101c9078add130d",
-    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs": "ef6088a09cc2cbd672fdb503dacc2985cc2fa0192143fa264d44575214be1251",
+    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs": "5727b60cd42aaf6e51179793b8e24a43957b68293cf9a39dcc9cc362bef15bd1",
     "src/bin/lay_ibus_engine/window_interaction/mod.rs": "4028c2b0944308b2f88ab3f793b62ac1580907abba895301136624bd1ad68398",
     "src/bin/lay_ibus_engine/window_interaction/native_cursor_edit.rs": "222940139b08928c926f20b3e30f2cbefcc74670529d57cf542a53c7ee3c3ec1",
     "src/bin/lay_ibus_engine/window_interaction/native_cursor_observation.rs": "97a0a2197406f7aa089e6b7c90119a402f048fb2fdd8ab56827fc5e5cb165717",

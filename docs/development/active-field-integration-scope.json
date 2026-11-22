@@ -1,12 +1,12 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "c40d29a8aece5187d0f20484b009c377929d80f4",
+  "base": "8e37bf92aa944c7da1fb9f485af9445aca8dff50",
   "components": [
     "tooling"
   ],
   "shared_paths": [
-    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs",
-    "scripts/test-lanes/known_failures.json"
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs"
   ],
-  "decision": "docs/architecture/decisions/2026-11-22-manual-editable-selection-contracts.json"
+  "decision": "docs/architecture/decisions/2026-11-22-manual-selection-nonblocking-observation.json"
 }

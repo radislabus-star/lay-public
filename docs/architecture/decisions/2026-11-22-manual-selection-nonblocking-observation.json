@@ -1,0 +1,74 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "base": "8e37bf92aa944c7da1fb9f485af9445aca8dff50",
+  "previous_decision": "docs/architecture/decisions/2026-11-22-manual-editable-selection-contracts.json",
+  "decision": "Release the existing engine write guard only while observing the new GTK3 selected range. Revalidate the engine activation, text snapshot, revisions and original bridge token before dispatch.",
+  "reason": "The exact c40d29a8 package recognized four user-generated Double Shift gestures on the physical ThinkPad keyboard. Its first observation timed out. The authenticated final Shift release was observed by the bus before the timeout, while the engine callback could enter only after it. GTK synchronously processing that release could not answer the selected-range query until the engine write guard became free.",
+  "verification": "Reproduce the historical timeout with a real GTK3 synchronous release and concurrent ManualToggleV3 on the private remote runner. Re-run that exact ordering and an ordinary GTK3 control on fixed bytes. Check GTK3/X11 and GNOME Wayland replacements, refusals and focus transitions. Check existing physical owner tests and require exact live source/physical acceptance before installation.",
+  "not_tested": "The user left after the first hardware failure and asked for automated work. Hardware success on the changed build remains pending.",
+  "invariants": [
+    "C03",
+    "C04",
+    "C05",
+    "C07",
+    "C10"
+  ],
+  "protected_paths": [
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs"
+  ],
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "evidence": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/physical-qx059d4b/ime-trace.jsonl",
+  "rollback": "Revert the isolated observation and revalidation change. The installed stable version stays as the prior baseline.",
+  "reproduction": {
+    "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/x11-physical-order-red-129.json",
+    "old_ime_sha256": "23ca4f34e36cdab30905d38f52d9edc77c13387d9978c47fb315f881b0e9e8ba",
+    "idle_control": "PASS",
+    "concurrent_synchronous_release": "FAIL",
+    "synchronous_release_callback_ms": 70.882
+  },
+  "results": {
+    "release_package": "/home/ubu/.cache/lay/development/issue81-129-20261122/package-129-nonblocking.json",
+    "ime_sha256": "1e88b8918588cb37266222f7f6d3a63c2221780efd68f4f8fd39650e38611132",
+    "client_visible": {
+      "x11-physical-order-green-129": {
+        "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/x11-physical-order-green-129.json",
+        "passed": 3,
+        "total": 3,
+        "synchronous_shift_release_ms": 1.522,
+        "selected_replacement_visible_ms": 37.838
+      },
+      "gnome-physical-order-green-129": {
+        "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-physical-order-green-129.json",
+        "passed": 3,
+        "total": 3,
+        "synchronous_shift_release_ms": 1.988,
+        "selected_replacement_visible_ms": 39.711
+      },
+      "x11-nonblocking-129": {
+        "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/x11-nonblocking-129.json",
+        "passed": 8,
+        "total": 8
+      },
+      "gnome-order-repeat-fixed-129": {
+        "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-order-repeat-fixed-129.json",
+        "passed": 8,
+        "total": 8
+      },
+      "gnome-entry-nonblocking-129": {
+        "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-entry-nonblocking-129.json",
+        "passed": 3,
+        "total": 3
+      }
+    },
+    "first_gnome_pass": {
+      "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-nonblocking-129.json",
+      "passed": 7,
+      "total": 8,
+      "first_failure": "Bridge admission denied before the new read, in the TextView injected-Shift case. Exact previous and fixed binaries passed the subsequent control and repeat.",
+      "previous_binary_comparison": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-order-control-c40-129.json"
+    },
+    "verdict": "The old synchronous-release timeout no longer occurs in the executed GTK3 X11 or Wayland reproductions. These disposable client sessions used a bridge call and a GTK release event. They do not provide a real-keyboard acceptance for the changed package."
+  }
+}
