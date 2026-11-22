@@ -50,8 +50,8 @@
     {
       "evidence": [
         "src/text_edit/executor.rs:L151",
-        "src/text_edit/gate.rs:L456",
-        "src/text_edit/gate.rs:L458",
+        "src/text_edit/gate.rs:L483",
+        "src/text_edit/gate.rs:L485",
         "src/text_edit/structural_verifier.rs:L133"
       ],
       "id": "typed-transition-capability",
@@ -108,8 +108,8 @@
     },
     {
       "evidence": [
-        "graph_links:73572",
-        "graph_nodes:28965"
+        "graph_links:73675",
+        "graph_nodes:28995"
       ],
       "id": "fast-verifiable",
       "status": "PASS",
@@ -123,11 +123,11 @@
       "src/nanda_wave/lexical_phase/format.rs:L109:normalize_surface()"
     ]
   },
-  "graph_binding_fingerprint": "4c1e47e205cbbf222cc55a153db93b90213e0e24482b65483ed5780359ce8fd1",
-  "graph_fingerprint": "3b5b9a98ec5c1fd6e159d7b1cc211f8759ed70e99f5e612a7bae91ae53f6f155",
-  "graph_links": 73572,
-  "graph_nodes": 28965,
+  "graph_binding_fingerprint": "762e1abed11d4de983cd57bf14b15a38aabcd2104bf279b2ac64f97f341cb3ba",
+  "graph_fingerprint": "39e43c92c6f93b3baca37de8ad2b8e029a98e99c0914757a33659bc2129ad473",
+  "graph_links": 73675,
+  "graph_nodes": 28995,
   "schema": "lay.architecture-graph-receipt.v1",
-  "source_fingerprint": "267ad447995c0e860a51dc5bf77bf45cfc581f4bda63c29e32619cae5ecf4f54",
+  "source_fingerprint": "c3dfaf0e99c768024de1937139c2f60822c9946b9c063a09b06506958b79dd2e",
   "verdict": "PASS"
 }

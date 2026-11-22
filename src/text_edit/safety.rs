@@ -23,6 +23,43 @@ pub fn autocorrect_edit_safety(
     plan: &TextReplacement,
     transition: &TransitionAudit,
 ) -> EditPlanSafetyReport {
+    edit_safety(original, replacement, plan, transition, false)
+}
+
+pub(super) fn selected_layout_edit_safety(
+    original: &str,
+    replacement: &str,
+    plan: &TextReplacement,
+    transition: &TransitionAudit,
+) -> EditPlanSafetyReport {
+    let exact_selection_projection = transition.is_verified()
+        && transition.proof() == Some(TransitionProof::ManualIntent)
+        && plan.move_left == 0
+        && plan.move_right == 0
+        && plan.backspaces as usize == original.chars().count()
+        && original != replacement
+        && crate::dict::convert(original, crate::dict::detect_direction(original)) == replacement;
+    let mut report = edit_safety(
+        original,
+        replacement,
+        plan,
+        transition,
+        exact_selection_projection,
+    );
+    if !exact_selection_projection {
+        report.allow_apply = false;
+        report.reason = "invalid_selected_layout_projection";
+    }
+    report
+}
+
+fn edit_safety(
+    original: &str,
+    replacement: &str,
+    plan: &TextReplacement,
+    transition: &TransitionAudit,
+    exact_selection_projection: bool,
+) -> EditPlanSafetyReport {
     let original_chars = original.chars().collect::<Vec<_>>();
     let plan_cursor_valid = replacement_plan_has_valid_cursor(original_chars.len(), plan);
     let plan_matches_replacement =
@@ -73,6 +110,7 @@ pub fn autocorrect_edit_safety(
 
     let strong_boundary_shape = !boundary_changed
         || layout_phrase
+        || exact_selection_projection
         || manual_current_token_boundary_shape
         || strong_boundary_edit_shape(original, replacement);
 

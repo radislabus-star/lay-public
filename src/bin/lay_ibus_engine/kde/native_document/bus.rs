@@ -317,6 +317,14 @@ pub(super) async fn read_focused(
     desktop: FocusedWindow,
     with_hint_geometry: bool,
 ) -> NativeResult<(Connection, NativeFieldIdentity, NativeSnapshot)> {
+    let (connection, identity) = read_focused_identity(desktop).await?;
+    let actual = snapshot(&connection, &identity, with_hint_geometry).await?;
+    Ok((connection, identity, actual))
+}
+
+async fn read_focused_identity(
+    desktop: FocusedWindow,
+) -> NativeResult<(Connection, NativeFieldIdentity)> {
     let session = Connection::session().await.map_err(|error| {
         crate::trace::record(
             serde_json::json!({
@@ -371,8 +379,70 @@ pub(super) async fn read_focused(
         application,
         field,
     };
-    let actual = snapshot(&connection, &identity, with_hint_geometry).await?;
-    Ok((connection, identity, actual))
+    Ok((connection, identity))
+}
+
+/// Verify the application's current range without creating or moving it.
+pub(super) async fn verify_manual_selection(
+    desktop: FocusedWindow,
+    expected: &SurroundingTextSnapshot,
+) -> NativeResult<Option<(u32, u32)>> {
+    let (connection, identity) = read_focused_identity(desktop).await?;
+    let owner = &identity.owner;
+    let field = identity.field.as_str();
+    let Some((start, end)) = selected_range(&connection, &identity).await? else {
+        return Ok(None);
+    };
+    let properties: std::collections::HashMap<String, OwnedValue> = call(
+        &connection,
+        owner,
+        identity.application.as_str(),
+        "org.freedesktop.DBus.Properties",
+        "GetAll",
+        &("org.a11y.atspi.Application",),
+    )
+    .await?
+    .body()
+    .deserialize()
+    .map_err(|_| "native_manual_toolkit")?;
+    let application_property = |name: &str| {
+        properties
+            .get(name)
+            .and_then(|value| <&str>::try_from(value).ok())
+    };
+    if !application_property("ToolkitName").is_some_and(|name| name.eq_ignore_ascii_case("gtk"))
+        || !application_property("Version").is_some_and(|version| version.starts_with("3."))
+    {
+        return Err("native_manual_toolkit");
+    }
+    state(&connection, owner, field).await?;
+    let count = property(&connection, owner, field, "CharacterCount").await?;
+    if !(0 <= start && start < end && end <= count && count <= MAX_DOCUMENT_CHARS)
+        || count as usize != expected.text.chars().count()
+        || (expected.has_selection()
+            && (start as u32, end as u32)
+                != (
+                    expected.cursor_pos.min(expected.anchor_pos),
+                    expected.cursor_pos.max(expected.anchor_pos),
+                ))
+        || ![start as u32, end as u32].contains(&expected.cursor_pos)
+    {
+        return Err("native_manual_range");
+    }
+    let (text, caret) = futures_lite::future::zip(
+        call(&connection, owner, field, TEXT, "GetText", &(0i32, count)),
+        property(&connection, owner, field, "CaretOffset"),
+    )
+    .await;
+    let text: String = text?.body().deserialize().map_err(|_| "native_text")?;
+    if text != expected.text || caret? as u32 != expected.cursor_pos {
+        return Err("native_manual_snapshot");
+    }
+    state(&connection, owner, field).await?;
+    if selected_range(&connection, &identity).await? != Some((start, end)) {
+        return Err("native_manual_range_changed");
+    }
+    Ok(Some((start as u32, end as u32)))
 }
 
 async fn focused_field(

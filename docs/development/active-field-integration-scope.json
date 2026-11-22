@@ -1,11 +1,24 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "c1f098936a16c98867068137d689474fece25714",
+  "base": "71e2007194c8edf57d94f9cb2fb18bbb03ca4a07",
   "components": [
     "tooling"
   ],
   "shared_paths": [
-    "src/main.rs"
+    "Cargo.toml",
+    "Cargo.lock",
+    "src/bin/lay_ibus_engine/window_interaction/mod.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs",
+    "src/bin/lay_ibus_engine/window_interaction/execution.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/bus.rs",
+    "scripts/test-lanes/manifest.json",
+    "src/text_edit.rs",
+    "src/text_edit/action.rs",
+    "src/text_edit/gate.rs",
+    "src/text_edit/safety.rs",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
   ],
-  "decision": "docs/architecture/decisions/2026-11-21-explicit-selection-clipboard.json"
+  "decision": "docs/architecture/decisions/2026-11-22-manual-editable-selection.json"
 }

@@ -57,6 +57,13 @@ const MAX_DOCUMENT_CHARS: i32 = 4096;
 const MAX_APPLICATIONS: usize = 128;
 type NativeResult<T> = Result<T, &'static str>;
 
+pub(super) async fn verify_manual_selection(
+    desktop: FocusedWindow,
+    expected: &SurroundingTextSnapshot,
+) -> NativeResult<Option<(u32, u32)>> {
+    bus::verify_manual_selection(desktop, expected).await
+}
+
 impl LayIbusEngine {
     pub(crate) async fn kde_chrome_activation_deadline(
         backend: lay::desktop::LayoutBackend,

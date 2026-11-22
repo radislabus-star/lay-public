@@ -13,14 +13,14 @@
     "project": []
   },
   "counts": {
-    "correctness": 3616,
+    "correctness": 3618,
     "ignored": 45,
     "package": 36,
     "performance": 11
   },
   "isolation_counts": {
     "process": 507,
-    "target": 3201
+    "target": 3203
   },
   "package_fixtures": [
     {
@@ -24622,6 +24622,20 @@
       "kind": "test",
       "lane": "correctness",
       "name": "window_interaction::desktop::tests::native_peer_binding_requires_explicit_nonzero_desktop_process",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::manual_selection::tests::physical_double_shift_owner_selection_projects_only_the_exact_unicode_range",
+      "target": "bin:lay-ibus-engine"
+    },
+    {
+      "isolation": "target",
+      "kind": "test",
+      "lane": "correctness",
+      "name": "window_interaction::manual_selection::tests::physical_double_shift_owner_selection_requires_a_real_nonempty_range_and_change",
       "target": "bin:lay-ibus-engine"
     },
     {

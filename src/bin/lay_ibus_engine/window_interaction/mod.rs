@@ -1,6 +1,7 @@
 mod authority;
 mod desktop;
 mod execution;
+mod manual_selection;
 mod native_cursor_edit;
 #[path = "../kde/native_document.rs"]
 mod native_document;

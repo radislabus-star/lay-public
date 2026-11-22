@@ -708,14 +708,20 @@ impl LayImeBridge {
     }
 
     pub(crate) async fn manual_toggle_v2_inner(&self) -> fdo::Result<(bool, bool)> {
-        Ok(self.manual_toggle_outcome_inner().await?.as_legacy_v2())
+        Ok(self
+            .manual_toggle_outcome_inner(false)
+            .await?
+            .as_legacy_v2())
     }
 
     pub(crate) async fn manual_toggle_v3_inner(&self) -> fdo::Result<(u8, bool)> {
-        Ok(self.manual_toggle_outcome_inner().await?.as_v3())
+        Ok(self.manual_toggle_outcome_inner(true).await?.as_v3())
     }
 
-    async fn manual_toggle_outcome_inner(&self) -> fdo::Result<ImeManualToggleOutcome> {
+    async fn manual_toggle_outcome_inner(
+        &self,
+        accept_editable_selection: bool,
+    ) -> fdo::Result<ImeManualToggleOutcome> {
         let token = match self.bridge_admission_token().await {
             Ok(token) => token,
             Err(error) => {
@@ -764,6 +770,15 @@ impl LayImeBridge {
             crate::trace::record(
                 r#"{"kind":"ibus_manual_toggle_refresh","stage":"exact_ready_for_same_gesture"}"#,
             );
+        }
+        if accept_editable_selection && super::manual_selection::has_document_snapshot(&engine) {
+            let mut output = EngineOutput::legacy(emitter);
+            if let Some(outcome) = self
+                .manual_selection_outcome(&mut engine, token.as_ref(), &path, &mut output)
+                .await?
+            {
+                return Ok(outcome);
+            }
         }
         // A layout handoff can deliver cursor geometry before admission Ready.
         // Qualify the current field before testing UnknownStart eligibility;

@@ -1,0 +1,87 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "base": "71e2007194c8edf57d94f9cb2fb18bbb03ca4a07",
+  "decision": "Admit an explicit, independently confirmed editable selection at ManualToggleV3. Reuse physical layout projection, the manual edit authorization, the focused WindowInteraction executor and its IBus output. Both readings are observations, not permission to write.",
+  "reason": "Issue #81 asks for in-place conversion with the existing manual gesture. GTK3/X11 demonstrated one CommitText replacing the current range completely. After deselection in the same field, stock IBus left a stale anchor and consuming it inserted text alongside the old string. AT-SPI distinguished a current range, deselection, different field, and a read-only field. The first missing transition is independent verification of the currently selected editable range before output.",
+  "scope": "Specifically authorized field integration, GNOME Wayland and GTK3/X11. The clean baseline is v1.0.128. The main GNOME CLI reported 1.0.128; the loaded IME was older deleted bytes and was not used for baseline parity. Source capture and the external accessibility probe are staged independently of the user's installed services.",
+  "candidate": "ManualToggleV3 verifies the current GTK3 document selection against the live IBus context, full surrounding text and caret. X11 authenticates the focused process through XRes. GNOME uses its Shell focus receipt. AT-SPI supplies the range in Gtk.Entry when IBus reports only the caret. An exact full-range layout projection uses the existing EditAction, SafetyGate, AuthorizedEdit and WindowInteraction executor. The operation keeps the current keyboard mode and settles through the current bridge owner.",
+  "verification": "Run scope and architecture checks before editing and release, the IME and physical Double Shift owner tests, a source regression for exact ranges and two conversion directions, and client-visible single-operation checks on GTK3/X11 and native GNOME Wayland. Collect range/text and focus outcomes for deselection, field change, read-only and no selection. Measure successful gesture latency; require a real-keyboard confirmation for release. Compare the dedicated selection plan and the legacy manual tail guard for a real multiword phrase.",
+  "not_tested": "Physical keyboard confirmation is blocked on the worker because it has no letter-and-Shift device. The private package is not an installation or publication. Production GNOME, GTK4, Kitty terminal display selection, KDE and the reporter's intermittent layout switch are outside this native proof.",
+  "invariants": [
+    "C05",
+    "C06",
+    "C07",
+    "C09",
+    "C10"
+  ],
+  "protected_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "src/bin/lay_ibus_engine/window_interaction/mod.rs",
+    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
+    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs",
+    "src/bin/lay_ibus_engine/window_interaction/execution.rs",
+    "src/bin/lay_ibus_engine/kde/native_document.rs",
+    "src/bin/lay_ibus_engine/kde/native_document/bus.rs",
+    "scripts/test-lanes/manifest.json",
+    "src/text_edit.rs",
+    "src/text_edit/action.rs",
+    "src/text_edit/gate.rs",
+    "src/text_edit/safety.rs",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
+  ],
+  "runtime_authority_changed": true,
+  "delivery_routes_changed": false,
+  "models_changed": false,
+  "rollback": "Revert the V3 selection admission and method, read-only selection entry, XRes feature and associated evidence with one task revert. No runtime configuration migration.",
+  "previous_decision": "docs/architecture/decisions/2026-11-21-explicit-selection-clipboard.json",
+  "observed_gate": "Focused IME run selected 1184 cases, passed 1183, and rejected the new multiword selection test. The first failed transition is the existing manual tail SafetyGate, which rightly requires a different boundary proof. The new scoped factory computes exact physical projection itself, and the existing SafetyGate verifies the full replacement, cursor bounds and projection in its explicit-selection entry. No generic caller can opt in through the old action constructor.",
+  "gate_receipt": "/home/ubu/.cache/lay/development/run-0zorckll/RESULT.json",
+  "version_metadata": "Cargo package and lockfile, numeric and named extension versions, and the tray version and release date.",
+  "focus_handoff_red": {
+    "observation": "After two successful TextView conversions on GNOME Wayland, the new selection executor revoked the active owner; both Entry requests reached ManualToggleV3 with passive FocusIn and failed before selection admission. Entry as initial widget passed both projections.",
+    "trace": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-compositor-keys-trace.json",
+    "implementation": "Retire the previous document snapshot and committed-tail state after dispatch, then use the existing bridge completion on success. Transport failure still spends the scoped output witness through its existing drop guard."
+  },
+  "evidence": {
+    "build": "/home/ubu/.cache/lay/development/issue81-129-20261122/package-129-final.json",
+    "version": "lay 1.0.129",
+    "optimized_binaries": 10,
+    "compiler_warnings": 0,
+    "ime_sha256": "23ca4f34e36cdab30905d38f52d9edc77c13387d9978c47fb315f881b0e9e8ba",
+    "native_verdict": "19 of 19 actual GTK3 widget checks on the exact loaded package IME",
+    "gtk3_x11": {
+      "pass": 8,
+      "fail": 0,
+      "replacements": 5,
+      "median_ms": 27.244,
+      "p95_ms": 30.296
+    },
+    "gnome_wayland": {
+      "pass": 11,
+      "fail": 0,
+      "replacements": 7,
+      "median_ms": 35.705,
+      "p95_ms": 38.117
+    },
+    "native_summary": "/home/ubu/.cache/lay/development/issue81-129-20261122/native-final-summary.json",
+    "native_input": "Actual GTK3/X11 and GTK3/GNOME 42.9 Wayland with a virtual monitor. Each result follows one direct ManualToggleV3 call. The isolated GNOME 42 test uses the same Shell focus contract through a test-only extension. Latency measures RPC-to-visible replacement. The captured field text, layout and a clipboard sentinel are compared directly.",
+    "boundary": "Focus between Entry and TextView now passes after a successful conversion. The previous red and bridge owner trace remain linked above.",
+    "source_checks": {
+      "ime_pass": 1184,
+      "daemon_pass": 342,
+      "failed": 0,
+      "receipt": "/home/ubu/.cache/lay/development/run-c1j9kkdx/RESULT.json",
+      "archive_sha256": "fb830c56144477c4a3e4cc6215f60141104acd1fd6a4ec97592c3bb7bf17b98c"
+    },
+    "stable_update_check": {
+      "reported_installed": "1.0.128",
+      "reported_stable": "1.0.128",
+      "candidate_publication": "unpublished"
+    },
+    "native_latency_samples": {
+      "gtk3_x11": 5,
+      "gnome_wayland": 7
+    }
+  }
+}

@@ -345,6 +345,33 @@ pub fn plan_ime_manual_toggle_edit(
     )
 }
 
+/// The caller must verify the live editable selection before executing this plan.
+/// The requested text is always the exact physical projection of that selection.
+pub fn plan_manual_selection_layout_edit(selected: &str) -> Option<EditAction> {
+    let replacement = crate::dict::convert(selected, crate::dict::detect_direction(selected));
+    if replacement == selected {
+        return None;
+    }
+    let authority = TransitionAuthority::explicit_user_intent(selected, &replacement);
+    let action = EditAction::planned_selection_layout_replacement(PlannedReplacementInput {
+        source: "ime-manual-editable-selection",
+        confidence_milli: 1_000,
+        from_text: selected,
+        to_text: &replacement,
+        plan: TextReplacement {
+            move_left: 0,
+            backspaces: selected.chars().count().try_into().ok()?,
+            insert: replacement.clone(),
+            move_right: 0,
+        },
+        selected_source_id: Some("manual_selection_layout"),
+        selected_error_class: None,
+        transition: authority.transition().clone(),
+    });
+    let action = seal_ready_action(action, Some(&authority));
+    action.allow_apply().then_some(action)
+}
+
 pub fn plan_native_edit(
     source: &str,
     confidence_milli: i16,

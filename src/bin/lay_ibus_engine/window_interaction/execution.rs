@@ -1,3 +1,4 @@
+use super::manual_selection::VerifiedManualSelection;
 use super::{TextTargetAuthority, WindowInteraction};
 use crate::context_admission::{AdmissionToken, SettledWordState};
 use crate::engine::LayIbusEngine;
@@ -81,6 +82,31 @@ impl std::fmt::Display for LocalExecutionFailure {
 impl std::error::Error for LocalExecutionFailure {}
 
 impl WindowInteraction {
+    pub(super) async fn execute_manual_selection(
+        engine: &mut LayIbusEngine,
+        selection: VerifiedManualSelection,
+        output: &mut EngineOutput<'_, '_>,
+    ) -> Result<ExecutionReceipt, LocalExecutionFailure> {
+        let Some(edit) = selection.authorize() else {
+            return Ok(ExecutionReceipt::Rejected);
+        };
+        let Some(plan) = edit.action().plan() else {
+            return Ok(ExecutionReceipt::Rejected);
+        };
+        // The client already has this exact editable range selected. One
+        // CommitText replaces it; there is no preliminary deletion or fallback.
+        let result = output
+            .commit_text(crate::text::make_ibus_text(plan.insert.clone()))
+            .await;
+        engine.observe_document_snapshot(None);
+        engine.close_committed_tail_field();
+        result.map_err(|error| {
+            LocalExecutionFailure::new(LocalEffectProgress::CommitDispatched, error)
+        })?;
+        engine.settle_context_bridge_output();
+        Ok(ExecutionReceipt::LocalComplete)
+    }
+
     pub(crate) async fn execute_local(
         engine: &mut LayIbusEngine,
         authority: TextTargetAuthority,

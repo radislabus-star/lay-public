@@ -87,6 +87,17 @@ impl EditAction {
     }
 
     pub(super) fn planned_replacement(input: PlannedReplacementInput<'_>) -> Self {
+        Self::planned_replacement_checked(input, autocorrect_edit_safety)
+    }
+
+    pub(super) fn planned_selection_layout_replacement(input: PlannedReplacementInput<'_>) -> Self {
+        Self::planned_replacement_checked(input, super::safety::selected_layout_edit_safety)
+    }
+
+    fn planned_replacement_checked(
+        input: PlannedReplacementInput<'_>,
+        check_safety: fn(&str, &str, &TextReplacement, &TransitionAudit) -> EditPlanSafetyReport,
+    ) -> Self {
         let PlannedReplacementInput {
             source,
             confidence_milli,
@@ -99,7 +110,7 @@ impl EditAction {
         } = input;
         let from_text = from_text.to_string();
         let to_text = to_text.to_string();
-        let mut safety = autocorrect_edit_safety(&from_text, &to_text, &plan, &transition);
+        let mut safety = check_safety(&from_text, &to_text, &plan, &transition);
         downgrade_low_confidence_boundary_edit(&mut safety, confidence_milli);
         downgrade_low_confidence_wide_edit(&mut safety, confidence_milli, selected_error_class);
         let kind = classify_planned_replacement(&safety);
