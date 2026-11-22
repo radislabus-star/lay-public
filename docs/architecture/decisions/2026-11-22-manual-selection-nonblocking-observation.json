@@ -60,6 +60,15 @@
         "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-entry-nonblocking-129.json",
         "passed": 3,
         "total": 3
+      },
+      "x11-daemon-129-gestures": {
+        "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/x11-daemon-129-gestures.json",
+        "passed": 3,
+        "total": 3,
+        "input": "Private GTK3/X11 mouse drag and Shift+Left followed by synthetic X11 Shift pairs through the staged daemon",
+        "recognized_gestures": 3,
+        "selection_commits": 2,
+        "explicit_read_only_refusals": 1
       }
     },
     "first_gnome_pass": {
@@ -69,6 +78,20 @@
       "first_failure": "Bridge admission denied before the new read, in the TextView injected-Shift case. Exact previous and fixed binaries passed the subsequent control and repeat.",
       "previous_binary_comparison": "/home/ubu/.cache/lay/development/issue81-129-20261122/gnome-order-control-c40-129.json"
     },
-    "verdict": "The old synchronous-release timeout no longer occurs in the executed GTK3 X11 or Wayland reproductions. These disposable client sessions used a bridge call and a GTK release event. They do not provide a real-keyboard acceptance for the changed package."
+    "verdict": "The old synchronous-release timeout no longer occurs in the executed GTK3 X11 or Wayland reproductions. These disposable client sessions used a bridge call and a GTK release event. They do not provide a real-keyboard acceptance for the changed package.",
+    "source_checks": {
+      "tested_git_commit": "0118d6185afd2d6597a6d2fa72a52e0342a9e01f",
+      "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/nonblocking-changed-gate-result.json",
+      "log": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/nonblocking-check-lay-changed.log",
+      "correctness_and_package_passed": 3654,
+      "correctness_and_package_failed": 0,
+      "separately_confirmed_physical_owner_source_tests": 7
+    },
+    "staged_package": {
+      "receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/nonblocking-staged-package.json",
+      "verified_binaries": 10,
+      "production_cli": "lay 1.0.128",
+      "changed_package_real_keyboard_confirmation": "PENDING"
+    }
   }
 }
