@@ -5,7 +5,7 @@
   "decision": "Release the existing engine write guard only while observing the new GTK3 selected range. Revalidate the engine activation, text snapshot, revisions and original bridge token before dispatch.",
   "reason": "The exact c40d29a8 package recognized four user-generated Double Shift gestures on the physical ThinkPad keyboard. Its first observation timed out. The authenticated final Shift release was observed by the bus before the timeout, while the engine callback could enter only after it. GTK synchronously processing that release could not answer the selected-range query until the engine write guard became free.",
   "verification": "Reproduce the historical timeout with a real GTK3 synchronous release and concurrent ManualToggleV3 on the private remote runner. Re-run that exact ordering and an ordinary GTK3 control on fixed bytes. Check GTK3/X11 and GNOME Wayland replacements, refusals and focus transitions. Check existing physical owner tests and require exact live source/physical acceptance before installation.",
-  "not_tested": "The user left after the first hardware failure and asked for automated work. Hardware success on the changed build remains pending.",
+  "not_tested": "Physical confirmation covers the local GTK3 XWayland selection field. The other client coverage is the listed isolated automation.",
   "invariants": [
     "C03",
     "C04",
@@ -92,6 +92,28 @@
       "verified_binaries": 10,
       "production_cli": "lay 1.0.128",
       "changed_package_real_keyboard_confirmation": "PENDING"
+    },
+    "local_hardware_installation": {
+      "date": "2026-11-23",
+      "first_attempt": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/nonblocking-physical-ixd6d_je/physical-result.json",
+      "fixture_comparison": {
+        "polling_18_ms": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/physical-gtk-timing-slow.json",
+        "polling_2_ms": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/physical-gtk-timing-fast.json"
+      },
+      "finding": "The 18 ms sleeps in the physical GTK actor delayed replies to successive AT-SPI requests. The same binaries passed when GTK dispatch ran promptly.",
+      "harness_change": "The physical GTK actor dispatches events on the GLib main context. A timer checks external test predicates.",
+      "physical_receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/nonblocking-physical-r3oida72/physical-result.json",
+      "installation_receipt": "/home/ubu/.cache/lay/development/issue81-129-20261122/local-install/nonblocking-installed.json",
+      "physical_keyboard_replacements": 1,
+      "production_cli": "1.0.129",
+      "production_tray": "1.0.129",
+      "production_layout": "lay-ime-ru",
+      "confirmed_loaded_binaries": [
+        "lay-daemon",
+        "lay-ibus-engine",
+        "lay-nanda-wave-train",
+        "lay-l11-serve"
+      ]
     }
   }
 }
