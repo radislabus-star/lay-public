@@ -22,6 +22,7 @@
   "delivery_routes_changed": false,
   "rollback": "Retain the public 1.0.129 tag and use a new immutable 1.0.130 tag for the verified dependency update.",
   "verification": "Use the locked full release build, archive-bound check-lay-changed gate and physical Double Shift owner lane, GTK3 native smoke and real-keyboard confirmation. Check the GitHub CI and Security verdicts and the installed menu's public stable discovery source.",
+  "not_tested": "Untested scope includes native Qt selection, other application fields, a new browser matrix, and applying the update on the installed desktop.",
   "baseline_evidence": {
     "installed_version": "1.0.129",
     "ime_sha256": "1e88b8918588cb37266222f7f6d3a63c2221780efd68f4f8fd39650e38611132",
