@@ -1,12 +1,15 @@
 {
   "schema": "lay.field-integration-scope.v1",
-  "base": "8e37bf92aa944c7da1fb9f485af9445aca8dff50",
+  "base": "f120f5d2224ceae2269a9f6b7f7521f48c141336",
   "components": [
     "tooling"
   ],
   "shared_paths": [
-    "src/bin/lay_ibus_engine/window_interaction/authority.rs",
-    "src/bin/lay_ibus_engine/window_interaction/manual_selection.rs"
+    "Cargo.toml",
+    "Cargo.lock",
+    "VERSIONING.md",
+    "extension/lay@radislabus-star.github.io/metadata.json",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
   ],
-  "decision": "docs/architecture/decisions/2026-11-22-manual-selection-nonblocking-observation.json"
+  "decision": "docs/architecture/decisions/2026-11-24-url-security-release.json"
 }

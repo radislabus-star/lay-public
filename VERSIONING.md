@@ -17,7 +17,7 @@ integer metadata version remains monotonic and is encoded as
 
 Current source version:
 
-- `1.0.127`
+- `1.0.130`
 
 1.0.127 uses the observed left context to resolve selected missing-letter ambiguities. It also reuses edit distances and rejects unsupported expansions of an attested left word. See [release notes](docs/release-1.0.127.md).
 

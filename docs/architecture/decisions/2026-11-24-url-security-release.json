@@ -1,0 +1,46 @@
+{
+  "schema": "lay.architecture-decision.v1",
+  "base": "f120f5d2224ceae2269a9f6b7f7521f48c141336",
+  "previous_decision": "docs/architecture/decisions/2026-11-22-manual-selection-nonblocking-observation.json",
+  "scope": "Authorized dependency security release on the accepted Lay 1.0.129 source. Update url through ureq and set the release metadata to 1.0.130.",
+  "reason": "GitHub Security run 45349034811 rejects locked url 2.5.8 for RUSTSEC-2026-0592. RustSec identifies 2.5.9 as the first patched version.",
+  "decision": "Resolve url 2.5.9 with its required form_urlencoded 1.2.3. Retain the other locked dependencies and publish 1.0.130 after complete verification.",
+  "protected_paths": [
+    "Cargo.toml",
+    "Cargo.lock",
+    "VERSIONING.md",
+    "extension/lay@radislabus-star.github.io/metadata.json",
+    "extension/lay@radislabus-star.github.io/tray_support.js"
+  ],
+  "invariants": [
+    "C01",
+    "C05",
+    "C07",
+    "C09"
+  ],
+  "runtime_authority_changed": false,
+  "delivery_routes_changed": false,
+  "rollback": "Retain the public 1.0.129 tag and use a new immutable 1.0.130 tag for the verified dependency update.",
+  "verification": "Use the locked full release build, archive-bound check-lay-changed gate and physical Double Shift owner lane, GTK3 native smoke and real-keyboard confirmation. Check the GitHub CI and Security verdicts and the installed menu's public stable discovery source.",
+  "baseline_evidence": {
+    "installed_version": "1.0.129",
+    "ime_sha256": "1e88b8918588cb37266222f7f6d3a63c2221780efd68f4f8fd39650e38611132",
+    "previous_security_run": "https://github.com/radislabus-star/lay-public/actions/runs/45349034811",
+    "advisory": "https://rustsec.org/advisories/RUSTSEC-2026-0592.html"
+  },
+  "lockfile_delta": {
+    "form_urlencoded": [
+      "1.2.2",
+      "1.2.3"
+    ],
+    "lay": [
+      "1.0.129",
+      "1.0.130"
+    ],
+    "url": [
+      "2.5.8",
+      "2.5.9"
+    ]
+  },
+  "verification_receipt": "/home/ubu/.cache/lay/development/release-130-20261124/verification.json"
+}
